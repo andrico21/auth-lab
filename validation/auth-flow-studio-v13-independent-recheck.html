@@ -1,0 +1,388 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Auth Flow Studio v13 - independent recheck</title><style>
+:root{color-scheme:light;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#17263d;background:#eef2f7}*{box-sizing:border-box}body{margin:0}main{max-width:1120px;margin:auto;padding:42px 30px 70px}header{border-top:7px solid #6550bf;padding:26px 30px;background:white;border-radius:4px 4px 14px 14px}h1{font-size:34px;letter-spacing:-1px;margin:5px 0 16px}h2{font-size:25px;margin:36px 0 16px}h3{font-size:19px;line-height:1.4;margin:0}p,li,dd,td{font-size:15px;line-height:1.65}p{margin:10px 0}a{color:#4f389c;text-underline-offset:3px;overflow-wrap:anywhere}.eyebrow{font-size:12px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:#645478}.verdict{font-size:21px;font-weight:700;color:#813c29}.metrics{display:flex;flex-wrap:wrap;gap:14px;margin-top:22px}.metric{background:#f4f2fa;border-radius:8px;padding:12px 18px;flex:1;min-width:180px}.metric strong{display:block;font-size:22px}.metric span{font-size:13px;color:#526078}.notice{background:#fff6df;border-left:4px solid #b78625;padding:15px 20px;margin:20px 0}nav{display:flex;gap:20px;flex-wrap:wrap;margin:22px 0}article{background:white;border:1px solid #dae0e8;border-radius:12px;padding:24px 28px;margin:18px 0}.finding-heading{display:flex;align-items:baseline;gap:12px}.badge{font-size:12px;font-weight:750;border-radius:5px;padding:4px 8px;white-space:nowrap}.high{color:#8c2e21;background:#ffe8e2}.medium{color:#745410;background:#fff1cb}.low{color:#345572;background:#e6f1f8}.source{font-size:13px;color:#58687c;margin:12px 0 18px;font-family:ui-monospace,monospace}dl{display:grid;grid-template-columns:165px 1fr;gap:10px 18px;margin:0}dt{font-size:13px;font-weight:700;padding-top:3px;color:#4c5b70}dd{margin:0;min-width:0}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.9em;background:#eef1f6;padding:1px 4px;border-radius:3px;overflow-wrap:anywhere}table{border-collapse:collapse;background:white;width:100%;margin:15px 0}th,td{padding:12px 14px;text-align:left;vertical-align:top;border:1px solid #dbe1e8}th{background:#e6eaf2;font-size:13px}td.status{font-size:13px;font-weight:650;white-space:nowrap}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#17263d;color:#eef3ff;padding:18px;border-radius:7px;font-size:12px;line-height:1.55}details{background:white;padding:15px 18px;border:1px solid #dbe1e8;border-radius:7px;margin:10px 0}summary{cursor:pointer;font-weight:650;font-size:14px}footer{margin-top:35px;font-size:12px;color:#657187}.table-wrap{overflow-x:auto}.small{font-size:13px;color:#526078}@media(max-width:700px){main{padding:20px 14px}header,article{padding:20px}h1{font-size:28px}dl{grid-template-columns:1fr;gap:4px}dd{margin-bottom:12px}.finding-heading{align-items:flex-start}td,th{padding:10px}}@media print{:root{background:white}main{max-width:none;padding:0}header{padding:12px 0}article{break-inside:avoid;border-radius:0}nav{display:none}h2{break-after:avoid}a{color:inherit}pre{background:#f1f3f5;color:#17263d}details{break-inside:avoid}}
+
+.table-wrap{overflow-x:auto}code{overflow-wrap:anywhere}summary{cursor:pointer}pre{max-height:650px;overflow:auto}
+.verdict{color:#236148}.closed{color:#236148;background:#e6f4ec}h3{scroll-margin-top:20px}</style></head><body><main>
+<header><div class="eyebrow">Independent review · version 13 · 8 October 2026</div><h1>The last reported display issue is fixed.</h1><p class="verdict">L5 closed. No new defect found in this scoped recheck.</p><p>Both companion JWE Compact fields now retain their exact per-hop value through Compute, Send and Check. Earlier tested corrections remain intact. Native-browser usability acceptance is still open.</p><div class="metrics"><div class="metric"><strong>459 / 459</strong><span>Fresh full-suite pass</span></div><div class="metric"><strong>L5 closed</strong><span>Both encrypted-token paths</span></div><div class="metric"><strong>2 source lines</strong><span>29 other modules unchanged</span></div><div class="metric"><strong>Browser QA open</strong><span>No native engine available</span></div></div></header>
+<nav><a href="#closure">Fix verification</a><a href="#retained">Retained fixes</a><a href="#verification">Build and tests</a><a href="#coverage">Coverage</a><a href="#browser">Browser acceptance</a><a href="#evidence">Evidence appendix</a></nav>
+<p>Target: the uploaded v13 HTML, source ZIP and handoff, compared byte-for-byte with independently reviewed v12. Audit only: application source and delivered tests were not edited. This is a focused check of the release change plus a fresh full suite and relevant independent regression probes.</p>
+<h2 id="closure">L5 · Companion JWE Compact continuity - closed</h2>
+<article><dl>
+<dt>Original reproduction</dt><dd>Corporate sign-in through an external IdP → Generic external IdP → All OIDC ID tokens, signed then JWE. Select <code>jweCompactBroker</code> and then <code>jweCompactApp</code> in Attribute index. In v12, Compute showed the encoded compact token; Send and Check switched to the generic <code>protected.encrypted_key.iv.ciphertext.tag</code> glossary template.</dd>
+<dt>v13 observation</dt><dd>Compute, Send and Check now use the same complete encoded value for the selected hop. Actual index/player observations and backward range previews retain that value. The broker token and application token remain distinct.</dd>
+<dt>Correction</dt><dd><code>src/jwe-data.js:115</code> snapshots the compact-field value on the wire stage; <code>:123</code> carries it into local structure verification. Both assignments preserve the stage’s other occurrence values. These are the only source changes.</dd>
+<dt>Adjacent boundaries</dt><dd>The glossary still explains generic syntax. No HTTP response parameter or new protocol operation is introduced. idTokenA/B wire values stay compact JWE; the recovered inner JWS remains a separate local representation. Encrypted wire fields do not acquire plaintext identity claims, CEKs or private encryption keys. Provider restrictions and source immutability remain intact.</dd>
+<dt>Standards distinction</dt><dd><a href="https://www.rfc-editor.org/rfc/rfc7516.html#section-3.1">RFC 7516 §3.1</a> defines the compact serialization structure; it was reopened for this recheck. L5 was a low-priority teaching-display continuity issue, not an RFC violation. Its correction does not amount to testing live cryptography.</dd>
+<dt>Disposition</dt><dd>Closed in the independently tested models and application event/player paths. No new high, medium or low finding was established in the changed scope.</dd>
+</dl></article>
+<h2 id="retained">Earlier findings remain closed in their tested scope</h2><div class="table-wrap"><table><thead><tr><th>Prior finding</th><th>Current evidence</th></tr></thead><tbody><tr><td>R6 / L4 · response and audience values</td><td>The independent audience probe is rerun against v13. Branch-specific status/challenge/error values and per-recipient audiences remain correct, including JWE, Device/CIBA and reverse-seek cases. The new snapshots preserve local claim values without creating plaintext claim transport.</td></tr><tr><td>R7 / L3 / R3 · JWE and provider boundaries</td><td>Relevant independent JWE/token/provider checks retain exact assembly→wire ID-token continuity, local recovered-inner representation, protocol-appropriate AWS wording and named-provider restrictions. L5 now closes the companion-field gap.</td></tr><tr><td>R8 / L1 · replay and completion</td><td>The retained 82-case control/state probe passes. Zero-speed explicit replay restores the previous positive speed and synchronizes packet state; paused preview behavior remains distinct. The full suite also retains terminal-seek regression checks.</td></tr><tr><td>R10 / R2 / R5 · resize and logical focus</td><td>The retained 25-case resize probe passes for keyboard/hover ownership, nested/invalid anchors, timers and playing/paused/idle state. Focus and app code are unchanged; the full suite retains the prior inspector/catalog return tests.</td></tr><tr><td>R9 / L2 / R4 · runtime context</td><td>The retained 437-assertion runtime probe passes, including native→browser transitions, SPA/BFF client ownership, exact URI preservation, cache/default rules, lifecycle clearance and custom client/audience projection.</td></tr><tr><td>Earlier routing/protocol/search cases</td><td>All existing source modules outside jwe-data.js and all 49 previous test/harness files match v12 exactly. The fresh complete delivered suite passes their retained regressions. The broad independent v12 review remains the baseline; its full matrices are not claimed as freshly rerun here.</td></tr></tbody></table></div>
+<h2 id="verification">Fresh verification</h2><div class="table-wrap"><table><thead><tr><th>Check</th><th>Result</th><th>Boundary</th></tr></thead><tbody><tr><td>npm run build</td><td>Exit 0; 0.285 s</td><td>Supplied, archived and rebuilt standalone HTML are byte-identical.</td></tr><tr><td>node --test --test-concurrency=2 tests/*.test.mjs</td><td>459 pass; 0 fail; 198.702 s reported</td><td>Fresh v13 full-suite run; 0 cancelled/skipped/todo. Wrapper 198.785 s. The worker’s 31-test targeted result and v12’s 457-test result are separate historical evidence.</td></tr><tr><td>Archive integrity</td><td>89 files; 939,904 bytes; integrity clean</td><td>All 89 archived members remain byte-identical after build and audit. Standalone HTML is 1,320,876 bytes.</td></tr><tr><td>Source/test integrity</td><td>Two source-line additions; no deleted assertions</td><td>29 source modules and all 49 existing test/harness files unchanged. One new test file contains two compact-continuity regressions. README and the release validation log are also updated/added.</td></tr><tr><td>Independent JWE checks</td><td>L5 and adjacent token/provider paths pass</td><td>Exact visible packet and reverse-seek observations; per-hop structure, wire ownership, recovered-inner and immutable-input checks. Detailed counts and methods are in the appendix.</td></tr><tr><td>Independent audience checks</td><td>Retained response/audience probe passes</td><td>Core and grant composition, scalar values, operation boundaries and reverse seek; details below.</td></tr><tr><td>Independent retained UI/context checks</td><td>82 player cases; 25 resize cases; 437 runtime assertions</td><td>Deterministic DOM/SVG/event/clock evidence. Counts overlap with delivered tests and are not a sum of unique standards clauses.</td></tr><tr><td>Standalone/offline checks</td><td>Inline bundle boots; no external runtime assets</td><td>Included full-suite integration check; no native file:// session, browser console/network recording or real layout test.</td></tr><tr><td>Execution environment</td><td>Node 24.19.0; npm 11.9.0; Python 3.12.14</td><td>Linux 6.18.44 x86_64, glibc 2.39. Browser executable/tool availability rechecked; none available.</td></tr></tbody></table></div>
+<p><strong>HTML SHA-256</strong><br><code>959fe1b62f10ef92b4a591f7a9f78cfb32ebc6e79cf82cc6ec77ab3134ee3147</code></p>
+<p><strong>Source ZIP SHA-256</strong><br><code>dfa91c0595e17860538b526fa91a4464cc6cfc885862efcef9a25279e91cdb00</code></p>
+<h2 id="coverage">Requirement coverage</h2><div class="table-wrap"><table><thead><tr><th>Requirement</th><th>Status</th><th>Evidence / limit</th></tr></thead><tbody><tr><td>Reported L5 value continuity</td><td>Verified</td><td>Exact reproduction fixed on broker and application paths, including selected-field playback and reverse preview.</td></tr><tr><td>Earlier reported model/event defects</td><td>Verified in retained scope</td><td>Fresh delivered suite, relevant independent probes and unchanged-source comparison support maintaining their closure.</td></tr><tr><td>Universal RFC conformance</td><td>Partially verified</td><td>Specific protocol representations and boundaries checked. No exhaustive proof across every standard, extension or configuration.</td></tr><tr><td>Usability and control semantics</td><td>Partially verified</td><td>Replay, seek, help ownership, focus-return intent and runtime application behavior pass event-model checks. Native interaction remains open.</td></tr><tr><td>Browser visuals/accessibility</td><td>Cannot verify</td><td>No real browser engine. No rendered geometry, Tab order, accessibility tree, screen-reader or pointer/range result.</td></tr><tr><td>Standalone/offline deployment</td><td>Partially verified</td><td>Exact rebuild and harness boot pass; actual browser file:// and lifecycle behavior remain untested.</td></tr><tr><td>Live provider/hardware interoperability</td><td>Cannot verify</td><td>No live Keycloak/vendor tenant, authenticator, cryptographic exchange or deployment performed. Retained documentation baseline is Keycloak 26.8.0.</td></tr><tr><td>Every scenario/configuration combination</td><td>Missing / declared scope boundary</td><td>Inventory unchanged: 12 presets, 43 extended models, 54 choices and 498 merged extended scalar definitions. Representative matrices do not cover the full Cartesian product or every extension/vendor recovery policy.</td></tr></tbody></table></div>
+<h2 id="browser">Remaining usability acceptance</h2><p>The remaining useful acceptance work is a real-browser pass in a primary browser and an independent engine. No native engine was installed or callable here, and the previously blocked download was not retried.</p><div class="table-wrap"><table><thead><tr><th>Area</th><th>Open checks</th></tr></thead><tbody><tr><td>Rendered layout</td><td>1920×1080, 1366×768, 1024×768 and narrow windows; 200% zoom, both themes and reduced motion. Index/topic scrolling, long addresses, card bounds, sticky controls and popup/overlay containment.</td></tr><tr><td>Keyboard/accessibility</td><td>Tab/Shift+Tab, F2/Escape/resize, visible focus, picker scroll, range announcements, accessibility tree and screen-reader output.</td></tr><tr><td>Pointer/player integration</td><td>Native seek gestures, graph movement, pointer capture/cancel and route/packet alignment after scroll and zoom.</td></tr><tr><td>Offline/lifecycle</td><td>Real file:// boot, console/network observations, back-forward cache and autocomplete restoration.</td></tr></tbody></table></div>
+<p>No open code/model defect remains from the reported findings within the tested scope. Browser usability and interoperability limits remain explicit; this report does not certify the entire application as universally standards-conformant.</p>
+<h2 id="evidence">Independent evidence appendix</h2><p>Reports below distinguish new v13 execution from the retained v12 baseline. Source and shipped tests were left unchanged. The minimal L5 reproduction records packet values; it is not a native-browser recording.</p>
+<details><summary>L5 and adjacent JWE/provider review - providers-review.txt</summary><pre>Auth Flow Studio v13 - independent companion-JWE continuity recheck
+Reviewed 2026-10-08. Audit only; application source unchanged by reviewer.
+
+Disposition
+L5 is closed. Selecting either JWE Compact Serialization field now retains the actual hop-specific compact value through Compute, Send and Check. Both forward visible playback and reverse slider preview agree with the corresponding wire id_token. No remaining finding arose in this scoped workstream. R7 ID-token assembly/recovered-inner behavior, L3 AWS wording and R3 named-provider guards remain correct in the targeted checks.
+
+Change inspected
+Only two added occurrence bindings are present in the source diff under review: src/jwe-data.js:115 snapshots jweCompactApp/Broker on the wire step from its existing assembly value; :123 snapshots it again on the recipient&#x27;s unwrap/structure-check step. The change preserves the other occurrence values through object spread. No HTTP payload, claim, encryption policy or player behavior is added. The glossary&#x27;s five-part syntax template remains intact.
+
+Exact reproduction and evidence
+Corporate sign-in → Generic external IdP → All OIDC ID tokens, signed then JWE; click JWE Compact Serialization (broker ID token) in the actual Attribute index, then its application counterpart. For each field, Compute/Send/Check now share a single encoded five-part value, rather than switching to protected.encrypted_key.iv.ciphertext.tag at Send/Check. The broker and app retain their different complete compact strings and recipient kid values; a shared visible prefix is merely truncation.
+Minimal prior audit reproduction was rerun unchanged with version argument v13. Evidence: providers-compact-v13.json; reproducible copy providers-compact-repro.mjs. Both hops have exactly one distinct value across their three actual player packets. The established v12 output in recheck-v12/providers-compact-v12.json shows the prior two-representation behavior.
+
+Independent adjacent assertions
+providers-jwe-adjacent.mjs reuses the relevant v12 audit matrix and strengthens the prior observation into strict assertions. Exit 0; results providers-jwe-adjacent.json and providers-jwe-adjacent-output.txt:
+- 270 core configurations spanning valid native/web application contexts, OIDC/SAML app and broker legs, single/Keycloak/Generic topology, app/broker/both-JWE, and five factor modes. These include harmless unused broker-control combinations in single-realm models.
+- 180 encrypted-hop checks. Companion Compute/Send/Check values all equal the corresponding wire id_token even with an intentionally incompatible glossary fallback. Recipient structure checks remain local at the actual wire recipient. Provider adaptation preserves input objects and infers encryption from an expanded Generic model.
+- The ID-token fields still assemble/send the exact compact value, while the later verified/recovered inner JWS is distinct and local. Encrypted wire fields still omit individual plaintext identity claims, CEKs and encryption private keys. The standard algorithm/header example remains RSA-OAEP-256/A256GCM with cty=JWT.
+- Eight actual app configurations, ten ID-token studies and forty visible packet assertions retain R7 across assembly, send, recovered inner and backward selection. Both companion scalars additionally pass six forward visible packet checks and six reverse seeks through the actual range input handler; seeks remain paused and current step, packet value and rendered packet text agree.
+- 32 named-provider configuration checks retain signed/app-JWE acceptance and requested/expanded broker-JWE rejection across all four named profiles and both app protocols. No new named-provider encryption capability is claimed. Actual AWS selection with both app protocols retains corrected SAML-specific protection wording.
+
+Limits
+This closes the observed display-continuity note at source/model/event-handler level. Evidence uses the existing offline DOM/SVG/clock harness, not native browser painting, accessibility-tree, gesture or screen-reader verification. No live cryptographic or provider/Keycloak interoperation is claimed. Root audit owns the fresh full-suite and artifact-integrity results. No further broad sweep was performed after these scoped checks passed.
+</pre></details><details><summary>Response/audience regression review - audience-report.txt</summary><pre>V13 NARROW AUDIENCE / RESPONSE / JWE REGRESSION RECHECK
+
+R6 and L4 remain CLOSED. No new finding within this assigned scope.
+No application files changed. Full-suite verification belongs to the root;
+the separate provider/JWE reviewer owns the L5 disposition.
+
+Changes inspected: src/jwe-data.js adds only the companion Compact occurrence
+binding on the encrypted wire object (:115) and on the unwrap object (:123).
+Both use a fresh attributeValues object with existing occurrence context
+spread first, retaining audience values and adding the same compact value.
+No field or send/receive operation is added by those two assignments.
+
+CHECKS AND RESULTS
+1. Reran the exact independent v12 audience probe against v13 source.
+   Command: node recheck-v13/audience-probe.mjs
+   Exit 0; 1,942 checks pass. Evidence: audience-probe.json and
+   audience-probe-output.txt.
+   - All API status/error/challenge create and send values remain exact:
+     expired/wrong-audience 401 invalid_token, missing permission 403
+     insufficient_scope, successful read 200 without synthetic error.
+   - Actual index-click handlers, visible player packets and backwards range
+     input retain their occurrence values: 58 reverse-seek previews.
+   - 120 core factor/deployment/topology/protection compositions retain exact
+     broker/app audience values; JWE wires expose no plaintext aud operation.
+   - Source models remain unchanged after JWE composition, and locally
+     recovered inner JWS is not replaced by compact ciphertext.
+   - 40 Device/CIBA compositions retain device-client/device-confidential/
+     ciba-client, rather than inheriting a core desktop-app/web-app audience.
+   - Scope follows token validity; expected audience remains local policy.
+     API operation ledgers remain unchanged from the v11 baseline.
+
+2. Added a narrow runtime-context probe around the new companion bindings.
+   Command: node recheck-v13/audience-runtime-probe.mjs
+   Exit 0; 148 checks pass across six contexts (native/web × single/two/
+   Generic external), all with both-JWE where applicable.
+   Evidence: audience-runtime-probe.json.
+   - Applied clientID corp-client-13 and custom application/issuer/callback
+     addresses compose correctly with the new wire/unwrap snapshots.
+   - Local app audience is corp-client-13; broker audience is realm-a-broker.
+   - Earlier source/composed step objects remain byte-for-byte unchanged.
+   - Companion derive/send/check values match the wire ID-token compact;
+     custom context does not rewrite the schematic compact ciphertext bytes.
+   - Existing audience metadata inside the snapshots does not become a wire
+     field or packet. Decrypted and ordinary validation keep their recovered
+     local inner-JWS representation.
+
+TOTAL: 2,090 independent assertions; zero failures. No optional broader sweep
+performed after the changed boundary and retained closures were verified.
+
+Scope limits: model/source and deterministic DOM-event/player evidence only.
+No native-browser rendering, actual keyboard/assistive-technology behavior,
+live OAuth/OIDC/Keycloak interoperability or cryptographic execution claimed.
+No new normative standards interpretation is introduced by this display-value
+binding; the previous RFC 6750/OIDC audience review remains the reference.
+</pre></details><details><summary>Retained controls, focus, runtime and integrity - retained-report.txt</summary><pre>Auth Flow Studio v13 - bounded retained integration/usability recheck
+2026-10-08. Audit only; no application or delivered test changes.
+Target: /workspace/scratch/b1e0b9877d92/recheck-v13/auth-flow-studio
+Baseline: v12 in the adjacent review directory.
+
+Result
+No retained integration/usability regression found in the independently rerun
+scope: 82 playback cases, 25 focus/resize cases and 437 runtime assertions pass.
+All three review scripts exit 0. Assertions are unchanged from the prior v12
+independent probes; only output filenames were renamed to retained-*.
+Affected compact-JWE continuity and audience checks are assigned separately.
+The root executes the complete delivered suite. This report is not a universal
+RFC-conformance, native-browser usability or accessibility certification.
+
+Source and test integrity
+retained-source-inventory.json and retained-source.diff record the comparison.
+The sole changed application module is src/jwe-data.js. It adds exactly two
+occurrence-snapshot assignments: the wire message inherits its compact value
+from assembly, and unwrap inherits that same compact value from the wire.
+No source line is removed. The other 29 source files are byte-identical to v12,
+including app, player, focus, runtime, routing, attribute trace/usage and all
+other protocol builders. These unchanged files support retaining the prior
+source assessment; they are not presented as freshly rerun broad protocol tests.
+
+All 49 existing test/harness files are byte-identical. No prior assertion was
+edited or removed. One new test file covers compact continuity. Other archive
+changes are README/build output and a new labelled targeted-validation log.
+The root owns exact archive/build integrity and full-suite evidence.
+
+Playback - 82 cases pass
+retained-player-probes.mjs -&gt; retained-player-results.json / retained-player-log.txt
+The prior independent matrix exercises full Basic Keycloak and codeVerifier
+study contexts, with initial 1x, .01x, .37x and 4x speeds followed by zero.
+Connection click/Enter/Space, timeline, Next/Previous, attribute activation,
+inspector Replay, main Resume and focused-study controls restore the expected
+speed. Immediate packet name/count/visibility, current step/timeline marker,
+active route and scheduled-frame count remain coherent before frame progress.
+First-frame clock establishment, subsequent progress, ordinary Pause, positive
+speed adjustment remaining paused, and seek replacing short playback queues
+with the complete study all pass. Two deliberate engine queue replacements
+at zero remain paused while synchronizing displayed packet state. Nonanimated
+step selection remains idle at zero. This retains the checked R8 behavior.
+
+Focus/resize - 25 cases pass
+retained-focus-probes.mjs -&gt; retained-focus-results.json
+Actual window resize events cover idle/playing/paused state with index,
+participant and nested help; preserved source focus and return chains; close
+timers; trigger-owned focus; hover-only panels; detached/hidden/inert/aria-hidden
+anchors; invalid nested parents/children; and live inspector replacements with
+the index both visible and hidden. Every case preserves queue identity, elapsed
+time, position, status and speed. The original R10 behavior and exercised R2/R5
+fallback/rebuild paths remain corrected in the deterministic event model.
+
+Runtime - 437 assertions pass
+retained-runtime-probes.mjs -&gt; retained-runtime-results.json / retained-runtime-log.txt
+Eighteen native-to-Implicit/Hybrid transitions cover http/HTTP/HtTp and
+127.0.0.1/localhost/[::1]. Browser execution excludes native HTTP values despite
+native diagram layout; rejected Apply remains atomic; native return preserves
+exact original callback strings. HTTPS/browser context and module execution/
+cache precedence remain intact.
+Two ownership cases cover actual SPA client card/popup/inspector and BFF
+backend separation, drafts, Apply/reset and lifecycle clearing. The compact
+SPA card shows its applied URL; full popup/inspector context carries the client
+ID and exact callback. Eighteen custom-client/audience configurations retain
+separate application and upstream recipients through signed/encrypted and
+named/Generic profiles. These cases retain the checked R9/L2 and relevant L4
+integration behavior without a broad protocol resweep.
+
+Browser availability and limits
+retained-browser-availability.json records a fresh brief PATH/common-cache
+check. No Chromium/Chrome/Firefox executable or Playwright browser engine was
+found; the conventional Playwright cache contains bookkeeping only. No browser
+installation or download retry was attempted.
+
+The supplied harness and its independent focus extension verify handlers and
+state, not rendered CSS, native pointer/range interaction, Tab order, assistive
+technology, browser lifecycle/memory clearing, actual file:// execution or live
+provider/hardware/cryptographic interoperability. Native-browser ergonomics
+acceptance therefore remains open. No screenshots or browser measurements are
+claimed, and probe counts are not counts of unique standards requirements.
+</pre></details><details><summary>Minimal L5 reproduction - providers-compact-repro.mjs</summary><pre>import {pathToFileURL} from &#x27;node:url&#x27;;
+const version=process.argv[2]||&#x27;v13&#x27;;
+const source=&#x27;/workspace/scratch/b1e0b9877d92/recheck-&#x27;+version+&#x27;/auth-flow-studio/&#x27;;
+const {installHarness,HarnessEvent}=await import(pathToFileURL(source+&#x27;tests/dom-harness.mjs&#x27;));
+const {document,clock}=installHarness();const {AuthFlowStudio}=await import(pathToFileURL(source+&#x27;src/app.js&#x27;));
+const app=new AuthFlowStudio();document.body.appendChild(app);app.connectedCallback();
+const change=(id,value)=&gt;{const e=app.querySelector(&#x27;#&#x27;+id);e.value=value;e.dispatchEvent(new HarnessEvent(&#x27;change&#x27;));};
+app.selectLabScenario(&#x27;corporate-external&#x27;);change(&#x27;provider-profile&#x27;,&#x27;generic&#x27;);change(&#x27;token-protection&#x27;,&#x27;both-jwe&#x27;);
+const rows=[];
+for(const id of [&#x27;jweCompactBroker&#x27;,&#x27;jweCompactApp&#x27;]){
+  app.refs[&#x27;attribute-index&#x27;].querySelector(&#x27;[data-index-attribute=&quot;&#x27;+id+&#x27;&quot;]&#x27;).click();const packets=[];
+  for(const [stage,kind]of [[&#x27;wrap&#x27;,&#x27;derive&#x27;],[&#x27;wire&#x27;,&#x27;send&#x27;],[&#x27;unwrap&#x27;,&#x27;verify&#x27;]]){
+    const i=app.traceQueue.findIndex(s=&gt;s.jweStage===stage&amp;&amp;s.traceKind===kind);app.selectStep(i,true);clock.advance(600);
+    const s=app.traceQueue[i];packets.push({stage,kind,sourceStepId:s.sourceStepId,title:s.title,summary:s.summary,from:s.from,to:s.to,wireToken:app.steps.find(w=&gt;w.id===s.sourceStepId)?.payload.find(p=&gt;p.name===&#x27;id_token&#x27;)?.value,packet:app.player.snapshot().packet.value,visible:app.refs[&#x27;packet-value&#x27;].textContent});
+  }
+  rows.push({id,definition:app.definition(id),packets});app.clearAttribute();
+}
+console.log(JSON.stringify({version,rows},null,2));
+app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();
+</pre></details><details><summary>Observed v13 compact packets - providers-compact-v13.json</summary><pre>{
+  &quot;version&quot;: &quot;v13&quot;,
+  &quot;rows&quot;: [
+    {
+      &quot;id&quot;: &quot;jweCompactBroker&quot;,
+      &quot;definition&quot;: {
+        &quot;name&quot;: &quot;JWE Compact Serialization (broker ID token)&quot;,
+        &quot;meaning&quot;: &quot;The five-part string carried in the token response’s id_token field.&quot;,
+        &quot;description&quot;: &quot;The five-part string carried in the token response’s id_token field.&quot;,
+        &quot;origin&quot;: &quot;the upstream OIDC provider joins the base64url-encoded protected header, encrypted key, IV, ciphertext and tag with four periods.&quot;,
+        &quot;generator&quot;: &quot;the upstream OIDC provider joins the base64url-encoded protected header, encrypted key, IV, ciphertext and tag with four periods.&quot;,
+        &quot;purpose&quot;: &quot;Transports the signed-and-encrypted ID token over HTTPS. Its encrypted contents must be decrypted, inner-signature checked and claim validated before accepting identity.&quot;,
+        &quot;example&quot;: &quot;protected.encrypted_key.iv.ciphertext.tag (five schematic parts)&quot;,
+        &quot;standard&quot;: &quot;RFC 7516 §3.1&quot;,
+        &quot;source&quot;: &quot;https://www.rfc-editor.org/rfc/rfc7516&quot;
+      },
+      &quot;packets&quot;: [
+        {
+          &quot;stage&quot;: &quot;wrap&quot;,
+          &quot;kind&quot;: &quot;derive&quot;,
+          &quot;sourceStepId&quot;: &quot;external-web-password-l18-jwe-broker-wrap&quot;,
+          &quot;title&quot;: &quot;Compute JWE Compact Serialization (broker ID token)&quot;,
+          &quot;summary&quot;: &quot;Replaces id_token’s wire representation with the nested signed-and-encrypted compact JWE.&quot;,
+          &quot;from&quot;: &quot;realmB&quot;,
+          &quot;to&quot;: &quot;realmB&quot;,
+          &quot;packet&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwia2lkIjoiYnJva2VyLWVuYy0yMDI2IiwiY3R5IjoiSldUIn0.c2NoZW1hdGljX2Jyb2tlcl9lbmNyeXB0ZWRfa2V5.c2NoZW1hdGljX2Jyb2tlcl9pdg.c2NoZW1hdGljX2Jyb2tlcl9jaXBoZXJ0ZXh0.c2NoZW1hdGljX2Jyb2tlcl90YWc&quot;,
+          &quot;visible&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOi…&quot;
+        },
+        {
+          &quot;stage&quot;: &quot;wire&quot;,
+          &quot;kind&quot;: &quot;send&quot;,
+          &quot;sourceStepId&quot;: &quot;external-web-password-l18&quot;,
+          &quot;title&quot;: &quot;Send JWE Compact Serialization (broker ID token)&quot;,
+          &quot;summary&quot;: &quot;Encoded component inside the compact JWE; not a separate HTTP response field.&quot;,
+          &quot;from&quot;: &quot;realmB&quot;,
+          &quot;to&quot;: &quot;realmA&quot;,
+          &quot;wireToken&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwia2lkIjoiYnJva2VyLWVuYy0yMDI2IiwiY3R5IjoiSldUIn0.c2NoZW1hdGljX2Jyb2tlcl9lbmNyeXB0ZWRfa2V5.c2NoZW1hdGljX2Jyb2tlcl9pdg.c2NoZW1hdGljX2Jyb2tlcl9jaXBoZXJ0ZXh0.c2NoZW1hdGljX2Jyb2tlcl90YWc&quot;,
+          &quot;packet&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwia2lkIjoiYnJva2VyLWVuYy0yMDI2IiwiY3R5IjoiSldUIn0.c2NoZW1hdGljX2Jyb2tlcl9lbmNyeXB0ZWRfa2V5.c2NoZW1hdGljX2Jyb2tlcl9pdg.c2NoZW1hdGljX2Jyb2tlcl9jaXBoZXJ0ZXh0.c2NoZW1hdGljX2Jyb2tlcl90YWc&quot;,
+          &quot;visible&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOi…&quot;
+        },
+        {
+          &quot;stage&quot;: &quot;unwrap&quot;,
+          &quot;kind&quot;: &quot;verify&quot;,
+          &quot;sourceStepId&quot;: &quot;external-web-password-l18-jwe-broker-unwrap&quot;,
+          &quot;title&quot;: &quot;Check JWE Compact Serialization (broker ID token)&quot;,
+          &quot;summary&quot;: &quot;Checks compact structure and configured JWE algorithm/type allowlists; key hints do not establish trust.&quot;,
+          &quot;from&quot;: &quot;realmA&quot;,
+          &quot;to&quot;: &quot;realmA&quot;,
+          &quot;packet&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwia2lkIjoiYnJva2VyLWVuYy0yMDI2IiwiY3R5IjoiSldUIn0.c2NoZW1hdGljX2Jyb2tlcl9lbmNyeXB0ZWRfa2V5.c2NoZW1hdGljX2Jyb2tlcl9pdg.c2NoZW1hdGljX2Jyb2tlcl9jaXBoZXJ0ZXh0.c2NoZW1hdGljX2Jyb2tlcl90YWc&quot;,
+          &quot;visible&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOi…&quot;
+        }
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;jweCompactApp&quot;,
+      &quot;definition&quot;: {
+        &quot;name&quot;: &quot;JWE Compact Serialization (application ID token)&quot;,
+        &quot;meaning&quot;: &quot;The five-part string carried in the token response’s id_token field.&quot;,
+        &quot;description&quot;: &quot;The five-part string carried in the token response’s id_token field.&quot;,
+        &quot;origin&quot;: &quot;Realm A joins the base64url-encoded protected header, encrypted key, IV, ciphertext and tag with four periods.&quot;,
+        &quot;generator&quot;: &quot;Realm A joins the base64url-encoded protected header, encrypted key, IV, ciphertext and tag with four periods.&quot;,
+        &quot;purpose&quot;: &quot;Transports the signed-and-encrypted ID token over HTTPS. Its encrypted contents must be decrypted, inner-signature checked and claim validated before accepting identity.&quot;,
+        &quot;example&quot;: &quot;protected.encrypted_key.iv.ciphertext.tag (five schematic parts)&quot;,
+        &quot;standard&quot;: &quot;RFC 7516 §3.1&quot;,
+        &quot;source&quot;: &quot;https://www.rfc-editor.org/rfc/rfc7516&quot;
+      },
+      &quot;packets&quot;: [
+        {
+          &quot;stage&quot;: &quot;wrap&quot;,
+          &quot;kind&quot;: &quot;derive&quot;,
+          &quot;sourceStepId&quot;: &quot;external-web-password-l24-jwe-app-wrap&quot;,
+          &quot;title&quot;: &quot;Compute JWE Compact Serialization (application ID token)&quot;,
+          &quot;summary&quot;: &quot;Replaces id_token’s wire representation with the nested signed-and-encrypted compact JWE.&quot;,
+          &quot;from&quot;: &quot;realmA&quot;,
+          &quot;to&quot;: &quot;realmA&quot;,
+          &quot;packet&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwia2lkIjoiYXBwLWVuYy0yMDI2IiwiY3R5IjoiSldUIn0.c2NoZW1hdGljX2FwcF9lbmNyeXB0ZWRfa2V5.c2NoZW1hdGljX2FwcF9pdg.c2NoZW1hdGljX2FwcF9jaXBoZXJ0ZXh0.c2NoZW1hdGljX2FwcF90YWc&quot;,
+          &quot;visible&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOi…&quot;
+        },
+        {
+          &quot;stage&quot;: &quot;wire&quot;,
+          &quot;kind&quot;: &quot;send&quot;,
+          &quot;sourceStepId&quot;: &quot;external-web-password-l24&quot;,
+          &quot;title&quot;: &quot;Send JWE Compact Serialization (application ID token)&quot;,
+          &quot;summary&quot;: &quot;Encoded component inside the compact JWE; not a separate HTTP response field.&quot;,
+          &quot;from&quot;: &quot;realmA&quot;,
+          &quot;to&quot;: &quot;app&quot;,
+          &quot;wireToken&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwia2lkIjoiYXBwLWVuYy0yMDI2IiwiY3R5IjoiSldUIn0.c2NoZW1hdGljX2FwcF9lbmNyeXB0ZWRfa2V5.c2NoZW1hdGljX2FwcF9pdg.c2NoZW1hdGljX2FwcF9jaXBoZXJ0ZXh0.c2NoZW1hdGljX2FwcF90YWc&quot;,
+          &quot;packet&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwia2lkIjoiYXBwLWVuYy0yMDI2IiwiY3R5IjoiSldUIn0.c2NoZW1hdGljX2FwcF9lbmNyeXB0ZWRfa2V5.c2NoZW1hdGljX2FwcF9pdg.c2NoZW1hdGljX2FwcF9jaXBoZXJ0ZXh0.c2NoZW1hdGljX2FwcF90YWc&quot;,
+          &quot;visible&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOi…&quot;
+        },
+        {
+          &quot;stage&quot;: &quot;unwrap&quot;,
+          &quot;kind&quot;: &quot;verify&quot;,
+          &quot;sourceStepId&quot;: &quot;external-web-password-l24-jwe-app-unwrap&quot;,
+          &quot;title&quot;: &quot;Check JWE Compact Serialization (application ID token)&quot;,
+          &quot;summary&quot;: &quot;Checks compact structure and configured JWE algorithm/type allowlists; key hints do not establish trust.&quot;,
+          &quot;from&quot;: &quot;app&quot;,
+          &quot;to&quot;: &quot;app&quot;,
+          &quot;packet&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOiJBMjU2R0NNIiwia2lkIjoiYXBwLWVuYy0yMDI2IiwiY3R5IjoiSldUIn0.c2NoZW1hdGljX2FwcF9lbmNyeXB0ZWRfa2V5.c2NoZW1hdGljX2FwcF9pdg.c2NoZW1hdGljX2FwcF9jaXBoZXJ0ZXh0.c2NoZW1hdGljX2FwcF90YWc&quot;,
+          &quot;visible&quot;: &quot;eyJhbGciOiJSU0EtT0FFUC0yNTYiLCJlbmMiOi…&quot;
+        }
+      ]
+    }
+  ]
+}
+</pre></details><details><summary>Fresh full-suite command expansion - verification.json</summary><pre>{
+  &quot;platform&quot;: &quot;Linux-6.18.44-x86_64-with-glibc2.39&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;name&quot;: &quot;build&quot;,
+      &quot;args&quot;: [
+        &quot;npm&quot;,
+        &quot;run&quot;,
+        &quot;build&quot;
+      ],
+      &quot;exit_code&quot;: 0,
+      &quot;seconds&quot;: 0.2845161290024407
+    },
+    {
+      &quot;name&quot;: &quot;tests&quot;,
+      &quot;args&quot;: [
+        &quot;node&quot;,
+        &quot;--test&quot;,
+        &quot;--test-concurrency=2&quot;,
+        &quot;tests/advanced-ui.test.mjs&quot;,
+        &quot;tests/api-response-values-regression.test.mjs&quot;,
+        &quot;tests/architecture-variants.test.mjs&quot;,
+        &quot;tests/attribute-index.test.mjs&quot;,
+        &quot;tests/attribute-usage.test.mjs&quot;,
+        &quot;tests/audience-effects-ui.test.mjs&quot;,
+        &quot;tests/branching-lab.test.mjs&quot;,
+        &quot;tests/ciba.test.mjs&quot;,
+        &quot;tests/configuration-layout-regression.test.mjs&quot;,
+        &quot;tests/core-audience-occurrence-regression.test.mjs&quot;,
+        &quot;tests/ctap-participant-ui.test.mjs&quot;,
+        &quot;tests/device-flow.test.mjs&quot;,
+        &quot;tests/dom-runtime.test.mjs&quot;,
+        &quot;tests/extended-grants-lab.test.mjs&quot;,
+        &quot;tests/fido-direct.test.mjs&quot;,
+        &quot;tests/focus-return-regression.test.mjs&quot;,
+        &quot;tests/generic-jwe-values-regression.test.mjs&quot;,
+        &quot;tests/independent-protocol-boundaries.test.mjs&quot;,
+        &quot;tests/jwe-compact-continuity-regression.test.mjs&quot;,
+        &quot;tests/jwe.test.mjs&quot;,
+        &quot;tests/keyboard-independent-regression.test.mjs&quot;,
+        &quot;tests/layout.test.mjs&quot;,
+        &quot;tests/learning-presets.test.mjs&quot;,
+        &quot;tests/lifecycle-independent-regression.test.mjs&quot;,
+        &quot;tests/lifecycle-lab.test.mjs&quot;,
+        &quot;tests/movement-independent-regression.test.mjs&quot;,
+        &quot;tests/new-protocol-ui.test.mjs&quot;,
+        &quot;tests/participant-context-ui.test.mjs&quot;,
+        &quot;tests/player-controls-ui.test.mjs&quot;,
+        &quot;tests/player-seek.test.mjs&quot;,
+        &quot;tests/protection-lab.test.mjs&quot;,
+        &quot;tests/protocol.test.mjs&quot;,
+        &quot;tests/ready-scenarios.test.mjs&quot;,
+        &quot;tests/replay-state-regression.test.mjs&quot;,
+        &quot;tests/resize-focus-regression.test.mjs&quot;,
+        &quot;tests/routing-review-regression.test.mjs&quot;,
+        &quot;tests/runtime-client-ownership-regression.test.mjs&quot;,
+        &quot;tests/runtime-environment.test.mjs&quot;,
+        &quot;tests/saml-advanced-lab.test.mjs&quot;,
+        &quot;tests/saml-value-continuity.test.mjs&quot;,
+        &quot;tests/saml.test.mjs&quot;,
+        &quot;tests/scenario-picker.test.mjs&quot;,
+        &quot;tests/service-account.test.mjs&quot;,
+        &quot;tests/single-realm.test.mjs&quot;,
+        &quot;tests/step-overlay-layout.test.mjs&quot;,
+        &quot;tests/step-overlay.test.mjs&quot;,
+        &quot;tests/token-exchange.test.mjs&quot;,
+        &quot;tests/universal-ui.test.mjs&quot;,
+        &quot;tests/web-api-lab.test.mjs&quot;
+      ],
+      &quot;exit_code&quot;: 0,
+      &quot;seconds&quot;: 198.78492453000217
+    }
+  ],
+  &quot;rebuilt_html_sha256&quot;: &quot;959fe1b62f10ef92b4a591f7a9f78cfb32ebc6e79cf82cc6ec77ab3134ee3147&quot;
+}</pre></details><details><summary>Fresh full-suite summary</summary><pre>ℹ tests 459
+ℹ suites 0
+ℹ pass 459
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 198701.970483</pre></details><footer>Independent review of uploaded v13 files, 8 October 2026. Earlier reports preserved. Application source unchanged. Findings and closure are limited to the recorded evidence.</footer></main></body></html>
