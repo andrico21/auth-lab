@@ -48,7 +48,7 @@ const toKebab=s=>String(s).replace(/[A-Z]/g,c=>'-'+c.toLowerCase());
 
 export class HarnessElement extends EventTarget {
   constructor(tagName='element'){
-    super();this.tagName=tagName.toUpperCase();this.attributes=new Map();this.childNodes=[];this.parentElement=null;this.style={};this.scrollCalls=[];this.animationCalls=[];
+    super();this.tagName=tagName.toUpperCase();this.attributes=new Map();this.childNodes=[];this.parentElement=null;this.style={setProperty(name,value){this[name]=String(value);},getPropertyValue(name){return this[name]||'';},removeProperty(name){const value=this[name]||'';delete this[name];return value;}};this.scrollCalls=[];this.animationCalls=[];
     this.dataset=new Proxy({}, {get:(_,k)=>this.getAttribute('data-'+toKebab(k))??undefined,set:(_,k,v)=>{this.setAttribute('data-'+toKebab(k),v);return true;}});
     this.classList={contains:c=>(this.getAttribute('class')||'').split(/\s+/).includes(c),add:(...cs)=>this.setAttribute('class',[...new Set([...(this.getAttribute('class')||'').split(/\s+/).filter(Boolean),...cs])].join(' ')),remove:(...cs)=>this.setAttribute('class',(this.getAttribute('class')||'').split(/\s+/).filter(c=>!cs.includes(c)).join(' ')),toggle:(c,force)=>{const present=this.classList.contains(c),add=force===undefined?!present:!!force;if(add)this.classList.add(c);else this.classList.remove(c);return add;}};
   }

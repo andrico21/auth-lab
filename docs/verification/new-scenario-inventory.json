@@ -1,0 +1,703 @@
+{
+  "kind": "implemented-registry-inventory",
+  "version": "1.1.3",
+  "newScenarios": 87,
+  "scenarios": [
+    {
+      "id": "lab-ad-first-sign-in",
+      "title": "AD-01 \u00b7 First domain sign-in \u2192 file access",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 25,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-ad-cache-none",
+      "title": "AD-02 \u00b7 No usable credentials \u2192 acquire them",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 25,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-ad-cache-tgt",
+      "title": "AD-02 \u00b7 Cached TGT \u2192 first service access",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 13,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-ad-cache-service",
+      "title": "AD-02 \u00b7 Cached service ticket \u2192 fresh proof",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 8,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-ad-unknown-spn",
+      "title": "AD-05 \u00b7 Unknown SPN \u2192 KDC acquisition failure",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 5,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-ad-stale-service-key",
+      "title": "AD-05 \u00b7 Stale service key \u2192 acceptor failure",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 10,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-ad-clock-skew",
+      "title": "AD-05 \u00b7 Authenticator clock skew",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 5,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-ad-expired-ticket",
+      "title": "AD-05 \u00b7 Service-ticket expiry",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 7,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-ad-authenticator-replay",
+      "title": "AD-05 \u00b7 Replayed authenticator",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 5,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-ad-access-denied",
+      "title": "AD-05 \u00b7 Authenticated identity, denied resource",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 7,
+      "status": "RFC / Microsoft-specified reference"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "title": "KC-01 \u00b7 Desktop Kerberos SSO \u2192 Keycloak \u2192 OIDC",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 32,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-spnego-missing-acceptor-mic",
+      "title": "KC-01 \u00b7 SPNEGO reference: missing required acceptor MIC",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 23,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-spnego-invalid-acceptor-mic",
+      "title": "KC-01 \u00b7 SPNEGO reference: invalid acceptor MIC",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 23,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-kerberos-alternative-otp-skip",
+      "title": "KC-02 \u00b7 Why Alternative Kerberos can skip Forms OTP",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 33,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-kerberos-fresh-totp",
+      "title": "KC-02 \u00b7 Kerberos + a fresh required TOTP",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 38,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-password-fresh-totp",
+      "title": "KC-02 \u00b7 Password fallback + a fresh required TOTP",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 21,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-low-assurance-cookie",
+      "title": "KC-02 \u00b7 Low-assurance cookie \u2192 required factor",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 19,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-cookie-fresh-factor",
+      "title": "KC-02 \u00b7 Sufficient cookie still needs a fresh factor",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 19,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-cookie-age-reuse",
+      "title": "KC-02 \u00b7 Age-bounded factor reuse \u2192 success",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 14,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-cookie-age-expired",
+      "title": "KC-02 \u00b7 Existing factor too old \u2192 fresh factor",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 19,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-factor-unenrolled",
+      "title": "KC-02 \u00b7 Required factor not enrolled \u2192 reject",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 26,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-factor-failed",
+      "title": "KC-02 \u00b7 Incorrect TOTP \u2192 no successful result",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 32,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-factor-cancelled",
+      "title": "KC-02 \u00b7 Cancelled WebAuthn factor \u2192 reject",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 28,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-unsupported-assurance",
+      "title": "KC-02 \u00b7 Unsupported required assurance \u2192 reject",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 6,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-prompt-none-factor-required",
+      "title": "KC-02 \u00b7 prompt=none with required interaction",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 6,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-kerberos-fresh-webauthn",
+      "title": "KC-02 \u00b7 Kerberos + required-UV WebAuthn factor",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 39,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-kc-webauthn-uv-policy-fail",
+      "title": "KC-02 \u00b7 Valid signature, missing required UV",
+      "workspace": "kerberos",
+      "family": "keycloak-bridge",
+      "sourceEvents": 33,
+      "status": "RFC / Keycloak configured reference"
+    },
+    {
+      "id": "lab-ad-pkinit-success",
+      "title": "AD-03 \u00b7 Smart-card PKINIT \u00b7 fresh DH",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 21,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-pkinit-binding",
+      "title": "AD-03 \u00b7 PKINIT \u00b7 strong account binding denied",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 9,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-pkinit-trust",
+      "title": "AD-03 \u00b7 PKINIT \u00b7 user certificate trust denied",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 9,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-pkinit-kdc-trust",
+      "title": "AD-03 \u00b7 PKINIT \u00b7 KDC certificate trust denied",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 11,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-success",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 protected user AS",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 15,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-bootstrap",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 computer bootstrap exception",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 5,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-required-armor",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 required armor absent",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 4,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-unsupported-dc",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 required FAST \u00b7 no suitable DC",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 2,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-optional-fallback",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 optional FAST \u00b7 explicit password fallback",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 5,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-checksum",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 request binding checksum rejected",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 12,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-challenge",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 user encrypted challenge rejected",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 13,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-missing-response",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 required protected reply absent",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 13,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-response-nonce",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 protected reply nonce mismatch",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 14,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-as-ticket-binding",
+      "title": "AD-04 \u00b7 FAST AS \u00b7 finished ticket binding mismatch",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 14,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-tgs-success",
+      "title": "AD-04 \u00b7 FAST TGS \u00b7 implicit armor and mandatory strengthening",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 9,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-tgs-missing-subkey",
+      "title": "AD-04 \u00b7 FAST TGS \u00b7 mandatory authenticator subkey absent",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 2,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-fast-tgs-missing-strengthen",
+      "title": "AD-04 \u00b7 FAST TGS \u00b7 mandatory strengthen-key absent",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 8,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ad-forest-one-way",
+      "title": "AD-06A \u00b7 One-way forest trust \u00b7 A account \u2192 B resource",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 19,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-one-way-reverse",
+      "title": "AD-06A \u00b7 One-way trust \u00b7 reverse direction denied",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 7,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-two-way-a-b",
+      "title": "AD-06B \u00b7 Two-way forest trust \u00b7 A \u2192 B",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 19,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-two-way-b-a",
+      "title": "AD-06B \u00b7 Two-way forest trust \u00b7 B \u2192 A",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 19,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-child-domains",
+      "title": "AD-06C \u00b7 Child domains across two forests",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 31,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-three-denied",
+      "title": "AD-06D \u00b7 Three forests \u00b7 A \u2192 C is not implied",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 7,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-three-direct",
+      "title": "AD-06D \u00b7 Three forests \u00b7 explicit C trusts A",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 19,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-same-forest",
+      "title": "AD-06E \u00b7 Same forest \u00b7 child \u2192 root comparison",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 19,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-selective-denied",
+      "title": "AD-06F \u00b7 Selective authentication denied before service ticket",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 13,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-sid-filtering",
+      "title": "AD-06F \u00b7 SID filtering \u00b7 foreign identity preserved",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 20,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-invalid-pac",
+      "title": "AD-06F \u00b7 Invalid PAC \u00b7 validation rejection",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 13,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-acl-denied",
+      "title": "AD-06F \u00b7 Authentication succeeds; resource ACL denies",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 19,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-cached-referrals",
+      "title": "AD-06F \u00b7 Cached referral; acquire only the service ticket",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 14,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ad-forest-cached-service",
+      "title": "AD-06F \u00b7 Cached service ticket; no KDC exchange",
+      "workspace": "kerberos",
+      "family": "ad-ds",
+      "sourceEvents": 9,
+      "status": "RFC / MS-KILE reference"
+    },
+    {
+      "id": "lab-ssh-cert-success",
+      "title": "SSH \u00b7 Corporate SSO \u2192 SSH certificate",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 35,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-audience",
+      "title": "SSH \u00b7 Enrollment rejected \u00b7 wrong ID-token audience",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 22,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-principal",
+      "title": "SSH \u00b7 Enrollment rejected \u00b7 unauthorized root principal",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 21,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-host",
+      "title": "SSH \u00b7 SSH stopped \u00b7 untrusted server host key",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 26,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-userca",
+      "title": "SSH \u00b7 SSH rejected \u00b7 untrusted user CA",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 34,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-copy",
+      "title": "SSH \u00b7 SSH rejected \u00b7 certificate copied without its key",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 35,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-session",
+      "title": "SSH \u00b7 SSH rejected \u00b7 signature from another connection",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 34,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-account",
+      "title": "SSH \u00b7 SSH rejected \u00b7 existing Unix account denied",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 34,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-root",
+      "title": "SSH \u00b7 SSH rejected \u00b7 certificate alice, requested account root",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 34,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-callback",
+      "title": "SSH \u00b7 Enrollment stopped \u00b7 callback state mismatch",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 12,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-pkce",
+      "title": "SSH \u00b7 Enrollment stopped \u00b7 wrong PKCE verifier",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 14,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-reissue",
+      "title": "SSH \u00b7 User certificate reissuance \u00b7 fresh approval, existing key",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 55,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-cert-lifecycle",
+      "title": "SSH \u00b7 SSH credential lifecycle \u00b7 four independent clocks",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 48,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-device-cadence",
+      "title": "SSH \u00b7 Headless enrollment \u00b7 RFC polling, slow_down and backoff",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 45,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-device-cancel",
+      "title": "SSH \u00b7 Headless enrollment \u00b7 cancel and ignore a late result",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 13,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-device-restart",
+      "title": "SSH \u00b7 Headless enrollment \u00b7 cancelled transaction, fresh restart",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 40,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-device-denied",
+      "title": "SSH \u00b7 Headless enrollment \u00b7 approval denied",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 14,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-device-expired",
+      "title": "SSH \u00b7 Headless enrollment \u00b7 device transaction expired",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 14,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-device-clienterror",
+      "title": "SSH \u00b7 Headless enrollment \u00b7 terminal client error",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 14,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-sssd-success",
+      "title": "SSH \u00b7 Browser approval during SSH login \u00b7 remote SSSD client",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 38,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ssh-sssd-cached",
+      "title": "SSH \u00b7 Browser approval \u00b7 existing NSS identity cache",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 33,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ssh-sssd-bob",
+      "title": "SSH \u00b7 Browser approval rejected \u00b7 requested Alice, approved Bob",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 35,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ssh-sssd-domain",
+      "title": "SSH \u00b7 Browser approval rejected \u00b7 same name in another domain",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 35,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ssh-sssd-account",
+      "title": "SSH \u00b7 Browser approval rejected \u00b7 Unix account policy",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 37,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ssh-sssd-lookup",
+      "title": "SSH \u00b7 Identity lookup unavailable \u00b7 no Device transaction",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 14,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ssh-sssd-permission",
+      "title": "SSH \u00b7 Identity lookup denied \u00b7 service API permission",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 14,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ssh-sssd-zero",
+      "title": "SSH \u00b7 Keyboard-interactive \u00b7 zero-prompt information comparison",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 38,
+      "status": "reference"
+    },
+    {
+      "id": "lab-ssh-gss-success",
+      "title": "SSH \u00b7 Kerberos GSS-API context + session-bound MIC",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 17,
+      "status": "standards-only"
+    },
+    {
+      "id": "lab-ssh-gss-account",
+      "title": "SSH \u00b7 Kerberos GSS-API context accepted, account denied",
+      "workspace": "ssh",
+      "family": "ssh-access",
+      "sourceEvents": 16,
+      "status": "standards-only"
+    }
+  ]
+}

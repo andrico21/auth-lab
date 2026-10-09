@@ -110,9 +110,11 @@ test('native callback and ordinary SAML environment fields expose their distinct
 test('runtime personalization has no persistence, network, address navigation or URL serialization code',()=>{
   const runtime=fs.readFileSync(new URL('../src/runtime-environment.js',import.meta.url),'utf8');
   const app=fs.readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
-  for(const forbidden of [/\blocalStorage\b/,/\bsessionStorage\b/,/\bindexedDB\b/,/\bfetch\s*\(/,/\bXMLHttpRequest\b/,/\bsendBeacon\s*\(/,/\bhistory\.(?:pushState|replaceState)\s*\(/,/\blocation\.(?:assign|replace)\s*\(/,/\bdocument\.cookie\b/]){
+  for(const forbidden of [/\blocalStorage\b/,/\bsessionStorage\b/,/\bindexedDB\b/,/\bfetch\s*\(/,/\bXMLHttpRequest\b/,/\bsendBeacon\s*\(/,/\blocation\.(?:assign|replace)\s*\(/,/\bdocument\.cookie\b/]){
     assert.equal(forbidden.test(runtime),false,String(forbidden));assert.equal(forbidden.test(app),false,String(forbidden));
   }
+  assert.equal(/\bhistory\./.test(runtime),false,'personalization does not serialize runtime addresses');
+  assert.match(app,/history\.pushState\(null,'',route\)/,'navigation only writes the fixed registry route');
 });
 
 test('hidden desktop callback drafts cannot contaminate web sign-in or block a later SAML environment apply',()=>{

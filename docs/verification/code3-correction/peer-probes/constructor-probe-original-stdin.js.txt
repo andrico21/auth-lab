@@ -1,0 +1,29 @@
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import {ADLAB_SCENARIOS,ADLAB_ATTRIBUTES} from './src/kerberos-ad-lab.js';
+import {CRYPTOLAB_SCENARIOS,CRYPTOLAB_ATTRIBUTES} from './src/kerberos-crypto-lab.js';
+import {projectScenarioContext,scenarioContextRows} from './src/scenario-context.js';
+import {reconstructProtocolState} from './src/protocol-state.js';
+const models=[...ADLAB_SCENARIOS,...CRYPTOLAB_SCENARIOS];
+const snapshot=m=>JSON.stringify({definitions:m.definitions(),steps:m.steps(),initialState:m.initialState,protocolValues:m.protocolValues,actors:m.actors()});
+const initial=JSON.stringify(models.map(snapshot)),registries=JSON.stringify([ADLAB_ATTRIBUTES,CRYPTOLAB_ATTRIBUTES]);
+let normalized=0,rejected=0;
+for(const model of models){
+ for(const realm of ['A.EXAMPLE','CORP.EXAMPLE','R'.repeat(254)]){
+  const name=(model.id.startsWith('lab-kc')||model.family==='crypto'?'HTTP':'cifs')+'/review.corp.test';
+  const plain=model.contextualize({kerberosRealm:realm,servicePrincipal:name});
+  const qualified=model.contextualize({kerberosRealm:realm,servicePrincipal:name+'@'+realm});
+  assert.equal(snapshot(plain),snapshot(qualified),model.id+' qualified and plain equivalent');
+  normalized++;
+ }
+ for(const servicePrincipal of ['HTTP/server@OTHER.EXAMPLE','HTTP/server@A.EXAMPLE@A.EXAMPLE','HTTP/server\\@A.EXAMPLE','HTTP/server\\/part','HTTP/server\\']){
+  assert.throws(()=>model.contextualize({kerberosRealm:'A.EXAMPLE',servicePrincipal}),TypeError,model.id+' rejects '+servicePrincipal);rejected++;
+ }
+ for(const length of [255,2048]){assert.throws(()=>model.contextualize({kerberosRealm:'R'.repeat(length)}),TypeError);rejected++;}
+}
+assert.equal(JSON.stringify(models.map(snapshot)),initial);assert.equal(JSON.stringify([ADLAB_ATTRIBUTES,CRYPTOLAB_ATTRIBUTES]),registries);
+const model=models.find(m=>m.id==='lab-ad-first-sign-in').contextualize({servicePrincipal:'cifs/review.corp.test@A.EXAMPLE'});
+const projected=projectScenarioContext(model,model.steps(),{servicePrincipal:'cifs/review.corp.test@A.EXAMPLE'});
+const request=projected.steps.find(s=>s.id.endsWith('-service-tgs-request')).attributeOperations.find(o=>o.attributeId==='adSPN'&&o.carriedAs==='TGS-REQ.req-body.sname');
+console.log(JSON.stringify({scope:'read-only constructors only; not actual handler or emitted bundle; no native browser',modelCount:models.length,normalizedContexts:normalized,rejectedContexts:rejected,baseAndRegistriesUnchanged:true,rawProjectionHazard:{requestSname:request.value,serviceRows:scenarioContextRows(model,'adService',{servicePrincipal:'cifs/review.corp.test@A.EXAMPLE'})},sourceHashes:Object.fromEntries(['src/kerberos-context.js','src/kerberos-ad-lab.js','src/kerberos-crypto-lab.js','src/scenario-context.js'].map(p=>[p,createHash('sha256').update(readFileSync(p)).digest('hex')]))},null,2));

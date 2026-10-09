@@ -1,9 +1,15 @@
 // Page-owned example context. This module has no browser persistence, logging,
 // discovery, navigation or network code. Source protocol models stay immutable.
 // Addresses are adapted only through declared symbolic entities and endpoints.
+import { resolveKerberosContext, validateKerberosRealm, validateKerberosServicePrincipal } from './kerberos-context.js';
 
 const runtimeField = (key, label, kind = 'url', extra = {}) => Object.freeze({key,label,kind,...extra});
 export const RUNTIME_ENVIRONMENT_FIELDS = Object.freeze([
+  runtimeField('caURL','SSH certificate authority URL','url'),
+  runtimeField('sshHost','SSH host name','hostname'),
+  runtimeField('kerberosRealm','Kerberos realm (not a Keycloak realm)','kerberos-realm',{note:'Lab input: 1-254 letters, digits, dots, underscores or hyphens; start with a letter or digit. Blank keeps the example realm.'}),
+  runtimeField('servicePrincipal','Kerberos service principal (SPN)','principal',{note:'Use service/host, optionally followed by @the matching Kerberos realm. Other target realms belong in the separate cross-realm lessons.'}),
+  runtimeField('unixAccount','Requested Unix account','account'),
   runtimeField('appURL','Application URL'),
   runtimeField('keycloakABaseURL','Keycloak A deployment URL'),runtimeField('realmA','Realm A name','segment'),
   runtimeField('keycloakBBaseURL','Keycloak B deployment URL'),runtimeField('realmB','Realm B name','segment'),
@@ -51,9 +57,14 @@ const runtimeApplicableAppURL = (value,options) => {
   const parsed=runtimeParsedURL(value);
   return parsed&&(parsed.protocol==='https:'||parsed.protocol==='http:'&&runtimeExecutionEnvironment(options)==='native'&&runtimeIsLoopback(parsed.hostname))?value:'';
 };
-function runtimeValidateField(field,value,options) {
+function runtimeValidateField(field,value,options,kerberosRealm='') {
   if(!value)return '';
+  if(field.kind==='kerberos-realm')return validateKerberosRealm(value);
+  if(field.kind==='principal')return validateKerberosServicePrincipal(value,kerberosRealm);
   if(runtimeHasControl(value))return 'Use a value without control characters.';
+  if(value.length>2048)return 'Use a value of at most 2048 characters.';
+  if(field.kind==='hostname')return /^[A-Za-z0-9][A-Za-z0-9.-]*$/.test(value)&&value.length<=253?'':'Use a DNS host name without a URL scheme, port or path.';
+  if(field.kind==='account')return /^[A-Za-z_][A-Za-z0-9_.-]{0,63}\$?$/.test(value)?'':'Use a Unix account name such as alice.';
   if(field.kind==='segment')return value==='.'||value==='..'?'Use a named path segment.':'';
   if(field.kind==='identifier')return '';
   let parsed;
@@ -233,12 +244,13 @@ export class RuntimeEnvironment {
   validate(options={}) {
     options=this._options(options);
     const errors={},active=Array.isArray(options.activeFields)?new Set(options.activeFields):null;
-    for(const field of RUNTIME_ENVIRONMENT_FIELDS){if(active&&!active.has(field.key))continue;const error=runtimeValidateField(field,this._draft[field.key],options);if(error)errors[field.key]=error;}
+    const kerberosRealm=!active||active.has('kerberosRealm')?this._draft.kerberosRealm:this._applied.kerberosRealm;
+    for(const field of RUNTIME_ENVIRONMENT_FIELDS){if(active&&!active.has(field.key))continue;const error=runtimeValidateField(field,this._draft[field.key],options,kerberosRealm);if(error)errors[field.key]=error;}
     const provider=this._draft.providers[runtimeProfileKey(options)]||{};
     for(const field of RUNTIME_PROVIDER_FIELDS){if(active&&!active.has('provider.'+field.key))continue;const error=runtimeValidateField(field,provider[field.key]||'',options);if(error)errors['provider.'+field.key]=error;}
     return {ok:!Object.keys(errors).length,errors};
   }
-  apply(options={}) {
+  apply(options={},constructCandidate=null) {
     options=this._options(options);
     const result=this.validate(options);
     if(!result.ok)return {...result,context:this._applied,revision:this._revision};
@@ -248,8 +260,23 @@ export class RuntimeEnvironment {
     const provider={...(next.providers[profileId]||{})},draftProvider=this._draft.providers[profileId]||{};
     for(const key of runtimeProviderKeys)if((!active||active.has('provider.'+key))&&Object.hasOwn(draftProvider,key))provider[key]=draftProvider[key];
     if(Object.keys(provider).length)next.providers[profileId]=provider;
-    this._applied=runtimeFreeze(next);this._revision++;this._appliedArchitecture=options.architecture;this._appliedExecutionEnvironment=runtimeExecutionEnvironment(options);this._resolvedCache.clear();
-    return {...result,context:this._applied,revision:this._revision};
+    let candidate,model;
+    try{
+      // Keep the raw draft for correction, but commit one normalized service
+      // name. Generic scenario projection must never put @REALM back into sname.
+      if(next.servicePrincipal)next.servicePrincipal=resolveKerberosContext(next).servicePrincipal;
+      candidate=runtimeFreeze(next);
+      if(constructCandidate)model=constructCandidate(candidate,{revision:this._revision+1});
+    }catch(error){
+      const changed=[...runtimeCommonKeys].filter(key=>(!active||active.has(key))&&next[key]!==this._applied[key]);
+      const field=typeof error?.field==='string'&&(!active||active.has(error.field))?error.field:changed[0]||[...(active||runtimeCommonKeys)][0]||'environment';
+      const message=error?.field&&typeof error.message==='string'?error.message:'Could not rebuild the animation from these example values. Check this field and try again; your previous animation is unchanged.';
+      return {ok:false,errors:{[field]:message},context:this._applied,revision:this._revision};
+    }
+    // Validation and fixture construction above are side-effect-free. Only a
+    // fully constructed candidate changes committed context or playback inputs.
+    this._applied=candidate;this._revision++;this._appliedArchitecture=options.architecture;this._appliedExecutionEnvironment=runtimeExecutionEnvironment(options);this._resolvedCache.clear();
+    return {...result,context:this._applied,revision:this._revision,...(constructCandidate?{model}:{})};
   }
   reset(){this._draft=runtimeFreeze(runtimeEmpty());this._applied=runtimeFreeze(runtimeEmpty());this._revision++;this._appliedArchitecture='web';this._appliedExecutionEnvironment='server';this._resolvedCache.clear();return this._applied;}
   _options(options={}){

@@ -4,7 +4,7 @@ import {RuntimeEnvironment,RUNTIME_ENVIRONMENT_FIELDS,RUNTIME_PROVIDER_FIELDS} f
 import {getJourneySteps,getActorOverrides,JOURNEYS} from '../src/architecture-variants.js';
 import {getSamlSteps,SAML_ATTRIBUTES} from '../src/saml-data.js';
 import {getFidoSteps,getFidoExampleOverrides,getFidoActorOverrides} from '../src/fido-direct.js';
-import {LAB_SCENARIOS} from '../src/lab-catalog.js';
+import {LEGACY_LAB_SCENARIOS as LAB_SCENARIOS} from '../src/lab-catalog.js';
 import {ATTRIBUTES,ACTORS} from '../src/protocol-data.js';
 import {buildAttributeTrace} from '../src/attribute-trace.js';
 import {getProviderProfile,applyProviderProfile} from '../src/learning-presets.js';

@@ -1,0 +1,94 @@
+✖ the scenario field exposes an inline combobox while preserving the complete native selection contract (790.262934ms)
+✖ inline search matches case-insensitive terms across titles, categories, status and canonical attributes (561.468621ms)
+✖ typing and clearing results preserve the active journey, selected attribute and running playback (1286.548321ms)
+✔ keyboard navigation changes only the highlighted option until Enter selects it (1106.20317ms)
+✔ no results and Enter cannot accidentally switch or reset the active scenario (924.468098ms)
+✔ Escape, Tab and outside focus dismiss a query and restore the selected title (998.812487ms)
+✔ native, catalog and programmatic selections all synchronize the inline scenario title (1729.217491ms)
+✔ typing into a closed field preserves the query, including immediately after selecting without another focus event (933.531947ms)
+✔ choosing Core lab through the inline search restores the configurable setup saved before visiting a scenario (3394.660636ms)
+✔ the first Basic Keycloak sign-in preset shows a single-realm browser password login with Code and PKCE (1604.934463ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 7
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13668.80284
+
+✖ failing tests:
+
+test at tests/scenario-picker.test.mjs:32:1
+✖ the scenario field exposes an inline combobox while preserving the complete native selection contract (790.262934ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  139 !== 54
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/auth-lab-main/tests/scenario-picker.test.mjs:38:81)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 139,
+    expected: 54,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/scenario-picker.test.mjs:47:1
+✖ inline search matches case-insensitive terms across titles, categories, status and canonical attributes (561.468621ms)
+  AssertionError [ERR_ASSERTION]: token session lifecycle matches every requested term across scenario metadata
+  + actual - expected
+  ... Skipped lines
+  
+    [
+      'lab-backchannel-logout',
+      'lab-frontchannel-logout',
+      'lab-offline-access',
+      'lab-refresh-rotation',
+  ...
+      'lab-ssh-cert-lifecycle',
+  +   'lab-ssh-device-restart',
+      'lab-sso-existing-session',
+      'lab-sso-login-required',
+      'lab-token-revocation'
+    ]
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/auth-lab-main/tests/scenario-picker.test.mjs:52:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [ 'lab-backchannel-logout', 'lab-frontchannel-logout', 'lab-offline-access', 'lab-refresh-rotation', 'lab-rp-initiated-logout', 'lab-session-expiry', 'lab-ssh-cert-lifecycle', 'lab-ssh-device-restart', 'lab-sso-existing-session', 'lab-sso-login-required', 'lab-token-revocation' ],
+    expected: [ 'lab-backchannel-logout', 'lab-frontchannel-logout', 'lab-offline-access', 'lab-refresh-rotation', 'lab-rp-initiated-logout', 'lab-session-expiry', 'lab-ssh-cert-lifecycle', 'lab-sso-existing-session', 'lab-sso-login-required', 'lab-token-revocation' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/scenario-picker.test.mjs:59:1
+✖ typing and clearing results preserve the active journey, selected attribute and running playback (1286.548321ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  139 !== 54
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/auth-lab-main/tests/scenario-picker.test.mjs:64:144)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 139,
+    expected: 54,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

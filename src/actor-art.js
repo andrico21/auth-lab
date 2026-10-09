@@ -182,6 +182,8 @@ const artwork = {
 };
 
 const palettes = {
+  agent: ['#78d4d0', '#338c9d'],
+  smartcard: ['#e2c984', '#bd9a50'],
   user: ['#f18aab', '#cf557e'],
   app: ['#9b8cf6', '#6483e6'],
   browser: ['#65d9e4', '#238fb7'],
@@ -194,9 +196,15 @@ const palettes = {
   totp: ['#5ee7b5', '#1eac83'],
 };
 
+// Distinguish a software key holder and a certificate smart card from a
+// roaming FIDO security key. These stay inline SVG assets in the offline HTML.
+artwork.agent=p=>`<ellipse cx="50" cy="87" rx="35" ry="6" fill="#294b6518"/><g filter="url(#${p}-shadow)"><rect x="19" y="20" width="62" height="58" rx="13" fill="url(#${p}-primary)"/><rect x="29" y="30" width="42" height="37" rx="6" fill="#efffff"/><circle cx="42" cy="46" r="7" fill="none" stroke="#36839a" stroke-width="4"/><path d="M48 50l14 12m-6-6 4-4m-1 7 4-4" fill="none" stroke="#36839a" stroke-width="4" stroke-linecap="round"/><path d="M28 13v7m15-7v7m15-7v7m15-7v7M28 78v7m15-7v7m15-7v7m15-7v7" stroke="#448797" stroke-width="3" stroke-linecap="round"/></g>`;
+artwork.smartcard=p=>`<ellipse cx="50" cy="86" rx="37" ry="6" fill="#294b6518"/><g filter="url(#${p}-shadow)"><rect x="10" y="23" width="80" height="52" rx="8" fill="#f0f5ff" stroke="#9aa8c0" stroke-width="2"/><rect x="10" y="23" width="80" height="12" rx="6" fill="#6d81b8"/><rect x="23" y="44" width="22" height="19" rx="3" fill="url(#${p}-primary)" stroke="#a18343"/><path d="M30 44v19m8-19v19m-15-13h22m-22 7h22" stroke="#8f7033" stroke-width="1"/><circle cx="67" cy="51" r="7" fill="#92a9da"/><path d="M55 68c1-10 23-10 24 0" fill="#92a9da"/></g>`;
+
 /** Each call gets a new defs namespace, including repeated actors in overlays. */
 export function actorIllustration(id) {
-  const actorId = Object.hasOwn(artwork, id) ? id : 'user';
+  const aliases={key:'yubikey',securityKey:'yubikey',workstation:'app',cli:'app',server:'webapp',service:'webapp',ca:'realmB',kdc:'realmA',directory:'realmA',pam:'webapp',sssd:'webapp'};
+  const actorId = Object.hasOwn(artwork, id) ? id : aliases[id]||'user';
   const prefix = `actor-art-${actorId}-${++illustrationSequence}`;
   const [light, dark] = palettes[actorId];
   return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="presentation" focusable="false" class="actor-illustration">

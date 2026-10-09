@@ -7,7 +7,7 @@ import {installHarness,HarnessEvent} from './dom-harness.mjs';
 // cryptography, a browser layout engine or native authentication devices.
 const universalHarness=installHarness();
 const {AuthFlowStudio}=await import('../src/app.js');
-const {LAB_SCENARIOS,LAB_ATTRIBUTES}=await import('../src/lab-catalog.js');
+const {LAB_SCENARIOS:ALL_LAB_SCENARIOS,LEGACY_LAB_SCENARIOS:LAB_SCENARIOS,LAB_ATTRIBUTES}=await import('../src/lab-catalog.js');
 const {LEARNING_PRESETS}=await import('../src/learning-presets.js');
 const {GRAPH_WIDTH,GRAPH_HEIGHT,CARD_BOUNDS}=await import('../src/layout.js');
 const {clock,document}=universalHarness;
@@ -25,8 +25,8 @@ test('the universal selector exposes every model with its own participants, supp
   const app=universalMount();try{
     assert.equal(LAB_SCENARIOS.length,43,'all 43 extended scenarios are registered');
     const options=app.refs['lab-scenario'].querySelectorAll('option').map(option=>option.getAttribute('value'));
-    const expectedIds=[...new Set([...LEARNING_PRESETS.map(preset=>preset.id),'core',...LAB_SCENARIOS.map(model=>model.id)])];
-    assert.deepEqual(options.slice().sort(),expectedIds.sort());assert.equal(options.length,54,'ready-to-run presets and extended models have no duplicate choices');
+    const expectedIds=[...new Set([...LEARNING_PRESETS.map(preset=>preset.id),'core',...ALL_LAB_SCENARIOS.map(model=>model.id)])];
+    assert.deepEqual(options.slice().sort(),expectedIds.sort());assert.equal(options.length,54+ALL_LAB_SCENARIOS.length-LAB_SCENARIOS.length,'ready-to-run presets and extended models have no duplicate choices');
     assert.equal(new Set(options).size,options.length);
     for(const model of LAB_SCENARIOS){
       universalSelect(app,'lab-scenario',model.id);assert.equal(app.labModel,model);assert.equal(app.labScenarioId,model.id);

@@ -1,0 +1,752 @@
+✖ R1: lab-ad-first-sign-in Apply keeps full TGS reply, focused Send and final state consistent in A.EXAMPLE (2623.056628ms)
+✖ R1: lab-ad-first-sign-in Apply keeps full TGS reply, focused Send and final state consistent in CORP.EXAMPLE (2509.997185ms)
+✖ R1: lab-kc-kerberos-sso Apply keeps full TGS reply, focused Send and final state consistent in A.EXAMPLE (2734.099158ms)
+✖ R1: lab-kc-kerberos-sso Apply keeps full TGS reply, focused Send and final state consistent in CORP.EXAMPLE (2832.922096ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-first-sign-in (0.387132ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-cache-none (0.145746ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-cache-tgt (0.12209ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-cache-service (0.132056ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-unknown-spn (0.136311ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-stale-service-key (0.175209ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-clock-skew (0.169911ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-expired-ticket (0.105215ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-authenticator-replay (0.082081ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-access-denied (0.072617ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-kerberos-sso (0.069602ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-spnego-missing-acceptor-mic (0.101209ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-spnego-invalid-acceptor-mic (0.110994ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-kerberos-alternative-otp-skip (0.083544ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-kerberos-fresh-totp (0.080099ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-password-fresh-totp (0.099877ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-low-assurance-cookie (0.065647ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-cookie-fresh-factor (0.066618ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-cookie-age-reuse (0.107919ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-cookie-age-expired (0.071465ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-factor-unenrolled (0.091946ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-factor-failed (0.092437ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-factor-cancelled (0.06758ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-unsupported-assurance (0.060429ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-prompt-none-factor-required (0.059798ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-kerberos-fresh-webauthn (0.095932ms)
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-webauthn-uv-policy-fail (0.069754ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 0
+ℹ fail 31
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11074.478099
+
+✖ failing tests:
+
+test at tests/html2-context-r1.test.mjs:51:3
+✖ R1: lab-ad-first-sign-in Apply keeps full TGS reply, focused Send and final state consistent in A.EXAMPLE (2623.056628ms)
+  AssertionError [ERR_ASSERTION]: Full TGS-REP names the operator-selected service
+  + actual - expected
+  
+  + 'EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/files.a.example)'
+  - 'EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/other.corp.test; srealm=A.EXAMPLE)'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:65:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/files.a.example)',
+    expected: 'EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/other.corp.test; srealm=A.EXAMPLE)',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:51:3
+✖ R1: lab-ad-first-sign-in Apply keeps full TGS reply, focused Send and final state consistent in CORP.EXAMPLE (2509.997185ms)
+  AssertionError [ERR_ASSERTION]: Full TGS-REP names the operator-selected service
+  + actual - expected
+  
+  + 'EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/files.a.example)'
+  - 'EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/other.corp.test; srealm=CORP.EXAMPLE)'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:65:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/files.a.example)',
+    expected: 'EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/other.corp.test; srealm=CORP.EXAMPLE)',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:51:3
+✖ R1: lab-kc-kerberos-sso Apply keeps full TGS reply, focused Send and final state consistent in A.EXAMPLE (2734.099158ms)
+  AssertionError [ERR_ASSERTION]: Full TGS-REP names the operator-selected service
+  + actual - expected
+  
+  + 'EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/idp.a.example)'
+  - 'EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/other.corp.test; srealm=A.EXAMPLE)'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:65:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/idp.a.example)',
+    expected: 'EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/other.corp.test; srealm=A.EXAMPLE)',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:51:3
+✖ R1: lab-kc-kerberos-sso Apply keeps full TGS reply, focused Send and final state consistent in CORP.EXAMPLE (2832.922096ms)
+  AssertionError [ERR_ASSERTION]: Full TGS-REP names the operator-selected service
+  + actual - expected
+  
+  + 'EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/idp.a.example)'
+  - 'EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/other.corp.test; srealm=CORP.EXAMPLE)'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:65:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/idp.a.example)',
+    expected: 'EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/other.corp.test; srealm=CORP.EXAMPLE)',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-first-sign-in (0.387132ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-cache-none (0.145746ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-cache-tgt (0.12209ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-cache-service (0.132056ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-unknown-spn (0.136311ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-stale-service-key (0.175209ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-clock-skew (0.169911ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-expired-ticket (0.105215ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-authenticator-replay (0.082081ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-ad-access-denied (0.072617ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-kerberos-sso (0.069602ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-spnego-missing-acceptor-mic (0.101209ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-spnego-invalid-acceptor-mic (0.110994ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-kerberos-alternative-otp-skip (0.083544ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-kerberos-fresh-totp (0.080099ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-password-fresh-totp (0.099877ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-low-assurance-cookie (0.065647ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-cookie-fresh-factor (0.066618ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-cookie-age-reuse (0.107919ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-cookie-age-expired (0.071465ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-factor-unenrolled (0.091946ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-factor-failed (0.092437ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-factor-cancelled (0.06758ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-unsupported-assurance (0.060429ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-prompt-none-factor-required (0.059798ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-kerberos-fresh-webauthn (0.095932ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/html2-context-r1.test.mjs:101:37
+✖ R1: constructor context preserves causal outcomes and exact field values for lab-kc-webauthn-uv-policy-fail (0.069754ms)
+  AssertionError [ERR_ASSERTION]: Every AD/bridge preset uses a typed fixture constructor
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main/tests/html2-context-r1.test.mjs:102:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

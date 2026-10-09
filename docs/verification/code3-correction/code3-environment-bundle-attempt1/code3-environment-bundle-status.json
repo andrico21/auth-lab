@@ -1,0 +1,264 @@
+{
+  "kind": "code3-environment-emitted-bundle-check",
+  "nativeBrowser": false,
+  "timestamp": "2026-10-09T17:42:21.678Z",
+  "project": "/workspace/scratch/231fca57c2a8/auth-lab-main",
+  "artifact": {
+    "path": "/workspace/scratch/231fca57c2a8/auth-lab-main/dist/auth-flow-studio.html",
+    "bytes": 1833704,
+    "sha256": "918b601be9ac8c3e1832097a0a214ac1ff3a43f8d7a678a92e6bf7082f9689bd"
+  },
+  "contract": {
+    "realmLimit": 254,
+    "realmLengths": [
+      254,
+      255,
+      2048
+    ],
+    "singleRealmServiceNames": "Unqualified, or a qualifier exactly matching the candidate account realm."
+  },
+  "limits": [
+    "Unmodified emitted IIFE; deterministic DOM harness and animation clock.",
+    "No native browser, rendered layout, native keyboard accessibility or CSP enforcement acceptance.",
+    "No live AD/Keycloak interoperability or cryptographic certification."
+  ],
+  "cases": [
+    {
+      "id": "lab-ad-first-sign-in",
+      "condition": "realm-254",
+      "acceptedIdentity": {
+        "target": "cifs/review.corp.example",
+        "realm": "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+        "transmittedRequestNames": [
+          "host/ws01.a.example",
+          "cifs/review.corp.example"
+        ],
+        "proofTarget": "cifs/review.corp.example",
+        "issuedTarget": "cifs/review.corp.example",
+        "cachedTarget": "cifs/review.corp.example",
+        "fullReply": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/review.corp.example; srealm=RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR)",
+        "focusedSend": {
+          "sourceIndex": 16,
+          "value": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/review.corp.example; srealm=RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR)",
+          "packetValue": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/review.corp.example; srealm=RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR)",
+          "compactPacketLabel": "EncryptedData(key=tgt-session:01, EncT…"
+        },
+        "independentHostTarget": "host/ws01.a.example"
+      },
+      "baseAndPriorFixturesUnchanged": true,
+      "resetRestores": true,
+      "passed": true
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "condition": "realm-255",
+      "rejection": {
+        "draftRealmLength": 255,
+        "message": "Kerberos realm (not a Keycloak realm): This lab accepts a Kerberos realm of 1-254 letters, digits, dots, underscores or hyphens, starting with a letter or digit (for example CORP.EXAMPLE).",
+        "committedRealm": "BASE.EXAMPLE",
+        "playbackUnchanged": true
+      },
+      "correctedApplyWithoutReset": true,
+      "acceptedIdentity": {
+        "target": "cifs/review.corp.example",
+        "realm": "CORP.EXAMPLE",
+        "transmittedRequestNames": [
+          "host/ws01.a.example",
+          "cifs/review.corp.example"
+        ],
+        "proofTarget": "cifs/review.corp.example",
+        "issuedTarget": "cifs/review.corp.example",
+        "cachedTarget": "cifs/review.corp.example",
+        "fullReply": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/review.corp.example; srealm=CORP.EXAMPLE)",
+        "focusedSend": {
+          "sourceIndex": 16,
+          "value": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/review.corp.example; srealm=CORP.EXAMPLE)",
+          "packetValue": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/review.corp.example; srealm=CORP.EXAMPLE)",
+          "compactPacketLabel": "EncryptedData(key=tgt-session:01, EncT…"
+        },
+        "independentHostTarget": "host/ws01.a.example"
+      },
+      "baseAndPriorFixturesUnchanged": true,
+      "resetRestores": true,
+      "passed": true
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "condition": "realm-2048",
+      "rejection": {
+        "draftRealmLength": 2048,
+        "message": "Kerberos realm (not a Keycloak realm): This lab accepts a Kerberos realm of 1-254 letters, digits, dots, underscores or hyphens, starting with a letter or digit (for example CORP.EXAMPLE).",
+        "committedRealm": "BASE.EXAMPLE",
+        "playbackUnchanged": true
+      },
+      "passed": false,
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n9 !== 0\n\n    at assertSuccess (file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:43:43)\n    at file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:153:9"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "condition": "unqualified-service",
+      "acceptedIdentity": {
+        "target": "cifs/review.corp.example",
+        "realm": "CORP.EXAMPLE",
+        "transmittedRequestNames": [
+          "host/ws01.a.example",
+          "cifs/review.corp.example"
+        ],
+        "proofTarget": "cifs/review.corp.example",
+        "issuedTarget": "cifs/review.corp.example",
+        "cachedTarget": "cifs/review.corp.example",
+        "fullReply": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/review.corp.example; srealm=CORP.EXAMPLE)",
+        "focusedSend": {
+          "sourceIndex": 16,
+          "value": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/review.corp.example; srealm=CORP.EXAMPLE)",
+          "packetValue": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/review.corp.example; srealm=CORP.EXAMPLE)",
+          "compactPacketLabel": "EncryptedData(key=tgt-session:01, EncT…"
+        },
+        "independentHostTarget": "host/ws01.a.example"
+      },
+      "baseAndPriorFixturesUnchanged": true,
+      "resetRestores": true,
+      "passed": true
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "condition": "matching-qualifier",
+      "passed": false,
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n9 !== 0\n\n    at assertSuccess (file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:43:43)\n    at file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:162:13"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "condition": "conflicting-qualifier",
+      "rejections": [
+        {
+          "draftRealm": "",
+          "effectiveRealm": "A.EXAMPLE",
+          "message": "Kerberos service principal (SPN): The service realm qualifier must match the account Kerberos realm (A.EXAMPLE). Use the separate cross-realm lessons for a service in another realm."
+        },
+        {
+          "draftRealm": "CORP.EXAMPLE",
+          "effectiveRealm": "CORP.EXAMPLE",
+          "message": "Kerberos service principal (SPN): The service realm qualifier must match the account Kerberos realm (CORP.EXAMPLE). Use the separate cross-realm lessons for a service in another realm."
+        }
+      ],
+      "passed": false,
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n9 !== 0\n\n    at assertSuccess (file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:43:43)\n    at file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:161:9"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "condition": "realm-254",
+      "acceptedIdentity": {
+        "target": "HTTP/review.corp.example",
+        "realm": "RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR",
+        "transmittedRequestNames": [
+          "HTTP/review.corp.example"
+        ],
+        "proofTarget": "HTTP/review.corp.example",
+        "issuedTarget": "HTTP/review.corp.example",
+        "cachedTarget": "HTTP/review.corp.example",
+        "fullReply": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/review.corp.example; srealm=RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR)",
+        "focusedSend": {
+          "sourceIndex": 8,
+          "value": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/review.corp.example; srealm=RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR)",
+          "packetValue": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/review.corp.example; srealm=RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR)",
+          "compactPacketLabel": "EncryptedData(key=tgt-session:01, EncT…"
+        }
+      },
+      "baseAndPriorFixturesUnchanged": true,
+      "resetRestores": true,
+      "passed": true
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "condition": "realm-255",
+      "rejection": {
+        "draftRealmLength": 255,
+        "message": "Kerberos realm (not a Keycloak realm): This lab accepts a Kerberos realm of 1-254 letters, digits, dots, underscores or hyphens, starting with a letter or digit (for example CORP.EXAMPLE).",
+        "committedRealm": "BASE.EXAMPLE",
+        "playbackUnchanged": true
+      },
+      "correctedApplyWithoutReset": true,
+      "acceptedIdentity": {
+        "target": "HTTP/review.corp.example",
+        "realm": "CORP.EXAMPLE",
+        "transmittedRequestNames": [
+          "HTTP/review.corp.example"
+        ],
+        "proofTarget": "HTTP/review.corp.example",
+        "issuedTarget": "HTTP/review.corp.example",
+        "cachedTarget": "HTTP/review.corp.example",
+        "fullReply": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/review.corp.example; srealm=CORP.EXAMPLE)",
+        "focusedSend": {
+          "sourceIndex": 8,
+          "value": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/review.corp.example; srealm=CORP.EXAMPLE)",
+          "packetValue": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/review.corp.example; srealm=CORP.EXAMPLE)",
+          "compactPacketLabel": "EncryptedData(key=tgt-session:01, EncT…"
+        }
+      },
+      "baseAndPriorFixturesUnchanged": true,
+      "resetRestores": true,
+      "passed": true
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "condition": "realm-2048",
+      "rejection": {
+        "draftRealmLength": 2048,
+        "message": "Kerberos realm (not a Keycloak realm): This lab accepts a Kerberos realm of 1-254 letters, digits, dots, underscores or hyphens, starting with a letter or digit (for example CORP.EXAMPLE).",
+        "committedRealm": "BASE.EXAMPLE",
+        "playbackUnchanged": true
+      },
+      "passed": false,
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n7 !== 0\n\n    at assertSuccess (file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:43:43)\n    at file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:153:9"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "condition": "unqualified-service",
+      "acceptedIdentity": {
+        "target": "HTTP/review.corp.example",
+        "realm": "CORP.EXAMPLE",
+        "transmittedRequestNames": [
+          "HTTP/review.corp.example"
+        ],
+        "proofTarget": "HTTP/review.corp.example",
+        "issuedTarget": "HTTP/review.corp.example",
+        "cachedTarget": "HTTP/review.corp.example",
+        "fullReply": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/review.corp.example; srealm=CORP.EXAMPLE)",
+        "focusedSend": {
+          "sourceIndex": 8,
+          "value": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/review.corp.example; srealm=CORP.EXAMPLE)",
+          "packetValue": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/review.corp.example; srealm=CORP.EXAMPLE)",
+          "compactPacketLabel": "EncryptedData(key=tgt-session:01, EncT…"
+        }
+      },
+      "baseAndPriorFixturesUnchanged": true,
+      "resetRestores": true,
+      "passed": true
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "condition": "matching-qualifier",
+      "passed": false,
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n7 !== 0\n\n    at assertSuccess (file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:43:43)\n    at file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:162:13"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "condition": "conflicting-qualifier",
+      "rejections": [
+        {
+          "draftRealm": "",
+          "effectiveRealm": "A.EXAMPLE",
+          "message": "Kerberos service principal (SPN): The service realm qualifier must match the account Kerberos realm (A.EXAMPLE). Use the separate cross-realm lessons for a service in another realm."
+        },
+        {
+          "draftRealm": "CORP.EXAMPLE",
+          "effectiveRealm": "CORP.EXAMPLE",
+          "message": "Kerberos service principal (SPN): The service realm qualifier must match the account Kerberos realm (CORP.EXAMPLE). Use the separate cross-realm lessons for a service in another realm."
+        }
+      ],
+      "passed": false,
+      "reason": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n7 !== 0\n\n    at assertSuccess (file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:43:43)\n    at file:///workspace/scratch/231fca57c2a8/auth-lab-main/tools/verification/code3-environment-bundle-check.mjs:161:9"
+    }
+  ],
+  "passed": false
+}

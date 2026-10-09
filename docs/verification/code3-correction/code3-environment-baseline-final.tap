@@ -1,0 +1,747 @@
+TAP version 13
+# Subtest: R2: lab-ad-first-sign-in accepts the chosen 254-character realm boundary and Reset restores its base
+ok 1 - R2: lab-ad-first-sign-in accepts the chosen 254-character realm boundary and Reset restores its base
+  ---
+  duration_ms: 5320.718123
+  type: 'test'
+  ...
+# Subtest: R2: lab-ad-first-sign-in rejects a 255-character realm atomically, then corrected Apply works without Reset
+not ok 2 - R2: lab-ad-first-sign-in rejects a 255-character realm atomically, then corrected Apply works without Reset
+  ---
+  duration_ms: 2233.373788
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:82:34'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception: The real Apply handler must report a recoverable inline error instead of throwing
+    Actual message: "Use a valid example Kerberos realm."
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'Use a valid example Kerberos realm.'
+  name: 'TypeError'
+  stack: |-
+    adContext (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:143:62)
+    adBaseScenario (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:277:49)
+    model.contextualize (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:286:29)
+    get labModel (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:99:79)
+    AuthFlowStudio.renderAll (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:524:13)
+    AuthFlowStudio.refreshConfiguration (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:921:10)
+    AuthFlowStudio.applyEnvironment (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:473:23)
+    HarnessElement.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:277:80)
+    HarnessElement.dispatchEvent (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:24:98)
+    HarnessElement.click (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:76:16)
+  operator: 'doesNotThrow'
+  stack: |-
+    apply (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:25:28)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:84:117)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+  ...
+# Subtest: R2: lab-ad-first-sign-in rejects a 2048-character realm atomically, then corrected Apply works without Reset
+not ok 3 - R2: lab-ad-first-sign-in rejects a 2048-character realm atomically, then corrected Apply works without Reset
+  ---
+  duration_ms: 3088.718205
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:82:34'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception: The real Apply handler must report a recoverable inline error instead of throwing
+    Actual message: "Use a valid example Kerberos realm."
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'Use a valid example Kerberos realm.'
+  name: 'TypeError'
+  stack: |-
+    adContext (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:143:62)
+    adBaseScenario (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:277:49)
+    model.contextualize (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:286:29)
+    get labModel (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:99:79)
+    AuthFlowStudio.renderAll (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:524:13)
+    AuthFlowStudio.refreshConfiguration (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:921:10)
+    AuthFlowStudio.applyEnvironment (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:473:23)
+    HarnessElement.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:277:80)
+    HarnessElement.dispatchEvent (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:24:98)
+    HarnessElement.click (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:76:16)
+  operator: 'doesNotThrow'
+  stack: |-
+    apply (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:25:28)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:84:117)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R2: lab-ad-first-sign-in unexpected fixture-constructor failure is an atomic recoverable Apply rejection
+not ok 4 - R2: lab-ad-first-sign-in unexpected fixture-constructor failure is an atomic recoverable Apply rejection
+  ---
+  duration_ms: 3000.202518
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:88:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception: The real Apply handler must report a recoverable inline error instead of throwing
+    Actual message: "Synthetic fixture rebuild failure"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'Synthetic fixture rebuild failure'
+  name: 'TypeError'
+  stack: |-
+    base.contextualize (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:91:106)
+    get labModel (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:99:79)
+    AuthFlowStudio.renderAll (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:524:13)
+    AuthFlowStudio.refreshConfiguration (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:921:10)
+    AuthFlowStudio.applyEnvironment (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:473:23)
+    HarnessElement.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:277:80)
+    HarnessElement.dispatchEvent (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:24:98)
+    HarnessElement.click (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:76:16)
+    file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:25:85
+    getActual (node:assert:611:5)
+  operator: 'doesNotThrow'
+  stack: |-
+    apply (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:25:28)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:92:44)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-ad-first-sign-in unqualified service identity is consistent through requests, full/focused reply, animation and cache
+ok 5 - R3: lab-ad-first-sign-in unqualified service identity is consistent through requests, full/focused reply, animation and cache
+  ---
+  duration_ms: 4182.520628
+  type: 'test'
+  ...
+# Subtest: R3: lab-ad-first-sign-in matching @A.EXAMPLE qualifier normalizes without moving the account realm
+not ok 6 - R3: lab-ad-first-sign-in matching @A.EXAMPLE qualifier normalizes without moving the account realm
+  ---
+  duration_ms: 1853.525989
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:99:51'
+  failureType: 'testCodeFailure'
+  error: |-
+    Committed context contains the separate unqualified principal name
+    + actual - expected
+    
+    + 'cifs/review.corp.example@A.EXAMPLE'
+    - 'cifs/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'cifs/review.corp.example'
+  actual: 'cifs/review.corp.example@A.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:100:191)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-ad-first-sign-in matching @CORP.EXAMPLE qualifier normalizes without moving the account realm
+not ok 7 - R3: lab-ad-first-sign-in matching @CORP.EXAMPLE qualifier normalizes without moving the account realm
+  ---
+  duration_ms: 1984.125083
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:99:51'
+  failureType: 'testCodeFailure'
+  error: |-
+    Committed context contains the separate unqualified principal name
+    + actual - expected
+    
+    + 'cifs/review.corp.example@CORP.EXAMPLE'
+    - 'cifs/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'cifs/review.corp.example'
+  actual: 'cifs/review.corp.example@CORP.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:100:191)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-ad-first-sign-in conflicting @OTHER.EXAMPLE preserves the prior A.EXAMPLE model and running trace
+not ok 8 - R3: lab-ad-first-sign-in conflicting @OTHER.EXAMPLE preserves the prior A.EXAMPLE model and running trace
+  ---
+  duration_ms: 4689.078785
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:102:51'
+  failureType: 'testCodeFailure'
+  error: |-
+    The inline failure must be visible
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    rejected (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:53:10)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:104:70)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-ad-first-sign-in conflicting @OTHER.EXAMPLE preserves the prior CORP.EXAMPLE model and running trace
+not ok 9 - R3: lab-ad-first-sign-in conflicting @OTHER.EXAMPLE preserves the prior CORP.EXAMPLE model and running trace
+  ---
+  duration_ms: 4022.180199
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:102:51'
+  failureType: 'testCodeFailure'
+  error: |-
+    The inline failure must be visible
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    rejected (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:53:10)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:104:70)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R2: lab-kc-kerberos-sso accepts the chosen 254-character realm boundary and Reset restores its base
+ok 10 - R2: lab-kc-kerberos-sso accepts the chosen 254-character realm boundary and Reset restores its base
+  ---
+  duration_ms: 4760.915873
+  type: 'test'
+  ...
+# Subtest: R2: lab-kc-kerberos-sso rejects a 255-character realm atomically, then corrected Apply works without Reset
+not ok 11 - R2: lab-kc-kerberos-sso rejects a 255-character realm atomically, then corrected Apply works without Reset
+  ---
+  duration_ms: 2436.296402
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:82:34'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception: The real Apply handler must report a recoverable inline error instead of throwing
+    Actual message: "Use a valid example Kerberos realm."
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'Use a valid example Kerberos realm.'
+  name: 'TypeError'
+  stack: |-
+    adContext (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:143:62)
+    adBridgeScenario (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:395:17)
+    model.contextualize (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:426:29)
+    get labModel (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:99:79)
+    AuthFlowStudio.renderAll (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:524:13)
+    AuthFlowStudio.refreshConfiguration (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:921:10)
+    AuthFlowStudio.applyEnvironment (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:473:23)
+    HarnessElement.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:277:80)
+    HarnessElement.dispatchEvent (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:24:98)
+    HarnessElement.click (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:76:16)
+  operator: 'doesNotThrow'
+  stack: |-
+    apply (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:25:28)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:84:117)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R2: lab-kc-kerberos-sso rejects a 2048-character realm atomically, then corrected Apply works without Reset
+not ok 12 - R2: lab-kc-kerberos-sso rejects a 2048-character realm atomically, then corrected Apply works without Reset
+  ---
+  duration_ms: 3044.819164
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:82:34'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception: The real Apply handler must report a recoverable inline error instead of throwing
+    Actual message: "Use a valid example Kerberos realm."
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'Use a valid example Kerberos realm.'
+  name: 'TypeError'
+  stack: |-
+    adContext (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:143:62)
+    adBridgeScenario (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:395:17)
+    model.contextualize (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:426:29)
+    get labModel (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:99:79)
+    AuthFlowStudio.renderAll (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:524:13)
+    AuthFlowStudio.refreshConfiguration (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:921:10)
+    AuthFlowStudio.applyEnvironment (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:473:23)
+    HarnessElement.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:277:80)
+    HarnessElement.dispatchEvent (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:24:98)
+    HarnessElement.click (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:76:16)
+  operator: 'doesNotThrow'
+  stack: |-
+    apply (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:25:28)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:84:117)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R2: lab-kc-kerberos-sso unexpected fixture-constructor failure is an atomic recoverable Apply rejection
+not ok 13 - R2: lab-kc-kerberos-sso unexpected fixture-constructor failure is an atomic recoverable Apply rejection
+  ---
+  duration_ms: 3004.953908
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:88:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception: The real Apply handler must report a recoverable inline error instead of throwing
+    Actual message: "Synthetic fixture rebuild failure"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'Synthetic fixture rebuild failure'
+  name: 'TypeError'
+  stack: |-
+    base.contextualize (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:91:106)
+    get labModel (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:99:79)
+    AuthFlowStudio.renderAll (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:524:13)
+    AuthFlowStudio.refreshConfiguration (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:921:10)
+    AuthFlowStudio.applyEnvironment (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:473:23)
+    HarnessElement.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:277:80)
+    HarnessElement.dispatchEvent (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:24:98)
+    HarnessElement.click (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:76:16)
+    file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:25:85
+    getActual (node:assert:611:5)
+  operator: 'doesNotThrow'
+  stack: |-
+    apply (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:25:28)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:92:44)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-kc-kerberos-sso unqualified service identity is consistent through requests, full/focused reply, animation and cache
+ok 14 - R3: lab-kc-kerberos-sso unqualified service identity is consistent through requests, full/focused reply, animation and cache
+  ---
+  duration_ms: 5000.348552
+  type: 'test'
+  ...
+# Subtest: R3: lab-kc-kerberos-sso matching @A.EXAMPLE qualifier normalizes without moving the account realm
+not ok 15 - R3: lab-kc-kerberos-sso matching @A.EXAMPLE qualifier normalizes without moving the account realm
+  ---
+  duration_ms: 2270.638255
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:99:51'
+  failureType: 'testCodeFailure'
+  error: |-
+    Committed context contains the separate unqualified principal name
+    + actual - expected
+    
+    + 'HTTP/review.corp.example@A.EXAMPLE'
+    - 'HTTP/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'HTTP/review.corp.example'
+  actual: 'HTTP/review.corp.example@A.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:100:191)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-kc-kerberos-sso matching @CORP.EXAMPLE qualifier normalizes without moving the account realm
+not ok 16 - R3: lab-kc-kerberos-sso matching @CORP.EXAMPLE qualifier normalizes without moving the account realm
+  ---
+  duration_ms: 2121.645254
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:99:51'
+  failureType: 'testCodeFailure'
+  error: |-
+    Committed context contains the separate unqualified principal name
+    + actual - expected
+    
+    + 'HTTP/review.corp.example@CORP.EXAMPLE'
+    - 'HTTP/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'HTTP/review.corp.example'
+  actual: 'HTTP/review.corp.example@CORP.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:100:191)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-kc-kerberos-sso conflicting @OTHER.EXAMPLE preserves the prior A.EXAMPLE model and running trace
+not ok 17 - R3: lab-kc-kerberos-sso conflicting @OTHER.EXAMPLE preserves the prior A.EXAMPLE model and running trace
+  ---
+  duration_ms: 4388.645246
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:102:51'
+  failureType: 'testCodeFailure'
+  error: |-
+    The inline failure must be visible
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    rejected (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:53:10)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:104:70)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-kc-kerberos-sso conflicting @OTHER.EXAMPLE preserves the prior CORP.EXAMPLE model and running trace
+not ok 18 - R3: lab-kc-kerberos-sso conflicting @OTHER.EXAMPLE preserves the prior CORP.EXAMPLE model and running trace
+  ---
+  duration_ms: 4515.343536
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:102:51'
+  failureType: 'testCodeFailure'
+  error: |-
+    The inline failure must be visible
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    rejected (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:53:10)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:104:70)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: Apply rejects unsupported or ambiguous principal notation cifs/review.corp.example@A.EXAMPLE@OTHER.EXAMPLE
+not ok 19 - R3: Apply rejects unsupported or ambiguous principal notation cifs/review.corp.example@A.EXAMPLE@OTHER.EXAMPLE
+  ---
+  duration_ms: 2073.536063
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:110:116'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'cifs/review.corp.example@A.EXAMPLE'
+    - 'cifs/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'cifs/review.corp.example'
+  actual: 'cifs/review.corp.example@A.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    assertADIdentity (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:62:143)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:111:315)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: Apply rejects unsupported or ambiguous principal notation cifs/review\\@corp.example@A.EXAMPLE
+not ok 20 - R3: Apply rejects unsupported or ambiguous principal notation cifs/review\\@corp.example@A.EXAMPLE
+  ---
+  duration_ms: 2260.939116
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:110:116'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'cifs/review.corp.example@A.EXAMPLE'
+    - 'cifs/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'cifs/review.corp.example'
+  actual: 'cifs/review.corp.example@A.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    assertADIdentity (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:62:143)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:111:315)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R2: an invalid inactive Kerberos draft cannot poison a successful SSH environment Apply
+not ok 21 - R2: an invalid inactive Kerberos draft cannot poison a successful SSH environment Apply
+  ---
+  duration_ms: 1247.925218
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:114:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception: The real Apply handler must report a recoverable inline error instead of throwing
+    Actual message: "Use a valid example Kerberos realm."
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  error: 'Use a valid example Kerberos realm.'
+  name: 'TypeError'
+  stack: |-
+    adContext (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:143:62)
+    adBaseScenario (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:277:49)
+    model.contextualize (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/kerberos-ad-lab.js:286:29)
+    get labModel (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:99:79)
+    AuthFlowStudio.renderAll (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:524:13)
+    AuthFlowStudio.refreshConfiguration (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:921:10)
+    AuthFlowStudio.applyEnvironment (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:473:23)
+    HarnessElement.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/src/app.js:277:80)
+    HarnessElement.dispatchEvent (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:24:98)
+    HarnessElement.click (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/dom-harness.mjs:76:16)
+  operator: 'doesNotThrow'
+  stack: |-
+    apply (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:25:28)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:116:74)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-ad-pkinit-success uses the same matching qualifier contract in the request and accepted service cache
+not ok 22 - R3: lab-ad-pkinit-success uses the same matching qualifier contract in the request and accepted service cache
+  ---
+  duration_ms: 1911.505793
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:124:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'HTTP/review.corp.example@CORP.EXAMPLE'
+    - 'HTTP/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'HTTP/review.corp.example'
+  actual: 'HTTP/review.corp.example@CORP.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:126:176)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-ad-pkinit-success rejects a conflicting target realm through Apply and remains correctable
+not ok 23 - R3: lab-ad-pkinit-success rejects a conflicting target realm through Apply and remains correctable
+  ---
+  duration_ms: 1852.095503
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:138:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    The inline failure must be visible
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    rejected (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:53:10)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:139:137)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-ad-fast-tgs-success uses the same matching qualifier contract in the request and accepted service cache
+not ok 24 - R3: lab-ad-fast-tgs-success uses the same matching qualifier contract in the request and accepted service cache
+  ---
+  duration_ms: 1654.466859
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:124:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'HTTP/review.corp.example@CORP.EXAMPLE'
+    - 'HTTP/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'HTTP/review.corp.example'
+  actual: 'HTTP/review.corp.example@CORP.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:126:176)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: lab-ad-fast-tgs-success rejects a conflicting target realm through Apply and remains correctable
+not ok 25 - R3: lab-ad-fast-tgs-success rejects a conflicting target realm through Apply and remains correctable
+  ---
+  duration_ms: 1614.49523
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:138:3'
+  failureType: 'testCodeFailure'
+  error: |-
+    The inline failure must be visible
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    rejected (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:53:10)
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:139:137)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: direct lab-ad-first-sign-in projection and participant rows normalize a raw matching-qualified context without mutating issued fixtures
+not ok 26 - R3: direct lab-ad-first-sign-in projection and participant rows normalize a raw matching-qualified context without mutating issued fixtures
+  ---
+  duration_ms: 3.569538
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:143:33'
+  failureType: 'testCodeFailure'
+  error: |-
+    A raw qualifier cannot be reintroduced into a normalized request by the generic projector
+    + actual - expected
+    
+    + 'cifs/review.corp.example@CORP.EXAMPLE'
+    - 'cifs/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'cifs/review.corp.example'
+  actual: 'cifs/review.corp.example@CORP.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:145:279)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+# Subtest: R3: direct lab-kc-kerberos-sso projection and participant rows normalize a raw matching-qualified context without mutating issued fixtures
+not ok 27 - R3: direct lab-kc-kerberos-sso projection and participant rows normalize a raw matching-qualified context without mutating issued fixtures
+  ---
+  duration_ms: 3.739358
+  type: 'test'
+  location: '/workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:143:33'
+  failureType: 'testCodeFailure'
+  error: |-
+    A raw qualifier cannot be reintroduced into a normalized request by the generic projector
+    + actual - expected
+    
+    + 'HTTP/review.corp.example@CORP.EXAMPLE'
+    - 'HTTP/review.corp.example'
+                               ^
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 'HTTP/review.corp.example'
+  actual: 'HTTP/review.corp.example@CORP.EXAMPLE'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///workspace/scratch/231fca57c2a8/code3-regression-baseline-jsci0qi0/auth-lab-main/tests/code3-environment-contract.test.mjs:145:279)
+    Test.runInAsyncScope (node:async_hooks:227:14)
+    Test.run (node:internal/test_runner/test:1382:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+    Test.postRun (node:internal/test_runner/test:1522:19)
+    Test.run (node:internal/test_runner/test:1447:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+  ...
+1..27
+# tests 27
+# suites 0
+# pass 4
+# fail 23
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 75038.900663

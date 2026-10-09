@@ -1,6 +1,6 @@
 import {ATTRIBUTES} from './protocol-data.js';
 
-export const TRACE_ACTION_LABELS = {create:'Create',derive:'Compute',store:'Store',use:'Use',verify:'Check',send:'Send',receive:'Receive'};
+export const TRACE_ACTION_LABELS = {create:'Create',derive:'Compute',store:'Store',use:'Use',verify:'Check',inspect:'Inspect',encrypt:'Encrypt',decrypt:'Decrypt',evict:'Evict',send:'Send',receive:'Receive'};
 
 const traceCanonicalNames = name => String(name).replace(/^response\./,'').split(' / ').map(n=>n.replace(/\s*\([^)]*\)/g,'').trim());
 function traceFieldValue(id,step,examples) {
@@ -14,7 +14,7 @@ function traceFieldValue(id,step,examples) {
  * A stored field never becomes a packet merely because it is mentioned in a
  * request. A transfer is emitted once, followed by its receiver's local checks.
  */
-export function buildAttributeTrace(usages,examples={}) {
+export function buildAttributeTrace(usages,examples={},exactValues={}) {
   const queue=[];
   for(const usage of usages){
     let local=[];let wireEmitted=false;let sequence=0;
@@ -27,7 +27,7 @@ export function buildAttributeTrace(usages,examples={}) {
         id:'trace-'+usage.step.id+'-'+(++sequence),sourceStepId:usage.step.id,sourceIndex:usage.index,
         from,to,channel:from===to?'internal':usage.step.channel,
         title,summary:descriptions.join(' '),detail:descriptions.join(' '),fields:ids,
-        payload:ids.map(id=>({name:ATTRIBUTES[id]?.name||id,value:traceFieldValue(id,usage.step,examples),attributeId:id,
+        payload:ids.map(id=>({name:ATTRIBUTES[id]?.name||id,value:actions.find(a=>a.attributeId===id&&Object.hasOwn(a,'value'))?.value??exactValues[actions.find(a=>a.attributeId===id&&a.exactValueRef)?.exactValueRef]??traceFieldValue(id,usage.step,examples),attributeId:id,
           description:actions.find(a=>a.attributeId===id)?.carriedAs ? 'Carried inside '+actions.find(a=>a.attributeId===id).carriedAs+'.' : undefined})),
         checks:[],traceKind:kind,traceActions:actions.map(a=>({...a})),
       };

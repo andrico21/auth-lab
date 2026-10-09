@@ -25,7 +25,7 @@ function pickerActive(app){const id=pickerInput(app).getAttribute('aria-activede
 function pickerChoose(app,id){const row=pickerRows(app).find(option=>option.dataset.scenarioOption===id);assert.ok(row,'matching scenario is selectable');row.click();}
 const pickerCanonical=name=>String(name).replace(/\s*\([^)]*\)/g,'').trim();
 function pickerExpected(query){const terms=query.toLowerCase().trim().split(/\s+/);return LAB_SCENARIOS.filter(model=>{
-  const text=[model.title,model.summary,model.category,model.status,...model.ids.map(id=>pickerCanonical(LAB_ATTRIBUTES[id]?.name||id))].join(' ').toLowerCase();
+  const text=[model.title,model.summary,model.category,model.status,model.protocol||'oidc',model.workspace,model.family,model.keywords,model.lesson,model.evidenceLabel,...model.ids.flatMap(id=>[pickerCanonical(LAB_ATTRIBUTES[id]?.name||id),LAB_ATTRIBUTES[id]?.standard])].join(' ').toLowerCase();
   return terms.every(term=>text.includes(term));
 }).map(model=>model.id);}
 
@@ -35,10 +35,10 @@ test('the scenario field exposes an inline combobox while preserving the complet
     assert.ok(app.querySelector('#lab-scenario-picker'));assert.ok(input);assert.ok(menu);assert.ok(status);
     assert.equal(input.getAttribute('role'),'combobox');assert.equal(input.getAttribute('aria-expanded'),'false');assert.equal(input.getAttribute('aria-controls'),list.id);assert.equal(list.getAttribute('role'),'listbox');assert.equal(menu.hidden,true);
     const options=app.refs['lab-scenario'].querySelectorAll('option').map(option=>option.getAttribute('value'));
-    assert.deepEqual(options.slice().sort(),pickerAllIds.slice().sort());assert.equal(new Set(options).size,54);
+    assert.deepEqual(options.slice().sort(),pickerAllIds.slice().sort());assert.equal(new Set(options).size,pickerAllIds.length);
     assert.equal(app.refs['lab-scenario'].hidden,true,'the old native selector is retained without a duplicate visible control');
     assert.equal(input.value,pickerTitle(app,'basic-keycloak'));
-    pickerOpen(app);assert.equal(menu.hidden,false);assert.equal(input.getAttribute('aria-expanded'),'true');assert.equal(pickerRows(app).length,54);assert.equal(pickerIds(app)[0],'basic-keycloak','the basic sign-in preset is the first suggestion');
+    pickerOpen(app);assert.equal(menu.hidden,false);assert.equal(input.getAttribute('aria-expanded'),'true');assert.equal(pickerRows(app).length,pickerAllIds.length);assert.equal(pickerIds(app)[0],'basic-keycloak','the basic sign-in preset is the first suggestion');
     assert.ok(pickerRows(app).every(row=>row.getAttribute('role')==='option'&&row.id),'results have usable option identities');
     assert.ok(status.getAttribute('aria-live')||status.getAttribute('role')==='status','result feedback can be announced');
   }finally{pickerUnmount(app);}
@@ -61,7 +61,7 @@ test('typing and clearing results preserve the active journey, selected attribut
     app.selectLabScenario('lab-bff-api');app.selectAttribute('pkce',false);app.playAttribute();const before=app.player.snapshot(),queue=app.player.queue.slice(),selection=app.attributeSelection;
     assert.equal(before.status,'playing');pickerOpen(app);pickerType(app,'artifact');
     assert.equal(app.labScenarioId,'lab-bff-api');assert.equal(app.attributeSelection,selection);assert.equal(app.player.status,'playing');assert.equal(app.player.kind,before.kind);assert.deepEqual(app.player.queue,queue);
-    app.querySelector('#lab-scenario-clear').click();assert.equal(pickerMenu(app).hidden,false);assert.equal(pickerInput(app).value,'');assert.equal(pickerRows(app).length,54);assert.equal(app.labScenarioId,'lab-bff-api');assert.equal(app.player.status,'playing');
+    app.querySelector('#lab-scenario-clear').click();assert.equal(pickerMenu(app).hidden,false);assert.equal(pickerInput(app).value,'');assert.equal(pickerRows(app).length,pickerAllIds.length);assert.equal(app.labScenarioId,'lab-bff-api');assert.equal(app.player.status,'playing');
   }finally{pickerUnmount(app);}
 });
 
@@ -128,6 +128,6 @@ test('the first Basic Keycloak sign-in preset shows a single-realm browser passw
     assert.ok(app.steps.some(step=>step.fields.includes('password')),'the provider receives an account password');assert.ok(app.steps.some(step=>step.fields.includes('codeA')),'Realm A issues the app authorization code');assert.ok(app.steps.some(step=>step.fields.includes('codeVerifier')),'the application uses PKCE');
     const broker=app.refs.actors.querySelector('[data-actor="realmB"]');assert.ok(!broker||broker.hidden,'the single-realm preset does not display a second identity provider');
     assert.ok(app.steps.every(step=>![step.from,step.to].includes('realmB')),'there is no upstream broker');assert.ok(app.steps.every(step=>!step.fields.some(id=>['codeB','clientIdBroker','otpCode','otpSecret','credentialPrivateKey','assertionSignature'].includes(id))),'no second-realm exchange, OTP or passkey factor is inserted');
-    assert.equal(LAB_SCENARIOS.length,43,'the quick preset is not counted as another extended model');
+    assert.equal(LAB_SCENARIOS.filter(model=>!model.workspace).length,43,'the quick preset is not counted as another extended model');
   }finally{pickerUnmount(app);}
 });

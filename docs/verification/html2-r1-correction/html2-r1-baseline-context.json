@@ -1,0 +1,171 @@
+{
+  "kind": "html2-r1-independent-context-repro",
+  "nativeBrowser": false,
+  "project": "/workspace/scratch/231fca57c2a8/html2-r1-baseline-ag8g5r28/auth-lab-main",
+  "sourceSha256": "dfa14972e8b92c327065a21ef1beb72133479421805ee79473ded22c90225083",
+  "htmlSha256": "7f49ff591c7ba43ee73e7ae19ef17c1db1c155957201fc655ee499a80b0352ae",
+  "scenarios": [
+    {
+      "id": "lab-ad-first-sign-in",
+      "input": {
+        "servicePrincipal": "cifs/other.corp.test",
+        "kerberosRealm": "unchanged A.EXAMPLE"
+      },
+      "request": "cifs/other.corp.test",
+      "header": "cifs/other.corp.test",
+      "fullReply": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/files.a.example)",
+      "proof": "cifs/files.a.example",
+      "cache": "cifs/other.corp.test",
+      "focusedSend": "EncryptedData(key=tgt-session:01, EncTGSRepPart for cifs/files.a.example)",
+      "sessions": {
+        "localLogon": true,
+        "serviceAuthenticated": true,
+        "resourceAccess": true
+      },
+      "host": {
+        "proof": "host/ws01.a.example",
+        "cache": "host/ws01.a.example",
+        "reply": "EncryptedData(key=tgt-session:01, EncTGSRepPart for host/ws01.a.example)"
+      }
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "input": {
+        "servicePrincipal": "HTTP/other.corp.test",
+        "kerberosRealm": "unchanged A.EXAMPLE"
+      },
+      "request": "HTTP/other.corp.test",
+      "header": "HTTP/other.corp.test",
+      "fullReply": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/idp.a.example)",
+      "proof": "HTTP/idp.a.example",
+      "cache": "HTTP/other.corp.test",
+      "focusedSend": "EncryptedData(key=tgt-session:01, EncTGSRepPart for HTTP/idp.a.example)",
+      "sessions": {
+        "localLogon": true,
+        "serviceAuthenticated": false,
+        "resourceAccess": false,
+        "applicationAuthenticated": true,
+        "gssMechanismAuthenticated": true,
+        "spnegoComplete": true
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "lab-ad-first-sign-in",
+      "name": "request sname",
+      "passed": true,
+      "actual": "cifs/other.corp.test",
+      "expected": "cifs/other.corp.test"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "name": "clear ticket header",
+      "passed": true,
+      "actual": "cifs/other.corp.test",
+      "expected": "cifs/other.corp.test"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "name": "proof target",
+      "passed": false,
+      "actual": "cifs/files.a.example",
+      "expected": "cifs/other.corp.test",
+      "assertion": "proof target\n+ actual - expected\n\n+ 'cifs/files.a.example'\n- 'cifs/other.corp.test'\n        ^\n"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "name": "protected reply target",
+      "passed": false,
+      "actual": "cifs/files.a.example",
+      "expected": "cifs/other.corp.test",
+      "assertion": "protected reply target\n+ actual - expected\n\n+ 'cifs/files.a.example'\n- 'cifs/other.corp.test'\n        ^\n"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "name": "cached target",
+      "passed": true,
+      "actual": "cifs/other.corp.test",
+      "expected": "cifs/other.corp.test"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "name": "focused Send target",
+      "passed": false,
+      "actual": "cifs/files.a.example",
+      "expected": "cifs/other.corp.test",
+      "assertion": "focused Send target\n+ actual - expected\n\n+ 'cifs/files.a.example'\n- 'cifs/other.corp.test'\n        ^\n"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "name": "independent host proof",
+      "passed": true,
+      "actual": "host/ws01.a.example",
+      "expected": "host/ws01.a.example"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "name": "independent host cache",
+      "passed": true,
+      "actual": "host/ws01.a.example",
+      "expected": "host/ws01.a.example"
+    },
+    {
+      "id": "lab-ad-first-sign-in",
+      "name": "independent host reply target",
+      "passed": true,
+      "actual": "host/ws01.a.example",
+      "expected": "host/ws01.a.example"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "name": "request sname",
+      "passed": true,
+      "actual": "HTTP/other.corp.test",
+      "expected": "HTTP/other.corp.test"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "name": "clear ticket header",
+      "passed": true,
+      "actual": "HTTP/other.corp.test",
+      "expected": "HTTP/other.corp.test"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "name": "proof target",
+      "passed": false,
+      "actual": "HTTP/idp.a.example",
+      "expected": "HTTP/other.corp.test",
+      "assertion": "proof target\n+ actual - expected\n\n+ 'HTTP/idp.a.example'\n- 'HTTP/other.corp.test'\n        ^\n"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "name": "protected reply target",
+      "passed": false,
+      "actual": "HTTP/idp.a.example",
+      "expected": "HTTP/other.corp.test",
+      "assertion": "protected reply target\n+ actual - expected\n\n+ 'HTTP/idp.a.example'\n- 'HTTP/other.corp.test'\n        ^\n"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "name": "cached target",
+      "passed": true,
+      "actual": "HTTP/other.corp.test",
+      "expected": "HTTP/other.corp.test"
+    },
+    {
+      "id": "lab-kc-kerberos-sso",
+      "name": "focused Send target",
+      "passed": false,
+      "actual": "HTTP/idp.a.example",
+      "expected": "HTTP/other.corp.test",
+      "assertion": "focused Send target\n+ actual - expected\n\n+ 'HTTP/idp.a.example'\n- 'HTTP/other.corp.test'\n        ^\n"
+    }
+  ],
+  "summary": {
+    "checks": 15,
+    "passed": 9,
+    "failed": 6
+  }
+}
