@@ -1,4 +1,4 @@
-import {GRAPH_WIDTH,GRAPH_HEIGHT,CARD_BOUNDS} from './layout.js';
+import {GRAPH_WIDTH,GRAPH_HEIGHT} from './layout.js';
 
 const overlayLayoutPadding = 10;
 const overlayLayoutCardClearance = 8;
@@ -78,18 +78,17 @@ function overlayLayoutAnchor(points,rectangle,middle) {
   return {...best};
 }
 
-/** Place a measured panel beside an active connection in logical graph units. */
-export function placeStepOverlay(points,size,positions) {
-  const width=overlayLayoutClamp(Number(size?.width)||220,1,GRAPH_WIDTH-overlayLayoutPadding*2);
-  const height=overlayLayoutClamp(Number(size?.height)||120,1,GRAPH_HEIGHT-overlayLayoutPadding*2);
+/** Place a measured panel beside a connection, respecting complete reserved bounds. */
+export function placeStepOverlay(points,size,bounds) {
+  const measuredWidth=Number(size?.width)||220,measuredHeight=Number(size?.height)||120;
+  const width=overlayLayoutClamp(measuredWidth,1,GRAPH_WIDTH-overlayLayoutPadding*2);
+  const height=overlayLayoutClamp(measuredHeight,1,GRAPH_HEIGHT-overlayLayoutPadding*2);
   const route=(points||[]).filter(point=>Number.isFinite(point?.x)&&Number.isFinite(point?.y)).map(point=>({x:point.x,y:point.y}));
   if(!route.length)route.push({x:GRAPH_WIDTH/2,y:GRAPH_HEIGHT/2});
   const middle=overlayLayoutPathMiddle(route);
-  const obstacles=Object.values(positions||{}).map(position=>({
-    left:position.x-CARD_BOUNDS.width/2-overlayLayoutCardClearance,
-    right:position.x+CARD_BOUNDS.width/2+overlayLayoutCardClearance,
-    top:position.y-CARD_BOUNDS.height/2-overlayLayoutCardClearance,
-    bottom:position.y+CARD_BOUNDS.height/2+overlayLayoutCardClearance
+  const obstacles=(bounds||[]).map(bound=>({
+    left:bound.left-overlayLayoutCardClearance,right:bound.right+overlayLayoutCardClearance,
+    top:bound.top-overlayLayoutCardClearance,bottom:bound.bottom+overlayLayoutCardClearance
   }));
   const candidates=new Map();
   const add=(x,y)=> {
@@ -132,5 +131,5 @@ export function placeStepOverlay(points,size,positions) {
       best={...rectangle,anchor};bestCollision=collision;bestScore=score;
     }
   }
-  return best;
+  return {...best,fits:bestCollision<=1e-7&&measuredWidth<=width&&measuredHeight<=height};
 }

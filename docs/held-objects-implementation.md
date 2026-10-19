@@ -1,12 +1,12 @@
 # Held objects implementation handoff
 
-Review candidate for Astra. No commit, push, Pages deployment or repository upload is included. Publication to `andrico21/auth-lab` remains gated on the user's successful independent review.
+Review candidate for Astra. No push, Pages deployment or repository upload has been performed. Publication to `andrico21/auth-lab` remains gated on the user's successful independent review.
 
 ## Baseline and scope
 
 Implements the approved Held Objects v2 design, its A01-A21 acceptance matrix, and both worker notes: collapse recovery uses `#show-internals`, and target sizes are measured after transforms in rendered CSS pixels.
 
-The delivered reviewed source ZIP has SHA-256 `9e295c46e666633e83f971a57e01b329233ddf9114067506a1741afcbb1e15c8`. Its application modules match the repository baseline after the required 1:1 ASCII-hyphen normalization. The delivered Code4/G01-A browser-runner correction is carried forward. Its seek comparisons now use the same completed canonical prefix as the new inventory rather than an in-flight event's old inclusive post-state.
+The approved input baseline source ZIP has SHA-256 `9e295c46e666633e83f971a57e01b329233ddf9114067506a1741afcbb1e15c8`. Its application modules match the repository baseline after the required 1:1 ASCII-hyphen normalization. The delivered Code4/G01-A browser-runner correction is carried forward. Its seek comparisons now use the same completed canonical prefix as the new inventory rather than an in-flight event's old inclusive post-state.
 
 All 130 fixed extended scenarios, the Core-backed presets and configurable Core have explicit inventory authoring. The picker has 141 deduplicated choices. Coverage is logical-owner, configuration and cursor scoped; a catalog count alone does not establish completeness.
 
@@ -53,6 +53,8 @@ Ordering uses initial display order, acquisition ordinal and holding ID. Overflo
 - External mode: narrow views, invalid composite routes/bounds, supported movement or custom layouts use the independently valid base map and an accessible logical-owner list. A fallback never repairs or conceals invalid actor geometry.
 
 Visibility and individual acquisitions do not reflow actors. Responsive mode changes can recompute the approved layout once. Geometry and transformed bounds participate in route/cache identity. Logical AS/TGS and CLI/agent owners are never reassigned to the visual parent. Reduced motion uses the same semantic commits without packet-frame animation.
+
+The checked **Show step attributes** control continues to expose the complete names-only set in full, compact and external inventory modes. Placement avoids entire reserved actor/inventory composites, not just actor centers. If no panel-sized region is free, the same named group moves below the map; it is never silently hidden or replaced by the single current packet field. Keyboard-focused help is remeasured after its `:focus-within` hint appears, including nested F2 help, so the extra text does not push the panel past the viewport.
 
 ## Reproducible checks
 

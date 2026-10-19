@@ -56,6 +56,25 @@ async function overlayBounds(page,selector,label){
   assert.ok(bounds.left>=-1&&bounds.right<=bounds.width+1&&bounds.top>=-1&&bounds.bottom<=bounds.height+1,label+' stays inside viewport: '+JSON.stringify(bounds));
   return bounds;
 }
+async function hoverActor(page,card){
+  await card.scrollIntoViewIfNeeded();
+  const point=await card.evaluate(node=>{
+    let r=node.getBoundingClientRect();
+    const toolbar=document.querySelector('#map-controls'),bottom=innerHeight-4;
+    const top=Math.max(4,toolbar.getBoundingClientRect().bottom+4);
+    window.scrollBy(0,(r.top+r.bottom)/2-(top+bottom)/2);
+    r=node.getBoundingClientRect();
+    const left=Math.max(4,r.left),right=Math.min(innerWidth-4,r.right);
+    const visibleTop=Math.max(4,r.top,toolbar.getBoundingClientRect().bottom+4),visibleBottom=Math.min(bottom,r.bottom);
+    if(left>=right||visibleTop>=visibleBottom)throw new Error('No visible participant hover target below the sticky controls.');
+    const x=(left+right)/2,y=(visibleTop+visibleBottom)/2,hit=document.elementFromPoint(x,y);
+    if(!node.contains(hit))throw new Error('Participant hover point is obstructed before pointer entry.');
+    return {x,y};
+  });
+  // A non-modal help panel may cover the trigger after genuine pointer entry.
+  // Locator.hover retries that post-entry hit test; it is not the user gesture.
+  await page.mouse.move(point.x,point.y);
+}
 async function scene(page,label,{samplePaths=false}={}){
   const snapshot=await page.evaluate(samplePaths=>{
     const a=document.querySelector('auth-flow-studio');
@@ -98,7 +117,7 @@ async function help(page,mode,{everyActor=true,fresh=false,screenshots=false}={}
     // a new mouseover event and must not be the gate's implicit precondition.
     await page.mouse.move(0,0);
     await page.evaluate(fresh=>{const a=document.querySelector('auth-flow-studio');a.hidePopups();document.activeElement?.blur();if(fresh)a.refs['actor-popup'].innerHTML='';},fresh);
-    await card.hover();await overlayBounds(page,'#actor-popup',mode+' '+id+' hover help');
+    await hoverActor(page,card);await overlayBounds(page,'#actor-popup',mode+' '+id+' hover help');
     const title=await page.locator('#actor-popup .popup-title').textContent();
     const expected=await page.evaluate(id=>document.querySelector('auth-flow-studio').actor(id).name,id);assert.equal(title,expected);
     await page.evaluate(()=>{document.querySelector('auth-flow-studio').hidePopups();document.activeElement?.blur();});

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-imWsX3hlo8ixEetATOB1XDfDa5qKjiRiORAy0fxdq9g='; script-src-attr 'none'; style-src 'sha256-0sA5xjjvkLiHTPVnJ3743E5OM4Bm7mSVIrEioKEwUgU='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ASikW43/trZB8rcR8rcDeilRpWdGze9TIzVdqhQu+u8='; script-src-attr 'none'; style-src 'sha256-e5LLHy6g5bljtxohq/opc7EBNOILfhPLj0Dv8ikqvY4='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="Explore Web sign-in, SSH access and AD DS Kerberos: OAuth, SAML, passkeys, MFA, certificates, Device Flow, PKINIT, FAST and forest trusts in one offline animated lab.">
@@ -280,6 +280,8 @@ summary:focus-visible, [role="button"]:focus-visible {
 .step-attributes code.is-current { color: var(--text); background: color-mix(in srgb, var(--channel-color), transparent 78%); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--channel-color), transparent 50%); }
 .step-attributes-tether { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9; overflow: visible; }
 .step-attributes-tether path { stroke: var(--channel-color, var(--subtle)); stroke-width: 1.2; stroke-dasharray: 3 4; fill: none; opacity: .65; }
+.step-attributes-external { padding: 12px 18px; border-top: 1px solid var(--border); background: var(--panel-soft); }
+.step-attributes.is-external { position: static; width: auto; max-width: none; box-shadow: none; backdrop-filter: none; }
 .legend { display: flex; align-items: center; justify-content: center; gap: 18px; flex-wrap: wrap; padding: 12px 15px; border-top: 1px solid var(--border-soft); }
 .legend-item { display: inline-flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); }
 .legend-dot { width: 15px; height: 2px; display: inline-block; background: var(--channel-color, var(--browser)); border-radius: 2px; }
@@ -8134,18 +8136,17 @@ function overlayLayoutAnchor(points,rectangle,middle) {
   return {...best};
 }
 
-/** Place a measured panel beside an active connection in logical graph units. */
-function placeStepOverlay(points,size,positions) {
-  const width=overlayLayoutClamp(Number(size?.width)||220,1,GRAPH_WIDTH-overlayLayoutPadding*2);
-  const height=overlayLayoutClamp(Number(size?.height)||120,1,GRAPH_HEIGHT-overlayLayoutPadding*2);
+/** Place a measured panel beside a connection, respecting complete reserved bounds. */
+function placeStepOverlay(points,size,bounds) {
+  const measuredWidth=Number(size?.width)||220,measuredHeight=Number(size?.height)||120;
+  const width=overlayLayoutClamp(measuredWidth,1,GRAPH_WIDTH-overlayLayoutPadding*2);
+  const height=overlayLayoutClamp(measuredHeight,1,GRAPH_HEIGHT-overlayLayoutPadding*2);
   const route=(points||[]).filter(point=>Number.isFinite(point?.x)&&Number.isFinite(point?.y)).map(point=>({x:point.x,y:point.y}));
   if(!route.length)route.push({x:GRAPH_WIDTH/2,y:GRAPH_HEIGHT/2});
   const middle=overlayLayoutPathMiddle(route);
-  const obstacles=Object.values(positions||{}).map(position=>({
-    left:position.x-CARD_BOUNDS.width/2-overlayLayoutCardClearance,
-    right:position.x+CARD_BOUNDS.width/2+overlayLayoutCardClearance,
-    top:position.y-CARD_BOUNDS.height/2-overlayLayoutCardClearance,
-    bottom:position.y+CARD_BOUNDS.height/2+overlayLayoutCardClearance
+  const obstacles=(bounds||[]).map(bound=>({
+    left:bound.left-overlayLayoutCardClearance,right:bound.right+overlayLayoutCardClearance,
+    top:bound.top-overlayLayoutCardClearance,bottom:bound.bottom+overlayLayoutCardClearance
   }));
   const candidates=new Map();
   const add=(x,y)=> {
@@ -8188,7 +8189,7 @@ function placeStepOverlay(points,size,positions) {
       best={...rectangle,anchor};bestCollision=collision;bestScore=score;
     }
   }
-  return best;
+  return {...best,fits:bestCollision<=1e-7&&measuredWidth<=width&&measuredHeight<=height};
 }
 
 
@@ -13288,6 +13289,7 @@ class AuthFlowStudio extends HTMLElement {
     this.innerHTML=this.shell();
     this.refs={};
     ['studio','graph','connections','actors','packet','packet-name','packet-value','packet-count','timeline','inspector','inspector-heading','progress','story','play','speed','speed-label','seek','seek-position','mode','authenticator','architecture','upstream','status','actor-popup','attribute-popup','toast','attribute-index','attribute-search','attribute-index-list','attribute-topics','attribute-focus','attribute-index-meta','attribute-index-empty','app-protocol','broker-protocol','saml-binding','saml-initiation','token-protection','assertion-protection','protocol-summary','step-attributes','step-attributes-tether','show-step-attributes','oidc-flow','lab-scenario','lab-catalog','lab-search','lab-cards','lab-support','move-participants','provider-settings','provider-profile','provider-note','environment-fields','environment-errors','environment-status'].forEach(id=>this.refs[id]=this.querySelector('#'+id));
+    this.refs['step-attributes-external']=this.querySelector('#step-attributes-external');
     this.refs['show-step-attributes'].checked=this.showStepAttributes;
     this.heldView=new HeldObjectView(this);
     const presetIds=new Set(LEARNING_PRESETS.map(preset=>preset.id));
@@ -13454,6 +13456,7 @@ class AuthFlowStudio extends HTMLElement {
             <div class="step-attributes" id="step-attributes" role="group" aria-label="Attribute names in the active step" hidden></div>
             <div class="packet-position" id="packet" hidden><div class="packet-chip"><span class="packet-orb"></span><div><span class="packet-name" id="packet-name"></span><code class="packet-value" id="packet-value"></code></div><span class="packet-count" id="packet-count"></span></div></div>
           </div></div>
+          <section id="step-attributes-external" class="step-attributes-external" aria-label="Attribute names in the active step" hidden></section>
           <div id="held-active-message" class="held-active-message" aria-label="Active message" hidden></div>
           <section class="lifetime-strip" id="lifetime-strip" aria-label="Four independent credential and session lifetimes" hidden></section>
           <div class="scenario-environment" id="scenario-environment" hidden></div>
@@ -13570,7 +13573,13 @@ class AuthFlowStudio extends HTMLElement {
     this.refs['attribute-popup'].addEventListener('mouseleave',()=>{this.deferCloseAttribute();this.deferCloseActor();});
     this.refs['attribute-popup'].addEventListener('click',e=>{if(e.target.closest('[data-close]'))this.dismissPopup('attribute');});
     ['actor','attribute'].forEach(kind=>{
-      this.refs[kind+'-popup'].addEventListener('focusin',()=>{if(kind==='actor'||this.refs['actor-popup'].contains(this.attributeAnchor))clearTimeout(this.closeTimer);if(kind==='attribute'||this.popupOwnsFocus('attribute'))clearTimeout(this.attributeTimer);});
+      this.refs[kind+'-popup'].addEventListener('focusin',()=>{
+        if(kind==='actor'||this.refs['actor-popup'].contains(this.attributeAnchor))clearTimeout(this.closeTimer);
+        if(kind==='attribute'||this.popupOwnsFocus('attribute'))clearTimeout(this.attributeTimer);
+        // :focus-within reveals the keyboard hint and changes the measured height.
+        const popup=this.refs[kind+'-popup'],anchor=this[kind+'Anchor'];
+        if(anchor&&!popup.hidden)this.placePopup(popup,anchor,kind==='actor'?370:340);
+      });
       this.refs[kind+'-popup'].addEventListener('focusout',e=>{this.deferCloseAttribute(e.relatedTarget);this.deferCloseActor(e.relatedTarget);});
     });
     this.addEventListener('keydown',e=>{
@@ -13999,6 +14008,7 @@ class AuthFlowStudio extends HTMLElement {
   hideStepAttributes() {
     if(!this.refs)return;
     this.refs['step-attributes'].hidden=true;this.refs['step-attributes-tether'].hidden=true;this.stepOverlayIdentity='';
+    this.refs['step-attributes-external'].hidden=true;
   }
   stepAttributeItems(step) {
     const source=step.sourceStepId?this.steps.find(s=>s.id===step.sourceStepId)||step:step;
@@ -14018,12 +14028,14 @@ class AuthFlowStudio extends HTMLElement {
   renderStepAttributes(event,force=false) {
     if(!this.refs)return;
     if(!this.showStepAttributes||!['playing','paused'].includes(event.status)||!event.step){this.hideStepAttributes();return;}
-    if(this.heldGeometry){this.hideStepAttributes();return;}
     const overlay=this.refs['step-attributes'],step=event.step;
-    if(force||this.stepOverlayIdentity!==step.id){
+    if(force||this.stepOverlayIdentity!==step.id||this.stepOverlayGeometry!==this.heldGeometry){
       const items=this.stepAttributeItems(step);
       if(!items.length){this.hideStepAttributes();return;}
       this.stepOverlayIdentity=step.id;
+      this.stepOverlayGeometry=this.heldGeometry;
+      if(overlay.parentElement!==this.refs.graph)this.refs.graph.appendChild(overlay);
+      overlay.classList.remove('is-external');this.refs['step-attributes-external'].hidden=true;
       overlay.innerHTML=items.map(item=>`<code data-step-attribute="${escapeHtml(item.ids.join(' '))}">${escapeHtml(item.name)}</code>`).join('');
       overlay.dataset.step=step.sourceStepId||step.id;overlay.dataset.channel=channelCategory(step.channel);overlay.hidden=false;
       this.positionStepAttributes(step);
@@ -14037,7 +14049,13 @@ class AuthFlowStudio extends HTMLElement {
     const overlay=this.refs['step-attributes'],graphRect=this.refs.graph.getBoundingClientRect(),panelRect=overlay.getBoundingClientRect();
     const size={width:panelRect.width*GRAPH_WIDTH/(graphRect.width||GRAPH_WIDTH),height:panelRect.height*GRAPH_HEIGHT/(graphRect.height||GRAPH_HEIGHT)};
     const length=path.getTotalLength(),points=Array.from({length:25},(_,i)=>path.getPointAtLength(length*i/24));
-    const placement=placeStepOverlay(points,size,this.positions);
+    const bounds=this.heldGeometry?Object.values(this.heldGeometry.bounds):Object.values(this.positions).map(position=>({left:position.x-CARD_BOUNDS.width/2,right:position.x+CARD_BOUNDS.width/2,top:position.y-CARD_BOUNDS.height/2,bottom:position.y+CARD_BOUNDS.height/2}));
+    const placement=placeStepOverlay(points,size,bounds);
+    if(!placement.fits){
+      overlay.classList.add('is-external');this.refs['step-attributes-external'].appendChild(overlay);
+      this.refs['step-attributes-external'].hidden=false;this.refs['step-attributes-tether'].hidden=true;
+      return;
+    }
     overlay.style.left=placement.x/GRAPH_WIDTH*100+'%';overlay.style.top=placement.y/GRAPH_HEIGHT*100+'%';
     const anchor=placement.anchor,edge={x:Math.max(placement.x,Math.min(placement.x+placement.width,anchor.x)),y:Math.max(placement.y,Math.min(placement.y+placement.height,anchor.y))},tether=this.refs['step-attributes-tether'];
     tether.dataset.channel=channelCategory(step.channel);tether.querySelector('path').setAttribute('d',`M ${anchor.x} ${anchor.y} L ${edge.x} ${edge.y}`);tether.hidden=false;

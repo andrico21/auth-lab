@@ -35,6 +35,13 @@ function sampledPath(path) {
   });
 }
 
+function actorBounds(positions) {
+  return Object.values(positions).map(position=>({
+    left:position.x-CARD_BOUNDS.width/2,right:position.x+CARD_BOUNDS.width/2,
+    top:position.y-CARD_BOUNDS.height/2,bottom:position.y+CARD_BOUNDS.height/2
+  }));
+}
+
 function assertBounded(panel,label='panel') {
   assert.ok(Number.isFinite(panel.x)&&Number.isFinite(panel.y),label+' finite coordinates');
   assert.ok(panel.x>=10-1e-7&&panel.y>=10-1e-7,label+' minimum map padding');
@@ -69,7 +76,7 @@ test('step panels remain bounded and avoid every actor for all real ordered rout
       const points=sampledPath(connectionPath(from,to,positions));
       for(const size of [{width:220,height:120},{width:280,height:180},{width:200,height:60}]) {
         const label=architecture+' '+from+'→'+to+' '+size.width+'×'+size.height;
-        const panel=placeStepOverlay(points,size,positions);
+        const panel=placeStepOverlay(points,size,actorBounds(positions));
         assertBounded(panel,label);assertNoCards(panel,positions,label);assertAnchorOnPath(panel.anchor,points,label);
         assert.equal(panel.width,size.width);assert.equal(panel.height,size.height);
       }
@@ -82,8 +89,8 @@ test('reversing a connection preserves placement and its tether location',()=> {
     const positions=getPositions(architecture);
     for(const [from,to]of [['app','realmA'],['browser','realmB'],['user','app'],['realmA','realmA']]) {
       const points=sampledPath(connectionPath(from,to,positions));
-      const forward=placeStepOverlay(points,{width:280,height:180},positions);
-      const reverse=placeStepOverlay([...points].reverse(),{width:280,height:180},positions);
+      const forward=placeStepOverlay(points,{width:280,height:180},actorBounds(positions));
+      const reverse=placeStepOverlay([...points].reverse(),{width:280,height:180},actorBounds(positions));
       for(const key of ['x','y','width','height'])assert.ok(Math.abs(forward[key]-reverse[key])<1e-5,key+' is direction-independent');
       assert.ok(Math.hypot(forward.anchor.x-reverse.anchor.x,forward.anchor.y-reverse.anchor.y)<1e-5,'anchor is direction-independent');
     }
@@ -94,7 +101,7 @@ test('a crowded route falls back to a free region rather than covering participa
   const positions={left:{x:260,y:220},middle:{x:450,y:220},right:{x:640,y:220},
     lowerLeft:{x:260,y:410},lowerMiddle:{x:450,y:410},lowerRight:{x:640,y:410}};
   const points=[{x:355,y:180},{x:355,y:450}];
-  const panel=placeStepOverlay(points,{width:280,height:180},positions);
+  const panel=placeStepOverlay(points,{width:280,height:180},actorBounds(positions));
   assertBounded(panel);assertNoCards(panel,positions);assertAnchorOnPath(panel.anchor,points);
   assert.ok(panel.x>=730 || panel.y>=505 || panel.x+panel.width<=170,
     'panel moves to an empty canvas region when immediate route space is too small');
@@ -102,7 +109,7 @@ test('a crowded route falls back to a free region rather than covering participa
 
 test('a simple clear connection keeps the panel beside the link and near its middle',()=> {
   const points=[{x:200,y:300},{x:800,y:300}];
-  const panel=placeStepOverlay(points,{width:220,height:120},{});
+  const panel=placeStepOverlay(points,{width:220,height:120},[]);
   assertBounded(panel);
   assert.ok(Math.abs(panel.x+panel.width/2-500)<1e-7,'panel is centered on connection midpoint');
   assert.ok(panel.y+panel.height<=300-14 || panel.y>=300+14,'panel keeps the animated connection visible');
@@ -111,10 +118,36 @@ test('a simple clear connection keeps the panel beside the link and near its mid
 test('degenerate input and oversize panels have deterministic bounded fallbacks without mutation',()=> {
   const points=[{x:120,y:240}],positions=getPositions('native');
   const before=JSON.stringify({points,positions});
-  const panel=placeStepOverlay(points,{width:5000,height:5000},positions);
+  const panel=placeStepOverlay(points,{width:5000,height:5000},actorBounds(positions));
   assertBounded(panel);assert.equal(panel.width,GRAPH_WIDTH-20);assert.equal(panel.height,GRAPH_HEIGHT-20);
+  assert.equal(panel.fits,false,'clamped dimensions must not promise the measured panel fits');
   assertAnchorOnPath(panel.anchor,points);
   assert.equal(JSON.stringify({points,positions}),before);
-  const fallback=placeStepOverlay([{x:NaN,y:0}],{},{});
+  const fallback=placeStepOverlay([{x:NaN,y:0}],{},[]);
   assertBounded(fallback);assert.deepEqual(fallback.anchor,{x:GRAPH_WIDTH/2,y:GRAPH_HEIGHT/2});
+});
+
+test('step panels avoid complete actor-plus-inventory composites, including reserved cells',()=> {
+  const bounds=[
+    {left:22,right:338,top:38,bottom:212},{left:402,right:718,top:38,bottom:212},
+    {left:782,right:1098,top:38,bottom:212},{left:22,right:338,top:278,bottom:452},
+    {left:402,right:718,top:278,bottom:452},{left:782,right:1098,top:278,bottom:452},
+    {left:22,right:338,top:518,bottom:692}
+  ];
+  const before=JSON.stringify(bounds),points=[{x:346,y:125},{x:394,y:365}];
+  const panel=placeStepOverlay(points,{width:260,height:120},bounds);
+  assert.equal(panel.fits,true);assertBounded(panel);assertAnchorOnPath(panel.anchor,points);
+  for(const bound of bounds) {
+    const overlapWidth=Math.max(0,Math.min(panel.x+panel.width,bound.right+8)-Math.max(panel.x,bound.left-8));
+    const overlapHeight=Math.max(0,Math.min(panel.y+panel.height,bound.bottom+8)-Math.max(panel.y,bound.top-8));
+    assert.ok(overlapWidth*overlapHeight<1e-6,'panel clears the complete reserved composite');
+  }
+  assert.equal(JSON.stringify(bounds),before,'placement does not alter the shared geometry');
+});
+
+test('a map without a free panel-sized region reports an external presentation is needed',()=> {
+  const panel=placeStepOverlay([{x:560,y:365}],{width:260,height:120},
+    [{left:10,right:GRAPH_WIDTH-10,top:10,bottom:GRAPH_HEIGHT-10}]);
+  assert.equal(panel.fits,false);
+  assertBounded(panel);
 });

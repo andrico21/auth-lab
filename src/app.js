@@ -85,6 +85,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.innerHTML=this.shell();
     this.refs={};
     ['studio','graph','connections','actors','packet','packet-name','packet-value','packet-count','timeline','inspector','inspector-heading','progress','story','play','speed','speed-label','seek','seek-position','mode','authenticator','architecture','upstream','status','actor-popup','attribute-popup','toast','attribute-index','attribute-search','attribute-index-list','attribute-topics','attribute-focus','attribute-index-meta','attribute-index-empty','app-protocol','broker-protocol','saml-binding','saml-initiation','token-protection','assertion-protection','protocol-summary','step-attributes','step-attributes-tether','show-step-attributes','oidc-flow','lab-scenario','lab-catalog','lab-search','lab-cards','lab-support','move-participants','provider-settings','provider-profile','provider-note','environment-fields','environment-errors','environment-status'].forEach(id=>this.refs[id]=this.querySelector('#'+id));
+    this.refs['step-attributes-external']=this.querySelector('#step-attributes-external');
     this.refs['show-step-attributes'].checked=this.showStepAttributes;
     this.heldView=new HeldObjectView(this);
     const presetIds=new Set(LEARNING_PRESETS.map(preset=>preset.id));
@@ -251,6 +252,7 @@ export class AuthFlowStudio extends HTMLElement {
             <div class="step-attributes" id="step-attributes" role="group" aria-label="Attribute names in the active step" hidden></div>
             <div class="packet-position" id="packet" hidden><div class="packet-chip"><span class="packet-orb"></span><div><span class="packet-name" id="packet-name"></span><code class="packet-value" id="packet-value"></code></div><span class="packet-count" id="packet-count"></span></div></div>
           </div></div>
+          <section id="step-attributes-external" class="step-attributes-external" aria-label="Attribute names in the active step" hidden></section>
           <div id="held-active-message" class="held-active-message" aria-label="Active message" hidden></div>
           <section class="lifetime-strip" id="lifetime-strip" aria-label="Four independent credential and session lifetimes" hidden></section>
           <div class="scenario-environment" id="scenario-environment" hidden></div>
@@ -367,7 +369,13 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs['attribute-popup'].addEventListener('mouseleave',()=>{this.deferCloseAttribute();this.deferCloseActor();});
     this.refs['attribute-popup'].addEventListener('click',e=>{if(e.target.closest('[data-close]'))this.dismissPopup('attribute');});
     ['actor','attribute'].forEach(kind=>{
-      this.refs[kind+'-popup'].addEventListener('focusin',()=>{if(kind==='actor'||this.refs['actor-popup'].contains(this.attributeAnchor))clearTimeout(this.closeTimer);if(kind==='attribute'||this.popupOwnsFocus('attribute'))clearTimeout(this.attributeTimer);});
+      this.refs[kind+'-popup'].addEventListener('focusin',()=>{
+        if(kind==='actor'||this.refs['actor-popup'].contains(this.attributeAnchor))clearTimeout(this.closeTimer);
+        if(kind==='attribute'||this.popupOwnsFocus('attribute'))clearTimeout(this.attributeTimer);
+        // :focus-within reveals the keyboard hint and changes the measured height.
+        const popup=this.refs[kind+'-popup'],anchor=this[kind+'Anchor'];
+        if(anchor&&!popup.hidden)this.placePopup(popup,anchor,kind==='actor'?370:340);
+      });
       this.refs[kind+'-popup'].addEventListener('focusout',e=>{this.deferCloseAttribute(e.relatedTarget);this.deferCloseActor(e.relatedTarget);});
     });
     this.addEventListener('keydown',e=>{
@@ -796,6 +804,7 @@ export class AuthFlowStudio extends HTMLElement {
   hideStepAttributes() {
     if(!this.refs)return;
     this.refs['step-attributes'].hidden=true;this.refs['step-attributes-tether'].hidden=true;this.stepOverlayIdentity='';
+    this.refs['step-attributes-external'].hidden=true;
   }
   stepAttributeItems(step) {
     const source=step.sourceStepId?this.steps.find(s=>s.id===step.sourceStepId)||step:step;
@@ -815,12 +824,14 @@ export class AuthFlowStudio extends HTMLElement {
   renderStepAttributes(event,force=false) {
     if(!this.refs)return;
     if(!this.showStepAttributes||!['playing','paused'].includes(event.status)||!event.step){this.hideStepAttributes();return;}
-    if(this.heldGeometry){this.hideStepAttributes();return;}
     const overlay=this.refs['step-attributes'],step=event.step;
-    if(force||this.stepOverlayIdentity!==step.id){
+    if(force||this.stepOverlayIdentity!==step.id||this.stepOverlayGeometry!==this.heldGeometry){
       const items=this.stepAttributeItems(step);
       if(!items.length){this.hideStepAttributes();return;}
       this.stepOverlayIdentity=step.id;
+      this.stepOverlayGeometry=this.heldGeometry;
+      if(overlay.parentElement!==this.refs.graph)this.refs.graph.appendChild(overlay);
+      overlay.classList.remove('is-external');this.refs['step-attributes-external'].hidden=true;
       overlay.innerHTML=items.map(item=>`<code data-step-attribute="${escapeHtml(item.ids.join(' '))}">${escapeHtml(item.name)}</code>`).join('');
       overlay.dataset.step=step.sourceStepId||step.id;overlay.dataset.channel=channelCategory(step.channel);overlay.hidden=false;
       this.positionStepAttributes(step);
@@ -834,7 +845,13 @@ export class AuthFlowStudio extends HTMLElement {
     const overlay=this.refs['step-attributes'],graphRect=this.refs.graph.getBoundingClientRect(),panelRect=overlay.getBoundingClientRect();
     const size={width:panelRect.width*GRAPH_WIDTH/(graphRect.width||GRAPH_WIDTH),height:panelRect.height*GRAPH_HEIGHT/(graphRect.height||GRAPH_HEIGHT)};
     const length=path.getTotalLength(),points=Array.from({length:25},(_,i)=>path.getPointAtLength(length*i/24));
-    const placement=placeStepOverlay(points,size,this.positions);
+    const bounds=this.heldGeometry?Object.values(this.heldGeometry.bounds):Object.values(this.positions).map(position=>({left:position.x-CARD_BOUNDS.width/2,right:position.x+CARD_BOUNDS.width/2,top:position.y-CARD_BOUNDS.height/2,bottom:position.y+CARD_BOUNDS.height/2}));
+    const placement=placeStepOverlay(points,size,bounds);
+    if(!placement.fits){
+      overlay.classList.add('is-external');this.refs['step-attributes-external'].appendChild(overlay);
+      this.refs['step-attributes-external'].hidden=false;this.refs['step-attributes-tether'].hidden=true;
+      return;
+    }
     overlay.style.left=placement.x/GRAPH_WIDTH*100+'%';overlay.style.top=placement.y/GRAPH_HEIGHT*100+'%';
     const anchor=placement.anchor,edge={x:Math.max(placement.x,Math.min(placement.x+placement.width,anchor.x)),y:Math.max(placement.y,Math.min(placement.y+placement.height,anchor.y))},tether=this.refs['step-attributes-tether'];
     tether.dataset.channel=channelCategory(step.channel);tether.querySelector('path').setAttribute('d',`M ${anchor.x} ${anchor.y} L ${edge.x} ${edge.y}`);tether.hidden=false;
