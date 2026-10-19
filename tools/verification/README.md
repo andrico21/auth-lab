@@ -1,6 +1,6 @@
 # Verification tools
 
-Run these commands from the repository root. Each accepts an optional project directory and `--help`. The default project is the repository containing the scripts, independent of the current working directory. Evidence goes to `docs/verification`; set `AUTH_LAB_QA_EVIDENCE_DIR` to choose another directory. The scripts do not change application source or contact identity providers.
+Run these commands from the repository root; `--help` lists each tool's arguments. The default project is the repository containing the scripts, independent of the current working directory. General evidence goes to `docs/verification` or `AUTH_LAB_QA_EVIDENCE_DIR`; held-object evidence uses `docs/verification/held-objects` or `AUTH_LAB_HELD_EVIDENCE_DIR`. The scripts do not change application source or contact identity providers.
 
 ## Native browser
 
@@ -80,6 +80,16 @@ bun tools/verification/held-objects-check.mjs
 
 The semantic gate uses the application's actual source-generation pipeline. It checks every picker choice and applicable normalized Core configuration, required interaction cases, exact identities, bounded temporary retention, state bindings and equal canonical full/link/object cursors. It emits `held-objects-source-status.json` and `held-objects-coverage-manifest.json`. Structural validity and universal coverage are separate gates; incomplete supported actor/cursor declarations fail the latter.
 
+### Complete source regression report
+
+```sh
+bun tools/verification/run-regressions.mjs
+```
+
+Runs every `tests/*.test.mjs` file in four bounded workers, using a fresh current-Bun process with `test --isolate --timeout=900000` per file. `held-objects-regression-status.json` records each command, exit status, pass/fail totals, log path and application/test/helper identities before and after the run. An optional project-directory argument overrides the checkout default.
+
+### Main native acceptance
+
 ```sh
 PLAYWRIGHT_MODULE=/absolute/path/to/playwright-core/index.mjs \
 CHROMIUM_EXECUTABLE=/absolute/path/to/chrome \
@@ -90,7 +100,24 @@ Playwright and Chromium are optional external QA tooling, not application depend
 
 Native checks cover modular source HTTP, standalone HTTP and standalone `file://`; initial/final inventories for every choice; dense folded/expanded full/compact/external layouts; actor/dock routes; final rendered target sizes; complete visible step-attribute names and collision-aware fallback; exact-object keyboard lifecycle and R1 replay/full-source equality; touch; reduced motion; source/emitted state equality; and no external application requests or unexpected CSP violations. The 1480-pixel desktop case exercises the measured compact range; every loading mode must actually produce full, compact and external geometry.
 
+### Focused native and delivered-file reports
+
+```sh
+export PLAYWRIGHT_MODULE=/absolute/path/to/playwright-core/index.mjs
+export CHROMIUM_EXECUTABLE=/absolute/path/to/chrome
+bun tools/verification/run-focused-native.mjs
+bun tools/verification/review-file-smoke.mjs /absolute/path/to/auth-lab-held-objects.html
+```
+
+The focused runner owns an ephemeral loopback server and checks source HTTP, standalone HTTP and standalone file: exact holding focus/state across full/compact/external changes, collapse recovery, viewport-contained nested F2 help and one receipt announcement across multiple animation frames. Its report is `held-objects-focused-native-status.json`.
+
+The file runner defaults to the checkout's `dist/auth-flow-studio.html` if no HTML argument is supplied. A delivered-file argument must match that build's SHA-256. It opens the actual file, checks exact R1 replay/full-state equality, measured compact controls and visible step names, and rejects unexpected runtime/CSP errors or external application requests. Its report is `review-file-smoke-status.json`; it does not replace the broader enforcing-CSP probes.
+
+The regression and focused runners accept `[project-directory]`; the file runner accepts `[standalone.html] [project-directory]`. All three record their shipped runner SHA-256 and actual regeneration command. No temporary script, hardcoded checkout path or fixed preview port is required.
+
 New reports/screenshots default to `docs/verification/held-objects/`; set `AUTH_LAB_HELD_EVIDENCE_DIR` to redirect them. The preserved broader runner uses `AUTH_LAB_QA_EVIDENCE_DIR`. Its accepted long-realm fixture is 244 characters; the separate 364-character rejection/recovery case retains G01-A's same-task atomicity probe. Hover fixtures leave the previous actor, reveal an unobstructed point below sticky controls, verify it with `elementFromPoint`, then send a genuine pointer move. This avoids the SDK retrying after an interactive help panel legitimately covers its trigger. No forced hover or synthetic mouse event substitutes for the user gesture.
+
+Source control retains the eight representative native captures included in the source ZIP. `.gitignore` excludes other held-object PNG captures and the four named superseded reports; they remain on disk and in the separate full verification archive. Current status reports, manifests and regression logs remain in the source package.
 
 The help panels are non-modal: Tab can leave a panel whose only control is Close. After verifying that exit, the runner focuses the actor and presses F2 again before testing Escape. It never tries to focus a now-hidden Close control or depends on completing the sequence before the blur timeout.
 

@@ -80,7 +80,7 @@ Application build and tests remain Bun-only, with no application dependencies or
 bun run build
 bun test --isolate --timeout=900000 tests/held-object-*.test.mjs
 bun tools/verification/held-objects-check.mjs
-bun run test
+bun tools/verification/run-regressions.mjs
 ```
 
 The source acceptance tool uses the application's actual `scenarioSnapshot()` pipeline without repeatedly rendering the catalog. It validates all choices, every applicable normalized Core combination, and the required interaction cases. It records family-state equality and full/link/exact canonical projection evidence. Its manifest includes initial holdings, exact representations, event/milestone bindings, coverage scopes, limitations and Core exclusions. This is semantic source evidence, not native-browser evidence.
@@ -95,6 +95,17 @@ bun tools/verification/held-objects-browser-check.mjs
 
 The native tool checks modular source HTTP, standalone HTTP and standalone `file://`; all choices at initial/final cursors; dense folded/expanded layouts; routes; rendered 44-pixel targets; keyboard exact-object lifecycle; touch; reduced motion; no external application requests; and source/emitted state equality. It changes Chrome's actual default browser zoom through its own isolated settings page and verifies the resulting CSS layout viewport and visual scale. It does not substitute CSS zoom, pinch scaling or a smaller viewport for real browser zoom.
 
+Focused native and delivered-file evidence use the same optional Playwright/Chromium environment:
+
+```sh
+export PLAYWRIGHT_MODULE=/absolute/path/to/playwright-core/index.mjs
+export CHROMIUM_EXECUTABLE=/absolute/path/to/chrome
+bun tools/verification/run-focused-native.mjs
+bun tools/verification/review-file-smoke.mjs /absolute/path/to/auth-lab-held-objects.html
+```
+
+The focused runner serves its own ephemeral loopback origin. The file runner defaults to `dist/auth-flow-studio.html` when no file argument is supplied; passing the delivered HTML additionally requires it to match the current build. Both use the checkout containing the script by default, independent of the working directory. The regression/focused runners accept an optional project directory; the file runner accepts it after the optional HTML path. All three support `--help`.
+
 The preserved broader regression tool remains available:
 
 ```sh
@@ -104,6 +115,8 @@ bun tools/verification/native-browser-acceptance.mjs
 ```
 
 Evidence is under `docs/verification/held-objects/`. `AUTH_LAB_HELD_EVIDENCE_DIR` redirects new held-object reports; `AUTH_LAB_QA_EVIDENCE_DIR` redirects the preserved broader gate. Reports bind exact source/artifact identities and distinguish observed native checks from the DOM harness. The source regression report lists the actual bounded per-file Bun invocations/results.
+
+The full-regression, focused-native and delivered-file report generators are shipped under `tools/verification/`. Their reports record the exact runner SHA-256 and actual regeneration command. The complete source runner uses four workers, each launching the current Bun executable with `test --isolate --timeout=900000` for one test file, and hashes the shared test helpers as well as application/test inputs. No published current report depends on an unshipped temporary runner or a fixed preview port.
 
 The test DOM compiles selector structure once per lookup and stops `querySelector()` at the first document-order match. Matching nodes are not cached across mutations. This removes test-only traversal overhead without changing production rendering or pretending to establish browser geometry, CSP enforcement or screen-reader behavior. Playback tests assert selected queues, actual packets and control behavior rather than private dispatch-tag spellings.
 
