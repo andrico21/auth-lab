@@ -135,7 +135,7 @@ test('activating a participant field with the index hidden falls back to its act
     const card=app.refs.actors.querySelector('[data-actor="app"]');focus(card);key(card,'F2');
     const field=app.refs['actor-popup'].querySelector('[data-attribute="redirectApp"]');focus(field);field.click();
     assert.equal(app.attributeSelection,'redirectApp');assert.equal(app.refs['actor-popup'].hidden,true);
-    returnedFocus(card);assert.equal(app.refs['attribute-popup'].hidden,true);
+    returnedFocus(app.refs.actors.querySelector('[data-actor="app"]'));assert.equal(app.refs['attribute-popup'].hidden,true);
   }finally{unmount(app);}
 });
 

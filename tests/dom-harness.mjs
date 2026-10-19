@@ -27,21 +27,30 @@ class EventTarget {
 }
 class TextNode { constructor(text){this.data=decode(text);this.parentElement=null;} get textContent(){return this.data;} set textContent(v){this.data=String(v);} }
 function selectorParts(selector){return selector.trim().split(/\s+(?=(?:[^\[\]]*\[[^\[\]]*\])*[^\[\]]*$)/);}
+// Compile only for the duration of one query. DOM mutations need no cache invalidation.
+function selectorGroups(selector){
+  return selector.split(',').map(group=>selectorParts(group).map(part=>({
+    tag:part.match(/^[\w-]+|^\*/)?.[0]?.toUpperCase(),
+    tokens:[...part.matchAll(/#([\w-]+)|\.([\w-]+)|\[([\w:-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\]\s]+)))?\]/g)].map(token=>({
+      id:token[1],className:token[2],attribute:token[3],
+      value:token[4]===undefined&&token[5]===undefined&&token[6]===undefined?undefined:decode(token[4]??token[5]??token[6])
+    }))
+  })));
+}
 function matchesCompound(node,selector){
   if(!(node instanceof HarnessElement))return false;
-  const tag=selector.match(/^[\w-]+|^\*/)?.[0];
-  if(tag&&tag!=='*'&&node.tagName.toLowerCase()!==tag.toLowerCase())return false;
-  for(const token of selector.matchAll(/#([\w-]+)|\.([\w-]+)|\[([\w:-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\]\s]+)))?\]/g)){
-    if(token[1]&&node.id!==token[1])return false;
-    if(token[2]&&!node.classList.contains(token[2]))return false;
-    if(token[3]){if(!node.hasAttribute(token[3]))return false;const value=token[4]??token[5]??token[6];if(value!==undefined&&node.getAttribute(token[3])!==decode(value))return false;}
+  if(selector.tag&&selector.tag!=='*'&&node.tagName!==selector.tag)return false;
+  for(const token of selector.tokens){
+    if(token.id&&node.id!==token.id)return false;
+    if(token.className&&!node.classList.contains(token.className))return false;
+    if(token.attribute){if(!node.hasAttribute(token.attribute))return false;if(token.value!==undefined&&node.getAttribute(token.attribute)!==token.value)return false;}
   }
   return true;
 }
 function matchesSelector(node,selector){
-  const parts=selectorParts(selector);let current=node;
-  if(!matchesCompound(current,parts.pop()))return false;
-  while(parts.length){const part=parts.pop();current=current.parentElement;while(current&&!matchesCompound(current,part))current=current.parentElement;if(!current)return false;}
+  let current=node;
+  if(!matchesCompound(current,selector[selector.length-1]))return false;
+  for(let i=selector.length-2;i>=0;i--){current=current.parentElement;while(current&&!matchesCompound(current,selector[i]))current=current.parentElement;if(!current)return false;}
   return true;
 }
 const toKebab=s=>String(s).replace(/[A-Z]/g,c=>'-'+c.toLowerCase());
@@ -68,10 +77,10 @@ export class HarnessElement extends EventTarget {
   get hidden(){return this.hasAttribute('hidden');} set hidden(value){value?this.setAttribute('hidden',''):this.removeAttribute('hidden');}
   get disabled(){return this.hasAttribute('disabled');} set disabled(value){value?this.setAttribute('disabled',''):this.removeAttribute('disabled');}
   get value(){if(this._value!==undefined)return this._value;if(this.tagName==='SELECT')return this.querySelector('option')?.getAttribute('value')||'';return this.getAttribute('value')||'';} set value(v){this._value=String(v);}
-  querySelectorAll(selector){const groups=selector.split(',').map(s=>s.trim()),results=[];const visit=node=>{for(const child of node.children){if(groups.some(s=>matchesSelector(child,s)))results.push(child);visit(child);}};visit(this);return results;}
-  querySelector(selector){return this.querySelectorAll(selector)[0]||null;}
-  matches(selector){return selector.split(',').some(s=>matchesSelector(this,s.trim()));}
-  closest(selector){let node=this;while(node){if(node.matches(selector))return node;node=node.parentElement;}return null;}
+  querySelectorAll(selector){const groups=selectorGroups(selector),results=[];const visit=node=>{for(const child of node.childNodes){if(!(child instanceof HarnessElement))continue;if(groups.some(group=>matchesSelector(child,group)))results.push(child);visit(child);}};visit(this);return results;}
+  querySelector(selector){const groups=selectorGroups(selector);const visit=node=>{for(const child of node.childNodes){if(!(child instanceof HarnessElement))continue;if(groups.some(group=>matchesSelector(child,group)))return child;const match=visit(child);if(match)return match;}return null;};return visit(this);}
+  matches(selector){return selectorGroups(selector).some(group=>matchesSelector(this,group));}
+  closest(selector){const groups=selectorGroups(selector);let node=this;while(node){if(groups.some(group=>matchesSelector(node,group)))return node;node=node.parentElement;}return null;}
   contains(node){while(node){if(node===this)return true;node=node.parentElement;}return false;}
   click(){this.dispatchEvent(new HarnessEvent('click'));}
   focus(){this.dispatchEvent(new HarnessEvent('focusin'));}

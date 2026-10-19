@@ -174,10 +174,16 @@ test('moving participants supports explicit pointer and keyboard controls and co
   const app=universalMount();try{
     universalSelect(app,'mode','password-totp');universalSelect(app,'authenticator','yubikey');universalSelect(app,'architecture','web');universalSelect(app,'upstream','external');universalSelect(app,'broker-protocol','saml');universalSelect(app,'assertion-protection','encrypted');
     const keys=['mode','authenticator','architecture','upstream','applicationProtocol','brokerProtocol','samlBinding','samlInitiation','tokenProtection','assertionProtection','oidcFlow'],saved=Object.fromEntries(keys.map(key=>[key,app[key]]));universalToggle(app,'show-step-attributes',false);
-    app.selectLabScenario('lab-api-errors');const card=app.refs.actors.querySelector('[data-actor="app"]'),initial={...app.positions.app};
+    app.selectLabScenario('lab-api-errors');let card=app.refs.actors.querySelector('[data-actor="app"]');const initial={...app.positions.app};
     card.dispatchEvent(new HarnessEvent('keydown',{key:'ArrowDown'}));assert.deepEqual(app.positions.app,initial,'movement is disabled by default');card.dispatchEvent(new HarnessEvent('pointerdown',{button:0,pointerId:7,clientX:100,clientY:100}));assert.equal(app.dragState,null);
-    universalToggle(app,'move-participants',true);assert.equal(app.moveParticipants,true);assert.equal(app.refs.graph.classList.contains('is-move-mode'),true);card.dispatchEvent(new HarnessEvent('keydown',{key:'ArrowDown'}));assert.deepEqual(app.positions.app,{x:initial.x,y:initial.y+12});
-    card.dispatchEvent(new HarnessEvent('pointerdown',{button:0,pointerId:7,clientX:100,clientY:100}));assert.equal(app.dragState.id,'app');const before={...app.positions.app};card.dispatchEvent(new HarnessEvent('pointermove',{pointerId:8,clientX:103,clientY:100}));assert.deepEqual(app.positions.app,before,'another pointer cannot move the selected card');card.dispatchEvent(new HarnessEvent('pointermove',{pointerId:7,clientX:103,clientY:100}));assert.ok(app.positions.app.x>before.x);card.dispatchEvent(new HarnessEvent('pointerup',{pointerId:7}));assert.equal(app.dragState,null);assert.equal(card.classList.contains('is-dragging'),false);
+    universalToggle(app,'move-participants',true);assert.equal(app.moveParticipants,true);assert.equal(app.refs.graph.classList.contains('is-move-mode'),true);
+    // Move mode can replace inventory geometry and rebuild the participant cards.
+    card=app.refs.actors.querySelector('[data-actor="app"]');assert.ok(card);const movableInitial={...app.positions.app};
+    card.dispatchEvent(new HarnessEvent('keydown',{key:'ArrowDown'}));assert.deepEqual(app.positions.app,{x:movableInitial.x,y:movableInitial.y+12});
+    card.dispatchEvent(new HarnessEvent('pointerdown',{button:0,pointerId:7,clientX:100,clientY:100}));assert.equal(app.dragState.id,'app');const before={...app.positions.app},graphWidth=app.refs.graph.getBoundingClientRect().width;
+    card.dispatchEvent(new HarnessEvent('pointermove',{pointerId:8,clientX:103,clientY:100}));assert.deepEqual(app.positions.app,before,'another pointer cannot move the selected card');
+    card.dispatchEvent(new HarnessEvent('pointermove',{pointerId:7,clientX:103,clientY:100}));assert.deepEqual(app.positions.app,{x:before.x+3*GRAPH_WIDTH/graphWidth,y:before.y});
+    card.dispatchEvent(new HarnessEvent('pointerup',{pointerId:7}));assert.equal(app.dragState,null);assert.equal(card.classList.contains('is-dragging'),false);
     app.selectLabScenario('lab-saml-metadata');app.selectLabScenario('lab-spa-api');universalSelect(app,'lab-scenario','core');assert.equal(app.labModel,null);for(const key of keys)assert.equal(app[key],saved[key],key+' returns to its prior core preference');assert.equal(app.refs['show-step-attributes'].checked,false);assert.equal(app.refs['lab-support'].hidden,true);assert.equal(app.refs.mode.disabled,false);
   }finally{universalUnmount(app);}
 });

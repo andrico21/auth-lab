@@ -8,7 +8,7 @@ import { buildAttributeTrace } from '../src/attribute-trace.js';
 import { applyJweProtection } from '../src/jwe-data.js';
 import { getCibaSteps, getCibaAttributeOverrides, getCibaExampleOverrides } from '../src/ciba-data.js';
 import { getDeviceSteps, getDeviceAttributeOverrides } from '../src/device-flow-data.js';
-import { installHarness } from './dom-harness.mjs';
+import { installHarness, HarnessEvent } from './dom-harness.mjs';
 
 // Expected authorities and CTAP members come from independent OIDC Discovery
 // §3 / Core §3.1.3.7 and CTAP 2.2 §§6.1.2, 6.2.2, 6.5.5 fixtures. Do not derive
@@ -163,8 +163,18 @@ const { AuthFlowStudio } = await import('../src/app.js');
 test('F05: active-step overlays and focused CTAP transfers show canonical members, and API construction has its own local overlay', () => {
   const app = new AuthFlowStudio(); harness.document.body.appendChild(app); app.connectedCallback();
   try {
+    const select = (id, value) => {
+      const control = app.querySelector('#' + id);
+      assert.ok(control, id + ' control exists');
+      assert.equal(control.disabled, false, id + ' is available for configuration');
+      control.value = value; control.dispatchEvent(new HarnessEvent('change'));
+    };
+    select('lab-scenario', 'core');
+    select('mode', 'passkey');
+    for (const [id, value] of [['architecture', 'web'], ['upstream', 'external'], ['authenticator', 'yubikey'], ['app-protocol', 'oidc'], ['broker-protocol', 'oidc'], ['oidc-flow', 'authorization-code']]) select(id, value);
     for (const mode of ['passkey', 'enrollment', 'fido-login', 'fido-enrollment']) {
-      app.labScenarioId = 'core'; app.mode = mode; app.architecture = 'web'; app.upstream = 'external'; app.authenticator = 'yubikey'; app.applicationProtocol = 'oidc'; app.brokerProtocol = 'oidc'; app.oidcFlow = 'authorization-code'; app.renderAll();
+      // Configuration changes retire the previous focused playback row before rendering.
+      select('mode', mode);
       const registration = mode.includes('enrollment');
       const response = app.steps.find(item => item.ctapOperation === 'return');
       const names = app.stepAttributeItems(response).map(item => item.name);

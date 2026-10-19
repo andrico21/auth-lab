@@ -56,6 +56,21 @@ Visibility and individual acquisitions do not reflow actors. Responsive mode cha
 
 The checked **Show step attributes** control continues to expose the complete names-only set in full, compact and external inventory modes. Placement avoids entire reserved actor/inventory composites, not just actor centers. If no panel-sized region is free, the same named group moves below the map; it is never silently hidden or replaced by the single current packet field. Keyboard-focused help is remeasured after its `:focus-within` hint appears, including nested F2 help, so the extra text does not push the panel past the viewport.
 
+## Observed verification
+
+Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The standalone is 2,239,078 bytes with SHA-256 `812d14edf6827996b8653d063cd85a83691ca35f1ddc79d30333037e7b3fa484`. The separately staged review HTML is byte-identical and was opened directly from its delivered `file://` path.
+
+| Observed check | Result |
+| --- | --- |
+| Semantic source gate | Passed: 141 choices, 921 normalized Core configurations, 86 required interactions and 28,016 equal-cursor comparisons |
+| Targeted UI regressions | 31 passed, 0 failed across placement, inventory and workspace tests |
+| Held-object native gate | Passed in source HTTP, standalone HTTP and standalone file: 141 choices and 36 dense layouts per mode, all three geometry modes, rendered targets/routes, complete step names, exact-object lifecycle/replay, actual 200%/400% browser zoom, touch, reduced motion, source/emitted state equality and no unexpected CSP violations/external application requests |
+| Focused native acceptance | All three loading modes preserve exact holding focus and canonical state through full/compact/external switching; internal-owner collapse recovers to `#show-internals`; nested F2 help stays inside the viewport |
+| Announcement cadence | In all three loading modes, one receipt-related live-region update across many actual animation frames; no per-frame inventory announcement |
+| Delivered-file smoke | Exact R1 replay through source rows 4/5/6 equals the full snapshot at event 6/complete; compact actors measure 82x132 and summary controls 44x44 rendered CSS pixels; the complete step names remain visible; no external application requests or unexpected CSP violations |
+
+The machine-readable reports retain exact identities, commands or scenario details and observed results. Superseded or cancelled attempts are not passing evidence. Screen-reader speech/comprehension is not established by the DOM mutation or keyboard checks.
+
 ## Reproducible checks
 
 Application build and tests remain Bun-only, with no application dependencies or install step:

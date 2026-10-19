@@ -352,7 +352,13 @@ try{
     check(mode+' application respects CSP and makes no external requests',{requestCount:requests.length});
     const fetchProbe=mode==='standalone-file'?'https://auth-lab-csp-probe.invalid/qa-prohibited-fetch':origin+'/qa-prohibited-fetch';
     const interceptionCountBeforeProbe=interceptions.length;
-    const csp=await page.evaluate(async fetchProbe=>{window.__qaNativeCspRecords=[];let evalBlocked=false;try{Function('return 42')();}catch{evalBlocked=true;}const script=document.createElement('script');script.textContent='window.__qaInlineExecuted=true';document.head.append(script);let fetchRejected=false;try{await fetch(fetchProbe);}catch{fetchRejected=true;}return {evalBlocked,inlineBlocked:!window.__qaInlineExecuted,fetchRejected};},fetchProbe);
+    const cspProbe=async fetchProbe=>{window.__qaNativeCspRecords=[];let evalBlocked=false;try{Function('return 42')();}catch{evalBlocked=true;}const script=document.createElement('script');script.textContent='window.__qaInlineExecuted=true';document.head.append(script);let fetchRejected=false;try{await fetch(fetchProbe);}catch{fetchRejected=true;}return {evalBlocked,inlineBlocked:!window.__qaInlineExecuted,fetchRejected};};
+    // DevTools defaults to bypassing unsafe-eval CSP inside evaluate calls.
+    // Disable that exception so this probes the page policy, not debugger privileges.
+    const probeSession=await context.newCDPSession(page);
+    const probeResult=await probeSession.send('Runtime.evaluate',{expression:'('+cspProbe.toString()+')('+JSON.stringify(fetchProbe)+')',awaitPromise:true,returnByValue:true,allowUnsafeEvalBlockedByCSP:false});
+    await probeSession.detach();assert.equal(probeResult.exceptionDetails,undefined,mode+' CSP probe executes in the protected page context');
+    const csp=probeResult.result.value;
     await page.waitForFunction(()=>window.__qaNativeCspRecords.length>=3);const violations=await page.evaluate(()=>window.__qaNativeCspRecords);
     assert.equal(csp.evalBlocked,true);assert.equal(csp.inlineBlocked,true);assert.equal(csp.fetchRejected,true);
     assert.ok(violations.some(v=>/^script-src/.test(v.directive)&&v.blocked==='eval'&&v.disposition==='enforce'),mode+' eval attributed to script-src');

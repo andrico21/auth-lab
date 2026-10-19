@@ -99,7 +99,7 @@ test('F19: unavailable actor or field help does not throw or focus stale hidden 
   }finally{dispose(app);}
 });
 
-test('F19/G01: collapsing a keyboard-owned internal component returns focus to its parent without changing protocol state',()=>{
+test('F19/G01: collapsing a keyboard-owned internal component returns focus to the initiating checkbox without changing protocol state',()=>{
   const app=mount();try{
     app.selectLabScenario('lab-ad-first-sign-in');app.selectStep(4,false);
     const toggle=app.querySelector('#show-internals');toggle.checked=true;toggle.dispatchEvent(new HarnessEvent('change'));
@@ -107,11 +107,13 @@ test('F19/G01: collapsing a keyboard-owned internal component returns focus to i
     const before=app.protocolSnapshot().state;
     toggle.checked=false;toggle.dispatchEvent(new HarnessEvent('change'));
     assert.equal(app.refs['actor-popup'].hidden,true);
-    assert.equal(document.activeElement,app.refs.actors.querySelector('[data-actor="adKdc"]'));
+    assert.equal(document.activeElement,toggle);
+    assert.equal(app.querySelector('#internals-control').hidden,false,'the initiating checkbox remains visible after collapse');
     assert.deepEqual(app.protocolSnapshot().state,before);
     // Direct card focus, without an open panel, follows the same collapse rule.
     toggle.checked=true;toggle.dispatchEvent(new HarnessEvent('change'));focus(app.refs.actors.querySelector('[data-actor="adTgs"]'));
     toggle.checked=false;toggle.dispatchEvent(new HarnessEvent('change'));
-    assert.equal(document.activeElement,app.refs.actors.querySelector('[data-actor="adKdc"]'));
+    assert.equal(document.activeElement,toggle);
+    assert.deepEqual(app.protocolSnapshot().state,before);
   }finally{dispose(app);}
 });
