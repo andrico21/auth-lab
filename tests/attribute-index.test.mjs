@@ -54,7 +54,7 @@ test('attribute search finds canonical names and distinguishes matching definiti
 test('PKCE selection shows birth, browser commitment, code binding and local server validation without exposing the verifier',()=>{
   const app=mount();try{
     app.refs['attribute-topics'].querySelector('[data-trace-topic="pkce"]').click();
-    assert.equal(app.attributeSelection,'pkce');assert.equal(app.player.kind,'attribute');assert.equal(app.player.status,'playing');
+    assert.equal(app.attributeSelection,'pkce');assert.equal(app.player.status,'playing');
     const queue=app.traceQueue;assert.ok(queue.length>5,'local processing is animated separately from transport');
     assert.deepEqual(ids(queue),['l02','l03','l04','l20','l23']);
     assert.equal(app.refs.timeline.querySelectorAll('[data-step]').length,queue.length);
@@ -112,11 +112,11 @@ test('a connection in attribute mode replays only the selected field and unrelat
     app.selectAttribute('codeChallenge',false);
     const local=app.refs.connections.querySelector('[data-pair="realmA--realmA"]');assert.ok(local);
     const expected=app.traceQueue.filter(step=>step.from==='realmA'&&step.to==='realmA');assert.ok(expected.length>1);
-    local.querySelector('.connection-hit').click();assert.equal(app.player.kind,'attribute-connection');assert.deepEqual(app.player.queue,expected);
+    local.querySelector('.connection-hit').click();assert.deepEqual(app.player.queue,expected);
     const packets=[];app.player.subscribe(event=>{if(event.type==='frame'&&event.visible)packets.push(event.packet.attributeId);});
     const unrelated=app.refs.connections.querySelector('[data-pair="realmA--realmB"]');assert.ok(unrelated);assert.equal(unrelated.classList.contains('is-outside-trace'),true);
     assert.equal(unrelated.querySelector('.connection-hit').getAttribute('tabindex'),'-1');
-    unrelated.querySelector('.connection-hit').click();assert.deepEqual(app.player.queue,expected);assert.equal(app.player.kind,'attribute-connection');
+    unrelated.querySelector('.connection-hit').click();assert.deepEqual(app.player.queue,expected);
     app.player.setSpeed(4);finish(app);assert.ok(packets.length);assert.ok(packets.every(id=>id==='codeChallenge'));
     assert.equal(app.attributeSelection,'codeChallenge');assert.equal(app.refs['attribute-index'].hidden,false);
   }finally{unmount(app);}
@@ -127,15 +127,15 @@ test('focused playback controls preserve the selected field and clearing focus r
     app.selectAttribute('pkce');assert.equal(app.player.status,'playing');clock.frame();clock.advance(500);
     app.refs.play.click();assert.equal(app.player.status,'paused');const elapsed=app.player.elapsed;clock.advance(500);assert.equal(app.player.elapsed,elapsed);
     app.refs.speed.value='2';app.refs.speed.dispatchEvent(new HarnessEvent('input'));assert.equal(app.player.speed,2);
-    app.refs.play.click();assert.equal(app.player.status,'playing');assert.equal(app.player.kind,'attribute');assert.equal(app.attributeSelection,'pkce');
-    app.refs.inspector.querySelector('[data-trace-step="2"]').click();assert.equal(app.traceIndex,2);assert.equal(app.player.kind,'attribute-step');assert.equal(app.player.queue.length,1);
+    app.refs.play.click();assert.equal(app.player.status,'playing');assert.equal(app.attributeSelection,'pkce');
+    app.refs.inspector.querySelector('[data-trace-step="2"]').click();assert.equal(app.traceIndex,2);assert.equal(app.player.queue.length,1);
     assert.equal(app.player.queue[0],app.traceQueue[2]);
     app.refs.timeline.querySelector('[data-step="1"]').click();assert.equal(app.traceIndex,1);assert.equal(app.player.queue[0],app.traceQueue[1]);
     app.querySelector('#next').click();assert.equal(app.traceIndex,2);app.querySelector('#previous').click();assert.equal(app.traceIndex,1);
     app.querySelector('#reset').click();assert.equal(app.player.status,'idle');assert.equal(clock.frames.size,0);assert.equal(app.attributeSelection,'pkce');assert.equal(app.traceIndex,0);
     app.clearAttribute();assert.equal(app.attributeSelection,null);assert.equal(app.player.status,'idle');assert.equal(app.refs['attribute-focus'].hidden,true);
     assert.equal(app.refs.timeline.querySelectorAll('[data-step]').length,app.steps.length);
-    app.refs.play.click();assert.equal(app.player.kind,'demo');assert.deepEqual(app.player.queue,app.steps);
+    app.refs.play.click();assert.deepEqual(app.player.queue,app.steps);
   }finally{unmount(app);}
 });
 
@@ -146,7 +146,7 @@ test('changing the journey or passkey device refreshes selected usages and cance
     assert.ok(app.traceQueue.length);assert.ok(app.traceQueue.every(step=>step.from==='yubikey'&&step.to==='yubikey'));
     select(app,'mode','password-totp');assert.equal(app.attributeSelection,'privateKey');assert.equal(app.traceQueue.length,0);assert.equal(app.player.status,'idle');
     assert.equal(app.refs.timeline.querySelectorAll('[data-step]').length,0);assert.ok(text(app.refs.inspector).match(/not used|no .*usage|no .*operation/i));
-    app.selectAttribute('otpCode');assert.equal(app.player.kind,'attribute');assert.ok(app.traceQueue.some(step=>step.from==='totp'&&step.to==='totp'));
+    app.selectAttribute('otpCode');assert.ok(app.traceQueue.some(step=>step.from==='totp'&&step.to==='totp'));
     assert.ok(app.traceQueue.some(step=>step.from==='browser'&&step.to==='realmB'));
     assert.ok(app.traceQueue.some(step=>step.from==='realmB'&&step.to==='realmB'&&step.traceKind==='verify'));
     assert.ok(app.traceQueue.every(step=>![step.from,step.to].includes('app')),'native application is not an OTP recipient');
@@ -236,7 +236,7 @@ test('the FIDO2 topic animates only application, browser, person and selected se
   const app=mount();try{
     select(app,'mode','fido-login');select(app,'authenticator','yubikey');
     const topic=app.refs['attribute-topics'].querySelector('[data-trace-topic="fido2"]');assert.ok(topic);topic.click();
-    assert.equal(app.attributeSelection,'fido2');assert.equal(app.player.kind,'attribute');assert.ok(app.traceQueue.length);
+    assert.equal(app.attributeSelection,'fido2');assert.ok(app.traceQueue.length);
     const allowed=new Set(['user','app','browser','yubikey']);
     assert.ok(app.traceQueue.every(step=>allowed.has(step.from)&&allowed.has(step.to)),'direct proof excludes both Keycloak realms and the unselected device');
     assert.ok(app.traceQueue.some(step=>step.from==='app'&&step.to==='browser'&&step.payload.some(field=>field.attributeId==='challengeLogin')));

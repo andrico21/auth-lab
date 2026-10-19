@@ -63,7 +63,7 @@ Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The standalone is 2,239,07
 | Observed check | Result |
 | --- | --- |
 | Semantic source gate | Passed: 141 choices, 921 normalized Core configurations, 86 required interactions and 28,016 equal-cursor comparisons |
-| Targeted UI regressions | 31 passed, 0 failed across placement, inventory and workspace tests |
+| Full source regression suite | 1,089 passed, 0 failed across all 72 test files, using four bounded workers and the recorded per-file Bun invocations; source identities stayed unchanged |
 | Held-object native gate | Passed in source HTTP, standalone HTTP and standalone file: 141 choices and 36 dense layouts per mode, all three geometry modes, rendered targets/routes, complete step names, exact-object lifecycle/replay, actual 200%/400% browser zoom, touch, reduced motion, source/emitted state equality and no unexpected CSP violations/external application requests |
 | Focused native acceptance | All three loading modes preserve exact holding focus and canonical state through full/compact/external switching; internal-owner collapse recovers to `#show-internals`; nested F2 help stays inside the viewport |
 | Announcement cadence | In all three loading modes, one receipt-related live-region update across many actual animation frames; no per-frame inventory announcement |
@@ -104,6 +104,8 @@ bun tools/verification/native-browser-acceptance.mjs
 
 Evidence is under `docs/verification/held-objects/`. `AUTH_LAB_HELD_EVIDENCE_DIR` redirects new held-object reports; `AUTH_LAB_QA_EVIDENCE_DIR` redirects the preserved broader gate. Reports bind exact source/artifact identities and distinguish observed native checks from the DOM harness. The source regression report lists the actual bounded per-file Bun invocations/results.
 
+The test DOM compiles selector structure once per lookup and stops `querySelector()` at the first document-order match. Matching nodes are not cached across mutations. This removes test-only traversal overhead without changing production rendering or pretending to establish browser geometry, CSP enforcement or screen-reader behavior. Playback tests assert selected queues, actual packets and control behavior rather than private dispatch-tag spellings.
+
 ## Acceptance evidence map
 
 | Acceptance | Primary behavior evidence |
@@ -120,6 +122,18 @@ Evidence is under `docs/verification/held-objects/`. `AUTH_LAB_HELD_EVIDENCE_DIR
 | A16-A18 | Equal-cursor differential checks, frame/speed invariance, context rejection and stale-selection clearing |
 | A19-A20 | Native full/compact/external geometry, keyboard/focus, touch, reduced motion and actual browser zoom |
 | A21 | Generated per-choice manifest, normalized Core matrix, all required interactions and rejecting universal gate |
+
+## Review package
+
+| File | Purpose |
+| --- | --- |
+| `auth-lab-held-objects.html` | Offline standalone application; identity recorded above |
+| `auth-lab-held-objects-code.zip` | Complete source, tests, build/workflows, documentation, current status/manifests and a small representative screenshot set; no Git database or QA dependencies |
+| `auth-lab-held-objects-verification.zip` | Complete generated verification directory, including native captures, logs and clearly named superseded attempts |
+| `held-objects-implementation.md` | This handoff, available without extracting the source archive |
+| `SHA256SUMS.txt` | Checksums for the standalone, both archives and handoff |
+
+Both archives use the `auth-lab-held-objects/` project root. Extracting the verification archive beside the source archive restores the full relative evidence tree. Raw report execution paths remain unchanged; packaged evidence uses the corresponding project-relative paths. Start the independent review with this handoff and the source ZIP, not by reading the minified standalone or entire coverage manifest into one context.
 
 ## Review and manual limits
 

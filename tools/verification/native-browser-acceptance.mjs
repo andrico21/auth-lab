@@ -110,6 +110,7 @@ async function scene(page,label,{samplePaths=false}={}){
 async function help(page,mode,{everyActor=true,fresh=false,screenshots=false}={}){
   const ids=await page.locator('#actors [data-actor]').evaluateAll(cards=>cards.filter(c=>!c.hidden&&c.getBoundingClientRect().width).map(c=>c.dataset.actor));
   const captureId=await page.evaluate(ids=>{const a=document.querySelector('auth-flow-studio');return ids.find(id=>a.scenarioOwnedActors?.[id]?.parentId)||ids[0];},ids);
+  const singleControlTabExit=[];
   for(const id of everyActor?ids:ids.slice(0,1)){
     const card=page.locator('#actors [data-actor="'+id+'"]');
     // A replaced actor can occupy the previous trigger's exact coordinates.
@@ -127,8 +128,15 @@ async function help(page,mode,{everyActor=true,fresh=false,screenshots=false}={}
     if(screenshots&&id===captureId)await screen(page,mode+'-'+id+'-participant-help',{fullPage:false});
     const multipleHelpControls=await page.locator('#actor-popup button,#actor-popup a[href]').count()>1;
     await page.keyboard.press('Tab');
-    assert.equal(await page.evaluate(()=>document.activeElement?.isConnected&&document.activeElement?.getBoundingClientRect().width>0),true,mode+' Tab reaches visible content');
-    if(multipleHelpControls)assert.equal(await page.evaluate(()=>document.querySelector('#actor-popup').contains(document.activeElement)),true,mode+' Tab explores controls inside participant help');
+    const tabFocus=await page.evaluate(()=>({inside:document.querySelector('#actor-popup').contains(document.activeElement),visible:!!document.activeElement?.isConnected&&document.activeElement.getBoundingClientRect().width>0}));
+    if(multipleHelpControls){assert.equal(tabFocus.visible,true,mode+' Tab reaches visible help content');assert.equal(tabFocus.inside,true,mode+' Tab explores controls inside participant help');}
+    else{
+      assert.equal(tabFocus.inside,false,mode+' single-control non-modal help does not trap Tab');singleControlTabExit.push(id);
+      // Tab left the panel, so its normal blur timer may already have closed it.
+      // Re-enter through the real trigger before testing an owned-panel Escape.
+      await card.focus();await page.keyboard.press('F2');
+      assert.equal(await page.evaluate(()=>document.querySelector('#actor-popup').contains(document.activeElement)),true,mode+' '+id+' F2 re-enters help after Tab exit');
+    }
     const field=page.locator('#actor-popup [data-attribute]').first();
     if(await field.count()){
       const fieldId=await field.getAttribute('data-attribute');await field.focus();await page.keyboard.press('F2');
@@ -140,9 +148,9 @@ async function help(page,mode,{everyActor=true,fresh=false,screenshots=false}={}
       assert.equal(await page.locator('#actor-popup').evaluate(node=>node.hidden),false,mode+' nested Escape retains participant help');
     }else await page.locator('#actor-popup [data-close]').focus();
     await page.keyboard.press('Escape');
-    assert.equal(await page.evaluate(()=>document.activeElement?.dataset.actor),id,mode+' Escape restores exact participant');
+    assert.equal(await page.evaluate(()=>document.activeElement?.dataset.actor),id,mode+' '+id+' Escape restores exact participant');
   }
-  check(mode+' hover/focus/F2/Tab/nested-help/Escape',{actors:everyActor?ids:ids.slice(0,1),fresh});
+  check(mode+' hover/focus/F2/Tab/nested-help/Escape',{actors:everyActor?ids:ids.slice(0,1),fresh,singleControlTabExit});
 }
 async function screen(page,name,{fullPage=true}={}){const safeName=name.replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,180),file=path.join(evidenceDir,'code1-correction-'+safeName+'.png');await page.screenshot({path:file,fullPage});evidence.screenshots.push(file);}
 async function protocolStudy(page,mode){
