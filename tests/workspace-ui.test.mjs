@@ -68,7 +68,7 @@ test('attribute focus reveals its internal owner; full, field and seek views sha
     const focused=app.protocolSnapshot(),sourceIndex=focused.sourceIndex;
     assert.deepEqual(focused.state,reconstructProtocolState(focused.model,sourceIndex));
     app.clearAttribute();app.selectStep(sourceIndex,false);assert.deepEqual(app.protocolSnapshot().state,focused.state);
-    const clock=app.studyClock(),fraction=(clock.offsets[sourceIndex]+1)/clock.total;
+    const clock=app.studyClock(),fraction=(clock.offsets[sourceIndex]+clock.durations[sourceIndex])/clock.total;
     app.seekPlayback(fraction);assert.equal(app.protocolSnapshot().sourceIndex,sourceIndex);assert.deepEqual(app.protocolSnapshot().state,focused.state);
   }finally{cleanup(app);}
 });

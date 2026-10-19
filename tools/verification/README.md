@@ -67,3 +67,27 @@ node tools/verification/code3-environment-bundle-check.mjs
 ```
 
 Build first. This independent tool evaluates the actual inline IIFE with only the DOM harness, then exercises twelve AD/Keycloak Apply cases: realm254/255/2048 and unqualified/matching/conflicting service principals. It checks rejection/error association and exact old context/model/playback preservation, corrected Apply without Reset, parsed name/realm values in full/focused Send and packet/state, and Reset/base immutability. The report records exact artifact bytes/hash and explicitly marks native browser acceptance false. These are handler/value checks, not browser layout, native keyboard or enforced CSP evidence.
+
+## Held objects source and native acceptance
+
+```sh
+bun run build
+bun test --isolate --timeout=900000 tests/held-object-*.test.mjs
+bun tools/verification/held-objects-check.mjs
+```
+
+The semantic gate uses the application's actual source-generation pipeline. It checks every picker choice and applicable normalized Core configuration, required interaction cases, exact identities, bounded temporary retention, state bindings and equal canonical full/link/object cursors. It emits `held-objects-source-status.json` and `held-objects-coverage-manifest.json`. Structural validity and universal coverage are separate gates; incomplete supported actor/cursor declarations fail the latter.
+
+```sh
+PLAYWRIGHT_MODULE=/absolute/path/to/playwright-core/index.mjs \
+CHROMIUM_EXECUTABLE=/absolute/path/to/chrome \
+bun tools/verification/held-objects-browser-check.mjs
+```
+
+Playwright and Chromium are optional external QA tooling, not application dependencies. The runner never downloads them. It creates and removes its own isolated persistent Chrome profile so the real browser settings page is available for 200%/400% default browser zoom. Incognito contexts cannot open that page. It verifies the resulting CSS layout viewport and `visualViewport.scale`, rather than substituting CSS zoom, pinch scaling or viewport emulation.
+
+Native checks cover modular source HTTP, standalone HTTP and standalone `file://`; initial/final inventories for every choice; dense folded/expanded full/compact/external layouts; actor/dock routes; final rendered target sizes; exact-object keyboard lifecycle; touch; reduced motion; source/emitted state equality; and no external application requests or unexpected CSP violations.
+
+New reports/screenshots default to `docs/verification/held-objects/`; set `AUTH_LAB_HELD_EVIDENCE_DIR` to redirect them. The preserved broader runner uses `AUTH_LAB_QA_EVIDENCE_DIR`. Its accepted long-realm fixture is 244 characters; the separate 364-character rejection/recovery case retains G01-A's same-task atomicity probe. Fresh hover tests explicitly move outside the actor before pointer entry, rather than depending on a stationary pointer after DOM replacement.
+
+Read the [held-objects handoff](../../docs/held-objects-implementation.md) and final machine-readable reports for exact observed results and identities. Superseded attempts are kept separately and are not passing evidence. Real screen-reader speech/comprehension and cross-engine/live-service interoperability are not inferred from these gates.

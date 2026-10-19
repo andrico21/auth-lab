@@ -16,6 +16,8 @@ export class FlowPlayer {
     this.lastTime = null;
     this.handle = null;
     this.kind = 'demo';
+    this.reducedMotion = false;
+    this.timer = null;
   }
   subscribe(listener) { this.listeners.add(listener); return () => this.listeners.delete(listener); }
   emit(type, extra = {}) { this.listeners.forEach(fn => fn({ type, ...this.snapshot(), ...extra })); }
@@ -62,7 +64,22 @@ export class FlowPlayer {
     this.emit('step'); this.emit('state'); this.emit('frame');
     return true;
   }
-  schedule() { if (this.status === 'playing' && this.handle === null) this.handle = this.requestFrame(time => this.tick(time)); }
+  setReducedMotion(enabled) {
+    const next=!!enabled;
+    if(next===this.reducedMotion)return;
+    this.cancel();this.reducedMotion=next;this.lastTime=null;this.schedule();
+  }
+  schedule() {
+    if(this.status!=='playing'||this.handle!==null||this.timer!==null)return;
+    if(this.reducedMotion){this.timer=setTimeout(()=>this.advanceReducedMotion(),600/this.speed);return;}
+    this.handle=this.requestFrame(time=>this.tick(time));
+  }
+  advanceReducedMotion() {
+    this.timer=null;if(this.status!=='playing')return;
+    this.elapsed=stepDuration(this.queue[this.position]);this.emit('stepcomplete');
+    if(this.position+1>=this.queue.length){this.status='complete';this.emit('complete');this.emit('state');return;}
+    this.position+=1;this.elapsed=0;this.emit('step');this.emit('frame');this.schedule();
+  }
   tick(time) {
     this.handle = null;
     if (this.status !== 'playing') return;
@@ -96,7 +113,7 @@ export class FlowPlayer {
     if (this.speed === 0) this.pause();
     this.emit('speed'); return true;
   }
-  cancel() { if (this.handle !== null) this.cancelFrame(this.handle); this.handle = null; }
+  cancel() { if(this.timer!==null){clearTimeout(this.timer);this.timer=null;}if (this.handle !== null) this.cancelFrame(this.handle); this.handle = null; }
   stop(notify = true) { this.cancel(); this.status = 'idle'; this.queue = []; this.position = 0; this.elapsed = 0; this.lastTime = null; if (notify) this.emit('state'); }
 }
 

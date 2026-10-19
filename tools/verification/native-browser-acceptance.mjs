@@ -93,6 +93,10 @@ async function help(page,mode,{everyActor=true,fresh=false,screenshots=false}={}
   const captureId=await page.evaluate(ids=>{const a=document.querySelector('auth-flow-studio');return ids.find(id=>a.scenarioOwnedActors?.[id]?.parentId)||ids[0];},ids);
   for(const id of everyActor?ids:ids.slice(0,1)){
     const card=page.locator('#actors [data-actor="'+id+'"]');
+    // A replaced actor can occupy the previous trigger's exact coordinates.
+    // Establish a real pointer entry after hiding help; stationary hover is not
+    // a new mouseover event and must not be the gate's implicit precondition.
+    await page.mouse.move(0,0);
     await page.evaluate(fresh=>{const a=document.querySelector('auth-flow-studio');a.hidePopups();document.activeElement?.blur();if(fresh)a.refs['actor-popup'].innerHTML='';},fresh);
     await card.hover();await overlayBounds(page,'#actor-popup',mode+' '+id+' hover help');
     const title=await page.locator('#actor-popup .popup-title').textContent();
@@ -144,7 +148,7 @@ async function protocolStudy(page,mode){
   await page.evaluate(index=>{const a=document.querySelector('auth-flow-studio');a.clearAttribute();a.selectStep(index,false);},focused.sourceIndex);
   assert.deepEqual(await page.evaluate(()=>document.querySelector('auth-flow-studio').protocolSnapshot().state),focused.state,mode+' focused replay and full source prefix agree');
   assert.equal(await page.evaluate(()=>document.activeElement?.dataset.indexAttribute),'forestTgsRep',mode+' full source view restores focused index field');
-  await page.evaluate(index=>{const a=document.querySelector('auth-flow-studio'),clock=a.studyClock();a.seekPlayback((clock.offsets[index]+1)/clock.total);},focused.sourceIndex);
+  await page.evaluate(index=>{const a=document.querySelector('auth-flow-studio'),clock=a.studyClock();a.seekPlayback((clock.offsets[index]+clock.durations[index])/clock.total);},focused.sourceIndex);
   assert.deepEqual(await page.evaluate(()=>document.querySelector('auth-flow-studio').protocolSnapshot().state),focused.state,mode+' seeking reconstructs same state');
   assert.equal(await page.evaluate(()=>document.activeElement?.dataset.indexAttribute),'forestTgsRep',mode+' seeking retains focused index field');
   const edge=page.locator('#connections .connection-hit').first();await edge.focus();await page.keyboard.press('Enter');
@@ -152,7 +156,7 @@ async function protocolStudy(page,mode){
   assert.equal(await page.evaluate(()=>document.activeElement?.matches('.connection-hit')),true,mode+' keyboard connection replay retains link focus');
   const connectionPrefix=await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio'),s=a.protocolSnapshot();return {state:s.state,index:s.sourceIndex,queue:a.player.queue.map(step=>step.id)};});
   assert.ok(connectionPrefix.queue.length,mode+' connection selects ordered exchanges');
-  await page.evaluate(index=>document.querySelector('auth-flow-studio').selectStep(index,false),connectionPrefix.index);
+  await page.evaluate(index=>{const a=document.querySelector('auth-flow-studio');if(index<0)a.querySelector('#reset').click();else a.selectStep(index,false);},connectionPrefix.index);
   assert.deepEqual(await page.evaluate(()=>document.querySelector('auth-flow-studio').protocolSnapshot().state),connectionPrefix.state,mode+' connection replay uses complete source prefix');
   await page.locator('#move-participants').check();
   const moveId=await page.locator('#actors [data-actor]').first().getAttribute('data-actor');
@@ -164,19 +168,114 @@ async function protocolStudy(page,mode){
   await page.locator('#move-participants').uncheck();await scene(page,mode+' moved forest',{samplePaths:true});
   check(mode+' filtering, collapse, focused replay, seek and keyboard movement preserve protocol semantics');
 }
+async function oversizedRealm(page,mode,id,acceptedRealm){
+  const oversized=('LONGCONTEXT.'.repeat(28))+'OPERATOR-MEMORY-ONLY.INVALID';
+  assert.equal(acceptedRealm.length,244);assert.equal(oversized.length,364);
+  const label=mode+' '+id+' oversized realm';
+  const setup=await page.evaluate(acceptedRealm=>{
+    const a=document.querySelector('auth-flow-studio');
+    // Prepare a real focused Send with a visible packet. The atomicity probe
+    // below resumes it and invokes Apply between snapshots in one JS task,
+    // so a scheduled browser frame cannot race with the comparison.
+    const attributeIds=[...new Set(a.steps.flatMap(step=>step.attributeOperations||[]).filter(operation=>operation.kind==='send').map(operation=>operation.attributeId))];
+    let sendIndex=-1;
+    // A packet's first display field may be descriptive rather than sent. Use
+    // declared Send operations and confirm an actual transferable trace moment.
+    for(const attributeId of attributeIds){
+      a.selectAttribute(attributeId,false);
+      sendIndex=a.traceQueue.findIndex(step=>step.traceKind==='send'&&step.from!==step.to&&step.payload.length);
+      if(sendIndex>=0)break;
+    }
+    if(sendIndex<0)throw new Error('The selected field needs a focused Send');
+    a.selectStep(sendIndex,false);a.player.seek([a.currentStep],.2,'attribute-step');
+    const capture=()=>{
+      const protocol=a.protocolSnapshot();
+      // Copy data now, rather than returning shared objects that a faulty
+      // handler could mutate in place before Playwright serializes the result.
+      return JSON.parse(JSON.stringify({applied:a.runtimeEnvironment.applied,revision:a.runtimeEnvironment.revision,active:a.runtimeEnvironment.active,
+        model:{id:a.labModel.id,definitions:a.labModel.definitions(),initialState:a.labModel.initialState,steps:a.labModel.steps(),actors:a.labModel.actors(),protocolValues:a.labModel.protocolValues},
+        index:a.index,traceIndex:a.traceIndex,visibleIndex:a.visibleIndex,attributeSelection:a.attributeSelection,
+        visited:[...a.visited],inspection:a.inspection,player:a.player.snapshot(),handle:a.player.handle,lastTime:a.player.lastTime,
+        queue:a.player.queue,traceQueue:a.traceQueue,steps:a.steps,
+        sourceIndex:protocol.sourceIndex,state:protocol.state,instances:protocol.instances,
+        packet:{hidden:a.refs.packet.hidden,name:a.refs['packet-name'].textContent,value:a.refs['packet-value'].textContent,count:a.refs['packet-count'].textContent,identity:a.packetIdentity},
+        environmentStatus:a.refs['environment-status'].textContent,status:a.refs.status.textContent}));
+    };
+    const references={applied:a.runtimeEnvironment.applied,model:a.labModel,memo:a.contextModelMemo,steps:a.steps,
+      traceQueue:a.traceQueue,queue:a.player.queue,visited:a.visited,inspection:a.inspection,currentStep:a.currentStep};
+    // Reference identity has to be checked inside this browser realm; returned
+    // Playwright objects are copies. Keep this probe state outside the app.
+    window.__qaNativeRejectedApply={references,capture};
+    return {snapshot:capture(),acceptedRealm:a.runtimeEnvironment.applied.kerberosRealm,expectedRealm:acceptedRealm};
+  },acceptedRealm);
+  assert.equal(setup.acceptedRealm,setup.expectedRealm,label+' begins with an active accepted realm');
+  assert.equal(setup.snapshot.player.status,'paused');assert.ok(setup.snapshot.queue.length>0);
+  assert.ok(setup.snapshot.traceQueue.length>0);assert.ok(setup.snapshot.attributeSelection);
+  assert.equal(setup.snapshot.player.visible,true);assert.equal(setup.snapshot.packet.hidden,false);
+  try{
+    const field=page.locator('[data-environment-field="kerberosRealm"]'),errors=page.locator('#environment-errors');
+    await field.fill(oversized);
+    const rejected=await page.evaluate(()=>{
+      const a=document.querySelector('auth-flow-studio'),held=window.__qaNativeRejectedApply,r=held.references;
+      a.player.setSpeed(.01);a.player.resume();
+      const before=held.capture();
+      // HTMLElement.click dispatches the actual installed Apply handler. Both
+      // snapshots share this JS task: RAF may run only after it returns.
+      document.querySelector('#environment-apply').click();
+      return {before,sameReferences:{applied:a.runtimeEnvironment.applied===r.applied,model:a.labModel===r.model,
+        memo:a.contextModelMemo===r.memo,steps:a.steps===r.steps,traceQueue:a.traceQueue===r.traceQueue,
+        queue:a.player.queue===r.queue,visited:a.visited===r.visited,inspection:a.inspection===r.inspection,currentStep:a.currentStep===r.currentStep},after:held.capture()};
+    });
+    assert.equal(rejected.before.player.status,'playing',label+' rejects while playback is running');
+    assert.equal(rejected.before.player.visible,true);assert.equal(rejected.before.packet.hidden,false);
+    assert.equal(await errors.isVisible(),true,label+' shows a visible recoverable error');
+    assert.equal(await errors.getAttribute('role'),'alert');assert.match(await errors.textContent(),/254/);
+    assert.equal(await field.getAttribute('aria-invalid'),'true');
+    assert.equal(await field.getAttribute('aria-errormessage'),'environment-errors');
+    assert.ok((await field.getAttribute('aria-describedby')||'').split(/\s+/).includes('environment-errors'));
+    for(const [name,same]of Object.entries(rejected.sameReferences))assert.equal(same,true,label+' preserves exact '+name+' identity');
+    assert.deepEqual(rejected.after,rejected.before,label+' preserves committed context, model, protocol state, queue, clock, indices, field selection and packet');
+    // Recovery uses the same Apply control; Reset is deliberately never invoked.
+    await field.fill(acceptedRealm);await page.locator('#environment-apply').click();
+    assert.equal(await errors.evaluate(node=>node.hidden),true,label+' corrected Apply clears the error');
+    assert.equal(await errors.textContent(),'');assert.equal(await field.getAttribute('aria-invalid'),'false');
+    assert.equal(await field.getAttribute('aria-errormessage'),null);
+    const recovered=await page.evaluate(()=>{
+      const a=document.querySelector('auth-flow-studio'),r=window.__qaNativeRejectedApply.references;
+      return {applied:a.runtimeEnvironment.applied,revision:a.runtimeEnvironment.revision,active:a.runtimeEnvironment.active,
+        freshContext:a.runtimeEnvironment.applied!==r.applied,freshModel:a.labModel!==r.model,
+        playerStatus:a.player.status,queueLength:a.player.queue.length,attributeSelection:a.attributeSelection,
+        traceIndex:a.traceIndex,visibleIndex:a.visibleIndex,index:a.index,firstSourceIndex:a.traceQueue[0]?.sourceIndex,
+        currentStepIsFirstTrace:a.currentStep===a.traceQueue[0]};
+    });
+    assert.deepEqual(recovered.applied,rejected.before.applied,label+' correction retains the complete accepted context');
+    assert.equal(recovered.revision,rejected.before.revision+1,label+' correction commits exactly once');
+    assert.equal(recovered.active,true);assert.equal(recovered.freshContext,true);assert.equal(recovered.freshModel,true);
+    assert.equal(recovered.playerStatus,'idle');assert.equal(recovered.queueLength,0);
+    assert.equal(recovered.attributeSelection,rejected.before.attributeSelection,label+' correction retains the selected field');
+    assert.equal(recovered.traceIndex,0);assert.equal(recovered.visibleIndex,0);
+    assert.equal(recovered.index,recovered.firstSourceIndex,label+' correction restarts at the first visible focused source moment');
+    assert.equal(recovered.currentStepIsFirstTrace,true);
+    check(label+' rejects atomically and corrects without Reset',{acceptedRealmLength:acceptedRealm.length,rejectedRealmLength:oversized.length,
+      associatedVisibleError:true,exactReferencesPreserved:rejected.sameReferences,playbackStatusDuringRejection:rejected.before.player.status,
+      playbackAndProtocolUnchanged:true,correctedWithoutReset:true,focusedReplayRestartsAtFirstMoment:true});
+    await page.evaluate(()=>document.querySelector('auth-flow-studio').clearAttribute());
+  }finally{await page.evaluate(()=>{delete window.__qaNativeRejectedApply;});}
+}
 async function longContext(page,mode){
   for(const id of ['lab-ssh-cert-success','lab-ad-first-sign-in','lab-ad-pkinit-success','lab-ad-fast-as-success']){
     await choose(page,id);
     await page.locator('#environment-panel').evaluate(node=>node.open=true);
     await page.locator('#environment-fields details').evaluateAll(nodes=>nodes.forEach(node=>node.open=true));
     const fields=await page.locator('[data-environment-field]').evaluateAll(nodes=>nodes.map(node=>node.dataset.environmentField));
-    const samples={caURL:'https://operator-memory-only.invalid/'+('ca-path-'.repeat(110)),aIssuerURL:'https://operator-memory-only.invalid/'+('issuer-path-'.repeat(90)),sshHost:('long-context-'.repeat(12))+'operator-memory-only.invalid',kerberosRealm:('LONGCONTEXT.'.repeat(28))+'OPERATOR-MEMORY-ONLY.INVALID',servicePrincipal:'HTTP/'+('long-context-'.repeat(12))+'operator-memory-only.invalid',appURL:'https://operator-memory-only.invalid/'+('application-path-'.repeat(70))};
+    const samples={caURL:'https://operator-memory-only.invalid/'+('ca-path-'.repeat(110)),aIssuerURL:'https://operator-memory-only.invalid/'+('issuer-path-'.repeat(90)),sshHost:('long-context-'.repeat(12))+'operator-memory-only.invalid',kerberosRealm:('LONGCONTEXT.'.repeat(18))+'OPERATOR-MEMORY-ONLY.INVALID',servicePrincipal:'HTTP/'+('long-context-'.repeat(12))+'operator-memory-only.invalid',appURL:'https://operator-memory-only.invalid/'+('application-path-'.repeat(70))};
     const applied=[];
     for(const [field,value]of Object.entries(samples))if(fields.includes(field)){await page.locator('[data-environment-field="'+field+'"]').fill(value);applied.push({field,value});}
     assert.ok(applied.length,mode+' '+id+' offers concrete runtime context');
     await page.locator('#environment-apply').click();
     assert.equal(await page.locator('#environment-errors').evaluate(node=>node.hidden),true,mode+' long context validates');
     assert.equal(await page.evaluate(()=>document.querySelector('auth-flow-studio').runtimeEnvironment.active),true);
+    if(fields.includes('kerberosRealm'))await oversizedRealm(page,mode,id,samples.kerberosRealm);
     for(const {value}of applied)assert.equal(await page.locator('#scenario-environment').evaluate((node,value)=>node.textContent.includes(value),value),true,mode+' full address is readable below the diagram');
     await scene(page,mode+' '+id+' long context');
     assert.equal(await page.evaluate(()=>{if(location.href.includes('operator-memory-only'))return true;for(const name of ['localStorage','sessionStorage']){try{if(window[name].length>0)return true;}catch{/* Opaque file origin can prohibit storage access. */}}return false;}),false,mode+' runtime values never enter storage/history');

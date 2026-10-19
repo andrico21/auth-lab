@@ -22,7 +22,8 @@ import { LEARNING_PRESETS, PROVIDER_PROFILES, getLearningPreset, getProviderProf
 import { RuntimeEnvironment, RUNTIME_ENVIRONMENT_FIELDS, RUNTIME_PROVIDER_FIELDS } from './runtime-environment.js';
 import { STUDIO_WORKSPACES, workspaceOf, studioRoute, parseStudioRoute, visibleActorId, scenarioPositions } from './workspaces.js';
 import { scenarioContextRows, projectScenarioContext, scenarioBindingValue } from './scenario-context.js';
-import { reconstructProtocolState, buildProtocolInstances } from './protocol-state.js';
+import { buildProtocolInstances } from './protocol-state.js';
+import { HeldObjectView } from './held-object-view.js';
 
 Object.assign(ATTRIBUTES,VARIANT_ATTRIBUTES,FIDO_ATTRIBUTES);
 Object.assign(ATTRIBUTES,SAML_ATTRIBUTES,JWE_ATTRIBUTES);
@@ -85,12 +86,13 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs={};
     ['studio','graph','connections','actors','packet','packet-name','packet-value','packet-count','timeline','inspector','inspector-heading','progress','story','play','speed','speed-label','seek','seek-position','mode','authenticator','architecture','upstream','status','actor-popup','attribute-popup','toast','attribute-index','attribute-search','attribute-index-list','attribute-topics','attribute-focus','attribute-index-meta','attribute-index-empty','app-protocol','broker-protocol','saml-binding','saml-initiation','token-protection','assertion-protection','protocol-summary','step-attributes','step-attributes-tether','show-step-attributes','oidc-flow','lab-scenario','lab-catalog','lab-search','lab-cards','lab-support','move-participants','provider-settings','provider-profile','provider-note','environment-fields','environment-errors','environment-status'].forEach(id=>this.refs[id]=this.querySelector('#'+id));
     this.refs['show-step-attributes'].checked=this.showStepAttributes;
+    this.heldView=new HeldObjectView(this);
     const presetIds=new Set(LEARNING_PRESETS.map(preset=>preset.id));
     const pickerOptions=[...LEARNING_PRESETS.map(preset=>({id:preset.id,title:preset.title,category:preset.category,summary:preset.summary,searchText:[preset.title,preset.summary,preset.id,preset.config.applicationProtocol,preset.config.oidcFlow,...(LAB_MODELS[preset.modelId]?.ids||[]).map(id=>[ATTRIBUTES[id]?.name,ATTRIBUTES[id]?.standard].join(' ')),LAB_MODELS[preset.modelId]?.category||'',LAB_MODELS[preset.modelId]?.status||'',preset.id==='basic-keycloak'?'ordinary standard default oauth logon login pkce':preset.id==='corporate-external'?'entra microsoft okta amazon cognito aws federation corporate':'' ].join(' ')})),{id:'core',title:'Core lab · configurable sign-in, SAML, FIDO and grants',category:'Custom configuration',summary:'Explore your own combination using Advanced configuration.',searchText:'core configurable sign-in login keycloak native localhost web oidc oauth saml fido webauthn passkey yubikey windows hello password totp mfa authorization code pkce service account device ciba token exchange'},...LAB_SCENARIOS.filter(model=>!presetIds.has(model.id)).map(model=>({id:model.id,title:model.title,category:model.category,summary:model.summary,searchText:[model.title,model.summary,model.category,model.status,model.protocol||'oidc',model.workspace,model.family,model.keywords,model.lesson,model.evidenceLabel,...model.ids.map(id=>[ATTRIBUTES[id]?.name,ATTRIBUTES[id]?.standard].join(' '))].join(' ')}))];
     this.scenarioPicker=new ScenarioPicker(this.querySelector('#lab-scenario-picker'),pickerOptions,id=>this.selectLabScenario(id),this);
     this.bind(); this.renderAll();this.openRoute();
   }
-  disconnectedCallback() { this.player?.stop(false); this.unsubscribe?.();this.scenarioPicker?.destroy();window.removeEventListener('hashchange',this.routeListener);window.removeEventListener('pagehide',this.environmentPageHide);window.removeEventListener('pageshow',this.environmentPageShow); clearTimeout(this.closeTimer); clearTimeout(this.attributeTimer); }
+  disconnectedCallback() { this.heldView?.destroy();this.player?.stop(false); this.unsubscribe?.();this.scenarioPicker?.destroy();window.removeEventListener('hashchange',this.routeListener);window.removeEventListener('pagehide',this.environmentPageHide);window.removeEventListener('pageshow',this.environmentPageShow); clearTimeout(this.closeTimer); clearTimeout(this.attributeTimer); }
   get learningPreset() {return getLearningPreset(this.labScenarioId);}
   get baseLabModel() {return LAB_MODELS[this.learningPreset?.modelId||this.labScenarioId]||null;}
   get labModel() {
@@ -140,14 +142,17 @@ export class AuthFlowStudio extends HTMLElement {
     return applyJweProtection(steps,{protection:config.tokenProtection||this.tokenProtection,authenticator:config.authenticator});
   }
   get steps() { return this.activeSteps||this.journeyFor(); }
-  get visibleSteps() {return this.attributeSelection?this.traceQueue:this.steps;}
-  get visibleIndex() {return this.attributeSelection?this.traceIndex:this.index;}
+  get hasTrace() {return !!(this.attributeSelection||this.objectTraceSelection);}
+  get visibleSteps() {return this.hasTrace?this.traceQueue:this.steps;}
+  get visibleIndex() {return this.hasTrace?this.traceIndex:this.index;}
   get currentStep() { return this.visibleSteps[this.visibleIndex]; }
   get layoutKey() {return this.labModel?.id||(this.learningPreset?this.learningPreset.id:'core-'+this.architecture);}
-  get positions() {
-    const positions={...(this.scenarioOwnedActors?scenarioPositions(this.labModel,this.steps,this.scenarioOwnedActors,this.showInternals):getPositions(this.architecture)),...(this.customLayouts[this.layoutKey]||{})};
+  get positions() {return this.heldGeometry?.positions||this.basePositions;}
+  get basePositions() {
+    const layoutSteps=this.hasTrace?[...this.steps,...this.traceQueue]:this.steps;
+    const positions={...(this.scenarioOwnedActors?scenarioPositions(this.labModel,layoutSteps,this.scenarioOwnedActors,this.showInternals):getPositions(this.architecture)),...(this.customLayouts[this.layoutKey]||{})};
     if(!this.labModel&&!this.learningPreset)return positions;
-    const ids=new Set(this.steps.flatMap(s=>[this.nodeId(s.from),this.nodeId(s.to),...(s.attributeOperations||[]).map(op=>this.nodeId(op.actorId))]));
+    const ids=new Set(layoutSteps.flatMap(s=>[this.nodeId(s.from),this.nodeId(s.to),...(s.attributeOperations||[]).map(op=>this.nodeId(op.actorId))]));
     return Object.fromEntries(Object.entries(positions).filter(([id])=>ids.has(id)));
   }
   actor(id) {
@@ -230,6 +235,7 @@ export class AuthFlowStudio extends HTMLElement {
         <div class="speed-control"><label for="speed">Playback speed <output class="speed-value" id="speed-label">1×</output></label><input id="speed" type="range" min="0" max="4" step="0.01" value="1" aria-label="Playback speed" title="0 pauses; speeds start at 0.01×. Play restores the last non-zero speed."></div>
         <label class="overlay-toggle"><input type="checkbox" id="show-step-attributes" checked><span>Show step attributes</span></label>
         <label class="overlay-toggle" id="internals-control" hidden><input type="checkbox" id="show-internals"><span>Show component internals</span></label>
+        <label class="overlay-toggle"><input type="checkbox" id="show-held-objects" checked><span>Show held objects</span></label>
         <div class="seek-control"><label for="seek"><span>Explore the timeline</span><output id="seek-position">Step 1</output></label><input id="seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek through the current journey" aria-describedby="seek-hint"><span id="seek-hint">Drag to inspect any moment · playback stays paused · press Play to continue</span></div>
         </div>
         <section class="map-panel" aria-label="Interactive authentication map">
@@ -240,10 +246,12 @@ export class AuthFlowStudio extends HTMLElement {
             <div class="zone-label device">${uiIcon('info')}<span>YOUR DEVICE</span></div><div class="zone-label cloud">IDENTITY SERVICES</div>
             <svg class="graph-connections" id="connections" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-label="Connections between authentication participants"><defs>${Object.keys(channelLabels).map(c=>`<marker id="arrow-${c}" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto-start-reverse" viewBox="0 0 7 7"><path d="M0 0 7 3.5 0 7" class="arrow-fill ${c}"/></marker>`).join('')}</defs><g id="connection-paths"></g></svg>
             <div id="actors"></div>
+            <div id="held-docks" class="held-docks"></div>
             <svg class="step-attributes-tether" id="step-attributes-tether" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-hidden="true" hidden><path/></svg>
             <div class="step-attributes" id="step-attributes" role="group" aria-label="Attribute names in the active step" hidden></div>
             <div class="packet-position" id="packet" hidden><div class="packet-chip"><span class="packet-orb"></span><div><span class="packet-name" id="packet-name"></span><code class="packet-value" id="packet-value"></code></div><span class="packet-count" id="packet-count"></span></div></div>
           </div></div>
+          <div id="held-active-message" class="held-active-message" aria-label="Active message" hidden></div>
           <section class="lifetime-strip" id="lifetime-strip" aria-label="Four independent credential and session lifetimes" hidden></section>
           <div class="scenario-environment" id="scenario-environment" hidden></div>
           <div class="map-footer"><div class="legend">${Object.entries(channelLabels).map(([key,label])=>`<span class="legend-item"><span class="legend-dot" data-channel="${key}"></span>${label}</span>`).join('')}</div><p class="map-hint">Hover or focus a participant for help. F2 moves keyboard focus inside the help panel; Tab explores its controls, Escape returns. Click a connection to replay its exchanges.</p></div>
@@ -253,13 +261,16 @@ export class AuthFlowStudio extends HTMLElement {
         <div class="study-sidebar"><aside class="attribute-index-panel" id="attribute-index" aria-label="Separate attribute index"><div class="attribute-index-heading"><div><h2>Attribute index</h2><p>Click a field to animate its path. Hover or focus it for help. F2 moves focus inside that help panel; Tab explores, Escape returns.</p></div><button class="icon-button" id="attribute-index-toggle" aria-label="Hide attribute index">${uiIcon('close')}</button></div><label class="sr-only" for="attribute-search">Search attributes, PKCE or purpose</label><input class="glossary-search" id="attribute-search" type="search" placeholder="Search client_id, PKCE, secret…"><div class="attribute-topic-list" id="attribute-topics"></div><p class="attribute-index-meta" id="attribute-index-meta"></p><div class="attribute-index-list" id="attribute-index-list"></div><p id="attribute-index-empty" hidden>No matching attributes.</p></aside>
         <aside class="inspector-panel" aria-label="Participant and exchange inspector"><div class="inspector-top"><span id="inspector-heading">EXCHANGE INSPECTOR</span><button class="icon-button" id="follow" aria-label="Follow the current demo step" title="Follow the current step">${uiIcon('arrow')}</button></div><div class="inspector-content" id="inspector"></div></aside></div>
       </div>
+      <section id="held-objects" class="held-objects" aria-label="Current logical-owner inventory"></section>
+      <section id="held-inspector" class="held-inspector" aria-label="Exact held object inspector" hidden></section>
       <section class="timeline-panel" aria-label="Ordered journey steps"><div class="timeline-head"><div><span class="eyebrow">THE JOURNEY</span><h2>One exchange at a time</h2></div><div class="timeline-controls"><button class="icon-button" id="previous" aria-label="Previous step">${uiIcon('previous')}</button><button class="icon-button" id="next" aria-label="Next step">${uiIcon('next')}</button></div></div><div class="timeline-strip" id="timeline"></div></section>
-      <details class="protocol-state-panel" id="protocol-state-panel" hidden><summary><strong>Objects, credentials & protocol state</strong><span id="protocol-state-summary"></span></summary><p class="environment-note">State after the selected source event. Field and connection replay include earlier events. Playback speed and card movement do not change protocol time. Values are symbolic examples; private keys and opaque ciphertext are not decrypted by this lab.</p><div id="protocol-instance-list"></div><pre id="protocol-state-value"></pre></details>
+      <details class="protocol-state-panel" id="protocol-state-panel" hidden><summary><strong>Current protocol state and object history</strong><span id="protocol-state-summary"></span></summary><p class="environment-note">Current state uses the same authored cursor as held objects. The cumulative field-instance ledger below is history, not current possession. Playback speed and card movement do not change protocol time. Values are symbolic examples; private keys and opaque ciphertext are not decrypted by this lab.</p><h3>Field-instance history</h3><div id="protocol-instance-list"></div><h3>Current protocol state</h3><pre id="protocol-state-value"></pre></details>
       <details class="coverage-panel"><summary><strong>SPA, API & coverage</strong><span>Core controls + ${LAB_SCENARIOS.length} extended scenarios</span></summary><div class="coverage-content"><div><h3>SPA and API are different roles</h3><p>A <strong>Single Page Application (SPA)</strong> runs in the browser. A pure browser OAuth client cannot keep a client secret. The SPA walkthrough shows its HTTPS callback, Code + PKCE, token handling, CORS and a separate resource API.</p><p>An <strong>API</strong> checks the access token’s trust, intended audience, lifetime and permissions. API introspection, 401/403, JWKS rotation, certificate binding and DPoP are distinct scenarios. An ID token is the client’s login result, not an API credential.</p><p>A <strong>Backend for Frontend (BFF)</strong> retains credentials and tokens on the server and gives the browser an opaque session cookie. The BFF → API scenario shows this boundary.</p><h3>How to use the lab</h3><p>Choose a scenario above or browse the searchable library. Play the entire process, click a connection, or select one attribute. Enable Show step attributes to keep the message’s complete names beside its active link. Enable Move participants to drag cards or use arrow keys; Reset layout restores their positions.</p></div><div><h3>Animated coverage</h3><ul><li>Core configurable OIDC/SAML sign-in: one realm, two realms, independent upstream IdP, native loopback and confidential web callback; passwords, passkeys, FIDO2, TOTP and configured MFA.</li>${LAB_CATEGORIES.map(category=>'<li>'+escapeHtml(category)+' · '+LAB_SCENARIOS.filter(model=>model.category===category).length+' scenarios</li>').join('')}</ul><h3>Support is visible</h3><p>Each scenario links to primary documentation and identifies supported/configured Keycloak behavior, Preview/deprecated behavior or a standards-only profile. CIBA Push and alternate signed-hint profiles are not presented as built-in Keycloak features. Legacy grants are educational comparisons.</p><h3>Practical limits</h3><p>This is an offline protocol simulator. Values and cryptographic operations are schematic; it does not configure or contact a live server. Provider-specific policies and every combination of extensions are not expanded into separate presets. Detailed factor ceremonies remain available in the core journeys. Version-specific support is stated in the scenario’s note.</p></div></div></details>
       <footer class="sources-footer"><p class="documentation-baseline">Documentation baseline: <a href="https://www.keycloak.org/2026/10/keycloak-2680-released" target="_blank" rel="noopener noreferrer">Keycloak 26.8.0</a> · checked 8 October 2026. Support depends on feature flags, client policy and realm configuration. This offline model is not a live compatibility test.</p><details><summary>Protocol notes & primary sources</summary><div class="source-notes">${(LEARNING_NOTES||[]).filter(note=>['One authenticator per attempt','Sessions can shorten real sign-in','Passkey plus TOTP is an explicit flow','TOTP codes can be phished'].includes(note.title)).map(note=>`<p>${escapeHtml(note.text)}</p>`).join('')}<p>Illustrative messages and values. Login assumes a fresh session. Registration starts with a verified relying-party account. FIDO2 combines WebAuthn and CTAP: external FIDO2 keys use CTAP2 locally; Windows Hello uses the platform authenticator path. In single-realm sign-in, Realm A verifies the selected method and returns the selected protocol’s identity result. In brokered sign-in the upstream provider verifies WebAuthn. For OIDC, application client_id is a configured public identifier; the app validates the ID token’s aud against it. For SAML, Keycloak’s registered client identifier is the SP entity ID, used as AuthnRequest Issuer and assertion Audience; the XML does not gain an OAuth client_id parameter. In direct FIDO2 sign-in the web application itself is the relying party, using its own RP ID and public-key credential records.</p><p>Passkey + TOTP and passwordless TOTP require explicit configured flows. TOTP alone is one factor. External providers must support and configure the chosen method; login-form field names and credential policies are provider-specific.</p><p>SAML Web SSO uses Redirect/POST requests and POST responses. Assertion encryption uses XML Encryption. JWE protects OIDC ID tokens; recipients decrypt locally before verifying the inner signature and applicable claims. Device and CIBA tokens have no invented Authorization Code, PKCE or nonce stages.</p><p>Service accounts act as the application’s own identity and receive an access token without a human login or MFA. Device user_code is not TOTP: it links a separate browser to a private device_code. CIBA uses an administrator-controlled authentication-channel service; its illustrated password/passkey/TOTP policy is a service implementation, not a built-in CIBA browser redirect flow. Standard Token Exchange V2 here is same-realm and access-token-to-access-token; strict downscoping is explicitly configured, not assumed from the grant.</p></div><p>Animated coverage and remaining variants are listed in SPA, API & coverage above. These examples illustrate messages, not live authentication or exhaustive Keycloak configuration.</p><div class="source-links">${[...SOURCES,...FIDO_SOURCES,...SAML_SOURCES,...JWE_SOURCES,...SERVICE_SOURCES,...DEVICE_SOURCES,...CIBA_SOURCES,...EXCHANGE_SOURCES,...LAB_SOURCES].map(source=>`<a href="${escapeHtml(source.url||source.source)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.label||source.name||source.title)}</a>`).join('')}</div></details><span>Built to explore · RFC / OASIS / W3C / FIDO names, plain-language explanations</span></footer>
       <div id="actor-popup" class="floating-panel" role="dialog" aria-modal="false" aria-label="Participant attributes" hidden></div>
       <div id="attribute-popup" class="attribute-tooltip" role="dialog" aria-modal="false" aria-label="Attribute explanation" hidden></div>
       <div id="toast" class="toast" role="status" hidden></div>
+      <div id="held-announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     </main>`;
   }
   bind() {
@@ -267,13 +278,8 @@ export class AuthFlowStudio extends HTMLElement {
     this.querySelector('#workspace-families').addEventListener('click',event=>{const button=event.target.closest('[data-family]');if(button){this.family=button.dataset.family;const model=LAB_SCENARIOS.find(item=>workspaceOf(item)==='kerberos'&&item.family===this.family);if(model)this.selectLabScenario(model.id);}});
     this.querySelector('#workspace-presets').addEventListener('click',event=>{const button=event.target.closest('[data-lab-scenario]');if(button)this.selectLabScenario(button.dataset.labScenario);});
     this.querySelector('#show-internals').addEventListener('change',()=>{
-      const target=captureFocusTarget(this,document.activeElement);
       this.hidePopups();this.showInternals=this.querySelector('#show-internals').checked;this.renderAll();this.renderPacket(this.player.snapshot());
-      if(target?.actorId){
-        let actorId=this.nodeId(target.actorId);
-        if(!this.refs.actors.querySelector(`[data-actor="${actorId}"]`))actorId=Object.values(this.scenarioOwnedActors||{}).find(actor=>actor.parentId===target.actorId&&this.positions[actor.id])?.id||actorId;
-        this.restoreTargetFocus({...target,actorId,attributeId:null,region:'actors'});
-      }
+      this.querySelector('#show-internals').focus();
     });
     this.routeListener=()=>this.openRoute();window.addEventListener('hashchange',this.routeListener);
     this.querySelector('#quick-start').addEventListener('click',e=>{const button=e.target.closest('[data-learning-preset]');if(button)this.selectLabScenario(button.dataset.learningPreset);});
@@ -287,7 +293,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.querySelector('#lab-open').addEventListener('click',()=>{this.refs['lab-catalog'].open=!this.refs['lab-catalog'].open;if(this.refs['lab-catalog'].open)this.refs['lab-search'].focus();});
     this.refs['lab-search'].addEventListener('input',()=>{this.catalogQuery=this.refs['lab-search'].value;this.renderCatalog();});
     this.refs['lab-cards'].addEventListener('click',event=>{const card=event.target.closest('[data-lab-scenario]');if(card)this.selectLabScenario(card.dataset.labScenario);});
-    this.refs['move-participants'].addEventListener('change',()=>{this.moveParticipants=!!this.refs['move-participants'].checked;this.refs.graph.classList.toggle('is-move-mode',this.moveParticipants);});
+    this.refs['move-participants'].addEventListener('change',()=>{this.moveParticipants=!!this.refs['move-participants'].checked;this.refs.graph.classList.toggle('is-move-mode',this.moveParticipants);this.heldView.configureGeometry();this.renderActors();this.renderConnections();this.renderPacket(this.player.snapshot());});
     this.querySelector('#layout-reset').addEventListener('click',()=>{delete this.customLayouts[this.layoutKey];this.renderAll();this.renderPacket(this.player.snapshot());this.renderStepAttributes(this.player.snapshot(),true);});
     ['mode','authenticator','architecture','upstream'].forEach(key=>this.refs[key].addEventListener('change',()=>{const wasDirect=this.isDirectFido;this.labScenarioId='core';this[key]=this.refs[key].value;if(key==='mode'&&(this.isDirectFido||modeMetadata[this.mode]?.enrollment))this.oidcFlow='authorization-code';if(key==='mode'&&this.isDirectFido&&!wasDirect){this.authenticator='yubikey';this.refs.authenticator.value='yubikey';}this.refreshConfiguration();}));
     this.refs['oidc-flow'].addEventListener('change',()=>{this.labScenarioId='core';this.oidcFlow=this.refs['oidc-flow'].value;if(this.isAdvancedFlow){this.applicationProtocol='oidc';if(this.isDirectFido||modeMetadata[this.mode]?.enrollment)this.mode='passkey';this.refs.mode.value=this.mode;}this.refreshConfiguration();});
@@ -296,7 +302,7 @@ export class AuthFlowStudio extends HTMLElement {
       this.ensureRunningSpeed();
       if(this.player.status==='playing')this.player.pause();
       else if(this.player.status==='paused')this.player.resume();
-      else if(this.attributeSelection)this.playAttribute();
+      else if(this.hasTrace)this.playAttribute();
       else {this.inspection={type:'step'};this.visited.clear();this.player.play(this.steps,'demo');}
     });
     this.querySelector('#reset').addEventListener('click',()=>this.reset());
@@ -490,7 +496,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs['environment-errors'].hidden=true;this.refs['environment-errors'].textContent='';this.refreshConfiguration();
   }
   moveActor(id,x,y) {
-    const current=this.positions;if(!current[id]||!Number.isFinite(x)||!Number.isFinite(y))return false;
+    const current=this.heldGeometry?this.basePositions:this.positions;if(!current[id]||!Number.isFinite(x)||!Number.isFinite(y))return false;
     const margin=24,hx=CARD_BOUNDS.width/2+margin,hy=CARD_BOUNDS.height/2+margin;
     const candidate={x:Math.max(hx,Math.min(GRAPH_WIDTH-hx,x)),y:Math.max(hy,Math.min(GRAPH_HEIGHT-hy,y))};
     if(Object.entries(current).some(([other,p])=>other!==id&&Math.abs(p.x-candidate.x)<CARD_BOUNDS.width+margin&&Math.abs(p.y-candidate.y)<CARD_BOUNDS.height+margin))return false;
@@ -500,7 +506,7 @@ export class AuthFlowStudio extends HTMLElement {
     if(!routes.ok){this.showToast('Leave more room for connections and local processing around participants.');return false;}
     if(this.player.status==='playing')this.player.pause();
     if(!this.customLayouts[this.layoutKey])this.customLayouts[this.layoutKey]={};
-    this.customLayouts[this.layoutKey][id]=candidate;this.refreshMapGeometry();return true;
+    this.customLayouts[this.layoutKey][id]=candidate;this.heldView?.configureGeometry();this.refreshMapGeometry();return true;
   }
   refreshMapGeometry() {
     const positions=this.positions;
@@ -540,7 +546,8 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs.upstream.value=this.upstream;
     this.updateProtocolControls();
     this.activeSteps=this.journeyFor();this.renderWorkspace();
-    this.ensureLayoutRoutes(this.traceQueue);
+    this.heldView?.configureGeometry();
+    if(!this.heldGeometry)this.ensureLayoutRoutes(this.traceQueue);
     const meta=modeMetadata[this.mode];
     this.querySelector('#scenario-title').textContent=this.advancedFlow?.title||meta.title;
     const description=this.isSingleRealm?meta.description.replace(/the upstream provider/gi,'the Keycloak realm').replace(/upstream/gi,'Realm A'):meta.description;
@@ -615,6 +622,7 @@ export class AuthFlowStudio extends HTMLElement {
     // are intentionally forbidden by the standalone page's CSP.
     this.refs.actors.querySelectorAll('[data-actor]').forEach(card=>{const p=this.positions[card.dataset.actor];card.style.left=p.x/GRAPH_WIDTH*100+'%';card.style.top=p.y/GRAPH_HEIGHT*100+'%';const color=this.actor(card.dataset.actor).color;if(/^#[0-9a-f]{3,8}$/i.test(color||''))card.style.setProperty('--actor-color',color);});
     this.renderScenarioEnvironment();
+    this.heldView?.render();
   }
   renderScenarioEnvironment(){
     const panel=this.querySelector('#scenario-environment');panel.hidden=!this.labModel?.workspace;
@@ -628,15 +636,18 @@ export class AuthFlowStudio extends HTMLElement {
     zones.querySelectorAll('[data-zone-actor]').forEach(zone=>{const p=this.positions[zone.dataset.zoneActor];zone.style.left=p.x/GRAPH_WIDTH*100+'%';zone.style.top=p.y/GRAPH_HEIGHT*100+'%';});
   }
   protocolSnapshot(){
-    if(!this.labModel?.initialState)return null;
-    const snapshot=this.scenarioSnapshot(),model={...this.labModel,instanceScope:this.labScenarioId+'@context-'+this.runtimeEnvironment.revision,steps:()=>snapshot.steps,initialState:snapshot.initialState||this.labModel.initialState,protocolValues:snapshot.protocolValues||this.labModel.protocolValues};
-    const selected=this.currentStep,sourceIndex=Number.isInteger(selected?.sourceIndex)?selected.sourceIndex:snapshot.steps.findIndex(step=>step.id===(selected?.sourceStepId||selected?.id));
-    return {model,sourceIndex,state:reconstructProtocolState(model,sourceIndex),instances:buildProtocolInstances(model,sourceIndex)};
+    const snapshot=this.scenarioSnapshot();
+    if(this.protocolMemo?.source!==snapshot){const model={...this.labModel,instanceScope:this.labScenarioId+'@context-'+this.runtimeEnvironment.revision,steps:()=>snapshot.steps,initialState:snapshot.initialState||this.labModel?.initialState||{},protocolValues:snapshot.protocolValues||this.labModel?.protocolValues||{}};this.protocolMemo={source:snapshot,model,instances:new Map()};}
+    const held=this.heldView.snapshot(),sourceIndex=held.cursor.milestone==='complete'?held.cursor.eventIndex:Math.max(-1,held.cursor.eventIndex-1);
+    if(!this.protocolMemo.instances.has(sourceIndex))this.protocolMemo.instances.set(sourceIndex,buildProtocolInstances(this.protocolMemo.model,sourceIndex));
+    return {model:this.protocolMemo.model,sourceIndex,selectedSourceIndex:held.cursor.eventIndex,cursor:held.cursor,state:held.state,instances:this.protocolMemo.instances.get(sourceIndex)};
   }
   renderProtocolState(){
+    const cursor=this.heldView.snapshot().cursor,key=JSON.stringify([this.heldView.contextId,cursor,this.attributeSelection]);
+    if(this.protocolRenderKey===key)return;this.protocolRenderKey=key;
     const panel=this.querySelector('#protocol-state-panel'),snapshot=this.protocolSnapshot();panel.hidden=!snapshot;this.renderLifetimes(snapshot);
     if(!snapshot)return;
-    this.querySelector('#protocol-state-summary').textContent='Source event '+(snapshot.sourceIndex+1)+' / '+snapshot.model.steps().length+' · protocol clock '+snapshot.state.protocolClock+' · fixture '+this.labScenarioId+'@context-'+this.runtimeEnvironment.revision;
+    this.querySelector('#protocol-state-summary').textContent=(snapshot.cursor.eventIndex<0?'Before step 1':'Source event '+(snapshot.cursor.eventIndex+1)+' / '+snapshot.cursor.milestone)+' / '+snapshot.model.steps().length+' · protocol clock '+snapshot.state.protocolClock+' · fixture '+this.labScenarioId+'@context-'+this.runtimeEnvironment.revision;
     this.querySelector('#protocol-state-value').textContent=JSON.stringify(snapshot.state,null,2);
     const records=snapshot.instances.filter(record=>!this.attributeSelection||record.definitionIds?.includes(this.attributeSelection)||record.definitionId===this.attributeSelection);
     this.querySelector('#protocol-instance-list').innerHTML=records.length?'<div class="instance-table-scroll"><table class="instance-table"><thead><tr><th>Object instance</th><th>Creator / holders / inspectors</th><th>Exact field occurrence</th></tr></thead><tbody>'+records.map(record=>`<tr><td><code>${escapeHtml(record.qualifiedInstanceId||record.instanceId)}</code></td><td>${escapeHtml(record.creator||'Configured before the journey')}<br>Observed holders: ${escapeHtml((record.holders||[]).join(', '))}<br>Inspectors across fields: ${escapeHtml((record.inspectors||[]).join(', '))}</td><td>${record.occurrences.map(occurrence=>`<div class="instance-occurrence"><code>${escapeHtml(occurrence.fieldPath)}</code> · ${escapeHtml(occurrence.representation)} · ${escapeHtml(occurrence.eventId)}<br>Actor: ${escapeHtml(occurrence.actorId)} · ${escapeHtml(occurrence.kind)}<br>Permitted inspectors of this occurrence: ${escapeHtml((occurrence.inspectors||[]).join(', ')||'not declared')}<br><code>${escapeHtml(occurrence.value===undefined?'Exact bytes are intentionally not exposed':typeof occurrence.value==='string'?occurrence.value:JSON.stringify(occurrence.value))}</code></div>`).join('')}</td></tr>`).join('')+'</tbody></table></div>':'<p class="environment-note">No instantiated object is visible in this prefix.</p>';
@@ -691,72 +702,78 @@ export class AuthFlowStudio extends HTMLElement {
     const identity=realm?realm:entity&&entity!==primary?entity:null;
     return `<span class="actor-context" id="actor-context-${id}" aria-label="${escapeHtml(primary.label)}: ${escapeHtml(primary.value)}" title="${escapeHtml(rows.map(row=>row.label+': '+row.value).join('\n'))}">${identity?`<span class="actor-context-identity">${escapeHtml(identity.label)}: ${escapeHtml(identity.value)}</span>`:''}<code class="actor-context-address">${escapeHtml(primary.value)}</code></span>`;
   }
+  connectionRoute(from,to) {return this.heldGeometry?.routes.get(from+'>'+to)||connectionPath(from,to,this.positions);}
   renderConnections() {
     const pairs=new Map();
     const focusPairs=new Set(this.traceQueue.map(s=>pairKey(this.nodeId(s.from),this.nodeId(s.to))));
-    [...this.steps,...(this.attributeSelection?this.traceQueue:[])].forEach(s=>{
+    [...this.steps,...(this.hasTrace?this.traceQueue:[])].forEach(s=>{
       const from=this.nodeId(s.from),to=this.nodeId(s.to),key=pairKey(from,to);
       if(!pairs.has(key))pairs.set(key,{from,to,channel:channelCategory(s.channel),count:0});
       pairs.get(key).count++;
     });
     this.querySelector('#connection-paths').innerHTML=[...pairs.entries()].map(([key,p])=>{
       const label=`Replay ${p.count} ordered exchange${p.count===1?'':'s'} between ${this.actor(p.from).name} and ${this.actor(p.to).name}`;
-      const outside=this.attributeSelection&&!focusPairs.has(key),d=connectionPath(p.from,p.to,this.positions);
+      const outside=this.hasTrace&&!focusPairs.has(key),d=this.connectionRoute(p.from,p.to);
       return `<g class="connection-group ${outside?'is-outside-trace':''}" data-pair="${key}" data-channel="${p.channel}"><title>${escapeHtml(label)}</title><path class="connection-line ${p.channel}" d="${d}"/><path class="connection-hit" d="${d}" role="button" tabindex="${outside?-1:0}" aria-label="${escapeHtml(label)}"/></g>`;
     }).join('');
   }
   renderTimeline() {
-    this.refs.timeline.innerHTML=this.visibleSteps.map((s,i)=>`<button class="timeline-step ${i===this.visibleIndex?'is-current':''} ${this.attributeSelection?'is-trace-step':''}" data-step="${i}" aria-current="${i===this.visibleIndex?'step':'false'}"><span class="step-number">${String(i+1).padStart(2,'0')}</span><span class="step-title">${escapeHtml(s.title)}</span><span class="step-phase">${escapeHtml(this.attributeSelection?(s.traceKind+' · journey '+(s.sourceIndex+1)):s.phase)}</span></button>`).join('');
+    this.refs.timeline.innerHTML=this.visibleSteps.map((s,i)=>`<button class="timeline-step ${i===this.visibleIndex?'is-current':''} ${this.hasTrace?'is-trace-step':''}" data-step="${i}" aria-current="${i===this.visibleIndex?'step':'false'}"><span class="step-number">${String(i+1).padStart(2,'0')}</span><span class="step-title">${escapeHtml(s.title)}</span><span class="step-phase">${escapeHtml(this.hasTrace?(s.traceKind+' · journey '+(s.sourceIndex+1)):s.phase)}</span></button>`).join('');
   }
   selectStep(index,animate=false) {
     this.player.stop(false);this.hidePopups();
-    if(this.attributeSelection){this.traceIndex=index;this.index=this.traceQueue[index]?.sourceIndex||0;this.inspection=this.traceInspection();}
+    this.heldView?.selectStep();
+    if(this.hasTrace){this.traceIndex=index;this.index=this.traceQueue[index]?.sourceIndex||0;this.inspection=this.traceInspection();}
     else {this.index=index;this.inspection={type:'step'};}
     this.refs.packet.hidden=true;this.hideStepAttributes();this.updateStep();this.renderInspector();this.updateControls();
-    if(animate&&this.currentStep){this.ensureRunningSpeed();this.player.play([this.currentStep],this.attributeSelection?'attribute-step':'step');}
+    if(animate&&this.currentStep){this.ensureRunningSpeed();this.player.play([this.currentStep],this.hasTrace?'trace-step':'step');}
   }
   reset() {
+    this.heldView?.reset();
     if(this.attributeSelection){this.selectAttribute(this.attributeSelection,false);return;}
     this.player.stop(false);this.index=0;this.visited.clear();this.packetIdentity='';this.inspection={type:'step'};
-    this.attributeSelection=null;this.traceQueue=[];this.traceIndex=0;
+    this.attributeSelection=null;this.objectTraceSelection=null;this.traceQueue=[];this.traceIndex=0;
     this.hidePopups();this.refs.packet.hidden=true;this.hideStepAttributes();this.renderConnections();this.renderTimeline();this.renderAttributeIndex();this.renderFocus();this.updateStep();this.renderInspector();this.updateControls();
   }
   replayConnection(pair) {
     this.hidePopups();const exchanges=this.visibleSteps.filter(step=>pairKey(this.nodeId(step.from),this.nodeId(step.to))===pair);
     if(!exchanges.length)return;
     this.ensureRunningSpeed();
-    this.inspection=this.attributeSelection?this.traceInspection():{type:'connection',pair,exchanges};this.renderInspector();
-    this.player.play(exchanges,this.attributeSelection?'attribute-connection':'connection');
+    this.inspection=this.hasTrace?this.traceInspection():{type:'connection',pair,exchanges};this.renderInspector();
+    this.player.play(exchanges,this.hasTrace?'trace-connection':'connection');
   }
   inspectActor(id) {this.hidePopups();this.inspection={type:'actor',id};this.renderInspector();this.updateNodeSelection();}
   updateNodeSelection() {this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>n.classList.toggle('is-selected',this.inspection.type==='actor'&&n.dataset.actor===this.inspection.id));}
   updateStep() {
     this.renderProtocolState();
+    this.heldView?.render();
     const s=this.currentStep;
     if(!s){this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>{n.classList.remove('is-source','is-target','is-trace-participant');n.classList.add('is-outside-trace');n.querySelector('.actor-trace-action').hidden=true;});this.refs.connections.querySelectorAll('[data-pair]').forEach(g=>{g.classList.remove('is-active');g.querySelector('.connection-line').removeAttribute('marker-end');});this.refs.story.innerHTML='<p class="empty-state">This field has no replayable operation in this journey. Choose one of the available journeys in the inspector.</p>';this.refs.progress.style.width='0%';this.refs.progress.parentElement.setAttribute('aria-valuenow','0');return;}
     const source=this.nodeId(s.from),target=this.nodeId(s.to),pair=pairKey(source,target),category=channelCategory(s.channel);
     const focusActors=new Set(this.traceQueue.flatMap(step=>[this.nodeId(step.from),this.nodeId(step.to)]));
     this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>{
       n.classList.toggle('is-source',n.dataset.actor===source);n.classList.toggle('is-target',n.dataset.actor===target);
-      n.classList.toggle('is-outside-trace',!!this.attributeSelection&&!focusActors.has(n.dataset.actor));n.classList.toggle('is-trace-participant',!!this.attributeSelection&&focusActors.has(n.dataset.actor));
-      const badge=n.querySelector('.actor-trace-action'),active=!!this.attributeSelection&&(n.dataset.actor===source||n.dataset.actor===target);
-      badge.hidden=!active;if(active)badge.textContent=s.from===s.to?TRACE_ACTION_LABELS[s.traceKind]:n.dataset.actor===source?'Send':'Receive';
+      n.classList.toggle('is-outside-trace',this.hasTrace&&!focusActors.has(n.dataset.actor));n.classList.toggle('is-trace-participant',this.hasTrace&&focusActors.has(n.dataset.actor));
+      const badge=n.querySelector('.actor-trace-action'),active=this.hasTrace&&(n.dataset.actor===source||n.dataset.actor===target);
+      badge.hidden=!active;if(active)badge.textContent=s.from===s.to?(TRACE_ACTION_LABELS[s.traceKind]||s.traceKind||'Local event'):n.dataset.actor===source?'Send':'Receive';
     });
     this.refs.connections.querySelectorAll('[data-pair]').forEach(g=>{
       const active=g.dataset.pair===pair;g.classList.toggle('is-active',active);g.classList.toggle('is-visited',this.visited.has(g.dataset.pair));
-      if(active){g.dataset.channel=category;const path=g.querySelector('.connection-line');path.setAttribute('d',connectionPath(source,target,this.positions));path.setAttribute('class','connection-line '+category);path.setAttribute('marker-end','url(#arrow-'+category+')');}
+      if(active){g.dataset.channel=category;const path=g.querySelector('.connection-line');path.setAttribute('d',this.connectionRoute(source,target));path.setAttribute('class','connection-line '+category);path.setAttribute('marker-end','url(#arrow-'+category+')');}
       else g.querySelector('.connection-line').removeAttribute('marker-end');
     });
     this.refs.timeline.querySelectorAll('[data-step]').forEach(button=>{const n=Number(button.dataset.step);button.classList.toggle('is-current',n===this.visibleIndex);button.classList.toggle('is-done',n<this.visibleIndex);button.setAttribute('aria-current',n===this.visibleIndex?'step':'false');});
     const percentage=Math.round(this.visibleIndex/this.visibleSteps.length*100);this.refs.progress.style.width=percentage+'%';
     this.refs.progress.parentElement.setAttribute('aria-valuenow',percentage);
-    this.refs.story.innerHTML=`<span class="story-index">${String(this.visibleIndex+1).padStart(2,'0')} / ${String(this.visibleSteps.length).padStart(2,'0')}</span><div><span class="story-phase">${escapeHtml(this.attributeSelection?'ATTRIBUTE PATH · '+s.traceKind:s.phase)}</span><p>${escapeHtml(s.summary)}</p></div>`;
+    this.refs.story.innerHTML=`<span class="story-index">${String(this.visibleIndex+1).padStart(2,'0')} / ${String(this.visibleSteps.length).padStart(2,'0')}</span><div><span class="story-phase">${escapeHtml(this.objectTraceSelection?'EXACT OBJECT HISTORY · '+s.traceKind:this.attributeSelection?'ATTRIBUTE PATH · '+s.traceKind:s.phase)}</span><p>${escapeHtml(s.summary)}</p></div>`;
     this.updateNodeSelection();
   }
   onPlayer(event) {
+    this.heldView?.event(event);
+    if(['frame','stepcomplete','complete','state'].includes(event.type))this.renderProtocolState();
     if(event.type==='step'&&event.step){
       const index=this.steps.findIndex(s=>s.id===(event.step.sourceStepId||event.step.id));if(index>=0)this.index=index;
-      if(this.attributeSelection){const traceIndex=this.traceQueue.findIndex(s=>s.id===event.step.id);if(traceIndex>=0)this.traceIndex=traceIndex;}
+      if(this.hasTrace){const traceIndex=this.traceQueue.findIndex(s=>s.id===event.step.id);if(traceIndex>=0)this.traceIndex=traceIndex;}
       this.updateStep();if(this.inspection.type==='step'||(this.attributeSelection&&['attribute','topic'].includes(this.inspection.type)))this.renderInspector();
       const button=this.refs.timeline.querySelector(`[data-step="${this.visibleIndex}"]`);
       if(button)this.refs.timeline.scrollTo?.({left:this.refs.timeline.scrollLeft+button.getBoundingClientRect().left-this.refs.timeline.getBoundingClientRect().left-(this.refs.timeline.clientWidth-button.offsetWidth)/2,behavior:'smooth'});
@@ -798,6 +815,7 @@ export class AuthFlowStudio extends HTMLElement {
   renderStepAttributes(event,force=false) {
     if(!this.refs)return;
     if(!this.showStepAttributes||!['playing','paused'].includes(event.status)||!event.step){this.hideStepAttributes();return;}
+    if(this.heldGeometry){this.hideStepAttributes();return;}
     const overlay=this.refs['step-attributes'],step=event.step;
     if(force||this.stepOverlayIdentity!==step.id){
       const items=this.stepAttributeItems(step);
@@ -841,7 +859,10 @@ export class AuthFlowStudio extends HTMLElement {
       const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const point=path.getPointAtLength(path.getTotalLength()*(reduced?.5:event.progress));
       this.refs.packet.style.left=Math.max(112,Math.min(GRAPH_WIDTH-112,point.x))/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=Math.max(40,Math.min(GRAPH_HEIGHT-40,point.y))/GRAPH_HEIGHT*100+'%';
+      if(this.heldGeometry){this.refs.packet.style.left=point.x/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=point.y/GRAPH_HEIGHT*100+'%';}
     }
+    const external=this.querySelector('#held-active-message');external.hidden=!this.heldGeometry||!event.step;
+    if(!external.hidden)external.textContent=packet.name+': '+formatProtocolValue(packet.value)+' · '+event.step.title;
   }
   ensureRunningSpeed() {if(this.player.speed===0)this.player.setSpeed(this.lastRunningSpeed||1);}
   studyClock() {
@@ -853,9 +874,9 @@ export class AuthFlowStudio extends HTMLElement {
   }
   seekPlayback(fraction) {
     const clock=this.studyClock();if(!clock.steps.length)return;
-    this.hidePopups();this.inspection=this.attributeSelection?this.traceInspection():{type:'step'};
+    this.hidePopups();this.inspection=this.hasTrace?this.traceInspection():{type:'step'};
     this.visited.clear();this.packetIdentity='';
-    this.player.seek(clock.steps,fraction,this.attributeSelection?'attribute':'demo');
+    this.player.seek(clock.steps,fraction,this.objectTraceSelection?'object':this.attributeSelection?'attribute':'demo');
     const state=this.player.snapshot(),completedCount=this.visibleIndex+(state.stepElapsed>=state.duration?1:0);
     for(let i=0;i<completedCount;i++){const step=clock.steps[i];this.visited.add(pairKey(this.nodeId(step.from),this.nodeId(step.to)));}
     this.updateStep();this.renderInspector();this.updateSeekControls(this.player.snapshot());
@@ -872,10 +893,10 @@ export class AuthFlowStudio extends HTMLElement {
   }
   updateControls() {
     const status=this.player.status;
-    const label=status==='playing'?'Pause':status==='paused'?'Resume':this.attributeSelection?'Play attribute path':'Play demo';
+    const label=status==='playing'?'Pause':status==='paused'?'Resume':this.objectTraceSelection?'Play exact object history':this.attributeSelection?'Play attribute path':'Play demo';
     this.refs.play.innerHTML=uiIcon(status==='playing'?'pause':'play',status!=='playing')+'<span>'+label+'</span>';
     this.refs.play.setAttribute('aria-label',label+' animation');
-    this.refs.play.disabled=!!this.attributeSelection&&!this.traceQueue.length;
+    this.refs.play.disabled=this.hasTrace&&!this.traceQueue.length;
     if(this.player.speed>0)this.lastRunningSpeed=this.player.speed;
     this.refs.speed.value=String(this.player.speed);this.refs['speed-label'].textContent=this.player.speed===0?'Stopped':this.player.speed+'×';
     this.refs.status.textContent=status==='playing'?(this.attributeSelection?'FOLLOWING ATTRIBUTE':this.player.kind==='connection'?'REPLAYING CONNECTION':'DEMO RUNNING'):status==='paused'?'PAUSED':status==='complete'?'COMPLETE':'READY TO EXPLORE';
@@ -926,6 +947,7 @@ export class AuthFlowStudio extends HTMLElement {
   }
   refreshConfiguration() {
     const selection=this.attributeSelection;
+    this.heldView?.reset();this.objectTraceSelection=null;
     this.player.stop(false);this.hidePopups();this.activeSteps=null;this.attributeSelection=null;this.traceQueue=[];this.traceIndex=0;this.index=0;this.visited.clear();this.inspection={type:'step'};this.refs.packet.hidden=true;this.hideStepAttributes();
     this.renderAll();if(selection)this.selectAttribute(selection,false);
   }
@@ -979,30 +1001,32 @@ export class AuthFlowStudio extends HTMLElement {
     }
     return null;
   }
-  traceInspection() {return {type:ATTRIBUTE_TOPICS[this.attributeSelection]?'topic':'attribute',id:this.attributeSelection};}
+  traceInspection() {return this.objectTraceSelection?{type:'step'}:{type:ATTRIBUTE_TOPICS[this.attributeSelection]?'topic':'attribute',id:this.attributeSelection};}
   selectAttribute(id,animate=true) {
     const returnTarget=captureFocusTarget(this,document.activeElement);
     id=this.labAttributeAlias(id);
     if(!getAttributeIds(id).length)return;
+    this.objectTraceSelection=null;
     this.player.stop(false);this.hidePopups();this.attributeSelection=id;this.traceIndex=0;this.visited.clear();this.packetIdentity='';
     this.attributeUsages=this.attributeUsage(this.steps,id);
     const examples={...this.runtimeEnvironment.projectExamples({...(this.isDirectFido?getFidoExampleOverrides():getExampleOverrides(this.architecture,this.upstream)),...(this.isUsingSaml?getSamlExampleOverrides(this.protocolConfig()):{}),...(this.isAdvancedFlow?this.advancedFlow.examples(this.protocolConfig()):{}),...this.scenarioSnapshot().exampleOverrides},this.environmentOptions)};
     getAttributeIds(id).forEach(field=>examples[field]=this.definition(field).example);
     this.traceQueue=buildAttributeTrace(this.attributeUsages,examples,this.scenarioSnapshot().protocolValues||this.labModel?.protocolValues||{});
     if(this.scenarioOwnedActors&&!this.showInternals&&this.attributeUsages.some(usage=>usage.actions.some(action=>this.scenarioOwnedActors[action.actorId]?.parentId))){this.showInternals=true;this.renderActors();this.renderWorkspace();}
-    if(this.ensureLayoutRoutes(this.traceQueue))this.renderActors();
+    this.heldView?.configureGeometry();this.renderActors();
+    if(!this.heldGeometry&&this.ensureLayoutRoutes(this.traceQueue))this.renderActors();
     this.index=this.traceQueue[0]?.sourceIndex||0;this.inspection=this.traceInspection();this.refs.packet.hidden=true;this.hideStepAttributes();
     this.renderConnections();this.renderTimeline();this.renderAttributeIndex();this.renderFocus();this.renderInspector();this.updateStep();this.updateControls();
     if(returnTarget&&(returnTarget.attributeId||returnTarget.topicId))this.restoreTargetFocus(returnTarget,{attributeId:ATTRIBUTE_TOPICS[id]?undefined:id,preferIndex:true});
     if(animate&&this.traceQueue.length)this.playAttribute();
   }
   clearAttribute() {
-    this.attributeSelection=null;this.traceQueue=[];this.attributeUsages=[];this.reset();
+    this.attributeSelection=null;this.objectTraceSelection=null;this.traceQueue=[];this.attributeUsages=[];this.reset();
   }
   playAttribute() {
-    if(!this.attributeSelection||!this.traceQueue.length)return;
+    if(!this.hasTrace||!this.traceQueue.length)return;
     this.ensureRunningSpeed();
-    this.inspection=this.traceInspection();this.visited.clear();this.player.play(this.traceQueue,'attribute');
+    this.inspection=this.traceInspection();this.visited.clear();this.player.play(this.traceQueue,this.objectTraceSelection?'object':'attribute');
   }
   selectionName(id=this.attributeSelection) {return ATTRIBUTE_TOPICS[id]?.name||this.definition(id).name||id;}
   indexContext(id) {
@@ -1055,8 +1079,9 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs['attribute-index-empty'].hidden=!!(count||topics);
   }
   renderFocus() {
-    const focus=this.refs['attribute-focus'];focus.hidden=!this.attributeSelection;
-    if(!this.attributeSelection){focus.innerHTML='';return;}
+    const focus=this.refs['attribute-focus'];focus.hidden=!this.hasTrace;
+    if(!this.hasTrace){focus.innerHTML='';return;}
+    if(this.objectTraceSelection){focus.innerHTML=`<div class="focus-caption"><span class="eyebrow">EXACT OBJECT HISTORY</span><strong>${escapeHtml(this.objectTraceSelection)}</strong><p>Canonical source-prefix replay, including earlier source events. History does not imply current possession.</p></div><div class="focus-controls"><button class="button primary" data-trace-play>Replay exact history</button><button class="button quiet" data-clear-trace>Full journey</button></div>`;return;}
     focus.innerHTML=`<div class="focus-caption"><span class="eyebrow">FOLLOW ONE ATTRIBUTE</span><strong>${escapeHtml(this.selectionName())}</strong><p class="focus-summary">${this.traceQueue.length} animated moments in ${this.attributeUsages.length} journey steps. Only selected fields move; local operations stay with their participant.</p></div><div class="focus-controls"><button class="button primary" data-trace-play ${this.traceQueue.length?'':'disabled'}>${uiIcon('play')}Replay path</button><button class="button quiet" data-clear-trace>Full journey</button></div>`;
   }
   traceHtml(id) {

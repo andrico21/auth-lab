@@ -4,9 +4,16 @@ import {fileURLToPath} from 'node:url';
 import {SOURCE_CSP, normalizeHtmlLines, standaloneCsp, cspMeta} from './security-policy.mjs';
 const root=path.dirname(fileURLToPath(import.meta.url));
 const readSource = file => normalizeHtmlLines(fs.readFileSync(path.join(root,file),'utf8'));
-const modules=['protocol-data.js','single-realm.js','architecture-variants.js','attribute-usage.js','fido-direct.js','saml-data.js','service-account-data.js','device-flow-data.js','ciba-data.js','token-exchange-data.js','jwe-data.js','lab-common.js','web-api-lab.js','lifecycle-lab.js','protection-lab.js','extended-grants-lab.js','saml-advanced-lab.js','branching-lab.js','kerberos-context.js','kerberos-ad-lab.js','kerberos-crypto-lab.js','kerberos-forest-lab.js','ssh-access-lab.js','lab-catalog.js','attribute-trace.js','actor-art.js','player.js','layout.js','step-overlay-layout.js','scenario-picker.js','focus-target.js','learning-presets.js','runtime-environment.js','workspaces.js','scenario-context.js','protocol-state.js','app.js'];
-const source=modules.map(name=>readSource(path.join('src',name))
-  .replace(/^import .*?;\s*$/gm,'').replace(/\bexport (?=(?:const|let|class|function)\b)/g,'')).join('\n\n');
+const modules=['protocol-data.js','single-realm.js','architecture-variants.js','attribute-usage.js','fido-direct.js','saml-data.js','service-account-data.js','device-flow-data.js','ciba-data.js','token-exchange-data.js','jwe-data.js','lab-common.js','web-api-lab.js','lifecycle-lab.js','protection-lab.js','extended-grants-lab.js','saml-advanced-lab.js','branching-lab.js','kerberos-context.js','kerberos-ad-lab.js','kerberos-crypto-lab.js','kerberos-forest-lab.js','ssh-access-lab.js','lab-catalog.js','attribute-trace.js','actor-art.js','player.js','layout.js','step-overlay-layout.js','scenario-picker.js','focus-target.js','learning-presets.js','runtime-environment.js','workspaces.js','scenario-context.js','protocol-state.js','held-object-authoring.js','held-object-state.js','held-object-ad.js','held-object-kerberos.js','held-object-ssh.js','held-object-protection.js','held-object-web.js','held-object-core.js','held-objects.js','held-object-view.js','app.js'];
+const source=modules.map(name=>{
+  const input=readSource(path.join('src',name));
+  const body=input.replace(/^import .*?;\s*$/gm,'').replace(/\bexport (?=(?:const|let|class|function)\b)/g,'');
+  if(!name.startsWith('held-'))return body;
+  // The inventory modules retain module-private names in the offline bundle.
+  // Explicit exports are the only bindings shared with subsequent modules.
+  const names=[...input.matchAll(/^export\s+(?:const|let|class|function)\s+([A-Za-z_$][\w$]*)/gm)].map(match=>match[1]);
+  return 'const {'+names.join(',')+'}=(()=>{\n'+body+'\nreturn {'+names.join(',')+'};\n})();';
+}).join('\n\n');
 const css=readSource('src/styles.css');
 const script='\n(()=>{\n'+source.replace(/<\/script/gi,'<\\/script')+'\n})();\n';
 const template=readSource('index.html');
