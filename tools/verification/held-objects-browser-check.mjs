@@ -148,7 +148,17 @@ try{
     const record={mode,target,scenarios:[],layouts:[],checks:[]};heldNativeReport.modes.push(record);
     assert.equal(await page.locator('#show-held-objects').isChecked(),true);
     const choices=await page.evaluate(()=>[...document.querySelector('auth-flow-studio').refs['lab-scenario'].options].map(option=>option.value));
-    for(const id of choices){await heldNativeChoose(page,id);const initial=await heldNativeScene(page,mode+' '+id+' initial');await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.selectStep(a.steps.length-1,false);});const final=await heldNativeScene(page,mode+' '+id+' final');const fingerprint=heldNativeHash(JSON.stringify({initial:{holdings:initial.holdings,state:initial.state},final:{holdings:final.holdings,state:final.state}}));if(mode==='source-http')fingerprints.set(id,fingerprint);else assert.equal(fingerprint,fingerprints.get(id),mode+' source/emitted exact state for '+id);record.scenarios.push({id,initialHoldings:initial.holdings.length,finalHoldings:final.holdings.length,mode:final.mode,fingerprint});}
+    for(const id of choices){
+      await heldNativeChoose(page,id);
+      const initial=await heldNativeScene(page,mode+' '+id+' initial');
+      assert.equal(initial.mode,'full',mode+' '+id+' collapsed desktop initial inventory remains full');
+      await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.selectStep(a.steps.length-1,false);});
+      const final=await heldNativeScene(page,mode+' '+id+' final');
+      assert.equal(final.mode,'full',mode+' '+id+' collapsed desktop final inventory remains full');
+      const fingerprint=heldNativeHash(JSON.stringify({initial:{holdings:initial.holdings,state:initial.state},final:{holdings:final.holdings,state:final.state}}));
+      if(mode==='source-http')fingerprints.set(id,fingerprint);else assert.equal(fingerprint,fingerprints.get(id),mode+' source/emitted exact state for '+id);
+      record.scenarios.push({id,initialHoldings:initial.holdings.length,finalHoldings:final.holdings.length,initialMode:initial.mode,mode:final.mode,fingerprint});
+    }
     for(const width of [1920,1600,1480,1050,390,280]){await page.setViewportSize({width,height:1100});for(const id of ['lab-ad-forest-child-domains','lab-ssh-cert-reissue','lab-ad-fast-as-success'])for(const expanded of [false,true]){await heldNativeChoose(page,id,expanded,true);const scene=await heldNativeScene(page,mode+' '+id+' '+width+'px '+expanded);delete scene.state;delete scene.holdings;record.layouts.push(scene);}if(width===1920||width===1480||width===390)await heldNativeScreenshot(page,mode+'-'+width+'-inventory');}
     for(const geometry of ['full','compact','external'])heldNativeCheck(record.layouts.some(scene=>scene.mode===geometry),mode+' actually exercises '+geometry+' inventory geometry');
     record.animationSurface=await heldNativeAnimationSurface(page,mode);

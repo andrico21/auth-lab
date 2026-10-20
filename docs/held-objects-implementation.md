@@ -48,7 +48,7 @@ Ordering uses initial display order, acquisition ordinal and holding ID. Overflo
 
 ## Conditional geometry
 
-- Full mode: a measured map of at least 1120x730 CSS pixels and independently valid routes uses fixed 316x174 composites with a 164-unit actor, 8-unit gap and 144-unit dock. Reference positions determine participant columns and vertical order; column populations reserve at most three rows, rather than placing actors in registry order. Three slots mean either three holdings or two holdings plus overflow. Folded logical owners retain separate compartments. Obsolete device/server zones are hidden in this revised grid.
+- Full mode: a measured map of at least 1120x730 CSS pixels and independently valid routes uses fixed 316x174 composites with a 164-unit actor, 8-unit gap and 144-unit dock. Declared reference positions, including configured actors absent from the current journey, determine preferred columns and vertical order. Placement first minimizes necessary column changes, then geometric displacement within at most nine reserved cells. Three slots mean either three holdings or two holdings plus overflow. Folded logical owners retain separate compartments. Obsolete device/server zones are hidden in this revised grid.
 - Compact mode: a measured canvas/viewport of at least 960 CSS pixels, valid reserved envelopes and routes uses final-CSS 82x132 actor buttons plus a 6-pixel gap and 44x44 sibling summary. The 140x140 content stays within the reserved envelope; ports use the actual transformed actor bounds.
 - External mode: narrow views, invalid composite routes/bounds, supported movement or custom layouts use the independently valid base map and an accessible logical-owner list. A fallback never repairs or conceals invalid actor geometry.
 
@@ -56,19 +56,20 @@ Visibility and individual acquisitions do not reflow actors. Responsive mode cha
 
 The checked **Show step attributes** control continues to expose the complete names-only set in full, compact and external inventory modes. Placement avoids entire reserved actor/inventory composites, not just actor centers. If no panel-sized region is free, the same named group moves below the map; it is never silently hidden or replaced by the single current packet field. Keyboard-focused help is remeasured after its `:focus-within` hint appears, including nested F2 help, so the extra text does not push the panel past the viewport.
 
-The animation-area correction keeps the basic web person's/browser's column separate from the issuer/backend column. The native-client variation keeps the person, browser and local application together instead of pushing the third client into an issuer cell. Missing reference positions or overfull columns decline full mode instead of inventing a placement. Docked names wrap to two lines within the unchanged 44-pixel targets.
+The animation-area correction keeps the basic web person's/browser's column separate from the issuer/backend column. The native-client variation keeps the person, browser and local application together instead of pushing the third client into an issuer cell. Crowded columns rebalance only as necessary to retain desktop docks; inactive AS/TGS references come from declared model positions rather than current step participation. Missing reference positions or unprovable routes still decline full mode instead of inventing a placement. Docked names wrap to two lines within the unchanged 44-pixel targets.
 
 Connection keyboard focus uses a visible halo along the actual SVG path. The global rectangular outline is suppressed only on connection hit paths; other controls retain their normal focus rings. A path's bounding box is not a connector and must never appear as a rectangle through actor cards or inventories.
 
 ## Observed verification
 
-Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The standalone is 2,239,078 bytes with SHA-256 `812d14edf6827996b8653d063cd85a83691ca35f1ddc79d30333037e7b3fa484`. The separately staged review HTML is byte-identical and was opened directly from its delivered `file://` path.
+Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The standalone is 2,242,219 bytes with SHA-256 `dd10048bb8efaf08e995584f96f8796987276dabb52e3e5af77eabdc1ee2a2de`. Reports record the exercised source and artifact identities.
 
 | Observed check | Result |
 | --- | --- |
 | Semantic source gate | Passed: 141 choices, 921 normalized Core configurations, 86 required interactions and 28,016 equal-cursor comparisons |
 | Full source regression suite | 1,089 passed, 0 failed across all 72 test files, using four bounded workers and the recorded per-file Bun invocations; source identities stayed unchanged |
 | Held-object native gate | Passed in source HTTP, standalone HTTP and standalone file: 141 choices and 36 dense layouts per mode, all three geometry modes, rendered targets/routes, complete step names, exact-object lifecycle/replay, actual 200%/400% browser zoom, touch, reduced motion, source/emitted state equality and no unexpected CSP violations/external application requests |
+| Animation-area regression | Passed in all three loading modes: paused username/password exchange at 1920 pixels for web/native clients, 1480-pixel compact and 390-pixel external layouts; authored columns, complete visible names, path-following focus and unchanged canonical snapshots. Dense layout coverage contains 18 folded and 18 expanded cases per mode. |
 | Preserved broader native gate | Passed: 224 collapsed/expanded catalog variants per loading mode and 297 recorded checks, including long-context rejection/recovery, responsive help, non-modal Tab/Escape, protocol preservation and enforcing eval/inline-script/fetch CSP probes in all three loading modes |
 | Focused native acceptance | All three loading modes preserve exact holding focus and canonical state through full/compact/external switching; internal-owner collapse recovers to `#show-internals`; nested F2 help stays inside the viewport |
 | Announcement cadence | In all three loading modes, one receipt-related live-region update across many actual animation frames; no per-frame inventory announcement |

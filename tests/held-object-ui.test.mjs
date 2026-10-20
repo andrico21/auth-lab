@@ -92,6 +92,20 @@ test('full docks do not move a third client participant into the issuer column',
   assert.ok(full.positions.user.y<full.positions.browser.y&&full.positions.browser.y<full.positions.app.y);
 });
 
+test('full docks minimally rebalance crowded authored columns without dropping inventories',()=>{
+  const anchors={adUser:{x:145,y:120},adBrowser:{x:145,y:365},adWorkstation:{x:145,y:610},adApp:{x:560,y:120},adKeycloak:{x:560,y:365},adKdc:{x:560,y:610},adTgs:{x:560,y:610},adFactor:{x:975,y:365},adAs:{x:975,y:610}};
+  const actors=Object.keys(anchors),pairs=actors.map((id,index)=>[id,actors[(index+1)%actors.length]]);
+  const full=fullDockGeometry(actors,actors,pairs,1120,730,{},anchors);
+  assert.ok(full,'all declared participants still have full desktop inventories');
+  const columns=[...new Set(Object.values(full.positions).map(point=>point.x))].sort((a,b)=>a-b);
+  assert.equal(columns.length,3);
+  for(const id of ['adUser','adBrowser','adWorkstation'])assert.equal(full.positions[id].x,columns[0]);
+  for(const id of ['adFactor','adAs'])assert.equal(full.positions[id].x,columns[2]);
+  const crowded=['adApp','adKeycloak','adKdc','adTgs'];
+  assert.equal(crowded.filter(id=>full.positions[id].x===columns[1]).length,3,'only the necessary participant leaves the crowded column');
+  assert.equal(crowded.filter(id=>full.positions[id].x===columns[2]).length,1);
+});
+
 test('initial UI shows seeded holdings, explicit complete-empty and no future creation',()=>{
   const f=mountFixture();try{
     assert.equal(f.app.querySelector('#show-held-objects').hasAttribute('checked'),true);

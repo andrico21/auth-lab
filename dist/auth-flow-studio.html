@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-o11if4uY1VHU30InxWH9IgX0NGiIQ14fiL41CgtK3ts='; script-src-attr 'none'; style-src 'sha256-5qfyTg95RSWI2AqA24dkPJAOq1qYHx6AaHRRBEwbRsQ='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HXWZJvLjbOAuTFiKWX1XivkOlEeva8l8qBx/K498sfE='; script-src-attr 'none'; style-src 'sha256-5qfyTg95RSWI2AqA24dkPJAOq1qYHx6AaHRRBEwbRsQ='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="Explore Web sign-in, SSH access and AD DS Kerberos: OAuth, SAML, passkeys, MFA, certificates, Device Flow, PKINIT, FAST and forest trusts in one offline animated lab.">
@@ -12932,7 +12932,7 @@ function detachedHoldingStatus(compiled, snapshot, selection) {
   return 'No longer held';
 }
 
-// Preserve authored columns and vertical order in a centered composite grid.
+// Prefer authored columns, minimizing necessary moves when a column is crowded.
 // Hidden components keep their cells; inventory changes never move actors.
 function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 730, aliases = {}, referencePositions) {
   if (width < 1120 || height < 730 || actorIds.length > 9 || !actorIds.length ||
@@ -12948,26 +12948,34 @@ function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 730, alia
     if(used===columns)break;
     columns=used;
   }
-  const rows=Math.max(...groups.map(group=>group.length));
-  if(rows>3)return null;
-  const ys=Array.from({length:rows},(_,row)=>Math.round((row+.5)*730/rows)),positions={},bounds={};
-  groups.forEach((group,column)=>{
-    group.sort((a,b)=>referencePositions[a].y-referencePositions[b].y||referencePositions[a].x-referencePositions[b].x||(a<b?-1:a>b?1:0));
-    let bestMask=0,bestCost=Infinity;
-    for(let mask=1;mask<1<<rows;mask++){
-      let index=0,cost=0;
-      for(let row=0;row<rows;row++)if(mask&(1<<row)){
-        if(index===group.length){cost=Infinity;break;}
-        cost+=(ys[row]-referencePositions[group[index++]].y)**2;
-      }
-      if(index===group.length&&cost<bestCost){bestCost=cost;bestMask=mask;}
+  columns=Math.max(columns,Math.ceil(actorIds.length/3));
+  const ordered=[...actorIds].sort(),preferred=ordered.map(id=>Math.max(0,Math.min(columns-1,Math.round((referencePositions[id].x+76)*columns/1120-.5))));
+  const populations=new Uint8Array(columns);for(const column of preferred)populations[column]++;
+  const rows=Math.min(3,Math.max(Math.ceil(actorIds.length/columns),...populations));
+  const cells=Array.from({length:columns*rows},(_,index)=>({x:Math.round((index%columns+.5)*1120/columns-76),y:Math.round((Math.floor(index/columns)+.5)*730/rows)}));
+  const size=1<<cells.length,moves=new Uint8Array(size).fill(255),distances=new Float64Array(size).fill(Infinity),counts=new Uint8Array(size),previous=new Uint16Array(size),chosen=new Uint8Array(size);
+  moves[0]=0;distances[0]=0;let finish=-1,bestMoves=255,bestDistance=Infinity;
+  for(let mask=0;mask<size;mask++){
+    if(mask)counts[mask]=counts[mask>>1]+(mask&1);
+    if(!Number.isFinite(distances[mask]))continue;
+    const index=counts[mask];
+    if(index===ordered.length){
+      if(moves[mask]<bestMoves||moves[mask]===bestMoves&&distances[mask]<bestDistance){finish=mask;bestMoves=moves[mask];bestDistance=distances[mask];}
+      continue;
     }
-    const x=Math.round((column+.5)*1120/columns-76);let index=0;
-    for(let row=0;row<rows;row++)if(bestMask&(1<<row)){
-      const id=group[index++],y=ys[row];
-      positions[id]={x,y};bounds[id]={left:x-82,right:x+234,top:y-87,bottom:y+87};
+    const anchor=referencePositions[ordered[index]];
+    for(let cell=0;cell<cells.length;cell++){
+      if(mask&(1<<cell))continue;
+      const next=mask|(1<<cell),point=cells[cell],nextMoves=moves[mask]+(cell%columns!==preferred[index]?1:0),distance=distances[mask]+(point.x-anchor.x)**2+(point.y-anchor.y)**2;
+      if(nextMoves<moves[next]||nextMoves===moves[next]&&distance<distances[next]){moves[next]=nextMoves;distances[next]=distance;previous[next]=mask;chosen[next]=cell;}
     }
-  });
+  }
+  if(finish<0)return null;
+  const positions={},bounds={};
+  for(let index=ordered.length-1,mask=finish;index>=0;index--){
+    const id=ordered[index],{x,y}=cells[chosen[mask]];
+    positions[id]={x,y};bounds[id]={left:x-82,right:x+234,top:y-87,bottom:y+87};mask=previous[mask];
+  }
   for(const [id,slot] of Object.entries(aliases))if(positions[slot])positions[id]=positions[slot];
   const visible = Object.fromEntries(visibleIds.filter(id => positions[id]).map(id => [id,positions[id]]));
   const rectangles = Object.entries(bounds).map(([id,b]) => ({id,left:b.left-10,right:b.right+10,top:b.top-10,bottom:b.bottom+10}));
@@ -12980,7 +12988,7 @@ function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 730, alia
     if (!route) return null;
     routes.set(key,route);
   }
-  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-columns-v2'])};
+  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-capacity-v3'])};
 }
 
 // Compact controls keep fixed final CSS sizes. Only their reserved world-space
@@ -13101,7 +13109,8 @@ class HeldObjectView {
     const pairs=[...app.steps,...(app.hasTrace?app.traceQueue:[])].map(step=>[app.nodeId(step.from),app.nodeId(step.to)]);
     const width=Math.min(rect.width,viewport.width),height=rect.height;
     const compactPositions=Object.fromEntries(visible.map(id=>[id,base[id]]));
-    const reference=app.scenarioOwnedActors?scenarioPositions(app.labModel,app.steps,actors,true):getPositions(app.architecture);
+    const authored=app.labModel?.positions||app.labModel?.actorPositions||app.labModel?.layout?.positions||app.labModel?.layout||{};
+    const reference=app.scenarioOwnedActors?{...scenarioPositions(app.labModel,app.steps,actors,true),...authored}:getPositions(app.architecture);
     for(const [child,parent] of Object.entries(aliases))if(reference[child])reference[parent]=reference[child];
     const anchors=Object.fromEntries(all.map(id=>[id,reference[id]||actors[id]?.position]));
     const signature=JSON.stringify([all,visible,pairs,width>=1120,height>=730,viewport.width,app.moveParticipants,!!app.customLayouts[app.layoutKey],aliases,compactPositions,anchors]);
