@@ -101,7 +101,7 @@ export function buildProtectionHeldObjects(args) {
     const p = 'prot-' + choice.slice(4);
     basic(p + '-start', p + '-redeem', p + '-pkce-check');
     put(p + '-start', 'pending-state', 'Original backend state', 'app', ['protState'], 'pending-attempt');
-    put(p + '-start', 'pkce-verifier', 'Backend-only PKCE verifier', 'app', ['protVerifier'], 'pending-attempt');
+    put(p + '-start', 'pkce-verifier', 'Backend-only PKCE verifier', 'app', ['protVerifier'], 'pending-attempt', { readableBy: ['app', 'realmA'] });
     put(p + '-start', 'pkce-challenge', 'Public S256 PKCE commitment', 'app', ['protChallenge', 'protChallengeMethod'], 'pending-attempt', { readableBy: ['app', 'browser', 'realmA'], derivedFrom: ['pkce-verifier'] });
     put(p + '-start', 'authorization-request', 'Public authorization request', 'app', PROT_REQUEST, 'pending-attempt', { readableBy: ['app', 'browser', 'realmA'], related: ['pending-state', 'pkce-challenge'] });
     if (choice === 'lab-par') {

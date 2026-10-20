@@ -11,7 +11,7 @@ import { DEVICE_ATTRIBUTES, DEVICE_SOURCES, DEVICE_TOPIC_IDS, getDeviceSteps, ge
 import { CIBA_ATTRIBUTES, CIBA_SOURCES, CIBA_TOPIC_IDS, getCibaSteps, getCibaActorOverrides, getCibaAttributeOverrides, getCibaExampleOverrides } from './ciba-data.js';
 import { EXCHANGE_ATTRIBUTES, EXCHANGE_SOURCES, EXCHANGE_TOPIC_IDS, getTokenExchangeSteps, getTokenExchangeActorOverrides, getTokenExchangeAttributeOverrides, getTokenExchangeExampleOverrides } from './token-exchange-data.js';
 import { actorIllustration } from './actor-art.js';
-import { FlowPlayer, resolveActor, pairKey, connectionSteps } from './player.js';
+import { FlowPlayer, authoredMessageTiming, resolveActor, pairKey, connectionSteps } from './player.js';
 import { POSITIONS, getPositions, GRAPH_WIDTH, GRAPH_HEIGHT, connectionPath, channelCategory, validateLayoutRoutes } from './layout.js';
 import { CARD_BOUNDS } from './layout.js';
 import { placeStepOverlay } from './step-overlay-layout.js';
@@ -80,7 +80,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.attributeSelection=null;this.attributeQuery='';this.traceQueue=[];this.traceIndex=0;this.activeSteps=null;
     this.inspection={type:'step'}; this.visited=new Set(); this.packetIdentity='';
     this.theme='dark'; this.closeTimer=null; this.attributeTimer=null;this.showStepAttributes=true;this.stepOverlayIdentity='';this.lastRunningSpeed=1;
-    this.player=new FlowPlayer();
+    this.player=new FlowPlayer({getTiming:(step,kind)=>authoredMessageTiming(this.heldView?.compiled().plan,step,kind)});
     this.unsubscribe=this.player.subscribe(event=>this.onPlayer(event));
     this.innerHTML=this.shell();
     this.refs={};
@@ -790,7 +790,7 @@ export class AuthFlowStudio extends HTMLElement {
       // Its packet must replace the previous step's packet immediately.
       this.refs.packet.hidden=true;this.renderPacket(event);
     }
-    if(event.type==='frame')this.renderPacket(event);
+    if(['frame','stepcomplete','complete','state'].includes(event.type)&&event.step)this.renderPacket(event);
     if(['step','frame','state','complete'].includes(event.type))this.updateSeekControls(event);
     if(event.type==='stepcomplete'&&event.step){this.visited.add(pairKey(this.nodeId(event.step.from),this.nodeId(event.step.to)));this.hideStepAttributes();}
     if(event.type==='complete'){
@@ -858,6 +858,9 @@ export class AuthFlowStudio extends HTMLElement {
   }
   renderPacket(event) {
     if(!event.step)return;
+    this.refs.packet.dataset.messagePhase=event.messagePhase;
+    this.refs.packet.dataset.messageId=event.messageId||'';
+    this.refs.packet.dataset.routeProgress=String(event.progress);
     this.renderStepAttributes(event);
     const from=this.nodeId(event.step.from),to=this.nodeId(event.step.to),pair=pairKey(from,to);
     const group=[...this.refs.connections.querySelectorAll('[data-pair]')].find(g=>g.dataset.pair===pair);
@@ -878,8 +881,8 @@ export class AuthFlowStudio extends HTMLElement {
       this.refs.packet.style.left=Math.max(112,Math.min(GRAPH_WIDTH-112,point.x))/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=Math.max(40,Math.min(GRAPH_HEIGHT-40,point.y))/GRAPH_HEIGHT*100+'%';
       if(this.heldGeometry){this.refs.packet.style.left=point.x/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=point.y/GRAPH_HEIGHT*100+'%';}
     }
-    const external=this.querySelector('#held-active-message');external.hidden=!this.heldGeometry||!event.step;
-    if(!external.hidden)external.textContent=packet.name+': '+formatProtocolValue(packet.value)+' · '+event.step.title;
+    const external=this.querySelector('#held-active-message');external.hidden=!this.heldGeometry||!event.step||event.messagePhase==='local';
+    if(!external.hidden){external.dataset.messagePhase=event.messagePhase;external.textContent=packet.name+': '+formatProtocolValue(packet.value)+' · '+event.step.title+' · '+event.messagePhase;}
   }
   ensureRunningSpeed() {if(this.player.speed===0)this.player.setSpeed(this.lastRunningSpeed||1);}
   studyClock() {

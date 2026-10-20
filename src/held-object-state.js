@@ -256,6 +256,7 @@ function build(planInput, { model = null, steps } = {}) {
       holdings.set(id, { ...holding, holdingId: id, qualifiedHoldingId: `${plan.contextId}#${id}`, store: effect.store, retention: effect.retention ?? holding.retention, movedFrom: effect.holdingId, movedAt: timestamp });
     } else if (effect.op === 'observe') {
       requireValue(created.has(effect.artifactId), 'Observation precedes artifact creation.'); actor(effect.actorId);
+      if (effect.representationId !== undefined) representation(effect.artifactId, effect.representationId);
       requireValue(['verification', 'acceptance', 'knowledge'].includes(effect.kind), 'Unknown observation kind.'); text(effect.result, 'Observation result');
       observations.push({ ...effect, cursor: timestamp, ordinal: observations.length });
     } else if (effect.op === 'authority') {
@@ -326,6 +327,14 @@ export function assertHeldObjectCoverage(compiledOrPlan, options = {}) {
   return true;
 }
 
+function readableFields(representation, actorId) {
+  const readable = representation.readableBy.includes(actorId);
+  return representation.fields.map(field => {
+    const allowed = readable && (field.readableBy === undefined || field.readableBy.includes(actorId));
+    return allowed ? { ...field, readable: true } : { attributeId: field.attributeId, ...(field.name === undefined ? {} : { name: field.name }), readable: false, redacted: true };
+  });
+}
+
 /** A holder can inspect only its exact representation and permitted fields. */
 export function inspectHeldObject(snapshot, holdingId) {
   const holding = snapshot.holdings.find(item => item.holdingId === holdingId);
@@ -333,10 +342,7 @@ export function inspectHeldObject(snapshot, holdingId) {
   const artifact = snapshot.artifacts.find(item => item.artifactId === holding.artifactId);
   const representation = artifact.representations.find(item => item.representationId === holding.representationId);
   const readable = representation.readableBy.includes(holding.actorId);
-  const fields = representation.fields.map(field => {
-    const allowed = readable && (field.readableBy === undefined || field.readableBy.includes(holding.actorId));
-    return allowed ? { ...field, readable: true } : { attributeId: field.attributeId, ...(field.name === undefined ? {} : { name: field.name }), readable: false, redacted: true };
-  });
+  const fields = readableFields(representation, holding.actorId);
   const { representations, ...metadata } = artifact;
   return freeze({ holding, artifact: metadata, representation: { representationId: representation.representationId, format: representation.format, readable, fields }, fields,
     observations: snapshot.observations.filter(item => item.artifactId === artifact.artifactId && item.actorId === holding.actorId),
@@ -347,46 +353,61 @@ export function inspectHeldObject(snapshot, holdingId) {
 export function heldObjectTrace(compiled, artifactId) {
   const data = engine(compiled); requireValue(data.artifacts.has(artifactId), 'Unknown exact artifact ID.');
   if (data.trace.has(artifactId)) return data.trace.get(artifactId);
-  const artifact = data.artifacts.get(artifactId), rows = [], holdingArtifacts = new Map(), holdingActors = new Map();
-  for (const effect of data.plan.initial || []) if (effect.op === 'acquire') {
-    holdingArtifacts.set(effect.holdingId, effect.artifactId); holdingActors.set(effect.holdingId, effect.actorId);
-  }
+  const artifact = data.artifacts.get(artifactId), rows = [], history = new Map();
+  const remember = effect => {
+    if (effect.op === 'acquire') history.set(effect.holdingId, effect);
+    else if (effect.op === 'move') {
+      const holding = history.get(effect.holdingId);
+      history.set(effect.toHoldingId ?? effect.holdingId, { ...holding, holdingId: effect.toHoldingId ?? effect.holdingId, store: effect.store });
+    }
+  };
+  for (const effect of data.plan.initial || []) remember(effect);
+  const occurrence = (snapshot, before, actorId, representationId, preferred) => {
+    const current = snapshot.holdings.filter(item => item.artifactId === artifactId && item.actorId === actorId && (representationId === undefined || item.representationId === representationId));
+    const prior = before.holdings.filter(item => item.artifactId === artifactId && item.actorId === actorId && (representationId === undefined || item.representationId === representationId));
+    const holding = preferred ?? current.at(-1) ?? prior.at(-1);
+    const rep = artifact.representations.find(item => item.representationId === (representationId ?? holding?.representationId));
+    const fields = rep ? readableFields(rep, actorId) : [];
+    return { ...(holding ? { holdingId: holding.holdingId } : {}), ...(rep ? { representationId: rep.representationId } : {}), inspectionActorId: actorId,
+      fields: fields.map(field => field.attributeId),
+      payload: fields.map(field => ({ attributeId: field.attributeId, name: field.name ?? field.attributeId, ...(field.readable ? { value: field.value } : { value: 'Not readable by this holder', redacted: true }) })) };
+  };
   const seeded = data.checkpoints.get(initialCursor);
   if (seeded.artifacts.some(item => item.artifactId === artifactId)) {
-    const holding = seeded.holdings.find(item => item.artifactId === artifactId);
-    const owner = holding?.actorId ?? artifact.creator;
-    const fields = holding ? inspectHeldObject(seeded, holding.holdingId).fields : [];
+    const holding = seeded.holdings.find(item => item.artifactId === artifactId), owner = holding?.actorId ?? artifact.creator;
     rows.push(freeze({ id: `held-trace:${encodeURIComponent(compiled.contextId)}:${encodeURIComponent(artifactId)}:initial`,
       sourceIndex: -1, sourceStepId: null, artifactId, heldContextId: compiled.contextId, heldCursorStart: initialCursor, heldCursorEnd: initialCursor,
       traceKind: 'initial', title: `${artifact.label}: initial provisioned context`, from: owner, to: owner, channel: 'internal',
-      fields: fields.map(field => field.attributeId), payload: fields.map(field => ({ attributeId: field.attributeId, name: field.name ?? field.attributeId, ...(field.readable ? { value: field.value } : { value: 'Not readable by this holder', redacted: true }) })),
+      ...occurrence(seeded, seeded, owner, holding?.representationId, holding),
       attributeOperations: [], attributeValues: {}, protocolEffects: [], checks: [] }));
   }
   for (const [index, event] of data.events.entries()) {
     let previous = event.cursors.get('before');
     for (const milestone of event.milestones) {
-      const end = event.cursors.get(milestone.id), kinds = new Set(), actors = [];
+      const end = event.cursors.get(milestone.id), kinds = new Set(), related = [];
       for (const effect of milestone.effects) {
-        const id = effect.artifactId ?? holdingArtifacts.get(effect.holdingId);
-        if (effect.op === 'acquire') { holdingArtifacts.set(effect.holdingId, effect.artifactId); holdingActors.set(effect.holdingId, effect.actorId); }
-        if (effect.op === 'move' && effect.toHoldingId) { holdingArtifacts.set(effect.toHoldingId, id); holdingActors.set(effect.toHoldingId, holdingActors.get(effect.holdingId)); }
+        const holding = history.get(effect.holdingId), id = effect.artifactId ?? holding?.artifactId;
+        remember(effect);
         if (id === artifactId) {
           kinds.add(effect.op);
-          const owner = effect.actorId ?? effect.authorityId ?? holdingActors.get(effect.holdingId);
-          if (owner) actors.push(owner);
+          related.push({ effect, holding: effect.op === 'acquire' ? effect : effect.op === 'move' ? history.get(effect.toHoldingId ?? effect.holdingId) : holding });
         }
       }
-      const messages = (event.messages || []).filter(message => message.objects.some(object => object.artifactId === artifactId) && message.end <= milestone.at && message.end > (previous.milestone === 'before' ? 0 : event.milestones.find(item => item.id === previous.milestone).at));
+      const startAt = previous.milestone === 'before' ? 0 : event.milestones.find(item => item.id === previous.milestone).at;
+      const messages = (event.messages || []).filter(message => message.objects.some(object => object.artifactId === artifactId) && message.end <= milestone.at && message.end > startAt);
       if (messages.length) kinds.add('send');
       if (kinds.size) {
-        const snapshot = data.checkpoints.get(end), actorId = messages.at(-1)?.to ?? actors.at(-1) ?? artifact.creator;
-        const holding = snapshot.holdings.find(item => item.artifactId === artifactId && item.actorId === actorId);
-        const fields = holding ? inspectHeldObject(snapshot, holding.holdingId).fields : [];
+        const message = messages.at(-1), object = message?.objects.find(item => item.artifactId === artifactId);
+        const last = related.at(-1), actorId = message?.to ?? last?.effect.actorId ?? last?.effect.authorityId ?? last?.holding?.actorId ?? artifact.creator;
+        const explicit = [...related].reverse().find(item => item.effect.actorId === actorId && item.effect.representationId !== undefined);
+        const representationId = object?.representationId ?? explicit?.effect.representationId;
+        const preferred = [...related].reverse().find(item => item.holding?.actorId === actorId && (representationId === undefined || item.holding.representationId === representationId))?.holding;
         const source = data.steps[index];
         rows.push(freeze({ ...source, id: `held-trace:${encodeURIComponent(compiled.contextId)}:${encodeURIComponent(artifactId)}:${index}:${encodeURIComponent(milestone.id)}`,
           sourceIndex: index, sourceStepId: source.id, artifactId, heldContextId: compiled.contextId, heldCursorStart: previous, heldCursorEnd: end,
-          traceKind: [...kinds].join('/'), title: `${artifact.label}: ${[...kinds].join(', ')}`, from: messages[0]?.from ?? actorId, to: messages.at(-1)?.to ?? actorId,
-          fields: fields.map(field => field.attributeId), payload: fields.map(field => ({ attributeId: field.attributeId, name: field.name ?? field.attributeId, ...(field.readable ? { value: field.value } : { value: 'Not readable by this holder', redacted: true }) })),
+          ...(message ? { messageId: message.messageId } : {}),
+          traceKind: [...kinds].join('/'), title: `${artifact.label}: ${[...kinds].join(', ')}`, from: messages[0]?.from ?? actorId, to: message?.to ?? actorId,
+          ...occurrence(data.checkpoints.get(end), data.checkpoints.get(previous), actorId, representationId, preferred),
           attributeOperations: [], attributeValues: {}, protocolEffects: [], checks: [] }));
       }
       previous = end;

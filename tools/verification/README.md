@@ -102,7 +102,11 @@ Native checks cover modular source HTTP, standalone HTTP and standalone `file://
 
 Animation-area cases additionally exercise the paused username/password exchange in the basic web and native-client configurations, compact desktop and narrow external layouts. They check actual participant-column relationships, visible complete step names, path-following focus without an SVG bounding rectangle, and preservation of the complete canonical snapshot. Route clearance includes compact summary bounds. Captures center the map using ordinary scrolling; narrow captures show the actual scroll viewport, not the offscreen full-width canvas.
 
-Every picker choice must retain full inventories at both initial and final cursors in the collapsed 1920-pixel desktop sweep. Cached/failed AD and forest journeys and Kerberos-to-Keycloak bridges remain included: an actor omitted from current steps still uses its declared reference position, and a crowded column cannot silently reduce this desktop coverage to compact summaries.
+Code1 acceptance checks actual displayed compact-JWE/local decoded values from both selected representations; packet phase and displayed protocol state immediately around authored receipt in full/connection/exact replay; repeated owner returns; and exact focus identity plus originating region with separate resize/removal/collapse fallbacks. CSP records accumulate host-side across all application navigations/reloads. Touch opens the real exact-object inspector separately in source HTTP, standalone HTTP and standalone file, with a per-mode record.
+
+Kerberos/SSH composition checks independently cover AD, FAST, forest, SSH certificate enrollment/reissue, Device/SSSD and GSS with internals folded/expanded. They measure complete logical-owner label ranges, frame attachment, family-specific participant order, adjacent row spacing and the centered active GSS row. These assertions accompany actual visual inspection; overlap-free bounds alone are not a readability claim.
+
+Every picker choice must retain full inventories at both initial and final cursors in the collapsed 1920-pixel desktop sweep. Cached/failed AD and forest journeys and Kerberos-to-Keycloak bridges remain included. Reservations cover physical actors participating anywhere in the selected journey, independently of the cursor; collapsed aliases and owners absent from the whole lesson do not add empty cells. A crowded column cannot silently reduce this desktop coverage to compact summaries.
 
 ### Focused native and delivered-file reports
 

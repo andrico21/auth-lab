@@ -92,6 +92,46 @@ test('A04/A05: certificate issuance, delivery, agent installation and offline ho
   assert.equal(tokenEvent.messages[0].objects.length, 2, 'ID and access tokens retain distinct object identities within the response');
 });
 
+test('HC05: server acceptance does not authenticate the SSH client before success receipt', () => {
+  for (const [suffix, check, result] of [
+    ['cert-success', 'host-policy', 'ssh-success'],
+    ['device-cadence', 'host-policy', 'ssh-success'],
+    ['gss-success', 'mic-check', 'result'],
+  ]) {
+    const f = fixture(model(suffix));
+    const beforeCheck = f.frame(check, 'before');
+    const checking = projectHeldObjects(f.compiled, { eventIndex: f.index(check), progress: 0.5 });
+    for (const snapshot of [beforeCheck, checking]) {
+      assert.equal(holding(snapshot, 'ssh-connection', 'sshHost'), undefined, suffix);
+      assert.equal(holding(snapshot, 'ssh-connection', 'sshCli'), undefined, suffix);
+      assert.equal(snapshot.state.sessions.ssh.authenticated, false, suffix);
+    }
+    const accepted = f.frame(check);
+    assert.ok(holding(accepted, 'ssh-connection', 'sshHost'), suffix);
+    assert.equal(accepted.state.sessions.ssh.authenticated, true, 'family flag is the server decision');
+    assert.equal(holding(accepted, 'ssh-connection', 'sshCli'), undefined, suffix);
+    assert.equal(observations(accepted, 'ssh-connection', 'sshCli', 'acceptance').length, 0);
+    for (const progress of [0, 0.5, 0.999]) {
+      const pending = projectHeldObjects(f.compiled, { eventIndex: f.index(result), progress });
+      assert.ok(holding(pending, 'ssh-connection', 'sshHost'), suffix);
+      assert.equal(holding(pending, 'ssh-connection', 'sshCli'), undefined, suffix + ': client waits for whole success message');
+      assert.equal(observations(pending, 'ssh-connection', 'sshCli', 'acceptance').length, 0);
+    }
+    const received = f.frame(result);
+    assert.ok(holding(received, 'ssh-connection', 'sshHost'), suffix);
+    assert.ok(holding(received, 'ssh-connection', 'sshCli'), suffix);
+    assert.deepEqual(observations(received, 'ssh-connection', 'sshCli', 'acceptance').map(item => item.result), ['accepted_success_receipt']);
+    assert.equal(holding(received, 'channel-1', 'sshCli'), undefined, 'authentication receipt does not open a channel');
+    assert.ok(holding(f.frame('channel'), 'channel-1', 'sshCli'), suffix);
+    assert.deepEqual(f.plan.bindings.filter(item => item.path === 'sessions.ssh.authenticated').map(item => item.actorId), ['sshHost']);
+    const wire = f.plan.events[f.steps[f.index(result)].id].messages;
+    assert.equal(wire.length, 1);
+    assert.deepEqual([wire[0].from, wire[0].to, wire[0].start, wire[0].end], ['sshHost', 'sshCli', 0, 1]);
+    assert.deepEqual(f.frame(check), accepted, 'rewinding must restore server-only acceptance');
+    assert.equal(holding(f.frame(result, 'before'), 'ssh-connection', 'sshCli'), undefined, 'rewinding before receipt removes client completion');
+  }
+});
+
 test('A14/A19: private keys remain local and CLI/agent are independent under visual collapse', () => {
   const m = model('cert-success');
   const f = fixture(m, 'collapsed', Object.fromEntries(Object.entries(m.actors()).map(([id, actor]) => [id, { ...actor, ...(id === 'sshAgent' ? { parentId: 'sshCli', collapsed: true } : {}) }])));
@@ -234,6 +274,56 @@ test('A18: cancelled and restarted Device results obey terminal state and indepe
   assert.ok(code);
   assert.equal(inspectHeldObject(heldAtExpiry, code.holdingId).expired, true);
   assert.equal(holding(expired.final(), 'device-code-1', 'sshCli'), undefined, 'explicit terminal cleanup, not clock alone, releases it');
+});
+
+test('HC04: local Device cancellation preserves valid issuer state while clearing polling and display copies', () => {
+  for (const suffix of ['device-cancel', 'device-restart']) {
+    const f = fixture(model(suffix));
+    const before = f.frame('cancel', 'before');
+    const cancelling = projectHeldObjects(f.compiled, { eventIndex: f.index('cancel'), progress: 0.999 });
+    const cancelled = f.frame('cancel');
+    for (const snapshot of [before, cancelling]) {
+      assert.ok(holding(snapshot, 'device-code-1', 'sshCli', 'private polling state'), suffix);
+      assert.ok(holding(snapshot, 'device-instructions-1', 'sshCli', 'approval display'), suffix);
+      assert.ok(holding(snapshot, 'device-instructions-1', 'user', 'approval display'), suffix);
+      assert.notEqual(snapshot.state.transaction.status, 'cancelled');
+    }
+    assert.equal(cancelled.state.transaction.status, 'cancelled');
+    for (const snapshot of [cancelled, f.frame('late-response'), f.frame('ignore-late'), f.final()]) {
+      assert.equal(holding(snapshot, 'device-code-1', 'sshCli'), undefined, suffix);
+      assert.equal(holding(snapshot, 'device-instructions-1', 'sshCli'), undefined, suffix);
+      assert.equal(holding(snapshot, 'device-instructions-1', 'user'), undefined, suffix);
+      for (const id of ['device-code-1', 'device-instructions-1']) {
+        const issuer = holding(snapshot, id, 'sshIdp', 'pending Device transaction');
+        assert.ok(issuer, suffix + '/' + id + ': no remote cancellation was authored');
+        assert.deepEqual(issuer, holding(before, id, 'sshIdp', 'pending Device transaction'));
+        assert.equal(issuer.retention, 'retained', 'issuer lifecycle can outlive the local walkthrough');
+        assert.equal(inspectHeldObject(snapshot, issuer.holdingId).expired, false);
+        assert.ok(snapshot.protocolClock < artifact(snapshot, id).expiresAt);
+      }
+      assert.equal(snapshot.authority.some(item => item.artifactId === 'device-code-1' && item.authorityId === 'sshIdp'), false, 'local cancellation is not issuer invalidation');
+    }
+    const late = f.frame('late-response');
+    for (const id of ['late-id-token', 'late-access-token']) {
+      assert.ok(holding(late, id, 'sshCli'), suffix);
+      assert.equal(holding(f.frame('ignore-late'), id, 'sshCli'), undefined, suffix);
+    }
+    assert.equal(observations(f.frame('ignore-late'), 'late-id-token', 'sshCli', 'acceptance')[0].result, 'rejected_cancelled_transaction');
+    assert.deepEqual(f.frame('cancel', 'before'), before, 'rewinding restores only authored local cleanup');
+    if (suffix === 'device-restart') {
+      const fresh = f.frame('restart-response');
+      assert.ok(holding(fresh, 'device-code-1', 'sshIdp', 'pending Device transaction'));
+      assert.ok(holding(fresh, 'device-code-2', 'sshIdp', 'pending Device transaction'));
+      assert.ok(holding(fresh, 'device-code-2', 'sshCli', 'private polling state'));
+      assert.notEqual(field(fresh, 'device-code-1', 'device_code'), field(fresh, 'device-code-2', 'device_code'));
+      assert.notEqual(field(fresh, 'device-instructions-1', 'user_code'), field(fresh, 'device-instructions-2', 'user_code'));
+      assert.notEqual(artifact(fresh, 'device-code-1').qualifiedArtifactId, artifact(fresh, 'device-code-2').qualifiedArtifactId);
+      assert.equal(fresh.state.transactions.old.status, 'cancelled');
+      assert.equal(fresh.state.transaction.instanceId, f.model.id + ':device-transaction-2');
+      assert.equal(holding(f.frame('tokens'), 'device-code-2', 'sshIdp', 'pending Device transaction'), undefined, 'authored issuer token response completes only generation 2');
+      assert.ok(holding(f.frame('tokens'), 'device-code-1', 'sshIdp', 'pending Device transaction'));
+    }
+  }
 });
 
 test('A06/A14/A19: SSSD keeps private client/code/token data remote and separates directory permission from user authentication', () => {

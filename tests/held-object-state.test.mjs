@@ -225,6 +225,33 @@ describe('exact traces and playback', () => {
     assert.equal(projectHeldObjects(compiled, heldCursorForPlayback(compiled, {}, seed, { selected: true })), projectHeldObjects(compiled));
   });
 
+  test('exact occurrences retain wire values and bind local checks to their decoded holding', () => {
+    const { plan, model, steps } = fixture(), token = plan.artifacts.find(item => item.artifactId === 'R1');
+    const compact = 'eyJhbGciOiJSU0EtT0FFUC0yNTYifQ.encrypted-key.iv.ciphertext.tag';
+    token.representations = [
+      { representationId: 'plain', format: 'JWE compact', readableBy: ['issuer', 'client'], fields: [{ attributeId: 'token', value: compact }] },
+      { representationId: 'view', format: 'decrypted JWS', readableBy: ['client'], fields: [
+        { attributeId: 'token', value: 'decoded-signed-token' }, { attributeId: 'issuer', value: 'https://issuer.example' },
+        { attributeId: 'private', value: 'ISSUER-ONLY', readableBy: ['issuer'] },
+      ] },
+    ];
+    const check = plan.events.response.milestones[1];
+    check.effects.unshift(acquire('R1', 'client', 'decoded', { representationId: 'view' }));
+    check.effects.find(effect => effect.op === 'observe').representationId = 'view';
+    const compiled = compileHeldObjects(plan, { model, steps }), final = projectHeldObjects(compiled, complete(2));
+    const rows = heldObjectTrace(compiled, 'R1'), wire = rows.find(row => row.heldCursorEnd.milestone === 'arrive'), local = rows.find(row => row.heldCursorEnd.milestone === 'check');
+    assert.equal(wire.representationId, 'plain'); assert.equal(wire.holdingId, 'client:R1:response');
+    assert.equal(wire.payload.find(field => field.attributeId === 'token').value, compact);
+    assert.equal(wire.payload.some(field => field.attributeId === 'issuer'), false);
+    assert.equal(local.representationId, 'view'); assert.equal(local.holdingId, 'client:R1:decoded');
+    assert.equal(local.payload.find(field => field.attributeId === 'token').value, 'decoded-signed-token');
+    assert.equal(local.payload.find(field => field.attributeId === 'issuer').value, 'https://issuer.example');
+    assert.equal(local.payload.find(field => field.attributeId === 'private').redacted, true);
+    assert.equal(JSON.stringify(rows).includes('ISSUER-ONLY'), false);
+    for (const row of rows) assert.equal(projectHeldObjects(compiled, heldCursorForPlayback(compiled, { status: 'complete', step: row }, row)), projectHeldObjects(compiled, row.heldCursorEnd));
+    assert.equal(projectHeldObjects(compiled, complete(2)), final);
+  });
+
   test('message-only replay stops at receipt without installing later credentials', () => {
     const { plan, model, steps } = fixture();
     const compiled = compileHeldObjects(plan, { model, steps });

@@ -79,8 +79,8 @@ export function buildADHeldObjects(args) {
   function local(event, id, type, label, actor, fields, {store = 'request', readers = [actor], retention = 'temporary', ...options} = {}) {
     define(id, type, label, actor, fields, readers, options); create(event, id); hold(event, id, actor, store, retention); return id;
   }
-  function seed(id, type, label, creator, fields, holders, options = {}) {
-    define(id, type, label, creator, fields, holders.map(([actor]) => actor), options); create(null, id);
+  function seed(id, type, label, creator, fields, holders, {readers = holders.map(([actor]) => actor), ...options} = {}) {
+    define(id, type, label, creator, fields, readers, options); create(null, id);
     for (const [actor, store] of holders) hold(null, id, actor, store);
     return id;
   }
@@ -94,7 +94,7 @@ export function buildADHeldObjects(args) {
   const machineKey = initialState.keys.machine;
   const kdcServiceKey = initialState.keys.serviceKdc;
   const installedKey = initialState.keys.serviceInstalled;
-  seed(userKey, 'long-term-key', 'Alice account key', 'adKdc', [field('adUserKey', userKey)], [['adKdc', 'directory'], ['adAs', 'account-keys']]);
+  seed(userKey, 'long-term-key', 'Alice account key', 'adKdc', [field('adUserKey', userKey)], [['adKdc', 'directory'], ['adAs', 'account-keys']], {readers: ['adKdc', 'adAs', 'adWorkstation']});
   seed(krbtgtKey, 'long-term-key', 'Realm krbtgt key', 'adKdc', [field('adKrbtgtKey', krbtgtKey)], [['adKdc', 'directory'], ['adAs', 'account-keys'], ['adTgs', 'account-keys']]);
   seed(machineKey, 'long-term-key', 'Workstation account key', 'adKdc', [field('adMachineKey', machineKey)], [['adKdc', 'directory'], ['adTgs', 'account-keys'], ['adWorkstation', 'machine-account']]);
   seed(kdcServiceKey, 'long-term-key', 'KDC service-account key', 'adKdc', [field('adServiceKey', kdcServiceKey), field('adTicketKeyVersion', initialState.keys.serviceKdcVersion)], [['adKdc', 'directory'], ['adTgs', 'account-keys'], ...(installedKey === kdcServiceKey ? [[acceptor, 'acceptor-keytab']] : [])]);
@@ -153,7 +153,7 @@ export function buildADHeldObjects(args) {
   }
   credential('tgt'); credential('host'); credential('service');
   if (has('password')) {
-    seed('password:domain', 'password', 'Local domain password input', 'adUser', [field('adPassword', '<local password>')], [['adUser', 'user-secret']]);
+    seed('password:domain', 'password', 'Local domain password input', 'adUser', [field('adPassword', '<local password>')], [['adUser', 'user-secret']], {readers: ['adUser', 'adWorkstation']});
     send('password', 'password:domain', 'adUser', 'adWorkstation', {store: 'local-logon-input'});
     hold('select-key', userKey, 'adWorkstation', 'logon-key', 'temporary');
     releaseStore('select-key', 'adWorkstation', 'local-logon-input');
@@ -259,12 +259,12 @@ export function buildADHeldObjects(args) {
     seed('replay:totp', 'replay-record', 'Accepted TOTP counters', provider, [field('adOtpReplay', [...initialState.otpReplayCache])], [[provider, 'otp-replay-cache']]);
     if (initialState.sessions.provider) {
       seed('provider-session:earlier', 'provider-session', 'Existing provider session and assurance', provider, [field('session', initialState.sessions.provider), field('primary', initialState.assurance.primary), field('factor', initialState.assurance.factor || 'none')], [[provider, 'sessions']]);
-      seed('cookie:provider:earlier', 'session-cookie', 'Opaque Keycloak SSO handle', provider, [field('adCookie', 'KC-session=<opaque handle>')], [[browser, 'cookies']], {related: ['provider-session:earlier']});
+      seed('cookie:provider:earlier', 'session-cookie', 'Opaque Keycloak SSO handle', provider, [field('adCookie', 'KC-session=<opaque handle>')], [[browser, 'cookies']], {readers: [browser, provider], related: ['provider-session:earlier']});
       send('authorize', 'cookie:provider:earlier', browser, provider, {store: 'cookie-inbox'});
       if (has('cookie-check')) observe('cookie-check', 'provider-session:earlier', provider, 'verification', value('cookie-check', 'adAssurance'));
     }
     local('transaction', 'oidc:corporate:01', 'oidc-transaction', 'Backend authorization transaction', app, [field('adState', value('transaction', 'adState')), field('adOidcNonce', value('transaction', 'adOidcNonce')), field('adClientId', clientId), field('adRedirectUri', callback)], {store: 'transaction', retention: 'temporary'});
-    local('transaction', 'verifier:corporate:01', 'pkce-verifier', 'Backend PKCE verifier', app, [field('adVerifier', value('transaction', 'adVerifier'))], {store: 'transaction'});
+    local('transaction', 'verifier:corporate:01', 'pkce-verifier', 'Backend PKCE verifier', app, [field('adVerifier', value('transaction', 'adVerifier'))], {store: 'transaction', readers: [app, provider]});
     local('transaction', 'challenge:corporate:01', 'pkce-challenge', 'S256 verifier commitment', app, [field('adChallenge', value('transaction', 'adChallenge')), field('adChallengeMethod', 'S256')], {store: 'transaction', readers: [app, browser, provider], derivedFrom: ['verifier:corporate:01']});
     local('transaction', 'request:oidc:01', 'authorization-request', 'Public authorization request', app, [field('adState', value('transaction', 'adState')), field('adOidcNonce', value('transaction', 'adOidcNonce')), field('adChallenge', value('transaction', 'adChallenge')), field('adChallengeMethod', 'S256'), field('adClientId', clientId), field('adRedirectUri', callback), field('adScope', value('transaction', 'adScope', 'openid profile')), ...(model.id === 'lab-kc-prompt-none-factor-required' ? [field('adPrompt', 'none')] : []), ...(model.id === 'lab-kc-unsupported-assurance' ? [field('adAcrValues', 'urn:auth-lab:unsupported-required-class')] : [])], {store: 'transaction', readers: [app, browser, provider], derivedFrom: ['challenge:corporate:01']});
     send('open-browser', 'request:oidc:01', app, browser, {store: 'navigation'});
@@ -315,7 +315,7 @@ export function buildADHeldObjects(args) {
       }
     }
     if (has('password-fallback')) {
-      seed('password:provider', 'password', 'Provider password credential', 'adUser', [field('adPassword', '<provider password>')], [['adUser', 'user-secret']]);
+      seed('password:provider', 'password', 'Provider password credential', 'adUser', [field('adPassword', '<provider password>')], [['adUser', 'user-secret']], {readers: ['adUser', browser, provider]});
       seed('account:provider-password', 'account-record', 'Configured provider credential verifier', provider, [field('credential', '<account credential / federation verifier>')], [[provider, 'account-credentials']]);
       send('password-fallback', 'password:provider', 'adUser', browser, {store: 'password-form'}); send('password-submit', 'password:provider', browser, provider, {store: 'password-input'});
       observe('password-check', 'password:provider', provider, 'verification', 'provider account credential accepted');

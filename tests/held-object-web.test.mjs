@@ -5,7 +5,8 @@ import { GRANTLAB_SCENARIOS } from '../src/extended-grants-lab.js';
 import { SAMLLAB_SCENARIOS } from '../src/saml-advanced-lab.js';
 import { BRANCHLAB_SCENARIOS } from '../src/branching-lab.js';
 import { buildWebHeldObjects } from '../src/held-object-web.js';
-import { compileHeldObjects, projectHeldObjects, assertHeldObjectCoverage, inspectHeldObject, heldObjectTrace } from '../src/held-object-state.js';
+import { compileHeldObjects, projectHeldObjects, assertHeldObjectCoverage, inspectHeldObject, heldObjectTrace, heldCursorForPlayback } from '../src/held-object-state.js';
+import { FlowPlayer, authoredMessageTiming } from '../src/player.js';
 
 const models=[...LIFELAB_SCENARIOS,...GRANTLAB_SCENARIOS,...SAMLLAB_SCENARIOS,...BRANCHLAB_SCENARIOS];
 function fixture(id,revision='test') {
@@ -258,10 +259,55 @@ test('exact object traces and revision-qualified contexts do not merge refresh g
   for(const row of trace) {
     assert.ok(row.heldCursorStart&&row.heldCursorEnd);
     assert.equal(row.sourceStepId,a.steps[row.sourceIndex].id);
-    assert.deepEqual(projectHeldObjects(a.compiled,row.heldCursorEnd),projectHeldObjects(a.compiled,row.heldCursorEnd));
   }
   const final=a.at('lab-refresh-rotation-replace');
   assert.ok(final.holdings.filter(item=>item.artifactId==='R1').every(item=>item.qualifiedArtifactId.startsWith(a.compiled.contextId+'#')));
+});
+
+test('refresh receipt and packet phase agree before, at and after arrival in journey, connection and exact replay',()=>{
+  const f=fixture('lab-refresh-rotation'),sourceId='lab-refresh-rotation-response';
+  const source=f.steps.find(step=>step.id===sourceId);
+  const event=f.plan.events[sourceId],receipt=event.milestones.find(item=>item.id==='received').at;
+  assert.equal(receipt,.75,'Receipt remains separate from the complete boundary and later identity checks/install.');
+  const exact=heldObjectTrace(f.compiled,'R1').find(row=>row.sourceStepId===sourceId&&row.heldCursorEnd.milestone==='received');
+  assert.ok(exact);
+  for(const count of [0,1,6,19]) for(const speed of [0,.01,.5,1,4]) for(const reducedMotion of [false,true]) {
+    const payload=Array.from({length:count},(_,index)=>({name:'field-'+index,value:'value-'+index}));
+    const journey=f.steps.map(step=>step===source?{...source,payload}:step);
+    const connection=journey.slice(0,journey.findIndex(step=>step.id===sourceId)+1).filter(step=>(step.from==='app'&&step.to==='realmA')||(step.from==='realmA'&&step.to==='app'));
+    for(const [kind,queue,row] of [['demo',journey,journey.find(step=>step.id===sourceId)],
+      ['connection',connection,connection.find(step=>step.id===sourceId)],['object',[{...exact,payload}],{...exact,payload}]]) {
+      const player=new FlowPlayer({getTiming:(step,kind)=>authoredMessageTiming(f.plan,step,kind)});
+      player.setSpeed(speed);player.setReducedMotion(reducedMotion);
+      const index=queue.findIndex(step=>step.id===row.id),duration=player.totalDuration([row]);
+      const offset=player.totalDuration(queue.slice(0,index)),total=player.totalDuration(queue);
+      const timing=authoredMessageTiming(f.plan,row,kind),start=timing.start,end=timing.end;
+      const boundary=(receipt-start)/(end-start);
+      // Connection and exact receipt end their replay interval; seek past it stays frozen.
+      for(const delta of [-1e-6,0,1e-6]) {
+        const fraction=Math.max(0,Math.min(1,boundary+delta));
+        player.seek(queue,(offset+duration*fraction)/total,kind);
+        const frame=player.snapshot(),held=projectHeldObjects(f.compiled,heldCursorForPlayback(f.compiled,{...frame,queue:player.queue}));
+        const received=delta>=0,label=`${kind}, ${count} fields, speed ${speed}, reduced ${reducedMotion}, delta ${delta}`;
+        assert.equal(frame.messagePhase,received?'received':'in-flight',label);
+        assert.equal(frame.visible,!received,label);
+        assert.equal(held.inFlight.some(message=>message.messageId===frame.messageId),!received,label);
+        assert.equal(held.cursor.milestone,received?'received':'delayed-response',label);
+        for(const id of ['R1','AT1','ID1']) {
+          assert.equal(has(held,id,'app','response'),received,label);
+          assert.equal(has(held,id,'app','credentials'),false,'Receipt is not installation: '+label);
+        }
+        assert.ok(has(held,'R0','app','credentials'),label);
+        assert.equal(held.observations.some(item=>item.artifactId==='ID1'&&item.result==='accepted'),false,label);
+        if(received)assert.equal(frame.progress,1,label);
+        else assert.ok(frame.progress>.99,label);
+        assert.deepEqual(held.state,f.at(sourceId,received?'received':'delayed-response').state,label);
+      }
+    }
+  }
+  const installed=f.at('lab-refresh-rotation-replace');
+  assert.ok(observation(installed,'ID1','app','accepted'));
+  for(const id of ['R1','AT1','ID1'])assert.ok(has(installed,id,'app','credentials'));
 });
 
 for(const [id,first,second,last] of [

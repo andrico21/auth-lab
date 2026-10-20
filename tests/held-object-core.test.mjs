@@ -142,6 +142,55 @@ test('enrollment starts verified but new key and TOTP seed do not preexist',()=>
   assert.equal(held(last(otp),'totp-provisioning-uri').length,0);
 });
 
+for(const mode of ['enrollment','fido-enrollment'])for(const authenticator of ['hello','yubikey'])test(mode+' '+authenticator+' separates authenticator output from browser registration assembly',()=>{
+  const f=fixture({mode,upstream:'single',architecture:'web',authenticator});
+  const rp=mode==='fido-enrollment'?'app':'realmA';
+  const outputId=authenticator==='hello'?'platform-result':'ctap-result';
+  const returned=snapshot(f,'e06');
+  const output=declaration(f,outputId);
+  const proof=declaration(f,'fido-proof');
+  const context=declaration(f,'fido-client-context');
+  assert.equal(created(snapshot(f,'e06','before'),'fido-private-key'),false);
+  assert.equal(created(snapshot(f,'e06','before'),outputId),false);
+  assert.equal(held(returned,'fido-private-key',authenticator).length,1);
+  assert.equal(held(returned,outputId,authenticator).length,1,'The authenticator owns its local registration output');
+  assert.equal(held(returned,outputId,'browser').length,1);
+  assert.equal(output.creator,authenticator);
+  assert.equal(output.representations.some(rep=>rep.fields.some(field=>field.attributeId==='clientDataJSON')),false);
+  assert.equal(proof.creator,'browser');
+  assert.deepEqual(proof.derivedFrom,[outputId,'fido-client-context']);
+  assert.equal(proof.representations.some(rep=>rep.readableBy.includes(authenticator)),false);
+  assert.deepEqual(
+    proof.representations[0].fields.find(field=>field.attributeId==='clientDataJSON'),
+    context.representations.find(rep=>rep.representationId==='plain').fields.find(field=>field.attributeId==='clientDataJSON'),
+    'The final response attaches the original browser client data, not authenticator-produced JSON',
+  );
+  const resultEvent=f.steps.find(step=>String(step.id).endsWith('-e06'));
+  const localMessage=f.plan.events[resultEvent.id].messages.find(message=>message.from===authenticator&&message.to==='browser');
+  assert.ok(localMessage.objects.some(object=>object.artifactId===outputId));
+  assert.equal(localMessage.objects.some(object=>object.artifactId==='fido-proof'||object.artifactId==='fido-private-key'),false);
+  if(authenticator==='hello') {
+    assert.match(output.label,/platform/);
+    assert.equal(/CTAP/.test(output.label),false);
+    assert.equal(!!declaration(f,'ctap-result'),false);
+    assert.equal(held(returned,'fido-proof','browser').length,1);
+  } else {
+    const conversion=f.steps.find(step=>step.ctapOperation==='registration-api-conversion');
+    assert.ok(conversion,'Roaming registration retains the explicit CTAP-to-WebAuthn conversion');
+    assert.equal(created(returned,'fido-proof'),false);
+    assert.equal(created(snapshot(f,conversion.id,'before'),'fido-proof'),false);
+    assert.equal(held(snapshot(f,conversion.id),'fido-proof','browser').length,1);
+  }
+  const submitted=f.steps.find(step=>String(step.id).endsWith('-e07'));
+  assert.ok(f.plan.events[submitted.id].messages.some(message=>message.from==='browser'&&message.to===rp&&message.objects.some(object=>object.artifactId==='fido-proof')));
+  assert.deepEqual(declaration(f,'fido-private-key').representations[0].readableBy,[authenticator]);
+  assert.equal(declaration(f,'fido-private-key').representations[0].fields.some(field=>field.attributeId==='rpId'),true);
+  assert.equal(held(last(f),'fido-private-key',authenticator).length,1);
+  assert.equal(held(last(f),'fido-rp-record',rp).length,1);
+  assert.equal(held(last(f),outputId).length,0);
+  assert.equal(held(last(f),'fido-proof').length,0);
+});
+
 for(const providerProfileId of ['generic','entra','okta','cognito','aws-identity-center'])test(providerProfileId+' managed boundary never fabricates factor stores',()=>{
   const f=fixture({mode:'password',upstream:'external',providerManaged:true,providerProfileId,brokerProtocol:providerProfileId==='aws-identity-center'?'saml':'oidc'});
   assert.equal(f.plan.artifacts.some(a=>['password','password-verifier','symmetric-key','authentication-proof','public-key-record'].includes(a.type)),false);
@@ -171,6 +220,36 @@ test('CIBA handle and service callback credential are not tokens or device UI da
   assert.equal(held(last(f),'ciba-channel-credential').length,0);
   assert.equal(held(last(f),'oidc-app-id-token','app').length,1);
   assert.equal(held(last(f),'oidc-app-id-token','browser').length,0);
+});
+
+test('CIBA internal factor success has no invented provider cookie carrier and still waits for explicit approval',()=>{
+  const f=fixture({mode:'password-totp',oidcFlow:'ciba',architecture:'web',upstream:'single'});
+  const factor=f.steps.find(step=>step.id==='ciba-factor-m05');
+  assert.ok(factor);
+  assert.equal(factor.from,'realmB');
+  assert.equal(factor.to,'realmB');
+  const checked=snapshot(f,factor.id);
+  assert.equal(checked.observations.some(item=>item.artifactId==='totp-input'&&item.actorId==='realmB'),true,'Factor verification still occurs');
+  assert.equal(checked.holdings.some(item=>item.actorId==='browser'&&declaration(f,item.artifactId)?.type==='cookie'),false);
+  assert.equal(f.plan.artifacts.some(artifact=>artifact.type==='cookie'||artifact.artifactId==='provider-session'),false,'This fixture defines no service session/cookie lifecycle');
+  assert.equal(f.plan.events[factor.id].messages?.some(message=>message.from==='realmB'&&message.to==='browser')||false,false);
+  for(const step of f.steps)for(const message of f.plan.events[step.id]?.messages||[]) {
+    assert.equal(message.objects.some(object=>object.artifactId==='provider-cookie'),false);
+    assert.ok(step.from===step.to?message.from===message.to:message.from===step.from&&message.to===step.to,'No unmodeled remote carrier is introduced at '+step.id);
+  }
+  const approvalIndex=f.steps.findIndex(step=>step.id==='ciba-approve');
+  assert.ok(f.steps.indexOf(factor)<approvalIndex);
+  for(const id of [factor.id,'ciba-approve','ciba-decision','ciba-result']) {
+    const pending=snapshot(f,id);
+    assert.equal(pending.observations.some(item=>item.artifactId==='ciba-handle'),false,'Provider acceptance waits for its protected result check');
+    assert.equal(created(pending,'oidc-app-id-token'),false,'Approval alone does not issue a token');
+    assert.equal(held(pending,'ciba-channel-credential','realmB').length,1);
+  }
+  const approved=snapshot(f,'ciba-approved');
+  assert.equal(approved.observations.some(item=>item.artifactId==='ciba-handle'&&item.actorId==='realmA'),true);
+  assert.equal(created(approved,'oidc-app-id-token'),false);
+  assert.equal(created(snapshot(f,'ciba-issue'),'oidc-app-id-token'),true);
+  assert.equal(held(last(f),'oidc-app-id-token','app').length,1);
 });
 
 test('service/exchange normalization omits human credentials and keeps exact source lineage',()=>{

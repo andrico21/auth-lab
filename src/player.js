@@ -2,11 +2,52 @@ const LEAD = 380, TRAVEL = 1050, GAP = 240, TAIL = 800;
 const packetCount = step => Math.max(1, step?.payload?.length || 0);
 const stepDuration = step => LEAD + packetCount(step) * (TRAVEL + GAP) + TAIL;
 
+/** Resolve presentation timing from the same authored event interval as holdings. */
+export function authoredMessageTiming(plan, step, kind) {
+  if (!plan) return undefined;
+  const event = plan?.events?.[step.sourceStepId || step.id];
+  let start = 0, end = 1;
+  if (step.heldCursorStart && step.heldCursorEnd) {
+    const first = step.heldCursorStart, last = step.heldCursorEnd;
+    if (first.eventIndex !== last.eventIndex || first.eventIndex < 0) return { start: 0, end: 0, messages: [] };
+    const at = cursor => cursor.milestone === 'before' ? 0 : event.milestones.find(item => item.id === cursor.milestone).at;
+    start = at(first); end = at(last);
+  } else if (kind === 'connection') {
+    const messages = (event?.messages || []).filter(message => message.from === step.from && message.to === step.to);
+    if (messages.length) {
+      start = Math.min(...messages.map(message => message.start));
+      end = Math.max(...messages.map(message => message.end));
+    }
+  }
+  const messages = (event?.messages || []).filter(message =>
+    (kind !== 'connection' || message.from === step.from && message.to === step.to) &&
+    (!step.artifactId || message.from === step.from && message.to === step.to &&
+      message.objects.some(object => object.artifactId === step.artifactId && (!step.representationId || object.representationId === step.representationId))) &&
+    message.end > start && message.start < end);
+  return { start, end, messages };
+}
+
+function authoredPacket(timing, elapsed, duration, count) {
+  const sourceProgress = timing.start + (timing.end - timing.start) * Math.max(0, Math.min(1, elapsed / duration));
+  const message = timing.messages.find(item => sourceProgress >= item.start && sourceProgress < item.end) ||
+    timing.messages.find(item => sourceProgress < item.start) || timing.messages.at(-1);
+  if (!message) return { packetIndex: count - 1, progress: 1, visible: false, messagePhase: 'local' };
+  const messagePhase = sourceProgress < message.start ? 'pending' : sourceProgress < message.end ? 'in-flight' : 'received';
+  // Every field's route is contained in this message, independent of field count.
+  const position = Math.max(0, Math.min(1, (sourceProgress - message.start) / (message.end - message.start))) * count;
+  const packetIndex = Math.min(count - 1, Math.floor(position));
+  return { packetIndex, progress: Math.min(1, position - packetIndex), visible: messagePhase === 'in-flight',
+    messagePhase, messageId: message.messageId,
+    messageStart: (message.start - timing.start) / (timing.end - timing.start),
+    messageEnd: (message.end - timing.start) / (timing.end - timing.start) };
+}
+
 /** A deterministic animation clock. Packets are intentionally sent one at a time. */
 export class FlowPlayer {
-  constructor({ requestFrame = cb => requestAnimationFrame(cb), cancelFrame = id => cancelAnimationFrame(id) } = {}) {
+  constructor({ requestFrame = cb => requestAnimationFrame(cb), cancelFrame = id => cancelAnimationFrame(id), getTiming } = {}) {
     this.requestFrame = requestFrame;
     this.cancelFrame = cancelFrame;
+    this.getTiming = getTiming;
     this.listeners = new Set();
     this.speed = 1;
     this.status = 'idle';
@@ -32,9 +73,13 @@ export class FlowPlayer {
     const overallDuration = this.totalDuration();
     const precedingDuration = this.totalDuration(this.queue.slice(0, this.position));
     const overallElapsed = this.queue.length ? precedingDuration + Math.max(0, Math.min(duration, this.elapsed)) : 0;
-    return { status: this.status, speed: this.speed, kind: this.kind, step, queuePosition: this.position,
-      queueLength: this.queue.length, packetIndex: index, packet: step?.payload?.[index], progress,
+    const timing = step && this.getTiming?.(step, this.kind);
+    const presentation = timing ? authoredPacket(timing, this.elapsed, duration, count) : {
+      packetIndex: index, progress,
       visible: !!step && this.elapsed >= LEAD && packetElapsed <= TRAVEL && this.elapsed < LEAD + count * packetWindow,
+      messagePhase: 'unmodeled' };
+    return { status: this.status, speed: this.speed, kind: this.kind, step, queuePosition: this.position,
+      queueLength: this.queue.length, ...presentation, packet: step?.payload?.[presentation.packetIndex],
       duration, elapsed: this.elapsed, stepElapsed: this.elapsed, overallDuration, overallElapsed,
       overallProgress: overallDuration ? overallElapsed / overallDuration : 0 };
   }

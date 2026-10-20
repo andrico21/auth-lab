@@ -40,6 +40,33 @@ for (const model of models) test(model.id + ' has complete, deterministic, relea
   }
 });
 
+for (const choice of ['lab-par', 'lab-jar', 'lab-jarm']) test('HC03: ' + choice + ' server inspects the delivered verifier, never before redemption', () => {
+  const f = fixture(choice);
+  const prefix = 'prot-' + choice.slice(4);
+  const before = f.at(prefix + '-redeem', 'before');
+  assert.equal(held(before, 'realmA', 'pkce-verifier').length, 0);
+  const delivered = f.at(prefix + '-redeem');
+  const receipt = held(delivered, 'realmA', 'pkce-verifier')[0];
+  assert.equal(receipt.store, 'redemption-verifier');
+  const inspection = inspectHeldObject(delivered, receipt.holdingId);
+  assert.equal(inspection.representation.readable, true);
+  const verifier = inspection.fields.find(field => field.attributeId === 'protVerifier');
+  assert.equal(verifier.readable, true);
+  assert.equal(verifier.redacted, undefined);
+  assert.equal(verifier.value, f.model.definitions({}).protVerifier.example);
+  assert.notEqual(verifier.value, undefined);
+  assert.equal(held(f.at(prefix + '-pkce-check'), 'realmA', 'pkce-verifier').length, 0, 'checking releases the request copy');
+  assert.deepEqual(f.at(prefix + '-redeem', 'before'), before, 'rewind removes receipt and inspection availability');
+  for (let eventIndex = -1; eventIndex < f.steps.length; eventIndex++) {
+    const snapshot = projectHeldObjects(f.compiled, {eventIndex, milestone: eventIndex < 0 ? 'initial' : 'complete'});
+    assert.equal(held(snapshot, 'browser', 'pkce-verifier').length, 0, 'backend verifier never enters browser storage');
+    assert.equal(held(snapshot, 'browser', 'issuer-key').length, 0, 'server signing key stays private');
+    if (eventIndex < f.steps.findIndex(step => step.id === prefix + '-redeem')) {
+      assert.equal(held(snapshot, 'realmA', 'pkce-verifier').length, 0, 'authored server readership is not early delivery');
+    }
+  }
+});
+
 test('DPoP proof target comes from each exact contextual source event, not the filtered glossary', () => {
   const model = models.find(item => item.id === 'lab-dpop');
   assert.equal(Object.hasOwn(model.definitions({}), 'protTokenEndpoint'), false);

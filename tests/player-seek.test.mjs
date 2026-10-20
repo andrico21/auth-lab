@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { FlowPlayer } from '../src/player.js';
+import { FlowPlayer, authoredMessageTiming } from '../src/player.js';
 
 const stageDuration = count => 380 + Math.max(1, count) * 1290 + 800;
 const queue = Object.freeze([
@@ -9,12 +9,13 @@ const queue = Object.freeze([
   Object.freeze({ id: 'token', from: 'app', to: 'realmA', payload: Object.freeze([{ id: 'code', name: 'code' }, { id: 'codeVerifier', name: 'code_verifier' }, { id: 'redirectUri', name: 'redirect_uri' }]) }),
 ]);
 
-function clockPlayer() {
+function clockPlayer(options = {}) {
   let time = 0, serial = 0;
   const frames = new Map();
   const player = new FlowPlayer({
     requestFrame(callback) { const id = ++serial; frames.set(id, callback); return id; },
     cancelFrame(id) { frames.delete(id); },
+    ...options,
   });
   function frame(delta = 100) {
     time += delta;
@@ -200,4 +201,110 @@ test('queues are shallow copied, source stages remain unchanged, and empty seeki
   assert.equal(player.snapshot().overallDuration, 0);
   assert.equal(player.snapshot().overallProgress, 0);
   assert.equal(frames.size, 0);
+});
+
+test('authored message bounds contain every field route regardless of payload count or playback speed', () => {
+  const plan = { events: { transfer: { messages: [{messageId:'wire',start:.2,end:.63,objects:[{artifactId:'token'}]}] } } };
+  for (const count of [0, 1, 6, 29]) for (const speed of [0, .01, .5, 1, 4]) {
+    const step = {id:'transfer',payload:Array.from({length:count},(_,index)=>({name:'field-'+index}))};
+    const {player, frames} = clockPlayer({getTiming:(row,kind)=>authoredMessageTiming(plan,row,kind)});
+    player.setSpeed(speed);
+    for (const [fraction, phase] of [[.199999,'pending'],[.2,'in-flight'],[.629999,'in-flight'],[.63,'received'],[.630001,'received'],[.8,'received']]) {
+      player.seek([step],fraction);
+      const snapshot=player.snapshot();
+      assert.equal(snapshot.messagePhase,phase,`count ${count}, speed ${speed}, position ${fraction}`);
+      assert.equal(snapshot.visible,phase==='in-flight');
+      close(snapshot.messageStart,.2); close(snapshot.messageEnd,.63);
+      if(phase==='received'){assert.equal(snapshot.progress,1);assert.equal(snapshot.packetIndex,Math.max(1,count)-1);}
+      if(fraction===.629999){assert.equal(snapshot.packetIndex,Math.max(1,count)-1);assert.ok(snapshot.progress>.999);}
+    }
+    assert.equal(frames.size,0);
+  }
+});
+
+test('exact replay uses its authored cursor interval and does not replay a previous message during later checks', () => {
+  const plan={events:{source:{milestones:[{id:'delayed',at:.25},{id:'received',at:.75},{id:'complete',at:1}],
+    messages:[{messageId:'wire',start:0,end:.75,objects:[{artifactId:'token'}]}]}}};
+  const row={id:'exact',sourceStepId:'source',artifactId:'token',payload:[{name:'token'}],
+    heldCursorStart:{eventIndex:2,milestone:'delayed'},heldCursorEnd:{eventIndex:2,milestone:'received'}};
+  const {player}=clockPlayer({getTiming:(step,kind)=>authoredMessageTiming(plan,step,kind)});
+  player.seek([row],.999999,'object');
+  assert.equal(player.snapshot().messagePhase,'in-flight');
+  assert.ok(player.snapshot().progress>.999);
+  player.seek([row],1,'object');
+  assert.equal(player.snapshot().messagePhase,'received');
+  assert.equal(player.snapshot().visible,false);
+  assert.equal(player.snapshot().progress,1);
+  const check={...row,heldCursorStart:row.heldCursorEnd,heldCursorEnd:{eventIndex:2,milestone:'complete'}};
+  player.seek([check],.5,'object');
+  assert.equal(player.snapshot().messagePhase,'local');
+  assert.equal(player.snapshot().visible,false);
+});
+
+test('seek/resume crosses the authored receipt once at slow and fast speeds, including reduced-motion completion', () => {
+  const plan={events:{transfer:{messages:[{messageId:'wire',start:0,end:.75,objects:[{artifactId:'token'}]}]}}};
+  const step={id:'transfer',payload:Array.from({length:6},(_,index)=>({name:'field-'+index}))};
+  for(const speed of [.01,.5,1,4]) {
+    const {player,frame}=clockPlayer({getTiming:(row,kind)=>authoredMessageTiming(plan,row,kind)});
+    const duration=player.totalDuration([step]);
+    player.setSpeed(speed);player.seek([step],(.75*duration-speed*50)/duration);
+    assert.equal(player.snapshot().messagePhase,'in-flight');
+    player.resume();frame();
+    assert.equal(player.snapshot().messagePhase,'in-flight','Resuming establishes origin without advancing.');
+    frame();
+    assert.equal(player.snapshot().messagePhase,'received');
+    assert.equal(player.snapshot().visible,false);
+    player.pause();
+    player.seek([step],.749999);player.setReducedMotion(true);player.resume();
+    assert.equal(player.snapshot().messagePhase,'in-flight');
+    player.cancel();player.advanceReducedMotion();
+    assert.equal(player.snapshot().messagePhase,'received');
+    assert.equal(player.snapshot().progress,1);
+    assert.equal(player.snapshot().status,'complete');
+  }
+});
+
+test('exact message presentation matches the occurrence route and representation rather than an artifact label',()=>{
+  const plan={events:{source:{milestones:[{id:'received',at:.75},{id:'complete',at:1}],messages:[
+    {messageId:'outer',from:'issuer',to:'client',start:0,end:.5,objects:[{artifactId:'object',representationId:'outer'}]},
+    {messageId:'inner',from:'issuer',to:'client',start:.5,end:.75,objects:[{artifactId:'object',representationId:'inner'}]},
+    {messageId:'other-owner',from:'client',to:'resource',start:0,end:1,objects:[{artifactId:'object',representationId:'inner'}]},
+  ]}}};
+  const row={id:'exact',sourceStepId:'source',artifactId:'object',representationId:'inner',from:'issuer',to:'client',payload:[{name:'same name'}],
+    heldCursorStart:{eventIndex:0,milestone:'before'},heldCursorEnd:{eventIndex:0,milestone:'received'}};
+  const {player}=clockPlayer({getTiming:(step,kind)=>authoredMessageTiming(plan,step,kind)});
+  player.seek([row],.5);
+  assert.equal(player.snapshot().messageId,'inner');
+  assert.equal(player.snapshot().messagePhase,'pending');
+  player.seek([row],.9);
+  assert.equal(player.snapshot().messageId,'inner');
+  assert.equal(player.snapshot().messagePhase,'in-flight');
+  player.seek([row],1);
+  assert.equal(player.snapshot().messageId,'inner');
+  assert.equal(player.snapshot().messagePhase,'received');
+  assert.equal(player.snapshot().visible,false);
+});
+
+test('connection replay maps its clock into the authored route interval while exact cursor bounds take precedence',()=>{
+  const plan={events:{source:{milestones:[{id:'delayed',at:.25},{id:'received',at:.75},{id:'complete',at:1}],messages:[
+    {messageId:'wire',from:'issuer',to:'client',start:.2,end:.75,objects:[{artifactId:'token'}]},
+    {messageId:'other-route',from:'issuer',to:'resource',start:0,end:1,objects:[{artifactId:'other'}]},
+  ]}}};
+  const row={id:'source',from:'issuer',to:'client',payload:[{name:'token'}]};
+  const {player}=clockPlayer({getTiming:(step,kind)=>authoredMessageTiming(plan,step,kind)});
+  player.seek([row],.75,'connection');
+  assert.equal(player.snapshot().messagePhase,'in-flight','Connection .75 is not source .75.');
+  close(player.snapshot().messageStart,0);close(player.snapshot().messageEnd,1);
+  player.seek([row],.999999,'connection');
+  assert.equal(player.snapshot().messagePhase,'in-flight');
+  player.seek([row],1,'connection');
+  assert.equal(player.snapshot().messagePhase,'received');
+  assert.equal(player.snapshot().visible,false);
+  const full=authoredMessageTiming(plan,row,'demo');
+  assert.equal(full.start,0);assert.equal(full.end,1,'Full replay retains the whole authored source interval.');
+  const exact={...row,sourceStepId:'source',artifactId:'token',
+    heldCursorStart:{eventIndex:0,milestone:'delayed'},heldCursorEnd:{eventIndex:0,milestone:'received'}};
+  const interval=authoredMessageTiming(plan,exact,'connection');
+  assert.equal(interval.start,.25);
+  assert.equal(interval.end,.75);
 });

@@ -38,6 +38,14 @@ function mountFixture(){
 }
 function unmount(app){app.disconnectedCallback();document.body.removeChild(app);document.activeElement=document.body;clock.frames.clear();clock.timers.clear();}
 const control=(app,id)=>[...app.querySelectorAll('[data-holding-id]')].find(item=>item.dataset.holdingId===id&&!item.closest('[hidden]'));
+function fixtureGeometry(f,mode){
+  const positions={app:{x:170,y:380},realmA:{x:820,y:170}},actors=Object.keys(positions),pairs=sourceSteps.map(step=>[step.from,step.to]);
+  f.app.heldGeometry=mode==='full'?fullDockGeometry(actors,actors,pairs,1120,730,{},positions):mode==='compact'?compactDockGeometry(positions,pairs,1105):null;
+  if(mode!=='external')assert.ok(f.app.heldGeometry);
+  f.app.refs.graph.dataset.heldGeometry=mode;
+  f.app.refs.actors.querySelectorAll('[data-actor]').forEach(card=>{card.getBoundingClientRect=()=>({width:82,height:132});});
+  f.view.lastKey='';f.view.render();
+}
 
 test('exact control identity, ordering and overflow pinning never merge equal attribute generations',()=>{
   const rows=['a','b','c','d'].map((id,ordinal)=>({contextId:'one',actorId:'app',artifactId:id,representationId:'plain',holdingId:'h-'+id,ordinal}));
@@ -190,6 +198,69 @@ test('exact history is an artifact trace and shares canonical snapshots with ful
     }
     assert.match(f.app.refs['attribute-focus'].textContent,/EXACT OBJECT HISTORY/);
   }finally{unmount(f.app);}
+});
+
+test('encrypted and decoded selections replay the same actual JWE and local decoded occurrences',()=>{
+  const app=mount();try{
+    app.selectLabScenario('core');
+    for(const [id,value] of [['mode','password'],['architecture','web'],['upstream','single'],['token-protection','app-jwe']]){
+      app.refs[id].value=value;app.refs[id].dispatchEvent(new HarnessEvent('change'));
+    }
+    app.selectStep(app.steps.length-1,false);
+    const compiled=app.heldView.compiled(),wire=app.steps.find(step=>step.jweHop==='app'&&step.jweStage==='wire');
+    const expected=wire.payload.find(field=>field.name==='id_token').value,final=app.heldView.snapshot(),queues=[];
+    for(const rep of ['encrypted','view']){
+      if(app.hasTrace)app.clearAttribute();
+      app.selectStep(app.steps.length-1,false);
+      const holding=app.heldView.snapshot().holdings.find(item=>item.actorId==='app'&&item.artifactId==='oidc-app-id-token'&&item.representationId===rep);
+      assert.ok(holding);app.heldView.select(holding);app.heldView.trace(holding.artifactId);app.player.pause();
+      const queue=app.player.queue,transfer=queue.find(row=>row.sourceStepId===wire.id);
+      assert.equal(transfer.representationId,'encrypted');
+      assert.equal(transfer.payload.find(field=>field.attributeId==='idTokenA').value,expected);
+      const local=queue.filter(row=>['decrypt','verify-inner'].includes(row.jweStage));
+      assert.ok(local.length>=2);
+      for(const row of local){assert.equal(row.representationId,'view');assert.ok(row.payload.some(field=>field.attributeId==='issuerA'));assert.ok(row.payload.some(field=>field.attributeId==='audience'));assert.ok(row.payload.some(field=>field.attributeId==='nonceApp'));assert.equal(row.payload.some(field=>field.attributeId==='jweProtectedHeaderApp'),false);}
+      for(const row of queue)assert.equal(projectHeldObjects(compiled,heldCursorForPlayback(compiled,{status:'complete',step:row},row)),projectHeldObjects(compiled,row.heldCursorEnd));
+      queues.push(queue);
+    }
+    assert.deepEqual(queues[0],queues[1]);
+    app.clearAttribute();app.selectStep(app.steps.length-1,false);assert.deepEqual(app.heldView.snapshot(),final);
+  }finally{unmount(app);}
+});
+
+test('owner selection reopens complete inventories independently of dock expansion',()=>{
+  for(const mode of ['full','compact']){
+    const f=mountFixture();try{
+      f.setCursor({eventIndex:0,milestone:'complete'});fixtureGeometry(f,mode);
+      for(const owner of ['app','realmA','app','realmA','app']){
+        f.view.root.querySelector(`.held-actor-picker [data-held-actor="${owner}"]`).click();
+        const expected=f.snapshot.holdings.filter(item=>item.actorId===owner).map(item=>item.holdingId).sort();
+        const shown=f.view.root.querySelectorAll(`[data-held-owner="${owner}"] [data-holding-id]`).map(item=>item.dataset.holdingId).sort();
+        assert.deepEqual(shown,expected);assert.ok(f.view.root.querySelector(`[data-held-owner="${owner}"] .held-coverage`));
+      }
+      f.view.root.querySelector('[data-held-collapse="app"]').click();
+      assert.equal(f.view.root.querySelector('[data-held-owner="app"]'),null);
+      assert.equal(document.activeElement.closest('.held-actor-picker')!==null,true);
+      f.view.root.querySelector('.held-actor-picker [data-held-actor="app"]').click();
+      assert.ok(f.view.root.querySelector('[data-held-owner="app"] [data-holding-id]'));
+    }finally{unmount(f.app);}
+  }
+});
+
+test('exact control recovery preserves its list or dock region and uses explicit disappearance fallbacks',()=>{
+  for(const region of ['held-objects','held-docks']){
+    const f=mountFixture();try{
+      fixtureGeometry(f,'full');f.view.root.querySelector('.held-actor-picker [data-held-actor="app"]').click();
+      const target=f.app.querySelector(`#${region} [data-holding-id="app-secret"]`);assert.ok(target);
+      target.focus();target.click();const key=document.activeElement.dataset.heldKey;
+      assert.equal(document.activeElement.closest('#'+region)!==null,true);
+      f.view.lastKey='';f.view.render();assert.equal(document.activeElement.dataset.heldKey,key);assert.ok(document.activeElement.closest('#'+region));
+      f.setCursor({eventIndex:1,milestone:'complete'});assert.equal(document.activeElement.dataset.heldKey,key);assert.ok(document.activeElement.closest('#'+region));
+      fixtureGeometry(f,'external');assert.equal(document.activeElement.dataset.heldKey,key);assert.ok(document.activeElement.closest('#held-objects'));
+      const old=f.view.root.querySelector('[data-holding-id="app-r0"]');old.focus();old.click();f.setCursor({eventIndex:2,milestone:'complete'});
+      assert.equal(document.activeElement.dataset.heldActor,'app');assert.ok(document.activeElement.closest('.held-actor-picker'));
+    }finally{unmount(f.app);}
+  }
 });
 
 test('real app initial, selected completion, seek start and Reset share the protocol-state cursor',()=>{

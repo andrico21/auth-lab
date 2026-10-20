@@ -97,8 +97,8 @@ export function buildCoreHeldObjects(args) {
     stores.get(to).add(toStore);categories.get(to).add(definitions.get(id).type);
     heldWire(plan,event.id,id,from,to,{representationId:rep,fromStore,toStore,retention:temporary?'temporary':'retained',...(temporary?{releaseAt:eventId(releaseAt)}:{}),releaseSender});
   };
-  const observe = (event,id,owner,policy,result='accepted',endpoint) => {
-    if(event) at(event,{op:'observe',artifactId:id,actorId:actor(owner),kind:'verification',policy,result,...(endpoint?{endpoint}:{}),requestId:event.id});
+  const observe = (event,id,owner,policy,result='accepted',endpoint,representationId) => {
+    if(event) at(event,{op:'observe',artifactId:id,actorId:actor(owner),kind:'verification',policy,result,...(endpoint?{endpoint}:{}),...(representationId?{representationId}:{}),requestId:event.id});
   };
   const seed = (id,type,label,owner,ids=[],event=null,store='configuration') => {
     declare(id,type,label,owner,ids,event);create(null,id,owner,store);return id;
@@ -212,8 +212,19 @@ export function buildCoreHeldObjects(args) {
         create(proofCreate,'ctap-result',auth,'output',{temporary:true,releaseAt:conversion});
         send(proofReturn,'ctap-result',auth,'browser',{toStore:'ctap-input',releaseAt:conversion});
       }
-      declare('fido-proof',registering?'registration-response':'authentication-proof',registering?'WebAuthn registration response':'Fresh WebAuthn assertion',conversion?'browser':auth,registering?['credentialId','attestationObject','clientDataJSON']:['credentialId','authenticatorData','signature','userHandle'],conversion||proofReturn,{derivedFrom:conversion?['ctap-result','fido-client-context']:['fido-private-key','fido-client-context']});
-      if(conversion)create(conversion,'fido-proof','browser','webauthn-response',{temporary:true,releaseAt:proofCheck});
+      const platformRegistration=registering&&!conversion;
+      if(platformRegistration) {
+        declare('platform-result','authenticator-response','Local platform authenticator registration result',auth,['credentialId','credentialPublicKey','authenticatorData','attestationObject'],proofReturn,{derivedFrom:['fido-private-key','fido-client-context']});
+        create(proofCreate,'platform-result',auth,'output',{temporary:true,releaseAt:proofCheck});
+        send(proofReturn,'platform-result',auth,'browser',{toStore:'platform-input',releaseAt:proofCheck});
+      }
+      const assembled=!!conversion||platformRegistration;
+      const registrationResponse=registering?{representations:[{
+        representationId:'plain',format:'registration-response',readableBy:['browser'],
+        fields:[...fields(conversion||proofReturn,['credentialId','attestationObject']),...fields(prepareRequest,['clientDataJSON'])],
+      }]}:{};
+      declare('fido-proof',registering?'registration-response':'authentication-proof',registering?'WebAuthn registration response':'Fresh WebAuthn assertion',assembled?'browser':auth,registering?['credentialId','attestationObject','clientDataJSON']:['credentialId','authenticatorData','signature','userHandle'],conversion||proofReturn,{derivedFrom:assembled?[conversion?'ctap-result':'platform-result','fido-client-context']:['fido-private-key','fido-client-context'],...registrationResponse});
+      if(assembled)create(conversion||proofReturn,'fido-proof','browser','webauthn-response',{temporary:true,releaseAt:proofCheck});
       else {
         create(proofCreate,'fido-proof',auth,'output',{temporary:true,releaseAt:proofCheck});
         send(proofReturn,'fido-proof',auth,'browser',{toStore:'webauthn-response',releaseAt:proofCheck});
@@ -249,8 +260,8 @@ export function buildCoreHeldObjects(args) {
       hold(jwe(hop,'wrap'),id,issuer,'encrypted-output',{rep:'encrypted',temporary:true,releaseAt:wire});
       send(wire,id,issuer,recipient,{rep:'encrypted',fromStore:'encrypted-output',toStore:'token-store',temporary:false});
       hold(jwe(hop,'decrypt'),id,recipient,'decoded-view',{rep:'view'});
-      observe(jwe(hop,'decrypt'),id,recipient,'JWE algorithm allowlist, local recipient key and authenticated GCM tag','authenticated plaintext');
-      observe(jwe(hop,'verify-inner'),id,recipient,'Expected issuer signing key and allowed inner JWS algorithm');
+      observe(jwe(hop,'decrypt'),id,recipient,'JWE algorithm allowlist, local recipient key and authenticated GCM tag','authenticated plaintext',undefined,'view');
+      observe(jwe(hop,'verify-inner'),id,recipient,'Expected issuer signing key and allowed inner JWS algorithm','accepted',undefined,'view');
       const suffix=hop==='broker'?'Broker':'App';
       seed('jwe-'+hop+'-private-key','private-key',hop+' configured decryption private key',recipient,['jweRecipientPrivateKey'+suffix],jwe(hop,'unwrap'),'key-store');
       seed('jwe-'+hop+'-public-key','public-key',hop+' registered recipient encryption public key',issuer,['jweRecipientPublicKey'+suffix],jwe(hop,'prepare'),'trust-cache');
@@ -258,7 +269,7 @@ export function buildCoreHeldObjects(args) {
       create(jwe(hop,'prepare'),'jwe-'+hop+'-cek',issuer,'encryption-workspace',{temporary:true,releaseAt:wire});
       hold(jwe(hop,'unwrap'),'jwe-'+hop+'-cek',recipient,'decryption-workspace',{temporary:true,releaseAt:jwe(hop,'decrypt')});readers('jwe-'+hop+'-cek','plain',[recipient]);
     } else send(wire,id,issuer,recipient,{fromStore:'token-output',toStore:'token-store',temporary:false});
-    observe(check,id,recipient,'Exact issuer, intended OIDC client audience, lifetime'+(!['device','ciba'].includes(flow)?', original nonce':' and completed grant transaction')+'; signature required before identity acceptance');
+    observe(check,id,recipient,'Exact issuer, intended OIDC client audience, lifetime'+(!['device','ciba'].includes(flow)?', original nonce':' and completed grant transaction')+'; signature required before identity acceptance','accepted',undefined,encrypted?'view':'plain');
     if(accessId) {
       declare('oidc-'+hop+'-access-token','access-token',hop+' issued access token',issuer,[accessId,'scope'],wire);
       create(issue,'oidc-'+hop+'-access-token',issuer,'token-output',{temporary:true,releaseAt:wire});
@@ -423,7 +434,9 @@ export function buildCoreHeldObjects(args) {
   // Provider SSO is a server session/cookie boundary, not proof of a particular
   // vendor factor store or an assurance level. Issued bearer tokens are released
   // from issuer output instead of being accumulated as issuer credentials.
-  if(!enrollment&&!direct&&!['client-credentials','token-exchange'].includes(flow)) {
+  // CIBA has no authored service-session policy or cookie delivery. Factor
+  // verification there must not synthesize a provider SSO boundary.
+  if(!enrollment&&!direct&&!['client-credentials','token-exchange','ciba'].includes(flow)) {
     const providerEvent=steps.find(s=>s.providerManaged&&String(s.id).endsWith('-authentication'))||find('l15')||find('l20')||stage(config.upstream==='single'?'app':'broker','response-create')||find('m05')||find('l14')||find('p03');
     if(providerEvent&&hasActor(rp)) {session(providerEvent,rp,'provider');cookie(providerEvent,rp,'provider');}
   }

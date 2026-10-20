@@ -327,17 +327,18 @@ function issueAndUseCertificate(a, isDevice, variant) {
     messageResult(a, 'failure', ['failure']);
     return;
   }
-  establish(a, 'host-policy');
+  establish(a, 'host-policy', 'ssh-success');
   messageResult(a, 'ssh-success', ['success']);
   channel(a, 'channel', 'channel-1');
 }
 
-function establish(a, stage) {
-  a.define('ssh-connection', 'connection', 'Authenticated SSH connection', 'sshHost', [a.literal('authenticated SSH connection', 'Established transport-bound SSH authentication; subsequent channels do not repeat user authentication')], stage, { related: ['ssh-transport'] });
-  for (const actor of ['sshCli', 'sshHost']) {
-    a.hold(stage, 'ssh-connection', actor, 'SSH connection');
-    a.bind('sessions.ssh.authenticated', actor, 'ssh-connection', 'SSH connection');
-  }
+function establish(a, acceptedAt, receivedAt) {
+  a.define('ssh-connection', 'connection', 'Authenticated SSH connection', 'sshHost', [a.literal('authenticated SSH connection', 'Established transport-bound SSH authentication; subsequent channels do not repeat user authentication')], acceptedAt, { related: ['ssh-transport'] });
+  a.hold(acceptedAt, 'ssh-connection', 'sshHost', 'SSH connection');
+  // The family flag records the host's decision, not the client's knowledge.
+  a.bind('sessions.ssh.authenticated', 'sshHost', 'ssh-connection', 'SSH connection');
+  a.hold(receivedAt, 'ssh-connection', 'sshCli', 'SSH connection');
+  a.observe(receivedAt, 'ssh-connection', 'sshCli', 'acceptance', 'accepted_success_receipt');
 }
 
 function messageResult(a, stage, keys) {
@@ -356,16 +357,20 @@ function device(a, variant) {
   certificateSetup(a, true);
   a.bind('credentials.userKey.instanceId', 'sshCli', 'user-private-key-1', 'local key file', a.model.id + ':key-1');
   plan.limitations.push('Device browser approval abstracts the configured IdP factor ceremony; it does not declare password, OTP or passkey enrollment. This is the RFC Device/OIDC reference, not a literal product retry trace.');
+  plan.limitations.push('Local Device cancellation releases CLI polling and approval display copies only. The issuer retains the pending transaction and its response-defined expiry unless a separately authored issuer transition clears it; no remote cancellation or cleanup is implied.');
   const firstTerminal = ['cancel', 'restart'].includes(variant) ? 'cancel' : ['denied', 'expired', 'clienterror'].includes(variant) ? 'stop' : 'tokens';
   const deviceSet = (second) => {
     const n = second ? 2 : 1, start = second ? 'restart-created' : 'device-created';
+    const locallyCancelled = !second && ['cancel', 'restart'].includes(variant);
+    const issuerTerminal = locallyCancelled ? null : second ? 'tokens' : firstTerminal;
+    const issuerRetention = issuerTerminal ? 'temporary' : 'retained';
     define('device-code-' + n, 'device-code', 'Private Device polling handle-' + n, 'sshIdp', fields(start, ['deviceCode']), start, { expiresAt: EPOCH + (second ? 605 : 600), readableBy: ['sshIdp', 'sshCli'] });
-    hold(start, 'device-code-' + n, 'sshIdp', 'pending Device transaction', { retention: 'temporary' });
-    release(second ? 'tokens' : firstTerminal, 'device-code-' + n, 'sshIdp', 'pending Device transaction');
+    hold(start, 'device-code-' + n, 'sshIdp', 'pending Device transaction', { retention: issuerRetention });
+    if (issuerTerminal) release(issuerTerminal, 'device-code-' + n, 'sshIdp', 'pending Device transaction');
     transfer(second ? 'restart-response' : 'response', 'device-code-' + n, 'sshIdp', 'sshCli', 'private polling state', second ? 'tokens' : firstTerminal);
     define('device-instructions-' + n, 'approval-instructions', 'Human Device approval code and URI-' + n, 'sshIdp', fields(start, second ? ['userCode', 'verifyUri', 'deviceExpiry'] : ['userCode', 'verifyUri', 'verifyComplete', 'deviceExpiry']), start, { expiresAt: EPOCH + (second ? 605 : 600) });
-    hold(start, 'device-instructions-' + n, 'sshIdp', 'pending Device transaction', { retention: 'temporary' });
-    release(second ? 'tokens' : firstTerminal, 'device-instructions-' + n, 'sshIdp', 'pending Device transaction');
+    hold(start, 'device-instructions-' + n, 'sshIdp', 'pending Device transaction', { retention: issuerRetention });
+    if (issuerTerminal) release(issuerTerminal, 'device-instructions-' + n, 'sshIdp', 'pending Device transaction');
     transfer(second ? 'restart-response' : 'response', 'device-instructions-' + n, 'sshIdp', 'sshCli', 'approval display', second ? 'tokens' : firstTerminal);
     transfer(second ? 'restart-display' : 'display', 'device-instructions-' + n, 'sshCli', 'user', 'approval display', second ? 'human-open' : variant === 'restart' || variant === 'cancel' ? 'cancel' : ['denied', 'expired', 'clienterror'].includes(variant) ? 'stop' : 'human-open');
   };
@@ -518,7 +523,7 @@ function sssd(a, variant) {
   release('account-result', 'unix-identity', 'pam', 'account policy input');
   observe('account-policy', 'unix-identity', 'pam', 'acceptance', variant === 'account' ? 'rejected_account_access' : 'accepted_existing_account');
   if (stages.has('account-failure')) { messageResult(a, 'account-failure', ['failure']); return; }
-  establish(a, 'ssh-success');
+  establish(a, 'ssh-success', 'ssh-success');
   messageResult(a, 'ssh-success', ['success']);
   channel(a, 'channel', 'channel-1');
 }
@@ -566,7 +571,7 @@ function gss(a, variant) {
   transfer('mic', 'gss-mic', 'sshCli', 'sshHost', 'MIC verification input', 'mic-check', { releaseSender: 'GSS output' });
   observe('mic-check', 'gss-mic', 'sshHost', 'verification', 'accepted_transport_bound_mic');
   observe('mic-check', 'gss-context', 'sshHost', 'acceptance', variant === 'account' ? 'rejected_account_access' : 'accepted_account_mapping');
-  if (variant === 'success') establish(a, 'mic-check');
+  if (variant === 'success') establish(a, 'mic-check', 'result');
   messageResult(a, 'result', ['result']);
   if (variant === 'success') channel(a, 'channel', 'channel-1');
   plan.limitations.push('Kerberos ticket/session-key handles describe the authored abstract GSS mechanism, not encoded ASN.1 or live cryptography. Credential delegation, SPNEGO and GSS key exchange are excluded by this fixture.');

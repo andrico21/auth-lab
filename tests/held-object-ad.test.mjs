@@ -59,6 +59,54 @@ test('A02/A19: cold user start retains independent configured keys and unrelated
   assert.ok(holding(f.frame('local-logon'), 'session:local-logon', 'adWorkstation', 'sessions'));
 });
 
+for (const [scenarioId, event, artifactId, actorId, attributeId, expected] of [
+  ['lab-ad-first-sign-in', 'password', 'password:domain', 'adWorkstation', 'adPassword', '<local password>'],
+  ['lab-ad-first-sign-in', 'select-key', 'key:user:alice:aes256', 'adWorkstation', 'adUserKey', 'key:user:alice:aes256'],
+  ['lab-kc-kerberos-sso', 'token-request', 'verifier:corporate:01', 'adKeycloak', 'adVerifier'],
+  ['lab-kc-password-fresh-totp', 'password-fallback', 'password:provider', 'adBrowser', 'adPassword', '<provider password>'],
+  ['lab-kc-password-fresh-totp', 'password-submit', 'password:provider', 'adKeycloak', 'adPassword', '<provider password>'],
+  ['lab-kc-low-assurance-cookie', 'authorize', 'cookie:provider:earlier', 'adKeycloak', 'adCookie', 'KC-session=<opaque handle>'],
+]) test('HC03: ' + scenarioId + '/' + event + ' permits inspection only after legitimate acquisition', () => {
+  const f = fixture(scenario(scenarioId));
+  assert.equal(holding(f.initial(), artifactId, actorId), undefined);
+  const before = f.frame(event, 'before');
+  assert.equal(holding(before, artifactId, actorId), undefined, 'reader permission alone never acquires the object');
+  const delivered = f.frame(event);
+  const inspection = inspected(delivered, artifactId, actorId);
+  assert.equal(inspection.representation.readable, true);
+  const field = inspection.fields.find(item => item.attributeId === attributeId);
+  assert.equal(field.readable, true);
+  assert.equal(field.redacted, undefined);
+  const authored = definition(delivered, artifactId).representations.find(rep => rep.representationId === 'plain').fields.find(item => item.attributeId === attributeId);
+  assert.equal(field.value, expected ?? authored.value);
+  assert.notEqual(field.value, undefined);
+  assert.deepEqual(f.frame(event, 'before'), before, 'rewind cannot retain a later acquisition');
+});
+
+test('HC03: explicit secret readers do not expose backend verifiers or protected Kerberos inner fields to transport holders', () => {
+  const f = fixture(scenario('lab-kc-kerberos-sso'));
+  for (let eventIndex = -1; eventIndex < f.steps.length; eventIndex++) {
+    const snapshot = projectHeldObjects(f.compiled, {eventIndex, milestone: eventIndex < 0 ? 'initial' : 'complete'});
+    assert.equal(holding(snapshot, 'verifier:corporate:01', 'adBrowser'), undefined);
+    assert.equal(holding(snapshot, 'key:user:alice:aes256', 'adBrowser'), undefined);
+    assert.equal(holding(snapshot, 'key:service-session:01', 'adBrowser'), undefined);
+  }
+  const carried = f.frame('gss-token');
+  const ticket = inspected(carried, 'ticket:service:01', 'adBrowser');
+  assert.equal(ticket.representation.representationId, 'opaque');
+  for (const attributeId of ['adCName', 'adPAC', 'sessionKeyInstanceId']) {
+    assert.equal(ticket.fields.some(field => field.attributeId === attributeId), false);
+  }
+  const proof = inspected(carried, 'authenticator:http:01', 'adBrowser');
+  assert.equal(proof.representation.representationId, 'opaque');
+  assert.deepEqual(proof.fields, []);
+  const cold = fixture(scenario('lab-ad-first-sign-in'));
+  const reply = inspected(cold.frame('as-reply'), 'reply:as:01', 'adWorkstation');
+  assert.equal(reply.representation.representationId, 'opaque');
+  assert.equal(reply.fields.some(field => field.attributeId === 'sessionKeyInstanceId'), false);
+  assert.equal(holding(cold.frame('as-reply'), 'key:tgt-session:01', 'adWorkstation'), undefined);
+});
+
 test('A02/A04/A05: AS and TGS issuance, ciphertext receipt, decrypt/check and accepted cache are distinct atomic boundaries', () => {
   const f = fixture(scenario('lab-ad-first-sign-in'));
   for (const [kind, create, reply, cache] of [['tgt', 'as-create', 'as-reply', 'cache-tgt'], ['host', 'host-tgs-create', 'host-tgs-reply', 'host-cache'], ['service', 'service-tgs-create', 'service-tgs-reply', 'service-cache']]) {

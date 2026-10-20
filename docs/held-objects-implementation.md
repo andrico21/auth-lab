@@ -10,6 +10,24 @@ The approved input baseline source ZIP has SHA-256 `9e295c46e666633e83f971a57e01
 
 All 130 fixed extended scenarios, the Core-backed presets and configurable Core have explicit inventory authoring. The picker has 141 deduplicated choices. Coverage is logical-owner, configuration and cursor scoped; a catalog count alone does not establish completeness.
 
+## Code1 implementation corrections
+
+This candidate addresses the independent HC01-HC09 findings. The approved pure checkpoint and explicit-family architecture is retained; independent acceptance is still required.
+
+| Finding | Corrected contract |
+| --- | --- |
+| HC01 | Exact replay binds each occurrence to its message/effect representation and holding. A decoded selection cannot replace historical compact JWE bytes. Local JWE checks explicitly use the decoded view and that occurrence actor's field permissions. |
+| HC02 | Packet routes use the same authored message interval as canonical receipt. Full journeys, connection intervals and exact-row intervals share that boundary; receipt remains distinct from checking and installation. |
+| HC03 | AD local input/key and bridge password/cookie/verifier readers are explicitly declared. PAR/JAR/JARM servers can inspect a delivered verifier; acquisition still gates availability and protected inner fields remain restricted. |
+| HC04 | Local Device cancellation cleans client polling/display state without deleting the issuer's still-valid pending transaction. A restart has distinct generation identities and rejects late old results. |
+| HC05 | SSH server acceptance and client completion differ. The client acquires the authenticated connection on success/result receipt, not during a server-local policy/MIC check. |
+| HC06 | Hello enrollment returns an authenticator-owned platform result; the browser assembles the WebAuthn response with its original client data. Private keys stay with the authenticator; roaming conversion retains its separate CTAP result. |
+| HC07 | Core CIBA does not synthesize an unauthored provider session/cookie transfer at an internal factor check. Explicit factor, approval and token events remain independent. |
+| HC08 | Owner-picker selection always opens that owner's complete inventory. Dock overflow can toggle its current owner; a separate collapse action closes the list. |
+| HC09 | Redraw recovery preserves both exact holding identity and originating list/dock/inspector region. Another equivalent control is a fallback only when the original region/control is absent; removal/collapse recover to the owner picker. |
+
+Kerberos and SSH have explicit visual acceptance beyond overlap checks: folded/expanded logical-owner names, source-family column/row relationships, composite-frame attachment and real focus/target geometry. Registry-only actors absent from the whole lesson do not reserve blank cells. Actual participants from the entire journey remain reserved independently of the current cursor.
+
 ## Source review order
 
 1. `src/held-object-state.js`: pure validation, immutable checkpoints, canonical cursors, exact traces, permission filtering and the separate universal-coverage gate.
@@ -42,21 +60,21 @@ All 130 fixed extended scenarios, the Core-backed presets and configurable Core 
 
 Current inspection uses actor/representation/field permissions. Removed or rewound selections remain explicitly historical: `No longer held`, `Not yet held`, or `Not created`. They do not become new holdings or actor knowledge. Apply, Reset and scenario/context changes clear stale exact selections atomically.
 
-Exact replay follows the selected artifact, not every occurrence of its attribute type. Full, link, attribute and exact-object views map back to canonical source history. Adjacent synthetic rows do not independently reapply an atomic event.
+Exact replay follows the selected artifact, not every occurrence of its attribute type. It preserves occurrence-specific representation values and permissions rather than rewriting them from the selected holding. Full, link, attribute and exact-object views map back to canonical source history. Adjacent synthetic rows do not independently reapply an atomic event.
 
-Ordering uses initial display order, acquisition ordinal and holding ID. Overflow counts hidden known holdings, not model gaps. A focused/selected exact holding is pinned or retained in its open list. Release never substitutes another token generation for focus. Inventory hide recovers to its toggle; component collapse prefers the initiating `#show-internals` checkbox. The hidden scenario select is never a recovery target.
+Ordering uses initial display order, acquisition ordinal and holding ID. Overflow counts hidden known holdings, not model gaps. A focused/selected exact holding is pinned or retained in its open list. Recovery first matches the exact key in its originating region; a duplicate dock control cannot steal list focus. Release never substitutes another token generation. Inventory hide recovers to its toggle; component collapse prefers the initiating `#show-internals` checkbox; explicit list collapse returns to its owner picker. The hidden scenario select is never a recovery target.
 
 ## Conditional geometry
 
-- Full mode: a measured map of at least 1120x730 CSS pixels and independently valid routes uses fixed 316x174 composites with a 164-unit actor, 8-unit gap and 144-unit dock. Declared reference positions, including configured actors absent from the current journey, determine preferred columns and vertical order. Placement first minimizes necessary column changes, then geometric displacement within at most nine reserved cells. Three slots mean either three holdings or two holdings plus overflow. Folded logical owners retain separate compartments. Obsolete device/server zones are hidden in this revised grid.
+- Full mode: a measured map of at least 1120x730 CSS pixels and independently valid routes uses fixed 316x174 composites with a 164-unit actor, 8-unit gap and 144-unit dock. Declared reference positions of full-journey physical participants determine preferred columns and vertical tiers. Aliased logical children do not reserve duplicate cells; inert registry-only owners remain reachable in the inventory list without forcing empty map rows. Placement minimizes necessary column changes, then displacement within at most nine reserved cells. Rows use 240-unit pitch, leaving the approved 66-unit lane. Three slots mean three holdings or two holdings plus overflow. Folded logical owners retain separate named controls.
 - Compact mode: a measured canvas/viewport of at least 960 CSS pixels, valid reserved envelopes and routes uses final-CSS 82x132 actor buttons plus a 6-pixel gap and 44x44 sibling summary. The 140x140 content stays within the reserved envelope; ports use the actual transformed actor bounds.
 - External mode: narrow views, invalid composite routes/bounds, supported movement or custom layouts use the independently valid base map and an accessible logical-owner list. A fallback never repairs or conceals invalid actor geometry.
 
-Visibility and individual acquisitions do not reflow actors. Responsive mode changes can recompute the reference-derived layout once. Geometry and transformed bounds participate in route/cache identity. Logical AS/TGS and CLI/agent owners are never reassigned to the visual parent. Reduced motion uses the same semantic commits without packet-frame animation.
+Inventory visibility and individual acquisitions do not reflow actors. Responsive mode or deliberate component-internals changes can recompute the reference-derived layout once. Geometry and transformed bounds participate in route/cache identity. Logical AS/TGS and CLI/agent owners are never reassigned to the visual parent. Reduced motion uses the same semantic commits without packet-frame animation.
 
 The checked **Show step attributes** control continues to expose the complete names-only set in full, compact and external inventory modes. Placement avoids entire reserved actor/inventory composites, not just actor centers. If no panel-sized region is free, the same named group moves below the map; it is never silently hidden or replaced by the single current packet field. Keyboard-focused help is remeasured after its `:focus-within` hint appears, including nested F2 help, so the extra text does not push the panel past the viewport.
 
-The animation-area correction keeps the basic web person's/browser's column separate from the issuer/backend column. The native-client variation keeps the person, browser and local application together instead of pushing the third client into an issuer cell. Crowded columns rebalance only as necessary to retain desktop docks; inactive AS/TGS references come from declared model positions rather than current step participation. Missing reference positions or unprovable routes still decline full mode instead of inventing a placement. Docked names wrap to two lines within the unchanged 44-pixel targets.
+The animation layouts retain each family's authored composition rather than imposing an OIDC template: AD person/workstation/KDC columns with the service on its adjacent row; FAST client/KDC order; SSH user/CLI/agent and IdP/CA relationships; and a centered cache-only GSS client/KDC/host row without an unused person cell. Basic web and native-client groupings remain intact. Missing references or unprovable routes decline full mode rather than inventing placement. Docked object and logical-owner names wrap to two lines, with a separate count line for merged owners, inside unchanged 44-pixel targets.
 
 Connection keyboard focus uses a visible halo along the actual SVG path. The global rectangular outline is suppressed only on connection hit paths; other controls retain their normal focus rings. A path's bounding box is not a connector and must never appear as a rectangle through actor cards or inventories.
 
@@ -64,12 +82,12 @@ Graph focus targets reserve the animation controls' measured height plus clearan
 
 ## Observed verification
 
-Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The standalone is 2,242,585 bytes with SHA-256 `89f586ac269f5c037b9d3f4f28d6675b77ee2b642a0ffd8909b834d058fc4f82`. Reports record the exercised source and artifact identities.
+Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The current standalone is 2,251,749 bytes with SHA-256 `2bef714560d305c5b64e0b6e79eb6f125c3fe121d2ac4324ff8d9082eed41651`. Reports record the exercised source and artifact identities.
 
 | Observed check | Result |
 | --- | --- |
-| Semantic source gate | Passed: 141 choices, 921 normalized Core configurations, 86 required interactions and 28,016 equal-cursor comparisons |
-| Full source regression suite | 1,092 passed, 0 failed across all 72 test files, using four bounded workers and the recorded per-file Bun invocations; source identities stayed unchanged |
+| Semantic source gate | Passed: 141 choices, 921 normalized Core configurations, 86 required interactions and 28,030 equal-cursor comparisons |
+| Full source regression suite | Current-candidate full-suite regeneration follows browser acceptance; the reviewed submission's 1,092/72-file result is historical, not a result for this correction |
 | Held-object native gate | Passed in source HTTP, standalone HTTP and standalone file: all 141 choices retain full inventories at initial/final collapsed desktop cursors; 36 dense layouts per mode exercise full/compact/external geometry, rendered targets/routes, complete step names, exact-object lifecycle/replay, actual 200%/400% browser zoom, touch, reduced motion, source/emitted state equality and no unexpected CSP violations/external application requests |
 | Animation-area regression | Passed in all three loading modes: paused username/password exchange at 1920 pixels for web/native clients, 1480-pixel compact and 390-pixel external layouts; authored columns, complete visible names, path-following focus and unchanged canonical snapshots. Dense layout coverage contains 18 folded and 18 expanded cases per mode. |
 | Preserved broader native gate | Passed: 224 collapsed/expanded catalog variants per loading mode and 297 recorded checks, including long-context rejection/recovery, responsive help, non-modal Tab/Escape, protocol preservation and enforcing eval/inline-script/fetch CSP probes in all three loading modes |
