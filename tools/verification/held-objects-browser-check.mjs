@@ -105,7 +105,7 @@ async function heldNativeAnimationSurface(page,mode){
   for(const [architecture,width]of [['web',1920],['native',1920],['web',1480],['web',390]]){
     await page.setViewportSize({width,height:1200});await heldNativeChoose(page,'basic-keycloak');
     if(architecture==='native')await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.refs.architecture.value='native';a.refs.architecture.dispatchEvent(new Event('change',{bubbles:true}));});
-    const before=await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio'),step=a.steps.find(step=>step.from==='user'&&step.to==='browser'&&step.id.endsWith('-p02'));if(!step)throw new Error('Credential-entry fixture is unavailable');a.player.seek([step],.5,'step');return {snapshot:JSON.stringify(a.protocolSnapshot()),names:a.stepAttributeItems(step).map(item=>item.name)};});
+    const before=await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio'),step=a.steps.find(step=>step.from==='user'&&step.to==='browser'&&step.id.endsWith('-p02'));if(!step)throw new Error('Credential-entry fixture is unavailable');a.player.seek([step],.5,'step');return {snapshot:JSON.stringify(a.protocolSnapshot()),names:['username','password']};});
     await page.locator('[data-pair="browser--user"] .connection-hit').focus();
     const surface=await page.evaluate(()=>{
       const a=document.querySelector('auth-flow-studio'),active=document.activeElement,halo=active.closest('.connection-group')?.querySelector('.edge-focus'),actors=Object.fromEntries([...a.refs.actors.querySelectorAll('[data-actor]')].filter(element=>!element.hidden).map(element=>{const r=element.getBoundingClientRect();return [element.dataset.actor,{x:(r.left+r.right)/2,y:(r.top+r.bottom)/2}];}));
@@ -135,17 +135,17 @@ async function heldNativeAnimationSurface(page,mode){
 // These are active full-journey seeks, not final-state composition screenshots.
 async function heldNativeLocalProcessing(page,mode){
   const records=[],fixtures=[
-    {id:'basic-keycloak',suffix:'-l02',actor:'app',kind:'pkce'},
+    {id:'basic-keycloak',suffix:'-l02',actor:'app',kind:'pkce',fieldIds:['clientIdApp','redirectApp','stateApp','nonceApp','codeVerifier','codeChallengeMethod','codeChallenge'],fields:['client_id','redirect_uri','state','nonce','code_verifier','code_challenge_method','code_challenge']},
     {id:'lab-ad-first-sign-in',suffix:'-select-key',actor:'adWorkstation',kind:'ad-key'},
     {id:'lab-ad-fast-as-success',suffix:'-computer-armor',actor:'cryptoComputer',kind:'fast-armor'},
     {id:'lab-ssh-cert-success',suffix:'-prepare',actor:'sshCli',kind:'ssh-cli'},
-    {id:'lab-ssh-cert-success',suffix:'-sign',actor:'sshAgent',kind:'ssh-agent'},
-    {id:'lab-ssh-cert-success',suffix:'-agent-request',actor:'sshCli',kind:'ssh-agent-ipc',exchange:true}
+    {id:'lab-ssh-cert-success',suffix:'-sign',actor:'sshAgent',kind:'ssh-agent',fields:['SSH user private key','SSH publickey signed input','signature']},
+    {id:'lab-ssh-cert-success',suffix:'-agent-request',actor:'sshCli',kind:'ssh-agent-ipc',exchange:true,fields:['SSH publickey signed input','session identifier']}
   ];
   for(const fixture of fixtures){
     await page.setViewportSize({width:1920,height:1200});await heldNativeChoose(page,fixture.id);
     const internalsEligible=await page.evaluate(()=>Object.values(document.querySelector('auth-flow-studio').scenarioOwnedActors||{}).some(actor=>actor.parentId));
-    const canonical=new Map();
+    const canonical=new Map(),visibleFields=new Map();
     for(const expanded of internalsEligible?[false,true]:[false])for(const width of [1920,1480,390]){
       await page.setViewportSize({width,height:1200});
       const prepared=await page.evaluate(({fixture,expanded})=>{
@@ -153,6 +153,17 @@ async function heldNativeLocalProcessing(page,mode){
         if(a.showInternals!==expanded){a.showInternals=expanded;a.renderAll();}
         const step=a.steps.find(s=>s.id.endsWith(fixture.suffix)&&s.from===fixture.actor);
         if(!step)throw new Error('Missing exact local-processing fixture '+fixture.id+fixture.suffix);
+        // Lab ledgers and the explicit Core field fixture are independent of
+        // the UI selector. Folding must never change the logical field set.
+        const operations=fixture.fieldIds?fixture.fieldIds.map(attributeId=>({attributeId})):(step.attributeOperations||[]).filter(operation=>operation.actorId===step.from&&(fixture.exchange?operation.kind==='send':!['inspect','send','receive'].includes(operation.kind)));
+        const expectedItems=[];
+        for(const operation of operations){
+          const name=a.definition(operation.attributeId).name.replace(/\s*\([^)]*\)/g,'').trim();
+          let item=expectedItems.find(item=>item.name===name);
+          if(!item){item={name,ids:[]};expectedItems.push(item);}
+          if(!item.ids.includes(operation.attributeId))item.ids.push(operation.attributeId);
+        }
+        if(!expectedItems.length)throw new Error('Missing independently authored fields for '+fixture.id+fixture.suffix);
         const clock=a.studyClock(),index=clock.steps.findIndex(s=>s.id===step.id),duration=clock.durations[index],count=Math.max(1,step.payload.length);
         if(index<0)throw new Error('The local-processing fixture must be in the full journey');
         // Match the existing field cadence, including authored transport compression.
@@ -162,13 +173,14 @@ async function heldNativeLocalProcessing(page,mode){
         const samples=Array.from({length:count},(_,packetIndex)=>[.2,.8].map(travel=>({packetIndex,travel,fraction:(clock.offsets[index]+start*duration+(380+packetIndex*1290+1050*travel)*scale)/clock.total}))).flat();
         const from=a.nodeId(step.from),to=a.nodeId(step.to);
         const markerDefinitions=[...a.refs.connections.querySelectorAll('marker')].map(marker=>{const view=marker.viewBox.baseVal;return {id:marker.id,units:marker.getAttribute('markerUnits'),width:marker.markerWidth.baseVal.value,height:marker.markerHeight.baseVal.value,refX:marker.refX.baseVal.value,viewBox:[view.x,view.y,view.width,view.height]};});
-        return {stepId:step.id,title:step.title,from:step.from,to:step.to,drawnFrom:from,drawnTo:to,presentation:step.from===step.to?'local':from===to?'folded':'transfer',sourcePayloadCount:step.payload.length,payloadScope:step.payload.length?'Authored payload fields':'Existing Local action/title fallback; no invented payload fields',markerDefinitions,samples};
+        return {stepId:step.id,title:step.title,from:step.from,to:step.to,drawnFrom:from,drawnTo:to,presentation:step.from===step.to?'local':from===to?'folded':'transfer',sourcePayloadCount:step.payload.length,payloadScope:step.payload.length?'Authored payload fields':'Existing Local action/title fallback; no invented payload fields',expectedItems,markerDefinitions,samples};
       },{fixture,expanded});
       assert.equal(prepared.from===prepared.to,!fixture.exchange,mode+' fixture uses original logical endpoints');
       if(fixture.exchange)assert.equal(prepared.presentation,expanded?'transfer':'folded',mode+' agent IPC is not local computation when folded');
+      if(fixture.fields)assert.deepEqual(prepared.expectedItems.map(item=>item.name).sort(),[...fixture.fields].sort(),mode+' '+fixture.kind+' authored fields match the meaningful signing/IPC fixture');
       const samples=[];
       for(const target of prepared.samples){
-        const observed=await page.evaluate(({fraction,stepId})=>{
+        const observed=await page.evaluate(({fraction,stepId,expectedItems})=>{
           const a=document.querySelector('auth-flow-studio');a.seekPlayback(fraction);
           const event=a.player.snapshot(),step=event.step,packet=event.packet||{name:'Local action',value:step.title},format=value=>value===undefined?'':value!==null&&typeof value==='object'?JSON.stringify(value):String(value);
           if(step.id!==stepId)throw new Error('Seek did not land on the exact local-processing step');
@@ -179,8 +191,9 @@ async function heldNativeLocalProcessing(page,mode){
           const fields=[...a.refs['step-attributes'].querySelectorAll('[data-step-attribute]')].filter(field=>field.getClientRects().length),current=event.visible?(packet.attributeId||a.payloadAttributeId(packet,step)):null,style=getComputedStyle(line),orb=a.refs.packet.querySelector('.packet-orb'),orbStyle=getComputedStyle(orb);
           const point=line.getPointAtLength(line.getTotalLength()*.5),svg=a.refs.connections.viewBox.baseVal;
           const expectedValue=format(packet.value),badges=[...a.refs.actors.querySelectorAll('.actor-trace-action')].filter(e=>!e.hidden).map(e=>e.textContent);
-          return {stepId:step.id,geometry:a.refs.graph.dataset.heldGeometry,presentation:group.dataset.presentation,packetPresentation:a.refs.packet.dataset.presentation,visible:event.visible,packetHidden:a.refs.packet.hidden,packetIndex:event.packetIndex,progress:event.progress,phase:event.messagePhase,name:a.refs['packet-name'].textContent,value:a.refs['packet-value'].textContent,count:a.refs['packet-count'].textContent,expectedName:packet.name,expectedValue:expectedValue.slice(0,38)+(expectedValue.length>38?'…':''),fullValue:expectedValue,expectedCount:(event.packetIndex+1)+'/'+Math.max(1,step.payload.length),fieldNames:fields.map(e=>e.textContent),expectedFieldNames:a.stepAttributeItems(step).map(item=>item.name),highlights:fields.filter(e=>e.classList.contains('is-current')).map(e=>e.dataset.stepAttribute),expectedHighlights:fields.filter(e=>!!current&&e.dataset.stepAttribute.split(' ').includes(current)).map(e=>e.dataset.stepAttribute),badges,markerEnd:line.getAttribute('marker-end'),animation:style.animationName,dasharray:style.strokeDasharray,filter:style.filter,orbShadow:orbStyle.boxShadow,orbAnimation:orbStyle.animationName,orbPlayState:orbStyle.animationPlayState,position:{left:a.refs.packet.style.left,top:a.refs.packet.style.top},midpoint:{left:point.x/svg.width*100,top:point.y/svg.height*100},status:event.status,kind:event.kind,playLabel:a.refs.play.textContent.trim(),seekEnabled:!a.refs.seek.disabled,seekValue:Number(a.refs.seek.value),expectedSeekValue:Math.round(fraction*1000),seekText:a.refs.seek.getAttribute('aria-valuetext'),canonicalBefore,canonicalAfter:JSON.stringify({protocol:a.protocolSnapshot(),held:a.heldView.snapshot()}),activeMessage:{visible:!a.querySelector('#held-active-message').hidden,text:a.querySelector('#held-active-message').textContent}};
-        },{fraction:target.fraction,stepId:prepared.stepId});
+          const badge=a.refs.inspector.querySelector('.channel-badge'),channel={packet:a.refs.packet.dataset.channel,fields:a.refs['step-attributes'].dataset.channel,label:badge?.textContent||'',badge:badge?.dataset.channel,visible:!!badge?.getClientRects().length};
+          return {channel,stepId:step.id,geometry:a.refs.graph.dataset.heldGeometry,presentation:group.dataset.presentation,packetPresentation:a.refs.packet.dataset.presentation,visible:event.visible,packetHidden:a.refs.packet.hidden,packetIndex:event.packetIndex,progress:event.progress,phase:event.messagePhase,name:a.refs['packet-name'].textContent,value:a.refs['packet-value'].textContent,count:a.refs['packet-count'].textContent,expectedName:packet.name,expectedValue:expectedValue.slice(0,38)+(expectedValue.length>38?'…':''),fullValue:expectedValue,expectedCount:(event.packetIndex+1)+'/'+Math.max(1,step.payload.length),fieldNames:fields.map(e=>e.textContent),expectedFieldNames:expectedItems.map(item=>item.name),highlights:fields.filter(e=>e.classList.contains('is-current')).map(e=>e.textContent),expectedHighlights:expectedItems.filter(item=>!!current&&item.ids.includes(current)).map(item=>item.name),badges,markerEnd:line.getAttribute('marker-end'),animation:style.animationName,dasharray:style.strokeDasharray,filter:style.filter,orbShadow:orbStyle.boxShadow,orbAnimation:orbStyle.animationName,orbPlayState:orbStyle.animationPlayState,position:{left:a.refs.packet.style.left,top:a.refs.packet.style.top},midpoint:{left:point.x/svg.width*100,top:point.y/svg.height*100},status:event.status,kind:event.kind,playLabel:a.refs.play.textContent.trim(),seekEnabled:!a.refs.seek.disabled,seekValue:Number(a.refs.seek.value),expectedSeekValue:Math.round(fraction*1000),seekText:a.refs.seek.getAttribute('aria-valuetext'),canonicalBefore,canonicalAfter:JSON.stringify({protocol:a.protocolSnapshot(),held:a.heldView.snapshot()}),activeMessage:{visible:!a.querySelector('#held-active-message').hidden,text:a.querySelector('#held-active-message').textContent}};
+        },{fraction:target.fraction,stepId:prepared.stepId,expectedItems:prepared.expectedItems});
         const label=mode+' '+fixture.kind+' '+expanded+' '+width+' field '+target.packetIndex+' @'+target.travel;
         assert.equal(observed.visible,true,label+' observes an actual visible field time');assert.equal(observed.packetHidden,false,label+' field marker is rendered');
         assert.equal(observed.packetIndex,target.packetIndex,label+' preserves legacy field cadence');assert.equal(observed.presentation,prepared.presentation,label+' logical route presentation');assert.equal(observed.packetPresentation,prepared.presentation,label+' packet presentation');
@@ -191,6 +204,8 @@ async function heldNativeLocalProcessing(page,mode){
         assert.equal(observed.canonicalAfter,observed.canonicalBefore,label+' presentation/focus redraw preserves the complete canonical snapshot');
         const key=target.packetIndex+':'+target.travel;
         if(canonical.has(key))assert.equal(observed.canonicalAfter,canonical.get(key),label+' width/internal folding preserves the exact canonical snapshot');else canonical.set(key,observed.canonicalAfter);
+        const visible={names:observed.fieldNames,highlights:observed.highlights};
+        if(visibleFields.has(key))assert.deepEqual(visible,visibleFields.get(key),label+' width/internal folding preserves the rendered field names and actual-packet highlights');else visibleFields.set(key,visible);
         if(!fixture.exchange){
           assert.equal(observed.markerEnd,null,label+' local route has no directional arrow');assert.equal(observed.animation,'none',label+' no travelling line animation');assert.equal(observed.dasharray,'none',label+' no directional dashes');assert.equal(observed.filter,'none',label+' no route glow');
           assert.equal(observed.orbShadow,'none',label+' local field pulse has no unbounded glow');assert.equal(observed.orbPlayState,'paused',label+' paused local pulse does not run');assert.ok(observed.badges.includes('Local processing'),label+' local processing is labelled in normal playback');
@@ -202,11 +217,17 @@ async function heldNativeLocalProcessing(page,mode){
           assert.ok(observed.markerEnd?.startsWith('url('),label+' actual IPC retains direction');assert.equal(observed.animation,'link-flow',label+' actual IPC retains travelling flow');
           if(!expanded)assert.ok(observed.badges.includes('Internal exchange'),label+' folded IPC is explicitly distinguished from local computation');
           if(samples.length&&samples.at(-1).packetIndex===observed.packetIndex)assert.notDeepEqual(observed.position,samples.at(-1).position,label+' actual IPC marker moves even on one drawn actor');
+          assert.equal(observed.channel.visible,true,label+' IPC has a rendered channel badge');assert.equal(observed.channel.badge,'ipc',label+' IPC channel badge category');assert.ok(observed.channel.label.includes('Local IPC'),label+' actual agent exchange is visibly labelled Local IPC');assert.equal(observed.channel.packet,'ipc',label+' actual IPC packet uses its local channel');assert.equal(observed.channel.fields,'ipc',label+' actual IPC fields use their local channel');
         }
         if(!fixture.exchange)assert.equal(observed.activeMessage.visible,true,label+' full local field value has a rendered readable panel');
         if(observed.activeMessage.visible)assert.ok(observed.activeMessage.text.includes(observed.fullValue),label+' visible message preserves the untruncated field value');
         const paint=await heldNativePaintedRoute(page,{local:!fixture.exchange});
         assert.deepEqual(paint.collisions,[],label+' painted route, focus halo, marker glyph and local field marker clear actor/dock/focus frames');
+        if(!fixture.exchange){
+          assert.ok(paint.transferClearance.routes.length>0,label+' independent clearance probe sees rendered non-self transfer paths');
+          assert.ok(paint.transferClearance.minimumWorld>=12-.01,label+' local glyph center clears every other rendered transfer route by at least 12 world units: '+JSON.stringify(paint.transferClearance));
+          if(['full','compact'].includes(observed.geometry))assert.deepEqual(paint.transferClearance.interiorCrossings,[],label+' no actual transfer path crosses the local U interior');
+        }
         for(const marker of paint.markers){assert.ok(marker.paintedSpanWorld<=10.1,label+' arrow paint fits the ten-unit route clearance');assert.ok(marker.tipOvershootCss<=.5,label+' arrow paint stops at its attachment port');}
         const canonicalHash=heldNativeHash(observed.canonicalAfter);delete observed.canonicalBefore;delete observed.canonicalAfter;
         samples.push({...target,...observed,canonicalHash,paint});
@@ -263,6 +284,7 @@ async function heldNativePaintedRoute(page,{local}){
       obstacles.push({owner,kind:frame?'trust-frame':focus?'actor-focus':e.className,bounds,own,frame});
     }
     const collisions=[],envelopes=[],markers=[];
+    let transferClearance=null;
     const collide=(paint,kind,at)=>{
       for(const obstacle of obstacles){
         if(obstacle.own&&at!==null&&(at<16*scale||length*scale-at<16*scale))continue;
@@ -293,20 +315,44 @@ async function heldNativePaintedRoute(page,{local}){
       const chip=a.refs.packet.querySelector('.packet-chip'),orb=a.refs.packet.querySelector('.packet-orb');
       if(getComputedStyle(chip).boxShadow!=='none')throw new Error('A local field chip must not cast a glow beyond its bounded glyph');
       for(const [element,kind]of [[chip,'local-field-chip'],[orb,'local-field-orb']]){const bounds=rect(element);envelopes.push({kind,bounds,shadow:getComputedStyle(element).boxShadow});collide(bounds,kind,null);}
+      const center=rect(orb),glyph={x:(center.left+center.right)/2,y:(center.top+center.bottom)/2},polygon=[];
+      for(let n=0;n<length;n+=.75){const p=line.getPointAtLength(n);polygon.push(new DOMPoint(p.x,p.y).matrixTransform(matrix));}
+      const tip=line.getPointAtLength(length);polygon.push(new DOMPoint(tip.x,tip.y).matrixTransform(matrix));
+      const inside=p=>{let result=false;for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){const a=polygon[i],b=polygon[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)result=!result;}return result;};
+      const segmentDistance=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,denominator=dx*dx+dy*dy,t=denominator?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/denominator)):0;return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy);};
+      const routes=[],interiorCrossings=[];
+      for(const other of a.refs.connections.querySelectorAll('.connection-group')){
+        const pair=other.dataset.pair?.split('--');
+        if(!pair||pair.length!==2||pair[0]===pair[1])continue;
+        const path=other.querySelector('.connection-line');
+        if(!path||!visible(path)||getComputedStyle(path).stroke==='none'||Number(getComputedStyle(path).opacity)===0)continue;
+        const total=path.getTotalLength(),transform=path.getScreenCTM();let prior=null,distance=Infinity,crossing=null;
+        for(let n=0;;n=Math.min(total,n+.75)){
+          const p=path.getPointAtLength(n),point=new DOMPoint(p.x,p.y).matrixTransform(transform);
+          if(prior)distance=Math.min(distance,segmentDistance(glyph,prior,point));
+          if(!crossing&&inside(point))crossing={pair:other.dataset.pair,atWorld:n,point:{x:point.x,y:point.y}};
+          prior=point;if(n===total)break;
+        }
+        routes.push({pair:other.dataset.pair,distanceCss:distance,distanceWorld:distance/scale});
+        if(crossing)interiorCrossings.push(crossing);
+      }
+      transferClearance={glyphCenter:glyph,scale,minimumCss:Math.min(...routes.map(route=>route.distanceCss)),minimumWorld:Math.min(...routes.map(route=>route.distanceWorld)),routes,interiorCrossings};
     }
-    return {pair:group.dataset.pair,local,obstacles:obstacles.map(({owner,kind,bounds})=>({owner,kind,bounds})),envelopes,markers,collisions:[...new Map(collisions.map(c=>[c.paint+':'+c.obstacle+':'+c.kind,c])).values()]};
+    return {pair:group.dataset.pair,local,obstacles:obstacles.map(({owner,kind,bounds})=>({owner,kind,bounds})),envelopes,markers,transferClearance,collisions:[...new Map(collisions.map(c=>[c.paint+':'+c.obstacle+':'+c.kind,c])).values()]};
   },local);
 }
 async function heldNativeStepAttributes(page,mode){
   const records=[];
-  for(const [width,id,expanded]of [[1920,'basic-keycloak',false],[1920,'basic-saml',false],[1920,'lab-refresh-rotation',false],[1920,'lab-ad-forest-child-domains',true],[1480,'lab-ad-fast-as-success',true],[1050,'lab-ssh-cert-reissue',true],[390,'lab-ssh-cert-success',false]]){
+  for(const [width,id,expanded,coreFields]of [[1920,'basic-keycloak',false,['client_id','redirect_uri','state','nonce','code_verifier','code_challenge_method','code_challenge']],[1920,'basic-saml',false],[1920,'lab-refresh-rotation',false],[1920,'lab-ad-forest-child-domains',true],[1480,'lab-ad-fast-as-success',true],[1050,'lab-ssh-cert-reissue',true],[390,'lab-ssh-cert-success',false]]){
     await page.setViewportSize({width,height:1200});await heldNativeChoose(page,id,expanded);
-    const expected=await page.evaluate(()=>{
-      const a=document.querySelector('auth-flow-studio'),step=a.steps.find(step=>a.stepAttributeItems(step).length>=2);
-      if(!step)throw new Error('The native fixture needs a multi-attribute step.');
+    const expected=await page.evaluate(coreFields=>{
+      const a=document.querySelector('auth-flow-studio');
+      const namesFor=step=>coreFields&&step.id.endsWith('-l02')?coreFields:[...new Set((step.attributeOperations||[]).filter(operation=>operation.actorId===step.from&&(step.from===step.to?!['inspect','send','receive'].includes(operation.kind):operation.kind==='send')).map(operation=>a.definition(operation.attributeId).name.replace(/\s*\([^)]*\)/g,'').trim()))];
+      const step=a.steps.find(step=>namesFor(step).length>=2);
+      if(!step)throw new Error('The native fixture needs independently authored multi-attribute fields.');
       a.player.seek([step],.5,'step');
-      return {stepId:step.id,names:a.stepAttributeItems(step).map(item=>item.name)};
-    });
+      return {stepId:step.id,names:namesFor(step)};
+    },coreFields);
     await page.locator('#step-attributes').scrollIntoViewIfNeeded();
     const actual=await page.evaluate(()=>{
       const a=document.querySelector('auth-flow-studio'),panel=a.refs['step-attributes'],r=panel.getBoundingClientRect(),graph=a.refs.graph.getBoundingClientRect();

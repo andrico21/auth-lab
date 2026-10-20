@@ -87,3 +87,20 @@ test('candidate validation reports malformed route inputs and supports every doc
   assert.equal(validateLayoutRoutes(null).ok,false);
   assert.equal(validateLayoutRoutes(positions,null).ok,false);
 });
+
+test('external local activity does not share the same-row workstation/KDC transfer corridor',()=>{
+  const positions={workstation:{x:560,y:120},kdc:{x:975,y:120}};
+  const loop=sampleRoute(connectionPath('workstation','workstation',positions),positions);
+  let remaining=loop.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p.x-loop[i].x,p.y-loop[i].y),0)/2,marker;
+  for(let i=1;i<loop.length;i++){
+    const a=loop[i-1],b=loop[i],length=Math.hypot(b.x-a.x,b.y-a.y);
+    if(length&&remaining<=length){marker={x:a.x+(b.x-a.x)*remaining/length,y:a.y+(b.y-a.y)*remaining/length};break;}
+    remaining-=length;
+  }
+  assert.ok(marker,'the local action has a visible midpoint');
+  const transfer=sampleRoute(connectionPath('workstation','kdc',positions),positions);
+  for(let i=1;i<transfer.length;i++){
+    const a=transfer[i-1],b=transfer[i],dx=b.x-a.x,dy=b.y-a.y,length=dx*dx+dy*dy,t=length?Math.max(0,Math.min(1,((marker.x-a.x)*dx+(marker.y-a.y)*dy)/length)):0;
+    assert.ok(Math.hypot(marker.x-a.x-t*dx,marker.y-a.y-t*dy)>=12-1e-6,'the actual rounded transfer clears the local glyph');
+  }
+});

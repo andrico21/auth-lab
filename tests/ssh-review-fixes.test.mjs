@@ -170,3 +170,37 @@ test('F17 account denial comes from explicit denied policy/result while certific
   assert.ok(focused(denied, 'PAM/account access result (local)').some(step => step.payload.some(item => item.value === result.value)));
   for (const m of [denied, allowed, denied.contextualize({ unixAccount: 'charlie' })]) assert.deepEqual(validateProtocolScenario(m).errors, []);
 });
+
+test('SSH process operations, same-host IPC and remote exchanges retain distinct channels', () => {
+  for (const suffix of ['cert-success', 'device-cadence', 'device-restart']) {
+    const m = model(suffix);
+    for (const [key, from, to, channel] of [
+      ['userauth-input', 'sshCli', 'sshCli', 'internal'],
+      ['agent-request', 'sshCli', 'sshAgent', 'local-ipc'],
+      ['sign', 'sshAgent', 'sshAgent', 'internal'],
+      ['agent-proof', 'sshAgent', 'sshCli', 'local-ipc'],
+      ['userauth', 'sshCli', 'sshHost', 'backchannel'],
+    ]) {
+      const step = event(m, key);
+      assert.equal(step.from, from, `${suffix}: ${key} sender`);
+      assert.equal(step.to, to, `${suffix}: ${key} recipient`);
+      assert.equal(step.channel, channel, `${suffix}: ${key} channel`);
+    }
+  }
+  const m = model('sssd-success');
+  for (const [key, from, to, channel] of [
+    ['pam-request', 'sshHost', 'pam', 'local-ipc'],
+    ['sssd-request', 'pam', 'sssd', 'local-ipc'],
+    ['sssd-info', 'sssd', 'pam', 'local-ipc'],
+    ['pam-info', 'pam', 'sshHost', 'local-ipc'],
+    ['human-info-created', 'sssd', 'sssd', 'internal'],
+    ['device-request', 'sssd', 'sshIdp', 'backchannel'],
+    ['ssh-info', 'sshHost', 'sshCli', 'backchannel'],
+    ['terminal-display', 'sshCli', 'user', 'backchannel'],
+  ]) {
+    const step = event(m, key);
+    assert.equal(step.from, from, `${key} sender`);
+    assert.equal(step.to, to, `${key} recipient`);
+    assert.equal(step.channel, channel, `${key} channel`);
+  }
+});

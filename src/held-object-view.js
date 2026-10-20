@@ -82,16 +82,9 @@ export function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 73
   for(const [id,slot] of Object.entries(aliases))if(positions[slot])positions[id]=positions[slot];
   const visible = Object.fromEntries(visibleIds.filter(id => positions[id]).map(id => [id,positions[id]]));
   const rectangles = Object.entries(bounds).map(([id,b]) => ({id,left:b.left-10,right:b.right+10,top:b.top-10,bottom:b.bottom+10}));
-  const routes = new Map();
-  for (const [from,to] of pairs) {
-    const key = from+'>'+to;
-    if (routes.has(key)) continue;
-    if (!visible[from] || !visible[to]) return null;
-    const route = compositeRoute(from,to,positions,rectangles);
-    if (!route) return null;
-    routes.set(key,route);
-  }
-  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-physical-240-v6'])};
+  const routes = compositeRoutes(visible,pairs,rectangles);
+  if (!routes) return null;
+  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-physical-240-v7'])};
 }
 
 // Compact controls keep fixed final CSS sizes. Only their reserved world-space
@@ -112,13 +105,31 @@ export function compactDockGeometry(positions,pairs,cssWidth,cssHeight=cssWidth*
     const a=entries[i][1],b=entries[j][1];
     if(a.left<b.right+20&&a.right+20>b.left&&a.top<b.bottom+20&&a.bottom+20>b.top)return null;
   }
-  const rectangles=entries.map(([id,b])=>({id,left:b.left-10,right:b.right+10,top:b.top-10,bottom:b.bottom+10})),routes=new Map();
-  for(const [from,to] of pairs){
+  const rectangles=entries.map(([id,b])=>({id,left:b.left-10,right:b.right+10,top:b.top-10,bottom:b.bottom+10}));
+  const routes=compositeRoutes(positions,pairs,rectangles,actorBounds);
+  if(!routes)return null;
+  return {mode:'compact',positions,bounds,actorBounds,routes,scaleX,scaleY,key:JSON.stringify([positions,pairs,cssWidth,cssHeight,'140x140-css-82x132-44x44-v4'])};
+}
+function compositeRoutes(positions,pairs,rectangles,actorBounds) {
+  const routes=new Map(),reserved=[...rectangles];
+  // Local activity owns a small lane away from the shared transfer ports.
+  // Route transfers afterward so no connection can cut through that activity.
+  for(const local of [true,false])for(const [from,to]of pairs){
     if(!positions[from]||!positions[to])return null;
+    if((from===to)!==local)continue;
     const key=from+'>'+to;if(routes.has(key))continue;
-    const route=compositeRoute(from,to,positions,rectangles,actorBounds);if(!route)return null;routes.set(key,route);
+    const points=compositeRoute(from,to,positions,reserved,actorBounds);
+    if(!points)return null;
+    routes.set(key,points.map((point,index)=>(index?'L ':'M ')+point.x+' '+point.y).join(' '));
+    if(local)reserved.push({
+      id:from+' local activity',
+      left:Math.min(...points.map(point=>point.x))-12,
+      right:Math.max(...points.map(point=>point.x))+12,
+      top:Math.min(...points.map(point=>point.y))-12,
+      bottom:Math.max(...points.map(point=>point.y))+12
+    });
   }
-  return {mode:'compact',positions,bounds,actorBounds,routes,scaleX,scaleY,key:JSON.stringify([positions,pairs,cssWidth,cssHeight,'140x140-css-82x132-44x44-v3'])};
+  return routes;
 }
 function compositeRoute(from,to,positions,rectangles,actorBounds) {
   const ports = id => {
@@ -131,14 +142,14 @@ function compositeRoute(from,to,positions,rectangles,actorBounds) {
   let minX=1120,maxX=0,minY=730,maxY=0;
   for(const r of rectangles){minX=Math.min(minX,r.left);maxX=Math.max(maxX,r.right);minY=Math.min(minY,r.top);maxY=Math.max(maxY,r.bottom);}
   if (from === to) {
-    const p=positions[from],b=actorBounds?.[from]||{left:p.x-82,right:p.x+82,top:p.y-87,bottom:p.y+87},cx=(b.left+b.right)/2,half=Math.min(32,(b.right-b.left)/4);
+    const p=positions[from],b=actorBounds?.[from]||{left:p.x-82,right:p.x+82,top:p.y-87,bottom:p.y+87},width=b.right-b.left,cx=(b.left+b.right)/2,half=Math.min(20,width/8);
     const own=rectangles.find(r=>p.x>r.left&&p.x<r.right&&p.y>r.top&&p.y<r.bottom);
-    // Keep the local activity lane beyond both the card's focus ring and its
-    // composite frame. Two ports on one edge avoid wrapping a transfer around it.
-    for(const [edge,lane]of [[b.top,Math.min(b.top,p.y-87)-24],[b.bottom,Math.max(b.bottom,p.y+87)+24]]){
-      const points=[{x:cx-half,y:edge},{x:cx-half,y:lane},{x:cx+half,y:lane},{x:cx+half,y:edge}];
+    // Leave the central transfer-port axis free. The reserved region also
+    // protects the stationary marker and the U's painted focus envelope.
+    for(const [edge,lane]of [[b.top,Math.min(b.top,p.y-87)-24],[b.bottom,Math.max(b.bottom,p.y+87)+24]])for(const offset of [-width/4,width/4]){
+      const points=[{x:cx+offset-half,y:edge},{x:cx+offset-half,y:lane},{x:cx+offset+half,y:lane},{x:cx+offset+half,y:edge}];
       if(points.some(point=>point.x<10||point.y<10||point.x>1110||point.y>720)||points.slice(1,-1).some(inside))continue;
-      if(clear(points[0],points[1],own)&&clear(points[1],points[2])&&clear(points[2],points[3],own))return points.map((point,index)=>(index?'L ':'M ')+point.x+' '+point.y).join(' ');
+      if(clear(points[0],points[1],own)&&clear(points[1],points[2])&&clear(points[2],points[3],own))return points;
     }
     return null;
   }
@@ -166,7 +177,7 @@ function compositeRoute(from,to,positions,rectangles,actorBounds) {
   if(!finish)return null;
   const points=[finish.end.base];let node=finish.node;
   while(node){points.unshift({x:node.x,y:node.y});if(!node.previous)points.unshift(node.origin.base);node=node.previous;}
-  return points.map((p,i)=>(i?'L ':'M ')+p.x+' '+p.y).join(' ');
+  return points;
 }
 
 export class HeldObjectView {

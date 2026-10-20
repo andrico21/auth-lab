@@ -160,3 +160,34 @@ test('encrypted SAML and JWE wire overlays list actual message names without pla
     }
   }finally{unmount(app);}
 });
+
+test('SSH attribute projections retain complete logical-owner fields and highlights when their cards fold together',()=>{
+  const app=mount();try{
+    app.selectLabScenario('lab-ssh-cert-success',{navigate:false});
+    const fixtures=[
+      {suffix:'-sign',kind:'create',names:['SSH user private key','SSH publickey signed input','signature']},
+      {suffix:'-agent-request',kind:'send',names:['SSH publickey signed input','session identifier']},
+      {suffix:'-agent-proof',kind:'send',names:['signature']}
+    ];
+    for(const fixture of fixtures){
+      const source=app.steps.find(step=>step.id.endsWith(fixture.suffix));assert.ok(source);
+      const operation=source.attributeOperations.find(operation=>operation.kind===fixture.kind);assert.ok(operation);
+      app.selectAttribute(operation.attributeId,false);
+      const row=app.traceQueue.find(step=>step.sourceStepId===source.id&&step.traceKind===fixture.kind);assert.ok(row);
+      assert.equal(row.payload.length,1,'the focused projection animates one field rather than the full source set');
+      const duration=380+row.payload.length*1290+800,timing=app.player.getTiming(row,'trace-step'),message=timing?.messages?.[0];
+      const start=message?(message.start-timing.start)/(timing.end-timing.start):0,end=message?(message.end-timing.start)/(timing.end-timing.start):1;
+      const scale=message?Math.min(1,(end-start)*duration/1430):1;
+      app.player.seek([row],(start*duration+(380+525)*scale)/duration,'trace-step');
+      assert.equal(app.player.snapshot().visible,true,'the highlight belongs to an actual visible packet');
+      const before=JSON.stringify({protocol:app.protocolSnapshot(),held:app.heldView.snapshot()});
+      for(const expanded of [false,true,false]){
+        const control=app.querySelector('#show-internals');control.checked=expanded;control.dispatchEvent(new HarnessEvent('change'));
+        assertNameSet(app,fixture.names);
+        assert.deepEqual(overlay(app).querySelectorAll('.is-current').map(node=>normalize(node.textContent)),[app.definition(operation.attributeId).name.replace(/\s*\([^)]*\)/g,'').trim()]);
+        assert.equal(JSON.stringify({protocol:app.protocolSnapshot(),held:app.heldView.snapshot()}),before,'folding projected source fields preserves exact canonical state');
+      }
+      app.clearAttribute();
+    }
+  }finally{unmount(app);}
+});

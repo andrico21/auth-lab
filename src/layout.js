@@ -57,11 +57,18 @@ function ports(p) {
 }
 
 function buildVisibilityGraph(positions) {
-  const rectangles=Object.entries(positions).map(([id,p])=>rectangle(id,p));
+  const rectangles=Object.entries(positions).map(([id,p])=>rectangle(id,p)),paths=new Map();
+  for(const id of Object.keys(positions))paths.set(id+'>'+id,selfRoute(id,positions,{rectangles}));
   const xs=[ROUTE_PADDING,GRAPH_WIDTH-ROUTE_PADDING],ys=[ROUTE_PADDING,GRAPH_HEIGHT-ROUTE_PADDING];
   for(const [id,p]of Object.entries(positions)) {
     const r=rectangle(id,p);xs.push(r.left,p.x,r.right);ys.push(r.top,p.y,r.bottom);
     for(const port of ports(p)){xs.push(port.x);ys.push(port.y);}
+  }
+  // Protect local glyphs and their loop interiors from real transfer paths.
+  // The same reservations participate in both node and segment clearance.
+  for(const [key,points]of paths){
+    const activity={id:key,left:Math.min(...points.map(p=>p.x))-12,right:Math.max(...points.map(p=>p.x))+12,top:Math.min(...points.map(p=>p.y))-12,bottom:Math.max(...points.map(p=>p.y))+12};
+    rectangles.push(activity);xs.push(activity.left,activity.right);ys.push(activity.top,activity.bottom);
   }
   const unique=values=>[...new Set(values)].sort((a,b)=>a-b);
   const xValues=unique(xs),yValues=unique(ys),nodes=[],index=new Map();
@@ -84,7 +91,7 @@ function buildVisibilityGraph(positions) {
     let previous;
     for(const y of yValues){const current=index.get(x+','+y);if(current!==undefined){link(previous,current,2);previous=current;}}
   }
-  return {nodes,index,rectangles,paths:new Map()};
+  return {nodes,index,rectangles,paths};
 }
 
 function graphFor(positions) {
@@ -164,7 +171,7 @@ function selfRoute(id,positions,graph) {
   // try narrower attachment spans and other clear portions of each side.
   for(const span of [60,40,24,16])for(const side of sides) {
     const half=span/2,clamp=n=>Math.max(side.min+half,Math.min(side.max-half,n));
-    const centers=[clamp(side.center),side.min+half,side.max-half];
+    const centers=[side.min+half,side.max-half,clamp(side.center)];
     for(const r of graph.rectangles)if(r.id!==id) {
       const low=side.vertical?r.top:r.left,high=side.vertical?r.bottom:r.right;
       centers.push(clamp(low-half),clamp(high+half));

@@ -809,10 +809,13 @@ export class AuthFlowStudio extends HTMLElement {
   }
   stepAttributeItems(step) {
     const source=step.sourceStepId?this.steps.find(s=>s.id===step.sourceStepId)||step:step;
-    const from=this.nodeId(step.from),to=this.nodeId(step.to),operations=getStepAttributeOperations(source,this.authenticator);
-    const local=operations.filter(a=>!['inspect','send','receive'].includes(a.kind));
-    let relevant=from===to?local.filter(a=>a.actorId===from):operations.filter(a=>a.kind==='send'&&a.actorId===from);
-    if(from!==to&&!relevant.length)relevant=local.filter(a=>a.actorId===from||a.actorId===to);
+    // Projected checks can be local even when their source step is a send.
+    // Match the projected logical owners, never their folded display cards.
+    const authenticator=source.authenticatorKind||source.selectedAuthenticator||this.authenticator;
+    const from=resolveActor(step.from,authenticator),to=resolveActor(step.to,authenticator),operations=getStepAttributeOperations(source,this.authenticator);
+    const local=operations.filter(a=>!['inspect','send','receive'].includes(a.kind)),isLocal=step.from===step.to;
+    let relevant=isLocal?local.filter(a=>a.actorId===from):operations.filter(a=>a.kind==='send'&&a.actorId===from);
+    if(!isLocal&&!relevant.length)relevant=local.filter(a=>a.actorId===from||a.actorId===to);
     const items=new Map();
     for(const operation of relevant){
       const definition=ATTRIBUTES[operation.attributeId];if(!definition)continue;

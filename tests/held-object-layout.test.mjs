@@ -6,6 +6,8 @@ import { ADLAB_SCENARIOS } from '../src/kerberos-ad-lab.js';
 import { CRYPTOLAB_SCENARIOS } from '../src/kerberos-crypto-lab.js';
 import { FORESTLAB_SCENARIOS } from '../src/kerberos-forest-lab.js';
 import { SSHLAB_SCENARIOS } from '../src/ssh-access-lab.js';
+import { getJourneySteps } from '../src/architecture-variants.js';
+import { getPositions } from '../src/layout.js';
 
 const models=[...ADLAB_SCENARIOS,...CRYPTOLAB_SCENARIOS,...FORESTLAB_SCENARIOS,...SSHLAB_SCENARIOS];
 const model=id=>models.find(item=>item.id===id);
@@ -36,6 +38,34 @@ function assertClear(geometry){
       for(const r of bounds){
         const crosses=a.x===b.x?a.x>r.left&&a.x<r.right&&Math.max(a.y,b.y)>r.top&&Math.min(a.y,b.y)<r.bottom:a.y>r.top&&a.y<r.bottom&&Math.max(a.x,b.x)>r.left&&Math.min(a.x,b.x)<r.right;
         assert.equal(crosses,false,key+' does not cross an inventory');
+      }
+    }
+  }
+}
+
+function assertLocalIsolation(geometry){
+  const paths=new Map([...geometry.routes].map(([key,path])=>[key,[...path.matchAll(/[ML] ([\d.-]+) ([\d.-]+)/g)].map(match=>({x:Number(match[1]),y:Number(match[2])}))]));
+  for(const [key,points]of paths){
+    const [from,to]=key.split('>');if(from!==to)continue;
+    const envelope=geometry.bounds[from],b=geometry.actorBounds?.[from]||{...envelope,right:envelope.left+164},first=points[0],last=points.at(-1);
+    assert.ok(first.y===b.top||first.y===b.bottom,key+' starts on the actual rendered card edge');
+    assert.equal(last.y,first.y,key+' returns to the same rendered edge');
+    for(const port of [first,last])assert.ok(port.x>=b.left&&port.x<=b.right,key+' attaches inside the rendered card width');
+    let remaining=points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p.x-points[i].x,p.y-points[i].y),0)/2,marker;
+    for(let i=1;i<points.length;i++){
+      const a=points[i-1],b=points[i],length=Math.hypot(b.x-a.x,b.y-a.y);
+      if(remaining<=length){marker={x:a.x+(b.x-a.x)*remaining/length,y:a.y+(b.y-a.y)*remaining/length};break;}
+      remaining-=length;
+    }
+    assert.ok(marker,key+' has a meaningful local activity midpoint');
+    const bounds={left:Math.min(...points.map(p=>p.x)),right:Math.max(...points.map(p=>p.x)),top:Math.min(...points.map(p=>p.y)),bottom:Math.max(...points.map(p=>p.y))};
+    for(const [other,route]of paths){
+      const endpoints=other.split('>');if(endpoints[0]===endpoints[1])continue;
+      for(let i=1;i<route.length;i++){
+        const a=route[i-1],b=route[i],dx=b.x-a.x,dy=b.y-a.y,length=dx*dx+dy*dy,t=length?Math.max(0,Math.min(1,((marker.x-a.x)*dx+(marker.y-a.y)*dy)/length)):0;
+        assert.ok(Math.hypot(marker.x-a.x-t*dx,marker.y-a.y-t*dy)>=12-1e-8,key+' marker is separate from '+other);
+        const crossing=a.x===b.x?a.x>bounds.left&&a.x<bounds.right&&Math.max(a.y,b.y)>bounds.top&&Math.min(a.y,b.y)<bounds.bottom:a.y>bounds.top&&a.y<bounds.bottom&&Math.max(a.x,b.x)>bounds.left&&Math.min(a.x,b.x)<bounds.right;
+        assert.equal(crossing,false,other+' does not cut through '+key+' activity');
       }
     }
   }
@@ -139,8 +169,19 @@ test('local routes reserve a painted activity lane clear of actor focus and comp
       assert.ok(marker.x>=6&&marker.x<=1114&&marker.y>=6&&marker.y<=724,key+' keeps a bounded local marker inside the graph');
     }
     assertClear(geometry);
+    assertLocalIsolation(geometry);
   }
   const compact=compactDockGeometry({actor:{x:104,y:120}},[['actor','actor']],960);
   assert.ok(compact);const points=[...compact.routes.get('actor>actor').matchAll(/[ML] ([\d.-]+) ([\d.-]+)/g)].map(match=>({x:Number(match[1]),y:Number(match[2])}));
   assert.ok(points[1].y>=compact.bounds.actor.bottom+24,'a tight top margin selects the clear bottom lane');
+});
+
+test('backend PKCE local activity stays separate from real transfers in full and compact web layouts',()=>{
+  const steps=getJourneySteps('password','web','single'),pairs=steps.map(step=>[step.from,step.to]),ids=[...new Set(pairs.flat())],positions=getPositions('web'),anchors=Object.fromEntries(ids.map(id=>[id,positions[id]]));
+  const full=fullDockGeometry(ids,ids,pairs,1120,730,{},anchors),compact=compactDockGeometry(anchors,pairs,960);
+  for(const geometry of [full,compact]){
+    assert.ok(geometry,'the actual basic web journey retains its eligible desktop layout');
+    assert.ok(geometry.routes.has('app>app'),'backend PKCE preparation has a real local route');
+    assertLocalIsolation(geometry);
+  }
 });

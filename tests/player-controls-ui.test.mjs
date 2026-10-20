@@ -298,3 +298,52 @@ test('folded SSH and KDC component exchanges retain direction and motion distinc
     }
   } finally { unmount(app); }
 });
+
+test('SSH signing and agent IPC preserve visible fields, actual-packet highlights and canonical replay state across folding', () => {
+  const app = mount(); try {
+    const fixtures = [
+      {suffix:'-sign', artifact:'user-proof', names:['SSH user private key','SSH publickey signed input','signature']},
+      {suffix:'-agent-request', artifact:'userauth-input', names:['SSH publickey signed input','session identifier']},
+      {suffix:'-agent-proof', artifact:'user-proof', names:['signature']}
+    ];
+    const fieldName = id => app.definition(id).name.replace(/\s*\([^)]*\)/g, '').trim();
+    for (const replay of ['demo','connection','object']) for (const fixture of fixtures) {
+      app.selectLabScenario('lab-ssh-cert-success', {navigate:false});
+      const source = app.steps.find(step => step.id.endsWith(fixture.suffix)); assert.ok(source);
+      let queue = app.steps;
+      if (replay === 'connection') {
+        app.replayConnection([app.nodeId(source.from),app.nodeId(source.to)].sort().join('--'));
+        queue = app.player.queue;
+      } else if (replay === 'object') {
+        app.heldView.trace(fixture.artifact); queue = app.traceQueue;
+      }
+      const row = queue.find(step => (step.sourceStepId || step.id) === source.id && step.from === source.from && step.to === source.to);
+      assert.ok(row, replay + ' retains the logical source endpoints');
+      const rowIndex = queue.indexOf(row), rowDuration = duration(row), count = Math.max(1,row.payload.length), timing = app.player.getTiming(row, replay), message = timing?.messages?.[0];
+      const start = message ? (message.start - timing.start) / (timing.end - timing.start) : 0;
+      const end = message ? (message.end - timing.start) / (timing.end - timing.start) : 1;
+      const scale = message ? Math.min(1, (end - start) * rowDuration / (380 + (count - 1) * 1290 + 1050)) : 1;
+      const preceding = queue.slice(0,rowIndex).reduce((sum,step) => sum + duration(step), 0), total = queue.reduce((sum,step) => sum + duration(step), 0);
+      for (let packetIndex = 0; packetIndex < count; packetIndex++) for (const travel of [.2,.8]) {
+        const fraction = (preceding + start * rowDuration + (380 + packetIndex * 1290 + travel * 1050) * scale) / total;
+        app.player.seek(queue, fraction, replay);
+        const event = app.player.snapshot(), packet = row.payload[packetIndex] || {name:'Local action',value:row.title};
+        assert.equal(event.step.id,row.id); assert.equal(event.packetIndex,packetIndex); assert.equal(event.visible,true);
+        assert.ok(Math.abs(event.progress - travel) < .0001, 'authored field cadence survives every replay path');
+        const canonical = JSON.stringify({protocol:app.protocolSnapshot(),held:app.heldView.snapshot()});
+        const expectedHighlight = packet.attributeId && fixture.names.includes(fieldName(packet.attributeId)) ? [fieldName(packet.attributeId)] : [];
+        for (const expanded of [false,true,false]) {
+          const control = app.querySelector('#show-internals'); control.checked = expanded; control.dispatchEvent(new HarnessEvent('change'));
+          const overlay = app.refs['step-attributes'];
+          assert.equal(overlay.hidden,false, replay + ' shows logical fields even on one folded card');
+          assert.deepEqual(overlay.querySelectorAll('[data-step-attribute]').map(node => node.textContent).sort(), [...fixture.names].sort());
+          assert.deepEqual(overlay.querySelectorAll('.is-current').map(node => node.textContent), expectedHighlight);
+          assert.equal(app.refs['packet-name'].textContent, packet.name);
+          assert.equal(app.refs.packet.dataset.presentation, source.from === source.to ? 'local' : expanded ? 'transfer' : 'folded');
+          assert.equal(JSON.stringify({protocol:app.protocolSnapshot(),held:app.heldView.snapshot()}), canonical, 'presentation changes preserve the exact canonical replay snapshot');
+          assert.equal(app.player.status,'paused');
+        }
+      }
+    }
+  } finally { unmount(app); }
+});

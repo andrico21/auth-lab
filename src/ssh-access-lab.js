@@ -110,8 +110,9 @@ function sshBuilder(meta,actors,initialState={}) {
   const stage=(key,title,from,to,summary,detail,operations,packet=[],effects=[],checks=[])=>{
     const eventId=meta.id+'-'+key;
     const enriched=operations.map((operation,index)=>{const exactValueRef=eventId+':'+index;values[exactValueRef]=operation.value;return {...operation,sourceEventId:eventId,exactValueRef};});
-    const step=labStep(eventId,title,from,to,'ssh',from===to?'internal':'backchannel',summary,detail,[...new Set(enriched.map(o=>o.attributeId))],packet,checks,enriched);
-    step.sshStage=key;step.interactionType=from===to?'local-operation':from==='user'||to==='user'?'human':(['sshAgent','pam','sssd'].includes(from)&&['sshCli','sshHost','pam','sssd'].includes(to))||(['sshAgent','pam','sssd'].includes(to)&&['sshCli','sshHost','pam','sssd'].includes(from))?'local-ipc':'network';
+    const interactionType=from===to?'local-operation':from==='user'||to==='user'?'human':(['sshAgent','pam','sssd'].includes(from)&&['sshCli','sshHost','pam','sssd'].includes(to))||(['sshAgent','pam','sssd'].includes(to)&&['sshCli','sshHost','pam','sssd'].includes(from))?'local-ipc':'network';
+    const step=labStep(eventId,title,from,to,'ssh',interactionType==='local-operation'?'internal':interactionType==='local-ipc'?'local-ipc':'backchannel',summary,detail,[...new Set(enriched.map(o=>o.attributeId))],packet,checks,enriched);
+    step.sshStage=key;step.interactionType=interactionType;
     step.protocolEffects=effects;steps.push(step);return step;
   };
   const local=(key,title,actor,summary,detail,operations,effects=[],checks=[])=>stage(key,title,actor,actor,summary,detail,operations,[],effects,checks);
