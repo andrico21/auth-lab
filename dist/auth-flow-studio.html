@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-HXWZJvLjbOAuTFiKWX1XivkOlEeva8l8qBx/K498sfE='; script-src-attr 'none'; style-src 'sha256-5qfyTg95RSWI2AqA24dkPJAOq1qYHx6AaHRRBEwbRsQ='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-VU2r+Duly5/6gPWYXSAVFPCDDEzrPZ+QL55pLJ1qxis='; script-src-attr 'none'; style-src 'sha256-3n2LvC0Lti+1SfyB9jiP1b6cn6ZDTWjNSMb5KCMSuQg='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="Explore Web sign-in, SSH access and AD DS Kerberos: OAuth, SAML, passkeys, MFA, certificates, Device Flow, PKINIT, FAST and forest trusts in one offline animated lab.">
@@ -195,6 +195,7 @@ summary:focus-visible, [role="button"]:focus-visible {
   aspect-ratio: 1120 / 730; min-width: 880px; position: relative; isolation: isolate;
   background: radial-gradient(circle, var(--grid) .8px, transparent 1px); background-size: 19px 19px;
 }
+.graph-canvas :is(button, [tabindex]) { scroll-margin-top: calc(var(--map-controls-height, 0px) + 24px); }
 .graph-canvas::before, .graph-canvas::after { content: ''; position: absolute; top: 54px; bottom: 3%; z-index: -1; border-radius: 18px; pointer-events: none; }
 .graph-canvas::before { left: 2%; right: 36.5%; border: 1px dashed color-mix(in srgb, var(--browser), transparent 82%); background: var(--device-wash); }
 .graph-canvas::after { left: 65%; right: 2%; border: 1px dashed color-mix(in srgb, var(--server), transparent 82%); background: var(--cloud-wash); }
@@ -13068,14 +13069,17 @@ class HeldObjectView {
       if(this.helpOpen){this.helpOpen=false;this.lastKey='';this.render();this.inspector.querySelector('[data-held-help]')?.focus();return;}
       this.expanded.delete(actor);this.lastKey='';this.render();this.recoverFocus(null,actor);
     };app.addEventListener('keydown',this.escape);
+    const controls=app.querySelector('#map-controls'),measureControls=()=>app.refs.graph.style.setProperty('--map-controls-height',controls.getBoundingClientRect().height+'px');
+    measureControls();
     this.resize=()=>{
+      measureControls();
       const previous=app.heldGeometry?.key,active=document.activeElement,key=active?.dataset?.heldKey||active?.dataset?.heldAction,actor=active?.dataset?.heldActor||active?.closest?.('[data-held-owner]')?.dataset?.heldOwner||this.selection?.actorId,owned=!!active?.closest?.('#held-objects, #held-inspector, #held-docks'),actorFocus=active?.dataset?.actor;
       this.configureGeometry();if(previous===app.heldGeometry?.key)return;
       if(owned&&active?.dataset?.holdingId&&actor){this.actorId=actor;this.expanded.add(actor);}
       app.renderActors();app.renderConnections();app.renderPacket(app.player.snapshot());this.lastKey='';this.render();
       if(owned)this.recoverFocus(key,actor);else if(actorFocus)app.refs.actors.querySelector(`[data-actor="${actorFocus}"]`)?.focus();
     };
-    this.observer=typeof ResizeObserver==='function'?new ResizeObserver(this.resize):null;this.observer?.observe(app.refs.graph);this.observer?.observe(app.refs.graph.parentElement);
+    this.observer=typeof ResizeObserver==='function'?new ResizeObserver(this.resize):null;this.observer?.observe(app.refs.graph);this.observer?.observe(app.refs.graph.parentElement);this.observer?.observe(controls);
     this.motion=window.matchMedia('(prefers-reduced-motion: reduce)');this.motionChange=()=>app.player.setReducedMotion(this.motion.matches);this.motion.addEventListener?.('change',this.motionChange);this.motionChange();
   }
   destroy(){this.observer?.disconnect();this.motion.removeEventListener?.('change',this.motionChange);this.app.querySelector('#show-held-objects').removeEventListener('change',this.toggle);this.app.removeEventListener('click',this.click);this.app.removeEventListener('focusin',this.focus);this.app.removeEventListener('keydown',this.escape);}

@@ -113,7 +113,7 @@ bun tools/verification/run-focused-native.mjs
 bun tools/verification/review-file-smoke.mjs /absolute/path/to/auth-lab-held-objects.html
 ```
 
-The focused runner owns an ephemeral loopback server and checks source HTTP, standalone HTTP and standalone file: exact holding focus/state across full/compact/external changes, collapse recovery, viewport-contained nested F2 help and one receipt announcement across multiple animation frames. Its report is `held-objects-focused-native-status.json`.
+The focused runner owns an ephemeral loopback server and checks source HTTP, standalone HTTP and standalone file: exact holding focus/state across full/compact/external changes, collapse recovery, viewport-contained nested F2 help and one receipt announcement across multiple animation frames. It also scrolls top-row participant/inventory targets beneath the sticky controls at 1920/1480/1050/390 pixels and requires focus recovery to clear the measured toolbar, preserve canonical state and return the target from center hit-testing. Participant help is dismissed with a real Escape before hit-testing its anchor. Its report is `held-objects-focused-native-status.json`.
 
 The file runner defaults to the checkout's `dist/auth-flow-studio.html` if no HTML argument is supplied. A delivered-file argument must match that build's SHA-256. It opens the actual file, checks exact R1 replay/full-state equality, measured compact controls and visible step names, and rejects unexpected runtime/CSP errors or external application requests. Its report is `review-file-smoke-status.json`; it does not replace the broader enforcing-CSP probes.
 
@@ -121,7 +121,7 @@ The regression and focused runners accept `[project-directory]`; the file runner
 
 New reports/screenshots default to `docs/verification/held-objects/`; set `AUTH_LAB_HELD_EVIDENCE_DIR` to redirect them. The preserved broader runner uses `AUTH_LAB_QA_EVIDENCE_DIR`. Its accepted long-realm fixture is 244 characters; the separate 364-character rejection/recovery case retains G01-A's same-task atomicity probe. Hover fixtures leave the previous actor, reveal an unobstructed point below sticky controls, verify it with `elementFromPoint`, then send a genuine pointer move. This avoids the SDK retrying after an interactive help panel legitimately covers its trigger. No forced hover or synthetic mouse event substitutes for the user gesture.
 
-Source control retains the ten representative native captures included in the source ZIP, including the repaired basic web/native animation surfaces. `.gitignore` excludes other held-object PNG captures and the four named superseded reports; they remain on disk and in the separate full verification archive. Current status reports, manifests and regression logs remain in the source package.
+Source control retains the eleven representative native captures included in the source ZIP, including the repaired basic web/native animation surfaces and unobscured sticky-toolbar focus. `.gitignore` excludes other held-object PNG captures and the four named superseded reports; they remain on disk and in the separate full verification archive. Current status reports, manifests and regression logs remain in the source package.
 
 The help panels are non-modal: Tab can leave a panel whose only control is Close. After verifying that exit, the runner focuses the actor and presses F2 again before testing Escape. It never tries to focus a now-hidden Close control or depends on completing the sequence before the blur timeout.
 

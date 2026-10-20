@@ -160,14 +160,17 @@ export class HeldObjectView {
       if(this.helpOpen){this.helpOpen=false;this.lastKey='';this.render();this.inspector.querySelector('[data-held-help]')?.focus();return;}
       this.expanded.delete(actor);this.lastKey='';this.render();this.recoverFocus(null,actor);
     };app.addEventListener('keydown',this.escape);
+    const controls=app.querySelector('#map-controls'),measureControls=()=>app.refs.graph.style.setProperty('--map-controls-height',controls.getBoundingClientRect().height+'px');
+    measureControls();
     this.resize=()=>{
+      measureControls();
       const previous=app.heldGeometry?.key,active=document.activeElement,key=active?.dataset?.heldKey||active?.dataset?.heldAction,actor=active?.dataset?.heldActor||active?.closest?.('[data-held-owner]')?.dataset?.heldOwner||this.selection?.actorId,owned=!!active?.closest?.('#held-objects, #held-inspector, #held-docks'),actorFocus=active?.dataset?.actor;
       this.configureGeometry();if(previous===app.heldGeometry?.key)return;
       if(owned&&active?.dataset?.holdingId&&actor){this.actorId=actor;this.expanded.add(actor);}
       app.renderActors();app.renderConnections();app.renderPacket(app.player.snapshot());this.lastKey='';this.render();
       if(owned)this.recoverFocus(key,actor);else if(actorFocus)app.refs.actors.querySelector(`[data-actor="${actorFocus}"]`)?.focus();
     };
-    this.observer=typeof ResizeObserver==='function'?new ResizeObserver(this.resize):null;this.observer?.observe(app.refs.graph);this.observer?.observe(app.refs.graph.parentElement);
+    this.observer=typeof ResizeObserver==='function'?new ResizeObserver(this.resize):null;this.observer?.observe(app.refs.graph);this.observer?.observe(app.refs.graph.parentElement);this.observer?.observe(controls);
     this.motion=window.matchMedia('(prefers-reduced-motion: reduce)');this.motionChange=()=>app.player.setReducedMotion(this.motion.matches);this.motion.addEventListener?.('change',this.motionChange);this.motionChange();
   }
   destroy(){this.observer?.disconnect();this.motion.removeEventListener?.('change',this.motionChange);this.app.querySelector('#show-held-objects').removeEventListener('change',this.toggle);this.app.removeEventListener('click',this.click);this.app.removeEventListener('focusin',this.focus);this.app.removeEventListener('keydown',this.escape);}

@@ -60,9 +60,11 @@ The animation-area correction keeps the basic web person's/browser's column sepa
 
 Connection keyboard focus uses a visible halo along the actual SVG path. The global rectangular outline is suppressed only on connection hit paths; other controls retain their normal focus rings. A path's bounding box is not a connector and must never appear as a rectangle through actor cards or inventories.
 
+Graph focus targets reserve the animation controls' measured height plus clearance through CSS scroll margins. The existing resize observer also watches the control bar, so wrapping at narrow widths updates the reservation without moving participants or changing protocol state. Focused native checks scroll top-row participants and inventory controls beneath the sticky bar, focus them, dismiss participant help with Escape where applicable, and require hit-testing at the focused target's center to return that target.
+
 ## Observed verification
 
-Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The standalone is 2,242,219 bytes with SHA-256 `dd10048bb8efaf08e995584f96f8796987276dabb52e3e5af77eabdc1ee2a2de`. Reports record the exercised source and artifact identities.
+Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The standalone is 2,242,585 bytes with SHA-256 `89f586ac269f5c037b9d3f4f28d6675b77ee2b642a0ffd8909b834d058fc4f82`. Reports record the exercised source and artifact identities.
 
 | Observed check | Result |
 | --- | --- |
@@ -72,6 +74,7 @@ Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The standalone is 2,242,21
 | Animation-area regression | Passed in all three loading modes: paused username/password exchange at 1920 pixels for web/native clients, 1480-pixel compact and 390-pixel external layouts; authored columns, complete visible names, path-following focus and unchanged canonical snapshots. Dense layout coverage contains 18 folded and 18 expanded cases per mode. |
 | Preserved broader native gate | Passed: 224 collapsed/expanded catalog variants per loading mode and 297 recorded checks, including long-context rejection/recovery, responsive help, non-modal Tab/Escape, protocol preservation and enforcing eval/inline-script/fetch CSP probes in all three loading modes |
 | Focused native acceptance | All three loading modes preserve exact holding focus and canonical state through full/compact/external switching; internal-owner collapse recovers to `#show-internals`; nested F2 help stays inside the viewport |
+| Sticky-toolbar focus regression | Passed in all three loading modes: six participant/inventory cases per mode across 1920, 1480, 1050 and 390-pixel widths; focused controls clear the rendered sticky bar, center hit-testing reaches the target, and complete canonical snapshots remain unchanged |
 | Announcement cadence | In all three loading modes, one receipt-related live-region update across many actual animation frames; no per-frame inventory announcement |
 | Delivered-file smoke | Exact R1 replay through source rows 4/5/6 equals the full snapshot at event 6/complete; compact actors measure 82x132 and summary controls 44x44 rendered CSS pixels; the complete step names remain visible; no external application requests or unexpected CSP violations |
 

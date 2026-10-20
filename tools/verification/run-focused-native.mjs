@@ -26,6 +26,34 @@ try{
   const url=mode==='standalone-file'?pathToFileURL(path.join(root,'dist/auth-flow-studio.html')).href:origin+'/'+(mode==='source-http'?'':'dist/auth-flow-studio.html');
   await page.goto(url,{waitUntil:'networkidle'});await page.setViewportSize({width:1920,height:1200});await settled();
   const record={mode,responsiveFocus:[]};report.modes.push(record);
+  record.stickyFocus=[];
+  for(const width of [1920,1480,1050,390]){
+   await page.setViewportSize({width,height:900});
+   await bounded(mode+' sticky focus fixture',()=>page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.selectLabScenario('lab-ad-cache-tgt');a.selectStep(a.steps.length-1,false);}));
+   await settled();
+   for(const kind of ['actor','inventory']){
+    const found=await bounded(mode+' sticky '+kind+' focus',()=>page.evaluate(kind=>{
+     const a=document.querySelector('auth-flow-studio');
+     const candidates=[...a.querySelectorAll(kind==='actor'?'#actors [data-actor]':'#held-docks button')].filter(n=>n.getBoundingClientRect().width);
+     candidates.sort((l,r)=>l.getBoundingClientRect().top-r.getBoundingClientRect().top||l.getBoundingClientRect().left-r.getBoundingClientRect().left);
+     const target=candidates[0];if(!target)return false;
+     window.__stickyFocus={target,snapshot:JSON.stringify(a.heldView.snapshot())};target.blur();
+     window.scrollTo(0,scrollY+target.getBoundingClientRect().top-60);target.focus();return true;
+    },kind));
+    if(!found){assert.equal(kind,'inventory');assert.equal(await page.locator('#graph').getAttribute('data-held-geometry'),'external');continue;}
+    // Participant help is a separate keyboard surface; dismiss it before hit-testing its anchor.
+    if(kind==='actor')await page.keyboard.press('Escape');await settled();
+    const result=await bounded(mode+' sticky '+kind+' visibility',()=>page.evaluate(kind=>{
+     const a=document.querySelector('auth-flow-studio'),{target,snapshot}=window.__stickyFocus,controls=a.querySelector('#map-controls');
+     const rect=target.getBoundingClientRect(),bar=controls.getBoundingClientRect(),hit=document.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2);
+     return {kind,geometry:a.refs.graph.dataset.heldGeometry,focused:document.activeElement===target,centerHitTarget:!!hit&&(hit===target||target.contains(hit)),unobscured:rect.top>=bar.bottom+4,toolbarHeight:bar.height,toolbarBottom:bar.bottom,targetTop:rect.top,canonicalSnapshotPreserved:snapshot===JSON.stringify(a.heldView.snapshot())};
+    },kind));
+    assert.ok(result.focused&&result.centerHitTarget&&result.unobscured&&result.canonicalSnapshotPreserved,JSON.stringify({mode,width,...result}));
+    record.stickyFocus.push({width,...result});
+    if(width===1920&&kind==='inventory'){const image=mode+'-sticky-toolbar-focus.png';await page.screenshot({path:path.join(out,image),fullPage:false});record.stickyFocusScreenshot=image;}
+   }
+  }
+  await page.setViewportSize({width:1920,height:1200});await settled();
   const first=await bounded(mode+' choose R0',()=>page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.selectLabScenario('lab-refresh-rotation');const h=a.heldView.snapshot().holdings.find(h=>h.actorId==='app'&&h.artifactId==='R0');a.heldView.select(h);return {holdingId:h.holdingId,snapshot:a.heldView.snapshot()};}));
   await settled();await page.locator('[data-holding-id='+JSON.stringify(first.holdingId)+']:visible').first().focus();
   for(const width of [1480,1050,390,1920]){
