@@ -91,7 +91,7 @@ export function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 73
     if (!route) return null;
     routes.set(key,route);
   }
-  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-physical-240-v5'])};
+  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-physical-240-v6'])};
 }
 
 // Compact controls keep fixed final CSS sizes. Only their reserved world-space
@@ -118,7 +118,7 @@ export function compactDockGeometry(positions,pairs,cssWidth,cssHeight=cssWidth*
     const key=from+'>'+to;if(routes.has(key))continue;
     const route=compositeRoute(from,to,positions,rectangles,actorBounds);if(!route)return null;routes.set(key,route);
   }
-  return {mode:'compact',positions,bounds,actorBounds,routes,scaleX,scaleY,key:JSON.stringify([positions,pairs,cssWidth,cssHeight,'140x140-css-82x132-44x44-v2'])};
+  return {mode:'compact',positions,bounds,actorBounds,routes,scaleX,scaleY,key:JSON.stringify([positions,pairs,cssWidth,cssHeight,'140x140-css-82x132-44x44-v3'])};
 }
 function compositeRoute(from,to,positions,rectangles,actorBounds) {
   const ports = id => {
@@ -126,14 +126,21 @@ function compositeRoute(from,to,positions,rectangles,actorBounds) {
     return [{x:p.x-92,y:cy,base:{x:b.left,y:cy}}, {x:cx,y:p.y-97,base:{x:cx,y:b.top}}, {x:cx,y:p.y+97,base:{x:cx,y:b.bottom}}];
   };
   const inside = p => rectangles.some(r => p.x > r.left && p.x < r.right && p.y > r.top && p.y < r.bottom);
-  const clear = (a,b) => !rectangles.some(r => a.x===b.x ? a.x>r.left && a.x<r.right && Math.max(a.y,b.y)>r.top && Math.min(a.y,b.y)<r.bottom : a.y>r.top && a.y<r.bottom && Math.max(a.x,b.x)>r.left && Math.min(a.x,b.x)<r.right);
+  const clear = (a,b,except) => !rectangles.some(r => r!==except&&(a.x===b.x ? a.x>r.left && a.x<r.right && Math.max(a.y,b.y)>r.top && Math.min(a.y,b.y)<r.bottom : a.y>r.top && a.y<r.bottom && Math.max(a.x,b.x)>r.left && Math.min(a.x,b.x)<r.right));
   const starts = ports(from), ends = ports(to);
   let minX=1120,maxX=0,minY=730,maxY=0;
   for(const r of rectangles){minX=Math.min(minX,r.left);maxX=Math.max(maxX,r.right);minY=Math.min(minY,r.top);maxY=Math.max(maxY,r.bottom);}
   if (from === to) {
-    const left=starts[0],top=starts[1],points=[left.base,{x:left.x,y:left.y},{x:left.x,y:top.y},{x:top.x,y:top.y},top.base];
-    if(points.some(p=>p.x<10||p.y<10||p.x>1110||p.y>720)||points.slice(1,-1).some(inside)||!clear(points[1],points[2])||!clear(points[2],points[3]))return null;
-    return points.map((p,i) => (i?'L ':'M ')+p.x+' '+p.y).join(' ');
+    const p=positions[from],b=actorBounds?.[from]||{left:p.x-82,right:p.x+82,top:p.y-87,bottom:p.y+87},cx=(b.left+b.right)/2,half=Math.min(32,(b.right-b.left)/4);
+    const own=rectangles.find(r=>p.x>r.left&&p.x<r.right&&p.y>r.top&&p.y<r.bottom);
+    // Keep the local activity lane beyond both the card's focus ring and its
+    // composite frame. Two ports on one edge avoid wrapping a transfer around it.
+    for(const [edge,lane]of [[b.top,Math.min(b.top,p.y-87)-24],[b.bottom,Math.max(b.bottom,p.y+87)+24]]){
+      const points=[{x:cx-half,y:edge},{x:cx-half,y:lane},{x:cx+half,y:lane},{x:cx+half,y:edge}];
+      if(points.some(point=>point.x<10||point.y<10||point.x>1110||point.y>720)||points.slice(1,-1).some(inside))continue;
+      if(clear(points[0],points[1],own)&&clear(points[1],points[2])&&clear(points[2],points[3],own))return points.map((point,index)=>(index?'L ':'M ')+point.x+' '+point.y).join(' ');
+    }
+    return null;
   }
   const xs = [...new Set([10,1110,...rectangles.flatMap(r => [r.left,r.right]),...starts.map(p=>p.x),...ends.map(p=>p.x)])].sort((a,b)=>a-b);
   const ys = [...new Set([10,720,...rectangles.flatMap(r => [r.top,r.bottom]),...starts.map(p=>p.y),...ends.map(p=>p.y)])].sort((a,b)=>a-b);

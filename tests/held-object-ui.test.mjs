@@ -472,9 +472,6 @@ test('compact geometry preserves base centers while routing from actual fixed-CS
     assert.equal(compact.bounds[id].right-compact.bounds[id].left,164);
     assert.equal(compact.bounds[id].bottom-compact.bounds[id].top,174);
   }
-  const endpoint=compact.routes.get('app>app').match(/^M ([\d.-]+) ([\d.-]+)/);
-  assert.equal(Number(endpoint[1]),compact.actorBounds.app.left);
-  assert.equal(Number(endpoint[2]),positions.app.y);
   const minimum=compactDockGeometry(positions,pairs,960);assert.ok(minimum);
   assert.ok(164*minimum.scaleX>=140&&174*minimum.scaleY>=140,'fixed 140x140 content fits the scaled reserved envelope');
   assert.notEqual(compact.key,minimum.key,'actual transformed port geometry participates in route-cache identity');

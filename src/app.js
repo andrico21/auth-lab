@@ -245,7 +245,7 @@ export class AuthFlowStudio extends HTMLElement {
           <div class="map-scroll"><div class="graph-canvas" id="graph">
             <div class="trust-zones" id="trust-zones" aria-hidden="true"></div>
             <div class="zone-label device">${uiIcon('info')}<span>YOUR DEVICE</span></div><div class="zone-label cloud">IDENTITY SERVICES</div>
-            <svg class="graph-connections" id="connections" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-label="Connections between authentication participants"><defs>${Object.keys(channelLabels).map(c=>`<marker id="arrow-${c}" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto-start-reverse" viewBox="0 0 7 7"><path d="M0 0 7 3.5 0 7" class="arrow-fill ${c}"/></marker>`).join('')}</defs><g id="connection-paths"></g></svg>
+            <svg class="graph-connections" id="connections" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-label="Connections between authentication participants"><defs>${Object.keys(channelLabels).map(c=>`<marker id="arrow-${c}" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto-start-reverse" viewBox="0 0 7 7"><path d="M0 0 7 3.5 0 7" class="arrow-fill ${c}"/></marker>`).join('')}</defs><g id="connection-paths"></g></svg>
             <div id="actors"></div>
             <div id="held-docks" class="held-docks"></div>
             <svg class="step-attributes-tether" id="step-attributes-tether" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-hidden="true" hidden><path/></svg>
@@ -720,7 +720,7 @@ export class AuthFlowStudio extends HTMLElement {
       pairs.get(key).count++;
     });
     this.querySelector('#connection-paths').innerHTML=[...pairs.entries()].map(([key,p])=>{
-      const label=`Replay ${p.count} ordered exchange${p.count===1?'':'s'} between ${this.actor(p.from).name} and ${this.actor(p.to).name}`;
+      const label=p.from===p.to?`Replay ${p.count} ordered operation${p.count===1?'':'s'} within ${this.actor(p.from).name}`:`Replay ${p.count} ordered exchange${p.count===1?'':'s'} between ${this.actor(p.from).name} and ${this.actor(p.to).name}`;
       const outside=this.hasTrace&&!focusPairs.has(key),d=this.connectionRoute(p.from,p.to);
       return `<g class="connection-group ${outside?'is-outside-trace':''}" data-pair="${key}" data-channel="${p.channel}"><title>${escapeHtml(label)}</title><path class="edge-focus" d="${d}" aria-hidden="true"/><path class="connection-line ${p.channel}" d="${d}"/><path class="connection-hit" d="${d}" role="button" tabindex="${outside?-1:0}" aria-label="${escapeHtml(label)}"/></g>`;
     }).join('');
@@ -756,19 +756,20 @@ export class AuthFlowStudio extends HTMLElement {
     this.renderProtocolState();
     this.heldView?.render();
     const s=this.currentStep;
-    if(!s){this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>{n.classList.remove('is-source','is-target','is-trace-participant');n.classList.add('is-outside-trace');n.querySelector('.actor-trace-action').hidden=true;});this.refs.connections.querySelectorAll('[data-pair]').forEach(g=>{g.classList.remove('is-active');g.querySelector('.connection-line').removeAttribute('marker-end');});this.refs.story.innerHTML='<p class="empty-state">This field has no replayable operation in this journey. Choose one of the available journeys in the inspector.</p>';this.refs.progress.style.width='0%';this.refs.progress.parentElement.setAttribute('aria-valuenow','0');return;}
+    if(!s){this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>{n.classList.remove('is-source','is-target','is-trace-participant');n.classList.add('is-outside-trace');n.querySelector('.actor-trace-action').hidden=true;});this.refs.connections.querySelectorAll('[data-pair]').forEach(g=>{g.classList.remove('is-active');delete g.dataset.presentation;g.querySelector('.connection-line').removeAttribute('marker-end');});this.refs.story.innerHTML='<p class="empty-state">This field has no replayable operation in this journey. Choose one of the available journeys in the inspector.</p>';this.refs.progress.style.width='0%';this.refs.progress.parentElement.setAttribute('aria-valuenow','0');return;}
     const source=this.nodeId(s.from),target=this.nodeId(s.to),pair=pairKey(source,target),category=channelCategory(s.channel);
+    const presentation=s.from===s.to?'local':source===target?'folded':'transfer';
     const focusActors=new Set(this.traceQueue.flatMap(step=>[this.nodeId(step.from),this.nodeId(step.to)]));
     this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>{
       n.classList.toggle('is-source',n.dataset.actor===source);n.classList.toggle('is-target',n.dataset.actor===target);
       n.classList.toggle('is-outside-trace',this.hasTrace&&!focusActors.has(n.dataset.actor));n.classList.toggle('is-trace-participant',this.hasTrace&&focusActors.has(n.dataset.actor));
-      const badge=n.querySelector('.actor-trace-action'),active=this.hasTrace&&(n.dataset.actor===source||n.dataset.actor===target);
-      badge.hidden=!active;if(active)badge.textContent=s.from===s.to?(TRACE_ACTION_LABELS[s.traceKind]||s.traceKind||'Local event'):n.dataset.actor===source?'Send':'Receive';
+      const badge=n.querySelector('.actor-trace-action'),active=(this.hasTrace||presentation!=='transfer')&&(n.dataset.actor===source||n.dataset.actor===target);
+      badge.hidden=!active;if(active)badge.textContent=presentation==='local'?(TRACE_ACTION_LABELS[s.traceKind]||s.traceKind||'Local processing'):presentation==='folded'?'Internal exchange':n.dataset.actor===source?'Send':'Receive';
     });
     this.refs.connections.querySelectorAll('[data-pair]').forEach(g=>{
       const active=g.dataset.pair===pair;g.classList.toggle('is-active',active);g.classList.toggle('is-visited',this.visited.has(g.dataset.pair));
-      if(active){g.dataset.channel=category;const path=g.querySelector('.connection-line');path.setAttribute('d',this.connectionRoute(source,target));path.setAttribute('class','connection-line '+category);path.setAttribute('marker-end','url(#arrow-'+category+')');}
-      else g.querySelector('.connection-line').removeAttribute('marker-end');
+      if(active){g.dataset.channel=category;g.dataset.presentation=presentation;const path=g.querySelector('.connection-line');path.setAttribute('d',this.connectionRoute(source,target));path.setAttribute('class','connection-line '+category);if(presentation==='local')path.removeAttribute('marker-end');else path.setAttribute('marker-end','url(#arrow-'+category+')');}
+      else {delete g.dataset.presentation;g.querySelector('.connection-line').removeAttribute('marker-end');}
     });
     this.refs.timeline.querySelectorAll('[data-step]').forEach(button=>{const n=Number(button.dataset.step);button.classList.toggle('is-current',n===this.visibleIndex);button.classList.toggle('is-done',n<this.visibleIndex);button.setAttribute('aria-current',n===this.visibleIndex?'step':'false');});
     const percentage=Math.round(this.visibleIndex/this.visibleSteps.length*100);this.refs.progress.style.width=percentage+'%';
@@ -859,8 +860,8 @@ export class AuthFlowStudio extends HTMLElement {
   renderPacket(event) {
     if(!event.step){
       this.refs.packet.hidden=true;
-      for(const key of ['messagePhase','messageId','routeProgress'])delete this.refs.packet.dataset[key];
-      const external=this.querySelector('#held-active-message');external.hidden=true;external.textContent='';delete external.dataset.messagePhase;
+      for(const key of ['messagePhase','messageId','routeProgress','presentation','playback'])delete this.refs.packet.dataset[key];
+      const external=this.querySelector('#held-active-message');external.hidden=true;external.textContent='';delete external.dataset.messagePhase;delete external.dataset.presentation;external.setAttribute('aria-label','Active message');
       return;
     }
     this.refs.packet.dataset.messagePhase=event.messagePhase;
@@ -868,6 +869,8 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs.packet.dataset.routeProgress=String(event.progress);
     this.renderStepAttributes(event);
     const from=this.nodeId(event.step.from),to=this.nodeId(event.step.to),pair=pairKey(from,to);
+    const presentation=event.step.from===event.step.to?'local':from===to?'folded':'transfer';
+    this.refs.packet.dataset.presentation=presentation;this.refs.packet.dataset.playback=event.status;
     const group=[...this.refs.connections.querySelectorAll('[data-pair]')].find(g=>g.dataset.pair===pair);
     const path=group?.querySelector('.connection-line');if(!path)return;
     const packet=event.packet||{name:'Local action',value:event.step.title};
@@ -877,17 +880,21 @@ export class AuthFlowStudio extends HTMLElement {
       this.packetIdentity=identity;this.refs['packet-name'].textContent=packet.name;this.refs['packet-value'].textContent=value.slice(0,38)+(value.length>38?'…':'');
       this.refs['packet-count'].textContent=(event.packetIndex+1)+'/'+Math.max(1,event.step.payload.length);
       this.refs.packet.dataset.channel=channelCategory(event.step.channel);
-      if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)this.refs.packet.querySelector('.packet-chip').animate?.([{opacity:.2,transform:'scale(.86)'},{opacity:1,transform:'scale(1)'}],{duration:180,fill:'both'});
+      if(presentation!=='local'&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)this.refs.packet.querySelector('.packet-chip').animate?.([{opacity:.2,transform:'scale(.86)'},{opacity:1,transform:'scale(1)'}],{duration:180,fill:'both'});
     }
     this.refs.packet.hidden=!event.visible;
     if(event.visible){
       const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const point=path.getPointAtLength(path.getTotalLength()*(reduced?.5:event.progress));
+      const point=path.getPointAtLength(path.getTotalLength()*((presentation==='local'||reduced)? .5:event.progress));
       this.refs.packet.style.left=Math.max(112,Math.min(GRAPH_WIDTH-112,point.x))/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=Math.max(40,Math.min(GRAPH_HEIGHT-40,point.y))/GRAPH_HEIGHT*100+'%';
-      if(this.heldGeometry){this.refs.packet.style.left=point.x/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=point.y/GRAPH_HEIGHT*100+'%';}
+      if(this.heldGeometry||presentation==='local'){this.refs.packet.style.left=point.x/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=point.y/GRAPH_HEIGHT*100+'%';}
     }
-    const external=this.querySelector('#held-active-message');external.hidden=!this.heldGeometry||!event.step||event.messagePhase==='local';
-    if(!external.hidden){external.dataset.messagePhase=event.messagePhase;external.textContent=packet.name+': '+formatProtocolValue(packet.value)+' · '+event.step.title+' · '+event.messagePhase;}
+    const external=this.querySelector('#held-active-message');external.hidden=presentation!=='local'&&(!this.heldGeometry||event.messagePhase==='local');
+    if(!external.hidden){
+      external.dataset.messagePhase=event.messagePhase;external.dataset.presentation=presentation;external.setAttribute('aria-label',presentation==='local'?'Active local operation':'Active message');
+      const detail=packet.name+': '+formatProtocolValue(packet.value)+' · '+event.step.title;
+      external.textContent=presentation==='local'?'Local processing at '+this.actor(event.step.from).name+' · '+detail:detail+' · '+event.messagePhase;
+    }
   }
   ensureRunningSpeed() {if(this.player.speed===0)this.player.setSpeed(this.lastRunningSpeed||1);}
   studyClock() {

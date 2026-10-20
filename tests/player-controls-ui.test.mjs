@@ -207,3 +207,94 @@ test('inspector Replay exchange restores the last non-zero speed and replays onl
     assert.deepEqual(app.player.queue.map(stage => stage.id), [step.id]);
   } finally { unmount(app); }
 });
+
+test('backend PKCE local fields retain their cadence and highlights without travelling or a direction marker', () => {
+  const app = mount(); try {
+    const local = app.steps.find(step => step.from === step.to && step.payload.some(field => field.name === 'code_verifier'));
+    assert.ok(local, 'the beginner journey prepares PKCE locally');
+    seekPacket(app, local, 'code_verifier');
+    const edge = app.refs.connections.querySelector('.connection-group.is-active'), line = edge.querySelector('.connection-line');
+    assert.equal(edge.dataset.presentation, 'local');
+    assert.equal(line.getAttribute('marker-end'), null);
+    assert.equal(app.refs.packet.dataset.presentation, 'local');
+    const badge = app.refs.actors.querySelector(`[data-actor="${app.nodeId(local.from)}"] .actor-trace-action`);
+    assert.equal(badge.hidden, false);
+    const state = app.player.snapshot(), field = state.packet, value = app.refs['packet-value'].textContent, canonical = app.protocolSnapshot();
+    const point = line.getPointAtLength(line.getTotalLength() * .5);
+    const expected = [point.x / 1120 * 100 + '%', point.y / 730 * 100 + '%'];
+    for (const progress of [.1, .9]) {
+      app.renderPacket({...state, progress});
+      assert.deepEqual([app.refs.packet.style.left, app.refs.packet.style.top], expected);
+      assert.equal(app.refs['packet-name'].textContent, field.name);
+      assert.equal(app.refs['packet-value'].textContent, value);
+      assert.equal(app.refs.packet.dataset.routeProgress, String(progress), 'presentation never replaces the temporal progress');
+      assert.ok(app.querySelectorAll('[data-step-attribute].is-current').some(node => node.dataset.stepAttribute.split(' ').includes('codeVerifier')));
+    }
+    assert.deepEqual(app.protocolSnapshot(), canonical, 'local presentation preserves the canonical protocol snapshot');
+    app.refs.play.click(); clock.frame(); clock.advance(30);
+    input(app, 'speed', '0');
+    const paused = app.player.snapshot();
+    assert.equal(app.refs.packet.dataset.playback, 'paused');
+    clock.advance(1000);
+    assert.equal(app.player.elapsed, paused.elapsed);
+    assert.equal(app.refs['packet-name'].textContent, field.name);
+    assert.deepEqual([app.refs.packet.style.left, app.refs.packet.style.top], expected);
+    app.refs.play.click(); clock.frame(); clock.advance(30); app.player.pause();
+    assert.equal(app.refs.packet.dataset.presentation, 'local');
+    seekPacket(app, local, 'code_challenge');
+    assert.equal(app.refs['packet-name'].textContent, 'code_challenge');
+    assert.deepEqual([app.refs.packet.style.left, app.refs.packet.style.top], expected);
+    const media = window.matchMedia;
+    try {
+      window.matchMedia = () => ({matches:true});
+      app.renderPacket({...app.player.snapshot(), progress:.1});
+      assert.deepEqual([app.refs.packet.style.left, app.refs.packet.style.top], expected);
+      app.renderPacket({...app.player.snapshot(), progress:.9});
+      assert.deepEqual([app.refs.packet.style.left, app.refs.packet.style.top], expected);
+    } finally { window.matchMedia = media; }
+    const transfer = app.steps.find(step => step.from !== step.to && step.payload.some(field => field.name === 'code_verifier'));
+    seekPacket(app, transfer, 'code_verifier');
+    const transferLine = app.refs.connections.querySelector('.connection-group.is-active .connection-line');
+    assert.equal(app.refs.packet.dataset.presentation, 'transfer');
+    assert.ok(transferLine.getAttribute('marker-end'));
+    const transport = app.player.snapshot();
+    app.renderPacket({...transport, progress:.2});
+    const start = [app.refs.packet.style.left, app.refs.packet.style.top];
+    app.renderPacket({...transport, progress:.8});
+    assert.notDeepEqual([app.refs.packet.style.left, app.refs.packet.style.top], start);
+    app.reset();
+    assert.equal(app.refs.packet.hidden, true); assert.equal(app.player.status, 'idle');
+    assert.equal(app.refs.seek.value, '0');
+  } finally { unmount(app); }
+});
+
+test('folded SSH and KDC component exchanges retain direction and motion distinct from local crypto work', () => {
+  const app = mount(); try {
+    for (const [scenario, presentation] of [['lab-ssh-cert-success', 'folded'], ['lab-ad-first-sign-in', 'transfer']]) {
+      app.selectLabScenario(scenario, {navigate:false});
+      const exchange = app.steps.find(step => step.from !== step.to && step.payload.length && (presentation === 'folded'
+        ? app.nodeId(step.from) === app.nodeId(step.to)
+        : app.scenarioOwnedActors[step.from]?.parentId || app.scenarioOwnedActors[step.to]?.parentId));
+      assert.ok(exchange, scenario + ' includes a real logical component exchange');
+      app.selectStep(app.steps.indexOf(exchange), false); app.player.seek([exchange], .35, 'step');
+      const edge = app.refs.connections.querySelector('.connection-group.is-active');
+      assert.equal(edge.dataset.presentation, presentation);
+      assert.equal(app.refs.packet.dataset.presentation, presentation);
+      assert.ok(edge.querySelector('.connection-line').getAttribute('marker-end'));
+      if (presentation === 'folded') {
+        const badge = app.refs.actors.querySelector(`[data-actor="${app.nodeId(exchange.from)}"] .actor-trace-action`);
+        assert.equal(badge.hidden, false);
+      }
+      const state = app.player.snapshot();
+      app.renderPacket({...state, visible:true, progress:.15});
+      const start = [app.refs.packet.style.left, app.refs.packet.style.top];
+      app.renderPacket({...state, visible:true, progress:.85});
+      assert.notDeepEqual([app.refs.packet.style.left, app.refs.packet.style.top], start);
+      const local = app.steps.find(step => step.from === step.to);
+      assert.ok(local, scenario + ' also includes local computation');
+      app.selectStep(app.steps.indexOf(local), false); app.player.seek([local], .35, 'step');
+      assert.equal(app.refs.packet.dataset.presentation, 'local');
+      assert.equal(app.refs.connections.querySelector('.connection-group.is-active .connection-line').getAttribute('marker-end'), null);
+    }
+  } finally { unmount(app); }
+});

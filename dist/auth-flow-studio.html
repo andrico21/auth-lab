@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-elw2PNQHF9OqXwsgA6Qd0RDWdMX2V4s2V7/+Wb3mnT0='; script-src-attr 'none'; style-src 'sha256-fmbaO3Y9TEUCS71E3HTNXRJxFLWU/DYeuHQRUMr4eBw='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-blkVuSxeeorltKCbDC9ctHLXcQSPW1AWZXXUlWbpPa4='; script-src-attr 'none'; style-src 'sha256-Yd8Cc7u0OQSgf8DbXZifYYjTMQnjmY2Cq5FlhOnVCSc='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="Explore Web sign-in, SSH access and AD DS Kerberos: OAuth, SAML, passkeys, MFA, certificates, Device Flow, PKINIT, FAST and forest trusts in one offline animated lab.">
@@ -216,6 +216,7 @@ summary:focus-visible, [role="button"]:focus-visible {
 .connection-group:hover .connection-line, .connection-group:focus-within .connection-line { stroke: var(--edge-color); stroke-width: 3; }
 .connection-group.is-visited .connection-line { stroke: color-mix(in srgb, var(--edge-color), transparent 52%); }
 .connection-group.is-active .connection-line { stroke: var(--edge-color); stroke-width: 3.2; stroke-dasharray: 8 7; animation: link-flow 1s linear infinite; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--edge-color), transparent 30%)); }
+.connection-group.is-active[data-presentation="local"] .connection-line { stroke-dasharray: none; animation: none; filter: none; }
 .connection-group.is-active { z-index: 3; }
 .edge-focus { stroke: var(--focus, #9cafed); stroke-width: 10; fill: none; opacity: 0; pointer-events: none; }
 .connection-group:focus-within .edge-focus { opacity: .35; }
@@ -273,6 +274,12 @@ summary:focus-visible, [role="button"]:focus-visible {
   color: var(--text); box-shadow: 0 5px 24px #0005; white-space: nowrap;
 }
 .packet-orb { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--channel-color, var(--accent)); box-shadow: 0 0 9px var(--channel-color, var(--accent)); }
+.packet-position[data-presentation="local"] .packet-chip { width: 12px; height: 12px; padding: 2px; gap: 0; border-radius: 50%; box-shadow: none; }
+.packet-position[data-presentation="local"] .packet-chip>div,.packet-position[data-presentation="local"] .packet-count { display: none; }
+.packet-position[data-presentation="local"] .packet-orb { width: 6px; height: 6px; flex-basis: 6px; box-shadow: none; animation: local-field-pulse 1.8s ease-in-out infinite; animation-play-state: paused; }
+.packet-position[data-presentation="local"][data-playback="playing"] .packet-orb { animation-play-state: running; }
+@keyframes local-field-pulse { 50% { opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .packet-position[data-presentation="local"] .packet-orb { animation: none; } }
 .packet-name { font-size: 12px; font-weight: 750; overflow: hidden; text-overflow: ellipsis; }
 .packet-value { font: 11px ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--muted); overflow: hidden; text-overflow: ellipsis; max-width: 170px; }
 .packet-name, .packet-value { display: block; }
@@ -13095,7 +13102,7 @@ function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 730, alia
     if (!route) return null;
     routes.set(key,route);
   }
-  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-physical-240-v5'])};
+  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-physical-240-v6'])};
 }
 
 // Compact controls keep fixed final CSS sizes. Only their reserved world-space
@@ -13122,7 +13129,7 @@ function compactDockGeometry(positions,pairs,cssWidth,cssHeight=cssWidth*730/112
     const key=from+'>'+to;if(routes.has(key))continue;
     const route=compositeRoute(from,to,positions,rectangles,actorBounds);if(!route)return null;routes.set(key,route);
   }
-  return {mode:'compact',positions,bounds,actorBounds,routes,scaleX,scaleY,key:JSON.stringify([positions,pairs,cssWidth,cssHeight,'140x140-css-82x132-44x44-v2'])};
+  return {mode:'compact',positions,bounds,actorBounds,routes,scaleX,scaleY,key:JSON.stringify([positions,pairs,cssWidth,cssHeight,'140x140-css-82x132-44x44-v3'])};
 }
 function compositeRoute(from,to,positions,rectangles,actorBounds) {
   const ports = id => {
@@ -13130,14 +13137,21 @@ function compositeRoute(from,to,positions,rectangles,actorBounds) {
     return [{x:p.x-92,y:cy,base:{x:b.left,y:cy}}, {x:cx,y:p.y-97,base:{x:cx,y:b.top}}, {x:cx,y:p.y+97,base:{x:cx,y:b.bottom}}];
   };
   const inside = p => rectangles.some(r => p.x > r.left && p.x < r.right && p.y > r.top && p.y < r.bottom);
-  const clear = (a,b) => !rectangles.some(r => a.x===b.x ? a.x>r.left && a.x<r.right && Math.max(a.y,b.y)>r.top && Math.min(a.y,b.y)<r.bottom : a.y>r.top && a.y<r.bottom && Math.max(a.x,b.x)>r.left && Math.min(a.x,b.x)<r.right);
+  const clear = (a,b,except) => !rectangles.some(r => r!==except&&(a.x===b.x ? a.x>r.left && a.x<r.right && Math.max(a.y,b.y)>r.top && Math.min(a.y,b.y)<r.bottom : a.y>r.top && a.y<r.bottom && Math.max(a.x,b.x)>r.left && Math.min(a.x,b.x)<r.right));
   const starts = ports(from), ends = ports(to);
   let minX=1120,maxX=0,minY=730,maxY=0;
   for(const r of rectangles){minX=Math.min(minX,r.left);maxX=Math.max(maxX,r.right);minY=Math.min(minY,r.top);maxY=Math.max(maxY,r.bottom);}
   if (from === to) {
-    const left=starts[0],top=starts[1],points=[left.base,{x:left.x,y:left.y},{x:left.x,y:top.y},{x:top.x,y:top.y},top.base];
-    if(points.some(p=>p.x<10||p.y<10||p.x>1110||p.y>720)||points.slice(1,-1).some(inside)||!clear(points[1],points[2])||!clear(points[2],points[3]))return null;
-    return points.map((p,i) => (i?'L ':'M ')+p.x+' '+p.y).join(' ');
+    const p=positions[from],b=actorBounds?.[from]||{left:p.x-82,right:p.x+82,top:p.y-87,bottom:p.y+87},cx=(b.left+b.right)/2,half=Math.min(32,(b.right-b.left)/4);
+    const own=rectangles.find(r=>p.x>r.left&&p.x<r.right&&p.y>r.top&&p.y<r.bottom);
+    // Keep the local activity lane beyond both the card's focus ring and its
+    // composite frame. Two ports on one edge avoid wrapping a transfer around it.
+    for(const [edge,lane]of [[b.top,Math.min(b.top,p.y-87)-24],[b.bottom,Math.max(b.bottom,p.y+87)+24]]){
+      const points=[{x:cx-half,y:edge},{x:cx-half,y:lane},{x:cx+half,y:lane},{x:cx+half,y:edge}];
+      if(points.some(point=>point.x<10||point.y<10||point.x>1110||point.y>720)||points.slice(1,-1).some(inside))continue;
+      if(clear(points[0],points[1],own)&&clear(points[1],points[2])&&clear(points[2],points[3],own))return points.map((point,index)=>(index?'L ':'M ')+point.x+' '+point.y).join(' ');
+    }
+    return null;
   }
   const xs = [...new Set([10,1110,...rectangles.flatMap(r => [r.left,r.right]),...starts.map(p=>p.x),...ends.map(p=>p.x)])].sort((a,b)=>a-b);
   const ys = [...new Set([10,720,...rectangles.flatMap(r => [r.top,r.bottom]),...starts.map(p=>p.y),...ends.map(p=>p.y)])].sort((a,b)=>a-b);
@@ -13613,7 +13627,7 @@ class AuthFlowStudio extends HTMLElement {
           <div class="map-scroll"><div class="graph-canvas" id="graph">
             <div class="trust-zones" id="trust-zones" aria-hidden="true"></div>
             <div class="zone-label device">${uiIcon('info')}<span>YOUR DEVICE</span></div><div class="zone-label cloud">IDENTITY SERVICES</div>
-            <svg class="graph-connections" id="connections" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-label="Connections between authentication participants"><defs>${Object.keys(channelLabels).map(c=>`<marker id="arrow-${c}" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto-start-reverse" viewBox="0 0 7 7"><path d="M0 0 7 3.5 0 7" class="arrow-fill ${c}"/></marker>`).join('')}</defs><g id="connection-paths"></g></svg>
+            <svg class="graph-connections" id="connections" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-label="Connections between authentication participants"><defs>${Object.keys(channelLabels).map(c=>`<marker id="arrow-${c}" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto-start-reverse" viewBox="0 0 7 7"><path d="M0 0 7 3.5 0 7" class="arrow-fill ${c}"/></marker>`).join('')}</defs><g id="connection-paths"></g></svg>
             <div id="actors"></div>
             <div id="held-docks" class="held-docks"></div>
             <svg class="step-attributes-tether" id="step-attributes-tether" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-hidden="true" hidden><path/></svg>
@@ -14088,7 +14102,7 @@ class AuthFlowStudio extends HTMLElement {
       pairs.get(key).count++;
     });
     this.querySelector('#connection-paths').innerHTML=[...pairs.entries()].map(([key,p])=>{
-      const label=`Replay ${p.count} ordered exchange${p.count===1?'':'s'} between ${this.actor(p.from).name} and ${this.actor(p.to).name}`;
+      const label=p.from===p.to?`Replay ${p.count} ordered operation${p.count===1?'':'s'} within ${this.actor(p.from).name}`:`Replay ${p.count} ordered exchange${p.count===1?'':'s'} between ${this.actor(p.from).name} and ${this.actor(p.to).name}`;
       const outside=this.hasTrace&&!focusPairs.has(key),d=this.connectionRoute(p.from,p.to);
       return `<g class="connection-group ${outside?'is-outside-trace':''}" data-pair="${key}" data-channel="${p.channel}"><title>${escapeHtml(label)}</title><path class="edge-focus" d="${d}" aria-hidden="true"/><path class="connection-line ${p.channel}" d="${d}"/><path class="connection-hit" d="${d}" role="button" tabindex="${outside?-1:0}" aria-label="${escapeHtml(label)}"/></g>`;
     }).join('');
@@ -14124,19 +14138,20 @@ class AuthFlowStudio extends HTMLElement {
     this.renderProtocolState();
     this.heldView?.render();
     const s=this.currentStep;
-    if(!s){this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>{n.classList.remove('is-source','is-target','is-trace-participant');n.classList.add('is-outside-trace');n.querySelector('.actor-trace-action').hidden=true;});this.refs.connections.querySelectorAll('[data-pair]').forEach(g=>{g.classList.remove('is-active');g.querySelector('.connection-line').removeAttribute('marker-end');});this.refs.story.innerHTML='<p class="empty-state">This field has no replayable operation in this journey. Choose one of the available journeys in the inspector.</p>';this.refs.progress.style.width='0%';this.refs.progress.parentElement.setAttribute('aria-valuenow','0');return;}
+    if(!s){this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>{n.classList.remove('is-source','is-target','is-trace-participant');n.classList.add('is-outside-trace');n.querySelector('.actor-trace-action').hidden=true;});this.refs.connections.querySelectorAll('[data-pair]').forEach(g=>{g.classList.remove('is-active');delete g.dataset.presentation;g.querySelector('.connection-line').removeAttribute('marker-end');});this.refs.story.innerHTML='<p class="empty-state">This field has no replayable operation in this journey. Choose one of the available journeys in the inspector.</p>';this.refs.progress.style.width='0%';this.refs.progress.parentElement.setAttribute('aria-valuenow','0');return;}
     const source=this.nodeId(s.from),target=this.nodeId(s.to),pair=pairKey(source,target),category=channelCategory(s.channel);
+    const presentation=s.from===s.to?'local':source===target?'folded':'transfer';
     const focusActors=new Set(this.traceQueue.flatMap(step=>[this.nodeId(step.from),this.nodeId(step.to)]));
     this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>{
       n.classList.toggle('is-source',n.dataset.actor===source);n.classList.toggle('is-target',n.dataset.actor===target);
       n.classList.toggle('is-outside-trace',this.hasTrace&&!focusActors.has(n.dataset.actor));n.classList.toggle('is-trace-participant',this.hasTrace&&focusActors.has(n.dataset.actor));
-      const badge=n.querySelector('.actor-trace-action'),active=this.hasTrace&&(n.dataset.actor===source||n.dataset.actor===target);
-      badge.hidden=!active;if(active)badge.textContent=s.from===s.to?(TRACE_ACTION_LABELS[s.traceKind]||s.traceKind||'Local event'):n.dataset.actor===source?'Send':'Receive';
+      const badge=n.querySelector('.actor-trace-action'),active=(this.hasTrace||presentation!=='transfer')&&(n.dataset.actor===source||n.dataset.actor===target);
+      badge.hidden=!active;if(active)badge.textContent=presentation==='local'?(TRACE_ACTION_LABELS[s.traceKind]||s.traceKind||'Local processing'):presentation==='folded'?'Internal exchange':n.dataset.actor===source?'Send':'Receive';
     });
     this.refs.connections.querySelectorAll('[data-pair]').forEach(g=>{
       const active=g.dataset.pair===pair;g.classList.toggle('is-active',active);g.classList.toggle('is-visited',this.visited.has(g.dataset.pair));
-      if(active){g.dataset.channel=category;const path=g.querySelector('.connection-line');path.setAttribute('d',this.connectionRoute(source,target));path.setAttribute('class','connection-line '+category);path.setAttribute('marker-end','url(#arrow-'+category+')');}
-      else g.querySelector('.connection-line').removeAttribute('marker-end');
+      if(active){g.dataset.channel=category;g.dataset.presentation=presentation;const path=g.querySelector('.connection-line');path.setAttribute('d',this.connectionRoute(source,target));path.setAttribute('class','connection-line '+category);if(presentation==='local')path.removeAttribute('marker-end');else path.setAttribute('marker-end','url(#arrow-'+category+')');}
+      else {delete g.dataset.presentation;g.querySelector('.connection-line').removeAttribute('marker-end');}
     });
     this.refs.timeline.querySelectorAll('[data-step]').forEach(button=>{const n=Number(button.dataset.step);button.classList.toggle('is-current',n===this.visibleIndex);button.classList.toggle('is-done',n<this.visibleIndex);button.setAttribute('aria-current',n===this.visibleIndex?'step':'false');});
     const percentage=Math.round(this.visibleIndex/this.visibleSteps.length*100);this.refs.progress.style.width=percentage+'%';
@@ -14227,8 +14242,8 @@ class AuthFlowStudio extends HTMLElement {
   renderPacket(event) {
     if(!event.step){
       this.refs.packet.hidden=true;
-      for(const key of ['messagePhase','messageId','routeProgress'])delete this.refs.packet.dataset[key];
-      const external=this.querySelector('#held-active-message');external.hidden=true;external.textContent='';delete external.dataset.messagePhase;
+      for(const key of ['messagePhase','messageId','routeProgress','presentation','playback'])delete this.refs.packet.dataset[key];
+      const external=this.querySelector('#held-active-message');external.hidden=true;external.textContent='';delete external.dataset.messagePhase;delete external.dataset.presentation;external.setAttribute('aria-label','Active message');
       return;
     }
     this.refs.packet.dataset.messagePhase=event.messagePhase;
@@ -14236,6 +14251,8 @@ class AuthFlowStudio extends HTMLElement {
     this.refs.packet.dataset.routeProgress=String(event.progress);
     this.renderStepAttributes(event);
     const from=this.nodeId(event.step.from),to=this.nodeId(event.step.to),pair=pairKey(from,to);
+    const presentation=event.step.from===event.step.to?'local':from===to?'folded':'transfer';
+    this.refs.packet.dataset.presentation=presentation;this.refs.packet.dataset.playback=event.status;
     const group=[...this.refs.connections.querySelectorAll('[data-pair]')].find(g=>g.dataset.pair===pair);
     const path=group?.querySelector('.connection-line');if(!path)return;
     const packet=event.packet||{name:'Local action',value:event.step.title};
@@ -14245,17 +14262,21 @@ class AuthFlowStudio extends HTMLElement {
       this.packetIdentity=identity;this.refs['packet-name'].textContent=packet.name;this.refs['packet-value'].textContent=value.slice(0,38)+(value.length>38?'…':'');
       this.refs['packet-count'].textContent=(event.packetIndex+1)+'/'+Math.max(1,event.step.payload.length);
       this.refs.packet.dataset.channel=channelCategory(event.step.channel);
-      if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches)this.refs.packet.querySelector('.packet-chip').animate?.([{opacity:.2,transform:'scale(.86)'},{opacity:1,transform:'scale(1)'}],{duration:180,fill:'both'});
+      if(presentation!=='local'&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches)this.refs.packet.querySelector('.packet-chip').animate?.([{opacity:.2,transform:'scale(.86)'},{opacity:1,transform:'scale(1)'}],{duration:180,fill:'both'});
     }
     this.refs.packet.hidden=!event.visible;
     if(event.visible){
       const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const point=path.getPointAtLength(path.getTotalLength()*(reduced?.5:event.progress));
+      const point=path.getPointAtLength(path.getTotalLength()*((presentation==='local'||reduced)? .5:event.progress));
       this.refs.packet.style.left=Math.max(112,Math.min(GRAPH_WIDTH-112,point.x))/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=Math.max(40,Math.min(GRAPH_HEIGHT-40,point.y))/GRAPH_HEIGHT*100+'%';
-      if(this.heldGeometry){this.refs.packet.style.left=point.x/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=point.y/GRAPH_HEIGHT*100+'%';}
+      if(this.heldGeometry||presentation==='local'){this.refs.packet.style.left=point.x/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=point.y/GRAPH_HEIGHT*100+'%';}
     }
-    const external=this.querySelector('#held-active-message');external.hidden=!this.heldGeometry||!event.step||event.messagePhase==='local';
-    if(!external.hidden){external.dataset.messagePhase=event.messagePhase;external.textContent=packet.name+': '+formatProtocolValue(packet.value)+' · '+event.step.title+' · '+event.messagePhase;}
+    const external=this.querySelector('#held-active-message');external.hidden=presentation!=='local'&&(!this.heldGeometry||event.messagePhase==='local');
+    if(!external.hidden){
+      external.dataset.messagePhase=event.messagePhase;external.dataset.presentation=presentation;external.setAttribute('aria-label',presentation==='local'?'Active local operation':'Active message');
+      const detail=packet.name+': '+formatProtocolValue(packet.value)+' · '+event.step.title;
+      external.textContent=presentation==='local'?'Local processing at '+this.actor(event.step.from).name+' · '+detail:detail+' · '+event.messagePhase;
+    }
   }
   ensureRunningSpeed() {if(this.player.speed===0)this.player.setSpeed(this.lastRunningSpeed||1);}
   studyClock() {

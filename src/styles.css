@@ -207,6 +207,7 @@ summary:focus-visible, [role="button"]:focus-visible {
 .connection-group:hover .connection-line, .connection-group:focus-within .connection-line { stroke: var(--edge-color); stroke-width: 3; }
 .connection-group.is-visited .connection-line { stroke: color-mix(in srgb, var(--edge-color), transparent 52%); }
 .connection-group.is-active .connection-line { stroke: var(--edge-color); stroke-width: 3.2; stroke-dasharray: 8 7; animation: link-flow 1s linear infinite; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--edge-color), transparent 30%)); }
+.connection-group.is-active[data-presentation="local"] .connection-line { stroke-dasharray: none; animation: none; filter: none; }
 .connection-group.is-active { z-index: 3; }
 .edge-focus { stroke: var(--focus, #9cafed); stroke-width: 10; fill: none; opacity: 0; pointer-events: none; }
 .connection-group:focus-within .edge-focus { opacity: .35; }
@@ -264,6 +265,12 @@ summary:focus-visible, [role="button"]:focus-visible {
   color: var(--text); box-shadow: 0 5px 24px #0005; white-space: nowrap;
 }
 .packet-orb { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--channel-color, var(--accent)); box-shadow: 0 0 9px var(--channel-color, var(--accent)); }
+.packet-position[data-presentation="local"] .packet-chip { width: 12px; height: 12px; padding: 2px; gap: 0; border-radius: 50%; box-shadow: none; }
+.packet-position[data-presentation="local"] .packet-chip>div,.packet-position[data-presentation="local"] .packet-count { display: none; }
+.packet-position[data-presentation="local"] .packet-orb { width: 6px; height: 6px; flex-basis: 6px; box-shadow: none; animation: local-field-pulse 1.8s ease-in-out infinite; animation-play-state: paused; }
+.packet-position[data-presentation="local"][data-playback="playing"] .packet-orb { animation-play-state: running; }
+@keyframes local-field-pulse { 50% { opacity: .4; } }
+@media (prefers-reduced-motion: reduce) { .packet-position[data-presentation="local"] .packet-orb { animation: none; } }
 .packet-name { font-size: 12px; font-weight: 750; overflow: hidden; text-overflow: ellipsis; }
 .packet-value { font: 11px ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--muted); overflow: hidden; text-overflow: ellipsis; max-width: 170px; }
 .packet-name, .packet-value { display: block; }

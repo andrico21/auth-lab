@@ -123,3 +123,24 @@ test('same-row AD exchanges use the available interior row corridor rather than 
   assert.ok(points.some((point,index)=>index&&point.y===points[index-1].y&&point.x!==points[index-1].x&&point.y>upper.bottom&&point.y<lower.top),'the visible exchange travels between the actor rows');
   assertClear(geometry);
 });
+
+test('local routes reserve a painted activity lane clear of actor focus and composite frames',()=>{
+  for(const source of models){
+    const {geometry}=composition(source);assert.ok(geometry,source.id);
+    for(const [key,path]of geometry.routes){
+      const [from,to]=key.split('>');if(from!==to)continue;
+      const b=geometry.bounds[from],points=[...path.matchAll(/[ML] ([\d.-]+) ([\d.-]+)/g)].map(match=>({x:Number(match[1]),y:Number(match[2])}));
+      const first=points[0],last=points.at(-1),lane=points[1].y;
+      assert.ok(first.y===b.top||first.y===b.bottom,key+' attaches to a card edge');
+      assert.equal(last.y,first.y,key+' returns to the same edge');
+      assert.ok(first.x>=b.left&&first.x<=b.left+164&&last.x>=b.left&&last.x<=b.left+164,key+' avoids the adjacent inventory');
+      assert.ok(lane<=b.top-24||lane>=b.bottom+24,key+' clears the focus/frame paint');
+      const marker={x:(first.x+last.x)/2,y:lane};
+      assert.ok(marker.x>=6&&marker.x<=1114&&marker.y>=6&&marker.y<=724,key+' keeps a bounded local marker inside the graph');
+    }
+    assertClear(geometry);
+  }
+  const compact=compactDockGeometry({actor:{x:104,y:120}},[['actor','actor']],960);
+  assert.ok(compact);const points=[...compact.routes.get('actor>actor').matchAll(/[ML] ([\d.-]+) ([\d.-]+)/g)].map(match=>({x:Number(match[1]),y:Number(match[2])}));
+  assert.ok(points[1].y>=compact.bounds.actor.bottom+24,'a tight top margin selects the clear bottom lane');
+});

@@ -87,17 +87,17 @@ async function heldNativeScreenshot(page,name,{selector=page.viewportSize().widt
     const visibleBounds={left:Math.max(0,bounds.left),right:Math.min(innerWidth,bounds.right),top:Math.max(0,bounds.top),bottom:Math.min(innerHeight,bounds.bottom)};
     const displayed=[...surface.querySelectorAll('.actor-card,#held-docks button')].filter(e=>e.getClientRects().length&&!e.closest('[hidden]')).map(e=>{
       const r=box(e),x=(r.left+r.right)/2,y=(r.top+r.bottom)/2,displayed=x>=visibleBounds.left&&x<=visibleBounds.right&&y>=visibleBounds.top&&y<=visibleBounds.bottom,hit=displayed?document.elementFromPoint(x,y):null;
-      return {kind:e.matches('.actor-card')?'actor':'inventory',actorId:e.dataset.actor||e.dataset.heldActor||null,action:e.dataset.heldAction||null,bounds:r,center:{x,y},displayed,centerExposed:!!hit&&(hit===e||e.contains(hit)),toolbarOverlap:!!toolbar&&r.left<toolbar.right&&r.right>toolbar.left&&r.top<toolbar.bottom&&r.bottom>toolbar.top};
+      return {kind:e.matches('.actor-card')?'actor':'inventory',actorId:e.dataset.actor||e.dataset.heldActor||null,action:e.dataset.heldAction||null,bounds:r,center:{x,y},displayed,centerExposed:!!hit&&(hit===e||e.contains(hit)),occluder:hit&&hit!==e&&!e.contains(hit)?{tag:hit.tagName,id:hit.id,classes:hit.getAttribute('class')}:null,toolbarOverlap:!!toolbar&&r.left<toolbar.right&&r.right>toolbar.left&&r.top<toolbar.bottom&&r.bottom>toolbar.top};
     });
     const actorTops=displayed.filter(e=>e.kind==='actor'),top=Math.min(...actorTops.map(e=>e.center.y));
     return {selector,viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio},scroll:{x:scrollX,y:scrollY},surfaceBounds:bounds,visibleBounds,toolbar,fullSurfaceVisible:bounds.left>=0&&bounds.top>=0&&bounds.right<=innerWidth&&bounds.bottom<=innerHeight,displayedTargets:displayed,topActorCenters:actorTops.filter(e=>Math.abs(e.center.y-top)<2).map(e=>({actorId:e.actorId,...e.center,displayed:e.displayed,centerExposed:e.centerExposed}))};
   },selector);
-  heldNativeCheck(camera.visibleBounds.right>camera.visibleBounds.left&&camera.visibleBounds.bottom>camera.visibleBounds.top,name+' camera has a visible surface');
-  heldNativeCheck(camera.displayedTargets.filter(t=>t.displayed).every(t=>!t.toolbarOverlap&&t.centerExposed),name+' displayed actor and inventory target centers are not occluded');
-  if(requireFull){heldNativeCheck(camera.fullSurfaceVisible,name+' complete graph fits actual viewport');heldNativeCheck(camera.topActorCenters.length>0&&camera.topActorCenters.every(t=>t.displayed&&t.centerExposed),name+' complete top actor row is exposed');}
   camera.captureBounds={left:0,top:0,right:camera.viewport.width,bottom:camera.viewport.height};
   await page.screenshot({path:path.join(heldNativeOutput,file),fullPage:false});
   heldNativeReport.screenshots.push(file);(heldNativeReport.cameras??=[]).push({screenshot:file,...camera});
+  heldNativeCheck(camera.visibleBounds.right>camera.visibleBounds.left&&camera.visibleBounds.bottom>camera.visibleBounds.top,name+' camera has a visible surface');
+  heldNativeCheck(camera.displayedTargets.filter(t=>t.displayed).every(t=>!t.toolbarOverlap&&t.centerExposed),name+' displayed actor and inventory target centers are not occluded');
+  if(requireFull){heldNativeCheck(camera.fullSurfaceVisible,name+' complete graph fits actual viewport');heldNativeCheck(camera.topActorCenters.length>0&&camera.topActorCenters.every(t=>t.displayed&&t.centerExposed),name+' complete top actor row is exposed');}
   return {file,camera};
 }
 async function heldNativeAnimationSurface(page,mode){
@@ -131,6 +131,171 @@ async function heldNativeAnimationSurface(page,mode){
     await heldNativeScreenshot(page,mode+'-basic-keycloak-'+architecture+'-'+width+'-animation-surface');
   }
   return records;
+}
+// These are active full-journey seeks, not final-state composition screenshots.
+async function heldNativeLocalProcessing(page,mode){
+  const records=[],fixtures=[
+    {id:'basic-keycloak',suffix:'-l02',actor:'app',kind:'pkce'},
+    {id:'lab-ad-first-sign-in',suffix:'-select-key',actor:'adWorkstation',kind:'ad-key'},
+    {id:'lab-ad-fast-as-success',suffix:'-computer-armor',actor:'cryptoComputer',kind:'fast-armor'},
+    {id:'lab-ssh-cert-success',suffix:'-prepare',actor:'sshCli',kind:'ssh-cli'},
+    {id:'lab-ssh-cert-success',suffix:'-sign',actor:'sshAgent',kind:'ssh-agent'},
+    {id:'lab-ssh-cert-success',suffix:'-agent-request',actor:'sshCli',kind:'ssh-agent-ipc',exchange:true}
+  ];
+  for(const fixture of fixtures){
+    await page.setViewportSize({width:1920,height:1200});await heldNativeChoose(page,fixture.id);
+    const internalsEligible=await page.evaluate(()=>Object.values(document.querySelector('auth-flow-studio').scenarioOwnedActors||{}).some(actor=>actor.parentId));
+    const canonical=new Map();
+    for(const expanded of internalsEligible?[false,true]:[false])for(const width of [1920,1480,390]){
+      await page.setViewportSize({width,height:1200});
+      const prepared=await page.evaluate(({fixture,expanded})=>{
+        const a=document.querySelector('auth-flow-studio');
+        if(a.showInternals!==expanded){a.showInternals=expanded;a.renderAll();}
+        const step=a.steps.find(s=>s.id.endsWith(fixture.suffix)&&s.from===fixture.actor);
+        if(!step)throw new Error('Missing exact local-processing fixture '+fixture.id+fixture.suffix);
+        const clock=a.studyClock(),index=clock.steps.findIndex(s=>s.id===step.id),duration=clock.durations[index],count=Math.max(1,step.payload.length);
+        if(index<0)throw new Error('The local-processing fixture must be in the full journey');
+        // Match the existing field cadence, including authored transport compression.
+        const timing=a.player.getTiming?.(step,'demo'),message=timing?.messages?.[0];
+        const start=message?(message.start-timing.start)/(timing.end-timing.start):0,end=message?(message.end-timing.start)/(timing.end-timing.start):1;
+        const scale=message?Math.min(1,(end-start)*duration/(380+(count-1)*1290+1050)):1;
+        const samples=Array.from({length:count},(_,packetIndex)=>[.2,.8].map(travel=>({packetIndex,travel,fraction:(clock.offsets[index]+start*duration+(380+packetIndex*1290+1050*travel)*scale)/clock.total}))).flat();
+        const from=a.nodeId(step.from),to=a.nodeId(step.to);
+        const markerDefinitions=[...a.refs.connections.querySelectorAll('marker')].map(marker=>{const view=marker.viewBox.baseVal;return {id:marker.id,units:marker.getAttribute('markerUnits'),width:marker.markerWidth.baseVal.value,height:marker.markerHeight.baseVal.value,refX:marker.refX.baseVal.value,viewBox:[view.x,view.y,view.width,view.height]};});
+        return {stepId:step.id,title:step.title,from:step.from,to:step.to,drawnFrom:from,drawnTo:to,presentation:step.from===step.to?'local':from===to?'folded':'transfer',sourcePayloadCount:step.payload.length,payloadScope:step.payload.length?'Authored payload fields':'Existing Local action/title fallback; no invented payload fields',markerDefinitions,samples};
+      },{fixture,expanded});
+      assert.equal(prepared.from===prepared.to,!fixture.exchange,mode+' fixture uses original logical endpoints');
+      if(fixture.exchange)assert.equal(prepared.presentation,expanded?'transfer':'folded',mode+' agent IPC is not local computation when folded');
+      const samples=[];
+      for(const target of prepared.samples){
+        const observed=await page.evaluate(({fraction,stepId})=>{
+          const a=document.querySelector('auth-flow-studio');a.seekPlayback(fraction);
+          const event=a.player.snapshot(),step=event.step,packet=event.packet||{name:'Local action',value:step.title},format=value=>value===undefined?'':value!==null&&typeof value==='object'?JSON.stringify(value):String(value);
+          if(step.id!==stepId)throw new Error('Seek did not land on the exact local-processing step');
+          const group=a.refs.connections.querySelector('.connection-group.is-active'),line=group.querySelector('.connection-line');
+          const canonicalBefore=JSON.stringify({protocol:a.protocolSnapshot(),held:a.heldView.snapshot()});
+          group.querySelector('.connection-hit').focus({preventScroll:true});
+          a.updateStep();a.renderPacket(event);
+          const fields=[...a.refs['step-attributes'].querySelectorAll('[data-step-attribute]')].filter(field=>field.getClientRects().length),current=event.visible?(packet.attributeId||a.payloadAttributeId(packet,step)):null,style=getComputedStyle(line),orb=a.refs.packet.querySelector('.packet-orb'),orbStyle=getComputedStyle(orb);
+          const point=line.getPointAtLength(line.getTotalLength()*.5),svg=a.refs.connections.viewBox.baseVal;
+          const expectedValue=format(packet.value),badges=[...a.refs.actors.querySelectorAll('.actor-trace-action')].filter(e=>!e.hidden).map(e=>e.textContent);
+          return {stepId:step.id,geometry:a.refs.graph.dataset.heldGeometry,presentation:group.dataset.presentation,packetPresentation:a.refs.packet.dataset.presentation,visible:event.visible,packetHidden:a.refs.packet.hidden,packetIndex:event.packetIndex,progress:event.progress,phase:event.messagePhase,name:a.refs['packet-name'].textContent,value:a.refs['packet-value'].textContent,count:a.refs['packet-count'].textContent,expectedName:packet.name,expectedValue:expectedValue.slice(0,38)+(expectedValue.length>38?'…':''),fullValue:expectedValue,expectedCount:(event.packetIndex+1)+'/'+Math.max(1,step.payload.length),fieldNames:fields.map(e=>e.textContent),expectedFieldNames:a.stepAttributeItems(step).map(item=>item.name),highlights:fields.filter(e=>e.classList.contains('is-current')).map(e=>e.dataset.stepAttribute),expectedHighlights:fields.filter(e=>!!current&&e.dataset.stepAttribute.split(' ').includes(current)).map(e=>e.dataset.stepAttribute),badges,markerEnd:line.getAttribute('marker-end'),animation:style.animationName,dasharray:style.strokeDasharray,filter:style.filter,orbShadow:orbStyle.boxShadow,orbAnimation:orbStyle.animationName,orbPlayState:orbStyle.animationPlayState,position:{left:a.refs.packet.style.left,top:a.refs.packet.style.top},midpoint:{left:point.x/svg.width*100,top:point.y/svg.height*100},status:event.status,kind:event.kind,playLabel:a.refs.play.textContent.trim(),seekEnabled:!a.refs.seek.disabled,seekValue:Number(a.refs.seek.value),expectedSeekValue:Math.round(fraction*1000),seekText:a.refs.seek.getAttribute('aria-valuetext'),canonicalBefore,canonicalAfter:JSON.stringify({protocol:a.protocolSnapshot(),held:a.heldView.snapshot()}),activeMessage:{visible:!a.querySelector('#held-active-message').hidden,text:a.querySelector('#held-active-message').textContent}};
+        },{fraction:target.fraction,stepId:prepared.stepId});
+        const label=mode+' '+fixture.kind+' '+expanded+' '+width+' field '+target.packetIndex+' @'+target.travel;
+        assert.equal(observed.visible,true,label+' observes an actual visible field time');assert.equal(observed.packetHidden,false,label+' field marker is rendered');
+        assert.equal(observed.packetIndex,target.packetIndex,label+' preserves legacy field cadence');assert.equal(observed.presentation,prepared.presentation,label+' logical route presentation');assert.equal(observed.packetPresentation,prepared.presentation,label+' packet presentation');
+        assert.ok(Math.abs(observed.progress-target.travel)<.0001,label+' temporal field progress remains unchanged despite fixed local position');
+        assert.equal(observed.name,observed.expectedName,label+' exact field label');assert.equal(observed.value,observed.expectedValue,label+' exact compact field value');assert.equal(observed.count,observed.expectedCount,label+' field count');
+        assert.deepEqual(observed.fieldNames,observed.expectedFieldNames,label+' complete local field set');assert.deepEqual(observed.highlights,observed.expectedHighlights,label+' current field highlight follows the real packet');
+        assert.equal(observed.status,'paused',label+' seeking remains paused');assert.equal(observed.kind,'demo',label+' normal full-journey playback');assert.equal(observed.playLabel,'Resume',label+' control remains resumable');assert.equal(observed.seekEnabled,true,label+' seek remains enabled');assert.equal(observed.seekValue,observed.expectedSeekValue,label+' seek control matches the selected time');assert.ok(observed.seekText.includes(prepared.title),label+' seek announces its exact source step');
+        assert.equal(observed.canonicalAfter,observed.canonicalBefore,label+' presentation/focus redraw preserves the complete canonical snapshot');
+        const key=target.packetIndex+':'+target.travel;
+        if(canonical.has(key))assert.equal(observed.canonicalAfter,canonical.get(key),label+' width/internal folding preserves the exact canonical snapshot');else canonical.set(key,observed.canonicalAfter);
+        if(!fixture.exchange){
+          assert.equal(observed.markerEnd,null,label+' local route has no directional arrow');assert.equal(observed.animation,'none',label+' no travelling line animation');assert.equal(observed.dasharray,'none',label+' no directional dashes');assert.equal(observed.filter,'none',label+' no route glow');
+          assert.equal(observed.orbShadow,'none',label+' local field pulse has no unbounded glow');assert.equal(observed.orbPlayState,'paused',label+' paused local pulse does not run');assert.ok(observed.badges.includes('Local processing'),label+' local processing is labelled in normal playback');
+          assert.equal(observed.orbAnimation,'local-field-pulse',label+' local marker uses an opacity pulse, not travel');
+          if(fixture.kind==='pkce')assert.ok(observed.highlights.length>0,label+' each visible PKCE field has its actual attribute highlight');
+          assert.ok(Math.abs(parseFloat(observed.position.left)-observed.midpoint.left)<.001&&Math.abs(parseFloat(observed.position.top)-observed.midpoint.top)<.001,label+' field marker stays at the route midpoint');
+          if(samples.length)assert.deepEqual(observed.position,samples[0].position,label+' local coordinates remain stable through meaningful time and field changes');
+        }else{
+          assert.ok(observed.markerEnd?.startsWith('url('),label+' actual IPC retains direction');assert.equal(observed.animation,'link-flow',label+' actual IPC retains travelling flow');
+          if(!expanded)assert.ok(observed.badges.includes('Internal exchange'),label+' folded IPC is explicitly distinguished from local computation');
+          if(samples.length&&samples.at(-1).packetIndex===observed.packetIndex)assert.notDeepEqual(observed.position,samples.at(-1).position,label+' actual IPC marker moves even on one drawn actor');
+        }
+        if(!fixture.exchange)assert.equal(observed.activeMessage.visible,true,label+' full local field value has a rendered readable panel');
+        if(observed.activeMessage.visible)assert.ok(observed.activeMessage.text.includes(observed.fullValue),label+' visible message preserves the untruncated field value');
+        const paint=await heldNativePaintedRoute(page,{local:!fixture.exchange});
+        assert.deepEqual(paint.collisions,[],label+' painted route, focus halo, marker glyph and local field marker clear actor/dock/focus frames');
+        for(const marker of paint.markers){assert.ok(marker.paintedSpanWorld<=10.1,label+' arrow paint fits the ten-unit route clearance');assert.ok(marker.tipOvershootCss<=.5,label+' arrow paint stops at its attachment port');}
+        const canonicalHash=heldNativeHash(observed.canonicalAfter);delete observed.canonicalBefore;delete observed.canonicalAfter;
+        samples.push({...target,...observed,canonicalHash,paint});
+      }
+      let pulse=null;
+      if(!fixture.exchange){
+        pulse=await page.evaluate(()=>{
+          const a=document.querySelector('auth-flow-studio'),before=JSON.stringify({protocol:a.protocolSnapshot(),held:a.heldView.snapshot()}),orb=a.refs.packet.querySelector('.packet-orb');
+          // Native click dispatch exercises the normal control without letting
+          // a frame advance the authored clock between the two control states.
+          a.refs.play.click();
+          const playing={status:a.player.status,label:a.refs.play.textContent.trim(),packetStatus:a.refs.packet.dataset.playback,pulse:getComputedStyle(orb).animationPlayState,line:getComputedStyle(a.refs.connections.querySelector('.is-active .connection-line')).animationName};
+          a.refs.play.click();
+          return {playing,paused:{status:a.player.status,label:a.refs.play.textContent.trim(),packetStatus:a.refs.packet.dataset.playback,pulse:getComputedStyle(orb).animationPlayState},canonicalPreserved:before===JSON.stringify({protocol:a.protocolSnapshot(),held:a.heldView.snapshot()})};
+        });
+        assert.deepEqual(pulse.playing,{status:'playing',label:'Pause',packetStatus:'playing',pulse:'running',line:'none'},mode+' local play resumes only the bounded pulse');
+        assert.deepEqual(pulse.paused,{status:'paused',label:'Resume',packetStatus:'paused',pulse:'paused'},mode+' local pause freezes the pulse');
+        assert.equal(pulse.canonicalPreserved,true,mode+' local controls preserve canonical state without a clock tick');
+      }
+      // Capture the active PKCE request and every local family at a real visible
+      // field, with the graph scrolled into the viewport and its route exposed.
+      const name=mode+'-active-'+fixture.kind+'-'+(expanded?'expanded':'collapsed')+'-'+width;
+      // Resizing can place a participant beneath the preceding UI click. Close
+      // that incidental hover help without moving the focused SVG route.
+      await page.mouse.move(0,0);
+      await page.keyboard.press('Escape');
+      await page.locator('#packet').evaluate(element=>element.scrollIntoView({block:'center',inline:'center'}));
+      const capture=await heldNativeScreenshot(page,name,{selector:width<960?'.map-scroll':'#graph',requireFull:width===1920});
+      assert.equal(await page.locator('#actor-popup').isHidden(),true,name+' active-scene camera is not covered by incidental participant help');
+      const exposed=await page.evaluate(()=>{
+        const a=document.querySelector('auth-flow-studio'),chip=a.refs.packet.querySelector('.packet-chip'),r=chip.getBoundingClientRect(),x=(r.left+r.right)/2,y=(r.top+r.bottom)/2;
+        const toolbar=a.querySelector('#map-controls').getBoundingClientRect(),route=a.refs.connections.querySelector('.connection-group.is-active .connection-line').getBoundingClientRect(),inside=b=>b.left>=0&&b.right<=innerWidth&&b.top>=0&&b.bottom<=innerHeight,overlap=b=>b.left<toolbar.right&&b.right>toolbar.left&&b.top<toolbar.bottom&&b.bottom>toolbar.top;
+        return {visible:!a.refs.packet.hidden,insideViewport:inside(r),toolbarOverlap:overlap(r),routeInsideViewport:inside(route),routeToolbarOverlap:overlap(route),routeBounds:{left:route.left,right:route.right,top:route.top,bottom:route.bottom},center:{x,y},stepId:a.player.snapshot().step.id};
+      });
+      assert.equal(exposed.stepId,prepared.stepId,name+' captures the exact active step');assert.equal(exposed.visible,true,name+' captures an active field, not a final state');assert.equal(exposed.insideViewport,true,name+' local glyph is inside the viewport');assert.equal(exposed.toolbarOverlap,false,name+' local glyph is unobscured by controls');
+      if(!fixture.exchange){assert.equal(exposed.routeInsideViewport,true,name+' complete local U route is inside the viewport');assert.equal(exposed.routeToolbarOverlap,false,name+' complete local U route clears the controls');}
+      records.push({id:fixture.id,kind:fixture.kind,expanded,width,...prepared,samples,pulse,screenshot:capture.file,camera:capture.camera,capturedField:exposed});
+    }
+  }
+  for(const geometry of ['full','compact','external'])assert.ok(records.some(r=>r.samples.some(s=>s.geometry===geometry)),mode+' active local probes exercise '+geometry+' where eligible');
+  return {scope:'Actual visible full-journey local/IPC fields, exact canonical snapshots and painted SVG/field extents; composition-only screenshots are not local-playback evidence',records};
+}
+async function heldNativePaintedRoute(page,{local}){
+  return page.evaluate(local=>{
+    const a=document.querySelector('auth-flow-studio'),group=a.refs.connections.querySelector('.connection-group.is-active'),line=group.querySelector('.connection-line'),matrix=line.getScreenCTM(),length=line.getTotalLength(),step=a.player.snapshot().step,endpoints=new Set([a.nodeId(step.from),a.nodeId(step.to)]);
+    const visible=e=>!!e.getClientRects().length&&!e.closest('[hidden]')&&getComputedStyle(e).visibility!=='hidden',rect=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom};},expand=(r,n)=>({left:r.left-n,right:r.right+n,top:r.top-n,bottom:r.bottom+n}),intersects=(a,b)=>a.left<b.right-.25&&a.right>b.left+.25&&a.top<b.bottom-.25&&a.bottom>b.top+.25;
+    const scale=Math.max(Math.hypot(matrix.a,matrix.b),Math.hypot(matrix.c,matrix.d)),obstacles=[];
+    for(const e of a.querySelectorAll('.actor-card,.held-dock,.held-compact-summary,.trust-zone')){
+      if(!visible(e))continue;
+      const owner=e.dataset.actor||e.dataset.heldDock||e.dataset.heldActor||e.dataset.zoneActor||null,own=endpoints.has(owner),frame=e.classList.contains('trust-zone');
+      // Endpoint ports may touch their own frame; other route paint may not.
+      if(own&&!local)continue;
+      const focus=e.matches('.actor-card.is-source,.actor-card.is-target,.actor-card:focus-visible'),bounds=expand(rect(e),focus?7:0);
+      obstacles.push({owner,kind:frame?'trust-frame':focus?'actor-focus':e.className,bounds,own,frame});
+    }
+    const collisions=[],envelopes=[],markers=[];
+    const collide=(paint,kind,at)=>{
+      for(const obstacle of obstacles){
+        if(obstacle.own&&at!==null&&(at<16*scale||length*scale-at<16*scale))continue;
+        const r=obstacle.bounds,bands=obstacle.frame?[{...r,bottom:r.top+1},{...r,top:r.bottom-1},{...r,right:r.left+1},{...r,left:r.right-1}]:[r];
+        if(bands.some(b=>intersects(paint,b)))collisions.push({paint:kind,obstacle:obstacle.owner||obstacle.kind,kind:obstacle.kind,at});
+      }
+    };
+    for(const path of [line,group.querySelector('.edge-focus')]){
+      const style=getComputedStyle(path);if(Number(style.opacity)===0||style.stroke==='none')continue;
+      // The actual visible focus stroke is wider than its centerline. A CSS
+      // drop-shadow is conservatively bounded at three blur radii.
+      const shadowPixels=[...style.filter.matchAll(/(-?[\d.]+)px/g)].map(match=>Number(match[1])),shadowRadius=shadowPixels.length>=3?Math.hypot(shadowPixels.at(-3),shadowPixels.at(-2))+Math.abs(shadowPixels.at(-1))*3:0,radius=Number.parseFloat(style.strokeWidth)*scale/2+shadowRadius;
+      envelopes.push({kind:path.classList.contains('edge-focus')?'focus-stroke':'route-stroke',stroke:style.stroke,width:Number.parseFloat(style.strokeWidth),radius,filter:style.filter});
+      for(let n=0;n<=length;n+=.75){const p=path.getPointAtLength(n),s=new DOMPoint(p.x,p.y).matrixTransform(matrix);collide({left:s.x-radius,right:s.x+radius,top:s.y-radius,bottom:s.y+radius},envelopes.at(-1).kind,n*scale);}
+    }
+    const markerRef=line.getAttribute('marker-end');
+    if(markerRef){
+      const marker=a.querySelector(markerRef.slice(markerRef.indexOf('#'),markerRef.lastIndexOf(')'))),view=marker.viewBox.baseVal,tip=line.getPointAtLength(length),prior=line.getPointAtLength(Math.max(0,length-.1)),angle=Math.atan2(tip.y-prior.y,tip.x-prior.x),unitsScale=marker.getAttribute('markerUnits')==='userSpaceOnUse'?1:Number.parseFloat(getComputedStyle(line).strokeWidth),sx=marker.markerWidth.baseVal.value/view.width*unitsScale,sy=marker.markerHeight.baseVal.value/view.height*unitsScale,points=[];let forwardPaint=-Infinity;
+      for(const glyph of marker.querySelectorAll('path,polygon,polyline,circle,rect')){
+        const total=glyph.getTotalLength();
+        for(let n=0;n<=total;n+=.2){const p=glyph.getPointAtLength(n),x=(p.x-marker.refX.baseVal.value)*sx,y=(p.y-marker.refY.baseVal.value)*sy;forwardPaint=Math.max(forwardPaint,x);points.push(new DOMPoint(tip.x+x*Math.cos(angle)-y*Math.sin(angle),tip.y+x*Math.sin(angle)+y*Math.cos(angle)).matrixTransform(matrix));}
+      }
+      const bounds={left:Math.min(...points.map(p=>p.x)),right:Math.max(...points.map(p=>p.x)),top:Math.min(...points.map(p=>p.y)),bottom:Math.max(...points.map(p=>p.y))};
+      markers.push({units:marker.getAttribute('markerUnits'),width:marker.markerWidth.baseVal.value,height:marker.markerHeight.baseVal.value,refX:marker.refX.baseVal.value,viewBox:[view.x,view.y,view.width,view.height],paintedBounds:bounds,paintedSpanWorld:Math.max(bounds.right-bounds.left,bounds.bottom-bounds.top)/scale,tipOvershootCss:Math.max(0,forwardPaint*scale)});
+      collide(bounds,'direction-marker',length*scale);
+    }
+    if(local){
+      const chip=a.refs.packet.querySelector('.packet-chip'),orb=a.refs.packet.querySelector('.packet-orb');
+      if(getComputedStyle(chip).boxShadow!=='none')throw new Error('A local field chip must not cast a glow beyond its bounded glyph');
+      for(const [element,kind]of [[chip,'local-field-chip'],[orb,'local-field-orb']]){const bounds=rect(element);envelopes.push({kind,bounds,shadow:getComputedStyle(element).boxShadow});collide(bounds,kind,null);}
+    }
+    return {pair:group.dataset.pair,local,obstacles:obstacles.map(({owner,kind,bounds})=>({owner,kind,bounds})),envelopes,markers,collisions:[...new Map(collisions.map(c=>[c.paint+':'+c.obstacle+':'+c.kind,c])).values()]};
+  },local);
 }
 async function heldNativeStepAttributes(page,mode){
   const records=[];
@@ -463,7 +628,7 @@ async function heldNativeFamilyComposition(page,mode){
     }
     delete scene.state;delete scene.holdings;records.push({id,expanded,screenshot:capture.file,camera:capture.camera,scene,...composition});
   }
-  return {scope:'Rendered Chromium composition and complete label bounds; not a human aesthetic review',records};
+  return {scope:'Final-state rendered Chromium composition and complete label bounds only; active local/IPC acceptance is recorded separately in localProcessing; not a human aesthetic review',records};
 }
 try{
   const require=createRequire(import.meta.url),module=process.env.PLAYWRIGHT_MODULE?await import(pathToFileURL(process.env.PLAYWRIGHT_MODULE).href):require('playwright');
@@ -488,6 +653,7 @@ try{
     record.code1.ownersAndFocus=await heldNativeOwnersAndFocus(page,mode);
     record.code1.actionFocus=await heldNativeActionFocus(page,mode);
     record.checks.push('HC01 rendered encrypted/decoded occurrence values from both selections','HC02 authored receipt boundaries across full/connection/exact replay, payload sizes and speeds','HC08 repeated owner return complete lists in full/compact','HC09 exact holding and non-holding action+region redraw focus, repeated merged/compact/overflow/picker return and separate resize/removal/collapse fallbacks');
+    record.localProcessing=await heldNativeLocalProcessing(page,mode);record.checks.push('Actual PKCE, AD/FAST and SSH CLI/agent local fields across full/compact/external and internal folding; fixed local midpoint, no directional flow, exact field/control/canonical state, painted stroke/focus/glyph clearance, and folded SSH IPC motion/direction');
     // Start the catalog sweep from a fresh configuration, retaining host-side CSP evidence.
     await page.goto(target,{waitUntil:'networkidle'});await page.setViewportSize({width:1920,height:1200});
     const choices=await page.evaluate(()=>[...document.querySelector('auth-flow-studio').refs['lab-scenario'].options].map(option=>option.value));

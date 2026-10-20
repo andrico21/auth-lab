@@ -106,9 +106,19 @@ test('stored PKCE challenge appears in local server checks while the token reque
     app.selectAttribute('codeChallenge',false);const check=app.traceQueue.findIndex(step=>step.sourceStepId==='l23'&&step.traceKind==='verify');assert.ok(check>=0);app.selectStep(check,true);
     assert.equal(app.currentStep.from,'realmA');assert.equal(app.currentStep.to,'realmA');assertNameSet(app,['code','client_id','redirect_uri','code_challenge_method','code_challenge','code_verifier']);
     assert.ok(shownNames(app).includes('code_challenge'),'stored challenge participates in a local server comparison');
+    assert.equal(app.refs.connections.querySelector('.connection-group.is-active').dataset.presentation,'local');
+    assert.equal(app.refs.connections.querySelector('.connection-group.is-active .connection-line').getAttribute('marker-end'),null);
+    clock.frame();clock.advance(600);
+    assert.equal(app.refs.packet.hidden,false);assert.equal(app.refs.packet.dataset.presentation,'local');
+    assert.equal(app.refs['packet-name'].textContent,'code_challenge');
+    assert.deepEqual(overlay(app).querySelectorAll('.is-current').map(node=>normalize(node.textContent)),['code_challenge']);
+    const point=[app.refs.packet.style.left,app.refs.packet.style.top];clock.advance(100);
+    assert.deepEqual([app.refs.packet.style.left,app.refs.packet.style.top],point,'local verification highlights its current field without transporting it');
     app.selectAttribute('codeVerifier',false);const send=app.traceQueue.findIndex(step=>step.sourceStepId==='l23'&&step.traceKind==='send');assert.ok(send>=0);app.selectStep(send,true);assertNameSet(app,defaultNames.l23);
     assert.ok(!shownNames(app).includes('code_challenge'),'the stored challenge does not become a token-request field');
     assert.ok(!shownNames(app).includes('code_challenge_method'),'the token request does not resend the stored PKCE method');
+    assert.equal(app.refs.connections.querySelector('.connection-group.is-active').dataset.presentation,'transfer');
+    assert.ok(app.refs.connections.querySelector('.connection-group.is-active .connection-line').getAttribute('marker-end'));
   }finally{unmount(app);}
 });
 
