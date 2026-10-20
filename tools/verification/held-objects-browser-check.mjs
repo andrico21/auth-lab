@@ -15,15 +15,15 @@ if(process.argv.includes('--help')){console.log('Usage: bun tools/verification/h
 fs.mkdirSync(heldNativeOutput,{recursive:true});
 const heldNativeHash=value=>createHash('sha256').update(value).digest('hex');
 const heldNativeIdentity=()=>({standalone:{bytes:fs.statSync(path.join(heldNativeRoot,'dist/auth-flow-studio.html')).size,sha256:heldNativeHash(fs.readFileSync(path.join(heldNativeRoot,'dist/auth-flow-studio.html')))},sources:Object.fromEntries(['index.html','build.mjs',...fs.readdirSync(path.join(heldNativeRoot,'src')).filter(name=>/\.(js|css)$/.test(name)).sort().map(name=>'src/'+name)].map(name=>[name,heldNativeHash(fs.readFileSync(path.join(heldNativeRoot,name)))]))});
-const heldNativeReport={kind:'held-objects-native-browser',timestamp:new Date().toISOString(),nativeBrowser:true,passed:false,identity:heldNativeIdentity(),modes:[],screenshots:[],manualNotEstablished:['Screen-reader speech and announcement comprehension with a real assistive-technology user','Cross-engine and live KDC/IdP/SSH interoperability'],failures:[]};
+const heldNativeReport={kind:'held-objects-native-browser',timestamp:new Date().toISOString(),nativeBrowser:true,passed:false,runnerSha256:heldNativeHash(fs.readFileSync(fileURLToPath(import.meta.url))),regenerationCommand:[process.execPath,...process.argv.slice(1)],identity:heldNativeIdentity(),modes:[],screenshots:[],manualNotEstablished:['Screen-reader speech and announcement comprehension with a real assistive-technology user','Cross-engine and live KDC/IdP/SSH interoperability'],failures:[]};
 let heldNativeBrowser,heldNativeServer,heldNativeContext,heldNativeProfile;
 const heldNativeCheck=(condition,message)=>assert.ok(condition,message);
-async function heldNativeChoose(page,id,expanded=false,final=false){const selected=await page.evaluate(({id,expanded,final})=>{const a=document.querySelector('auth-flow-studio');a.selectLabScenario(id);if(expanded){a.showInternals=true;a.renderAll();}if(final)a.selectStep(a.steps.length-1,false);return a.labScenarioId;},{id,expanded,final});assert.equal(selected,id,'Native acceptance fixture must select its exact registered scenario.');}
+async function heldNativeChoose(page,id,expanded=false,final=false){const selected=await page.evaluate(({id,expanded,final})=>{const a=document.querySelector('auth-flow-studio');a.selectLabScenario(id);if(a.showInternals!==expanded){a.showInternals=expanded;a.renderAll();}if(final)a.selectStep(a.steps.length-1,false);return a.labScenarioId;},{id,expanded,final});assert.equal(selected,id,'Native acceptance fixture must select its exact registered scenario.');}
 async function heldNativeScene(page,label,{routes=true}={}){
   const result=await page.evaluate(routes=>{
     const a=document.querySelector('auth-flow-studio'),graph=a.refs.graph.getBoundingClientRect();
     const visible=element=>{const r=element.getBoundingClientRect();return r.width>0&&r.height>0&&!element.closest('[hidden]')&&getComputedStyle(element).visibility!=='hidden';};
-    const boxes=[...a.querySelectorAll('.actor-card,.held-dock')].filter(visible).map(element=>{const r=element.getBoundingClientRect();return {id:element.dataset.actor||'dock:'+element.dataset.heldDock,left:r.left,right:r.right,top:r.top,bottom:r.bottom};});
+    const boxes=[...a.querySelectorAll('.actor-card,.held-dock,.held-compact-summary')].filter(visible).map(element=>{const r=element.getBoundingClientRect();return {id:element.dataset.actor||'dock:'+element.dataset.heldDock,left:r.left,right:r.right,top:r.top,bottom:r.bottom};});
     const overlaps=[];for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){const x=boxes[i],y=boxes[j];if(x.left<y.right-1&&x.right>y.left+1&&x.top<y.bottom-1&&x.bottom>y.top+1)overlaps.push([x.id,y.id]);}
     const collisions=[];if(routes)for(const element of a.refs.connections.querySelectorAll('.connection-line')){const matrix=element.getScreenCTM(),length=element.getTotalLength();if(!matrix)continue;for(let n=0;n<=length;n+=2){const p=element.getPointAtLength(n),point=new DOMPoint(p.x,p.y).matrixTransform(matrix);const box=boxes.find(b=>point.x>b.left+1&&point.x<b.right-1&&point.y>b.top+1&&point.y<b.bottom-1);if(box){collisions.push({pair:element.parentElement.dataset.pair,obstacle:box.id});break;}}}
     const targets=[...a.querySelectorAll('#held-docks button,#held-objects button,#held-inspector button')].filter(visible).map(element=>{const r=element.getBoundingClientRect();return {name:element.textContent.trim().slice(0,80),width:r.width,height:r.height};});
@@ -34,10 +34,42 @@ async function heldNativeScene(page,label,{routes=true}={}){
   assert.deepEqual(result.overlaps,[],label+' participant/dock overlap');assert.deepEqual(result.collisions,[],label+' routes clear actor and inventory bounds');assert.deepEqual(result.outside,[],label+' bounds fit map');assert.deepEqual(result.smallTargets,[],label+' inventory targets are 44 rendered CSS pixels');assert.equal(result.nestedActorButtons,0,label+' no nested actor buttons');assert.equal(result.coverageStatus,'complete',label+' complete logical-owner coverage');
   return result;
 }
-async function heldNativeScreenshot(page,name){const file=name+'.png';await page.locator('#graph').scrollIntoViewIfNeeded();await page.locator('#graph').screenshot({path:path.join(heldNativeOutput,file)});heldNativeReport.screenshots.push(file);}
+async function heldNativeScreenshot(page,name){const file=name+'.png',selector=page.viewportSize().width<960?'.map-scroll':'#graph';await page.locator(selector).evaluate(element=>element.scrollIntoView({block:'center',inline:'nearest'}));await page.locator(selector).screenshot({path:path.join(heldNativeOutput,file)});heldNativeReport.screenshots.push(file);}
+async function heldNativeAnimationSurface(page,mode){
+  const records=[];
+  for(const [architecture,width]of [['web',1920],['native',1920],['web',1480],['web',390]]){
+    await page.setViewportSize({width,height:1200});await heldNativeChoose(page,'basic-keycloak');
+    if(architecture==='native')await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.refs.architecture.value='native';a.refs.architecture.dispatchEvent(new Event('change',{bubbles:true}));});
+    const before=await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio'),step=a.steps.find(step=>step.from==='user'&&step.to==='browser'&&step.id.endsWith('-p02'));if(!step)throw new Error('Credential-entry fixture is unavailable');a.player.seek([step],.5,'step');return {snapshot:JSON.stringify(a.protocolSnapshot()),names:a.stepAttributeItems(step).map(item=>item.name)};});
+    await page.locator('[data-pair="browser--user"] .connection-hit').focus();
+    const surface=await page.evaluate(()=>{
+      const a=document.querySelector('auth-flow-studio'),active=document.activeElement,halo=active.closest('.connection-group')?.querySelector('.edge-focus'),actors=Object.fromEntries([...a.refs.actors.querySelectorAll('[data-actor]')].filter(element=>!element.hidden).map(element=>{const r=element.getBoundingClientRect();return [element.dataset.actor,{x:(r.left+r.right)/2,y:(r.top+r.bottom)/2}];}));
+      const panel=a.refs['step-attributes'],box=panel.getBoundingClientRect();
+      return {actors,focusedConnection:active.classList.contains('connection-hit'),outline:getComputedStyle(active).outlineStyle,routeHighlight:!!halo&&Number(getComputedStyle(halo).opacity)>0&&Number.parseFloat(getComputedStyle(halo).strokeWidth)>=6,stepNames:[...panel.querySelectorAll('code')].map(element=>element.textContent),stepNamesVisible:!panel.closest('[hidden]')&&box.width>0&&box.height>0,after:JSON.stringify(a.protocolSnapshot())};
+    });
+    assert.equal(surface.focusedConnection,true,mode+' connection receives keyboard focus');
+    assert.equal(surface.outline,'none',mode+' route focus does not draw a bounding rectangle through cards');
+    assert.equal(surface.routeHighlight,true,mode+' route itself retains a visible focus indicator');
+    assert.equal(surface.after,before.snapshot,mode+' route focus preserves the complete canonical snapshot');
+    assert.equal(surface.stepNamesVisible,true,mode+' the paused credential fields remain visible');
+    assert.deepEqual(surface.stepNames,before.names,mode+' the complete credential field set remains visible');
+    const scene=await heldNativeScene(page,mode+' basic '+architecture+' '+width+' animation surface');
+    if(width===1920){
+      assert.equal(scene.mode,'full');const p=surface.actors,aligned=(a,b)=>Math.abs(a-b)<1;
+      assert.ok(aligned(p.user.x,p.browser.x)&&p.user.y<p.browser.y,mode+' person/browser column and vertical order');
+      assert.ok(p.realmA.x>p.browser.x,mode+' issuer stays to the right of its clients');
+      if(architecture==='web')assert.ok(aligned(p.realmA.x,p.app.x)&&p.realmA.y<p.app.y,mode+' web backend and issuer form the server column');
+      else assert.ok(aligned(p.app.x,p.browser.x)&&p.browser.y<p.app.y,mode+' native application stays in the client column');
+    }
+    delete scene.state;delete scene.holdings;delete surface.after;
+    records.push({architecture,width,...scene,...surface,canonicalSnapshotPreserved:true});
+    await heldNativeScreenshot(page,mode+'-basic-keycloak-'+architecture+'-'+width+'-animation-surface');
+  }
+  return records;
+}
 async function heldNativeStepAttributes(page,mode){
   const records=[];
-  for(const [width,id,expanded]of [[1920,'lab-refresh-rotation',false],[1920,'lab-ad-forest-child-domains',true],[1480,'lab-ad-fast-as-success',true],[1050,'lab-ssh-cert-reissue',true],[390,'lab-ssh-cert-success',false]]){
+  for(const [width,id,expanded]of [[1920,'basic-keycloak',false],[1920,'basic-saml',false],[1920,'lab-refresh-rotation',false],[1920,'lab-ad-forest-child-domains',true],[1480,'lab-ad-fast-as-success',true],[1050,'lab-ssh-cert-reissue',true],[390,'lab-ssh-cert-success',false]]){
     await page.setViewportSize({width,height:1200});await heldNativeChoose(page,id,expanded);
     const expected=await page.evaluate(()=>{
       const a=document.querySelector('auth-flow-studio'),step=a.steps.find(step=>a.stepAttributeItems(step).length>=2);
@@ -119,6 +151,7 @@ try{
     for(const id of choices){await heldNativeChoose(page,id);const initial=await heldNativeScene(page,mode+' '+id+' initial');await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.selectStep(a.steps.length-1,false);});const final=await heldNativeScene(page,mode+' '+id+' final');const fingerprint=heldNativeHash(JSON.stringify({initial:{holdings:initial.holdings,state:initial.state},final:{holdings:final.holdings,state:final.state}}));if(mode==='source-http')fingerprints.set(id,fingerprint);else assert.equal(fingerprint,fingerprints.get(id),mode+' source/emitted exact state for '+id);record.scenarios.push({id,initialHoldings:initial.holdings.length,finalHoldings:final.holdings.length,mode:final.mode,fingerprint});}
     for(const width of [1920,1600,1480,1050,390,280]){await page.setViewportSize({width,height:1100});for(const id of ['lab-ad-forest-child-domains','lab-ssh-cert-reissue','lab-ad-fast-as-success'])for(const expanded of [false,true]){await heldNativeChoose(page,id,expanded,true);const scene=await heldNativeScene(page,mode+' '+id+' '+width+'px '+expanded);delete scene.state;delete scene.holdings;record.layouts.push(scene);}if(width===1920||width===1480||width===390)await heldNativeScreenshot(page,mode+'-'+width+'-inventory');}
     for(const geometry of ['full','compact','external'])heldNativeCheck(record.layouts.some(scene=>scene.mode===geometry),mode+' actually exercises '+geometry+' inventory geometry');
+    record.animationSurface=await heldNativeAnimationSurface(page,mode);
     record.stepAttributes=await heldNativeStepAttributes(page,mode);
     await page.setViewportSize({width:1920,height:1200});record.exact=await heldNativeExact(page,mode);
     await heldNativeChoose(page,'lab-ad-forest-child-domains',true,true);const before=await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');return {positions:a.positions,cursor:a.heldView.snapshot().cursor};});await page.locator('#show-held-objects').uncheck();assert.equal(await page.evaluate(()=>document.activeElement.id),'show-held-objects');await page.locator('#show-held-objects').check();assert.deepEqual(await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');return {positions:a.positions,cursor:a.heldView.snapshot().cursor};}),before,mode+' visibility does not reflow or seek');
@@ -126,7 +159,7 @@ try{
     record.browserZoom=[];for(const zoom of [2,4]){await settings.evaluate(zoom=>new Promise(resolve=>chrome.settingsPrivate.setDefaultZoom(zoom,resolve)),zoom);await page.reload({waitUntil:'networkidle'});await heldNativeChoose(page,'lab-ad-forest-child-domains',true,true);const scene=await heldNativeScene(page,mode+' actual browser zoom '+zoom,{routes:true});heldNativeCheck(Math.abs(scene.viewport.width-1920/zoom)<=2,mode+' actual zoom changes CSS layout viewport');heldNativeCheck(scene.viewport.visualScale===1,mode+' browser zoom is not pinch/CSS zoom');delete scene.state;delete scene.holdings;record.browserZoom.push({zoom,zoomIsBrowserUiZoom:true,...scene});}await settings.evaluate(()=>new Promise(resolve=>chrome.settingsPrivate.setDefaultZoom(1,resolve)));await settings.close();await page.reload({waitUntil:'networkidle'});
     await page.emulateMedia({reducedMotion:'reduce'});await heldNativeChoose(page,'lab-dpop');await page.locator('#play').click();await page.waitForFunction(()=>document.querySelector('auth-flow-studio').player.status==='complete');record.reducedMotion={status:'complete',cursor:await page.evaluate(()=>document.querySelector('auth-flow-studio').heldView.snapshot().cursor)};
     assert.deepEqual(errors,[],mode+' runtime errors');assert.deepEqual(await page.evaluate(()=>window.__heldNativeViolations),[],mode+' no application CSP violations');heldNativeCheck(requests.every(url=>mode==='standalone-file'?url===target:url.startsWith(origin+'/')),mode+' no external application requests');
-    record.requests=requests.length;record.checks.push('all picker choices initial/final','source/emitted identity','dense full/compact/external layouts','complete visible step-attribute names and collision-aware fallback','44 CSS pixel targets','route/dock clearance','keyboard exact-object lifecycle','exact R1 replay/full-source equality','visibility reserve','actual browser zoom 200%/400%','reduced motion','CSP/no external requests');
+    record.requests=requests.length;record.checks.push('all picker choices initial/final','source/emitted identity','authored web/native client-server columns','path-following keyboard focus without SVG bounding rectangles','dense full/compact/external layouts','complete visible step-attribute names and collision-aware fallback','44 CSS pixel targets','route/dock clearance','keyboard exact-object lifecycle','exact R1 replay/full-source equality','visibility reserve','actual browser zoom 200%/400%','reduced motion','CSP/no external requests');
     await page.close();await context.unroute('**/*');
   }
   const touchContext=await heldNativeBrowser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true}),touch=await touchContext.newPage();await touch.goto(origin+'/dist/auth-flow-studio.html',{waitUntil:'networkidle'});await touch.locator('#held-objects [data-held-actor]').first().tap();const touchObject=touch.locator('#held-objects [data-holding-id]:visible').first();await touchObject.tap();heldNativeCheck(await touch.locator('#held-inspector').isVisible(),'touch opens exact-object inspector');heldNativeReport.touch={viewport:{width:390,height:844},nativeTouch:true,exactObjectInspector:true};await touchContext.close();

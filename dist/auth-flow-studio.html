@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-ASikW43/trZB8rcR8rcDeilRpWdGze9TIzVdqhQu+u8='; script-src-attr 'none'; style-src 'sha256-e5LLHy6g5bljtxohq/opc7EBNOILfhPLj0Dv8ikqvY4='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-o11if4uY1VHU30InxWH9IgX0NGiIQ14fiL41CgtK3ts='; script-src-attr 'none'; style-src 'sha256-5qfyTg95RSWI2AqA24dkPJAOq1qYHx6AaHRRBEwbRsQ='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="Explore Web sign-in, SSH access and AD DS Kerberos: OAuth, SAML, passkeys, MFA, certificates, Device Flow, PKINIT, FAST and forest trusts in one offline animated lab.">
@@ -211,12 +211,13 @@ summary:focus-visible, [role="button"]:focus-visible {
 [data-channel="local"] { --channel-color: var(--local); --edge-color: var(--local); }
 .connection-line { stroke: var(--edge); stroke-width: 1.7; fill: none; stroke-linecap: round; transition: stroke .2s, stroke-width .2s, opacity .2s; }
 .connection-hit { fill: none; stroke: transparent; stroke-width: 20; pointer-events: stroke; cursor: pointer; }
+.connection-hit:focus-visible { outline: none; }
 .connection-group:hover .connection-line, .connection-group:focus-within .connection-line { stroke: var(--edge-color); stroke-width: 3; }
 .connection-group.is-visited .connection-line { stroke: color-mix(in srgb, var(--edge-color), transparent 52%); }
 .connection-group.is-active .connection-line { stroke: var(--edge-color); stroke-width: 3.2; stroke-dasharray: 8 7; animation: link-flow 1s linear infinite; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--edge-color), transparent 30%)); }
 .connection-group.is-active { z-index: 3; }
-.edge-focus { stroke: var(--edge-color); stroke-width: 8; fill: none; opacity: .08; pointer-events: none; }
-.connection-group:focus-within .edge-focus { opacity: .2; }
+.edge-focus { stroke: var(--focus, #9cafed); stroke-width: 10; fill: none; opacity: 0; pointer-events: none; }
+.connection-group:focus-within .edge-focus { opacity: .35; }
 .arrow-fill.browser { fill: var(--browser); }
 .arrow-fill.server { fill: var(--server); }
 .arrow-fill.passkey { fill: var(--passkey); }
@@ -812,9 +813,10 @@ summary:focus-visible, [role="button"]:focus-visible {
 .held-dock>.held-compartment{display:contents}
 .held-dock h3{font-size:10px;line-height:12px;margin:0;min-width:0;overflow:hidden}
 .held-dock h3 small{font-size:9px;line-height:11px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
-.held-dock .held-object-control,.held-dock .held-summary-control{height:44px;min-height:44px;max-height:44px;min-width:44px;padding:4px 6px;overflow:hidden}
+.held-dock .held-object-control,.held-dock .held-summary-control{height:44px;min-height:44px;max-height:44px;min-width:44px;padding:2px 6px;overflow:hidden}
 .held-dock .held-object-control strong,.held-dock .held-object-control small{display:block;width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.held-dock .held-object-control strong{font-size:11px}
+.held-dock .held-object-control strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;max-height:24px;font-size:11px;line-height:12px;white-space:normal;flex-shrink:0}
+.held-dock .held-object-control small{line-height:12px}
 .graph-canvas[data-held-geometry="full"]{width:1120px;min-width:1120px;height:730px;aspect-ratio:auto;margin-inline:auto}
 .graph-canvas[data-held-geometry="full"] .actor-card{width:164px;height:174px}
 .graph-canvas[data-held-geometry="full"] .packet-chip{width:12px;height:12px;padding:2px;gap:0;border-radius:50%}
@@ -12907,6 +12909,8 @@ return {buildHeldObjects,describeHeldObjectPlan,getHeldObjectManifest};
 const {holdingControlKey,orderedHoldings,holdingSlots,detachedHoldingStatus,fullDockGeometry,compactDockGeometry,HeldObjectView}=(()=>{
 
 
+
+
 const html = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const valueText = value => typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value ?? '');
 const holdingControlKey = holding => JSON.stringify([holding.contextId, holding.actorId, holding.artifactId, holding.representationId, holding.holdingId]);
@@ -12928,14 +12932,41 @@ function detachedHoldingStatus(compiled, snapshot, selection) {
   return 'No longer held';
 }
 
-// A separate fixed grid is used only with independently routed composite bounds.
-// Empty/collapsed cells remain reserved; acquisition and visibility never move actors.
-function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 730, aliases = {}) {
-  if (width < 1120 || height < 730 || actorIds.length > 9 || !actorIds.length) return null;
-  const positions = {}, bounds = {};
-  actorIds.forEach((id,index) => {
-    const x = [104,484,864][index % 3], y = [125,365,605][Math.floor(index / 3)];
-    positions[id] = {x,y}; bounds[id] = {left:x-82,right:x+234,top:y-87,bottom:y+87};
+// Preserve authored columns and vertical order in a centered composite grid.
+// Hidden components keep their cells; inventory changes never move actors.
+function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 730, aliases = {}, referencePositions) {
+  if (width < 1120 || height < 730 || actorIds.length > 9 || !actorIds.length ||
+      actorIds.some(id=>!Number.isFinite(referencePositions?.[id]?.x)||!Number.isFinite(referencePositions?.[id]?.y))) return null;
+  let columns=actorIds.length===1?1:actorIds.length===2||actorIds.length===4?2:3,groups;
+  for(;;){
+    groups=Array.from({length:columns},()=>[]);
+    for(const id of actorIds){
+      const column=Math.max(0,Math.min(columns-1,Math.round((referencePositions[id].x+76)*columns/1120-.5)));
+      groups[column].push(id);
+    }
+    const used=groups.filter(group=>group.length).length;
+    if(used===columns)break;
+    columns=used;
+  }
+  const rows=Math.max(...groups.map(group=>group.length));
+  if(rows>3)return null;
+  const ys=Array.from({length:rows},(_,row)=>Math.round((row+.5)*730/rows)),positions={},bounds={};
+  groups.forEach((group,column)=>{
+    group.sort((a,b)=>referencePositions[a].y-referencePositions[b].y||referencePositions[a].x-referencePositions[b].x||(a<b?-1:a>b?1:0));
+    let bestMask=0,bestCost=Infinity;
+    for(let mask=1;mask<1<<rows;mask++){
+      let index=0,cost=0;
+      for(let row=0;row<rows;row++)if(mask&(1<<row)){
+        if(index===group.length){cost=Infinity;break;}
+        cost+=(ys[row]-referencePositions[group[index++]].y)**2;
+      }
+      if(index===group.length&&cost<bestCost){bestCost=cost;bestMask=mask;}
+    }
+    const x=Math.round((column+.5)*1120/columns-76);let index=0;
+    for(let row=0;row<rows;row++)if(bestMask&(1<<row)){
+      const id=group[index++],y=ys[row];
+      positions[id]={x,y};bounds[id]={left:x-82,right:x+234,top:y-87,bottom:y+87};
+    }
   });
   for(const [id,slot] of Object.entries(aliases))if(positions[slot])positions[id]=positions[slot];
   const visible = Object.fromEntries(visibleIds.filter(id => positions[id]).map(id => [id,positions[id]]));
@@ -12949,7 +12980,7 @@ function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 730, alia
     if (!route) return null;
     routes.set(key,route);
   }
-  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,'316x174-left-top-bottom-v1'])};
+  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-columns-v2'])};
 }
 
 // Compact controls keep fixed final CSS sizes. Only their reserved world-space
@@ -13070,11 +13101,14 @@ class HeldObjectView {
     const pairs=[...app.steps,...(app.hasTrace?app.traceQueue:[])].map(step=>[app.nodeId(step.from),app.nodeId(step.to)]);
     const width=Math.min(rect.width,viewport.width),height=rect.height;
     const compactPositions=Object.fromEntries(visible.map(id=>[id,base[id]]));
-    const signature=JSON.stringify([all,visible,pairs,width>=1120,height>=730,viewport.width,app.moveParticipants,!!app.customLayouts[app.layoutKey],aliases,compactPositions]);
+    const reference=app.scenarioOwnedActors?scenarioPositions(app.labModel,app.steps,actors,true):getPositions(app.architecture);
+    for(const [child,parent] of Object.entries(aliases))if(reference[child])reference[parent]=reference[child];
+    const anchors=Object.fromEntries(all.map(id=>[id,reference[id]||actors[id]?.position]));
+    const signature=JSON.stringify([all,visible,pairs,width>=1120,height>=730,viewport.width,app.moveParticipants,!!app.customLayouts[app.layoutKey],aliases,compactPositions,anchors]);
     if(this.geometrySignature!==signature){
       this.geometrySignature=signature;
       const eligible=!app.moveParticipants&&!app.customLayouts[app.layoutKey];
-      app.heldGeometry=eligible&&visible.every(id=>Object.keys(actors).filter(owner=>app.nodeId(owner)===id).length<=3)?fullDockGeometry(all,visible,pairs,width,height,aliases):null;
+      app.heldGeometry=eligible&&visible.every(id=>Object.keys(actors).filter(owner=>app.nodeId(owner)===id).length<=3)?fullDockGeometry(all,visible,pairs,width,height,aliases,anchors):null;
       if(eligible&&!app.heldGeometry)app.heldGeometry=compactDockGeometry(compactPositions,pairs,viewport.width,viewport.width*730/1120,width);
       if(app.heldGeometry?.mode==='compact'&&app.heldGeometry.key===this.rejectedCompactKey)app.heldGeometry=null;
     }
@@ -13926,7 +13960,7 @@ class AuthFlowStudio extends HTMLElement {
     this.querySelector('#connection-paths').innerHTML=[...pairs.entries()].map(([key,p])=>{
       const label=`Replay ${p.count} ordered exchange${p.count===1?'':'s'} between ${this.actor(p.from).name} and ${this.actor(p.to).name}`;
       const outside=this.hasTrace&&!focusPairs.has(key),d=this.connectionRoute(p.from,p.to);
-      return `<g class="connection-group ${outside?'is-outside-trace':''}" data-pair="${key}" data-channel="${p.channel}"><title>${escapeHtml(label)}</title><path class="connection-line ${p.channel}" d="${d}"/><path class="connection-hit" d="${d}" role="button" tabindex="${outside?-1:0}" aria-label="${escapeHtml(label)}"/></g>`;
+      return `<g class="connection-group ${outside?'is-outside-trace':''}" data-pair="${key}" data-channel="${p.channel}"><title>${escapeHtml(label)}</title><path class="edge-focus" d="${d}" aria-hidden="true"/><path class="connection-line ${p.channel}" d="${d}"/><path class="connection-hit" d="${d}" role="button" tabindex="${outside?-1:0}" aria-label="${escapeHtml(label)}"/></g>`;
     }).join('');
   }
   renderTimeline() {

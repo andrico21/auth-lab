@@ -722,7 +722,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.querySelector('#connection-paths').innerHTML=[...pairs.entries()].map(([key,p])=>{
       const label=`Replay ${p.count} ordered exchange${p.count===1?'':'s'} between ${this.actor(p.from).name} and ${this.actor(p.to).name}`;
       const outside=this.hasTrace&&!focusPairs.has(key),d=this.connectionRoute(p.from,p.to);
-      return `<g class="connection-group ${outside?'is-outside-trace':''}" data-pair="${key}" data-channel="${p.channel}"><title>${escapeHtml(label)}</title><path class="connection-line ${p.channel}" d="${d}"/><path class="connection-hit" d="${d}" role="button" tabindex="${outside?-1:0}" aria-label="${escapeHtml(label)}"/></g>`;
+      return `<g class="connection-group ${outside?'is-outside-trace':''}" data-pair="${key}" data-channel="${p.channel}"><title>${escapeHtml(label)}</title><path class="edge-focus" d="${d}" aria-hidden="true"/><path class="connection-line ${p.channel}" d="${d}"/><path class="connection-hit" d="${d}" role="button" tabindex="${outside?-1:0}" aria-label="${escapeHtml(label)}"/></g>`;
     }).join('');
   }
   renderTimeline() {

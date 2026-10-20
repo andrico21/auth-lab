@@ -202,12 +202,13 @@ summary:focus-visible, [role="button"]:focus-visible {
 [data-channel="local"] { --channel-color: var(--local); --edge-color: var(--local); }
 .connection-line { stroke: var(--edge); stroke-width: 1.7; fill: none; stroke-linecap: round; transition: stroke .2s, stroke-width .2s, opacity .2s; }
 .connection-hit { fill: none; stroke: transparent; stroke-width: 20; pointer-events: stroke; cursor: pointer; }
+.connection-hit:focus-visible { outline: none; }
 .connection-group:hover .connection-line, .connection-group:focus-within .connection-line { stroke: var(--edge-color); stroke-width: 3; }
 .connection-group.is-visited .connection-line { stroke: color-mix(in srgb, var(--edge-color), transparent 52%); }
 .connection-group.is-active .connection-line { stroke: var(--edge-color); stroke-width: 3.2; stroke-dasharray: 8 7; animation: link-flow 1s linear infinite; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--edge-color), transparent 30%)); }
 .connection-group.is-active { z-index: 3; }
-.edge-focus { stroke: var(--edge-color); stroke-width: 8; fill: none; opacity: .08; pointer-events: none; }
-.connection-group:focus-within .edge-focus { opacity: .2; }
+.edge-focus { stroke: var(--focus, #9cafed); stroke-width: 10; fill: none; opacity: 0; pointer-events: none; }
+.connection-group:focus-within .edge-focus { opacity: .35; }
 .arrow-fill.browser { fill: var(--browser); }
 .arrow-fill.server { fill: var(--server); }
 .arrow-fill.passkey { fill: var(--passkey); }
@@ -803,9 +804,10 @@ summary:focus-visible, [role="button"]:focus-visible {
 .held-dock>.held-compartment{display:contents}
 .held-dock h3{font-size:10px;line-height:12px;margin:0;min-width:0;overflow:hidden}
 .held-dock h3 small{font-size:9px;line-height:11px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
-.held-dock .held-object-control,.held-dock .held-summary-control{height:44px;min-height:44px;max-height:44px;min-width:44px;padding:4px 6px;overflow:hidden}
+.held-dock .held-object-control,.held-dock .held-summary-control{height:44px;min-height:44px;max-height:44px;min-width:44px;padding:2px 6px;overflow:hidden}
 .held-dock .held-object-control strong,.held-dock .held-object-control small{display:block;width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.held-dock .held-object-control strong{font-size:11px}
+.held-dock .held-object-control strong{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;max-height:24px;font-size:11px;line-height:12px;white-space:normal;flex-shrink:0}
+.held-dock .held-object-control small{line-height:12px}
 .graph-canvas[data-held-geometry="full"]{width:1120px;min-width:1120px;height:730px;aspect-ratio:auto;margin-inline:auto}
 .graph-canvas[data-held-geometry="full"] .actor-card{width:164px;height:174px}
 .graph-canvas[data-held-geometry="full"] .packet-chip{width:12px;height:12px;padding:2px;gap:0;border-radius:50%}

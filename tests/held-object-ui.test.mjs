@@ -50,18 +50,46 @@ test('exact control identity, ordering and overflow pinning never merge equal at
 
 test('full docks have independent composite geometry, actor ports and reserved collapsed cells',()=>{
   const actors=['person','workstation','home','rootA','rootB','resource','service'];
+  const anchors=Object.fromEntries(actors.map((id,index)=>[id,{x:[145,560,975][index%3],y:[120,365,610][Math.floor(index/3)]}]));
   const pairs=actors.flatMap((id,index)=>[[id,id],[id,actors[(index+1)%actors.length]]]);
-  const full=fullDockGeometry(actors,actors,pairs,1120,730);
+  const full=fullDockGeometry(actors,actors,pairs,1120,730,{},anchors);
   assert.ok(full,'dense forest topology has a valid full dock mode');
   for(const bounds of Object.values(full.bounds)){assert.equal(bounds.right-bounds.left,316);assert.equal(bounds.bottom-bounds.top,174);assert.ok(bounds.left>=22&&bounds.right<=1098);}
-  assert.ok(full.routes.get('person>person').startsWith('M 22 125'),'self route starts on actor left, not its dock');
-  const collapsed=fullDockGeometry(['cli','agent','browser'],['cli','browser'],[['cli','browser']],1120,730);
-  const expanded=fullDockGeometry(['cli','agent','browser'],['cli','agent','browser'],[['cli','browser']],1120,730);
+  const start=full.routes.get('person>person').match(/^M ([\d.-]+) ([\d.-]+)/).slice(1).map(Number),person=full.positions.person;
+  assert.ok(Math.abs(Math.abs(start[0]-person.x)-82)<1e-6&&Math.abs(start[1]-person.y)<=87||Math.abs(Math.abs(start[1]-person.y)-87)<1e-6&&Math.abs(start[0]-person.x)<=82,'self route starts on the actor perimeter, not its inventory');
+  const childAnchors={cli:{x:145,y:120},agent:{x:145,y:610},browser:{x:975,y:120}};
+  const collapsed=fullDockGeometry(['cli','agent','browser'],['cli','browser'],[['cli','browser']],1120,730,{},childAnchors);
+  const expanded=fullDockGeometry(['cli','agent','browser'],['cli','agent','browser'],[['cli','browser']],1120,730,{},childAnchors);
   assert.deepEqual(collapsed.positions.cli,expanded.positions.cli);
   assert.deepEqual(collapsed.bounds.agent,expanded.bounds.agent);
-  assert.equal(fullDockGeometry(actors,actors,pairs,1119,730),null,'narrow final CSS box uses external controls');
-  assert.equal(fullDockGeometry(actors,actors,pairs,1120,729),null);
-  assert.equal(fullDockGeometry([...actors,'eight','nine','ten'],actors,pairs,1120,730),null);
+  assert.equal(fullDockGeometry(actors,actors,pairs,1119,730,{},anchors),null,'narrow final CSS box uses external controls');
+  assert.equal(fullDockGeometry(actors,actors,pairs,1120,729,{},anchors),null);
+  assert.equal(fullDockGeometry([...actors,'eight','nine','ten'],actors,pairs,1120,730,{},anchors),null);
+});
+
+test('full docks preserve authored client/server topology independently of registry order',()=>{
+  const anchors={user:{x:125,y:130},browser:{x:440,y:265},app:{x:820,y:605},realmA:{x:820,y:170}};
+  const actors=Object.keys(anchors),pairs=[['user','browser'],['browser','realmA'],['browser','app'],['app','realmA']];
+  const full=fullDockGeometry(actors,actors,pairs,1120,730,{},anchors);
+  assert.ok(full);
+  assert.equal(full.positions.user.x,full.positions.browser.x,'person and browser remain in the client column');
+  assert.equal(full.positions.realmA.x,full.positions.app.x,'issuer and application remain in the server column');
+  assert.ok(full.positions.user.x<full.positions.realmA.x,'client-to-server direction is preserved');
+  assert.ok(full.positions.user.y<full.positions.browser.y);
+  assert.ok(full.positions.realmA.y<full.positions.app.y);
+  const reordered=fullDockGeometry([...actors].reverse(),actors,pairs,1120,730,{},anchors);
+  assert.deepEqual(reordered.positions,full.positions,'registry order cannot determine the protocol diagram');
+});
+
+test('full docks do not move a third client participant into the issuer column',()=>{
+  const anchors={user:{x:125,y:130},app:{x:170,y:380},browser:{x:440,y:265},realmA:{x:820,y:170}};
+  const actors=Object.keys(anchors),pairs=[['user','browser'],['browser','realmA'],['browser','app'],['app','realmA']];
+  const full=fullDockGeometry(actors,actors,pairs,1120,730,{},anchors);
+  assert.ok(full);
+  assert.equal(full.positions.user.x,full.positions.app.x);
+  assert.equal(full.positions.browser.x,full.positions.app.x,'the browser remains with the native client');
+  assert.ok(full.positions.realmA.x>full.positions.browser.x);
+  assert.ok(full.positions.user.y<full.positions.browser.y&&full.positions.browser.y<full.positions.app.y);
 });
 
 test('initial UI shows seeded holdings, explicit complete-empty and no future creation',()=>{

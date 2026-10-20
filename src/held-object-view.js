@@ -1,5 +1,7 @@
 import { buildHeldObjects } from './held-objects.js';
 import { projectHeldObjects, inspectHeldObject, heldObjectTrace, heldCursorForPlayback } from './held-object-state.js';
+import { getPositions } from './layout.js';
+import { scenarioPositions } from './workspaces.js';
 
 const html = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const valueText = value => typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value ?? '');
@@ -22,14 +24,41 @@ export function detachedHoldingStatus(compiled, snapshot, selection) {
   return 'No longer held';
 }
 
-// A separate fixed grid is used only with independently routed composite bounds.
-// Empty/collapsed cells remain reserved; acquisition and visibility never move actors.
-export function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 730, aliases = {}) {
-  if (width < 1120 || height < 730 || actorIds.length > 9 || !actorIds.length) return null;
-  const positions = {}, bounds = {};
-  actorIds.forEach((id,index) => {
-    const x = [104,484,864][index % 3], y = [125,365,605][Math.floor(index / 3)];
-    positions[id] = {x,y}; bounds[id] = {left:x-82,right:x+234,top:y-87,bottom:y+87};
+// Preserve authored columns and vertical order in a centered composite grid.
+// Hidden components keep their cells; inventory changes never move actors.
+export function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 730, aliases = {}, referencePositions) {
+  if (width < 1120 || height < 730 || actorIds.length > 9 || !actorIds.length ||
+      actorIds.some(id=>!Number.isFinite(referencePositions?.[id]?.x)||!Number.isFinite(referencePositions?.[id]?.y))) return null;
+  let columns=actorIds.length===1?1:actorIds.length===2||actorIds.length===4?2:3,groups;
+  for(;;){
+    groups=Array.from({length:columns},()=>[]);
+    for(const id of actorIds){
+      const column=Math.max(0,Math.min(columns-1,Math.round((referencePositions[id].x+76)*columns/1120-.5)));
+      groups[column].push(id);
+    }
+    const used=groups.filter(group=>group.length).length;
+    if(used===columns)break;
+    columns=used;
+  }
+  const rows=Math.max(...groups.map(group=>group.length));
+  if(rows>3)return null;
+  const ys=Array.from({length:rows},(_,row)=>Math.round((row+.5)*730/rows)),positions={},bounds={};
+  groups.forEach((group,column)=>{
+    group.sort((a,b)=>referencePositions[a].y-referencePositions[b].y||referencePositions[a].x-referencePositions[b].x||(a<b?-1:a>b?1:0));
+    let bestMask=0,bestCost=Infinity;
+    for(let mask=1;mask<1<<rows;mask++){
+      let index=0,cost=0;
+      for(let row=0;row<rows;row++)if(mask&(1<<row)){
+        if(index===group.length){cost=Infinity;break;}
+        cost+=(ys[row]-referencePositions[group[index++]].y)**2;
+      }
+      if(index===group.length&&cost<bestCost){bestCost=cost;bestMask=mask;}
+    }
+    const x=Math.round((column+.5)*1120/columns-76);let index=0;
+    for(let row=0;row<rows;row++)if(bestMask&(1<<row)){
+      const id=group[index++],y=ys[row];
+      positions[id]={x,y};bounds[id]={left:x-82,right:x+234,top:y-87,bottom:y+87};
+    }
   });
   for(const [id,slot] of Object.entries(aliases))if(positions[slot])positions[id]=positions[slot];
   const visible = Object.fromEntries(visibleIds.filter(id => positions[id]).map(id => [id,positions[id]]));
@@ -43,7 +72,7 @@ export function fullDockGeometry(actorIds, visibleIds, pairs, width, height = 73
     if (!route) return null;
     routes.set(key,route);
   }
-  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,'316x174-left-top-bottom-v1'])};
+  return {mode:'full',positions:visible,bounds,routes,key:JSON.stringify([actorIds,visibleIds,pairs,aliases,referencePositions,'316x174-authored-columns-v2'])};
 }
 
 // Compact controls keep fixed final CSS sizes. Only their reserved world-space
@@ -164,11 +193,14 @@ export class HeldObjectView {
     const pairs=[...app.steps,...(app.hasTrace?app.traceQueue:[])].map(step=>[app.nodeId(step.from),app.nodeId(step.to)]);
     const width=Math.min(rect.width,viewport.width),height=rect.height;
     const compactPositions=Object.fromEntries(visible.map(id=>[id,base[id]]));
-    const signature=JSON.stringify([all,visible,pairs,width>=1120,height>=730,viewport.width,app.moveParticipants,!!app.customLayouts[app.layoutKey],aliases,compactPositions]);
+    const reference=app.scenarioOwnedActors?scenarioPositions(app.labModel,app.steps,actors,true):getPositions(app.architecture);
+    for(const [child,parent] of Object.entries(aliases))if(reference[child])reference[parent]=reference[child];
+    const anchors=Object.fromEntries(all.map(id=>[id,reference[id]||actors[id]?.position]));
+    const signature=JSON.stringify([all,visible,pairs,width>=1120,height>=730,viewport.width,app.moveParticipants,!!app.customLayouts[app.layoutKey],aliases,compactPositions,anchors]);
     if(this.geometrySignature!==signature){
       this.geometrySignature=signature;
       const eligible=!app.moveParticipants&&!app.customLayouts[app.layoutKey];
-      app.heldGeometry=eligible&&visible.every(id=>Object.keys(actors).filter(owner=>app.nodeId(owner)===id).length<=3)?fullDockGeometry(all,visible,pairs,width,height,aliases):null;
+      app.heldGeometry=eligible&&visible.every(id=>Object.keys(actors).filter(owner=>app.nodeId(owner)===id).length<=3)?fullDockGeometry(all,visible,pairs,width,height,aliases,anchors):null;
       if(eligible&&!app.heldGeometry)app.heldGeometry=compactDockGeometry(compactPositions,pairs,viewport.width,viewport.width*730/1120,width);
       if(app.heldGeometry?.mode==='compact'&&app.heldGeometry.key===this.rejectedCompactKey)app.heldGeometry=null;
     }

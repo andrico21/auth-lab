@@ -48,13 +48,17 @@ Ordering uses initial display order, acquisition ordinal and holding ID. Overflo
 
 ## Conditional geometry
 
-- Full mode: a measured map of at least 1120x730 CSS pixels and independently valid routes uses fixed 316x174 composites with a 164-unit actor, 8-unit gap and 144-unit dock. Three slots mean either three holdings or two holdings plus overflow. Folded logical owners retain separate compartments. Obsolete device/server zones are hidden in this revised grid.
+- Full mode: a measured map of at least 1120x730 CSS pixels and independently valid routes uses fixed 316x174 composites with a 164-unit actor, 8-unit gap and 144-unit dock. Reference positions determine participant columns and vertical order; column populations reserve at most three rows, rather than placing actors in registry order. Three slots mean either three holdings or two holdings plus overflow. Folded logical owners retain separate compartments. Obsolete device/server zones are hidden in this revised grid.
 - Compact mode: a measured canvas/viewport of at least 960 CSS pixels, valid reserved envelopes and routes uses final-CSS 82x132 actor buttons plus a 6-pixel gap and 44x44 sibling summary. The 140x140 content stays within the reserved envelope; ports use the actual transformed actor bounds.
 - External mode: narrow views, invalid composite routes/bounds, supported movement or custom layouts use the independently valid base map and an accessible logical-owner list. A fallback never repairs or conceals invalid actor geometry.
 
-Visibility and individual acquisitions do not reflow actors. Responsive mode changes can recompute the approved layout once. Geometry and transformed bounds participate in route/cache identity. Logical AS/TGS and CLI/agent owners are never reassigned to the visual parent. Reduced motion uses the same semantic commits without packet-frame animation.
+Visibility and individual acquisitions do not reflow actors. Responsive mode changes can recompute the reference-derived layout once. Geometry and transformed bounds participate in route/cache identity. Logical AS/TGS and CLI/agent owners are never reassigned to the visual parent. Reduced motion uses the same semantic commits without packet-frame animation.
 
 The checked **Show step attributes** control continues to expose the complete names-only set in full, compact and external inventory modes. Placement avoids entire reserved actor/inventory composites, not just actor centers. If no panel-sized region is free, the same named group moves below the map; it is never silently hidden or replaced by the single current packet field. Keyboard-focused help is remeasured after its `:focus-within` hint appears, including nested F2 help, so the extra text does not push the panel past the viewport.
+
+The animation-area correction keeps the basic web person's/browser's column separate from the issuer/backend column. The native-client variation keeps the person, browser and local application together instead of pushing the third client into an issuer cell. Missing reference positions or overfull columns decline full mode instead of inventing a placement. Docked names wrap to two lines within the unchanged 44-pixel targets.
+
+Connection keyboard focus uses a visible halo along the actual SVG path. The global rectangular outline is suppressed only on connection hit paths; other controls retain their normal focus rings. A path's bounding box is not a connector and must never appear as a rectangle through actor cards or inventories.
 
 ## Observed verification
 

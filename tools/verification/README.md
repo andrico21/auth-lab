@@ -100,6 +100,8 @@ Playwright and Chromium are optional external QA tooling, not application depend
 
 Native checks cover modular source HTTP, standalone HTTP and standalone `file://`; initial/final inventories for every choice; dense folded/expanded full/compact/external layouts; actor/dock routes; final rendered target sizes; complete visible step-attribute names and collision-aware fallback; exact-object keyboard lifecycle and R1 replay/full-source equality; touch; reduced motion; source/emitted state equality; and no external application requests or unexpected CSP violations. The 1480-pixel desktop case exercises the measured compact range; every loading mode must actually produce full, compact and external geometry.
 
+Animation-area cases additionally exercise the paused username/password exchange in the basic web and native-client configurations, compact desktop and narrow external layouts. They check actual participant-column relationships, visible complete step names, path-following focus without an SVG bounding rectangle, and preservation of the complete canonical snapshot. Route clearance includes compact summary bounds. Captures center the map using ordinary scrolling; narrow captures show the actual scroll viewport, not the offscreen full-width canvas.
+
 ### Focused native and delivered-file reports
 
 ```sh
@@ -117,7 +119,7 @@ The regression and focused runners accept `[project-directory]`; the file runner
 
 New reports/screenshots default to `docs/verification/held-objects/`; set `AUTH_LAB_HELD_EVIDENCE_DIR` to redirect them. The preserved broader runner uses `AUTH_LAB_QA_EVIDENCE_DIR`. Its accepted long-realm fixture is 244 characters; the separate 364-character rejection/recovery case retains G01-A's same-task atomicity probe. Hover fixtures leave the previous actor, reveal an unobstructed point below sticky controls, verify it with `elementFromPoint`, then send a genuine pointer move. This avoids the SDK retrying after an interactive help panel legitimately covers its trigger. No forced hover or synthetic mouse event substitutes for the user gesture.
 
-Source control retains the eight representative native captures included in the source ZIP. `.gitignore` excludes other held-object PNG captures and the four named superseded reports; they remain on disk and in the separate full verification archive. Current status reports, manifests and regression logs remain in the source package.
+Source control retains the ten representative native captures included in the source ZIP, including the repaired basic web/native animation surfaces. `.gitignore` excludes other held-object PNG captures and the four named superseded reports; they remain on disk and in the separate full verification archive. Current status reports, manifests and regression logs remain in the source package.
 
 The help panels are non-modal: Tab can leave a panel whose only control is Close. After verifying that exit, the runner focuses the actor and presses F2 again before testing Escape. It never tries to focus a now-hidden Close control or depends on completing the sequence before the blur timeout.
 
