@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {installHarness,HarnessEvent} from './dom-harness.mjs';
+import {WEBLAB_SCENARIOS} from '../src/web-api-lab.js';
+import {inspectHeldObject} from '../src/held-object-state.js';
 
 // These exercise actual application handlers and readable DOM values. Native
 // layout, Tab order and CSP enforcement remain the separate browser gate.
@@ -115,5 +117,77 @@ test('F19/G01: collapsing a keyboard-owned internal component returns focus to t
     toggle.checked=false;toggle.dispatchEvent(new HarnessEvent('change'));
     assert.equal(document.activeElement,toggle);
     assert.deepEqual(app.protocolSnapshot().state,before);
+  }finally{dispose(app);}
+});
+
+for(const [scenario,prefix,client,cleanup] of [
+  ['lab-spa-api','web-spa','browser','web-spa-identity'],
+  ['lab-bff-api','web-bff','app','web-bff-session-create'],
+]) test('HC03: mounted '+scenario+' exact token-request replay renders the authored verifier for realmA',()=>{
+  const app=mount();try{
+    app.selectLabScenario(scenario);
+    const model=WEBLAB_SCENARIOS.find(item=>item.id===scenario);
+    const expected=model.definitions({}).webVerifier.example;
+    const sourceRequest=app.steps.find(step=>step.id===prefix+'-token-request');
+    assert.equal(sourceRequest.payload.find(field=>field.attributeId==='webVerifier').value,expected);
+    const prepare=app.steps.findIndex(step=>step.id===prefix+'-prepare');
+    const cleanupIndex=app.steps.findIndex(step=>step.id===cleanup);
+    let senderId;
+    for(const [index,step] of app.steps.entries()){
+      app.selectStep(index,false);
+      const snapshot=app.heldView.snapshot();
+      const verifierHoldings=snapshot.holdings.filter(item=>item.artifactId==='web-verifier');
+      assert.equal(verifierHoldings.some(item=>item.actorId==='realmA'),false,step.id+': no server copy before delivery or after atomic request');
+      const sender=verifierHoldings.filter(item=>item.actorId===client);
+      assert.equal(sender.length,index>=prepare&&index<cleanupIndex?1:0,step.id+': normal sender lifecycle');
+      if(sender.length){
+        senderId??=sender[0].holdingId;
+        assert.equal(sender[0].holdingId,senderId);
+        const inspection=inspectHeldObject(snapshot,senderId);
+        assert.equal(inspection.representation.readable,true);
+        assert.equal(inspection.fields.find(field=>field.attributeId==='webVerifier').value,expected);
+      }
+      if(client==='app')assert.equal(verifierHoldings.some(item=>item.actorId==='browser'),false,step.id+': BFF verifier is never browser-owned');
+    }
+    app.selectStep(prepare,false);
+    const sender=app.heldView.snapshot().holdings.find(item=>item.holdingId===senderId);
+    app.heldView.select(sender);
+    const replay=app.querySelector('[data-held-trace="web-verifier"]');
+    assert.ok(replay,'the real exact-object inspector exposes its replay action');
+    replay.click();app.player.pause();
+    assert.equal(app.objectTraceSelection,'web-verifier');
+    assert.equal(app.player.kind,'object');
+    const queue=app.player.queue;
+    const requestRows=queue.filter(row=>row.sourceStepId===sourceRequest.id);
+    assert.equal(requestRows.length,1);
+    const request=requestRows[0];
+    assert.equal(request.inspectionActorId,'realmA');
+    assert.equal(request.to,'realmA');
+    assert.equal(request.from,client);
+    for(const [index,row] of queue.entries()){
+      assert.equal(row.artifactId,'web-verifier');
+      assert.ok([client,'realmA'].includes(row.inspectionActorId),row.sourceStepId+': BFF browser never inspects the verifier');
+      const fieldIndex=row.payload.findIndex(field=>field.attributeId==='webVerifier');
+      assert.ok(fieldIndex>=0);
+      assert.equal(row.payload[fieldIndex].value,expected);
+      assert.equal(row.payload[fieldIndex].redacted,undefined);
+      app.selectStep(index,false);
+      assert.equal(app.currentStep.id,row.id);
+      const rendered=app.refs.inspector.querySelectorAll('.payload-row')[fieldIndex];
+      assert.ok(rendered,row.sourceStepId);
+      assert.equal(rendered.querySelector('.field-value').textContent,expected,row.sourceStepId+': actual inspector value, not a selector-derived oracle');
+      const snapshot=app.heldView.snapshot();
+      assert.deepEqual(snapshot.cursor,row.heldCursorEnd);
+      assert.equal(snapshot.holdings.some(item=>item.actorId==='realmA'&&item.artifactId==='web-verifier'),false);
+      if(row===request){
+        assert.equal(inspectHeldObject(snapshot,row.holdingId),null,'historical request receipt is not a persistent server holding');
+        assert.equal(snapshot.holdings.some(item=>item.holdingId===senderId),true,'atomic delivery retains original sender until identity cleanup');
+      }
+      if(client==='app'){
+        assert.equal(snapshot.holdings.some(item=>item.actorId==='browser'&&item.artifactId==='web-verifier'),false);
+        const artifact=snapshot.artifacts.find(item=>item.artifactId==='web-verifier');
+        for(const rep of artifact.representations)assert.equal(rep.readableBy.includes('browser'),false);
+      }
+    }
   }finally{dispose(app);}
 });

@@ -547,6 +547,93 @@ async function heldNativeRepresentations(page,mode){
   assert.deepEqual(records[0].samples.map(s=>s.holdings),records[1].samples.map(s=>s.holdings),mode+' representation selection never changes canonical holdings');
   return {fixture,records};
 }
+// HC03: the atomic request copy is selectable through the client's history,
+// not a fabricated completed-state server holding.
+async function heldNativeVerifierReplay(page,mode){
+  const records=[];
+  for(const [id,prefix,client]of [['lab-spa-api','web-spa','browser'],['lab-bff-api','web-bff','app']]){
+    await page.setViewportSize({width:1920,height:1200});await heldNativeChoose(page,id);
+    const fixture=await page.evaluate(({prefix,client})=>{
+      const a=document.querySelector('auth-flow-studio'),compiled=a.heldView.compiled();
+      const representation=compiled.plan.artifacts.find(o=>o.artifactId==='web-verifier').representations.find(r=>r.representationId==='plain');
+      const authored=representation.fields.find(f=>f.attributeId==='webVerifier').value;
+      const source=a.steps.find(s=>s.id===prefix+'-token-request');
+      const boundaries=[],journey=[];
+      const canonical=()=>a.heldView.snapshot();
+      for(let index=0;index<a.steps.length;index++){
+        a.selectStep(index,false);const s=a.heldView.snapshot();
+        journey.push({sourceEventId:a.steps[index].id,cursor:s.cursor,verifierOwners:s.holdings.filter(h=>h.artifactId==='web-verifier').map(h=>h.actorId)});
+      }
+      for(const [label,fraction]of [['pre-delivery',0],['after-atomic-copy',1]]){
+        a.player.seek([source],fraction,'demo');boundaries.push({label,canonical:canonical()});
+      }
+      a.selectStep(a.steps.findIndex(s=>s.id===prefix+'-prepare'),false);
+      const holding=a.heldView.snapshot().holdings.find(h=>h.actorId===client&&h.artifactId==='web-verifier');
+      return {sourceEventId:source.id,authored,readableBy:representation.readableBy,holding,boundaries,journey};
+    },{prefix,client});
+    assert.equal(typeof fixture.authored,'string',mode+' authored verifier exists');
+    assert.deepEqual(new Set(fixture.readableBy),new Set([client,'realmA']),mode+' explicit verifier readers, independent of defaults');
+    assert.ok(fixture.holding,mode+' client owns prepared verifier');
+    for(const boundary of fixture.boundaries)assert.equal(boundary.canonical.holdings.some(h=>h.artifactId==='web-verifier'&&h.actorId==='realmA'),false,mode+' '+boundary.label+' no server verifier holding');
+    if(client==='app')assert.ok(fixture.journey.every(s=>!s.verifierOwners.includes('browser')),mode+' BFF browser never acquires verifier at any completed source event');
+    await page.locator('#held-objects .held-actor-picker [data-held-actor='+JSON.stringify(client)+']').click();
+    await page.locator('#held-objects [data-holding-id='+JSON.stringify(fixture.holding.holdingId)+']').click();
+    const clientInspection=await page.locator('#held-inspector').textContent();
+    assert.ok(clientInspection.includes(fixture.authored),mode+' legitimate client reads its prepared verifier');
+    await page.locator('#held-inspector [data-held-trace]').click();
+    await page.evaluate(()=>document.querySelector('auth-flow-studio').player.pause());
+    const occurrence=await page.evaluate(sourceId=>{
+      const a=document.querySelector('auth-flow-studio');
+      const index=a.traceQueue.findIndex(r=>r.sourceStepId===sourceId&&r.inspectionActorId==='realmA'&&r.payload.some(f=>f.attributeId==='webVerifier'));
+      if(index<0)throw new Error('Missing token-endpoint verifier occurrence');
+      return {index,row:a.traceQueue[index],browserOccurrences:a.traceQueue.filter(r=>r.inspectionActorId==='browser').map(r=>({sourceEventId:r.sourceStepId,payload:r.payload}))};
+    },fixture.sourceEventId);
+    const field=occurrence.row.payload.find(f=>f.attributeId==='webVerifier');
+    assert.equal(field.value,fixture.authored,mode+' realmA exact request queue retains authored verifier');
+    assert.notEqual(field.redacted,true,mode+' realmA verifier queue is not redacted');
+    if(client==='app')assert.deepEqual(occurrence.browserOccurrences,[],mode+' BFF verifier trace never grants browser inspection');
+    else assert.ok(occurrence.browserOccurrences.some(r=>r.payload.some(f=>f.attributeId==='webVerifier'&&f.value===fixture.authored&&!f.redacted)),mode+' SPA browser remains a readable verifier occurrence');
+    await page.locator('#timeline [data-step="'+occurrence.index+'"]').click();
+    await page.evaluate(()=>document.querySelector('auth-flow-studio').player.pause());
+    const observed=await page.evaluate(index=>{
+      const a=document.querySelector('auth-flow-studio'),row=a.traceQueue[index];
+      const canonical=()=>a.heldView.snapshot();
+      const boundaries=[0,1].map(fraction=>{a.player.seek([row],fraction,'object');return canonical();});
+      const packetIndex=row.payload.findIndex(f=>f.attributeId==='webVerifier'),count=Math.max(1,row.payload.length),duration=a.player.totalDuration([row]),timing=a.player.getTiming?.(row,'object'),message=timing?.messages?.[0];
+      if(packetIndex<0)throw new Error('The request occurrence has no authored verifier field');
+      const start=message?(message.start-timing.start)/(timing.end-timing.start):0,end=message?(message.end-timing.start)/(timing.end-timing.start):1,scale=message?Math.min(1,(end-start)*duration/(380+(count-1)*1290+1050)):1;
+      const fraction=start+(380+packetIndex*1290+1050*.5)*scale/duration;
+      a.player.seek([row],fraction,'object');
+      const sample=a.player.snapshot();
+      if(sample.packetIndex!==packetIndex||!sample.visible)throw new Error('The authored verifier sample must be visible');
+      return {sourceEventId:row.sourceStepId,inspectionActorId:row.inspectionActorId,rowId:row.id,boundaries,cursor:a.heldView.snapshot().cursor,packetVisible:!a.refs.packet.hidden,packetName:a.refs['packet-name'].textContent,packetValue:a.refs['packet-value'].textContent,activeMessage:a.querySelector('#held-active-message').textContent,displayedFields:[...a.refs.inspector.querySelectorAll('.field-value')].map(e=>e.textContent)};
+    },occurrence.index);
+    assert.equal(observed.sourceEventId,fixture.sourceEventId);assert.equal(observed.inspectionActorId,'realmA');
+    assert.deepEqual(observed.boundaries,fixture.boundaries.map(b=>b.canonical),mode+' exact replay canonical cursors/state equal original request before and after atomic delivery');
+    assert.equal(observed.packetVisible,true,mode+' verifier packet is genuinely visible');
+    assert.ok(observed.displayedFields.includes(fixture.authored),mode+' rendered request payload shows full authored verifier');
+    assert.ok(observed.activeMessage.includes(fixture.authored),mode+' rendered active packet contains full authored verifier');
+    const packetPrefix=observed.packetValue.replace(/…$/,'');
+    assert.ok(packetPrefix.length&&fixture.authored.startsWith(packetPrefix),mode+' visible packet label matches authored verifier, not redaction');
+    let screenshot=null;
+    if(mode==='source-http'){
+      await page.mouse.move(0,0);
+      const payload=page.locator('#inspector .field-value').filter({hasText:fixture.authored});
+      await payload.scrollIntoViewIfNeeded();
+      observed.camera=await payload.evaluate(element=>{
+        const r=element.getBoundingClientRect(),x=(r.left+r.right)/2,y=(r.top+r.bottom)/2,hit=document.elementFromPoint(x,y);
+        const packet=document.querySelector('#packet'),p=packet.getBoundingClientRect();
+        return {payloadBounds:{left:r.left,right:r.right,top:r.top,bottom:r.bottom},payloadExposed:x>=0&&x<innerWidth&&y>=0&&y<innerHeight&&!!hit&&(hit===element||element.contains(hit)),packetRendered:!packet.hidden,packetBounds:{left:p.left,right:p.right,top:p.top,bottom:p.bottom},viewport:{width:innerWidth,height:innerHeight},scroll:{x:scrollX,y:scrollY}};
+      });
+      assert.equal(observed.camera.payloadExposed,true,mode+' HC03 captured authored inspector field is visible and unoccluded');
+      assert.equal(observed.camera.packetRendered,true,mode+' HC03 capture retains a real visible packet sample');
+      screenshot=mode+'-'+prefix+'-verifier-realmA-exact-request.png';
+      await page.screenshot({path:path.join(heldNativeOutput,screenshot),fullPage:false});heldNativeReport.screenshots.push(screenshot);
+    }
+    records.push({id,client,selectedHoldingId:fixture.holding.holdingId,readableBy:fixture.readableBy,authoredValue:fixture.authored,authoredSha256:heldNativeHash(fixture.authored),observedValue:field.value,observedSha256:heldNativeHash(field.value),boundaries:fixture.boundaries,journey:fixture.journey,clientReadable:true,bffBrowserExcluded:client==='app'?true:null,canonicalCursorEquality:true,...observed,screenshot});
+  }
+  return records;
+}
 async function heldNativeBoundaries(page,mode){
   const records=[];
   for(const suffix of ['request','response'])for(const replay of ['full','connection','exact'])for(const speed of [.5,1,4]){
@@ -698,6 +785,8 @@ try{
     record.code1.boundaries=await heldNativeBoundaries(page,mode);
     record.code1.ownersAndFocus=await heldNativeOwnersAndFocus(page,mode);
     record.code1.actionFocus=await heldNativeActionFocus(page,mode);
+    record.hc03Verifier=await heldNativeVerifierReplay(page,mode);
+    record.checks.push('HC03 SPA/BFF actual client selection and exact token-request replay: realmA authored verifier queue/payload/visible packet, canonical before/after atomic ownership, SPA client readability and BFF browser exclusion');
     record.checks.push('HC01 rendered encrypted/decoded occurrence values from both selections','HC02 authored receipt boundaries across full/connection/exact replay, payload sizes and speeds','HC08 repeated owner return complete lists in full/compact','HC09 exact holding and non-holding action+region redraw focus, repeated merged/compact/overflow/picker return and separate resize/removal/collapse fallbacks');
     record.localProcessing=await heldNativeLocalProcessing(page,mode);record.checks.push('Actual PKCE, AD/FAST and SSH CLI/agent local fields across full/compact/external and internal folding; fixed local midpoint, no directional flow, exact field/control/canonical state, painted stroke/focus/glyph clearance, and folded SSH IPC motion/direction');
     // Start the catalog sweep from a fresh configuration, retaining host-side CSP evidence.

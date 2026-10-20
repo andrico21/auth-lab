@@ -204,6 +204,65 @@ for (const [id, p, client] of [['lab-spa-api', 'web-spa', 'browser'], ['lab-bff-
   assert.equal(f.plan.artifacts.some(item => item.representations.some(rep => rep.fields.some(field => field.attributeId === 'webRefreshToken'))), false);
 });
 
+for (const [id, p, client, cleanup] of [
+  ['lab-spa-api', 'web-spa', 'browser', 'web-spa-identity'],
+  ['lab-bff-api', 'web-bff', 'app', 'web-bff-session-create'],
+]) test('HC03: ' + id + ' token-request occurrence reads the original verifier without retaining a server copy', () => {
+  const f = fixture(id);
+  const expected = f.model.definitions({}).webVerifier.example;
+  const requestIndex = f.steps.findIndex(step => step.id === p + '-token-request');
+  const prepareIndex = f.steps.findIndex(step => step.id === p + '-prepare');
+  const cleanupIndex = f.steps.findIndex(step => step.id === cleanup);
+  assert.equal(f.steps[requestIndex].payload.find(field => field.attributeId === 'webVerifier').value, expected);
+  const trace = heldObjectTrace(f.compiled, 'web-verifier');
+  const requests = trace.filter(row => row.sourceStepId === p + '-token-request');
+  assert.equal(requests.length, 1, 'the request is an atomic occurrence');
+  const request = requests[0];
+  assert.equal(request.inspectionActorId, 'realmA');
+  assert.equal(request.from, client);
+  assert.equal(request.to, 'realmA');
+  const verifier = request.payload.find(field => field.attributeId === 'webVerifier');
+  assert.equal(verifier.value, expected);
+  assert.equal(verifier.redacted, undefined);
+  assert.equal(held(projectHeldObjects(f.compiled, request.heldCursorStart), 'realmA', 'web-verifier').length, 0);
+  const after = projectHeldObjects(f.compiled, request.heldCursorEnd);
+  assert.equal(held(after, 'realmA', 'web-verifier').length, 0, 'receipt and release occur in the same event');
+  assert.equal(inspectHeldObject(after, request.holdingId), null, 'history must not invent a live receipt holding');
+  const senderId = held(f.at(p + '-prepare'), client, 'web-verifier')[0].holdingId;
+  for (const cursor of f.compiled.cursors) {
+    const snapshot = projectHeldObjects(f.compiled, cursor);
+    const label = id + ' / ' + cursor.eventIndex + '/' + cursor.milestone;
+    assert.equal(held(snapshot, 'realmA', 'web-verifier').length, 0, label + ': no early or persistent server copy');
+    const completedIndex = cursor.milestone === 'before' ? cursor.eventIndex - 1 : cursor.eventIndex;
+    const sender = held(snapshot, client, 'web-verifier');
+    assert.equal(sender.length, completedIndex >= prepareIndex && completedIndex < cleanupIndex ? 1 : 0, label + ': sender retained until normal cleanup');
+    if (sender.length) {
+      assert.equal(sender[0].holdingId, senderId);
+      const inspection = inspectHeldObject(snapshot, senderId);
+      assert.equal(inspection.representation.readable, true);
+      assert.equal(inspection.fields.find(field => field.attributeId === 'webVerifier').value, expected);
+    }
+    const artifact = object(snapshot, 'web-verifier');
+    if (client === 'app') {
+      assert.equal(held(snapshot, 'browser', 'web-verifier').length, 0, label);
+      for (const rep of artifact?.representations || []) {
+        assert.equal(rep.readableBy.includes('browser'), false, label + ': BFF browser excluded even from historical verifier');
+      }
+    }
+    for (const artifactId of ['web-state', 'oidc-nonce']) {
+      const original = object(snapshot, artifactId);
+      if (original) for (const rep of original.representations) assert.deepEqual(rep.readableBy, [client], label + ': original state/nonce remain creator-only');
+    }
+  }
+  for (const row of trace) {
+    assert.ok([client, 'realmA'].includes(row.inspectionActorId));
+    const field = row.payload.find(item => item.attributeId === 'webVerifier');
+    assert.equal(field.value, expected, row.sourceStepId + ': every legitimate occurrence reads the original');
+    assert.equal(field.redacted, undefined);
+    assert.equal(held(projectHeldObjects(f.compiled, row.heldCursorEnd), 'realmA', 'web-verifier').length, 0);
+  }
+});
+
 test('BFF HttpOnly cookie is browser-held but unreadable to frontend JavaScript', () => {
   const f = fixture('lab-bff-api');
   const snapshot = f.at('web-bff-cookie');

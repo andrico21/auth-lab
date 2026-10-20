@@ -188,7 +188,8 @@ export function buildProtectionHeldObjects(args) {
       put(null, 'bff-secret', 'BFF confidential client credential', 'app', ['webClientSecret', 'webClientId'], 'client-credentials');
       put(null, 'bff-registration', 'BFF client authentication registration', 'realmA', ['webClientSecret', 'webClientId'], 'client-registration');
     }
-    for (const [id, attr, label] of [['web-state', 'webState', 'Original OIDC state'], ['oidc-nonce', 'webNonce', 'Original OIDC nonce'], ['web-verifier', 'webVerifier', 'Actual client PKCE verifier']]) put(p + '-prepare', id, label, client, [attr], 'pending-attempt');
+    for (const [id, attr, label] of [['web-state', 'webState', 'Original OIDC state'], ['oidc-nonce', 'webNonce', 'Original OIDC nonce']]) put(p + '-prepare', id, label, client, [attr], 'pending-attempt');
+    put(p + '-prepare', 'web-verifier', 'Actual client PKCE verifier', client, ['webVerifier'], 'pending-attempt', { readableBy: [client, 'realmA'] });
     put(p + '-prepare', 'web-challenge', 'Public S256 commitment', client, ['webChallenge', 'webChallengeMethod'], 'pending-attempt', { readableBy: [client, 'realmA', 'browser'], derivedFrom: ['web-verifier'] });
     put(p + '-prepare', 'web-request', 'Public OIDC authorization request', client, WEB_REQUEST, 'pending-attempt', { readableBy: [client, 'realmA', 'browser'], related: ['web-state', 'oidc-nonce', 'web-challenge'] });
     if (bff) copy(p + '-redirect', 'web-request', 'app', 'browser', 'pending-attempt', 'authorization-navigation', p + '-authorize');

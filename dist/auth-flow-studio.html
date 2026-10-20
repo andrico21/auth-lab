@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-zOAKMk+JaBer6rNENkWMdX/gznNVYDXSWnajHgbfTP4='; script-src-attr 'none'; style-src 'sha256-Yd8Cc7u0OQSgf8DbXZifYYjTMQnjmY2Cq5FlhOnVCSc='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-JtC1wUZdo8aAhoGV7IpypsjvBZsDBuZ2rPYdTnOhXEA='; script-src-attr 'none'; style-src 'sha256-Yd8Cc7u0OQSgf8DbXZifYYjTMQnjmY2Cq5FlhOnVCSc='; style-src-attr 'none'; connect-src 'none'; img-src 'none'; font-src 'none'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'none'; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="Explore Web sign-in, SSH access and AD DS Kerberos: OAuth, SAML, passkeys, MFA, certificates, Device Flow, PKINIT, FAST and forest trusts in one offline animated lab.">
@@ -11641,7 +11641,8 @@ function buildProtectionHeldObjects(args) {
       put(null, 'bff-secret', 'BFF confidential client credential', 'app', ['webClientSecret', 'webClientId'], 'client-credentials');
       put(null, 'bff-registration', 'BFF client authentication registration', 'realmA', ['webClientSecret', 'webClientId'], 'client-registration');
     }
-    for (const [id, attr, label] of [['web-state', 'webState', 'Original OIDC state'], ['oidc-nonce', 'webNonce', 'Original OIDC nonce'], ['web-verifier', 'webVerifier', 'Actual client PKCE verifier']]) put(p + '-prepare', id, label, client, [attr], 'pending-attempt');
+    for (const [id, attr, label] of [['web-state', 'webState', 'Original OIDC state'], ['oidc-nonce', 'webNonce', 'Original OIDC nonce']]) put(p + '-prepare', id, label, client, [attr], 'pending-attempt');
+    put(p + '-prepare', 'web-verifier', 'Actual client PKCE verifier', client, ['webVerifier'], 'pending-attempt', { readableBy: [client, 'realmA'] });
     put(p + '-prepare', 'web-challenge', 'Public S256 commitment', client, ['webChallenge', 'webChallengeMethod'], 'pending-attempt', { readableBy: [client, 'realmA', 'browser'], derivedFrom: ['web-verifier'] });
     put(p + '-prepare', 'web-request', 'Public OIDC authorization request', client, WEB_REQUEST, 'pending-attempt', { readableBy: [client, 'realmA', 'browser'], related: ['web-state', 'oidc-nonce', 'web-challenge'] });
     if (bff) copy(p + '-redirect', 'web-request', 'app', 'browser', 'pending-attempt', 'authorization-navigation', p + '-authorize');
