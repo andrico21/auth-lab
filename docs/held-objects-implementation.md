@@ -80,6 +80,8 @@ Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The standalone is 2,242,58
 
 The machine-readable reports retain exact identities, commands or scenario details and observed results. Superseded or cancelled attempts are not passing evidence. Screen-reader speech/comprehension is not established by the DOM mutation or keyboard checks.
 
+The final full-suite report was regenerated after all browser jobs finished. An earlier concurrent run timed out in one `advanced-ui.test.mjs` lifecycle case at the unchanged 900,000-ms per-test limit; that failed report/log are preserved separately and are not passing evidence. No application/test source or timeout changed between runs.
+
 ## Reproducible checks
 
 Application build and tests remain Bun-only, with no application dependencies or install step:
