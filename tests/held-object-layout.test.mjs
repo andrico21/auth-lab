@@ -97,3 +97,29 @@ test('compact and external choices keep physical topology without shrinking fina
   const crowded={...anchors,logicalDuplicate:{...anchors.adKdc}};
   assert.equal(compactDockGeometry(crowded,pairs,960),null,'unsafe expanded physical overlaps use external inventories');
 });
+
+test('Paper E dense forest and SSH grids preserve their declared cells through expansion',()=>{
+  const forestCells={user:{x:104,y:125},workstation:{x:104,y:365},kdcHome:{x:484,y:125},kdcRootA:{x:864,y:125},kdcRootB:{x:864,y:365},kdcResource:{x:864,y:605},service:{x:484,y:605}};
+  for(const expanded of [false,true]){
+    const {geometry}=composition(model('lab-ad-forest-child-domains'),expanded);assert.ok(geometry);
+    for(const [id,point]of Object.entries(forestCells)){
+      const visible=expanded&&id.startsWith('kdc')?id+'Tgs':id;
+      assert.deepEqual(geometry.positions[visible],point,visible+' occupies the declared physical DC cell');
+      if(visible!==id)assert.equal(geometry.positions[id],undefined,'no duplicate ancestor card');
+    }
+    assertClear(geometry);
+  }
+  const source=model('lab-ssh-cert-success'),folded=composition(source).geometry,expanded=composition(source,true).geometry;
+  for(const [id,point]of Object.entries(folded.positions))assert.deepEqual(expanded.positions[id],point,id+' does not move when the agent is revealed');
+  assert.deepEqual(folded.positions.sshCli,{x:104,y:365});assert.deepEqual(expanded.positions.sshAgent,{x:104,y:605});
+  assert.equal(folded.positions.sshAgent,undefined,'the reserved agent cell is vacant when folded');
+});
+
+test('same-row AD exchanges use the available interior row corridor rather than the frame edge',()=>{
+  const {geometry}=composition(model('lab-ad-first-sign-in')),upper=geometry.bounds.adWorkstation,lower=geometry.bounds.adService;
+  const path=geometry.routes.get('adUser>adWorkstation');
+  assert.ok(path,'the human/workstation exchange exists');
+  const points=[...path.matchAll(/[ML] ([\d.-]+) ([\d.-]+)/g)].map(match=>({x:Number(match[1]),y:Number(match[2])}));
+  assert.ok(points.some((point,index)=>index&&point.y===points[index-1].y&&point.x!==points[index-1].x&&point.y>upper.bottom&&point.y<lower.top),'the visible exchange travels between the actor rows');
+  assertClear(geometry);
+});

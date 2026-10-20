@@ -25,6 +25,11 @@ test('harness queries reflect attribute changes, removals and replacement withou
   assert.equal(root.querySelector('#after.new[data-label="updated"]'),button);
   assert.deepEqual(previous,[button],'earlier querySelectorAll results remain static');
   button.removeAttribute('data-label');assert.equal(root.querySelector('[data-label]'),null);
+  button.dataset.messagePhase='in-flight';
+  assert.equal(root.querySelector('[data-message-phase="in-flight"]'),button);
+  delete button.dataset.messagePhase;
+  assert.equal(button.dataset.messagePhase,undefined);assert.equal(button.hasAttribute('data-message-phase'),false);
+  assert.equal(root.querySelector('[data-message-phase]'),null);
   root.innerHTML='<button id="replacement" class="new"></button>';
   assert.equal(root.querySelector('.new').id,'replacement');
   assert.equal(root.contains(button),false);
@@ -40,4 +45,15 @@ test('harness matches and closest use the current nearest matching ancestor',()=
   owner.classList.remove('owner');assert.equal(label.closest('.owner'),root);
   root.removeChild(owner);assert.equal(label.closest('section'),null);
   assert.equal(label.closest('.missing'),null);
+});
+
+test('harness route length and interpolation follow both orthogonal and cubic packet paths',()=>{
+  const path=new HarnessElement('path'),point=(length,x,y)=>{
+    const actual=path.getPointAtLength(length);assert.ok(Math.abs(actual.x-x)<1e-9);assert.ok(Math.abs(actual.y-y)<1e-9);
+  };
+  path.setAttribute('d','M 104 278 L 104 268 L 392 268 L 392 222 L 484 222 L 484 212');
+  assert.equal(path.getTotalLength(),446);point(0,104,278);point(10,104,268);point(321,392,245);point(446,484,212);
+  path.setAttribute('d','M 0 0 L 10 0 C 20 0 30 0 40 0 L 40 30');
+  assert.ok(Math.abs(path.getTotalLength()-70)<1e-9);point(25,25,0);point(55,40,15);
+  assert.throws(()=>{path.setAttribute('d','M 0 0 Q 10 10 20 20');path.getTotalLength();},/absolute M\/L\/C/);
 });

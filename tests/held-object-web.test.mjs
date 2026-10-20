@@ -290,7 +290,9 @@ test('refresh receipt and packet phase agree before, at and after arrival in jou
         const frame=player.snapshot(),held=projectHeldObjects(f.compiled,heldCursorForPlayback(f.compiled,{...frame,queue:player.queue}));
         const received=delta>=0,label=`${kind}, ${count} fields, speed ${speed}, reduced ${reducedMotion}, delta ${delta}`;
         assert.equal(frame.messagePhase,received?'received':'in-flight',label);
-        assert.equal(frame.visible,!received,label);
+        const travelEnd=380+(Math.max(1,count)-1)*1290+1050;
+        const lastFieldEnd=frame.messageStart*duration+Math.min(travelEnd,(frame.messageEnd-frame.messageStart)*duration);
+        assert.equal(frame.visible,!received&&frame.elapsed<=lastFieldEnd,label);
         assert.equal(held.inFlight.some(message=>message.messageId===frame.messageId),!received,label);
         assert.equal(held.cursor.milestone,received?'received':'delayed-response',label);
         for(const id of ['R1','AT1','ID1']) {

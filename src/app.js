@@ -857,7 +857,12 @@ export class AuthFlowStudio extends HTMLElement {
     tether.dataset.channel=channelCategory(step.channel);tether.querySelector('path').setAttribute('d',`M ${anchor.x} ${anchor.y} L ${edge.x} ${edge.y}`);tether.hidden=false;
   }
   renderPacket(event) {
-    if(!event.step)return;
+    if(!event.step){
+      this.refs.packet.hidden=true;
+      for(const key of ['messagePhase','messageId','routeProgress'])delete this.refs.packet.dataset[key];
+      const external=this.querySelector('#held-active-message');external.hidden=true;external.textContent='';delete external.dataset.messagePhase;
+      return;
+    }
     this.refs.packet.dataset.messagePhase=event.messagePhase;
     this.refs.packet.dataset.messageId=event.messageId||'';
     this.refs.packet.dataset.routeProgress=String(event.progress);
@@ -913,6 +918,7 @@ export class AuthFlowStudio extends HTMLElement {
   }
   updateControls() {
     const status=this.player.status;
+    if(status==='idle')this.renderPacket(this.player.snapshot());
     const label=status==='playing'?'Pause':status==='paused'?'Resume':this.objectTraceSelection?'Play exact object history':this.attributeSelection?'Play attribute path':'Play demo';
     this.refs.play.innerHTML=uiIcon(status==='playing'?'pause':'play',status!=='playing')+'<span>'+label+'</span>';
     this.refs.play.setAttribute('aria-label',label+' animation');

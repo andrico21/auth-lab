@@ -213,7 +213,11 @@ test('authored message bounds contain every field route regardless of payload co
       player.seek([step],fraction);
       const snapshot=player.snapshot();
       assert.equal(snapshot.messagePhase,phase,`count ${count}, speed ${speed}, position ${fraction}`);
-      assert.equal(snapshot.visible,phase==='in-flight');
+      const duration=stageDuration(count),travelEnd=380+(Math.max(1,count)-1)*1290+1050;
+      const scale=Math.min(1,.43*duration/travelEnd),travelElapsed=fraction*duration-.2*duration;
+      const index=Math.min(Math.max(1,count)-1,Math.max(0,Math.floor((travelElapsed-380*scale)/(1290*scale))));
+      const fieldElapsed=travelElapsed-380*scale-index*1290*scale;
+      assert.equal(snapshot.visible,phase==='in-flight'&&travelElapsed>=380*scale&&fieldElapsed<=1050*scale&&travelElapsed<(380+Math.max(1,count)*1290)*scale);
       close(snapshot.messageStart,.2); close(snapshot.messageEnd,.63);
       if(phase==='received'){assert.equal(snapshot.progress,1);assert.equal(snapshot.packetIndex,Math.max(1,count)-1);}
       if(fraction===.629999){assert.equal(snapshot.packetIndex,Math.max(1,count)-1);assert.ok(snapshot.progress>.999);}
@@ -237,8 +241,9 @@ test('exact replay uses its authored cursor interval and does not replay a previ
   assert.equal(player.snapshot().progress,1);
   const check={...row,heldCursorStart:row.heldCursorEnd,heldCursorEnd:{eventIndex:2,milestone:'complete'}};
   player.seek([check],.5,'object');
-  assert.equal(player.snapshot().messagePhase,'local');
-  assert.equal(player.snapshot().visible,false);
+  assert.equal(authoredMessageTiming(plan,check,'object'),undefined);
+  assert.equal(player.snapshot().messagePhase,'unmodeled');
+  assert.equal(player.snapshot().visible,true,'A local row retains its own normal field presentation.');
 });
 
 test('seek/resume crosses the authored receipt once at slow and fast speeds, including reduced-motion completion', () => {
@@ -307,4 +312,76 @@ test('connection replay maps its clock into the authored route interval while ex
   const interval=authoredMessageTiming(plan,exact,'connection');
   assert.equal(interval.start,.25);
   assert.equal(interval.end,.75);
+});
+
+test('ordinary and local rows retain legacy packets when no applicable authored transport exists',()=>{
+  const plan={events:{source:{milestones:[{id:'received',at:.75},{id:'complete',at:1}],messages:[
+    {messageId:'wire',from:'issuer',to:'client',start:0,end:.75,objects:[{artifactId:'token',representationId:'plain'}]},
+  ]}}};
+  const rows=[
+    {id:'no-event',from:'issuer',to:'client'},
+    {id:'source',from:'client',to:'client'},
+    {id:'trace-local',sourceStepId:'source',from:'issuer',to:'issuer'},
+    {id:'trace-other-route',sourceStepId:'source',from:'issuer',to:'resource'},
+    {id:'trace-other-object',sourceStepId:'source',from:'issuer',to:'client',artifactId:'other'},
+    {id:'trace-other-representation',sourceStepId:'source',from:'issuer',to:'client',artifactId:'token',representationId:'ciphertext'},
+    {id:'trace-check',sourceStepId:'source',from:'issuer',to:'client',artifactId:'token',
+      heldCursorStart:{eventIndex:0,milestone:'received'},heldCursorEnd:{eventIndex:0,milestone:'complete'}},
+  ];
+  for(const row of rows)for(const kind of ['demo','attribute','attribute-step','trace-step','trace-connection','connection','object']) {
+    const step={...row,payload:[{name:'local-value'},{name:'second-value'}]};
+    const {player}=clockPlayer({getTiming:(item,mode)=>authoredMessageTiming(plan,item,mode)});
+    const {player:legacy}=clockPlayer();
+    assert.equal(authoredMessageTiming(plan,step,kind),undefined,row.id+' '+kind);
+    for(const elapsed of [0,379,380,905,1430,1431,1669,1670,2195,2720,3000,3760]) {
+      player.seek([step],elapsed/stageDuration(2),kind);legacy.seek([step],elapsed/stageDuration(2),kind);
+      assert.deepEqual(player.snapshot(),legacy.snapshot(),row.id+' '+kind+' '+elapsed);
+    }
+  }
+});
+
+test('full authored intervals preserve lead, field travel, gaps and tail at every payload size and speed',()=>{
+  for(const count of [0,1,2,6,29])for(const speed of [0,.01,.5,1,4])for(const reducedMotion of [false,true]) {
+    const step={id:'source',from:'issuer',to:'client',payload:Array.from({length:count},(_,i)=>({name:'field-'+i}))};
+    const plan={events:{source:{messages:[{messageId:'wire',from:'issuer',to:'client',start:0,end:1,objects:[]}]}}};
+    const {player}=clockPlayer({getTiming:(item,kind)=>authoredMessageTiming(plan,item,kind)});
+    const {player:legacy}=clockPlayer();
+    player.setSpeed(speed);legacy.setSpeed(speed);player.setReducedMotion(reducedMotion);legacy.setReducedMotion(reducedMotion);
+    const duration=stageDuration(count),samples=new Set([0,379,380,duration-1,duration]);
+    for(let index=0;index<Math.max(1,count);index++)for(const offset of [-1,0,1,525,1049,1050,1051,1289,1290])
+      samples.add(Math.max(0,Math.min(duration,380+index*1290+offset)));
+    for(const elapsed of samples) {
+      player.seek([step],elapsed/duration);legacy.seek([step],elapsed/duration);
+      const actual=player.snapshot(),expected=legacy.snapshot();
+      for(const key of ['packetIndex','packet','progress','visible','elapsed','duration'])assert.deepEqual(actual[key],expected[key],`${count} fields, speed ${speed}, ${elapsed}ms, ${key}`);
+      assert.equal(actual.messagePhase,elapsed===duration?'received':'in-flight');
+    }
+  }
+});
+
+test('early receipt compresses cadence only when the ordinary last field cannot arrive in time',()=>{
+  for(const count of [0,1,2,6,29])for(const speed of [0,.01,.5,1,4]) {
+    const step={id:'source',payload:Array.from({length:count},(_,i)=>({name:'field-'+i}))};
+    const plan={events:{source:{messages:[{messageId:'wire',start:0,end:.75,objects:[]}]}}};
+    const {player}=clockPlayer({getTiming:(item,kind)=>authoredMessageTiming(plan,item,kind)});
+    player.setSpeed(speed);
+    const duration=stageDuration(count),fields=Math.max(1,count),travelEnd=380+(fields-1)*1290+1050;
+    const scale=Math.min(1,.75*duration/travelEnd);
+    for(let index=0;index<fields;index++)for(const offset of [1,525,1049,1051,1170]) {
+      const elapsed=(380+index*1290+offset)*scale;
+      player.seek([step],elapsed/duration);
+      const frame=player.snapshot();
+      if(elapsed>=.75*duration){assert.equal(frame.visible,false);continue;}
+      assert.equal(frame.packetIndex,index);
+      close(frame.progress,Math.min(1,offset/1050));
+      assert.equal(frame.visible,offset<=1050);
+    }
+    for(const fraction of [.75,.750001,1]) {
+      player.seek([step],fraction);
+      assert.equal(player.snapshot().messagePhase,'received');
+      assert.equal(player.snapshot().visible,false);
+      assert.equal(player.snapshot().packetIndex,fields-1);
+      assert.equal(player.snapshot().progress,1);
+    }
+  }
 });

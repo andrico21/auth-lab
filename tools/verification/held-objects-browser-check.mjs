@@ -46,7 +46,20 @@ async function heldNativeTouch(browser,mode,target,origin,record){
     Object.assign(record.touch,{passed:true,holdingId:id,exactObjectInspector:true,requests:requests.length,screenshot:file});
   }finally{await context.close();}
 }
-async function heldNativeChoose(page,id,expanded=false,final=false){const selected=await page.evaluate(({id,expanded,final})=>{const a=document.querySelector('auth-flow-studio');a.selectLabScenario(id);if(a.showInternals!==expanded){a.showInternals=expanded;a.renderAll();}if(final)a.selectStep(a.steps.length-1,false);return a.labScenarioId;},{id,expanded,final});assert.equal(selected,id,'Native acceptance fixture must select its exact registered scenario.');}
+async function heldNativeChoose(page,id,expanded=false,final=false){
+  const selected=await page.evaluate(({id,expanded,final})=>{
+    const a=document.querySelector('auth-flow-studio');a.selectLabScenario(id);
+    if(a.showInternals!==expanded){a.showInternals=expanded;a.renderAll();}
+    if(final)a.selectStep(a.steps.length-1,false);
+    const message=a.querySelector('#held-active-message');
+    return {id:a.labScenarioId,packetHidden:a.refs.packet.hidden,messageHidden:message.hidden,message:message.textContent,messagePhase:message.dataset.messagePhase||null};
+  },{id,expanded,final});
+  assert.equal(selected.id,id,'Native acceptance fixture must select its exact registered scenario.');
+  assert.equal(selected.packetHidden,true,id+' inactive selection hides previous packet');
+  assert.equal(selected.messageHidden,true,id+' inactive selection hides previous active message');
+  assert.equal(selected.message,'',id+' inactive selection clears previous message content');
+  assert.equal(selected.messagePhase,null,id+' inactive selection clears previous message phase');
+}
 async function heldNativeScene(page,label,{routes=true}={}){
   const result=await page.evaluate(routes=>{
     const a=document.querySelector('auth-flow-studio'),graph=a.refs.graph.getBoundingClientRect();
@@ -62,7 +75,31 @@ async function heldNativeScene(page,label,{routes=true}={}){
   assert.deepEqual(result.overlaps,[],label+' participant/dock overlap');assert.deepEqual(result.collisions,[],label+' routes clear actor and inventory bounds');assert.deepEqual(result.outside,[],label+' bounds fit map');assert.deepEqual(result.smallTargets,[],label+' inventory targets are 44 rendered CSS pixels');assert.equal(result.nestedActorButtons,0,label+' no nested actor buttons');assert.equal(result.coverageStatus,'complete',label+' complete logical-owner coverage');
   return result;
 }
-async function heldNativeScreenshot(page,name){const file=name+'.png',selector=page.viewportSize().width<960?'.map-scroll':'#graph';await page.locator(selector).evaluate(element=>element.scrollIntoView({block:'center',inline:'nearest'}));await page.locator(selector).screenshot({path:path.join(heldNativeOutput,file)});heldNativeReport.screenshots.push(file);}
+async function heldNativeScreenshot(page,name,{selector=page.viewportSize().width<960?'.map-scroll':'#graph',requireFull=false}={}){
+  const file=name+'.png',surface=page.locator(selector);
+  await surface.evaluate(element=>element.scrollIntoView({block:'center',inline:'nearest'}));
+  await page.evaluate(selector=>{
+    const r=document.querySelector(selector).getBoundingClientRect(),toolbar=document.querySelector('#map-controls')?.getBoundingClientRect(),clearance=Math.max(0,toolbar?.bottom||0)+12;
+    if(r.top<clearance)window.scrollBy(0,r.top-clearance);
+  },selector);
+  const camera=await page.evaluate(selector=>{
+    const box=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height};},surface=document.querySelector(selector),bounds=box(surface),toolbarElement=document.querySelector('#map-controls'),toolbar=toolbarElement?box(toolbarElement):null;
+    const visibleBounds={left:Math.max(0,bounds.left),right:Math.min(innerWidth,bounds.right),top:Math.max(0,bounds.top),bottom:Math.min(innerHeight,bounds.bottom)};
+    const displayed=[...surface.querySelectorAll('.actor-card,#held-docks button')].filter(e=>e.getClientRects().length&&!e.closest('[hidden]')).map(e=>{
+      const r=box(e),x=(r.left+r.right)/2,y=(r.top+r.bottom)/2,displayed=x>=visibleBounds.left&&x<=visibleBounds.right&&y>=visibleBounds.top&&y<=visibleBounds.bottom,hit=displayed?document.elementFromPoint(x,y):null;
+      return {kind:e.matches('.actor-card')?'actor':'inventory',actorId:e.dataset.actor||e.dataset.heldActor||null,action:e.dataset.heldAction||null,bounds:r,center:{x,y},displayed,centerExposed:!!hit&&(hit===e||e.contains(hit)),toolbarOverlap:!!toolbar&&r.left<toolbar.right&&r.right>toolbar.left&&r.top<toolbar.bottom&&r.bottom>toolbar.top};
+    });
+    const actorTops=displayed.filter(e=>e.kind==='actor'),top=Math.min(...actorTops.map(e=>e.center.y));
+    return {selector,viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio},scroll:{x:scrollX,y:scrollY},surfaceBounds:bounds,visibleBounds,toolbar,fullSurfaceVisible:bounds.left>=0&&bounds.top>=0&&bounds.right<=innerWidth&&bounds.bottom<=innerHeight,displayedTargets:displayed,topActorCenters:actorTops.filter(e=>Math.abs(e.center.y-top)<2).map(e=>({actorId:e.actorId,...e.center,displayed:e.displayed,centerExposed:e.centerExposed}))};
+  },selector);
+  heldNativeCheck(camera.visibleBounds.right>camera.visibleBounds.left&&camera.visibleBounds.bottom>camera.visibleBounds.top,name+' camera has a visible surface');
+  heldNativeCheck(camera.displayedTargets.filter(t=>t.displayed).every(t=>!t.toolbarOverlap&&t.centerExposed),name+' displayed actor and inventory target centers are not occluded');
+  if(requireFull){heldNativeCheck(camera.fullSurfaceVisible,name+' complete graph fits actual viewport');heldNativeCheck(camera.topActorCenters.length>0&&camera.topActorCenters.every(t=>t.displayed&&t.centerExposed),name+' complete top actor row is exposed');}
+  camera.captureBounds={left:0,top:0,right:camera.viewport.width,bottom:camera.viewport.height};
+  await page.screenshot({path:path.join(heldNativeOutput,file),fullPage:false});
+  heldNativeReport.screenshots.push(file);(heldNativeReport.cameras??=[]).push({screenshot:file,...camera});
+  return {file,camera};
+}
 async function heldNativeAnimationSurface(page,mode){
   const records=[];
   for(const [architecture,width]of [['web',1920],['native',1920],['web',1480],['web',390]]){
@@ -158,7 +195,59 @@ async function heldNativeExact(page,mode){
   return {keyboardExactSelection:true,delayedResponse:true,conformingRelease:true,detachedHistory:true,rewind:true,reset:true,exactReplay:{artifactId:exactReplay.artifactId,sourceRows:exactReplay.sourceRows,cursor:exactReplay.snapshot.cursor,fullSnapshotEquality:true}};
 }
 async function heldNativeFocusState(page){
-  return page.evaluate(()=>{const a=document.querySelector('auth-flow-studio'),e=document.activeElement;return {holdingId:e?.dataset.holdingId||null,actorId:e?.dataset.heldActor||e?.dataset.heldCollapse||null,region:e?.closest('#held-objects,#held-docks,#held-inspector')?.id||null,selected:a.heldView.selection?.holdingId||null,connected:!!e?.isConnected,visible:!!e&&e.getClientRects().length>0};});
+  return page.evaluate(()=>{const a=document.querySelector('auth-flow-studio'),e=document.activeElement;return {action:e?.dataset.heldAction||null,holdingId:e?.dataset.holdingId||null,actorId:e?.dataset.heldActor||e?.dataset.heldCollapse||null,region:e?.closest('#held-objects,#held-docks,#held-inspector')?.id||null,selected:a.heldView.selection?.holdingId||null,connected:!!e?.isConnected,visible:!!e&&e.getClientRects().length>0};});
+}
+async function heldNativeActionFocus(page,mode){
+  const records=[],choices=await page.evaluate(()=>[...document.querySelector('auth-flow-studio').refs['lab-scenario'].options].map(o=>o.value));
+  const redraw=async(action,region,label)=>{
+    const before=await heldNativeFocusState(page);
+    assert.equal(before.action,action,mode+' '+label+' starts on exact action');assert.equal(before.region,region,mode+' '+label+' starts in exact region');
+    await page.evaluate(()=>{const v=document.querySelector('auth-flow-studio').heldView;v.lastKey='';v.render();});
+    const after=await heldNativeFocusState(page);
+    assert.equal(after.action,action,mode+' '+label+' redraw retains action');assert.equal(after.region,region,mode+' '+label+' redraw retains region');heldNativeCheck(after.connected&&after.visible,mode+' '+label+' redraw focus is live and visible');
+    return {before,after};
+  };
+  for(const kind of ['dock-owner','dock-overflow','compact','picker']){
+    let fixture;
+    const ids=[...new Set(['lab-ad-first-sign-in','lab-refresh-rotation','lab-ssh-cert-success',...choices])];
+    for(const width of kind==='compact'?[1600,1480,1280,1050]:[1920]){
+      await page.setViewportSize({width,height:1200});
+      for(const id of ids){
+        await heldNativeChoose(page,id,false,true);
+        const control=page.locator('[data-held-action^="'+kind+':"]:visible').first();
+        if(await control.count()){fixture={id,width,action:await control.getAttribute('data-held-action'),actorId:await control.getAttribute('data-held-actor')};break;}
+      }
+      if(fixture)break;
+    }
+    heldNativeCheck(fixture,mode+' renders an actual '+kind+' trigger');
+    const region=kind==='picker'?'held-objects':'held-docks',control=()=>page.locator('#'+region+' [data-held-action='+JSON.stringify(fixture.action)+']');
+    await control().focus();const ordinary=await redraw(fixture.action,region,kind);
+    const cycles=[];
+    for(let cycle=0;cycle<3;cycle++){
+      await control().click();
+      if(kind==='picker'){
+        cycles.push(await redraw(fixture.action,region,kind+' activated'));
+      }else{
+        // Opening an occupied owner may focus its complete-list holding. Escape returns to this exact dock action.
+        const opened=await heldNativeFocusState(page);
+        if(opened.region==='held-objects'){await page.keyboard.press('Escape');}
+        else{await control().click();await page.keyboard.press('Escape');}
+        cycles.push(await redraw(fixture.action,region,kind+' return'));
+      }
+    }
+    let fallback=null;
+    if(kind==='compact'){
+      await control().focus();await page.setViewportSize({width:390,height:844});
+      await page.waitForFunction(()=>document.querySelector('#graph').dataset.heldGeometry==='external');
+      fallback=await heldNativeFocusState(page);assert.equal(fallback.action,'picker:'+fixture.actorId,mode+' removed compact action falls back to same logical owner picker');assert.equal(fallback.region,'held-objects',mode+' compact fallback uses complete list region');heldNativeCheck(fallback.connected&&fallback.visible,mode+' compact fallback is live and visible');
+    }
+    records.push({kind,...fixture,region,ordinary,cycles,fallback});
+  }
+  await page.setViewportSize({width:1920,height:1200});await heldNativeChoose(page,'lab-refresh-rotation',false,true);
+  await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio'),h=a.heldView.snapshot().holdings.find(h=>h.actorId==='app'&&h.artifactId==='R1');if(!h)throw new Error('Exit focus fixture needs exact R1');a.heldView.select(h);a.heldView.trace(h.artifactId);a.player.pause();});
+  await page.locator('#held-inspector [data-held-action="exit"]').focus();
+  records.push({kind:'exit',region:'held-inspector',ordinary:await redraw('exit','held-inspector','exit')});
+  return {contract:'Stable data-held-action plus originating region across native redraws, three owner return cycles and removed compact-action fallback',records};
 }
 async function heldNativeOwnersAndFocus(page,mode){
   const records=[];
@@ -184,7 +273,7 @@ async function heldNativeOwnersAndFocus(page,mode){
       await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.heldView.lastKey='';a.heldView.render();});
       actual=await heldNativeFocusState(page);
       assert.equal(actual.holdingId,id,mode+' redraw preserves exact holding');assert.equal(actual.region,region,mode+' redraw preserves origin');
-      const screenshot=mode+'-'+geometry+'-'+region+'-exact-focus.png';await page.locator(region==='held-docks'?'#graph':'#held-objects').screenshot({path:path.join(heldNativeOutput,screenshot)});heldNativeReport.screenshots.push(screenshot);
+      const screenshot=mode+'-'+geometry+'-'+region+'-exact-focus.png';if(region==='held-docks')await heldNativeScreenshot(page,screenshot.slice(0,-4));else{await page.locator('#held-objects').screenshot({path:path.join(heldNativeOutput,screenshot)});heldNativeReport.screenshots.push(screenshot);}
       focus.push({origin:region,holdingId:id,afterRedraw:actual,screenshot});
     }
     await heldNativeScreenshot(page,mode+'-'+geometry+'-owner-return-focus');records.push({geometry,width,ownerReturnCycles:3,completeInventory:true,focus});
@@ -214,7 +303,7 @@ async function heldNativeRepresentations(page,mode){
     const a=document.querySelector('auth-flow-studio');a.selectLabScenario('core');
     Object.assign(a,{mode:'password',architecture:'web',upstream:'single',applicationProtocol:'oidc',brokerProtocol:'oidc',providerProfileId:'generic',providerManaged:false,oidcFlow:'authorization-code',tokenProtection:'app-jwe'});a.refreshConfiguration();a.selectStep(a.steps.length-1,false);
     const artifact=a.heldView.compiled().plan.artifacts.find(o=>o.artifactId==='oidc-app-id-token'),wire=a.steps.find(s=>s.id==='single-web-password-l24');
-    return {wireId:wire?.id,wireValue:wire?.payload.find(p=>p.attributeId==='idTokenA')?.value,decodedValue:artifact?.representations.find(r=>r.representationId==='view')?.fields.find(f=>f.attributeId==='idTokenA')?.value};
+    return {wireId:wire?.id,wireValue:wire?.payload.find(p=>p.attributeId==='idTokenA'||p.name==='id_token')?.value,decodedValue:artifact?.representations.find(r=>r.representationId==='view')?.fields.find(f=>f.attributeId==='idTokenA')?.value};
   });
   assert.equal(typeof fixture.wireValue,'string',mode+' authored compact JWE fixture');assert.equal(fixture.wireValue.split('.').length,5,mode+' five-part fixture value');assert.notEqual(fixture.decodedValue,fixture.wireValue);
   const records=[];
@@ -239,8 +328,8 @@ async function heldNativeRepresentations(page,mode){
         return {kind,rowId:row.id,sourceStepId:row.sourceStepId,expected,packetName:a.refs['packet-name'].textContent,packetValue:a.refs['packet-value'].textContent,activeMessage:a.querySelector('#held-active-message').textContent,packetVisible:!a.refs.packet.hidden,displayedFields:[...a.refs.inspector.querySelectorAll('.field-value')].map(e=>e.textContent),fieldsVisible:a.refs.inspector.getBoundingClientRect().height>0,holdings:a.heldView.snapshot().holdings};
       },{kind,fixture});
       assert.equal(sample.fieldsVisible,true,mode+' exact occurrence fields actually displayed');assert.ok(sample.displayedFields.includes(sample.expected),mode+' '+representationId+' selection displays full '+kind+' occurrence value');
-      if(kind==='wire'){assert.equal(sample.packetVisible,true,mode+' encrypted wire packet actually displayed');assert.equal(sample.packetValue,sample.expected.slice(0,38)+(sample.expected.length>38?'…':''),mode+' compact JWE packet value');assert.ok(sample.activeMessage.includes(sample.expected),mode+' active message contains full compact JWE');}
-      const file=mode+'-jwe-'+representationId+'-'+kind+'-display.png';await page.locator(kind==='wire'?'#graph':'#inspector').screenshot({path:path.join(heldNativeOutput,file)});heldNativeReport.screenshots.push(file);samples.push(sample);
+      if(kind==='wire'){assert.equal(sample.packetVisible,true,mode+' encrypted wire packet actually displayed');const prefix=sample.packetValue.replace(/…$/,'');assert.ok(prefix.length&&sample.expected.startsWith(prefix)&&!fixture.decodedValue.startsWith(prefix),mode+' wire packet displays ciphertext rather than the decoded value');assert.ok(sample.activeMessage.includes(sample.expected),mode+' active message contains full compact JWE');}
+      const file=mode+'-jwe-'+representationId+'-'+kind+'-display.png';if(kind==='wire')await heldNativeScreenshot(page,file.slice(0,-4));else{await page.locator('#inspector').screenshot({path:path.join(heldNativeOutput,file)});heldNativeReport.screenshots.push(file);}samples.push(sample);
     }
     records.push({selectedRepresentation:representationId,samples});
   }
@@ -315,6 +404,7 @@ async function heldNativeFamilyComposition(page,mode){
   const records=[],fixtures=['lab-ad-first-sign-in','lab-ad-fast-as-success','lab-ad-forest-child-domains','lab-ssh-cert-success','lab-ssh-cert-reissue','lab-ssh-device-cadence','lab-ssh-sssd-success','lab-ssh-gss-success'];
   for(const id of fixtures)for(const expanded of [false,true]){
     await page.setViewportSize({width:1920,height:1200});await heldNativeChoose(page,id,expanded,true);
+    const capture=await heldNativeScreenshot(page,mode+'-'+id+'-'+(expanded?'expanded':'collapsed')+'-composition',{selector:'#graph',requireFull:true});
     const scene=await heldNativeScene(page,mode+' composition '+id+' '+expanded);
     const composition=await page.evaluate(()=>{
       const a=document.querySelector('auth-flow-studio'),graph=a.refs.graph.getBoundingClientRect(),visible=e=>!!e.getClientRects().length&&!e.closest('[hidden]'),box=e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,width:r.width,height:r.height,x:(r.left+r.right)/2,y:(r.top+r.bottom)/2};};
@@ -337,8 +427,18 @@ async function heldNativeFamilyComposition(page,mode){
       }
       const rows=[...new Set(Object.values(actors).map(r=>Math.round(r.y)))].sort((a,b)=>a-b),rowGaps=rows.slice(1).map((y,i)=>y-rows[i]);
       const bounds={left:Math.min(...Object.values(frames).map(r=>r.left)),right:Math.max(...Object.values(frames).map(r=>r.right)),top:Math.min(...Object.values(frames).map(r=>r.top)),bottom:Math.max(...Object.values(frames).map(r=>r.bottom))};
-      return {actors,labels,attachments,rowGaps,graphTop:graph.top,graphHeight:graph.height,graphWidth:graph.width,occupied:{width:bounds.right-bounds.left,height:bounds.bottom-bounds.top},geometry:a.refs.graph.dataset.heldGeometry};
+      return {actors,labels,attachments,rowGaps,graphLeft:graph.left,graphTop:graph.top,graphHeight:graph.height,graphWidth:graph.width,occupied:{width:bounds.right-bounds.left,height:bounds.bottom-bounds.top},geometry:a.refs.graph.dataset.heldGeometry};
     });
+    assert.equal(composition.geometry,'full',mode+' '+id+' '+(expanded?'expanded':'collapsed')+' fits full participant inventory geometry');
+    if(id==='lab-ad-forest-child-domains'&&expanded)assert.equal(Object.keys(composition.actors).length,7,mode+' expanded forest retains seven physical actors without duplicate parent KDCs');
+    if(id==='lab-ssh-cert-success'&&expanded){
+      const collapsed=records.find(r=>r.id===id&&!r.expanded);
+      heldNativeCheck(collapsed,mode+' SSH expanded comparison has collapsed reference');
+      for(const [actorId,before]of Object.entries(collapsed.actors)){
+        const after=composition.actors[actorId];heldNativeCheck(after,mode+' SSH expansion retains '+actorId);
+        heldNativeCheck(Math.abs((before.x-collapsed.graphLeft)/collapsed.graphWidth-(after.x-composition.graphLeft)/composition.graphWidth)<.002&&Math.abs((before.y-collapsed.graphTop)/collapsed.graphHeight-(after.y-composition.graphTop)/composition.graphHeight)<.002,mode+' SSH expansion preserves shared '+actorId+' anchor rather than compressing vacant agent cell');
+      }
+    }
     assert.deepEqual(composition.labels.filter(l=>l.clipped),[],mode+' '+id+' complete logical-owner names fit rendered controls');
     for(const label of composition.labels)assert.equal(label.text.trim(),label.expected,mode+' merged owner displays complete logical name');
     heldNativeCheck(composition.attachments.every(a=>a.distance<=20),mode+' '+id+' connector endpoints attach to participant frames');
@@ -361,8 +461,7 @@ async function heldNativeFamilyComposition(page,mode){
       const middle=composition.graphTop+composition.graphHeight/2;
       for(const actorId of ['sshCli','kdc','sshHost'])heldNativeCheck(Math.abs(p[actorId].y-middle)<2,mode+' GSS '+actorId+' is centered on rendered graph midline');
     }
-    const file=mode+'-'+id+'-'+(expanded?'expanded':'collapsed')+'-composition.png';await page.locator('#graph').screenshot({path:path.join(heldNativeOutput,file)});heldNativeReport.screenshots.push(file);
-    delete scene.state;delete scene.holdings;records.push({id,expanded,screenshot:file,scene,...composition});
+    delete scene.state;delete scene.holdings;records.push({id,expanded,screenshot:capture.file,camera:capture.camera,scene,...composition});
   }
   return {scope:'Rendered Chromium composition and complete label bounds; not a human aesthetic review',records};
 }
@@ -383,6 +482,14 @@ try{
     const record={mode,target,scenarios:[],layouts:[],checks:[],runtimeErrors:errors,csp:{scope:'All application documents including every reload; accumulated host-side',violations}};heldNativeReport.modes.push(record);
     await page.goto(target,{waitUntil:'networkidle'});await page.waitForFunction(()=>document.querySelector('auth-flow-studio')?.heldView);
     assert.equal(await page.locator('#show-held-objects').isChecked(),true);
+    record.code1={};
+    record.code1.representations=await heldNativeRepresentations(page,mode);
+    record.code1.boundaries=await heldNativeBoundaries(page,mode);
+    record.code1.ownersAndFocus=await heldNativeOwnersAndFocus(page,mode);
+    record.code1.actionFocus=await heldNativeActionFocus(page,mode);
+    record.checks.push('HC01 rendered encrypted/decoded occurrence values from both selections','HC02 authored receipt boundaries across full/connection/exact replay, payload sizes and speeds','HC08 repeated owner return complete lists in full/compact','HC09 exact holding and non-holding action+region redraw focus, repeated merged/compact/overflow/picker return and separate resize/removal/collapse fallbacks');
+    // Start the catalog sweep from a fresh configuration, retaining host-side CSP evidence.
+    await page.goto(target,{waitUntil:'networkidle'});await page.setViewportSize({width:1920,height:1200});
     const choices=await page.evaluate(()=>[...document.querySelector('auth-flow-studio').refs['lab-scenario'].options].map(option=>option.value));
     assert.equal(choices.length,141,mode+' full 141-choice inventory gate');
     for(const id of choices){
@@ -402,11 +509,6 @@ try{
     record.stepAttributes=await heldNativeStepAttributes(page,mode);
     record.familyComposition=await heldNativeFamilyComposition(page,mode);record.checks.push('Kerberos and SSH collapsed/expanded rendered composition, complete logical-owner labels and frame attachment');
     await page.setViewportSize({width:1920,height:1200});record.exact=await heldNativeExact(page,mode);
-    record.code1={};
-    record.code1.representations=await heldNativeRepresentations(page,mode);
-    record.code1.boundaries=await heldNativeBoundaries(page,mode);
-    record.code1.ownersAndFocus=await heldNativeOwnersAndFocus(page,mode);
-    record.checks.push('HC01 rendered encrypted/decoded occurrence values from both selections','HC02 authored receipt boundaries across full/connection/exact replay, payload sizes and speeds','HC08 repeated owner return complete lists in full/compact','HC09 exact focus origin with separate resize/removal/collapse fallbacks');
     await heldNativeChoose(page,'lab-ad-forest-child-domains',true,true);const before=await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');return {positions:a.positions,cursor:a.heldView.snapshot().cursor};});await page.locator('#show-held-objects').uncheck();assert.equal(await page.evaluate(()=>document.activeElement.id),'show-held-objects');await page.locator('#show-held-objects').check();assert.deepEqual(await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');return {positions:a.positions,cursor:a.heldView.snapshot().cursor};}),before,mode+' visibility does not reflow or seek');
     const settings=await context.newPage();await settings.goto('chrome://settings/appearance');
     record.browserZoom=[];for(const zoom of [2,4]){await settings.evaluate(zoom=>new Promise(resolve=>chrome.settingsPrivate.setDefaultZoom(zoom,resolve)),zoom);await page.reload({waitUntil:'networkidle'});await heldNativeChoose(page,'lab-ad-forest-child-domains',true,true);const scene=await heldNativeScene(page,mode+' actual browser zoom '+zoom,{routes:true});heldNativeCheck(Math.abs(scene.viewport.width-1920/zoom)<=2,mode+' actual zoom changes CSS layout viewport');heldNativeCheck(scene.viewport.visualScale===1,mode+' browser zoom is not pinch/CSS zoom');delete scene.state;delete scene.holdings;record.browserZoom.push({zoom,zoomIsBrowserUiZoom:true,...scene});}await settings.evaluate(()=>new Promise(resolve=>chrome.settingsPrivate.setDefaultZoom(1,resolve)));await settings.close();await page.reload({waitUntil:'networkidle'});

@@ -58,7 +58,7 @@ const toKebab=s=>String(s).replace(/[A-Z]/g,c=>'-'+c.toLowerCase());
 export class HarnessElement extends EventTarget {
   constructor(tagName='element'){
     super();this.tagName=tagName.toUpperCase();this.attributes=new Map();this.childNodes=[];this.parentElement=null;this.style={setProperty(name,value){this[name]=String(value);},getPropertyValue(name){return this[name]||'';},removeProperty(name){const value=this[name]||'';delete this[name];return value;}};this.scrollCalls=[];this.animationCalls=[];
-    this.dataset=new Proxy({}, {get:(_,k)=>this.getAttribute('data-'+toKebab(k))??undefined,set:(_,k,v)=>{this.setAttribute('data-'+toKebab(k),v);return true;}});
+    this.dataset=new Proxy({}, {get:(_,k)=>this.getAttribute('data-'+toKebab(k))??undefined,set:(_,k,v)=>{this.setAttribute('data-'+toKebab(k),v);return true;},deleteProperty:(_,k)=>{this.removeAttribute('data-'+toKebab(k));return true;}});
     this.classList={contains:c=>(this.getAttribute('class')||'').split(/\s+/).includes(c),add:(...cs)=>this.setAttribute('class',[...new Set([...(this.getAttribute('class')||'').split(/\s+/).filter(Boolean),...cs])].join(' ')),remove:(...cs)=>this.setAttribute('class',(this.getAttribute('class')||'').split(/\s+/).filter(c=>!cs.includes(c)).join(' ')),toggle:(c,force)=>{const present=this.classList.contains(c),add=force===undefined?!present:!!force;if(add)this.classList.add(c);else this.classList.remove(c);return add;}};
   }
   get id(){return this.getAttribute('id')||'';} set id(v){this.setAttribute('id',v);}
@@ -95,12 +95,15 @@ export class HarnessElement extends EventTarget {
   curveSamples(){
     const d=this.getAttribute('d')||'';if(this._curveCache?.d===d)return this._curveCache.samples;
     const commands=d.match(/[a-z]/gi)||[],values=d.match(/-?\d*\.?\d+/g)?.map(Number)||[];
-    if(commands[0]!=='M'||commands.slice(1).some(command=>command!=='C')||values.length<8||(values.length-2)%6!==0)throw new Error('Harness supports app absolute M/C path geometry only: '+d);
-    let [x0,y0]=values,length=0;const samples=[{x:x0,y:y0,length:0}];
-    for(let offset=2;offset<values.length;offset+=6){
+    if(commands[0]!=='M'||commands.length<2||commands.slice(1).some(command=>!['L','C'].includes(command))||values.length!==2+commands.slice(1).reduce((count,command)=>count+(command==='L'?2:6),0))throw new Error('Harness supports app absolute M/L/C path geometry only: '+d);
+    let [x0,y0]=values,length=0,offset=2;const samples=[{x:x0,y:y0,length:0}];
+    for(const command of commands.slice(1)){
+      if(command==='L'){
+        const [x,y]=values.slice(offset,offset+2);length+=Math.hypot(x-x0,y-y0);samples.push({x,y,length});x0=x;y0=y;offset+=2;continue;
+      }
       const [x1,y1,x2,y2,x3,y3]=values.slice(offset,offset+6);
       for(let i=1;i<=100;i++){const t=i/100,u=1-t,x=u*u*u*x0+3*u*u*t*x1+3*u*t*t*x2+t*t*t*x3,y=u*u*u*y0+3*u*u*t*y1+3*u*t*t*y2+t*t*t*y3,prev=samples.at(-1);length+=Math.hypot(x-prev.x,y-prev.y);samples.push({x,y,length});}
-      x0=x3;y0=y3;
+      x0=x3;y0=y3;offset+=6;
     }
     this._curveCache={d,samples};return samples;
   }

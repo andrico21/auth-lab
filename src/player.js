@@ -4,12 +4,13 @@ const stepDuration = step => LEAD + packetCount(step) * (TRAVEL + GAP) + TAIL;
 
 /** Resolve presentation timing from the same authored event interval as holdings. */
 export function authoredMessageTiming(plan, step, kind) {
-  if (!plan) return undefined;
-  const event = plan?.events?.[step.sourceStepId || step.id];
+  if (!plan || !step) return undefined;
+  const event = plan.events?.[step.sourceStepId || step.id];
+  if (!event?.messages?.length) return undefined;
   let start = 0, end = 1;
   if (step.heldCursorStart && step.heldCursorEnd) {
     const first = step.heldCursorStart, last = step.heldCursorEnd;
-    if (first.eventIndex !== last.eventIndex || first.eventIndex < 0) return { start: 0, end: 0, messages: [] };
+    if (first.eventIndex !== last.eventIndex || first.eventIndex < 0) return undefined;
     const at = cursor => cursor.milestone === 'before' ? 0 : event.milestones.find(item => item.id === cursor.milestone).at;
     start = at(first); end = at(last);
   } else if (kind === 'connection') {
@@ -20,26 +21,37 @@ export function authoredMessageTiming(plan, step, kind) {
     }
   }
   const messages = (event?.messages || []).filter(message =>
-    (kind !== 'connection' || message.from === step.from && message.to === step.to) &&
+    (!step.from || message.from === step.from) && (!step.to || message.to === step.to) &&
     (!step.artifactId || message.from === step.from && message.to === step.to &&
       message.objects.some(object => object.artifactId === step.artifactId && (!step.representationId || object.representationId === step.representationId))) &&
     message.end > start && message.start < end);
-  return { start, end, messages };
+  return messages.length ? { start, end, messages } : undefined;
+}
+
+function packetPresentation(elapsed, count, scale = 1) {
+  const packetWindow = (TRAVEL + GAP) * scale;
+  const packetIndex = Math.min(count - 1, Math.max(0, Math.floor((elapsed - LEAD * scale) / packetWindow)));
+  const packetElapsed = elapsed - LEAD * scale - packetIndex * packetWindow;
+  return { packetIndex, progress: Math.max(0, Math.min(1, packetElapsed / (TRAVEL * scale))),
+    visible: elapsed >= LEAD * scale && packetElapsed <= TRAVEL * scale && elapsed < LEAD * scale + count * packetWindow };
 }
 
 function authoredPacket(timing, elapsed, duration, count) {
-  const sourceProgress = timing.start + (timing.end - timing.start) * Math.max(0, Math.min(1, elapsed / duration));
+  const span = timing.end - timing.start;
+  const sourceProgress = timing.start + span * Math.max(0, Math.min(1, elapsed / duration));
   const message = timing.messages.find(item => sourceProgress >= item.start && sourceProgress < item.end) ||
     timing.messages.find(item => sourceProgress < item.start) || timing.messages.at(-1);
-  if (!message) return { packetIndex: count - 1, progress: 1, visible: false, messagePhase: 'local' };
   const messagePhase = sourceProgress < message.start ? 'pending' : sourceProgress < message.end ? 'in-flight' : 'received';
-  // Every field's route is contained in this message, independent of field count.
-  const position = Math.max(0, Math.min(1, (sourceProgress - message.start) / (message.end - message.start))) * count;
-  const packetIndex = Math.min(count - 1, Math.floor(position));
-  return { packetIndex, progress: Math.min(1, position - packetIndex), visible: messagePhase === 'in-flight',
-    messagePhase, messageId: message.messageId,
-    messageStart: (message.start - timing.start) / (timing.end - timing.start),
-    messageEnd: (message.end - timing.start) / (timing.end - timing.start) };
+  const messageStart = (message.start - timing.start) / span;
+  const messageEnd = (message.end - timing.start) / span;
+  // Keep the normal lead, travel and inter-field gaps unless receipt requires compression.
+  // Only field travel must finish by receipt; the ordinary trailing gap/tail need not fit.
+  const travelEnd = LEAD + (count - 1) * (TRAVEL + GAP) + TRAVEL;
+  const scale = Math.min(1, (messageEnd - messageStart) * duration / travelEnd);
+  const presentation = packetPresentation(elapsed - messageStart * duration, count, scale);
+  return { ...presentation, ...(messagePhase === 'received' ? { packetIndex: count - 1, progress: 1 } : {}),
+    visible: presentation.visible && messagePhase === 'in-flight',
+    messagePhase, messageId: message.messageId, messageStart, messageEnd };
 }
 
 /** A deterministic animation clock. Packets are intentionally sent one at a time. */
@@ -66,18 +78,13 @@ export class FlowPlayer {
   snapshot() {
     const step = this.queue[this.position];
     const count = packetCount(step), duration = stepDuration(step);
-    const packetWindow = TRAVEL + GAP;
-    const index = Math.min(count - 1, Math.max(0, Math.floor((this.elapsed - LEAD) / packetWindow)));
-    const packetElapsed = this.elapsed - LEAD - index * packetWindow;
-    const progress = Math.max(0, Math.min(1, packetElapsed / TRAVEL));
+    const legacy = packetPresentation(this.elapsed, count);
     const overallDuration = this.totalDuration();
     const precedingDuration = this.totalDuration(this.queue.slice(0, this.position));
     const overallElapsed = this.queue.length ? precedingDuration + Math.max(0, Math.min(duration, this.elapsed)) : 0;
     const timing = step && this.getTiming?.(step, this.kind);
-    const presentation = timing ? authoredPacket(timing, this.elapsed, duration, count) : {
-      packetIndex: index, progress,
-      visible: !!step && this.elapsed >= LEAD && packetElapsed <= TRAVEL && this.elapsed < LEAD + count * packetWindow,
-      messagePhase: 'unmodeled' };
+    const presentation = timing?.messages?.length ? authoredPacket(timing, this.elapsed, duration, count) : {
+      ...legacy, visible: !!step && legacy.visible, messagePhase: 'unmodeled' };
     return { status: this.status, speed: this.speed, kind: this.kind, step, queuePosition: this.position,
       queueLength: this.queue.length, ...presentation, packet: step?.payload?.[presentation.packetIndex],
       duration, elapsed: this.elapsed, stepElapsed: this.elapsed, overallDuration, overallElapsed,

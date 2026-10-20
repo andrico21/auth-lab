@@ -247,6 +247,121 @@ test('owner selection reopens complete inventories independently of dock expansi
   }
 });
 
+test('picker, overflow and compact actions preserve their own regions through redraw and arrivals',()=>{
+  for(const mode of ['full','compact']){
+    const f=mountFixture();try{
+      fixtureGeometry(f,mode);
+      const dockAction=mode==='full'?'dock-overflow:app':'compact:app';
+      for(const [action,region] of [['picker:app','held-objects'],[dockAction,'held-docks']]){
+        const original=f.app.querySelector(`[data-held-action="${action}"]`);assert.ok(original);original.focus();
+        f.view.lastKey='';f.view.render();
+        assert.notEqual(document.activeElement,original,'redraw replaces the focused control');
+        assert.equal(document.activeElement.dataset.heldAction,action);assert.ok(document.activeElement.closest('#'+region));
+        for(const cursor of [{eventIndex:0,milestone:'complete'},{eventIndex:1,milestone:'complete'},{eventIndex:-1,milestone:'initial'}]){
+          f.setCursor(cursor);
+          assert.equal(document.activeElement.dataset.heldAction,action);assert.ok(document.activeElement.closest('#'+region));
+          assert.equal(f.view.selection,null,'redraw does not select another exact holding');
+        }
+      }
+    }finally{unmount(f.app);}
+  }
+});
+
+test('merged KDC, AS and TGS owner actions retain their own dock identity on redraw',()=>{
+  const app=mount();try{
+    app.selectLabScenario('lab-ad-first-sign-in',{navigate:false});app.selectStep(app.steps.length-1,false);
+    const view=app.heldView,positions=app.basePositions,ids=Object.keys(positions),pairs=app.steps.map(step=>[app.nodeId(step.from),app.nodeId(step.to)]);
+    app.heldGeometry=fullDockGeometry(ids,ids,pairs,1120,730,{},positions);assert.ok(app.heldGeometry);
+    view.lastKey='';view.render();
+    for(const owner of ['adKdc','adAs','adTgs']){
+      const action='dock-owner:'+owner,original=view.docks.querySelector(`[data-held-action="${action}"]`);assert.ok(original);
+      assert.equal(original.closest('[data-held-dock]').dataset.heldDock,'adKdc');original.focus();
+      view.lastKey='';view.render();
+      assert.notEqual(document.activeElement,original);assert.equal(document.activeElement.dataset.heldAction,action);
+      assert.ok(document.activeElement.closest('#held-docks'));assert.equal(document.activeElement.dataset.heldActor,owner);
+      document.activeElement.click();assert.equal(view.expanded.has(owner),true);assert.ok(view.root.querySelector(`[data-held-owner="${owner}"]`));
+      document.activeElement.dispatchEvent(new HarnessEvent('keydown',{key:'Escape'}));
+      assert.equal(view.expanded.has(owner),false);assert.equal(document.activeElement.dataset.heldAction,action);
+      assert.ok(document.activeElement.closest('#held-docks'));
+    }
+  }finally{unmount(app);}
+});
+
+test('expanded child-domain forest renders TGS owners in the approved full physical cells without parent duplicates',()=>{
+  const app=mount();try{
+    const box={left:0,top:0,right:1120,bottom:730,width:1120,height:730};
+    app.refs.graph.getBoundingClientRect=()=>box;app.refs.graph.parentElement.getBoundingClientRect=()=>box;
+    app.selectLabScenario('lab-ad-forest-child-domains',{navigate:false});
+    const view=app.heldView,cursor=view.snapshot().cursor,checkbox=app.querySelector('#show-internals');
+    checkbox.checked=true;checkbox.dispatchEvent(new HarnessEvent('change'));
+    assert.equal(app.heldGeometry?.mode,'full','expanded logical TGS components fit the seven physical participants');
+    assert.equal(app.refs.graph.dataset.heldGeometry,'full');assert.deepEqual(view.snapshot().cursor,cursor);
+    const expected={user:{x:104,y:125},workstation:{x:104,y:365},kdcHomeTgs:{x:484,y:125},kdcRootATgs:{x:864,y:125},kdcRootBTgs:{x:864,y:365},kdcResourceTgs:{x:864,y:605},service:{x:484,y:605}};
+    assert.deepEqual(app.heldGeometry.positions,expected);
+    assert.equal(app.refs.actors.querySelectorAll('[data-actor]').length,7);
+    assert.equal(view.docks.querySelectorAll('[data-held-dock]').length,7);
+    for(const [id,position] of Object.entries(expected)){
+      assert.deepEqual(app.positions[id],position);assert.ok(app.refs.actors.querySelector(`[data-actor="${id}"]`));
+      assert.ok(view.docks.querySelector(`[data-held-dock="${id}"]`));
+      if(!id.endsWith('Tgs'))continue;
+      const parent=app.scenarioOwnedActors[id].parentId;assert.ok(parent);
+      assert.equal(app.refs.actors.querySelector(`[data-actor="${parent}"]`),null);
+      assert.equal(view.docks.querySelector(`[data-held-dock="${parent}"]`),null);
+    }
+  }finally{unmount(app);}
+});
+
+test('dock toggles and Escape return to their initiating actions while list collapse returns to picker',()=>{
+  for(const mode of ['full','compact']){
+    const f=mountFixture();try{
+      fixtureGeometry(f,mode);const action=mode==='full'?'dock-overflow:app':'compact:app';
+      const open=()=>{const trigger=f.view.docks.querySelector(`[data-held-action="${action}"]`);trigger.focus();trigger.click();assert.equal(f.view.expanded.has('app'),true);assert.ok(document.activeElement.closest('#held-objects'));assert.equal(document.activeElement.dataset.holdingId,'app-r0');};
+      const closedAtDock=()=>{assert.equal(f.view.expanded.has('app'),false);assert.equal(document.activeElement.dataset.heldAction,action);assert.ok(document.activeElement.closest('#held-docks'));};
+      open();document.activeElement.dispatchEvent(new HarnessEvent('keydown',{key:'Escape'}));closedAtDock();
+      f.view.lastKey='';f.view.render();closedAtDock();
+      open();f.view.docks.querySelector(`[data-held-action="${action}"]`).click();closedAtDock();
+      open();f.view.root.querySelector('[data-held-collapse="app"]').click();
+      assert.equal(f.view.expanded.has('app'),false);assert.equal(document.activeElement.dataset.heldAction,'picker:app');
+      assert.ok(document.activeElement.closest('.held-actor-picker'));
+      for(let repeat=0;repeat<2;repeat++){document.activeElement.click();assert.equal(f.view.expanded.has('app'),true);assert.equal(document.activeElement.dataset.heldAction,'picker:app');}
+    }finally{unmount(f.app);}
+  }
+});
+
+test('Escape follows the active owner rather than an unrelated exact selection',()=>{
+  const f=mountFixture();try{
+    fixtureGeometry(f,'full');f.view.select(f.snapshot.holdings.find(item=>item.holdingId==='app-r0'));
+    f.view.root.querySelector('[data-held-action="picker:realmA"]').click();
+    assert.equal(f.view.expanded.has('realmA'),true);assert.equal(f.view.selection.actorId,'app');
+    document.activeElement.dispatchEvent(new HarnessEvent('keydown',{key:'Escape'}));
+    assert.equal(f.view.expanded.has('realmA'),false);assert.equal(f.view.expanded.has('app'),true);
+    assert.equal(document.activeElement.dataset.heldAction,'picker:realmA');assert.ok(document.activeElement.closest('#held-objects'));
+  }finally{unmount(f.app);}
+});
+
+test('empty compact inventories keep their dock trigger and missing summaries use the picker fallback',()=>{
+  const f=mountFixture();try{
+    fixtureGeometry(f,'compact');
+    const empty=f.view.docks.querySelector('[data-held-action="compact:realmA"]');empty.focus();empty.click();
+    assert.equal(f.view.expanded.has('realmA'),true);assert.equal(document.activeElement.dataset.heldAction,'compact:realmA');
+    document.activeElement.dispatchEvent(new HarnessEvent('keydown',{key:'Escape'}));
+    assert.equal(f.view.expanded.has('realmA'),false);assert.equal(document.activeElement.dataset.heldAction,'compact:realmA');
+    fixtureGeometry(f,'external');assert.equal(document.activeElement.dataset.heldAction,'picker:realmA');
+    assert.ok(document.activeElement.closest('#held-objects'));
+  }finally{unmount(f.app);}
+});
+
+test('trace exit remains in the exact inspector through redraw instead of entering an owner picker',()=>{
+  const f=mountFixture();try{
+    f.view.select(f.snapshot.holdings.find(item=>item.holdingId==='app-r0'));f.app.objectTraceSelection='R0';f.view.lastKey='';f.view.render();
+    const original=f.view.inspector.querySelector('[data-held-exit]');assert.ok(original);original.focus();
+    f.view.lastKey='';f.view.render();
+    assert.notEqual(document.activeElement,original);assert.equal(document.activeElement.dataset.heldAction,'exit');assert.ok(document.activeElement.closest('#held-inspector'));
+    f.setCursor({eventIndex:1,milestone:'complete'});
+    assert.equal(document.activeElement.dataset.heldAction,'exit');assert.ok(document.activeElement.closest('#held-inspector'));
+  }finally{unmount(f.app);}
+});
+
 test('exact control recovery preserves its list or dock region and uses explicit disappearance fallbacks',()=>{
   for(const region of ['held-objects','held-docks']){
     const f=mountFixture();try{
@@ -390,4 +505,26 @@ test('compact summary opens the complete owner list and preserves exact selectio
     f.app.heldGeometry=null;f.app.refs.graph.dataset.heldGeometry='external';f.view.lastKey='';f.view.render();
     assert.equal(f.view.selection.artifactId,'R0');assert.deepEqual(f.snapshot.cursor,cursor);
   }finally{unmount(f.app);}
+});
+
+test('journey switches, static timeline selection and reset discard the previous active message',()=>{
+  const app=mount();try{
+    const box=()=>({left:0,top:0,right:1120,bottom:730,width:1120,height:730});
+    app.refs.graph.getBoundingClientRect=box;app.refs.graph.parentElement.getBoundingClientRect=box;
+    app.selectLabScenario('lab-ssh-cert-success',{navigate:false});
+    const message=app.querySelector('#held-active-message'),ssh=app.steps.find(step=>step.from!==step.to&&step.payload.length);
+    app.player.seek([ssh],.35,'step');
+    assert.equal(message.hidden,false);assert.ok(message.textContent.includes(ssh.title));
+    const cleared=()=>{
+      assert.equal(app.refs.packet.hidden,true);assert.equal(message.hidden,true);
+      assert.equal(message.textContent,'');assert.equal(message.dataset.messagePhase,undefined);
+      assert.equal(app.refs.packet.dataset.messagePhase,undefined);
+    };
+    app.selectLabScenario('lab-ad-first-sign-in',{navigate:false});cleared();
+    const ad=app.steps.find(step=>step.from!==step.to&&step.payload.length);
+    const replay=()=>{app.player.seek([ad],.35,'step');assert.equal(message.hidden,false);assert.ok(message.textContent.includes(ad.title));assert.ok(!message.textContent.includes(ssh.title));};
+    replay();app.selectStep(app.steps.length-1,false);cleared();
+    replay();app.reset();cleared();
+    replay();app.player.stop();cleared();
+  }finally{unmount(app);}
 });

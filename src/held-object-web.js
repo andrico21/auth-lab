@@ -187,7 +187,8 @@ function lifeRotation(b) {
     b.send(id,p('response'),'realmA','app',{fromStore:'output',releaseAt:p('replace'),releaseSender:true});
     b.install(id,p('replace'),'app',old);
   }
-  // These milestones are protocol boundaries authored here, not field-chip stages.
+  // The clock and every response field route share these authored boundaries.
+  // Receipt is distinct from the later identity checks and credential install.
   const event=b.plan.events[p('response')];
   event.milestones=[{id:'delayed-response',at:0.25,effects:[]},{id:'received',at:0.75,effects:event.milestones[0].effects},{id:'complete',at:1,effects:[]}];
   for(const message of event.messages)message.end=0.75;

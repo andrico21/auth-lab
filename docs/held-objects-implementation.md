@@ -17,16 +17,18 @@ This candidate addresses the independent HC01-HC09 findings. The approved pure c
 | Finding | Corrected contract |
 | --- | --- |
 | HC01 | Exact replay binds each occurrence to its message/effect representation and holding. A decoded selection cannot replace historical compact JWE bytes. Local JWE checks explicitly use the decoded view and that occurrence actor's field permissions. |
-| HC02 | Packet routes use the same authored message interval as canonical receipt. Full journeys, connection intervals and exact-row intervals share that boundary; receipt remains distinct from checking and installation. |
+| HC02 | Applicable transport messages bound field travel by the same authored receipt used by holdings. Existing lead/travel/gap cadence is retained whenever it fits, and proportionally bounded only when required by an earlier receipt. Steps without an applicable authored message retain ordinary/local packet presentation. Full journeys, connection intervals and exact-row intervals share the receipt boundary; receipt remains distinct from checking and installation. Idle selection, journey changes, reset and stopped queues clear previous packet/message content and phase rather than carrying another protocol's display forward. |
 | HC03 | AD local input/key and bridge password/cookie/verifier readers are explicitly declared. PAR/JAR/JARM servers can inspect a delivered verifier; acquisition still gates availability and protected inner fields remain restricted. |
 | HC04 | Local Device cancellation cleans client polling/display state without deleting the issuer's still-valid pending transaction. A restart has distinct generation identities and rejects late old results. |
 | HC05 | SSH server acceptance and client completion differ. The client acquires the authenticated connection on success/result receipt, not during a server-local policy/MIC check. |
 | HC06 | Hello enrollment returns an authenticator-owned platform result; the browser assembles the WebAuthn response with its original client data. Private keys stay with the authenticator; roaming conversion retains its separate CTAP result. |
 | HC07 | Core CIBA does not synthesize an unauthored provider session/cookie transfer at an internal factor check. Explicit factor, approval and token events remain independent. |
 | HC08 | Owner-picker selection always opens that owner's complete inventory. Dock overflow can toggle its current owner; a separate collapse action closes the list. |
-| HC09 | Redraw recovery preserves both exact holding identity and originating list/dock/inspector region. Another equivalent control is a fallback only when the original region/control is absent; removal/collapse recover to the owner picker. |
+| HC09 | Redraw recovery preserves exact holding or non-holding action identity plus its list/dock/inspector origin. Picker, merged-owner, overflow, compact and trace-exit controls have distinct stable identities. Dock dismissal restores its initiating trigger; explicit list collapse returns to the owner picker. An equivalent control is a fallback only when the original region/control is absent. |
 
 Kerberos and SSH have explicit visual acceptance beyond overlap checks: folded/expanded logical-owner names, source-family column/row relationships, composite-frame attachment and real focus/target geometry. Registry-only actors absent from the whole lesson do not reserve blank cells. Actual participants from the entire journey remain reserved independently of the current cursor.
+
+Paper E's dense forest and eight-card SSH sheets use actor anchors x=104/484/864 and y=125/365/605, with 316x174 composites and 64/66-unit corridors. Expanding the SSH agent leaves common actors unchanged and the folded agent cell vacant; a forest's visible TGS occupies its physical KDC cell without duplicating the parent. Alias reference anchors are supplied before full-mode eligibility is checked. Sparse families may use fewer centered rows, while routes prefer available interior corridors over unnecessary frame-edge detours. Native family captures measure the sticky toolbar and exposed target centers before capturing the actual viewport.
 
 ## Source review order
 
@@ -82,14 +84,17 @@ Graph focus targets reserve the animation controls' measured height plus clearan
 
 ## Observed verification
 
-Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The current standalone is 2,251,749 bytes with SHA-256 `2bef714560d305c5b64e0b6e79eb6f125c3fe121d2ac4324ff8d9082eed41651`. Reports record the exercised source and artifact identities.
+Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The current standalone is 2,253,652 bytes with SHA-256 `1b593e2aa222e4fd17b7724c75270b2111b5b429682244c5941b83518a3adda2`. Reports record the exercised source and artifact identities.
 
 | Observed check | Result |
 | --- | --- |
 | Semantic source gate | Passed: 141 choices, 921 normalized Core configurations, 86 required interactions and 28,030 equal-cursor comparisons |
-| Full source regression suite | Current-candidate full-suite regeneration follows browser acceptance; the reviewed submission's 1,092/72-file result is historical, not a result for this correction |
+| Full source regression suite | Passed: 1,138 tests across all 73 files, zero failures, source identity unchanged. Four isolated Bun workers ran only after browser acceptance finished, retaining the original 900,000-ms per-test timeout. |
 | Held-object native gate | Passed in source HTTP, standalone HTTP and standalone file: all 141 choices retain full inventories at initial/final collapsed desktop cursors; 36 dense layouts per mode exercise full/compact/external geometry, rendered targets/routes, complete step names, exact-object lifecycle/replay, actual 200%/400% browser zoom, touch, reduced motion, source/emitted state equality and no unexpected CSP violations/external application requests |
 | Animation-area regression | Passed in all three loading modes: paused username/password exchange at 1920 pixels for web/native clients, 1480-pixel compact and 390-pixel external layouts; authored columns, complete visible names, path-following focus and unchanged canonical snapshots. Dense layout coverage contains 18 folded and 18 expanded cases per mode. |
+| Code1 native counterexamples | Passed in all three loading modes: encrypted/decoded occurrence values from both selected representations; 18 message-boundary cases per mode with before/at/after samples; repeated full/compact owner returns; exact holding and merged/compact/overflow/picker/exit action plus origin-region recovery, with separate resize/removal/collapse fallbacks. Every inactive scenario selection clears previous packet/message content and phase. |
+| Kerberos and SSH family composition | Passed: all 16 folded/expanded compositions per loading mode retain full geometry across AD, FAST, forests, SSH certificate enrollment/reissue, Device/SSSD and GSS. Complete names, frame attachment, Paper E forest cells without duplicate ancestors, stable shared SSH anchors and the centered active GSS row are checked. Captures measure full-graph/top-row exposure below sticky controls; actual final evidence-directory PNGs were inspected. |
+| Corrected CSP and touch scope | Host-side CSP records retain all application documents/reloads with zero unexpected violations. Genuine touch opens the exact-object inspector independently in source HTTP, standalone HTTP and standalone file; each mode records its own target, errors, requests and capture |
 | Preserved broader native gate | Passed: 224 collapsed/expanded catalog variants per loading mode and 297 recorded checks, including long-context rejection/recovery, responsive help, non-modal Tab/Escape, protocol preservation and enforcing eval/inline-script/fetch CSP probes in all three loading modes |
 | Focused native acceptance | All three loading modes preserve exact holding focus and canonical state through full/compact/external switching; internal-owner collapse recovers to `#show-internals`; nested F2 help stays inside the viewport |
 | Sticky-toolbar focus regression | Passed in all three loading modes: six participant/inventory cases per mode across 1920, 1480, 1050 and 390-pixel widths; focused controls clear the rendered sticky bar, center hit-testing reaches the target, and complete canonical snapshots remain unchanged |
@@ -98,7 +103,7 @@ Runtime: Bun 1.4.3 and native Chromium 155.0.8059.84. The current standalone is 
 
 The machine-readable reports retain exact identities, commands or scenario details and observed results. Superseded or cancelled attempts are not passing evidence. Screen-reader speech/comprehension is not established by the DOM mutation or keyboard checks.
 
-The final full-suite report was regenerated after all browser jobs finished. An earlier concurrent run timed out in one `advanced-ui.test.mjs` lifecycle case at the unchanged 900,000-ms per-test limit; that failed report/log are preserved separately and are not passing evidence. No application/test source or timeout changed between runs.
+The full-suite workflow runs after browser jobs finish. A historical pre-Code1 concurrent run timed out in one `advanced-ui.test.mjs` lifecycle case at the unchanged 900,000-ms limit; the same-source complete rerun passed without changing application/tests or raising that limit. Its failed report/log remain separate and are not passing evidence for this correction.
 
 ## Reproducible checks
 
