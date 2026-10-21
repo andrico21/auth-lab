@@ -9,7 +9,7 @@ The current candidate addresses NET-05, WIN-09, WIN-10 and SMB-R01 from the inde
 Use an existing matching Playwright Core/Chromium installation. The application still needs no dependency installation. Numeric QA has its own exact-pinned package; install it only if it is not already provisioned. Provision the two exact Bun executables separately:
 
 ```sh
-bun --cwd tools/verification/expansion-crypto install --frozen-lockfile --ignore-scripts
+bun install --cwd tools/verification/expansion-crypto --frozen-lockfile --ignore-scripts
 # Run focused source/mounted assertions before rebuilding:
 bun test --isolate --timeout=900000 \
   tests/windows-auth-lab.test.mjs tests/held-object-windows.test.mjs \
@@ -37,6 +37,8 @@ bun tools/verification/package-review-corrections.mjs \
 
 Use Bun 1.4.2 for the build/native/regression/package commands to reproduce the observed CI-pinned run. `LD_LIBRARY_PATH` may be supplied when the provisioned Chromium needs external runtime libraries. `AUTH_LAB_REVIEW_EVIDENCE_DIR` overrides the targeted native directory; the package tool's `--evidence-root` selects a complete alternative evidence tree.
 
+Use command-first `bun install --cwd ...` syntax with the pinned Bun version. The first publication CI run exposed that `bun --cwd ... install` resolves as a script invocation instead. Current setup instructions and newly emitted `frozenSetupCommand` metadata are corrected; previously reviewed JSON reports and archives retain their original bytes, including their historical command strings. Regenerate into a separate output directory rather than overwriting accepted evidence.
+
 `run-review-corrections-crypto.mjs` executes the permanent independent vector verifier with each supplied Bun binary. It retains raw JSON, actual argv/exit/runtime, output hashes, its own hash and the regeneration command; it does not manufacture expected bytes. Negative transcript fixtures are derived by the separately documented Python generator in `expansion-crypto/`.
 
 The native tool uses actual source HTTP, built HTTP and built `file:` surfaces with CSP enabled. It preserves the previous targeted SMB/navigation/profile/SPAKE/PAKE/icon coverage and adds all 53 receiver-local decoded RadSec occurrences, three actual field replay paths with exact full-prefix equality, six H-side resource receipt/acceptance paths, eleven Windows AES early/completed key contexts and five actual SMB ticket-key explanations. The three WinRM captures are accurately named `*-winrm-protected-command-result.png`. The tool has no request interception, avoiding Playwright's implicit ICO interception behavior.
@@ -49,7 +51,7 @@ The package gate requires exact source/runner/artifact hashes, all current test 
 The expansion retains the complete baseline gates below and adds independently authored per-preset contracts, numerical cryptographic QA and native acceptance for all 61 new IDs. See [the expansion verification contract](../../docs/expansion/native-verification.md) for exact scope, isolated dependency pins, baseline performance setup and honest manual/interoperability limits.
 
 ```sh
-bun --cwd tools/verification/expansion-crypto install --frozen-lockfile --ignore-scripts
+bun install --cwd tools/verification/expansion-crypto --frozen-lockfile --ignore-scripts
 bun run verify:crypto
 bun run build
 bun run verify:expansion

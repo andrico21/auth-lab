@@ -7,7 +7,7 @@ This directory is an isolated development/acceptance tool. Auth Flow Studio rema
 From the repository root, with Bun 1.4.3 (the authoring setup, pinned in this package):
 
 ```sh
-bun --cwd tools/verification/expansion-crypto install --frozen-lockfile --ignore-scripts
+bun install --cwd tools/verification/expansion-crypto --frozen-lockfile --ignore-scripts
 bun tools/verification/expansion-crypto/check-vectors.mjs
 ```
 

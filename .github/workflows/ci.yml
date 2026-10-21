@@ -22,7 +22,7 @@ jobs:
       - name: Verify the committed dist bundle is current
         run: git diff --exit-code -- dist/
       - name: Install isolated cryptographic verification dependencies
-        run: bun --cwd tools/verification/expansion-crypto install --frozen-lockfile --ignore-scripts
+        run: bun install --cwd tools/verification/expansion-crypto --frozen-lockfile --ignore-scripts
       - name: Verify pinned full cryptographic vectors
         run: bun run verify:crypto
       - name: Run the test suite

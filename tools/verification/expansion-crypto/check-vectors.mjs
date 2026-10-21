@@ -7,7 +7,7 @@ import { join, relative, sep } from 'node:path';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const command = 'bun tools/verification/expansion-crypto/check-vectors.mjs';
-const setup = 'bun --cwd tools/verification/expansion-crypto install --frozen-lockfile --ignore-scripts';
+const setup = 'bun install --cwd tools/verification/expansion-crypto --frozen-lockfile --ignore-scripts';
 const digest = (data) => createHash('sha256').update(data).digest('hex');
 const load = async (path) => JSON.parse(await readFile(join(root, path), 'utf8'));
 const shaFile = async (path) => digest(await readFile(join(root, path)));

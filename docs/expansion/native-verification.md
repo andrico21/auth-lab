@@ -16,7 +16,7 @@ Build the expansion checkout first using the existing Bun build command, then fr
 The native QA dependency is pinned separately from the dependency-free application in `tools/verification/native-qa/package.json` and `bun.lock`. For a fresh QA checkout:
 
 ```sh
-bun --cwd tools/verification/native-qa install --frozen-lockfile --ignore-scripts
+bun install --cwd tools/verification/native-qa --frozen-lockfile --ignore-scripts
 export PLAYWRIGHT_MODULE="$PWD/tools/verification/native-qa/node_modules/playwright-core/index.mjs"
 ```
 
