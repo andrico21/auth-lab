@@ -792,7 +792,7 @@ try{
     // Start the catalog sweep from a fresh configuration, retaining host-side CSP evidence.
     await page.goto(target,{waitUntil:'networkidle'});await page.setViewportSize({width:1920,height:1200});
     const choices=await page.evaluate(()=>[...document.querySelector('auth-flow-studio').refs['lab-scenario'].options].map(option=>option.value));
-    assert.equal(choices.length,141,mode+' full 141-choice inventory gate');
+    assert.equal(choices.length,214,mode+' full inventory gate: accepted 141 choices, 61 expansion presets and 12 SMB lessons');
     for(const id of choices){
       await heldNativeChoose(page,id);
       const initial=await heldNativeScene(page,mode+' '+id+' initial');

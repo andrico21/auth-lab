@@ -26,12 +26,12 @@ const directives=value=>new Map(value.split(';').map(item=>item.trim().split(/\s
 const contents=(html,tag)=>[...html.matchAll(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`,'gi'))].map(match=>match[1]);
 let built;
 before(()=>{
-  for(const name of ['build.mjs','security-policy.mjs','index.html','src'])fs.cpSync(path.join(project,name),path.join(fixture,name),{recursive:true});
+  for(const name of ['build.mjs','security-policy.mjs','index.html','src','assets'])fs.cpSync(path.join(project,name),path.join(fixture,name),{recursive:true});
   build();built=output();
 });
 after(()=>fs.rmSync(fixture,{recursive:true,force:true}));
 
-test('source CSP precedes assets and permits only same-origin scripts/styles, with no connections or HTML handlers',()=>{
+test('source CSP precedes assets and permits same-origin scripts, styles and icons, with no connections or HTML handlers',()=>{
   const policy=meta(template),rules=directives(policy.value);
   assert.equal(policy.value,SOURCE_CSP);
   assert.ok(policy.index>template.indexOf('<meta charset='));
@@ -39,7 +39,8 @@ test('source CSP precedes assets and permits only same-origin scripts/styles, wi
   assert.ok(policy.index<template.indexOf('<script '));
   assert.deepEqual(rules.get('script-src'),["'self'"]);
   assert.deepEqual(rules.get('style-src'),["'self'"]);
-  for(const name of ['default-src','script-src-attr','style-src-attr','connect-src','img-src','font-src','media-src','object-src','frame-src','worker-src','manifest-src','base-uri','form-action'])assert.deepEqual(rules.get(name),["'none'"],name);
+  assert.deepEqual(rules.get('img-src'),["'self'"]);
+  for(const name of ['default-src','script-src-attr','style-src-attr','connect-src','font-src','media-src','object-src','frame-src','worker-src','manifest-src','base-uri','form-action'])assert.deepEqual(rules.get(name),["'none'"],name);
   assert.doesNotMatch(policy.value,/unsafe-inline|unsafe-eval|unsafe-hashes|\*|https?:|data:|blob:/);
   for(const unsupported of ['frame-ancestors','sandbox','report-uri','report-to'])assert.equal(rules.has(unsupported),false,'unsupported meta directive is not advertised');
 });
@@ -53,13 +54,19 @@ test('standalone CSP authorizes exactly the final embedded script and stylesheet
   assert.deepEqual(rules.get('style-src'),[hash(styles[0])]);
   assert.equal(rules.get('script-src').includes(hash(scripts[0]+'\nwindow.injected=true;')),false);
   assert.equal(rules.get('style-src').includes(hash(styles[0]+'\n.actor-card{display:none}')),false);
-  assert.doesNotMatch(policy.value,/'self'|unsafe-inline|unsafe-eval|unsafe-hashes|\*|https?:|data:|blob:/);
+  assert.doesNotMatch(policy.value,/'self'|unsafe-inline|unsafe-eval|unsafe-hashes|\*|https?:|blob:/);
+  assert.deepEqual(rules.get('img-src'),['data:']);
+  for(const [name,sources] of rules)if(name!=='img-src')assert.equal(sources.includes('data:'),false,name+' must not authorize data URLs');
   assert.deepEqual(rules.get('connect-src'),["'none'"]);
   assert.deepEqual(rules.get('script-src-attr'),["'none'"]);
   assert.deepEqual(rules.get('style-src-attr'),["'none'"]);
   const markup=built.replace(/<script>[\s\S]*?<\/script>/g,'').replace(/<style>[\s\S]*?<\/style>/g,'');
   assert.doesNotMatch(markup,/\s(?:style|on\w+)\s*=/i);
-  assert.doesNotMatch(markup,/<(?:script|link)\b[^>]*\b(?:src|href)\s*=/i);
+  assert.doesNotMatch(markup,/<script\b[^>]*\bsrc\s*=/i);
+  for(const [tag] of markup.matchAll(/<link\b[^>]*>/gi)){
+    assert.match(tag,/\brel="(?:icon|apple-touch-icon)"/);
+    assert.match(tag,/\bhref="data:image\/(?:x-icon|svg\+xml|png);base64,[A-Za-z0-9+/=]+"/);
+  }
 });
 
 test('CRLF and CR source files produce identical standalone bytes and browser-matching hashes',()=>{
@@ -91,6 +98,7 @@ test('builder fails closed on missing/changed/late policies or invalid asset pla
       template.replace(tag,'').replace('</head>',tag+'\n</head>'),
       template.replace(styleTag,''),template.replace(styleTag,styleTag+'\n'+styleTag),
       template.replace(scriptTag,''),template.replace(scriptTag,scriptTag+'\n'+scriptTag),
+      template.replace('href="assets/favicon.svg"','href="missing.svg"'),
     ]){
       fs.writeFileSync(file,variant);
       const result=spawnSync(process.execPath,[path.join(fixture,'build.mjs')],{encoding:'utf8'});

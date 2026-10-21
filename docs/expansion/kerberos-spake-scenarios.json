@@ -1,0 +1,5298 @@
+{
+  "schemaVersion": 1,
+  "reviewBoundaryContract": {
+    "errorEnvelopes": {"firstAdvertisement": {"messageType":"KRB-ERROR","code":25,"name":"KDC_ERR_PREAUTH_REQUIRED"},"firstKdcOptimisticChallenge":{"messageType":"KRB-ERROR","code":25,"name":"KDC_ERR_PREAUTH_REQUIRED"},"postSupportChallenge":{"messageType":"KRB-ERROR","code":91,"name":"KDC_ERR_MORE_PREAUTH_DATA_REQUIRED"}},
+    "initialCookie": {"artifactSuffix":"initial-cookie","created":"advertisement; advertisement-intercept in downgrade branches","clientRepresentation":"opaque","decodedReaders":["spake-kdc"],"contents":"negotiation handle only; no scalar or challenge transcript","echo":"exact bytes in support or permitted timestamp-request","replacement":{"kdc":"kdc-challenge-create","client":"challenge"},"failureDisposal":{"kdc":"kdc-cleanup","client":"client-cleanup"},"optimisticRestart":"unsupported generation0 cookie abandoned independently at transcript-reset and kdc-transcript-reset; no initial-cookie invented"},
+    "attributeLifecycle": {"kspInitialKeyKey":{"derive":"client-derive","evictTemporary":"session"},"kspClientSharedK":{"derive":"client-derive","evictTemporary":"session"},"kspClientReplyKeyKey":{"derive":"client-derive","use":"client-validate","evictTemporary":"session"},"kspTgtSessionKey":{"derive":"as-create","clientVerify":"client-validate","store":"cache","evictTemporary":"session","retainedStore":"credential cache"},"contextOnlyPolicy":"inspect remains non-replayable","sourceCursorPolicy":"existing canonical events, no inserted protocol steps"}
+  },
+  "scenarios": [
+    {
+      "id": "lab-krb-spake-success",
+      "profile": "rfc9588-mit1222-ed25519-aes128-success",
+      "sources": [
+        "RFC9588 sections 3-8,10.4-10.5",
+        "RFC4120 sections 3.1-3.3",
+        "MIT 1.22.2 admin/spake"
+      ],
+      "errata": "RFC Editor errata search checked 2026-10-21: no matching errata found",
+      "actors": [
+        "spake-client",
+        "spake-kdc",
+        "spake-tgs",
+        "spake-service"
+      ],
+      "branch": "ordinary support then challenge",
+      "messageLedger": [
+        "AS-REQ",
+        "PREAUTH_REQUIRED advertisement / optimistic challenge",
+        "AS-REQ support (unless optimized)",
+        "MORE_PREAUTH_DATA_REQUIRED challenge + ETYPE-INFO2 + opaque cookie",
+        "AS-REQ response with encrypted SF-NONE",
+        "AS-REP without final PA-SPAKE",
+        "TGS-REQ",
+        "TGS-REP",
+        "AP-REQ",
+        "AP-REP"
+      ],
+      "boundaries": {
+        "challengeReceipt": "no derived key or TGT",
+        "responseReceipt": "KDC validation still pending",
+        "asReplyReceipt": "ticket received but not cached",
+        "clientValidation": "reply integrity, nonce and principal checked",
+        "cacheAcquisition": "first usable user TGT",
+        "serviceReply": "service ticket received is not application session"
+      },
+      "objects": {
+        "password": "client local only",
+        "kdcRecord": "KDC local only",
+        "privateScalars": "separate x/y identities, never wire or cookie decoded by client",
+        "cookie": "opaque client hold/echo; KDC decoded only",
+        "tgt": "opaque envelope; protected body TGS only",
+        "asClientMaterial": "reply-key encrypted; client/KDC decode",
+        "unrelated": "initial unrelated cache preserved"
+      },
+      "failureKnowledge": "endpoint learns failure only at its local validation or received error; no fabricated shared key",
+      "terminal": "application session",
+      "success": true,
+      "expectedHistory": [
+        "request",
+        "advertisement",
+        "support",
+        "kdc-challenge-create",
+        "challenge",
+        "client-derive",
+        "response",
+        "kdc-validate",
+        "as-create",
+        "as-receive",
+        "kdc-cleanup",
+        "client-validate",
+        "cache",
+        "tgs-request",
+        "tgs-validate",
+        "tgs-reply",
+        "tgs-cleanup",
+        "service-cache",
+        "ap-request",
+        "service-validate",
+        "ap-reply",
+        "service-cleanup",
+        "session"
+      ],
+      "profileSources": [
+        {
+          "name": "RFC 9588",
+          "status": "Proposed Standard",
+          "revision": "August 2024",
+          "sections": [
+            "3",
+            "4.1",
+            "4.2",
+            "4.3",
+            "4.5",
+            "4.6",
+            "6",
+            "7",
+            "8",
+            "10.5"
+          ],
+          "url": "https://www.rfc-editor.org/rfc/rfc9588.html"
+        },
+        {
+          "name": "MIT administration",
+          "revision": "1.22.2",
+          "url": "https://web.mit.edu/kerberos/krb5-latest/doc/admin/spake.html",
+          "checked": "2026-10-21"
+        }
+      ],
+      "fixture": "rfc9588-C-aes128-edwards25519 (offline validator); runtime symbolic",
+      "negativeAssertions": [
+        "No TGT cache before client validation and separate cache event",
+        "No client-readable ticket body",
+        "No x or y in any wire object or client-decoded cookie",
+        "No final PA-SPAKE from KDC",
+        "No OTP",
+        "No changes to unrelated credential"
+      ],
+      "concreteLedger": [
+        {
+          "event": "request",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "cname alice",
+            "sname krbtgt",
+            "nonce 741001",
+            "etype17"
+          ],
+          "protection": "none"
+        },
+        {
+          "event": "advertisement",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "empty PA-SPAKE151",
+            "single ETYPE-INFO2 enctype17 + salt"
+          ],
+          "protection": "unauthenticated METHOD-DATA"
+        },
+        {
+          "event": "support",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "SPAKESupport ordered groups [1]"
+          ],
+          "protection": "DER PA-SPAKE support"
+        },
+        {
+          "event": "kdc-challenge-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "fresh x",
+            "T",
+            "SF-NONE",
+            "opaque cookie"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "challenge",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "group1",
+            "T",
+            "SF-NONE",
+            "opaque cookie",
+            "ETYPE-INFO2 if client optimistic"
+          ],
+          "protection": "challenge unauthenticated; cookie KDC-only authenticated encryption"
+        },
+        {
+          "event": "client-derive",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "password local",
+            "ETYPE-INFO2 available",
+            "fresh y",
+            "S",
+            "K",
+            "transcript",
+            "K-prime[1]",
+            "candidate K-prime[0]"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "response",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "S",
+            "encrypted SF-NONE",
+            "echo opaque cookie"
+          ],
+          "protection": "factor K-prime[1], key usage65"
+        },
+        {
+          "event": "kdc-validate",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "K",
+            "transcript",
+            "K-prime[1]",
+            "factor validated"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "as-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "KDC-issued TGT session key",
+            "TGT",
+            "AS protected client material"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "as-receive",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "TGT envelope",
+            "AS client encrypted material",
+            "no final PA-SPAKE"
+          ],
+          "protection": "ticket realm TGT key; client part strengthened K-prime[0] except timestamp fallback"
+        },
+        {
+          "event": "kdc-cleanup",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "client-validate",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "decoded AS client material",
+            "nonce/principal/lifetime verified"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "accepted TGT envelope",
+            "KDC-issued session key"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-request",
+          "from": "spake-client",
+          "to": "spake-tgs",
+          "fields": [
+            "opaque TGT",
+            "authenticator",
+            "requested HTTP service"
+          ],
+          "protection": "authenticator TGT session key"
+        },
+        {
+          "event": "tgs-validate",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-reply",
+          "from": "spake-tgs",
+          "to": "spake-client",
+          "fields": [
+            "opaque service ticket",
+            "TGS client encrypted material"
+          ],
+          "protection": "ticket service key; client part TGT session key"
+        },
+        {
+          "event": "tgs-cleanup",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "service-cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "TGS client material validated",
+            "service session key cache"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-request",
+          "from": "spake-client",
+          "to": "spake-service",
+          "fields": [
+            "opaque service ticket",
+            "AP authenticator"
+          ],
+          "protection": "authenticator service session key"
+        },
+        {
+          "event": "service-validate",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-reply",
+          "from": "spake-service",
+          "to": "spake-client",
+          "fields": [
+            "encrypted authenticator timestamp echo"
+          ],
+          "protection": "service session key"
+        },
+        {
+          "event": "service-cleanup",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "session",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "AP reply echo validated",
+            "application context established"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        }
+      ],
+      "checkablePredicates": {
+        "initial": "credentials.tgt=false && session.established=false && unrelated.cache preserved",
+        "allPrefixesBeforeCache": "credentials.tgt=false",
+        "terminal": "session.established=true && credentials.tgt=true && credentials.serviceTicket=true",
+        "failureRelease": "Endpoint-local cleanup only; configured and unrelated holdings retained; no client event clears remote state",
+        "profileReset": "Each scenario is immutable; selection/rewind uses shared canonical reconstruction, not mutations to base definitions"
+      },
+      "permissionLedger": [
+        {
+          "artifactId": "lab-krb-spake-success:password",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "password"
+              ]
+            }
+          ],
+          "lifetime": "initial configured client input",
+          "exactFields": [
+            "password stays local"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:kdc-record",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "principal",
+                "enctype",
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "initial configuration retained",
+          "exactFields": [
+            "alice@SPAKE.EXAMPLE",
+            17,
+            "provisioned principal AES128 key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:unrelated",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "credential"
+              ]
+            }
+          ],
+          "lifetime": "initial credential cache unchanged on every branch",
+          "exactFields": [
+            "preexisting unrelated credential"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:x",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "scalar"
+              ]
+            }
+          ],
+          "lifetime": "fresh challenge creation to KDC-local cleanup",
+          "exactFields": [
+            "fresh KDC scalar; not wire"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:challenge",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "wire",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "group",
+                "public-T",
+                "factors"
+              ]
+            }
+          ],
+          "lifetime": "creation through endpoint-local exchange cleanup",
+          "exactFields": [
+            1,
+            "T=xP+wM",
+            "SF-NONE type1"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:cookie",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "cookie-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "state"
+              ]
+            }
+          ],
+          "lifetime": "KDC creation, client receipt and echo, then local cleanup",
+          "exactFields": [
+            "authenticated encrypted bytes",
+            "KDC-only private scalar reference/transcript"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:initial-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "enctype17",
+                "password/salt-derived key"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "enctype17",
+            "password/salt-derived key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:y",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "fresh client scalar"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "fresh client scalar"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:client-shared",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K=y(T-wM)"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K=y(T-wM)"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:client-transcript",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "support/challenge/S transcript hash"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "support/challenge/S transcript hash"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:client-factor-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K-prime[1]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K-prime[1]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:client-reply-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "candidate K-prime[0]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "candidate K-prime[0]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:kdc-shared",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "K=x(S-wN)"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "K=x(S-wN)"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:kdc-transcript",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "support/challenge/S transcript hash"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "support/challenge/S transcript hash"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:kdc-factor-key",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "K-prime[1]"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "K-prime[1]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:kdc-reply-key",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "strengthened K-prime[0]"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "strengthened K-prime[0]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:tgt-session",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "key",
+                "enctype"
+              ]
+            }
+          ],
+          "lifetime": "issued at AS creation, client acquires after AS validation, retained cache",
+          "exactFields": [
+            "KDC-issued K-client-tgs",
+            17
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:tgt",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-tgs"
+              ],
+              "fields": [
+                "client",
+                "server",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "AS creation; client receipt; validated cache; TGS use",
+          "exactFields": [
+            "TGT bytes",
+            "alice@SPAKE.EXAMPLE",
+            "krbtgt/SPAKE.EXAMPLE",
+            "K-client-tgs"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:as-material",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "nonce",
+                "session-key",
+                "server"
+              ]
+            }
+          ],
+          "lifetime": "AS creation/receipt; client decode only at validation",
+          "exactFields": [
+            "nonce741001",
+            "K-client-tgs",
+            "krbtgt/SPAKE.EXAMPLE"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:service-session",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue; validated client cache and service authenticated context",
+          "exactFields": [
+            "TGS-issued K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:service-ticket",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-tgs",
+                "spake-service"
+              ],
+              "fields": [
+                "client",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue/receipt/cache; service validated use",
+          "exactFields": [
+            "service ticket bytes",
+            "alice@SPAKE.EXAMPLE",
+            "K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-success:ap-reply",
+          "generation": 0,
+          "creator": "spake-service",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "echo-time"
+              ]
+            }
+          ],
+          "lifetime": "service creation then client receipt; client decode at mutual validation",
+          "exactFields": [
+            "echo of client authenticator timestamp"
+          ]
+        }
+      ],
+      "groupedOmissions": [
+        "No FAST armor or OTP; SF-NONE data omitted",
+        "DNS, TCP handshake and ASN.1 byte encoding are described, not separately animated",
+        "TGS and mutual AP follow RFC4120, not a modified SPAKE service protocol"
+      ],
+      "implementationDisposition": {
+        "source": "Authored all fixed event boundaries and terminal predicate",
+        "nativeEvidence": "Success representative parent UI gate passed; remaining variants require parent native verification",
+        "interoperability": "Not performed; offline symbolic teaching fixture only"
+      }
+    },
+    {
+      "id": "lab-krb-spake-wrong-password",
+      "profile": "rfc9588-mit1222-ed25519-aes128-wrong-password",
+      "sources": [
+        "RFC9588 sections 3-8,10.4-10.5",
+        "RFC4120 sections 3.1-3.3",
+        "MIT 1.22.2 admin/spake"
+      ],
+      "errata": "RFC Editor errata search checked 2026-10-21: no matching errata found",
+      "actors": [
+        "spake-client",
+        "spake-kdc",
+        "spake-tgs",
+        "spake-service"
+      ],
+      "branch": "KDC factor decryption fails; timestamp disabled",
+      "messageLedger": [
+        "AS-REQ",
+        "negotiation or interference",
+        "local rejection / KRB-ERROR"
+      ],
+      "boundaries": {
+        "challengeReceipt": "no derived key or TGT",
+        "responseReceipt": "KDC validation still pending",
+        "asReplyReceipt": "ticket received but not cached",
+        "clientValidation": "reply integrity, nonce and principal checked",
+        "cacheAcquisition": "first usable user TGT",
+        "serviceReply": "service ticket received is not application session"
+      },
+      "objects": {
+        "password": "client local only",
+        "kdcRecord": "KDC local only",
+        "privateScalars": "separate x/y identities, never wire or cookie decoded by client",
+        "cookie": "opaque client hold/echo; KDC decoded only",
+        "tgt": "opaque envelope; protected body TGS only",
+        "asClientMaterial": "reply-key encrypted; client/KDC decode",
+        "unrelated": "initial unrelated cache preserved"
+      },
+      "failureKnowledge": "endpoint learns failure only at its local validation or received error; no fabricated shared key",
+      "terminal": "PREAUTH_FAILED; no TGT",
+      "success": false,
+      "expectedHistory": [
+        "request",
+        "advertisement",
+        "support",
+        "kdc-challenge-create",
+        "challenge",
+        "client-derive",
+        "response",
+        "kdc-reject",
+        "error-receive",
+        "kdc-cleanup",
+        "client-cleanup"
+      ],
+      "profileSources": [
+        {
+          "name": "RFC 9588",
+          "status": "Proposed Standard",
+          "revision": "August 2024",
+          "sections": [
+            "3",
+            "4.1",
+            "4.2",
+            "4.3",
+            "4.5",
+            "4.6",
+            "6",
+            "7",
+            "8",
+            "10.5"
+          ],
+          "url": "https://www.rfc-editor.org/rfc/rfc9588.html"
+        },
+        {
+          "name": "MIT administration",
+          "revision": "1.22.2",
+          "url": "https://web.mit.edu/kerberos/krb5-latest/doc/admin/spake.html",
+          "checked": "2026-10-21"
+        }
+      ],
+      "fixture": "rfc9588-C-aes128-edwards25519 (offline validator); runtime symbolic",
+      "negativeAssertions": [
+        "No TGT cache before client validation and separate cache event",
+        "No client-readable ticket body",
+        "No x or y in any wire object or client-decoded cookie",
+        "No final PA-SPAKE from KDC",
+        "No OTP",
+        "No changes to unrelated credential"
+      ],
+      "concreteLedger": [
+        {
+          "event": "request",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "cname alice",
+            "sname krbtgt",
+            "nonce 741001",
+            "etype17"
+          ],
+          "protection": "none"
+        },
+        {
+          "event": "advertisement",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "empty PA-SPAKE151",
+            "single ETYPE-INFO2 enctype17 + salt"
+          ],
+          "protection": "unauthenticated METHOD-DATA"
+        },
+        {
+          "event": "support",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "SPAKESupport ordered groups [1]"
+          ],
+          "protection": "DER PA-SPAKE support"
+        },
+        {
+          "event": "kdc-challenge-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "fresh x",
+            "T",
+            "SF-NONE",
+            "opaque cookie"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "challenge",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "group1",
+            "T",
+            "SF-NONE",
+            "opaque cookie",
+            "ETYPE-INFO2 if client optimistic"
+          ],
+          "protection": "challenge unauthenticated; cookie KDC-only authenticated encryption"
+        },
+        {
+          "event": "client-derive",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "password local",
+            "ETYPE-INFO2 available",
+            "fresh y",
+            "S",
+            "K",
+            "transcript",
+            "K-prime[1]",
+            "candidate K-prime[0]"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "response",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "S",
+            "encrypted SF-NONE",
+            "echo opaque cookie"
+          ],
+          "protection": "factor K-prime[1], key usage65"
+        },
+        {
+          "event": "kdc-reject",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "factor ciphertext integrity failure",
+            "no accepted SF-NONE"
+          ],
+          "protection": "KDC-local validation"
+        },
+        {
+          "event": "error-receive",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "KDC_ERR_PREAUTH_FAILED"
+          ],
+          "protection": "unauthenticated error"
+        },
+        {
+          "event": "kdc-cleanup",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "KDC temporary objects only"
+          ],
+          "protection": "local"
+        },
+        {
+          "event": "client-cleanup",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "client temporary objects only"
+          ],
+          "protection": "local"
+        }
+      ],
+      "checkablePredicates": {
+        "initial": "credentials.tgt=false && session.established=false && unrelated.cache preserved",
+        "allPrefixesBeforeCache": "credentials.tgt=false",
+        "terminal": "credentials.tgt=false && credentials.serviceTicket=false && session.established=false",
+        "failureRelease": "Endpoint-local cleanup only; configured and unrelated holdings retained; no client event clears remote state",
+        "profileReset": "Each scenario is immutable; selection/rewind uses shared canonical reconstruction, not mutations to base definitions"
+      },
+      "permissionLedger": [
+        {
+          "artifactId": "lab-krb-spake-wrong-password:password",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "password"
+              ]
+            }
+          ],
+          "lifetime": "initial configured client input",
+          "exactFields": [
+            "password stays local"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:kdc-record",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "principal",
+                "enctype",
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "initial configuration retained",
+          "exactFields": [
+            "alice@SPAKE.EXAMPLE",
+            17,
+            "provisioned principal AES128 key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:unrelated",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "credential"
+              ]
+            }
+          ],
+          "lifetime": "initial credential cache unchanged on every branch",
+          "exactFields": [
+            "preexisting unrelated credential"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:x",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "scalar"
+              ]
+            }
+          ],
+          "lifetime": "fresh challenge creation to KDC-local cleanup",
+          "exactFields": [
+            "fresh KDC scalar; not wire"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:challenge",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "wire",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "group",
+                "public-T",
+                "factors"
+              ]
+            }
+          ],
+          "lifetime": "creation through endpoint-local exchange cleanup",
+          "exactFields": [
+            1,
+            "T=xP+wM",
+            "SF-NONE type1"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:cookie",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "cookie-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "state"
+              ]
+            }
+          ],
+          "lifetime": "KDC creation, client receipt and echo, then local cleanup",
+          "exactFields": [
+            "authenticated encrypted bytes",
+            "KDC-only private scalar reference/transcript"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:initial-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "enctype17",
+                "password/salt-derived key"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "enctype17",
+            "password/salt-derived key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:y",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "fresh client scalar"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "fresh client scalar"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:client-shared",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K=y(T-wM)"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K=y(T-wM)"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:client-transcript",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "support/challenge/S transcript hash"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "support/challenge/S transcript hash"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:client-factor-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K-prime[1]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K-prime[1]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-wrong-password:client-reply-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "candidate K-prime[0]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "candidate K-prime[0]"
+          ]
+        }
+      ],
+      "groupedOmissions": [
+        "No FAST armor or OTP; SF-NONE data omitted",
+        "DNS, TCP handshake and ASN.1 byte encoding are described, not separately animated",
+        "TGS and mutual AP follow RFC4120, not a modified SPAKE service protocol"
+      ],
+      "implementationDisposition": {
+        "source": "Authored all fixed event boundaries and terminal predicate",
+        "nativeEvidence": "Success representative parent UI gate passed; remaining variants require parent native verification",
+        "interoperability": "Not performed; offline symbolic teaching fixture only"
+      }
+    },
+    {
+      "id": "lab-krb-spake-no-common-group",
+      "profile": "rfc9588-mit1222-ed25519-aes128-no-common-group",
+      "sources": [
+        "RFC9588 sections 3-8,10.4-10.5",
+        "RFC4120 sections 3.1-3.3",
+        "MIT 1.22.2 admin/spake"
+      ],
+      "errata": "RFC Editor errata search checked 2026-10-21: no matching errata found",
+      "actors": [
+        "spake-client",
+        "spake-kdc",
+        "spake-tgs",
+        "spake-service"
+      ],
+      "branch": "disjoint configured groups; explicit rejection policy",
+      "messageLedger": [
+        "AS-REQ",
+        "negotiation or interference",
+        "local rejection / KRB-ERROR"
+      ],
+      "boundaries": {
+        "challengeReceipt": "no derived key or TGT",
+        "responseReceipt": "KDC validation still pending",
+        "asReplyReceipt": "ticket received but not cached",
+        "clientValidation": "reply integrity, nonce and principal checked",
+        "cacheAcquisition": "first usable user TGT",
+        "serviceReply": "service ticket received is not application session"
+      },
+      "objects": {
+        "password": "client local only",
+        "kdcRecord": "KDC local only",
+        "privateScalars": "separate x/y identities, never wire or cookie decoded by client",
+        "cookie": "opaque client hold/echo; KDC decoded only",
+        "tgt": "opaque envelope; protected body TGS only",
+        "asClientMaterial": "reply-key encrypted; client/KDC decode",
+        "unrelated": "initial unrelated cache preserved"
+      },
+      "failureKnowledge": "endpoint learns failure only at its local validation or received error; no fabricated shared key",
+      "terminal": "PREAUTH_FAILED; no shared key",
+      "success": false,
+      "expectedHistory": [
+        "request",
+        "advertisement",
+        "support",
+        "group-reject",
+        "error-receive",
+        "kdc-cleanup",
+        "client-cleanup"
+      ],
+      "profileSources": [
+        {
+          "name": "RFC 9588",
+          "status": "Proposed Standard",
+          "revision": "August 2024",
+          "sections": [
+            "3",
+            "4.1",
+            "4.2",
+            "4.3",
+            "4.5",
+            "4.6",
+            "6",
+            "7",
+            "8",
+            "10.5"
+          ],
+          "url": "https://www.rfc-editor.org/rfc/rfc9588.html"
+        },
+        {
+          "name": "MIT administration",
+          "revision": "1.22.2",
+          "url": "https://web.mit.edu/kerberos/krb5-latest/doc/admin/spake.html",
+          "checked": "2026-10-21"
+        }
+      ],
+      "fixture": "rfc9588-C-aes128-edwards25519 (offline validator); runtime symbolic",
+      "negativeAssertions": [
+        "No TGT cache before client validation and separate cache event",
+        "No client-readable ticket body",
+        "No x or y in any wire object or client-decoded cookie",
+        "No final PA-SPAKE from KDC",
+        "No OTP",
+        "No changes to unrelated credential"
+      ],
+      "concreteLedger": [
+        {
+          "event": "request",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "cname alice",
+            "sname krbtgt",
+            "nonce 741001",
+            "etype17"
+          ],
+          "protection": "none"
+        },
+        {
+          "event": "advertisement",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "empty PA-SPAKE151",
+            "single ETYPE-INFO2 enctype17 + salt"
+          ],
+          "protection": "unauthenticated METHOD-DATA"
+        },
+        {
+          "event": "support",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "SPAKESupport ordered groups [1]"
+          ],
+          "protection": "DER PA-SPAKE support"
+        },
+        {
+          "event": "group-reject",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "client group2 only",
+            "KDC group1 only",
+            "reject policy"
+          ],
+          "protection": "KDC-local policy; no shared key"
+        },
+        {
+          "event": "error-receive",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "KDC_ERR_PREAUTH_FAILED"
+          ],
+          "protection": "unauthenticated error"
+        },
+        {
+          "event": "kdc-cleanup",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "KDC temporary objects only"
+          ],
+          "protection": "local"
+        },
+        {
+          "event": "client-cleanup",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "client temporary objects only"
+          ],
+          "protection": "local"
+        }
+      ],
+      "checkablePredicates": {
+        "initial": "credentials.tgt=false && session.established=false && unrelated.cache preserved",
+        "allPrefixesBeforeCache": "credentials.tgt=false",
+        "terminal": "credentials.tgt=false && credentials.serviceTicket=false && session.established=false",
+        "failureRelease": "Endpoint-local cleanup only; configured and unrelated holdings retained; no client event clears remote state",
+        "profileReset": "Each scenario is immutable; selection/rewind uses shared canonical reconstruction, not mutations to base definitions"
+      },
+      "permissionLedger": [
+        {
+          "artifactId": "lab-krb-spake-no-common-group:password",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "password"
+              ]
+            }
+          ],
+          "lifetime": "initial configured client input",
+          "exactFields": [
+            "password stays local"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-no-common-group:kdc-record",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "principal",
+                "enctype",
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "initial configuration retained",
+          "exactFields": [
+            "alice@SPAKE.EXAMPLE",
+            17,
+            "provisioned principal AES128 key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-no-common-group:unrelated",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "credential"
+              ]
+            }
+          ],
+          "lifetime": "initial credential cache unchanged on every branch",
+          "exactFields": [
+            "preexisting unrelated credential"
+          ]
+        }
+      ],
+      "groupedOmissions": [
+        "No FAST armor or OTP; SF-NONE data omitted",
+        "DNS, TCP handshake and ASN.1 byte encoding are described, not separately animated",
+        "TGS and mutual AP follow RFC4120, not a modified SPAKE service protocol"
+      ],
+      "implementationDisposition": {
+        "source": "Authored all fixed event boundaries and terminal predicate",
+        "nativeEvidence": "Success representative parent UI gate passed; remaining variants require parent native verification",
+        "interoperability": "Not performed; offline symbolic teaching fixture only"
+      }
+    },
+    {
+      "id": "lab-krb-spake-downgrade-allowed",
+      "profile": "rfc9588-mit1222-ed25519-aes128-downgrade-allowed",
+      "sources": [
+        "RFC9588 sections 3-8,10.4-10.5",
+        "RFC4120 sections 3.1-3.3",
+        "MIT 1.22.2 admin/spake"
+      ],
+      "errata": "RFC Editor errata search checked 2026-10-21: no matching errata found",
+      "actors": [
+        "spake-client",
+        "spake-kdc",
+        "spake-tgs",
+        "spake-service",
+        "spake-observer"
+      ],
+      "branch": "observer strips advertisement; encrypted timestamp permitted",
+      "messageLedger": [
+        "AS-REQ",
+        "PREAUTH_REQUIRED advertisement / optimistic challenge",
+        "AS-REQ support (unless optimized)",
+        "MORE_PREAUTH_DATA_REQUIRED challenge + ETYPE-INFO2 + opaque cookie",
+        "AS-REQ response with encrypted SF-NONE",
+        "AS-REP without final PA-SPAKE",
+        "TGS-REQ",
+        "TGS-REP",
+        "AP-REQ",
+        "AP-REP"
+      ],
+      "boundaries": {
+        "challengeReceipt": "no derived key or TGT",
+        "responseReceipt": "KDC validation still pending",
+        "asReplyReceipt": "ticket received but not cached",
+        "clientValidation": "reply integrity, nonce and principal checked",
+        "cacheAcquisition": "first usable user TGT",
+        "serviceReply": "service ticket received is not application session"
+      },
+      "objects": {
+        "password": "client local only",
+        "kdcRecord": "KDC local only",
+        "privateScalars": "separate x/y identities, never wire or cookie decoded by client",
+        "cookie": "opaque client hold/echo; KDC decoded only",
+        "tgt": "opaque envelope; protected body TGS only",
+        "asClientMaterial": "reply-key encrypted; client/KDC decode",
+        "unrelated": "initial unrelated cache preserved"
+      },
+      "failureKnowledge": "endpoint learns failure only at its local validation or received error; no fabricated shared key",
+      "terminal": "application session via encrypted timestamp, not SPAKE",
+      "success": true,
+      "expectedHistory": [
+        "request",
+        "advertisement-intercept",
+        "advertisement-stripped",
+        "observer-cleanup",
+        "fallback-policy",
+        "timestamp-derive",
+        "timestamp-request",
+        "timestamp-validate",
+        "as-create",
+        "as-receive",
+        "kdc-cleanup",
+        "client-validate",
+        "cache",
+        "tgs-request",
+        "tgs-validate",
+        "tgs-reply",
+        "tgs-cleanup",
+        "service-cache",
+        "ap-request",
+        "service-validate",
+        "ap-reply",
+        "service-cleanup",
+        "session"
+      ],
+      "profileSources": [
+        {
+          "name": "RFC 9588",
+          "status": "Proposed Standard",
+          "revision": "August 2024",
+          "sections": [
+            "3",
+            "4.1",
+            "4.2",
+            "4.3",
+            "4.5",
+            "4.6",
+            "6",
+            "7",
+            "8",
+            "10.5"
+          ],
+          "url": "https://www.rfc-editor.org/rfc/rfc9588.html"
+        },
+        {
+          "name": "MIT administration",
+          "revision": "1.22.2",
+          "url": "https://web.mit.edu/kerberos/krb5-latest/doc/admin/spake.html",
+          "checked": "2026-10-21"
+        }
+      ],
+      "fixture": "rfc9588-C-aes128-edwards25519 (offline validator); runtime symbolic",
+      "negativeAssertions": [
+        "No TGT cache before client validation and separate cache event",
+        "No client-readable ticket body",
+        "No x or y in any wire object or client-decoded cookie",
+        "No final PA-SPAKE from KDC",
+        "No OTP",
+        "No changes to unrelated credential",
+        "No SPAKE shared key or strengthening claimed",
+        "Credential mechanism is encrypted-timestamp"
+      ],
+      "concreteLedger": [
+        {
+          "event": "request",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "cname alice",
+            "sname krbtgt",
+            "nonce 741001",
+            "etype17"
+          ],
+          "protection": "none"
+        },
+        {
+          "event": "advertisement-intercept",
+          "from": "spake-kdc",
+          "to": "spake-observer",
+          "fields": [
+            "PA-SPAKE advertisement",
+            "ETYPE-INFO2",
+            "timestamp offer"
+          ],
+          "protection": "initial unauthenticated response"
+        },
+        {
+          "event": "advertisement-stripped",
+          "from": "spake-observer",
+          "to": "spake-client",
+          "fields": [
+            "ETYPE-INFO2",
+            "timestamp offer",
+            "PA-SPAKE removed"
+          ],
+          "protection": "active attacker modifies unauthenticated response"
+        },
+        {
+          "event": "observer-cleanup",
+          "from": "spake-observer",
+          "to": "spake-observer",
+          "fields": [
+            "intercepted packet copies only"
+          ],
+          "protection": "observer-local"
+        },
+        {
+          "event": "fallback-policy",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "disable_encrypted_timestamp=false",
+            "encrypted-timestamp selected"
+          ],
+          "protection": "client-local policy; reduced offline-guessing protection"
+        },
+        {
+          "event": "timestamp-derive",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "initial password-derived key",
+            "current timestamp"
+          ],
+          "protection": "client-local"
+        },
+        {
+          "event": "timestamp-request",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "PA-ENC-TIMESTAMP"
+          ],
+          "protection": "encrypted under principal long-term key; not SPAKE"
+        },
+        {
+          "event": "timestamp-validate",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "timestamp decryption",
+            "freshness/replay"
+          ],
+          "protection": "KDC-local; no SPAKE key"
+        },
+        {
+          "event": "as-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "KDC-issued TGT session key",
+            "TGT",
+            "AS protected client material"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "as-receive",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "TGT envelope",
+            "AS client encrypted material",
+            "no final PA-SPAKE"
+          ],
+          "protection": "ticket realm TGT key; client part strengthened K-prime[0] except timestamp fallback"
+        },
+        {
+          "event": "kdc-cleanup",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "client-validate",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "decoded AS client material",
+            "nonce/principal/lifetime verified"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "accepted TGT envelope",
+            "KDC-issued session key"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-request",
+          "from": "spake-client",
+          "to": "spake-tgs",
+          "fields": [
+            "opaque TGT",
+            "authenticator",
+            "requested HTTP service"
+          ],
+          "protection": "authenticator TGT session key"
+        },
+        {
+          "event": "tgs-validate",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-reply",
+          "from": "spake-tgs",
+          "to": "spake-client",
+          "fields": [
+            "opaque service ticket",
+            "TGS client encrypted material"
+          ],
+          "protection": "ticket service key; client part TGT session key"
+        },
+        {
+          "event": "tgs-cleanup",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "service-cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "TGS client material validated",
+            "service session key cache"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-request",
+          "from": "spake-client",
+          "to": "spake-service",
+          "fields": [
+            "opaque service ticket",
+            "AP authenticator"
+          ],
+          "protection": "authenticator service session key"
+        },
+        {
+          "event": "service-validate",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-reply",
+          "from": "spake-service",
+          "to": "spake-client",
+          "fields": [
+            "encrypted authenticator timestamp echo"
+          ],
+          "protection": "service session key"
+        },
+        {
+          "event": "service-cleanup",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "session",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "AP reply echo validated",
+            "application context established"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        }
+      ],
+      "checkablePredicates": {
+        "initial": "credentials.tgt=false && session.established=false && unrelated.cache preserved",
+        "allPrefixesBeforeCache": "credentials.tgt=false",
+        "terminal": "session.established=true && credentials.tgt=true && credentials.serviceTicket=true",
+        "failureRelease": "Endpoint-local cleanup only; configured and unrelated holdings retained; no client event clears remote state",
+        "profileReset": "Each scenario is immutable; selection/rewind uses shared canonical reconstruction, not mutations to base definitions"
+      },
+      "permissionLedger": [
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:password",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "password"
+              ]
+            }
+          ],
+          "lifetime": "initial configured client input",
+          "exactFields": [
+            "password stays local"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:kdc-record",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "principal",
+                "enctype",
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "initial configuration retained",
+          "exactFields": [
+            "alice@SPAKE.EXAMPLE",
+            17,
+            "provisioned principal AES128 key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:unrelated",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "credential"
+              ]
+            }
+          ],
+          "lifetime": "initial credential cache unchanged on every branch",
+          "exactFields": [
+            "preexisting unrelated credential"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:tgt-session",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "key",
+                "enctype"
+              ]
+            }
+          ],
+          "lifetime": "issued at AS creation, client acquires after AS validation, retained cache",
+          "exactFields": [
+            "KDC-issued K-client-tgs",
+            17
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:tgt",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-tgs"
+              ],
+              "fields": [
+                "client",
+                "server",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "AS creation; client receipt; validated cache; TGS use",
+          "exactFields": [
+            "TGT bytes",
+            "alice@SPAKE.EXAMPLE",
+            "krbtgt/SPAKE.EXAMPLE",
+            "K-client-tgs"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:as-material",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "nonce",
+                "session-key",
+                "server"
+              ]
+            }
+          ],
+          "lifetime": "AS creation/receipt; client decode only at validation",
+          "exactFields": [
+            "nonce741001",
+            "K-client-tgs",
+            "krbtgt/SPAKE.EXAMPLE"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:service-session",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue; validated client cache and service authenticated context",
+          "exactFields": [
+            "TGS-issued K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:service-ticket",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-tgs",
+                "spake-service"
+              ],
+              "fields": [
+                "client",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue/receipt/cache; service validated use",
+          "exactFields": [
+            "service ticket bytes",
+            "alice@SPAKE.EXAMPLE",
+            "K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:ap-reply",
+          "generation": 0,
+          "creator": "spake-service",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "echo-time"
+              ]
+            }
+          ],
+          "lifetime": "service creation then client receipt; client decode at mutual validation",
+          "exactFields": [
+            "echo of client authenticator timestamp"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-allowed:timestamp",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-client",
+                "spake-kdc"
+              ],
+              "fields": [
+                "PA-ENC-TIMESTAMP"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-client",
+                "spake-kdc"
+              ],
+              "fields": [
+                "timestamp"
+              ]
+            }
+          ],
+          "lifetime": "client construction to independent endpoint cleanup",
+          "exactFields": [
+            "current timestamp protected with initial principal key, not SPAKE"
+          ]
+        }
+      ],
+      "groupedOmissions": [
+        "No FAST armor or OTP; SF-NONE data omitted",
+        "DNS, TCP handshake and ASN.1 byte encoding are described, not separately animated",
+        "TGS and mutual AP follow RFC4120, not a modified SPAKE service protocol"
+      ],
+      "implementationDisposition": {
+        "source": "Authored all fixed event boundaries and terminal predicate",
+        "nativeEvidence": "Success representative parent UI gate passed; remaining variants require parent native verification",
+        "interoperability": "Not performed; offline symbolic teaching fixture only"
+      }
+    },
+    {
+      "id": "lab-krb-spake-downgrade-blocked",
+      "profile": "rfc9588-mit1222-ed25519-aes128-downgrade-blocked",
+      "sources": [
+        "RFC9588 sections 3-8,10.4-10.5",
+        "RFC4120 sections 3.1-3.3",
+        "MIT 1.22.2 admin/spake"
+      ],
+      "errata": "RFC Editor errata search checked 2026-10-21: no matching errata found",
+      "actors": [
+        "spake-client",
+        "spake-kdc",
+        "spake-tgs",
+        "spake-service",
+        "spake-observer"
+      ],
+      "branch": "observer strips advertisement; encrypted timestamp disabled",
+      "messageLedger": [
+        "AS-REQ",
+        "negotiation or interference",
+        "local rejection / KRB-ERROR"
+      ],
+      "boundaries": {
+        "challengeReceipt": "no derived key or TGT",
+        "responseReceipt": "KDC validation still pending",
+        "asReplyReceipt": "ticket received but not cached",
+        "clientValidation": "reply integrity, nonce and principal checked",
+        "cacheAcquisition": "first usable user TGT",
+        "serviceReply": "service ticket received is not application session"
+      },
+      "objects": {
+        "password": "client local only",
+        "kdcRecord": "KDC local only",
+        "privateScalars": "separate x/y identities, never wire or cookie decoded by client",
+        "cookie": "opaque client hold/echo; KDC decoded only",
+        "tgt": "opaque envelope; protected body TGS only",
+        "asClientMaterial": "reply-key encrypted; client/KDC decode",
+        "unrelated": "initial unrelated cache preserved"
+      },
+      "failureKnowledge": "endpoint learns failure only at its local validation or received error; no fabricated shared key",
+      "terminal": "policy stop; no TGT",
+      "success": false,
+      "expectedHistory": [
+        "request",
+        "advertisement-intercept",
+        "advertisement-stripped",
+        "observer-cleanup",
+        "policy-stop",
+        "kdc-cleanup",
+        "client-cleanup"
+      ],
+      "profileSources": [
+        {
+          "name": "RFC 9588",
+          "status": "Proposed Standard",
+          "revision": "August 2024",
+          "sections": [
+            "3",
+            "4.1",
+            "4.2",
+            "4.3",
+            "4.5",
+            "4.6",
+            "6",
+            "7",
+            "8",
+            "10.5"
+          ],
+          "url": "https://www.rfc-editor.org/rfc/rfc9588.html"
+        },
+        {
+          "name": "MIT administration",
+          "revision": "1.22.2",
+          "url": "https://web.mit.edu/kerberos/krb5-latest/doc/admin/spake.html",
+          "checked": "2026-10-21"
+        }
+      ],
+      "fixture": "rfc9588-C-aes128-edwards25519 (offline validator); runtime symbolic",
+      "negativeAssertions": [
+        "No TGT cache before client validation and separate cache event",
+        "No client-readable ticket body",
+        "No x or y in any wire object or client-decoded cookie",
+        "No final PA-SPAKE from KDC",
+        "No OTP",
+        "No changes to unrelated credential"
+      ],
+      "concreteLedger": [
+        {
+          "event": "request",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "cname alice",
+            "sname krbtgt",
+            "nonce 741001",
+            "etype17"
+          ],
+          "protection": "none"
+        },
+        {
+          "event": "advertisement-intercept",
+          "from": "spake-kdc",
+          "to": "spake-observer",
+          "fields": [
+            "PA-SPAKE advertisement",
+            "ETYPE-INFO2",
+            "timestamp offer"
+          ],
+          "protection": "initial unauthenticated response"
+        },
+        {
+          "event": "advertisement-stripped",
+          "from": "spake-observer",
+          "to": "spake-client",
+          "fields": [
+            "ETYPE-INFO2",
+            "timestamp offer",
+            "PA-SPAKE removed"
+          ],
+          "protection": "active attacker modifies unauthenticated response"
+        },
+        {
+          "event": "observer-cleanup",
+          "from": "spake-observer",
+          "to": "spake-observer",
+          "fields": [
+            "intercepted packet copies only"
+          ],
+          "protection": "observer-local"
+        },
+        {
+          "event": "policy-stop",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "disable_encrypted_timestamp=true",
+            "no advertised PA-SPAKE"
+          ],
+          "protection": "client-local policy"
+        },
+        {
+          "event": "kdc-cleanup",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "KDC temporary objects only"
+          ],
+          "protection": "local"
+        },
+        {
+          "event": "client-cleanup",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "client temporary objects only"
+          ],
+          "protection": "local"
+        }
+      ],
+      "checkablePredicates": {
+        "initial": "credentials.tgt=false && session.established=false && unrelated.cache preserved",
+        "allPrefixesBeforeCache": "credentials.tgt=false",
+        "terminal": "credentials.tgt=false && credentials.serviceTicket=false && session.established=false",
+        "failureRelease": "Endpoint-local cleanup only; configured and unrelated holdings retained; no client event clears remote state",
+        "profileReset": "Each scenario is immutable; selection/rewind uses shared canonical reconstruction, not mutations to base definitions"
+      },
+      "permissionLedger": [
+        {
+          "artifactId": "lab-krb-spake-downgrade-blocked:password",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "password"
+              ]
+            }
+          ],
+          "lifetime": "initial configured client input",
+          "exactFields": [
+            "password stays local"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-blocked:kdc-record",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "principal",
+                "enctype",
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "initial configuration retained",
+          "exactFields": [
+            "alice@SPAKE.EXAMPLE",
+            17,
+            "provisioned principal AES128 key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-downgrade-blocked:unrelated",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "credential"
+              ]
+            }
+          ],
+          "lifetime": "initial credential cache unchanged on every branch",
+          "exactFields": [
+            "preexisting unrelated credential"
+          ]
+        }
+      ],
+      "groupedOmissions": [
+        "No FAST armor or OTP; SF-NONE data omitted",
+        "DNS, TCP handshake and ASN.1 byte encoding are described, not separately animated",
+        "TGS and mutual AP follow RFC4120, not a modified SPAKE service protocol"
+      ],
+      "implementationDisposition": {
+        "source": "Authored all fixed event boundaries and terminal predicate",
+        "nativeEvidence": "Success representative parent UI gate passed; remaining variants require parent native verification",
+        "interoperability": "Not performed; offline symbolic teaching fixture only"
+      }
+    },
+    {
+      "id": "lab-krb-spake-optimistic-accepted",
+      "profile": "rfc9588-mit1222-ed25519-aes128-optimistic-accepted",
+      "sources": [
+        "RFC9588 sections 3-8,10.4-10.5",
+        "RFC4120 sections 3.1-3.3",
+        "MIT 1.22.2 admin/spake"
+      ],
+      "errata": "RFC Editor errata search checked 2026-10-21: no matching errata found",
+      "actors": [
+        "spake-client",
+        "spake-kdc",
+        "spake-tgs",
+        "spake-service"
+      ],
+      "branch": "supported KDC optimistic challenge; omit support round trip",
+      "messageLedger": [
+        "AS-REQ",
+        "PREAUTH_REQUIRED advertisement / optimistic challenge",
+        "AS-REQ support (unless optimized)",
+        "MORE_PREAUTH_DATA_REQUIRED challenge + ETYPE-INFO2 + opaque cookie",
+        "AS-REQ response with encrypted SF-NONE",
+        "AS-REP without final PA-SPAKE",
+        "TGS-REQ",
+        "TGS-REP",
+        "AP-REQ",
+        "AP-REP"
+      ],
+      "boundaries": {
+        "challengeReceipt": "no derived key or TGT",
+        "responseReceipt": "KDC validation still pending",
+        "asReplyReceipt": "ticket received but not cached",
+        "clientValidation": "reply integrity, nonce and principal checked",
+        "cacheAcquisition": "first usable user TGT",
+        "serviceReply": "service ticket received is not application session"
+      },
+      "objects": {
+        "password": "client local only",
+        "kdcRecord": "KDC local only",
+        "privateScalars": "separate x/y identities, never wire or cookie decoded by client",
+        "cookie": "opaque client hold/echo; KDC decoded only",
+        "tgt": "opaque envelope; protected body TGS only",
+        "asClientMaterial": "reply-key encrypted; client/KDC decode",
+        "unrelated": "initial unrelated cache preserved"
+      },
+      "failureKnowledge": "endpoint learns failure only at its local validation or received error; no fabricated shared key",
+      "terminal": "application session",
+      "success": true,
+      "expectedHistory": [
+        "request",
+        "kdc-challenge-create",
+        "challenge",
+        "client-derive",
+        "response",
+        "kdc-validate",
+        "as-create",
+        "as-receive",
+        "kdc-cleanup",
+        "client-validate",
+        "cache",
+        "tgs-request",
+        "tgs-validate",
+        "tgs-reply",
+        "tgs-cleanup",
+        "service-cache",
+        "ap-request",
+        "service-validate",
+        "ap-reply",
+        "service-cleanup",
+        "session"
+      ],
+      "profileSources": [
+        {
+          "name": "RFC 9588",
+          "status": "Proposed Standard",
+          "revision": "August 2024",
+          "sections": [
+            "3",
+            "4.1",
+            "4.2",
+            "4.3",
+            "4.5",
+            "4.6",
+            "6",
+            "7",
+            "8",
+            "10.5"
+          ],
+          "url": "https://www.rfc-editor.org/rfc/rfc9588.html"
+        },
+        {
+          "name": "MIT administration",
+          "revision": "1.22.2",
+          "url": "https://web.mit.edu/kerberos/krb5-latest/doc/admin/spake.html",
+          "checked": "2026-10-21"
+        }
+      ],
+      "fixture": "rfc9588-C-aes128-edwards25519 (offline validator); runtime symbolic",
+      "negativeAssertions": [
+        "No TGT cache before client validation and separate cache event",
+        "No client-readable ticket body",
+        "No x or y in any wire object or client-decoded cookie",
+        "No final PA-SPAKE from KDC",
+        "No OTP",
+        "No changes to unrelated credential"
+      ],
+      "concreteLedger": [
+        {
+          "event": "request",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "cname alice",
+            "sname krbtgt",
+            "nonce 741001",
+            "etype17"
+          ],
+          "protection": "none"
+        },
+        {
+          "event": "kdc-challenge-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "fresh x",
+            "T",
+            "SF-NONE",
+            "opaque cookie"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "challenge",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "group1",
+            "T",
+            "SF-NONE",
+            "opaque cookie",
+            "ETYPE-INFO2 if client optimistic"
+          ],
+          "protection": "challenge unauthenticated; cookie KDC-only authenticated encryption"
+        },
+        {
+          "event": "client-derive",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "password local",
+            "ETYPE-INFO2 available",
+            "fresh y",
+            "S",
+            "K",
+            "transcript",
+            "K-prime[1]",
+            "candidate K-prime[0]"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "response",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "S",
+            "encrypted SF-NONE",
+            "echo opaque cookie"
+          ],
+          "protection": "factor K-prime[1], key usage65"
+        },
+        {
+          "event": "kdc-validate",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "K",
+            "transcript",
+            "K-prime[1]",
+            "factor validated"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "as-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "KDC-issued TGT session key",
+            "TGT",
+            "AS protected client material"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "as-receive",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "TGT envelope",
+            "AS client encrypted material",
+            "no final PA-SPAKE"
+          ],
+          "protection": "ticket realm TGT key; client part strengthened K-prime[0] except timestamp fallback"
+        },
+        {
+          "event": "kdc-cleanup",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "client-validate",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "decoded AS client material",
+            "nonce/principal/lifetime verified"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "accepted TGT envelope",
+            "KDC-issued session key"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-request",
+          "from": "spake-client",
+          "to": "spake-tgs",
+          "fields": [
+            "opaque TGT",
+            "authenticator",
+            "requested HTTP service"
+          ],
+          "protection": "authenticator TGT session key"
+        },
+        {
+          "event": "tgs-validate",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-reply",
+          "from": "spake-tgs",
+          "to": "spake-client",
+          "fields": [
+            "opaque service ticket",
+            "TGS client encrypted material"
+          ],
+          "protection": "ticket service key; client part TGT session key"
+        },
+        {
+          "event": "tgs-cleanup",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "service-cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "TGS client material validated",
+            "service session key cache"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-request",
+          "from": "spake-client",
+          "to": "spake-service",
+          "fields": [
+            "opaque service ticket",
+            "AP authenticator"
+          ],
+          "protection": "authenticator service session key"
+        },
+        {
+          "event": "service-validate",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-reply",
+          "from": "spake-service",
+          "to": "spake-client",
+          "fields": [
+            "encrypted authenticator timestamp echo"
+          ],
+          "protection": "service session key"
+        },
+        {
+          "event": "service-cleanup",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "session",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "AP reply echo validated",
+            "application context established"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        }
+      ],
+      "checkablePredicates": {
+        "initial": "credentials.tgt=false && session.established=false && unrelated.cache preserved",
+        "allPrefixesBeforeCache": "credentials.tgt=false",
+        "terminal": "session.established=true && credentials.tgt=true && credentials.serviceTicket=true",
+        "failureRelease": "Endpoint-local cleanup only; configured and unrelated holdings retained; no client event clears remote state",
+        "profileReset": "Each scenario is immutable; selection/rewind uses shared canonical reconstruction, not mutations to base definitions"
+      },
+      "permissionLedger": [
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:password",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "password"
+              ]
+            }
+          ],
+          "lifetime": "initial configured client input",
+          "exactFields": [
+            "password stays local"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:kdc-record",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "principal",
+                "enctype",
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "initial configuration retained",
+          "exactFields": [
+            "alice@SPAKE.EXAMPLE",
+            17,
+            "provisioned principal AES128 key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:unrelated",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "credential"
+              ]
+            }
+          ],
+          "lifetime": "initial credential cache unchanged on every branch",
+          "exactFields": [
+            "preexisting unrelated credential"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:x",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "scalar"
+              ]
+            }
+          ],
+          "lifetime": "fresh challenge creation to KDC-local cleanup",
+          "exactFields": [
+            "fresh KDC scalar; not wire"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:challenge",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "wire",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "group",
+                "public-T",
+                "factors"
+              ]
+            }
+          ],
+          "lifetime": "creation through endpoint-local exchange cleanup",
+          "exactFields": [
+            1,
+            "T=xP+wM",
+            "SF-NONE type1"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:cookie",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "cookie-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "state"
+              ]
+            }
+          ],
+          "lifetime": "KDC creation, client receipt and echo, then local cleanup",
+          "exactFields": [
+            "authenticated encrypted bytes",
+            "KDC-only private scalar reference/transcript"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:initial-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "enctype17",
+                "password/salt-derived key"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "enctype17",
+            "password/salt-derived key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:y",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "fresh client scalar"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "fresh client scalar"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:client-shared",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K=y(T-wM)"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K=y(T-wM)"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:client-transcript",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "support/challenge/S transcript hash"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "support/challenge/S transcript hash"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:client-factor-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K-prime[1]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K-prime[1]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:client-reply-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "candidate K-prime[0]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "candidate K-prime[0]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:kdc-shared",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "K=x(S-wN)"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "K=x(S-wN)"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:kdc-transcript",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "support/challenge/S transcript hash"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "support/challenge/S transcript hash"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:kdc-factor-key",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "K-prime[1]"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "K-prime[1]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:kdc-reply-key",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "strengthened K-prime[0]"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "strengthened K-prime[0]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:tgt-session",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "key",
+                "enctype"
+              ]
+            }
+          ],
+          "lifetime": "issued at AS creation, client acquires after AS validation, retained cache",
+          "exactFields": [
+            "KDC-issued K-client-tgs",
+            17
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:tgt",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-tgs"
+              ],
+              "fields": [
+                "client",
+                "server",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "AS creation; client receipt; validated cache; TGS use",
+          "exactFields": [
+            "TGT bytes",
+            "alice@SPAKE.EXAMPLE",
+            "krbtgt/SPAKE.EXAMPLE",
+            "K-client-tgs"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:as-material",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "nonce",
+                "session-key",
+                "server"
+              ]
+            }
+          ],
+          "lifetime": "AS creation/receipt; client decode only at validation",
+          "exactFields": [
+            "nonce741001",
+            "K-client-tgs",
+            "krbtgt/SPAKE.EXAMPLE"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:service-session",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue; validated client cache and service authenticated context",
+          "exactFields": [
+            "TGS-issued K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:service-ticket",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-tgs",
+                "spake-service"
+              ],
+              "fields": [
+                "client",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue/receipt/cache; service validated use",
+          "exactFields": [
+            "service ticket bytes",
+            "alice@SPAKE.EXAMPLE",
+            "K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-accepted:ap-reply",
+          "generation": 0,
+          "creator": "spake-service",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "echo-time"
+              ]
+            }
+          ],
+          "lifetime": "service creation then client receipt; client decode at mutual validation",
+          "exactFields": [
+            "echo of client authenticator timestamp"
+          ]
+        }
+      ],
+      "groupedOmissions": [
+        "No FAST armor or OTP; SF-NONE data omitted",
+        "DNS, TCP handshake and ASN.1 byte encoding are described, not separately animated",
+        "TGS and mutual AP follow RFC4120, not a modified SPAKE service protocol"
+      ],
+      "implementationDisposition": {
+        "source": "Authored all fixed event boundaries and terminal predicate",
+        "nativeEvidence": "Success representative parent UI gate passed; remaining variants require parent native verification",
+        "interoperability": "Not performed; offline symbolic teaching fixture only"
+      }
+    },
+    {
+      "id": "lab-krb-spake-optimistic-renegotiate",
+      "profile": "rfc9588-mit1222-ed25519-aes128-optimistic-renegotiate",
+      "sources": [
+        "RFC9588 sections 3-8,10.4-10.5",
+        "RFC4120 sections 3.1-3.3",
+        "MIT 1.22.2 admin/spake"
+      ],
+      "errata": "RFC Editor errata search checked 2026-10-21: no matching errata found",
+      "actors": [
+        "spake-client",
+        "spake-kdc",
+        "spake-tgs",
+        "spake-service"
+      ],
+      "branch": "unsupported P-256 challenge; reset generation and negotiate edwards25519",
+      "messageLedger": [
+        "AS-REQ",
+        "PREAUTH_REQUIRED advertisement / optimistic challenge",
+        "AS-REQ support (unless optimized)",
+        "MORE_PREAUTH_DATA_REQUIRED challenge + ETYPE-INFO2 + opaque cookie",
+        "AS-REQ response with encrypted SF-NONE",
+        "AS-REP without final PA-SPAKE",
+        "TGS-REQ",
+        "TGS-REP",
+        "AP-REQ",
+        "AP-REP"
+      ],
+      "boundaries": {
+        "challengeReceipt": "no derived key or TGT",
+        "responseReceipt": "KDC validation still pending",
+        "asReplyReceipt": "ticket received but not cached",
+        "clientValidation": "reply integrity, nonce and principal checked",
+        "cacheAcquisition": "first usable user TGT",
+        "serviceReply": "service ticket received is not application session"
+      },
+      "objects": {
+        "password": "client local only",
+        "kdcRecord": "KDC local only",
+        "privateScalars": "separate x/y identities, never wire or cookie decoded by client",
+        "cookie": "opaque client hold/echo; KDC decoded only",
+        "tgt": "opaque envelope; protected body TGS only",
+        "asClientMaterial": "reply-key encrypted; client/KDC decode",
+        "unrelated": "initial unrelated cache preserved"
+      },
+      "failureKnowledge": "endpoint learns failure only at its local validation or received error; no fabricated shared key",
+      "terminal": "application session",
+      "success": true,
+      "expectedHistory": [
+        "request",
+        "optimistic-create",
+        "optimistic-challenge",
+        "transcript-reset",
+        "support",
+        "kdc-transcript-reset",
+        "kdc-challenge-create",
+        "challenge",
+        "client-derive",
+        "response",
+        "kdc-validate",
+        "as-create",
+        "as-receive",
+        "kdc-cleanup",
+        "client-validate",
+        "cache",
+        "tgs-request",
+        "tgs-validate",
+        "tgs-reply",
+        "tgs-cleanup",
+        "service-cache",
+        "ap-request",
+        "service-validate",
+        "ap-reply",
+        "service-cleanup",
+        "session"
+      ],
+      "profileSources": [
+        {
+          "name": "RFC 9588",
+          "status": "Proposed Standard",
+          "revision": "August 2024",
+          "sections": [
+            "3",
+            "4.1",
+            "4.2",
+            "4.3",
+            "4.5",
+            "4.6",
+            "6",
+            "7",
+            "8",
+            "10.5"
+          ],
+          "url": "https://www.rfc-editor.org/rfc/rfc9588.html"
+        },
+        {
+          "name": "MIT administration",
+          "revision": "1.22.2",
+          "url": "https://web.mit.edu/kerberos/krb5-latest/doc/admin/spake.html",
+          "checked": "2026-10-21"
+        }
+      ],
+      "fixture": "rfc9588-C-aes128-edwards25519 (offline validator); runtime symbolic",
+      "negativeAssertions": [
+        "No TGT cache before client validation and separate cache event",
+        "No client-readable ticket body",
+        "No x or y in any wire object or client-decoded cookie",
+        "No final PA-SPAKE from KDC",
+        "No OTP",
+        "No changes to unrelated credential",
+        "Generation0 transcript and private scalar are abandoned",
+        "Generation1 transcript begins with support and new challenge, excludes rejected challenge"
+      ],
+      "concreteLedger": [
+        {
+          "event": "request",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "cname alice",
+            "sname krbtgt",
+            "nonce 741001",
+            "etype17"
+          ],
+          "protection": "none"
+        },
+        {
+          "event": "optimistic-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "fresh x generation0",
+            "T generation0"
+          ],
+          "protection": "KDC-local"
+        },
+        {
+          "event": "optimistic-challenge",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "group2 P-256",
+            "T generation0",
+            "opaque cookie generation0"
+          ],
+          "protection": "unauthenticated optimistic challenge"
+        },
+        {
+          "event": "transcript-reset",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "discard unsupported group2 branch",
+            "generation1 support/challenge transcript"
+          ],
+          "protection": "client-local; reset negotiation state"
+        },
+        {
+          "event": "support",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "SPAKESupport ordered groups [1]"
+          ],
+          "protection": "DER PA-SPAKE support"
+        },
+        {
+          "event": "kdc-transcript-reset",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "discard group2 transcript/x0/cookie0",
+            "fresh generation1 negotiation"
+          ],
+          "protection": "KDC-local; independent of client reset"
+        },
+        {
+          "event": "kdc-challenge-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "fresh x",
+            "T",
+            "SF-NONE",
+            "opaque cookie"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "challenge",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "group1",
+            "T",
+            "SF-NONE",
+            "opaque cookie",
+            "ETYPE-INFO2 if client optimistic"
+          ],
+          "protection": "challenge unauthenticated; cookie KDC-only authenticated encryption"
+        },
+        {
+          "event": "client-derive",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "password local",
+            "ETYPE-INFO2 available",
+            "fresh y",
+            "S",
+            "K",
+            "transcript",
+            "K-prime[1]",
+            "candidate K-prime[0]"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "response",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "S",
+            "encrypted SF-NONE",
+            "echo opaque cookie"
+          ],
+          "protection": "factor K-prime[1], key usage65"
+        },
+        {
+          "event": "kdc-validate",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "K",
+            "transcript",
+            "K-prime[1]",
+            "factor validated"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "as-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "KDC-issued TGT session key",
+            "TGT",
+            "AS protected client material"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "as-receive",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "TGT envelope",
+            "AS client encrypted material",
+            "no final PA-SPAKE"
+          ],
+          "protection": "ticket realm TGT key; client part strengthened K-prime[0] except timestamp fallback"
+        },
+        {
+          "event": "kdc-cleanup",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "client-validate",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "decoded AS client material",
+            "nonce/principal/lifetime verified"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "accepted TGT envelope",
+            "KDC-issued session key"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-request",
+          "from": "spake-client",
+          "to": "spake-tgs",
+          "fields": [
+            "opaque TGT",
+            "authenticator",
+            "requested HTTP service"
+          ],
+          "protection": "authenticator TGT session key"
+        },
+        {
+          "event": "tgs-validate",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-reply",
+          "from": "spake-tgs",
+          "to": "spake-client",
+          "fields": [
+            "opaque service ticket",
+            "TGS client encrypted material"
+          ],
+          "protection": "ticket service key; client part TGT session key"
+        },
+        {
+          "event": "tgs-cleanup",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "service-cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "TGS client material validated",
+            "service session key cache"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-request",
+          "from": "spake-client",
+          "to": "spake-service",
+          "fields": [
+            "opaque service ticket",
+            "AP authenticator"
+          ],
+          "protection": "authenticator service session key"
+        },
+        {
+          "event": "service-validate",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-reply",
+          "from": "spake-service",
+          "to": "spake-client",
+          "fields": [
+            "encrypted authenticator timestamp echo"
+          ],
+          "protection": "service session key"
+        },
+        {
+          "event": "service-cleanup",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "session",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "AP reply echo validated",
+            "application context established"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        }
+      ],
+      "checkablePredicates": {
+        "initial": "credentials.tgt=false && session.established=false && unrelated.cache preserved",
+        "allPrefixesBeforeCache": "credentials.tgt=false",
+        "terminal": "session.established=true && credentials.tgt=true && credentials.serviceTicket=true",
+        "failureRelease": "Endpoint-local cleanup only; configured and unrelated holdings retained; no client event clears remote state",
+        "profileReset": "Each scenario is immutable; selection/rewind uses shared canonical reconstruction, not mutations to base definitions"
+      },
+      "permissionLedger": [
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:password",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "password"
+              ]
+            }
+          ],
+          "lifetime": "initial configured client input",
+          "exactFields": [
+            "password stays local"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:kdc-record",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "principal",
+                "enctype",
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "initial configuration retained",
+          "exactFields": [
+            "alice@SPAKE.EXAMPLE",
+            17,
+            "provisioned principal AES128 key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:unrelated",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "credential"
+              ]
+            }
+          ],
+          "lifetime": "initial credential cache unchanged on every branch",
+          "exactFields": [
+            "preexisting unrelated credential"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:x",
+          "generation": 1,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "scalar"
+              ]
+            }
+          ],
+          "lifetime": "fresh challenge creation to KDC-local cleanup",
+          "exactFields": [
+            "fresh KDC scalar; not wire"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:challenge",
+          "generation": 1,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "wire",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "group",
+                "public-T",
+                "factors"
+              ]
+            }
+          ],
+          "lifetime": "creation through endpoint-local exchange cleanup",
+          "exactFields": [
+            1,
+            "T=xP+wM",
+            "SF-NONE type1"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:cookie",
+          "generation": 1,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "cookie-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "state"
+              ]
+            }
+          ],
+          "lifetime": "KDC creation, client receipt and echo, then local cleanup",
+          "exactFields": [
+            "authenticated encrypted bytes",
+            "KDC-only private scalar reference/transcript"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:initial-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "enctype17",
+                "password/salt-derived key"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "enctype17",
+            "password/salt-derived key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:y",
+          "generation": 1,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "fresh client scalar"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "fresh client scalar"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:client-shared",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K=y(T-wM)"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K=y(T-wM)"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:client-transcript",
+          "generation": 1,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "support/challenge/S transcript hash"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "support/challenge/S transcript hash"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:client-factor-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K-prime[1]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K-prime[1]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:client-reply-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "candidate K-prime[0]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "candidate K-prime[0]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:kdc-shared",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "K=x(S-wN)"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "K=x(S-wN)"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:kdc-transcript",
+          "generation": 1,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "support/challenge/S transcript hash"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "support/challenge/S transcript hash"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:kdc-factor-key",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "K-prime[1]"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "K-prime[1]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:kdc-reply-key",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "strengthened K-prime[0]"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "strengthened K-prime[0]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:optimistic-x",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "scalar-generation0"
+              ]
+            }
+          ],
+          "lifetime": "generation0 creation through KDC renegotiation reset",
+          "exactFields": [
+            "fresh abandoned x0, not reused"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:optimistic-challenge",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "wire",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "group2",
+                "public-T0"
+              ]
+            }
+          ],
+          "lifetime": "generation0 receipt through transcript reset",
+          "exactFields": [
+            "P-256 unsupported by configured client"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:tgt-session",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "key",
+                "enctype"
+              ]
+            }
+          ],
+          "lifetime": "issued at AS creation, client acquires after AS validation, retained cache",
+          "exactFields": [
+            "KDC-issued K-client-tgs",
+            17
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:tgt",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-tgs"
+              ],
+              "fields": [
+                "client",
+                "server",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "AS creation; client receipt; validated cache; TGS use",
+          "exactFields": [
+            "TGT bytes",
+            "alice@SPAKE.EXAMPLE",
+            "krbtgt/SPAKE.EXAMPLE",
+            "K-client-tgs"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:as-material",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "nonce",
+                "session-key",
+                "server"
+              ]
+            }
+          ],
+          "lifetime": "AS creation/receipt; client decode only at validation",
+          "exactFields": [
+            "nonce741001",
+            "K-client-tgs",
+            "krbtgt/SPAKE.EXAMPLE"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:service-session",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue; validated client cache and service authenticated context",
+          "exactFields": [
+            "TGS-issued K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:service-ticket",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-tgs",
+                "spake-service"
+              ],
+              "fields": [
+                "client",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue/receipt/cache; service validated use",
+          "exactFields": [
+            "service ticket bytes",
+            "alice@SPAKE.EXAMPLE",
+            "K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:ap-reply",
+          "generation": 0,
+          "creator": "spake-service",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "echo-time"
+              ]
+            }
+          ],
+          "lifetime": "service creation then client receipt; client decode at mutual validation",
+          "exactFields": [
+            "echo of client authenticator timestamp"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-optimistic-renegotiate:optimistic-cookie",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "cookie-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "state"
+              ]
+            }
+          ],
+          "lifetime": "KDC generation0 construction through endpoint reset, never reused",
+          "exactFields": [
+            "encrypted generation0 state",
+            "KDC-only x0 reference"
+          ]
+        }
+      ],
+      "groupedOmissions": [
+        "No FAST armor or OTP; SF-NONE data omitted",
+        "DNS, TCP handshake and ASN.1 byte encoding are described, not separately animated",
+        "TGS and mutual AP follow RFC4120, not a modified SPAKE service protocol"
+      ],
+      "implementationDisposition": {
+        "source": "Authored all fixed event boundaries and terminal predicate",
+        "nativeEvidence": "Success representative parent UI gate passed; remaining variants require parent native verification",
+        "interoperability": "Not performed; offline symbolic teaching fixture only"
+      }
+    },
+    {
+      "id": "lab-krb-spake-client-optimistic",
+      "profile": "rfc9588-mit1222-ed25519-aes128-client-optimistic",
+      "sources": [
+        "RFC9588 sections 3-8,10.4-10.5",
+        "RFC4120 sections 3.1-3.3",
+        "MIT 1.22.2 admin/spake"
+      ],
+      "errata": "RFC Editor errata search checked 2026-10-21: no matching errata found",
+      "actors": [
+        "spake-client",
+        "spake-kdc",
+        "spake-tgs",
+        "spake-service"
+      ],
+      "branch": "initial support; ETYPE-INFO2 arrives with challenge before derivation",
+      "messageLedger": [
+        "AS-REQ",
+        "PREAUTH_REQUIRED advertisement / optimistic challenge",
+        "AS-REQ support (unless optimized)",
+        "MORE_PREAUTH_DATA_REQUIRED challenge + ETYPE-INFO2 + opaque cookie",
+        "AS-REQ response with encrypted SF-NONE",
+        "AS-REP without final PA-SPAKE",
+        "TGS-REQ",
+        "TGS-REP",
+        "AP-REQ",
+        "AP-REP"
+      ],
+      "boundaries": {
+        "challengeReceipt": "no derived key or TGT",
+        "responseReceipt": "KDC validation still pending",
+        "asReplyReceipt": "ticket received but not cached",
+        "clientValidation": "reply integrity, nonce and principal checked",
+        "cacheAcquisition": "first usable user TGT",
+        "serviceReply": "service ticket received is not application session"
+      },
+      "objects": {
+        "password": "client local only",
+        "kdcRecord": "KDC local only",
+        "privateScalars": "separate x/y identities, never wire or cookie decoded by client",
+        "cookie": "opaque client hold/echo; KDC decoded only",
+        "tgt": "opaque envelope; protected body TGS only",
+        "asClientMaterial": "reply-key encrypted; client/KDC decode",
+        "unrelated": "initial unrelated cache preserved"
+      },
+      "failureKnowledge": "endpoint learns failure only at its local validation or received error; no fabricated shared key",
+      "terminal": "application session",
+      "success": true,
+      "expectedHistory": [
+        "support",
+        "kdc-challenge-create",
+        "challenge",
+        "client-derive",
+        "response",
+        "kdc-validate",
+        "as-create",
+        "as-receive",
+        "kdc-cleanup",
+        "client-validate",
+        "cache",
+        "tgs-request",
+        "tgs-validate",
+        "tgs-reply",
+        "tgs-cleanup",
+        "service-cache",
+        "ap-request",
+        "service-validate",
+        "ap-reply",
+        "service-cleanup",
+        "session"
+      ],
+      "profileSources": [
+        {
+          "name": "RFC 9588",
+          "status": "Proposed Standard",
+          "revision": "August 2024",
+          "sections": [
+            "3",
+            "4.1",
+            "4.2",
+            "4.3",
+            "4.5",
+            "4.6",
+            "6",
+            "7",
+            "8",
+            "10.5"
+          ],
+          "url": "https://www.rfc-editor.org/rfc/rfc9588.html"
+        },
+        {
+          "name": "MIT administration",
+          "revision": "1.22.2",
+          "url": "https://web.mit.edu/kerberos/krb5-latest/doc/admin/spake.html",
+          "checked": "2026-10-21"
+        }
+      ],
+      "fixture": "rfc9588-C-aes128-edwards25519 (offline validator); runtime symbolic",
+      "negativeAssertions": [
+        "No TGT cache before client validation and separate cache event",
+        "No client-readable ticket body",
+        "No x or y in any wire object or client-decoded cookie",
+        "No final PA-SPAKE from KDC",
+        "No OTP",
+        "No changes to unrelated credential"
+      ],
+      "concreteLedger": [
+        {
+          "event": "support",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "SPAKESupport ordered groups [1]"
+          ],
+          "protection": "DER PA-SPAKE support"
+        },
+        {
+          "event": "kdc-challenge-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "fresh x",
+            "T",
+            "SF-NONE",
+            "opaque cookie"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "challenge",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "group1",
+            "T",
+            "SF-NONE",
+            "opaque cookie",
+            "ETYPE-INFO2 if client optimistic"
+          ],
+          "protection": "challenge unauthenticated; cookie KDC-only authenticated encryption"
+        },
+        {
+          "event": "client-derive",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "password local",
+            "ETYPE-INFO2 available",
+            "fresh y",
+            "S",
+            "K",
+            "transcript",
+            "K-prime[1]",
+            "candidate K-prime[0]"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "response",
+          "from": "spake-client",
+          "to": "spake-kdc",
+          "fields": [
+            "S",
+            "encrypted SF-NONE",
+            "echo opaque cookie"
+          ],
+          "protection": "factor K-prime[1], key usage65"
+        },
+        {
+          "event": "kdc-validate",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "K",
+            "transcript",
+            "K-prime[1]",
+            "factor validated"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "as-create",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "KDC-issued TGT session key",
+            "TGT",
+            "AS protected client material"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "as-receive",
+          "from": "spake-kdc",
+          "to": "spake-client",
+          "fields": [
+            "TGT envelope",
+            "AS client encrypted material",
+            "no final PA-SPAKE"
+          ],
+          "protection": "ticket realm TGT key; client part strengthened K-prime[0] except timestamp fallback"
+        },
+        {
+          "event": "kdc-cleanup",
+          "from": "spake-kdc",
+          "to": "spake-kdc",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "client-validate",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "decoded AS client material",
+            "nonce/principal/lifetime verified"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "accepted TGT envelope",
+            "KDC-issued session key"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-request",
+          "from": "spake-client",
+          "to": "spake-tgs",
+          "fields": [
+            "opaque TGT",
+            "authenticator",
+            "requested HTTP service"
+          ],
+          "protection": "authenticator TGT session key"
+        },
+        {
+          "event": "tgs-validate",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "tgs-reply",
+          "from": "spake-tgs",
+          "to": "spake-client",
+          "fields": [
+            "opaque service ticket",
+            "TGS client encrypted material"
+          ],
+          "protection": "ticket service key; client part TGT session key"
+        },
+        {
+          "event": "tgs-cleanup",
+          "from": "spake-tgs",
+          "to": "spake-tgs",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "service-cache",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "TGS client material validated",
+            "service session key cache"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-request",
+          "from": "spake-client",
+          "to": "spake-service",
+          "fields": [
+            "opaque service ticket",
+            "AP authenticator"
+          ],
+          "protection": "authenticator service session key"
+        },
+        {
+          "event": "service-validate",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "local verification result"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        },
+        {
+          "event": "ap-reply",
+          "from": "spake-service",
+          "to": "spake-client",
+          "fields": [
+            "encrypted authenticator timestamp echo"
+          ],
+          "protection": "service session key"
+        },
+        {
+          "event": "service-cleanup",
+          "from": "spake-service",
+          "to": "spake-service",
+          "fields": [
+            "release own exchange scratch only",
+            "configured keys and remote credentials unchanged"
+          ],
+          "protection": "endpoint-local cleanup; service accepted key remains authenticated context"
+        },
+        {
+          "event": "session",
+          "from": "spake-client",
+          "to": "spake-client",
+          "fields": [
+            "AP reply echo validated",
+            "application context established"
+          ],
+          "protection": "local endpoint only; no network transfer"
+        }
+      ],
+      "checkablePredicates": {
+        "initial": "credentials.tgt=false && session.established=false && unrelated.cache preserved",
+        "allPrefixesBeforeCache": "credentials.tgt=false",
+        "terminal": "session.established=true && credentials.tgt=true && credentials.serviceTicket=true",
+        "failureRelease": "Endpoint-local cleanup only; configured and unrelated holdings retained; no client event clears remote state",
+        "profileReset": "Each scenario is immutable; selection/rewind uses shared canonical reconstruction, not mutations to base definitions"
+      },
+      "permissionLedger": [
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:password",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "password"
+              ]
+            }
+          ],
+          "lifetime": "initial configured client input",
+          "exactFields": [
+            "password stays local"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:kdc-record",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "principal",
+                "enctype",
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "initial configuration retained",
+          "exactFields": [
+            "alice@SPAKE.EXAMPLE",
+            17,
+            "provisioned principal AES128 key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:unrelated",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "credential"
+              ]
+            }
+          ],
+          "lifetime": "initial credential cache unchanged on every branch",
+          "exactFields": [
+            "preexisting unrelated credential"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:x",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "scalar"
+              ]
+            }
+          ],
+          "lifetime": "fresh challenge creation to KDC-local cleanup",
+          "exactFields": [
+            "fresh KDC scalar; not wire"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:challenge",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "wire",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "group",
+                "public-T",
+                "factors"
+              ]
+            }
+          ],
+          "lifetime": "creation through endpoint-local exchange cleanup",
+          "exactFields": [
+            1,
+            "T=xP+wM",
+            "SF-NONE type1"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:cookie",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "cookie-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "state"
+              ]
+            }
+          ],
+          "lifetime": "KDC creation, client receipt and echo, then local cleanup",
+          "exactFields": [
+            "authenticated encrypted bytes",
+            "KDC-only private scalar reference/transcript"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:initial-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "enctype17",
+                "password/salt-derived key"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "enctype17",
+            "password/salt-derived key"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:y",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "fresh client scalar"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "fresh client scalar"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:client-shared",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K=y(T-wM)"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K=y(T-wM)"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:client-transcript",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "support/challenge/S transcript hash"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "support/challenge/S transcript hash"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:client-factor-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "K-prime[1]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "K-prime[1]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:client-reply-key",
+          "generation": 0,
+          "creator": "spake-client",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-client"
+              ],
+              "fields": [
+                "candidate K-prime[0]"
+              ]
+            }
+          ],
+          "lifetime": "client derivation through client-local success/error cleanup",
+          "exactFields": [
+            "candidate K-prime[0]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:kdc-shared",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "K=x(S-wN)"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "K=x(S-wN)"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:kdc-transcript",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "support/challenge/S transcript hash"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "support/challenge/S transcript hash"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:kdc-factor-key",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "K-prime[1]"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "K-prime[1]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:kdc-reply-key",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc"
+              ],
+              "fields": [
+                "strengthened K-prime[0]"
+              ]
+            }
+          ],
+          "lifetime": "KDC validation/creation through KDC-local cleanup",
+          "exactFields": [
+            "strengthened K-prime[0]"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:tgt-session",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "key",
+                "enctype"
+              ]
+            }
+          ],
+          "lifetime": "issued at AS creation, client acquires after AS validation, retained cache",
+          "exactFields": [
+            "KDC-issued K-client-tgs",
+            17
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:tgt",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client",
+                "spake-tgs"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-tgs"
+              ],
+              "fields": [
+                "client",
+                "server",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "AS creation; client receipt; validated cache; TGS use",
+          "exactFields": [
+            "TGT bytes",
+            "alice@SPAKE.EXAMPLE",
+            "krbtgt/SPAKE.EXAMPLE",
+            "K-client-tgs"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:as-material",
+          "generation": 0,
+          "creator": "spake-kdc",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-kdc",
+                "spake-client"
+              ],
+              "fields": [
+                "nonce",
+                "session-key",
+                "server"
+              ]
+            }
+          ],
+          "lifetime": "AS creation/receipt; client decode only at validation",
+          "exactFields": [
+            "nonce741001",
+            "K-client-tgs",
+            "krbtgt/SPAKE.EXAMPLE"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:service-session",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "local",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue; validated client cache and service authenticated context",
+          "exactFields": [
+            "TGS-issued K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:service-ticket",
+          "generation": 0,
+          "creator": "spake-tgs",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-tgs",
+                "spake-client",
+                "spake-service"
+              ],
+              "fields": [
+                "ticket-bytes"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-tgs",
+                "spake-service"
+              ],
+              "fields": [
+                "client",
+                "session-key"
+              ]
+            }
+          ],
+          "lifetime": "TGS issue/receipt/cache; service validated use",
+          "exactFields": [
+            "service ticket bytes",
+            "alice@SPAKE.EXAMPLE",
+            "K-client-service"
+          ]
+        },
+        {
+          "artifactId": "lab-krb-spake-client-optimistic:ap-reply",
+          "generation": 0,
+          "creator": "spake-service",
+          "representations": [
+            {
+              "id": "opaque",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "ciphertext"
+              ]
+            },
+            {
+              "id": "decoded",
+              "readers": [
+                "spake-service",
+                "spake-client"
+              ],
+              "fields": [
+                "echo-time"
+              ]
+            }
+          ],
+          "lifetime": "service creation then client receipt; client decode at mutual validation",
+          "exactFields": [
+            "echo of client authenticator timestamp"
+          ]
+        }
+      ],
+      "groupedOmissions": [
+        "No FAST armor or OTP; SF-NONE data omitted",
+        "DNS, TCP handshake and ASN.1 byte encoding are described, not separately animated",
+        "TGS and mutual AP follow RFC4120, not a modified SPAKE service protocol"
+      ],
+      "implementationDisposition": {
+        "source": "Authored all fixed event boundaries and terminal predicate",
+        "nativeEvidence": "Success representative parent UI gate passed; remaining variants require parent native verification",
+        "interoperability": "Not performed; offline symbolic teaching fixture only"
+      }
+    }
+  ]
+}

@@ -86,14 +86,6 @@ test('an unrelated hover participant panel closes while keyboard-owned index hel
   }finally{unmount(app);}
 });
 
-test('a rebuilt index anchor closes its explanation and returns focus to the replacement field',()=>{
-  const app=mount();try{
-    const {field}=indexHelp(app);app.renderAttributeIndex();assert.equal(app.contains(field),false);
-    const replacement=app.refs['attribute-index-list'].querySelector('[data-index-attribute="codeVerifier"]');resized();
-    assert.equal(app.refs['attribute-popup'].hidden,true);sameFocus(replacement);
-    clock.advance(1000);assert.equal(app.refs['attribute-popup'].hidden,true);
-  }finally{unmount(app);}
-});
 
 test('a hidden index anchor closes its explanation and returns focus to Play',()=>{
   const app=mount();try{

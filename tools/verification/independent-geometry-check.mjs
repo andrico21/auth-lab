@@ -1,12 +1,13 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 /** Offline route geometry checks, explicitly not native browser layout checks. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {createHash} from 'node:crypto';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-if(process.argv.includes('--help')||process.argv.includes('-h')){console.log('Usage: node tools/verification/independent-geometry-check.mjs [project-directory]\nDefaults to this repository. Evidence: docs/verification, or AUTH_LAB_QA_EVIDENCE_DIR.\nOffline logical geometry checks; not native browser validation.');process.exit(0);}
+if(process.argv.includes('--help')||process.argv.includes('-h')){console.log('Usage: bun tools/verification/independent-geometry-check.mjs [project-directory]\nDefaults to this repository. Evidence: docs/verification, or AUTH_LAB_QA_EVIDENCE_DIR.\nOffline logical geometry checks; not native browser validation.');process.exit(0);}
 const project=path.resolve(process.argv[2]||path.join(here,'../..'));
 const evidenceDir=path.resolve(process.env.AUTH_LAB_QA_EVIDENCE_DIR||path.join(project,'docs/verification'));fs.mkdirSync(evidenceDir,{recursive:true});
 const imp=file=>import(pathToFileURL(path.join(project,file)).href);
@@ -16,7 +17,9 @@ const {AuthFlowStudio}=await imp('src/app.js');
 const {LAB_SCENARIOS}=await imp('src/lab-catalog.js');
 const {LEARNING_PRESETS}=await imp('src/learning-presets.js');
 const {CARD_BOUNDS,GRAPH_WIDTH,GRAPH_HEIGHT}=await imp('src/layout.js');
-const report={kind:'offline-independent-route-sampling',nativeBrowser:false,timestamp:new Date().toISOString(),project,scenarios:[],failures:[]};
+const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+const sourceIdentity=()=>Object.fromEntries(['index.html','build.mjs','package.json',...fs.readdirSync(path.join(project,'src')).filter(name=>/\.(js|css)$/.test(name)).sort().map(name=>'src/'+name)].map(name=>[name,hash(fs.readFileSync(path.join(project,name)))]));
+const report={kind:'offline-independent-route-sampling',nativeBrowser:false,timestamp:new Date().toISOString(),project,runnerSha256:hash(fs.readFileSync(fileURLToPath(import.meta.url))),regenerationCommand:[process.execPath,...process.argv.slice(1)],runtime:{version:process.version,bun:process.versions.bun||null},sourceIdentity:sourceIdentity(),standaloneSha256:hash(fs.readFileSync(path.join(project,'dist/auth-flow-studio.html'))),scenarios:[],failures:[]};
 const app=new AuthFlowStudio();harness.document.body.appendChild(app);app.connectedCallback();
 
 function cubicSegments(value){
@@ -62,5 +65,6 @@ try{
     }catch(error){report.failures.push({id,error:String(error.stack||error)});}
   }
 }finally{app.disconnectedCallback();harness.document.body.removeChild(app);harness.clock.frames.clear();harness.clock.timers.clear();}
-report.passed=report.failures.length===0;fs.writeFileSync(path.join(evidenceDir,'independent-geometry-status.json'),JSON.stringify(report,null,2)+'\n');
+report.identityUnchanged=JSON.stringify(sourceIdentity())===JSON.stringify(report.sourceIdentity);
+report.passed=report.failures.length===0&&report.identityUnchanged;fs.writeFileSync(path.join(evidenceDir,'independent-geometry-status.json'),JSON.stringify(report,null,2)+'\n');
 console.log(JSON.stringify({passed:report.passed,scenarioCount:report.scenarios.length,samples:report.scenarios.reduce((n,s)=>n+s.sampleCount,0),failures:report.failures.map(f=>({id:f.id,error:f.error.split('\n')[0]}))},null,2));if(!report.passed)process.exitCode=1;

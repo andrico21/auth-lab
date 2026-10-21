@@ -103,7 +103,7 @@ export const WEBLAB_SOURCES = [
 ];
 
 const webLabP = (id, value, description) => labP(WEBLAB_ATTRIBUTES[id].name, value === undefined ? WEBLAB_ATTRIBUTES[id].example : value, description, id);
-const webLabS = (id, title, from, to, operations, payload, summary, detail, checks = [], phase = 'tokens') => labStep(id, title, from, to, phase, from === to ? 'internal' : ['user'].includes(from) ? 'local' : 'https', summary, detail, [...new Set(operations.map(action => action.attributeId))], payload, checks, operations);
+const webLabS = (id, title, from, to, operations, payload, summary, detail, checks = [], phase = 'tokens') => labStep(id, title, from, to, phase, from === to ? 'internal' : from === 'user' ? 'human' : from === 'browser' || to === 'browser' ? 'https' : 'backchannel HTTPS', summary, detail, [...new Set(operations.map(action => action.attributeId))], payload, checks, operations);
 const webLabOp = (ids, kind, actor, detail) => labOp(ids, kind, actor, detail);
 const webLabWire = (ids, from, to, detail, carriedAs) => labWire(ids, from, to, detail, carriedAs);
 const webLabRequestIds = ['webClientId', 'webRedirectUri', 'webResponseType', 'webRequestScope', 'webState', 'webNonce', 'webChallenge', 'webChallengeMethod'];

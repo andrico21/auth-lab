@@ -1,0 +1,951 @@
+--- a/README.md
++++ b/README.md
+@@ -1,9 +1,13 @@
+ # Auth Flow Studio
+ 
++**SMB 3.1.1 integration candidate — 1.2.1-smb.1.** This candidate adds twelve SMB lessons to the reviewed expansion: configured Kerberos from a non-domain-joined PC, NTLMv2 compatibility, share/file authorization, signing, encryption, and two multichannel outcomes. There are 203 extended scenarios and 214 deduplicated choices. See [the SMB handoff](docs/smb-followup.md), [scenario inventory](docs/smb-scenarios.json), and the accompanying independent review and validation records under `docs/reviewer-handoff/` in the packaged source.
++
++**Changes are still requested for the inherited expansion.** Its nineteen review findings remain open; this addition does not fix them. The prior native-browser reports cover their recorded historical artifact only. No native-browser, screen-reader or live SMB interoperability pass is claimed for this candidate. NFS, workstation logon/elevation, MCP and Kubernetes/JWT work remains in the next-plan backlog.
++
+ An English, interactive teaching app with five primary workspaces: **Web sign-in**, **Windows sign-in and remote access**, **Kerberos**, **SSH access** and **Network access**, plus a secondary **Foundations** entry. The configurable web core covers Keycloak, OIDC/OAuth, SAML, FIDO2/WebAuthn, MFA, native/web clients, brokered identity, JWE/XML Encryption and additional OAuth grants. Participant illustrations, field traces, object identity, protocol-state replay and independent lifetime cards explain who owns each object and when it becomes usable. The app uses Web Components, SVG, CSS and the Web Animations API. Its standalone page works offline without external assets, packages or accounts.
+ 
+-Version **1.2.0** adds 61 fixed Windows, Network, Kerberos SPAKE and PAKE lessons, pinned protocol profiles and progressive Journey / Fields / Crypto views. The earlier environment validation, parsed-SPN and rejection/recovery contracts remain documented in the [Code3 environment handoff](docs/code3-environment-corrections.md), [R1 handoff](docs/html2-r1-correction.md) and [Code1 handoff](docs/code1-review-corrections.md). Expanded native-browser acceptance and regression results are recorded separately from those historical baseline reports.
+-The accepted **Held Objects Code3** baseline (`22242f2`) provides current per-actor inventories, exact-object inspection/replay and conditional full, compact and external layouts. [Its historical handoff](docs/held-objects-implementation.md) records HC01-HC09. The approved **61-preset Windows, Network and PAKE expansion is implemented**; [its separate handoff](docs/expansion/implementation.md) records current acceptance evidence and remaining limitations. The expansion has not been pushed, uploaded or deployed and requires successful independent Astra review. Manual G01 remains open.
++The inherited **1.2.0** expansion added 61 fixed Windows, Network, Kerberos SPAKE and PAKE lessons, pinned protocol profiles and progressive Journey / Fields / Crypto views. The earlier environment validation, parsed-SPN and rejection/recovery contracts remain documented in the [Code3 environment handoff](docs/code3-environment-corrections.md), [R1 handoff](docs/html2-r1-correction.md) and [Code1 handoff](docs/code1-review-corrections.md). Expanded native-browser acceptance and regression results are recorded separately from those historical baseline reports.
++The accepted **Held Objects Code3** baseline (`22242f2`) provides current per-actor inventories, exact-object inspection/replay and conditional full, compact and external layouts. [Its historical handoff](docs/held-objects-implementation.md) records HC01-HC09. The approved **61-preset Windows, Network and PAKE expansion is implemented**; [its separate handoff](docs/expansion/implementation.md) records original-snapshot acceptance evidence and remaining limitations. The expansion review requested nineteen corrections, documented in the separate independent review. Manual G01 remains open.
+ 
+ Performance caveat: legacy journeys retain the fully discoverable global field index. Its larger visible DOM adds measured replay-start and in-play search cost; the handoff preserves those material flags and native tracing evidence. Closing that pane avoids most of its prepaint cost. New profiled lessons already scope their default field lists to the selected journey.
+ 
+--- a/build.mjs
++++ b/build.mjs
+@@ -4,7 +4,7 @@
+ import {SOURCE_CSP, normalizeHtmlLines, standaloneCsp, cspMeta} from './security-policy.mjs';
+ const root=path.dirname(fileURLToPath(import.meta.url));
+ const readSource = file => normalizeHtmlLines(fs.readFileSync(path.join(root,file),'utf8'));
+-const modules=['protocol-data.js','single-realm.js','architecture-variants.js','attribute-usage.js','fido-direct.js','saml-data.js','service-account-data.js','device-flow-data.js','ciba-data.js','token-exchange-data.js','jwe-data.js','lab-common.js','web-api-lab.js','lifecycle-lab.js','protection-lab.js','extended-grants-lab.js','saml-advanced-lab.js','branching-lab.js','kerberos-context.js','kerberos-ad-lab.js','kerberos-crypto-lab.js','kerberos-forest-lab.js','ssh-access-lab.js','windows-auth-lab.js','network-access-lab.js','kerberos-spake-lab.js','pake-lab.js','lab-catalog.js','attribute-trace.js','actor-art.js','player.js','layout.js','step-overlay-layout.js','scenario-picker.js','focus-target.js','learning-presets.js','runtime-environment.js','workspaces.js','scenario-context.js','protocol-state.js','held-object-authoring.js','held-object-state.js','held-object-ad.js','held-object-kerberos.js','held-object-ssh.js','held-object-protection.js','held-object-web.js','held-object-core.js','held-object-windows.js','held-object-network.js','held-object-spake.js','held-object-pake.js','held-objects.js','held-object-view.js','app.js'];
++const modules=['protocol-data.js','single-realm.js','architecture-variants.js','attribute-usage.js','fido-direct.js','saml-data.js','service-account-data.js','device-flow-data.js','ciba-data.js','token-exchange-data.js','jwe-data.js','lab-common.js','web-api-lab.js','lifecycle-lab.js','protection-lab.js','extended-grants-lab.js','saml-advanced-lab.js','branching-lab.js','kerberos-context.js','kerberos-ad-lab.js','kerberos-crypto-lab.js','kerberos-forest-lab.js','ssh-access-lab.js','windows-auth-lab.js','smb-access-lab.js','smb-multichannel-lab.js','network-access-lab.js','kerberos-spake-lab.js','pake-lab.js','lab-catalog.js','attribute-trace.js','actor-art.js','player.js','layout.js','step-overlay-layout.js','scenario-picker.js','focus-target.js','learning-presets.js','runtime-environment.js','workspaces.js','scenario-context.js','protocol-state.js','held-object-authoring.js','held-object-state.js','held-object-ad.js','held-object-kerberos.js','held-object-ssh.js','held-object-protection.js','held-object-web.js','held-object-core.js','held-object-windows.js','held-object-smb.js','held-object-network.js','held-object-spake.js','held-object-pake.js','held-objects.js','held-object-view.js','app.js'];
+ const source=modules.map(name=>{
+   const input=readSource(path.join('src',name));
+   const body=input.replace(/^import .*?;\s*$/gm,'').replace(/\bexport (?=(?:const|let|class|function)\b)/g,'');
+--- /dev/null
++++ b/docs/smb-candidate-validation.md
+@@ -0,0 +1,14 @@
++# Final SMB candidate validation
++
++Candidate version: 1.2.1-smb.1. Review date: 2026-10-21.
++
++- Fresh Node build: 2,836,201 bytes.
++- HTML SHA-256: `7c049674d8d0b128075029dd8c43da5b07fab47a746cf6d0be1d862c09371ba7`.
++- Independent full regression: **1,462/1,462 passed**, 84 test files, 388.3 seconds, Node v24.19.0. Zero failures, cancellations, skips or todo cases.
++- Source/test identities stayed unchanged throughout the run.
++- Actual emitted bundle: **214/214 scenarios** mounted and selected in the offline DOM harness; embedded CSP hashes checked.
++- Base SMB focused tests: 16/16. Multichannel focused tests: 10/10. Independent held/canonical/mounted review passed at the frozen source hashes recorded in the handoff.
++
++The complete commands, runtime, source hashes, raw TAP and bundle report are in `reviewer-handoff/smb-candidate-validation/`. The original uploaded expansion has a separate validation directory and separate artifact identity.
++
++These checks do not establish native-browser CSP/layout/touch/zoom behavior, screen-reader acceptance, live Windows/Linux SMB interoperability, or computed packet cryptographic test vectors. The product is a deterministic symbolic teaching model. The original expansion's nineteen review findings and performance/accessibility caveats remain open.
+--- /dev/null
++++ b/docs/smb-followup.md
+@@ -0,0 +1,44 @@
++# SMB3.1.1 follow-up candidate
++
++This is an additive, separately reviewed SMB candidate. The inherited expansion reports under `docs/verification/expansion/` and the original `docs/expansion/implementation.md` describe the worker's prior artifact, SHA-256 `520a432945a7b628b5e029828787305cc0b3f038f100b43299d437cf6c2f4da5`. Their 61-preset, 202-choice, full-regression and native-browser claims are historical evidence for that artifact. They do not certify this SMB addition. The original expansion review's 19 findings remain open; this follow-up does not silently fix or reclassify them.
++
++The approved 61-scenario plan manifest remains intact. The separate [SMB inventory](smb-scenarios.json) records this follow-up's ten base scenarios and two multichannel comparisons. With those twelve additions the catalog contains 203 extended scenarios and 214 deduplicated choices. The family opens **configured Kerberos from a nonjoined client** at `#/windows/files/lab-smb-nonjoined-kerberos`; NTLMv2 is an explicit legacy-compatibility comparison.
++
++## Scope and interpretation
++
++The PC remains non-domain-joined with an existing `WORKGROUPPC\bob` desktop. The network credential is separately supplied as `CORP\alice`; the file server is a CORP domain member. Neither successful network authentication nor a failure changes the local desktop identity or joins the PC to AD.
++
++The main protocol profile is **SMB3.1.1 (`0x0311`)**, pinned to [MS-SMB2 revision 88.0, published 2026-09-28](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/5606ad47-5ee0-437a-817e-70c366052962). It explicitly negotiates SHA-512 preauthentication integrity, AES-CMAC signing and AES-128-GCM encryption. AES-CMAC is a supported, selected signing algorithm; this is not a claim that it is the default of every current Windows build. The older SMB2.1 design considered during preparation is not shipped as the main lesson.
++
++This is a deterministic symbolic teaching model. It makes no live Windows, AD, filesystem or OS-build interoperability claim, and does not compute cryptographic packets or configure a server. It uses one fresh base session with no guest, anonymous, DFS, compounding, leases, durable opens or compression; separate multichannel lessons add only their declared session-binding behavior.
++
++## Authentication and access boundaries
++
++- **Kerberos:** explicit domain credentials plus configured realm/KDC reachability, time and `cifs/files.corp.example` SPN enable AS/TGS acquisition without a client machine-domain channel. The KDC owns its own provisioned account key. The CIFS service ticket, ticket key, initiator subkey and Windows KILE AES **AP-REP acceptor subkey** are distinct. The acceptor subkey becomes the exported mechanism key. C acquires it only after validating AP-REP, then derives its SMB keys and verifies the final response.
++- **NTLMv2 compatibility:** C sends challenge-bound proof, not the raw password/hash. S validates through its own FILES$ Netlogon secure channel. C need not contact D directly for this validation. The validator's SessionBaseKey, wrapped ExportedSessionKey, NTLM transcript MIC and SMB signing key have separate custody and uses. Protected Netlogon inner fields remain opaque until local DC processing.
++- **SMB framing:** NEGOTIATE precedes SESSION_SETUP. Request/response MessageIds match. `STATUS_MORE_PROCESSING_REQUIRED` and an allocated SessionId are continuation state, not successful authentication. Final SPNEGO/AP-REP completion and signed SESSION_SETUP success share one carrier response.
++- **Authorization:** signed TREE_CONNECT evaluates share connection policy; successful response returns TreeId and the share encryption requirement. CREATE checks requested rights against the share grant and then the file ACL. It opens an existing file using `FILE_OPEN`, returning a FileId only on success. READ and accepted file data are separate later operations.
++
++The Microsoft [nonjoined-client SMB example](https://learn.microsoft.com/en-us/azure/storage/files/storage-how-to-use-files-windows#mount-the-file-share-from-a-non-domain-joined-vm-or-a-vm-joined-to-a-different-ad-domain) establishes that explicit domain credentials can support Kerberos without machine-domain membership. It does not justify claiming identical automatic credential selection on every on-premises client build. This lesson explicitly configures its Kerberos prerequisites and does not infer NTLM from join state.
++
++## Signing, encryption and negative cases
++
++Both peers chain `SHA512(previousHash || exact SMB message bytes)` from 64 zero bytes. The KDF context includes NEGOTIATE and SESSION_SETUP messages through the final client request: five messages for the NTLM exchange, three for the single-request Kerberos exchange. It excludes the final successful SESSION_SETUP response, which must be signed using keys already derived. See [server processing order](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/5ed93f06-a1d2-4837-8954-fa8b833c2654).
++
++The [SP800-108 counter KDF](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/da4e579e-02ce-4e27-bbce-3fc816a3ff92) uses HMAC-SHA256, `r=32`, `L=128` and the 64-byte transcript context. Distinct NUL-terminated labels derive SigningKey, ApplicationKey, C2SCipherKey and S2CCipherKey. Keys are derived locally at both endpoints and never carried in SMB packet fields. The DC obtains none of these SMB traffic keys.
++
++This profile sets `Session.EncryptData=false` and makes the reports share require encryption. Final SESSION_SETUP and both TREE_CONNECT messages are signed plaintext; TREE_CONNECT is excluded from share-only encryption. The verified response advertises `SMB2_SHAREFLAG_ENCRYPT_DATA`. CREATE/READ requests and responses, including file-access denial, use [AES-GCM encryption transforms](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/c4a91ca0-8d2e-404c-b9ac-3783ba9a01ef). Each direction has a separate cipher key and unique 12-byte nonce; the transform's AAD excludes ProtocolId and Signature. Its encrypted plaintext contains the entire inner SMB2 header/body. AEAD integrity replaces an extra inner SMB signature.
++
++The models separate ciphertext receipt, authenticated unwrap and application acceptance. The invalid-final-signature case changes the actual wire signature, discards the response, and explicitly chooses the permitted disconnect. The invalid-GCM-tag case changes the actual wire tag, obtains no plaintext file data and **must disconnect**. In this single-channel, nondurable profile, client teardown frees active keys/session/tree/file handles; earlier successes remain historical replay events. It does not falsely claim those handles remain usable. See [signature handling](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/36172e53-ac81-48fb-b2e3-caa3761b9157), [AEAD failure](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/d3c03e33-7dc7-4d58-8428-0a1484c5c874) and [disconnect cleanup](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/ae543f57-d993-4905-bce0-3cfc446c1fbb).
++
++The encryption-incompatibility case offers AES128-GCM against a server supporting only AES128-CCM. NEGOTIATE legitimately succeeds with `CipherCount=1, Ciphers[0]=0`. An explicitly configured client required-encryption policy then stops locally before authentication. This placement is a declared teaching-policy gate, not an asserted native Windows error status or exact packet timing. It follows [negotiation processing](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/b39f253e-4963-40df-8dff-2f9040ebbeb1), [client zero-cipher handling](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/3b29f3af-86f9-4962-8cf3-43471cb59363) and [client encryption policy](https://learn.microsoft.com/windows-server/storage/file-server/configure-smb-client-require-encryption?tabs=group-policy).
++
++## Evidence and remaining gates
++
++Base-module focused verification: `node --test tests/smb-access-lab.test.mjs tests/smb-ui.test.mjs` passed **16/16**. Assertions cover every base scenario and canonical held boundary, actor possession before observations, no secret key transmission, local logon invariance, exact request/response pairing, preauth cutoff, KILE subkey acquisition, directional keys, ciphertext/unwrap boundaries, share/file denials, genuine signature/tag failures, disconnect releases, replay operations and the actual mounted Cryptographic detail view.
++
++An independent scoped architecture/held-object review found no remaining blocker in the ten base scenarios after corrections. It checked the real held-inspector-to-exact-history path as well as model projections. This is narrower than native browser/device interoperability. Multichannel focused evidence and the final candidate-wide regression/build evidence are separate additions; inherited worker evidence is not reused as their proof.
++
++NFS version/authentication comparisons are recorded for the next worker plan by the coordinating review. No NFS implementation is included in this SMB candidate.
++
++Final coordinating checks passed **1,462/1,462 tests** and **214/214 emitted-bundle scenarios**. See [the final validation record](smb-candidate-validation.md) for exact identity and limits.
+--- /dev/null
++++ b/docs/smb-multichannel-notes.md
+@@ -0,0 +1,58 @@
++# SMB 3.1.1 multichannel reference notes
++
++Reviewed sources: 2026-10-21. This is a symbolic teaching model; no native Windows/Linux interoperability or computed packet bytes are claimed.
++
++## Scope and scenario IDs
++
++- `lab-smb-multichannel-binding-success`: complete first-channel Kerberos authentication and encrypted file access, authenticated interface discovery, independent second TCP negotiation, signed session binding, fresh same-user GSS context, final client verification, encrypted READ on the existing open file through channel2.
++- `lab-smb-multichannel-binding-rejected`: the same prerequisites, followed by an altered binding signature rejected before GSS. This chosen server behavior retains both transports and the original session; the next encrypted READ succeeds on channel1. It creates no channel2 key or accepted channel.
++
++Both scenarios use SMB 3.1.1 (0x0311), SHA512 preauthentication integrity, negotiated AES-CMAC signing and AES128-GCM encryption. The complete initial session is shown, not pre-seeded as an accepted session. The original standalone Kerberos lesson is copied and rebased without mutation. Both initial NEGOTIATE messages advertise multichannel and carry stable client/server GUIDs in these variants.
++
++The second TCP connection negotiates independently with the same ClientGUID, logical server GUID, dialect, protection selections and notifications setting. Its transcript begins at 64 zero bytes. Successful binding derives its signing key from the binding GSS key and the new transcript through the final client request. The final successful response is excluded from that KDF context.
++
++## Key and identity boundaries
++
++| Operation | Key or identity used |
++| --- | --- |
++| Binding SESSION_SETUP request | Existing `Session.SigningKey`; existing SessionId; Binding flag; PreviousSessionId=0 |
++| Binding GSS authentication | Fresh Kerberos authenticator and mutual context using the valid cached CIFS ticket; same user as Session.UserName |
++| Successful binding response | New `Channel.SigningKey` |
++| Failed SESSION_SETUP response | Existing `Session.SigningKey` |
++| Encrypted I/O on either channel | Retained session C2S/S2C cipher keys |
++| Existing resource access | Same SessionId, TreeId, FileId and existing read grant |
++
++The client holds the cached CIFS ticket only in its opaque representation. It uses the separately held ticket session key to construct a fresh authenticator. The binding acceptor subkey first belongs to the server and reaches the client only by verified AP-REP processing. The client derives its new channel signing key locally and verifies the final SMB response before channel2 becomes usable.
++
++Binding does not replace the original session key, application key, cipher keys, resource handles or local desktop identity. `WORKGROUPPC\bob` remains the local desktop user and `CORP\alice` remains the network user. SMB session binding is unrelated to TLS channel binding tokens; this profile uses direct TCP445 with no TLS.
++
++AES-GCM nonce uniqueness is session-wide for each directional key. The symbolic allocator continues from the first-channel CREATE/READ (#1/#2) through interface IOCTL (#3) and follow-up READ (#4). It never restarts on the second connection. New-channel traffic retains the existing encryption requirement and does not add a separate signature to the encrypted inner SMB2 message.
++
++## Source discrepancy and interpretation
++
++The [MS-SMB2 published-version page](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/5606ad47-5ee0-437a-817e-70c366052962) lists revision 88.0 dated 2026-09-28. Current PDF/DOCX links redirected to an endpoint that could not be retrieved during this review. The following interpretation is explicit rather than claiming that those files were inspected.
++
++The online [client binding section 3.2.5.3.3](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/9a697646-6085-4597-808c-765bb2280c6e) contains preauthentication handling for 3.1.1 but still lists the older SMB2AESCMAC/SmbSign signing KDF inputs without a dialect branch. The [server GSS section 3.3.5.5.3](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/5ed93f06-a1d2-4837-8954-fa8b833c2654) explicitly selects SMBSigningKey and the binding PreauthSession transcript for 3.1.1. This model applies that explicit 3.1.1 rule consistently at both endpoints.
++
++[Upstream Linux client source](https://github.com/torvalds/linux/blob/master/fs/smb/client/smb2transport.c), retrieved on the review date, corroborates this interpretation: `generate_smb311signingkey` supplies SMBSigningKey and the preauthentication hash, and the binding branch generates only the channel signing key. It does not regenerate the session cipher keys. An [immutable historical Linux source snapshot](https://code.googlesource.com/linux/torvalds/linux/+/5eff55d725a4e0dc6fc7709c4b1ca4fe40588d07/fs/smb/client/smb2transport.c) contains the same dialect-specific label/transcript and binding-only key derivation. This is source corroboration, not a live interoperability test, a claim about a particular OS build, or a resolution of the Microsoft editorial discrepancy.
++
++## Failure boundary
++
++[Server signature verification, 3.3.5.2.4](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/85df1680-2ee7-4d25-a916-a982371ddc75) requires rejection of a bad signature and permits disconnecting the current connection. This bounded failure selects no disconnect. It happens before GSS and before any new Channel or key allocation.
++
++Do not generalize that result to arbitrary binding failures. Authentication errors in [3.3.5.5.3](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/5ed93f06-a1d2-4837-8954-fa8b833c2654) include session and open/tree cleanup. The product explicitly limits its preserved-original-session outcome to the selected early signature failure.
++
++Other primary rules used:
++
++- [Binding preconditions and same-user check, 3.3.5.5](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/e545352b-9f2b-4c5e-9350-db46e4f6755e).
++- [Interface discovery request, 3.2.4.20.10](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/147adde4-d936-4597-924a-8caa3429c6b0).
++- [Server response key selection, 3.3.4.1.1](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/d594481c-f6d5-4de5-8842-9099063d41e7).
++- [Client response signature validation, 3.2.5.1.3](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/36172e53-ac81-48fb-b2e3-caa3761b9157).
++
++The SMB3.0 alternate-channel example was consulted only for sequence context. Its dialect and older cryptographic details were not copied into the 3.1.1 profile.
++
++## Validation
++
++`tests/smb-multichannel-lab.test.mjs` checks registration and base immutability; all canonical held-object boundaries; per-connection request/response matching; session-key proof versus new channel signing key; GSS receipt/verification and client usability ordering; cipher-key retention; nonce uniqueness across both connections; encrypted receipt versus authenticated decoding; early failure isolation; local field replay and exact-object replay; opaque cached-ticket use.
++
++Independent reviewers additionally examine mounted product flows. Pure model tests and mounted mocks do not establish native SMB implementation conformance.
+--- /dev/null
++++ b/docs/smb-scenarios.json
+@@ -0,0 +1,69 @@
++{
++  "scope": "Additive SMB follow-up; separate from original 61-scenario expansion contract",
++  "version": "1.2.1-smb.1",
++  "dialect": "0x0311",
++  "specification": "MS-SMB2 88.0 / 2026-09-28",
++  "default": "lab-smb-nonjoined-kerberos",
++  "scenarios": [
++    {
++      "code": "SMB01",
++      "id": "lab-smb-nonjoined-ntlm",
++      "boundary": "NTLMv2 compatibility; DC validation, signed session/share setup, encrypted file read"
++    },
++    {
++      "code": "SMB02",
++      "id": "lab-smb-nonjoined-kerberos",
++      "boundary": "Configured Kerberos primary; explicit credentials, KILE acceptor subkey, encrypted file read"
++    },
++    {
++      "code": "SMB03",
++      "id": "lab-smb-nonjoined-ntlm-blocked",
++      "boundary": "Server incoming NTLM policy rejects before challenge/DC validation"
++    },
++    {
++      "code": "SMB04",
++      "id": "lab-smb-nonjoined-bad-credential",
++      "boundary": "DC response rejection propagates through SMB; no accepted session"
++    },
++    {
++      "code": "SMB05",
++      "id": "lab-smb-nonjoined-dc-unavailable",
++      "boundary": "Server cannot perform DC validation; no invented DC result"
++    },
++    {
++      "code": "SMB06",
++      "id": "lab-smb-nonjoined-share-denied",
++      "boundary": "Authentication accepted; signed TREE_CONNECT denied; no tree"
++    },
++    {
++      "code": "SMB07",
++      "id": "lab-smb-nonjoined-file-denied",
++      "boundary": "Session/share accepted; encrypted CREATE denied by file ACL; no file handle"
++    },
++    {
++      "code": "SMB08",
++      "id": "lab-smb-nonjoined-signature-rejected",
++      "boundary": "Invalid final wire signature rejected; response discarded; profile elects disconnect"
++    },
++    {
++      "code": "SMB09",
++      "id": "lab-smb-nonjoined-encryption-rejected",
++      "boundary": "Invalid GCM wire tag rejected; no plaintext; required disconnect frees client handles"
++    },
++    {
++      "code": "SMB10",
++      "id": "lab-smb-nonjoined-encryption-unavailable",
++      "boundary": "No common cipher selected; explicit client required-encryption policy stops locally"
++    },
++    {
++      "code": "SMB11",
++      "id": "lab-smb-multichannel-binding-success",
++      "boundary": "Second-channel binding to existing authenticated session; separate channel transcript/signing"
++    },
++    {
++      "code": "SMB12",
++      "id": "lab-smb-multichannel-binding-rejected",
++      "boundary": "Early binding precondition rejection; established original channel/session preserved"
++    }
++  ]
++}
+--- a/package.json
++++ b/package.json
+@@ -1,9 +1,9 @@
+ {
+   "name": "auth-flow-studio",
+-  "version": "1.2.0",
++  "version": "1.2.1-smb.1",
+   "private": true,
+   "type": "module",
+-  "description": "An offline Web, Windows, Kerberos, SSH, Network and PAKE learning lab with 191 extended reference scenarios, exact object histories, deterministic state replay and one self-contained HTML build.",
++  "description": "SMB3.1.1 follow-up candidate: offline identity learning lab with 203 extended scenarios and 214 deduplicated choices; inherited expansion evidence is historical, see docs/smb-followup.md.",
+   "scripts": {
+     "build": "bun ./build.mjs",
+     "test": "bun test --isolate --timeout=900000 tests/*.test.mjs",
+--- /dev/null
++++ b/src/held-object-smb.js
+@@ -0,0 +1,16 @@
++import {createHeldObjectPlan,heldArtifact,heldCoverage} from './held-object-authoring.js';
++
++export function buildSMBHeldObjects(args){
++  if(!args?.model?.id?.startsWith('lab-smb-'))return null;
++  const ledger=args.model.smbInventory;
++  if(!ledger)throw new TypeError('SMB model has no explicit held-object ledger.');
++  const plan=createHeldObjectPlan(args);
++  for(const object of ledger.artifacts){const {artifactId,type,label,creator,generation,representations}=object;heldArtifact(plan,{artifactId,type,label,creator,generation,representations});}
++  plan.initial=ledger.initial.map(effect=>({...effect}));
++  for(const step of args.steps){const entry=ledger.events[step.id];if(!entry)throw new TypeError('SMB event has no held-object authoring: '+step.id);plan.events[step.id]={milestones:entry.milestones.map(m=>({...m,effects:m.effects.map(effect=>({...effect}))})),...(entry.messages?{messages:entry.messages.map(message=>({...message,objects:message.objects.map(object=>({...object}))}))}:{})};}
++  plan.bindings=ledger.bindings.map(binding=>({...binding}));
++  const effects=[...plan.initial,...Object.values(plan.events).flatMap(event=>event.milestones.flatMap(m=>m.effects))];
++  for(const actorId of Object.keys(plan.actors)){const acquisitions=effects.filter(e=>e.op==='acquire'&&e.actorId===actorId);heldCoverage(plan,actorId,{stores:[...new Set(acquisitions.map(e=>e.store))],categories:[...new Set(acquisitions.map(e=>plan.artifacts.find(a=>a.artifactId===e.artifactId)?.type).filter(Boolean))],rationale:'Explicit fixed SMB3.1.1 profile inventory, including local desktop identity, mechanism credentials, signed SMB handles and independent authorization results.'});}
++  plan.limitations.push('Symbolic protocol reference; no live OS/build interoperability, computed packet bytes or unmodeled SMB extensions.');
++  return plan;
++}
+--- a/src/held-objects.js
++++ b/src/held-objects.js
+@@ -5,6 +5,7 @@
+ import {buildWebHeldObjects} from './held-object-web.js';
+ import {buildCoreHeldObjects} from './held-object-core.js';
+ import {buildWindowsHeldObjects} from './held-object-windows.js';
++import {buildSMBHeldObjects} from './held-object-smb.js';
+ import {buildNetworkHeldObjects} from './held-object-network.js';
+ import {buildSpakeHeldObjects} from './held-object-spake.js';
+ import {buildPakeHeldObjects} from './held-object-pake.js';
+@@ -20,6 +21,8 @@
+ import {SAMLLAB_SCENARIOS} from './saml-advanced-lab.js';
+ import {BRANCHLAB_SCENARIOS} from './branching-lab.js';
+ import {WINDOWSLAB_SCENARIOS} from './windows-auth-lab.js';
++import {SMBLAB_SCENARIOS} from './smb-access-lab.js';
++import {SMBMULTI_SCENARIOS} from './smb-multichannel-lab.js';
+ import {NETWORKLAB_SCENARIOS} from './network-access-lab.js';
+ import {SPAKELAB_SCENARIOS} from './kerberos-spake-lab.js';
+ import {PAKELAB_SCENARIOS} from './pake-lab.js';
+@@ -31,6 +34,8 @@
+   [LIFELAB_SCENARIOS,'src/lifecycle-lab.js'],[GRANTLAB_SCENARIOS,'src/extended-grants-lab.js'],
+   [SAMLLAB_SCENARIOS,'src/saml-advanced-lab.js'],[BRANCHLAB_SCENARIOS,'src/branching-lab.js'],
+   [WINDOWSLAB_SCENARIOS,'src/windows-auth-lab.js'],[NETWORKLAB_SCENARIOS,'src/network-access-lab.js'],
++  [SMBLAB_SCENARIOS,'src/smb-access-lab.js'],
++  [SMBMULTI_SCENARIOS,'src/smb-multichannel-lab.js'],
+   [SPAKELAB_SCENARIOS,'src/kerberos-spake-lab.js'],[PAKELAB_SCENARIOS,'src/pake-lab.js'],
+ ].flatMap(([models,source])=>models.map(model=>[model.id,source])));
+ const heldObjectBuilders=new Map([
+@@ -40,6 +45,8 @@
+   ['src/lifecycle-lab.js',buildWebHeldObjects],['src/extended-grants-lab.js',buildWebHeldObjects],
+   ['src/saml-advanced-lab.js',buildWebHeldObjects],['src/branching-lab.js',buildWebHeldObjects],
+   ['src/windows-auth-lab.js',buildWindowsHeldObjects],['src/network-access-lab.js',buildNetworkHeldObjects],
++  ['src/smb-access-lab.js',buildSMBHeldObjects],
++  ['src/smb-multichannel-lab.js',buildSMBHeldObjects],
+   ['src/kerberos-spake-lab.js',buildSpakeHeldObjects],['src/pake-lab.js',buildPakeHeldObjects],
+ ]);
+ 
+--- a/src/lab-catalog.js
++++ b/src/lab-catalog.js
+@@ -9,14 +9,16 @@
+ import {FORESTLAB_ATTRIBUTES,FORESTLAB_SOURCES,FORESTLAB_SCENARIOS} from './kerberos-forest-lab.js';
+ import {SSHLAB_ATTRIBUTES,SSHLAB_SOURCES,SSHLAB_SCENARIOS} from './ssh-access-lab.js';
+ import {WINDOWSLAB_ATTRIBUTES,WINDOWSLAB_SOURCES,WINDOWSLAB_SCENARIOS} from './windows-auth-lab.js';
++import {SMBLAB_ATTRIBUTES,SMBLAB_SOURCES,SMBLAB_SCENARIOS} from './smb-access-lab.js';
++import {SMBMULTI_ATTRIBUTES,SMBMULTI_SOURCES,SMBMULTI_SCENARIOS} from './smb-multichannel-lab.js';
+ import {NETWORKLAB_ATTRIBUTES,NETWORKLAB_SOURCES,NETWORKLAB_SCENARIOS} from './network-access-lab.js';
+ import {SPAKELAB_ATTRIBUTES,SPAKELAB_SOURCES,SPAKELAB_SCENARIOS} from './kerberos-spake-lab.js';
+ import {PAKELAB_ATTRIBUTES,PAKELAB_SOURCES,PAKELAB_SCENARIOS} from './pake-lab.js';
+ 
+-export const LAB_ATTRIBUTES={...WEBLAB_ATTRIBUTES,...LIFELAB_ATTRIBUTES,...PROTLAB_ATTRIBUTES,...GRANTLAB_ATTRIBUTES,...SAMLLAB_ATTRIBUTES,...BRANCHLAB_ATTRIBUTES,...ADLAB_ATTRIBUTES,...CRYPTOLAB_ATTRIBUTES,...FORESTLAB_ATTRIBUTES,...SSHLAB_ATTRIBUTES,...WINDOWSLAB_ATTRIBUTES,...NETWORKLAB_ATTRIBUTES,...SPAKELAB_ATTRIBUTES,...PAKELAB_ATTRIBUTES};
+-export const LAB_SOURCES=[...WEBLAB_SOURCES,...LIFELAB_SOURCES,...PROTLAB_SOURCES,...GRANTLAB_SOURCES,...SAMLLAB_SOURCES,...BRANCHLAB_SOURCES,...ADLAB_SOURCES,...CRYPTOLAB_SOURCES,...FORESTLAB_SOURCES,...SSHLAB_SOURCES,...WINDOWSLAB_SOURCES,...NETWORKLAB_SOURCES,...SPAKELAB_SOURCES,...PAKELAB_SOURCES];
++export const LAB_ATTRIBUTES={...WEBLAB_ATTRIBUTES,...LIFELAB_ATTRIBUTES,...PROTLAB_ATTRIBUTES,...GRANTLAB_ATTRIBUTES,...SAMLLAB_ATTRIBUTES,...BRANCHLAB_ATTRIBUTES,...ADLAB_ATTRIBUTES,...CRYPTOLAB_ATTRIBUTES,...FORESTLAB_ATTRIBUTES,...SSHLAB_ATTRIBUTES,...WINDOWSLAB_ATTRIBUTES,...SMBLAB_ATTRIBUTES,...SMBMULTI_ATTRIBUTES,...NETWORKLAB_ATTRIBUTES,...SPAKELAB_ATTRIBUTES,...PAKELAB_ATTRIBUTES};
++export const LAB_SOURCES=[...WEBLAB_SOURCES,...LIFELAB_SOURCES,...PROTLAB_SOURCES,...GRANTLAB_SOURCES,...SAMLLAB_SOURCES,...BRANCHLAB_SOURCES,...ADLAB_SOURCES,...CRYPTOLAB_SOURCES,...FORESTLAB_SOURCES,...SSHLAB_SOURCES,...WINDOWSLAB_SOURCES,...SMBLAB_SOURCES,...SMBMULTI_SOURCES,...NETWORKLAB_SOURCES,...SPAKELAB_SOURCES,...PAKELAB_SOURCES];
+ export const LEGACY_LAB_SCENARIOS=[...WEBLAB_SCENARIOS,...LIFELAB_SCENARIOS,...PROTLAB_SCENARIOS,...GRANTLAB_SCENARIOS,...SAMLLAB_SCENARIOS,...BRANCHLAB_SCENARIOS];
+-export const LAB_SCENARIOS=[...LEGACY_LAB_SCENARIOS,...ADLAB_SCENARIOS,...CRYPTOLAB_SCENARIOS,...FORESTLAB_SCENARIOS,...SSHLAB_SCENARIOS,...WINDOWSLAB_SCENARIOS,...NETWORKLAB_SCENARIOS,...SPAKELAB_SCENARIOS,...PAKELAB_SCENARIOS];
++export const LAB_SCENARIOS=[...LEGACY_LAB_SCENARIOS,...ADLAB_SCENARIOS,...CRYPTOLAB_SCENARIOS,...FORESTLAB_SCENARIOS,...SSHLAB_SCENARIOS,...WINDOWSLAB_SCENARIOS,...SMBLAB_SCENARIOS,...SMBMULTI_SCENARIOS,...NETWORKLAB_SCENARIOS,...SPAKELAB_SCENARIOS,...PAKELAB_SCENARIOS];
+ export const LAB_MODELS=Object.fromEntries(LAB_SCENARIOS.map(model=>[model.id,model]));
+ export const LAB_CATEGORIES=[...new Set(LAB_SCENARIOS.map(model=>model.category))];
+ export const LAB_TOPICS=Object.fromEntries(LAB_SCENARIOS.map(model=>['topic-'+model.id,{id:'topic-'+model.id,name:model.title,attributeIds:model.ids,summary:model.summary,labScenarioId:model.id}]));
+--- /dev/null
++++ b/src/smb-access-lab.js
+@@ -0,0 +1,250 @@
++import {labAttribute,labP,labStep,labScenario} from './lab-common.js';
++
++const smbSpec='https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/5606ad47-5ee0-437a-817e-70c366052962';
++const smbNtlm='https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/5e550938-91d4-459f-b67d-75d70009e3f3';
++const smbNetlogon='https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-apds/5bfd942e-7da5-494d-a640-f269a0e3cc5d';
++const smbKerberos='https://www.rfc-editor.org/rfc/rfc4120.html';
++const smbKile='https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/7a7b081d-c0c6-46f4-acbf-a439664270b8';
++export const SMBLAB_ATTRIBUTES={};
++export const SMBLAB_SOURCES=[
++  {name:'MS-SMB2: SMB 3.1.1 reference profile',standard:'MS-SMB2',section:'2.2.3–2.2.14; 2.2.41; 3.1.4.2; 3.2.5.3; 3.3.5.5; 3.3.5.7; 3.3.5.9',url:smbSpec,retrieved:'2026-10-21',revision:'88.0 / 2026-09-28; dialect0x0311'},
++  {name:'MS-NLMP: NTLMv2 calculation and validation',standard:'MS-NLMP',section:'3.3.2',url:smbNtlm,retrieved:'2026-10-21'},
++  {name:'MS-APDS: NTLM pass-through validation',standard:'MS-APDS',section:'NTLM network logon example',url:smbNetlogon,retrieved:'2026-10-21'},
++  {name:'RFC 4120: Kerberos AS, TGS and mutual AP exchange',standard:'RFC 4120',section:'3.1–3.3',url:smbKerberos,retrieved:'2026-10-21'},
++  {name:'MS-KILE: mutual-authentication session-key selection',standard:'MS-KILE',section:'3.1.1.2',url:smbKile,retrieved:'2026-10-21'},
++  {name:'Microsoft: explicit AD credentials from a non-domain-joined client',standard:'Microsoft implementation documentation',section:'Non-domain-joined SMB client with explicit domain credentials',url:'https://learn.microsoft.com/en-us/azure/storage/files/storage-how-to-use-files-windows#mount-the-file-share-from-a-non-domain-joined-vm-or-a-vm-joined-to-a-different-ad-domain',retrieved:'2026-10-21'},
++].map(source=>({revision:'Online specification/documentation at retrieval; no OS build certification',errata:'Reference profile; no live interoperability assertion',...source}));
++
++// A separate SMB carrier. These objects are authored alongside canonical events;
++// neither HTTP helper messages nor local desktop logon changes are reused.
++function smbAuthor(spec){
++  const id='lab-smb-nonjoined-'+spec.suffix,C='smbClient',S='smbServer',D='smbDC';
++  const steps=[],definitions={},artifacts=[],initial=[],events={},bindings=[];
++  const actors={
++    [C]:{id:C,name:'C — workgroup PC',role:'Non-domain-joined client',plainRole:'Keeps its local desktop identity; supplies separate domain network credentials',kind:'client',color:'#2563eb',position:{x:160,y:160},notes:['Desktop: WORKGROUPPC\\bob. Network identity: CORP\\alice. Joining AD is not an authentication mechanism.']},
++    [S]:{id:S,name:'S — files.corp.example',role:'CORP domain-member SMB file server',plainRole:'Authenticates the SMB session, then checks share and file access',kind:'service',color:'#08916d',position:{x:550,y:160},notes:['Server machine account FILES$ has a secure channel to CORP. Signing protects session/share setup; this share requires encryption for file operations.']},
++    [D]:{id:D,name:'D — CORP domain controller',role:spec.kerberos?'KDC and account-key authority':'NTLM account validator',plainRole:spec.kerberos?'Issues client and CIFS service tickets':'Checks the response through the server machine secure channel',kind:'idp',color:'#7c3aed',position:{x:940,y:160},notes:['NTLM validation does not require C to contact D directly. The selected Kerberos acquisition does.']},
++  };
++  const initialState={smb:{clientJoined:false,localDesktopIdentity:'WORKGROUPPC\\bob',networkIdentity:'CORP\\alice',serverDomain:'CORP',mechanism:spec.kerberos?'Kerberos':'NTLMv2',negotiated:false,sessionIdAllocated:false,serverAuthenticated:false,clientSessionAccepted:false,shareAuthorized:false,treeConnected:false,fileAuthorized:false,fileOpened:false,fileRead:false,serverKnowsFailure:false,clientKnowsFailure:false,failure:null}};
++  const obj=(key,label,type,creator,value,readers,detail,{wire,wireReaders=readers,source=smbSpec,store='protocol state'}={})=>{
++    const artifactId=id+':'+key,attributeId='smb_'+spec.suffix.replace(/-/g,'_')+'_'+key;
++    definitions[attributeId]=labAttribute(label,detail,creator+' creates or provisions this exact '+type+'.',detail+' Read permission does not itself create possession.',value,source===smbSpec?'MS-SMB2 88.0 / SMB3.1.1':source===smbKerberos?'RFC4120':source===smbKile?'MS-KILE':source===smbNtlm?'MS-NLMP':'MS-APDS',source);
++    SMBLAB_ATTRIBUTES[attributeId]=definitions[attributeId];
++    const representation=(representationId,val,allowed)=>({representationId,format:representationId==='wire'?'Protected opaque envelope':'Synthetic symbolic value',readableBy:[...allowed],fields:[{attributeId,name:label,value:val,readableBy:[...allowed]}]});
++    const entry={artifactId,attributeId,key,label,type,creator,value,readers,wire,wireReaders,store,generation:1,representations:[representation('plain',value,readers),...(wire?[representation('wire',wire,wireReaders)]:[])]};artifacts.push(entry);return entry;
++  };
++  const own=(o,actor,representationId='plain',store=o.store)=>({op:'acquire',artifactId:o.artifactId,actorId:actor,representationId,store,holdingId:[actor,o.artifactId,representationId,store].join('|'),retention:'retained'});
++  const seen=(o,actor,result,representationId='plain',kind='verification')=>({op:'observe',artifactId:o.artifactId,actorId:actor,representationId,kind,result});
++  const seed=(o,owners)=>{initial.push({op:'create',artifactId:o.artifactId},...owners.map(actor=>own(o,actor)));return o;};
++  const netlogonView=o=>{o.representations.push({representationId:'netlogon',format:'Opaque Netlogon protected field',readableBy:[S,D],fields:[{attributeId:o.attributeId,name:o.label+' in protected RPC',value:'Netlogon protected field: '+o.label,readableBy:[S,D]}]});return o;};
++  const event=(stage,title,from,to,protocol,summary,objects=[],{made=[],got=[],derived=[],decoded=[],released=[],checks=[],puts={},layers=[],wireReps={}}={})=>{
++    const wire=from!==to,eventId=id+':'+stage,effects=made.flatMap(o=>[{op:'create',artifactId:o.artifactId},own(o,o.creator)]);
++    effects.push(...got,...decoded.map(o=>own(o,from,'plain','decoded validation context')),...checks,...released.map(o=>({op:'release',holdingId:own(o,from).holdingId})));
++    const related=[...got,...checks].map(e=>artifacts.find(o=>o.artifactId===e.artifactId));
++    const listed=wire?objects:[...new Set([...objects,...made,...decoded,...related])],ops=[];
++    const repFor=o=>wireReps[o.artifactId]||(o.wire?'wire':'plain');
++    const occurrence=(o,rep,actor,kind,holders=[actor])=>{const view=o.representations.find(r=>r.representationId===rep);return {attributeId:o.attributeId,instanceId:o.artifactId,creator:o.creator,holders,inspectors:view.readableBy,fieldPath:(rep==='plain'?'decoded.':'envelope.')+o.key,representation:rep,value:view.fields[0].value,sourceEventId:eventId,exactValueRef:o.artifactId+':'+rep,kind,actorId:actor};};
++    for(const o of made)ops.push(occurrence(o,'plain',o.creator,derived.includes(o)?'derive':'create'));
++    if(wire)for(const o of objects){const rep=repFor(o);ops.push(occurrence(o,rep,from,'send',[from,to]),occurrence(o,rep,to,'receive',[from,to]));effects.push(own(o,to,rep,'message inbox'));}
++    for(const o of decoded)ops.push(occurrence(o,'plain',from,'decrypt'));
++    for(const acquisition of got){const o=artifacts.find(item=>item.artifactId===acquisition.artifactId);ops.push(occurrence(o,acquisition.representationId,acquisition.actorId,derived.includes(o)?'derive':'store'));}
++    for(const check of checks){const o=artifacts.find(item=>item.artifactId===check.artifactId);ops.push({...occurrence(o,check.representationId,check.actorId,check.kind==='knowledge'?'use':'verify'),detail:check.result});}
++    for(const o of released)ops.push(occurrence(o,'plain',from,'evict'));
++    if(!wire)for(const o of objects)if(!ops.some(op=>op.instanceId===o.artifactId))ops.push(occurrence(o,'plain',from,'use'));
++    const step=labStep(eventId,title,from,to,protocol,wire?'backchannel':'internal',summary,summary,listed.map(o=>o.attributeId),listed.map(o=>labP(o.label,wire?o.representations.find(r=>r.representationId===repFor(o)).fields[0].value:o.value,definitions[o.attributeId].meaning,o.attributeId)),['Symbolic reference, not captured packets.','Receipt, verification and authorization have separate boundaries.'],ops);
++    step.smbStage=stage;step.eventType=wire?'message':'local';step.protocolLabel=protocol;step.beginnerSummary=summary;step.protocolDetail=summary;step.layers=layers;
++    step.cryptoDetail=listed.map(o=>o.label+': '+(wire?o.representations.find(r=>r.representationId===repFor(o)).fields[0].value:o.value)).join('\n')+'\nSynthetic expressions; no computed cryptographic bytes claimed.';
++    step.protocolEffects=Object.entries(puts).map(([path,value])=>({op:'put',path:'smb.'+path,value}));
++    events[eventId]={milestones:[{id:'complete',at:1,effects}],...(wire?{messages:[{messageId:eventId+':'+from+'->'+to,from,to,objects:objects.map(o=>({artifactId:o.artifactId,representationId:repFor(o)})),start:0,end:1}]}:{})};steps.push(step);return step;
++  };
++  const local=(stage,title,actor,summary,objects,options)=>event(stage,title,actor,actor,'Local validation / policy',summary,objects,options);
++  let messageId=0,preauth=null,preauthCount=0,signingKey=null,appKey=null,c2sKey=null,s2cKey=null,c2sNonce=0,s2cNonce=0;
++  const clientInstalled=[];
++  const disconnectClient=reason=>local('client-disconnect','Disconnect and free this single-channel client context',C,reason+' Free the nondurable open handles, trees, session and connection on C. Previous successful boundaries remain replayable history; they are not usable handles after teardown. Server-side cleanup is outside this client terminal boundary.',clientInstalled,{released:clientInstalled,puts:{connectionOpen:false,clientSessionAccepted:false,treeConnected:false,fileOpened:false,fileRead:false,clientDisconnected:true}});
++  const smbPacket=(stage,title,from,to,command,status,mid,sessionId,objects,options={})=>{
++    const encrypted=['CREATE','READ'].includes(command),signed=!encrypted&&Boolean(options.signed);
++    const treeId=['CREATE','READ'].includes(command)||command==='TREE_CONNECT'&&status==='STATUS_SUCCESS'?'tree-1':'0';
++    const header=obj(stage+'-header','SMB2 '+command+' '+(status||'request')+' header','packet-header',from,'Command='+command+'; MessageId='+mid+'; SessionId='+sessionId+'; TreeId='+treeId+'; Flags.SIGNED='+signed+'; '+(status?'Status='+status+'; ':'')+'Signature='+(signed?(spec.failure==='signature'&&stage==='session-success'?'<INVALID altered AES-CMAC signature>':'AES-CMAC(SigningKey, SMB2 message with Signature=Z(16))'):'Z(16)'),[C,S],'The response echoes its request MessageId. An in-progress SessionId is not an accepted session. This selected SMB3.1.1 profile negotiates AES-CMAC signing; encrypted messages instead use AEAD integrity and an unsigned inner SMB2 header.');
++    const error=status&&!['STATUS_SUCCESS','STATUS_MORE_PROCESSING_REQUIRED'].includes(status)?obj(stage+'-error-body','SMB2 ERROR Response body','error',from,'SMB2 ERROR Response; StructureSize=9; ErrorContextCount/reserved=0; ByteCount=0; no additional error data',[C,S],'The failing command retains its SMB header status and uses the SMB2 ERROR Response body; no success handle is returned.'):null;
++    const inner=[header,...objects,...(error?[error]:[])],made=[header,...(options.made||[]),...(error?[error]:[])];
++    let wireObjects=inner,wireReps={},layers=[{protocol:'SMB 3.1.1 (0x0311)',transport:'Direct TCP445',from,to,protection:signed?'AES-CMAC using derived SigningKey':'Pre-session unsigned framing; no TLS',...(signed?{keyRef:signingKey.artifactId}:{})}],transform=null,cipherKey=null;
++    if(encrypted){
++      cipherKey=from===C?c2sKey:s2cKey;const counter=from===C?++c2sNonce:++s2cNonce;
++      const nonce=(from===C?'C2S':'S2C')+' nonce12 #'+counter+'; unique under this directional key';
++      transform=obj(stage+'-transform','SMB3 encryption transform header','packet-header',from,'ProtocolId=0xFD534D42; Signature='+(spec.failure==='encryption'&&stage==='read-success'?'<INVALID altered GCM tag16>':'<GCM tag16>')+'; Nonce='+nonce+'; remaining nonce bytes zero; OriginalMessageSize=<inner SMB2 byte count>; Flags=ENCRYPTED; SessionId=session-1',[C,S],'AES-128-GCM protects the entire inner SMB2 message. The transform fields from Nonce through SessionId form authenticated associated data; ProtocolId and Signature are excluded. Nonce uniqueness is per directional key.');
++      for(const o of inner){o.representations.push({representationId:'ciphertext',format:'SMB3 AES-128-GCM ciphertext field',readableBy:[C,S],fields:[{attributeId:o.attributeId,name:o.label+' (encrypted)',value:'Opaque AES-128-GCM field in '+stage+'; no decoded '+o.key+' until authenticated unwrap',readableBy:[C,S]}]});wireReps[o.artifactId]='ciphertext';}
++      wireObjects=[transform,...inner];made.push(transform);layers=[{protocol:'SMB3 encryption transform',transport:'Direct TCP445; no TLS',from,to,protection:'AES-128-GCM; directional derived cipher key; authenticated header and unique nonce',keyRef:cipherKey.artifactId}];
++    }
++    const hashMessage=command==='NEGOTIATE'||command==='SESSION_SETUP'&&(!status||status==='STATUS_MORE_PROCESSING_REQUIRED');
++    let nextHash=null;
++    if(hashMessage){nextHash=obj('preauth-'+(++preauthCount),'Preauthentication transcript hash '+preauthCount,'transcript-hash',from,'SHA512('+preauth.key+' || exact SMB2 '+command+' '+(status||'request')+' bytes, MessageId='+mid+')',[C,S],'Both peers hash exact serialized SMB message bytes, including header and security buffer. This symbolic chain begins with64 zero bytes; the final successful SESSION_SETUP response is excluded from the key-derivation context.');made.push(nextHash);}
++    const step=event(stage,title,from,to,(encrypted?'SMB3 encrypted ':'SMB2 ')+command+' / TCP445',title+'. '+(options.summary||''),wireObjects,{...options,made,got:[...(options.got||[]),...(nextHash?[own(nextHash,to)]:[])],checks:[...(options.checks||[]),...(nextHash?[seen(preauth,from,'used_previous_hash_and_exact_message_bytes','plain','knowledge'),seen(preauth,to,'used_previous_hash_and_exact_message_bytes','plain','knowledge')]:[])],puts:{...(options.puts||{}),...(nextHash?{preauthMessages:preauthCount,preauthHash:nextHash.artifactId}:{})},wireReps,layers});
++    step.smbFrame={command,status:status||null,messageId:mid,sessionId,treeId,signed,encrypted,preauthHashed:hashMessage};
++    if(nextHash)preauth=nextHash;
++    if(encrypted&&spec.failure==='encryption'&&stage==='read-success')local(stage+'-reject','Reject the invalid SMB3 authentication tag',to,'Authenticated decryption fails. Do not acquire or use the inner SMB2 response or file data; no plaintext result is accepted.',[transform,cipherKey],{checks:[seen(transform,to,'rejected_GCM_tag'),seen(cipherKey,to,'used_directional_decryption_key','plain','knowledge')],puts:{failure:'SMB encryption integrity failure',clientKnowsFailure:true}});
++    else if(encrypted)local(stage+'-unwrap','Authenticate and decrypt the SMB3 message',to,'Validate the GCM tag and transform association before acquiring decoded SMB2 header/body fields. Encryption supplies integrity; no separate inner SMB signature is required.',[transform,cipherKey,...inner],{decoded:inner,checks:[seen(transform,to,'accepted_GCM_tag_nonce_session_and_AAD'),seen(cipherKey,to,'used_directional_decryption_key','plain','knowledge')]});
++    return step;
++  };
++  const bind=(path,o,actor,store=o.store)=>bindings.push({path:'smb.'+path,artifactId:o.artifactId,actorId:actor,representationId:'plain',store,presentWhen:'truthy'});
++  const desktop=seed(obj('desktop','Existing local desktop logon','logon-context',C,'WORKGROUPPC\\bob; local session already established',[C],'This local operating-system logon stays unchanged. Supplying CORP network credentials does not join the PC or replace this desktop identity.',{store:'local desktop session'}),[C]);
++  const credential=seed(obj('credential','Explicit network credential','credential',C,'CORP\\alice / alice@CORP.EXAMPLE; <synthetic password>',[C],'Separate explicit domain credential used locally for the chosen network mechanism. The password is never sent to the SMB server or DC.',{store:'client credential authority',source:spec.kerberos?smbKerberos:smbNtlm}),[C]);
++  const policy=seed(obj('policy','Fixed connection profile','policy',C,'Dialect=0x0311; SHA512 preauthentication; AES-CMAC signing required; AES128-GCM encryption required by reports share; no guest/anonymous; '+(spec.kerberos?'Kerberos explicitly required; KDC discovery/reachability and correct cifs SPN configured; no NTLM fallback':'NTLMv2 explicitly selected for legacy compatibility; server policy='+ (spec.failure==='blocked'?'deny incoming NTLM':'allow')),[C,S],'Client join state does not select the mechanism. The latest published SMB dialect3.1.1 is used with explicit supported algorithms; AES-CMAC is a negotiated choice, not a claim about every current Windows default.'),[C,S]);
++  preauth=seed(obj('preauth-0','Initial preauthentication hash','transcript-hash',C,'64 zero bytes (SHA512 chaining initial value)',[C,S],'The connection transcript starts before NEGOTIATE. Each side updates its own matching hash using exact message bytes; hashes are not sent as authentication tokens.'),[C,S]);
++  const sharePolicy=seed(obj('share-policy','Share access policy','authorization',S,'\\\\files.corp.example\\reports: '+(spec.failure==='share'?'deny CORP\\alice connection':'allow CORP\\alice connection and requested read access'),[S],'TREE_CONNECT evaluates share connection policy. The requested file access must also fit the share access grant.'),[S]);
++  const filePolicy=seed(obj('file-policy','File security descriptor','authorization',S,'reports\\quarterly.txt: '+(spec.failure==='file'?'deny CORP\\alice FILE_READ_DATA':'allow CORP\\alice FILE_READ_DATA'),[S],'The file-system ACL is evaluated independently when CREATE opens the named file; a TreeId alone does not grant file access.'),[S]);
++  local('identity','Keep local logon and network identity distinct',C,'Use CORP\\alice only for this connection. The PC remains outside the domain and the WORKGROUPPC\\bob desktop remains active.',[desktop,credential,policy],{checks:[seen(desktop,C,'retained_existing_local_logon','plain','knowledge')]});
++  const negotiate=obj('dialects','SMB3.1.1 capabilities offer','negotiation',C,'Dialects=[0x0311]; SecurityMode=SIGNING_ENABLED|SIGNING_REQUIRED; PREAUTH_INTEGRITY_CAPABILITIES: SHA512(id1), fresh client salt; ENCRYPTION_CAPABILITIES: AES128GCM(id2); SIGNING_CAPABILITIES: AES-CMAC(id1)',[C,S],'SMB3.1.1 negotiation contexts pin transcript hashing, encryption and signing algorithms independently. The salts and all serialized context bytes enter the preauthentication transcript.');
++  const negotiationId=messageId++;
++  smbPacket('negotiate-request','Offer the fixed dialect and require signing',C,S,'NEGOTIATE',null,negotiationId,'0',[negotiate],{made:[negotiate]});
++  const offer=obj('server-offer','Selected dialect, algorithms and mechanisms','negotiation',S,'DialectRevision=0x0311; SecurityMode=SIGNING_ENABLED|SIGNING_REQUIRED; selected PREAUTH=SHA512 with fresh server salt; ENCRYPTION='+(spec.failure==='cipher'?'CipherCount=1,Ciphers[0]=0 (no common cipher; server supports only AES128CCM)':'AES128GCM')+'; SIGNING=AES-CMAC; SecurityBuffer=SPNEGO NegTokenInit2 with '+(spec.kerberos?'Kerberos supported':'NTLM supported'),[C,S],'The server chooses algorithms from the client capabilities. A zero selected cipher means encryption is unsupported for this connection, even though dialect negotiation succeeded. The SPNEGO mechanism list is separate.');
++  smbPacket('negotiate-response','Receive dialect and mechanism support',S,C,'NEGOTIATE','STATUS_SUCCESS',negotiationId,'0',[offer],{made:[offer]});
++  if(spec.failure==='cipher'){local('encryption-policy-reject','Required encryption is unavailable',C,'The response legitimately selects cipher0 because there is no common cipher. This configured client requires usable encryption and stops locally before SESSION_SETUP. This is an explicit teaching policy gate, not a claimed native Windows packet timing or invented server NTSTATUS.',[offer,policy],{checks:[seen(offer,C,'no_usable_cipher'),seen(policy,C,'rejected_required_encryption_prerequisite')],puts:{failure:'required encryption unavailable',clientKnowsFailure:true}});return finish();}
++  local('negotiate-accept','Accept the configured protocol profile',C,'Check dialect, required signing and supported mechanism against the explicit local profile. Join state is not a fallback rule.',[offer,policy],{checks:[seen(offer,C,'accepted_fixed_dialect_signing_and_mechanism')],puts:{negotiated:true,connectionOpen:true}});
++  let sessionKey=null,finalToken=null,setupId=null,serverContext=null;
++  const authFailure=(reason,status,mid)=>{
++    local('authentication-reject','Reject SMB session authentication',S,reason,[policy],{puts:{failure:reason,serverKnowsFailure:true}});
++    smbPacket('authentication-failure','Return failed SESSION_SETUP',S,C,'SESSION_SETUP',status,mid,spec.failure==='blocked'?'0':'session-1',[],{summary:'No accepted SMB session, TreeId or file handle is created.'});
++    local('authentication-failure-accept','Learn the authentication failure',C,'The client processes the actual SESSION_SETUP error. Its local desktop and explicit credential remain local; no automatic alternate mechanism is attempted.',[desktop],{puts:{clientKnowsFailure:true}});
++  };
++  if(!spec.kerberos){
++    const account=seed(obj('account-verifier','DC account verifier','credential',D,'<CORP alice NT password-derived verifier>',[D],'Only the account DC holds this provisioned verifier. It validates the response; it never returns the raw verifier to the file server.',{source:smbNtlm,store:'AD account database'}),[D]);
++    const channel=seed(obj('netlogon-channel','Server machine secure channel','secure-channel',S,'FILES$ ↔ CORP DC; separate machine-account channel key',[S,D],'The domain-member file server uses its own authenticated Netlogon channel. The nonjoined client need not contact the DC directly for this NTLM validation.',{source:smbNetlogon}),[S,D]);
++    const token1=obj('ntlm-negotiate','NTLM NEGOTIATE_MESSAGE','negotiation',C,'SPNEGO NegTokenInit(NTLM); Unicode, ESS, sign, seal,128-bit, KEY_EXCH; NTLMv2 preconfigured',[C,S],'NTLMv2 is configured, not negotiated as a version against NTLMv1. The raw transcript is retained for the later NTLM MIC.',{source:smbNtlm});
++    const firstSetupId=messageId++;
++    smbPacket('session-negotiate','Begin NTLM session setup',C,S,'SESSION_SETUP',null,firstSetupId,'0',[token1],{made:[token1]});
++    if(spec.failure==='blocked'){authFailure('incoming NTLM blocked','STATUS_NOT_SUPPORTED',firstSetupId);return finish();}
++    const challenge=obj('ntlm-challenge','NTLM challenge and target information','challenge',S,'ServerChallenge=8 fresh symbolic bytes; MsvAvNbComputerName=FILES; MsvAvNbDomainName=CORP; MsvAvTimestamp; selected flags',[C,S,D],'The file server creates this fresh challenge. TargetInfo names the server domain; the account authority remains separately specified.',{source:smbNtlm});
++    smbPacket('session-challenge','Continue authentication and allocate an in-progress SessionId',S,C,'SESSION_SETUP','STATUS_MORE_PROCESSING_REQUIRED',firstSetupId,'session-1',[challenge],{made:[challenge],puts:{sessionIdAllocated:true},summary:'SessionId=session-1 is an in-progress context, not successful authentication.'});
++    const hash=obj('nt-hash','Client NT password-derived handle','credential',C,'MD4(UTF16LE(synthetic password))',[C],'This local hash is neither the transmitted NTLM response nor a Kerberos ticket.',{source:smbNtlm});
++    const responseKey=obj('response-key','NTLMv2 response key','session-key',C,'HMAC-MD5(NT-hash, UTF16LE(UPPER(alice)||CORP))',[C],'ResponseKeyNT remains local and derives the proof and candidate SessionBaseKey.',{source:smbNtlm});
++    const proof=obj('ntlm-proof','NTLMv2 challenge response','proof',C,(spec.failure==='password'?'INVALID proof; ':'')+'NTProofStr=HMAC-MD5(ResponseKeyNT, ServerChallenge||blob); blob includes timestamp, fresh client challenge, target AV pairs, MIC flag and terminators',[C,S,D],'The verifier checks this exact challenge-bound response. It does not receive the password or client hash. This fixed profile has NULL channel-binding input and no Extended Protection claim.',{source:smbNtlm});
++    const base=obj('client-base-key','Client candidate SessionBaseKey','session-key',C,'HMAC-MD5(ResponseKeyNT, NTProofStr)',[C],'Candidate derived material does not mean the server has accepted this account.',{source:smbNtlm});
++    sessionKey=obj('session-key','Exported NTLM session key','session-key',C,'NTLM ExportedSessionKey:16 synthetic random bytes; base key for SMB3.1.1 KDF',[C,S],'KEY_EXCH wraps this exported key with RC4K(KeyExchangeKey,...). The DC returns SessionBaseKey, not this exported key or an NT hash. SMB3.1.1 derives separate signing and directional cipher keys from this base and the preauthentication transcript.',{store:'SMB security context'});
++    const authenticate=obj('ntlm-authenticate','NTLM AUTHENTICATE_MESSAGE','proof',C,'CORP\\alice; NtChallengeResponse=proof||blob; LmChallengeResponse=Z(24); MIC=HMAC-MD5(ExportedSessionKey, negotiate||challenge||authenticate-with-zero-MIC); EncryptedRandomSessionKey=RC4K(KeyExchangeKey,ExportedSessionKey)',[C,S],'The timestamp-bearing NTLMv2 profile uses a zero LM-response field, not LM authentication. Only C/S see the MIC and wrapped exported key; neither is the DC account verifier.',{source:smbNtlm});
++    local('ntlm-derive','Derive the response and candidate session key',C,'Check the challenge, derive password-based proof and candidate keys, and construct the NTLM transcript MIC. The password and hash stay local.',[credential,hash,responseKey,proof,base,sessionKey,authenticate],{made:[hash,responseKey,proof,base,sessionKey,authenticate],checks:[seen(challenge,C,'accepted_target_flags_and_timestamp'),seen(credential,C,'used_for_local_derivation','plain','knowledge')]});
++    setupId=messageId++;
++    smbPacket('session-authenticate','Return the final NTLM token on the same SessionId',C,S,'SESSION_SETUP',null,setupId,'session-1',[authenticate,proof],{summary:'Reuse session-1; sending AUTHENTICATE does not establish the SMB session.'});
++    if(spec.failure==='dc'){local('dc-unavailable','Cannot use the server DC validation channel',S,'The configured DC/channel is unavailable. There is no request delivered to D and no invented DC rejection or credential cache success.',[channel],{checks:[seen(channel,S,'unavailable_for_validation')]});authFailure('DC validation unavailable','STATUS_NO_LOGON_SERVERS',setupId);return finish();}
++    const validation=obj('validation','Netlogon account validation request','request',S,'CORP\\alice; exact challenge and NTLMv2 response',[S,D],'The SMB server asks its account authority over a separate machine channel. This is Netlogon validation, not AS-REQ/TGS-REQ.',{source:smbNetlogon,wire:'Netlogon protected NETLOGON_NETWORK_INFO(challenge,response,CORP\\alice)'});
++    netlogonView(challenge);netlogonView(proof);
++    event('dc-request','Ask the DC to validate the response',S,D,'Netlogon protected RPC','Client C is not an endpoint of this machine-channel request. Inner response fields have protected representations until DC processing.',[validation,challenge,proof],{made:[validation],wireReps:{[challenge.artifactId]:'netlogon',[proof.artifactId]:'netlogon'},layers:[{protocol:'Netlogon',transport:'Machine secure channel',from:S,to:D,protection:'Authenticated RPC protection',keyRef:channel.artifactId}]});
++    const denied=spec.failure==='password';
++    const authorityKey=denied?null:obj('authority-base-key','Validated SessionBaseKey','session-key',D,'HMAC-MD5(authority ResponseKeyNT, accepted NTProofStr)',[D,S],'The DC independently derives this only after accepting the response. S receives it through the protected validation result and then recovers the exported key.',{source:smbNtlm,wire:'Netlogon protected SessionBaseKey'});
++    local('dc-verify','Validate using the authoritative account record',D,'Unwrap the protected validation fields and recompute the expected proof. Only success derives return key information; S does not learn the result until delivery.',[account,validation,proof,...(authorityKey?[authorityKey]:[])],{made:authorityKey?[authorityKey]:[],decoded:[validation,challenge,proof],checks:[seen(proof,D,denied?'rejected_response':'accepted_response')],puts:{dcValidated:!denied}});
++    const result=obj('dc-result','Netlogon validation result','result',D,denied?'STATUS_LOGON_FAILURE; no session key':'STATUS_SUCCESS; authorization information and SessionBaseKey',[D,S],'The protected result informs S; it does not itself create an SMB session.',{source:smbNetlogon,wire:'Netlogon protected '+(denied?'STATUS_LOGON_FAILURE':'success and session-key information')});
++    event('dc-result','Return account validation to the file server',D,S,'Netlogon protected RPC','Only the file server receives this result; the client waits for its SMB response.',[result,...(authorityKey?[authorityKey]:[])],{made:[result],layers:[{protocol:'Netlogon',transport:'Machine secure channel',from:D,to:S,protection:'Authenticated RPC protection',keyRef:channel.artifactId}]});
++    if(denied){local('dc-rejection-process','Process the unsuccessful account result',S,'Verify the returned channel/result before mapping the failure to this SESSION_SETUP response.',[result],{decoded:[result],checks:[seen(result,S,'accepted_failure_result')]});authFailure('bad domain credential','STATUS_LOGON_FAILURE',setupId);return finish();}
++    local('ntlm-accept','Recover the exported key and verify the NTLM transcript',S,'Unwrap the exported key using the returned SessionBaseKey/KXKEY; verify the retained NTLM MIC and target checks. The NTLM MIC is distinct from later SMB packet signatures.',[result,authorityKey,authenticate,token1,challenge,sessionKey],{decoded:[result,authorityKey],got:[own(sessionKey,S)],checks:[seen(authenticate,S,'accepted_MIC_target_and_response'),seen(sessionKey,S,'recovered_exported_key_after_authority_success','plain','knowledge')]});
++    finalToken=obj('spnego-complete','SPNEGO completion','negotiation',S,'NegTokenResp negState=accept_completed; selected mechanism NTLM',[C,S],'Completion of this configured single-mechanism exchange is carried by the actual SMB SESSION_SETUP response. No separate HTTP success is invented.');
++  }else{
++    const cKey=seed(obj('client-account-key','Client account-derived AES key','private-key',C,'AES128 password-derived CORP alice key handle',[C],'Explicit domain credentials are used locally after configured realm/KDC discovery. The nonjoined client can run Kerberos; this is not a claim that any UNC access automatically chooses it.',{source:smbKerberos}),[C]);
++    const dKey=seed(obj('dc-account-key','DC provisioned Alice AES key','private-key',D,'Authoritative AES128 CORP alice key; corresponding key material to client derivation',[D],'D uses its own provisioned key to verify preauthentication and protect the AS reply. No client password/hash is transmitted.',{source:smbKerberos,store:'AD principal key database'}),[D]);
++    const krbtgt=seed(obj('krbtgt-key','Realm TGT encryption key','private-key',D,'<CORP krbtgt AES key>',[D],'Only the KDC can open the TGT encrypted part.',{source:smbKerberos}),[D]);
++    const serviceKey=seed(obj('cifs-service-key','CIFS service account key','private-key',S,'<FILES$ AES128 service key>',[S,D],'The exact cifs/files.corp.example SPN resolves to this domain-member server account.',{source:smbKerberos}),[S,D]);
++    const asReq=obj('as-request','AS-REQ with preauthentication','request',C,'alice@CORP.EXAMPLE; PA-ENC-TIMESTAMP encrypted with account AES key; fresh nonce',[C,D],'C must discover/reach the KDC for this acquisition; this differs from NTLM server pass-through.',{source:smbKerberos});
++    event('as-request','Request a domain TGT using explicit credentials',C,D,'Kerberos AS-REQ / TCP88','No SMB or local desktop authentication has completed.',[asReq],{made:[asReq],checks:[seen(cKey,C,'used_for_preauthentication','plain','knowledge')],layers:[{protocol:'Kerberos AS',transport:'TCP88',from:C,to:D,protection:'PA-ENC-TIMESTAMP field encryption',keyRef:cKey.artifactId}]});
++    local('as-validate','Validate the account preauthentication at D',D,'Use the provisioned Alice key and configured account policy; successful verification precedes ticket issuance.',[asReq,dKey],{checks:[seen(asReq,D,'accepted_timestamp_integrity_account_policy'),seen(dKey,D,'used_for_preauthentication_and_reply','plain','knowledge')]});
++    const tgt=obj('tgt','Opaque TGT','ticket',D,'Decoded CORP TGT',[D],'C retains the opaque ticket while only D can inspect its encrypted part.',{source:smbKerberos,wire:'Ticket(krbtgt/CORP.EXAMPLE, enc-part=<krbtgt ciphertext>)',wireReaders:[C,D]});
++    const tgtKey=obj('tgt-key','Client/TGS session key','session-key',D,'<KDC-issued client/TGS AES128 session key>',[C,D],'C acquires this key only after validating the encrypted AS reply.',{source:smbKerberos});
++    const asRep=obj('as-reply','Protected AS reply','reply',D,'EncASRepPart: fresh nonce, principal, lifetime, TGT session key',[C,D],'The reply client part is protected with the corresponding account key, independently of TGT encryption.',{source:smbKerberos,wire:'EncryptedData(Alice account key, EncASRepPart)'});
++    event('as-reply','Deliver the TGT and protected client reply',D,C,'Kerberos AS-REP / TCP88','Receipt alone is not an installed credential.',[tgt,asRep],{made:[tgt,tgtKey,asRep],layers:[{protocol:'Kerberos AS',transport:'TCP88',from:D,to:C,protection:'Account-key client part; krbtgt-key ticket part',keyRef:dKey.artifactId}]});
++    local('as-accept','Validate and install the client TGT credential',C,'Check reply integrity, nonce, realm, principal and lifetime before acquiring the decoded TGT key.',[asRep,tgtKey],{decoded:[asRep],got:[own(tgtKey,C)],checks:[seen(asRep,C,'accepted_AS_reply'),seen(tgt,C,'installed_opaque_TGT','wire')]});
++    const tgsReq=obj('tgs-request','CIFS ticket request','request',C,'TGS-REQ for cifs/files.corp.example; opaque TGT; fresh Authenticator and nonce',[C,D],'The FQDN/SPN is explicitly configured; no IP-address or failed-SPN automatic NTLM fallback is modeled.',{source:smbKerberos});
++    event('tgs-request','Request the exact CIFS service ticket',C,D,'Kerberos TGS-REQ / TCP88','Authenticate with the existing TGT key, not a repeated plaintext password.',[tgsReq,tgt],{made:[tgsReq],layers:[{protocol:'Kerberos TGS',transport:'TCP88',from:C,to:D,protection:'TGT-key authenticator',keyRef:tgtKey.artifactId}]});
++    local('tgs-validate','Validate the TGT and requested service',D,'Decrypt the TGT, verify fresh authenticator and policy, then resolve cifs/files.corp.example.',[tgsReq,krbtgt,serviceKey],{checks:[seen(tgsReq,D,'accepted_TGT_authenticator_and_CIFS_SPN')]});
++    const ticket=obj('cifs-ticket','Opaque CIFS service ticket','ticket',D,'Decoded CIFS ticket for CORP alice and FILES$',[D,S],'The client carries the server-encrypted ticket without gaining the service long-term key.',{source:smbKerberos,wire:'Ticket(cifs/files.corp.example,enc-part=<FILES$ ciphertext>)',wireReaders:[C,S,D]});
++    const ticketKey=obj('ticket-key','CIFS ticket session key','session-key',D,'<KDC-issued CIFS AES128 ticket session key>',[C,S,D],'This ticket key is distinct from the client-selected GSS subkey used as the SMB session key.',{source:smbKerberos});
++    const tgsRep=obj('tgs-reply','Protected CIFS client reply','reply',D,'EncTGSRepPart: target SPN, nonce, lifetime and CIFS ticket key',[C,D],'C validates the encrypted reply before installing the scoped service credential.',{source:smbKerberos,wire:'EncryptedData(TGT-key, EncTGSRepPart)'});
++    event('tgs-reply','Deliver the CIFS ticket and matching key reply',D,C,'Kerberos TGS-REP / TCP88','The service ticket and protected client part have different encryption keys.',[ticket,tgsRep],{made:[ticket,ticketKey,tgsRep],layers:[{protocol:'Kerberos TGS',transport:'TCP88',from:D,to:C,protection:'TGT-key client part; FILES$-key ticket',keyRef:tgtKey.artifactId}]});
++    const initiatorKey=obj('initiator-subkey','Kerberos initiator subkey','session-key',C,'<client-selected AES128 authenticator subkey>',[C,S],'C selects this key and carries it inside the encrypted Authenticator. Windows KILE AES mutual authentication subsequently uses a distinct AP-REP acceptor subkey as the exported session key.',{source:smbKile});
++    local('tgs-accept','Install the service credential and choose the initiator subkey',C,'Check nonce, target and lifetime. Select the initiator subkey locally; S does not acquire it before AP acceptance.',[tgsRep,ticketKey,initiatorKey],{made:[initiatorKey],decoded:[tgsRep],got:[own(ticketKey,C)],checks:[seen(tgsRep,C,'accepted_CIFS_reply')]});
++    const apReq=obj('ap-request','Mutual Kerberos AP-REQ','proof',C,'SPNEGO(Kerberos AP-REQ); fresh Authenticator encrypted with CIFS ticket key, containing AES128 initiator subkey; mutual-required',[C,S],'The service receives the opaque ticket and encrypted authenticator together in one SESSION_SETUP security buffer.',{source:smbKerberos});
++    setupId=messageId++;
++    smbPacket('session-kerberos','Present the CIFS ticket in SESSION_SETUP',C,S,'SESSION_SETUP',null,setupId,'0',[apReq,ticket],{made:[apReq]});
++    sessionKey=obj('session-key','Exported Kerberos session key','session-key',S,'<server-selected AES128 acceptor subkey from EncAPRepPart>',[C,S],'For the selected Windows KILE AES mutual authentication, the AP-REP acceptor subkey is the exported session key. It differs from the initiator subkey and ticket session key. C obtains it only after validating the AP-REP.',{source:smbKile,store:'SMB security context'});
++    local('kerberos-accept','Validate the ticket and select the acceptor subkey',S,'Use the FILES$ service key, verify SPN, lifetime and replay rules, recover the ticket and initiator keys, then select a distinct KILE AES acceptor subkey for AP-REP. No password is delegated.',[apReq,ticket,serviceKey,ticketKey,initiatorKey,sessionKey],{made:[sessionKey],decoded:[ticket],got:[own(ticketKey,S),own(initiatorKey,S)],checks:[seen(apReq,S,'accepted_ticket_and_fresh_authenticator')]});
++    finalToken=obj('spnego-complete','SPNEGO completion with AP-REP','proof',S,'NegTokenResp accept_completed; EncAPRepPart contains matching ctime/cusec and distinct AES128 acceptor subkey; encrypted with CIFS ticket-session-key',[C,S],'This reciprocal mechanism token rides the same final SESSION_SETUP response as success. C validates/decrypts it to obtain the acceptor session key, then derives its SMB keys and verifies the response signature.',{source:smbKile,wire:'SPNEGO(EncryptedData(CIFS ticket-session-key, AP-REP with acceptor subkey))'});
++  }
++  serverContext=obj('session-context','Accepted SMB session','session',S,'SessionId=session-1; security identity CORP\\alice; guest=false; anonymous=false; signing required',[C,S],'The server security context and client acceptance are different events. Session establishment authorizes no share or file by itself.',{store:'SMB sessions'});
++  local('server-session','Establish the authenticated server session',S,'Install the exported mechanism key and domain identity in this SMB session; local desktop identity at C remains WORKGROUPPC\\bob.',[sessionKey,serverContext],{made:[serverContext],checks:[seen(sessionKey,S,'installed_exported_base_key','plain','acceptance')],puts:{serverAuthenticated:true,sessionIdAllocated:true}});
++  bind('serverAuthenticated',serverContext,S);
++  const kdf=(key,label,magic)=>obj(key,label,'session-key',S,'SP800-108 counter HMAC-SHA256 KDF(SessionKey, Label="'+magic+'\\0", Context='+preauth.key+' (64 bytes), L=128)',[C,S],'This key has its own purpose and direction. The derivation context ends at the final client SESSION_SETUP request; it excludes the final successful response to avoid circular signature derivation.',{store:'SMB3 derived keys'});
++  signingKey=kdf('signing-key','Derived SMB3 signing key','SMBSigningKey');
++  appKey=kdf('app-key','Derived SMB application key','SMBAppKey');
++  c2sKey=kdf('c2s-key','Client-to-server cipher key','SMBC2SCipherKey');
++  s2cKey=kdf('s2c-key','Server-to-client cipher key','SMBS2CCipherKey');
++  local('server-key-derivation','Derive signing and directional cipher keys at S',S,'Use the accepted mechanism key and SHA512 transcript through the last client token. Derive four separate128-bit keys; ApplicationKey is retained for its distinct purpose and is not used to encrypt file traffic. C→S is S decrypt/C encrypt; S→C is S encrypt/C decrypt.',[sessionKey,preauth,signingKey,appKey,c2sKey,s2cKey],{made:[signingKey,appKey,c2sKey,s2cKey],derived:[signingKey,appKey,c2sKey,s2cKey],checks:[seen(sessionKey,S,'used_for_SMB3_1_1_KDF','plain','knowledge'),seen(preauth,S,'used_final_request_hash_for_KDF','plain','knowledge')]});
++  smbPacket('session-success','Return signed SESSION_SETUP success',S,C,'SESSION_SETUP','STATUS_SUCCESS',setupId,'session-1',[finalToken],{made:[finalToken],signed:true,summary:'SessionFlags=0; Session.EncryptData=false, while the requested share later requires encryption. The mechanism completion token and signed SMB success are one response.'});
++  local('client-mechanism','Validate the final mechanism token',C,spec.kerberos?'Decrypt and validate the AP-REP with the ticket key; acquire its distinct acceptor subkey as the exported session key. The SMB success is not yet accepted.':'Process SPNEGO completion; the local exported NTLM key already exists, but the SMB response signature still requires verification.',[finalToken,sessionKey],{decoded:finalToken.wire?[finalToken]:[],got:spec.kerberos?[own(sessionKey,C)]:[],checks:[seen(finalToken,C,'accepted_selected_mechanism_completion')]});
++  local('client-key-derivation','Derive matching SMB3 keys at C',C,'Use the validated exported mechanism key and locally maintained preauthentication hash. Do not hash the final successful response into this KDF context.',[sessionKey,preauth,signingKey,appKey,c2sKey,s2cKey],{got:[own(signingKey,C),own(appKey,C),own(c2sKey,C),own(s2cKey,C)],derived:[signingKey,appKey,c2sKey,s2cKey],checks:[seen(sessionKey,C,'used_for_SMB3_1_1_KDF','plain','knowledge'),seen(preauth,C,'used_final_request_hash_for_KDF','plain','knowledge')]});
++  clientInstalled.push(sessionKey,signingKey,appKey,c2sKey,s2cKey);
++  if(spec.failure==='signature'){local('signature-reject','Reject the altered final SMB signature',C,'Discard the final response with its invalid SMB signature. The valid mechanism token does not make this SMB response acceptable. This fixed profile elects the permitted disconnect.',[signingKey],{checks:[seen(signingKey,C,'rejected_final_SESSION_SETUP_signature')],puts:{failure:'SMB signature rejected',clientKnowsFailure:true}});disconnectClient('Signature failure mandates discarding the response; this profile also elects disconnect.');return finish();}
++  local('client-session','Verify the final signature and accept the SMB session',C,'Verify the final SESSION_SETUP AES-CMAC with the derived SigningKey before using SessionId=session-1. Receipt of STATUS_SUCCESS alone is insufficient.',[signingKey,serverContext],{got:[own(serverContext,C)],checks:[seen(signingKey,C,'verified_final_SESSION_SETUP_signature')],puts:{clientSessionAccepted:true,clientSessionWasAccepted:true}});
++  clientInstalled.push(serverContext);
++  bind('clientSessionAccepted',serverContext,C);
++  const treeRequest=obj('tree-request','TREE_CONNECT share request','request',C,'Path=\\\\files.corp.example\\reports; SessionId=session-1',[C,S],'A signed plaintext request asks for this share under the authenticated network identity; it does not reauthenticate the desktop user.');
++  const treeMid=messageId++;
++  smbPacket('tree-request','Request the domain share',C,S,'TREE_CONNECT',null,treeMid,'session-1',[treeRequest],{made:[treeRequest],signed:true});
++  const shareDenied=spec.failure==='share';
++  local('share-check','Verify the request and evaluate share connection policy',S,'Verify SMB signature, then evaluate Share.ConnectSecurity for CORP\\alice. Authentication and share authorization are separate.',[treeRequest,sharePolicy],{checks:[seen(treeRequest,S,'accepted_SMB_signature'),seen(sharePolicy,S,shareDenied?'denied_share_connect':'allowed_share_connect')],puts:{shareAuthorized:!shareDenied,...(shareDenied?{failure:'share access denied',serverKnowsFailure:true}:{})}});
++  if(shareDenied){smbPacket('tree-denied','Return share authorization failure',S,C,'TREE_CONNECT','STATUS_ACCESS_DENIED',treeMid,'session-1',[],{signed:true});local('tree-denied-accept','Verify and learn the share denial',C,'The authenticated SMB session remains valid. No TreeId or file handle was granted.',[signingKey,serverContext],{checks:[seen(signingKey,C,'verified_denial_signature')],puts:{clientKnowsFailure:true}});return finish();}
++  const tree=obj('tree','Share connection handle','connection',S,'TreeId=tree-1; ShareType=DISK; ShareFlags=SMB2_SHAREFLAG_ENCRYPT_DATA; reports share; read access within share policy',[C,S],'A TreeId names the authorized share and its required-encryption policy. It is not a file handle or proof that the file ACL grants access. Subsequent CREATE/READ use SMB3 AEAD transforms.',{store:'SMB tree connections'});
++  smbPacket('tree-success','Return the signed share connection',S,C,'TREE_CONNECT','STATUS_SUCCESS',treeMid,'session-1',[tree],{made:[tree],signed:true});
++  local('tree-accept','Verify and install the TreeId',C,'Verify the response signature before using tree-1 for the requested file.',[tree,signingKey],{got:[own(tree,C)],checks:[seen(tree,C,'accepted_signed_TREE_CONNECT_result')],puts:{treeConnected:true,treeWasConnected:true}});bind('treeConnected',tree,C);clientInstalled.push(tree);
++  const open=obj('create-request','Read-only file open request','request',C,'TreeId=tree-1; Name=quarterly.txt; CreateDisposition=FILE_OPEN; DesiredAccess=FILE_READ_DATA',[C,S],'SMB2 CREATE also means opening an existing file. This request does not create or alter file contents.');
++  const openMid=messageId++;
++  smbPacket('create-request','Open the requested file for reading',C,S,'CREATE',null,openMid,'session-1',[open],{made:[open],signed:true});
++  local('share-read-check','Check requested file access against the share grant',S,'After authenticated decryption, ensure FILE_READ_DATA is permitted by the share access policy; then pass the request to the object store.',[open,sharePolicy],{checks:[seen(open,S,'accepted_authenticated_CREATE'),seen(sharePolicy,S,'requested_read_within_share_grant')]});
++  const fileDenied=spec.failure==='file';
++  local('file-check','Evaluate the file-system ACL',S,'The file object store independently checks CORP\\alice against the file security descriptor. A prior successful TREE_CONNECT cannot override this denial.',[open,filePolicy],{checks:[seen(filePolicy,S,fileDenied?'denied_FILE_READ_DATA':'allowed_FILE_READ_DATA')],puts:{fileAuthorized:!fileDenied,...(fileDenied?{failure:'file access denied',serverKnowsFailure:true}:{})}});
++  if(fileDenied){smbPacket('create-denied','Return file authorization failure',S,C,'CREATE','STATUS_ACCESS_DENIED',openMid,'session-1',[],{signed:true});local('create-denied-accept','Verify and learn the file denial',C,'The authenticated session and share connection remain valid. The encrypted denial has passed AEAD verification; no file handle is issued.',[s2cKey,serverContext,tree],{checks:[seen(s2cKey,C,'authenticated_encrypted_denial','plain','knowledge')],puts:{clientKnowsFailure:true}});return finish();}
++  const file=obj('file-handle','Read-authorized open file','file-handle',S,'FileId=file-1; quarterly.txt; FILE_READ_DATA granted',[C,S],'This handle exists only after the server checks both share access and the file ACL.',{store:'SMB open files'});
++  smbPacket('create-success','Return the encrypted open-file handle',S,C,'CREATE','STATUS_SUCCESS',openMid,'session-1',[file],{made:[file],signed:true});
++  local('create-accept','Verify and install the FileId',C,'After authenticated decryption, correlate the successful open response before using its FileId.',[file,s2cKey],{got:[own(file,C)],checks:[seen(file,C,'accepted_authenticated_CREATE_result')],puts:{fileOpened:true,fileWasOpened:true}});bind('fileOpened',file,C);clientInstalled.push(file);
++  const read=obj('read-request','File read request','request',C,'FileId=file-1; Offset=0; Length=64',[C,S],'Read travels inside an SMB3 encryption transform and uses the already authorized open handle; it is not a new domain logon.');
++  const readMid=messageId++;
++  smbPacket('read-request','Read from the authorized file handle',C,S,'READ',null,readMid,'session-1',[read],{made:[read],signed:true});
++  local('read-check','Validate the decrypted read and open-handle rights',S,'After AEAD verification, validate SessionId, TreeId, FileId and granted read rights before returning data.',[read,file],{checks:[seen(read,S,'accepted_authenticated_read_for_authorized_open')]});
++  const data=obj('file-data','Synthetic file data','data',S,'Quarterly report: synthetic teaching content.',[C,S],'These file bytes travel inside an AES-128-GCM SMB3 transform. The client holds only ciphertext until authenticated unwrap, then separately accepts the correlated read result.',{store:'file content'});
++  smbPacket('read-success','Return encrypted file data',S,C,'READ','STATUS_SUCCESS',readMid,'session-1',[data],{made:[data],signed:true});
++  if(spec.failure==='encryption'){disconnectClient('AEAD integrity failure requires disconnect.');return finish();}
++  local('read-accept','Verify the data before use',C,'Accept the authenticated and decrypted file response. Domain network access succeeded while the PC remained nonjoined and its local desktop identity stayed unchanged.',[data,sessionKey,desktop],{got:[own(data,C,'plain','accepted file data')],checks:[seen(data,C,'accepted_AEAD_and_correlated_READ'),seen(desktop,C,'local_logon_unchanged','plain','knowledge')],puts:{fileRead:true}});bind('fileRead',data,C,'accepted file data');
++  return finish();
++
++  function finish(){
++    const failure=Boolean(spec.failure),completion=failure?'The named detector rejects at its explicit policy, authentication, authorization or integrity boundary. Integrity-failure teardown frees client handles; earlier accepted events remain historical. Local desktop identity remains unchanged.':'Client authenticates and decrypts file data after separate domain authentication, share connection and file ACL checks.';
++    Object.freeze(initialState.smb);Object.freeze(initialState);
++    return labScenario({
++      id,title:spec.title,summary:spec.summary,workspace:'windows',family:'windows-files',protocol:'SMB 3.1.1 / '+(spec.kerberos?'Kerberos':'NTLMv2 compatibility'),category:'Windows file access',
++      standard:'MS-SMB2 88.0 / dialect0x0311 / '+(spec.kerberos?'MS-KILE AES mutual authentication':'MS-NLMP configured NTLMv2'),source:smbSpec,status:'reference',
++      supportNote:'Latest published SMB dialect3.1.1 with explicit supported algorithm choices. Symbolic protocol reference; specific OS builds and live interoperability remain unverified.',
++      learningObjective:spec.summary,prerequisites:['Existing local logon WORKGROUPPC\\bob; client not joined to AD','Explicit CORP\\alice network credential; domain-member FILES$ server','SMB3.1.1 peers; required AES-CMAC signing; AES128-GCM required by the reports share',spec.kerberos?'Configured realm/KDC reachability, clock tolerance, FQDN and cifs/files.corp.example SPN; Kerberos required':'Server DC machine secure channel and permitted NTLMv2 legacy compatibility unless the named failure changes them'],
++      keywords:['SMB3.1.1','workgroup','non-domain-joined','file share','NTLM','Kerberos','signing','encryption','preauthentication','share permissions','NTFS','local logon',spec.code],
++      initialState,smbInventory:{artifacts,initial,events,bindings},positions:Object.fromEntries(Object.entries(actors).map(([key,a])=>[key,a.position])),
++      profile:{
++        id:id+'-reference',name:spec.title,version:'SMB3.1.1 (0x0311); fresh single-channel session',implementation:'MS-SMB2 88.0 / MS-KILE reference; specific OS builds and interoperability unverified',publicationStatus:'Microsoft Open Specifications / RFC4120',supportStatus:'Reference only',
++        algorithms:['SHA512 preauthentication transcript','Explicitly negotiated AES-CMAC signing;16-byte signature','AES128-GCM encrypted share traffic;12-byte unique nonce and16-byte tag',spec.kerberos?'Kerberos AES128-CTS-HMAC-SHA1-96; distinct initiator and AP-REP acceptor subkeys':'NTLMv2 HMAC-MD5; KEY_EXCH; timestamp-bearing MIC profile','SP800-108 HMAC-SHA256 counter KDF; r=32; L=128'],
++        transports:['Direct TCP445; no TLS','Signed SESSION_SETUP and TREE_CONNECT; AES-GCM CREATE and READ',spec.kerberos?'C↔D Kerberos on TCP88':'S↔D protected Netlogon machine channel; C need not contact D'],
++        assumptions:['Client join state is independent of network mechanism selection','AES-CMAC is an explicit supported choice, not a universal current Windows default','Session.EncryptData=false; reports share requires encryption after validated TREE_CONNECT','One fresh session/channel; no guest, anonymous, DFS, compounding, durable handles, leases or compression in this base lesson','Explicit network credential does not change the existing local desktop logon','NTLM is legacy compatibility; no NTLMv1/LM happy path','Symbolic fixtures; no computed or captured packet bytes'],
++        completion,sources:SMBLAB_SOURCES,selectedMechanism:spec.kerberos?'Kerberos':'NTLM',clientJoined:false,localDesktopIdentity:'WORKGROUPPC\\bob',networkIdentity:'CORP\\alice',serverMembership:'CORP domain member',dialect:'0x0311',maximumDialect:'0x0311',signingRequired:true,shareEncryptionRequired:true,sessionEncryption:false,failureCase:spec.failure||null,
++        cryptoDetail:'SHA512 chains exact NEGOTIATE and SESSION_SETUP bytes from64 zero bytes through the final client request; the final successful response is excluded from the KDF context. The exported mechanism key is '+(spec.kerberos?'the Windows KILE AP-REP acceptor subkey':'the NTLM ExportedSessionKey')+'. HMAC-SHA256 counter KDF derives SigningKey, ApplicationKey, C2SCipherKey and S2CCipherKey with distinct NUL-terminated labels and the64-byte transcript hash. AES-CMAC protects the final session response and TREE_CONNECT. The share encryption flag requires AES128-GCM transforms for file traffic; authenticate the tag before decoding any inner message. All expressions are symbolic.',
++        keyDerivation:{mode:'symbolic',hash:'SHA512',hashThrough:'final client SESSION_SETUP request',signing:'AES-CMAC',cipher:'AES128-GCM',labels:['SMBSigningKey\\0','SMBAppKey\\0','SMBC2SCipherKey\\0','SMBS2CCipherKey\\0'],bits:128},
++      },
++      relatedLessons:[{id:'lab-smb-nonjoined-kerberos',title:'Configured Kerberos on a nonjoined client',summary:'Use explicit credentials and correct KDC/SPN prerequisites with the latest SMB dialect.'},{id:'lab-smb-nonjoined-ntlm',title:'NTLMv2 legacy compatibility',summary:'The member server validates the response through its own DC channel.'},{id:'lab-smb-nonjoined-file-denied',title:'Authenticated but denied by the file ACL',summary:'A valid session and share connection do not grant every file.'},{id:'lab-smb-nonjoined-encryption-rejected',title:'Encrypted response integrity failure',summary:'Reject the invalid tag and disconnect without accepting plaintext data.'}],
++    },definitions,steps,actors);
++  }
++}
++
++const smbPresets=[
++  {code:'SMB01',suffix:'ntlm',title:'Workgroup PC → domain SMB share: explicit credentials and NTLMv2',summary:'Keep the local desktop identity while the domain-member server validates CORP credentials through Netlogon, then separately checks share and file access.'},
++  {code:'SMB02',suffix:'kerberos',kerberos:true,title:'Workgroup PC → domain SMB share: configured Kerberos',summary:'Use explicit domain credentials and configured KDC/SPN prerequisites to acquire tickets from a nonjoined client; verify the SMB session before share and file access.'},
++  {code:'SMB03',suffix:'ntlm-blocked',failure:'blocked',title:'SMB NTLM blocked: no authenticated session',summary:'The server rejects its explicitly disallowed NTLM mechanism at the first SESSION_SETUP; no silent Kerberos retry or local desktop change.'},
++  {code:'SMB04',suffix:'bad-credential',failure:'password',title:'SMB wrong domain credential: DC rejects the response',summary:'The DC detects the invalid response, the server processes its result, and the client learns failure from SESSION_SETUP.'},
++  {code:'SMB05',suffix:'dc-unavailable',failure:'dc',title:'SMB domain validation unavailable',summary:'The server cannot use its DC channel. No DC verification, accepted session or implicit cached network login is invented.'},
++  {code:'SMB06',suffix:'share-denied',failure:'share',title:'SMB authenticated user denied at the share',summary:'Domain authentication succeeds; TREE_CONNECT is denied while the accepted SMB session and local desktop remain.'},
++  {code:'SMB07',suffix:'file-denied',failure:'file',title:'SMB share connected, file ACL denies read access',summary:'The session and share connection succeed, but CREATE fails the independent file ACL check. No FileId or readable file data is granted.'},
++  {code:'SMB08',suffix:'signature-rejected',kerberos:true,failure:'signature',title:'SMB3.1.1 final signature rejected',summary:'Kerberos mutual authentication completes, but an altered final SMB signature prevents client session acceptance and any share access.'},
++  {code:'SMB09',suffix:'encryption-rejected',kerberos:true,failure:'encryption',title:'SMB3.1.1 encrypted file data rejected',summary:'Reject a corrupted GCM tag after successful session, share and file-open checks; the client never obtains accepted plaintext file data.'},
++  {code:'SMB10',suffix:'encryption-unavailable',kerberos:true,failure:'cipher',title:'SMB3.1.1 required encryption unavailable',summary:'A valid negotiation selects no shared encryption cipher. An explicit client policy stops before authentication because encrypted access is required.'},
++];
++export const SMBLAB_SCENARIOS=smbPresets.map(smbAuthor);
+--- /dev/null
++++ b/src/smb-multichannel-lab.js
+@@ -0,0 +1,145 @@
++import {labAttribute,labP,labStep,labScenario} from './lab-common.js';
++import {SMBLAB_SCENARIOS} from './smb-access-lab.js';
++
++const mcRoot='https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/';
++const mcSources={
++  binding:mcRoot+'e545352b-9f2b-4c5e-9350-db46e4f6755e',
++  server:mcRoot+'5ed93f06-a1d2-4837-8954-fa8b833c2654',
++  client:mcRoot+'9a697646-6085-4597-808c-765bb2280c6e',
++  signature:mcRoot+'85df1680-2ee7-4d25-a916-a982371ddc75',
++  interfaces:mcRoot+'147adde4-d936-4597-924a-8caa3429c6b0',
++  verify:mcRoot+'36172e53-ac81-48fb-b2e3-caa3761b9157',
++};
++export const SMBMULTI_ATTRIBUTES={};
++export const SMBMULTI_SOURCES=Object.entries(mcSources).map(([name,url])=>({name:'MS-SMB2 multichannel: '+name,standard:'MS-SMB2',section:{binding:'3.3.5.5',server:'3.3.5.5.3',client:'3.2.5.3.3',signature:'3.3.5.2.4',interfaces:'3.2.4.20.10',verify:'3.2.5.1.3'}[name],url,retrieved:'2026-10-21',revision:'Current online section; landing page publishes rev88.0 / 2026-09-28',errata:'Client binding HTML retains SMB3.0 KDF labels; this symbolic3.1.1 model explicitly follows server3.1.1 KDF branch. Current PDF/DOCX download unavailable for cross-check.'}));
++SMBMULTI_SOURCES.push({name:'Linux SMB3.1.1 client KDF corroboration',standard:'Upstream implementation source',section:'generate_smb311signingkey; generate_smb3signingkey binding branch',url:'https://github.com/torvalds/linux/blob/master/fs/smb/client/smb2transport.c',retrieved:'2026-10-21',revision:'master retrieved on review date',errata:'Source corroboration only; not live interoperability evidence.'});
++const mcKdfCaveat='Source discrepancy: client binding HTML §3.2.5.3.3 still lists SMB2AESCMAC/SmbSign. This symbolic3.1.1 profile applies the explicit server §3.3.5.5.3 SMBSigningKey/transcript rule at both peers. Linux client source corroborates this choice. Published rev88 PDF/DOCX could not be retrieved to resolve the Microsoft discrepancy; no native interoperability claim.';
++
++// Rebase a complete independently usable first-channel flow. No initial accepted
++// session or key is fabricated, and the ordinary SMB scenario is never mutated.
++function smbMultichannelAuthor(reject){
++  const base=SMBLAB_SCENARIOS.find(m=>m.id==='lab-smb-nonjoined-kerberos');
++  const suffix=reject?'binding-rejected':'binding-success',id='lab-smb-multichannel-'+suffix;
++  const rewrite=value=>typeof value==='string'?value.replaceAll(base.id,id).replaceAll('smb_kerberos_','smb_mc_'+suffix.replaceAll('-','_')+'_'):Array.isArray(value)?value.map(rewrite):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([k,v])=>[rewrite(k),rewrite(v)])):value;
++  const steps=rewrite(base.steps()),definitions=rewrite(base.definitions()),actors=rewrite(base.actors());
++  const {artifacts,initial,events,bindings}=rewrite(base.smbInventory);
++  const initialState=rewrite(base.initialState),C='smbClient',S='smbServer';
++  Object.assign(initialState.smb,{multichannel:true,channel2Negotiated:false,channel2ServerBound:false,channel2ClientVerified:false,channel2Usable:false,channel2FileRead:false,bindingRejected:false,bindingServerKnowsFailure:false,bindingClientKnowsFailure:false});
++  const find=key=>artifacts.find(a=>a.key===key);
++  // Both original NEGOTIATE messages actually advertise the capabilities required
++  // by this scenario; the transcript refers to these modified serialized inputs.
++  for(const [key,extra] of [['dialects','; ClientGUID=client-guid-1; Capabilities include MULTI_CHANNEL; notifications=false'],['server-offer','; ServerGUID=files-server-guid-1; Capabilities include MULTI_CHANNEL; notifications=false']]){
++    const a=find(key),prior=a.value,next=prior+extra;
++    a.value=next;a.representations.find(r=>r.representationId==='plain').fields[0].value=next;
++    definitions[a.attributeId].example=next;
++    for(const step of steps){for(const p of step.payload||[])if(p.attributeId===a.attributeId&&p.value===prior)p.value=next;for(const op of step.attributeOperations||[])if(op.attributeId===a.attributeId&&op.value===prior)op.value=next;}
++  }
++  for(const step of steps)if(step.smbFrame)step.smbFrame.connectionId='tcp-1';
++  const object=(key,label,type,creator,value,detail,{wire,source=mcSources.binding,readers=[C,S],store='multichannel state'}={})=>{
++    const attributeId='smb_mc_'+suffix.replaceAll('-','_')+'_'+key,artifactId=id+':'+key;
++    definitions[attributeId]=labAttribute(label,detail,creator+' creates or derives this exact '+type+'.',detail,value,'MS-SMB2 / SMB3.1.1',source);
++    const rep=(representationId,val)=>({representationId,format:representationId==='plain'?'Synthetic symbolic value':'Protected opaque value',readableBy:readers,fields:[{attributeId,name:label,value:val,readableBy:readers}]});
++    const a={artifactId,attributeId,key,label,type,creator,value,readers,wire,store,generation:1,representations:[rep('plain',value),...(wire?[rep('wire',wire)]:[])]};artifacts.push(a);return a;
++  };
++  const own=(a,actor,representationId='plain',store=a.store)=>({op:'acquire',artifactId:a.artifactId,actorId:actor,representationId,store,holdingId:[actor,a.artifactId,representationId,store].join('|'),retention:'retained'});
++  const see=(a,actor,result,kind='verification',representationId='plain')=>({op:'observe',artifactId:a.artifactId,actorId:actor,representationId,kind,result});
++  const event=(stage,title,from,to,summary,objects=[],{made=[],got=[],decoded=[],checks=[],puts={},wireReps={},localReps={},layers=[],protocol='Local SMB multichannel processing'}={})=>{
++    const eventId=id+':'+stage,wire=from!==to,repFor=a=>wireReps[a.artifactId]||(a.wire?'wire':'plain'),localRep=a=>localReps[a.artifactId]||'plain';
++    const effects=[...made.flatMap(a=>[{op:'create',artifactId:a.artifactId},own(a,a.creator)]),...got,...decoded.map(a=>own(a,from,'plain','decoded validation context')),...checks];
++    const related=[...got,...checks].map(e=>artifacts.find(a=>a.artifactId===e.artifactId));
++    const listed=wire?objects:[...new Set([...objects,...made,...decoded,...related])],ops=[];
++    const op=(a,actor,kind,rep='plain',holders=[actor])=>({attributeId:a.attributeId,instanceId:a.artifactId,creator:a.creator,holders,inspectors:a.representations.find(r=>r.representationId===rep).readableBy,fieldPath:(rep==='plain'?'decoded.':'envelope.')+a.key,representation:rep,value:a.representations.find(r=>r.representationId===rep).fields[0].value,sourceEventId:eventId,exactValueRef:a.artifactId+':'+rep,kind,actorId:actor});
++    for(const a of made)ops.push(op(a,a.creator,'create'));
++    for(const a of decoded)ops.push(op(a,from,'decrypt'));
++    for(const e of got)ops.push(op(artifacts.find(a=>a.artifactId===e.artifactId),e.actorId,'store',e.representationId));
++    for(const e of checks)ops.push({...op(artifacts.find(a=>a.artifactId===e.artifactId),e.actorId,e.kind==='knowledge'?'use':'verify',e.representationId),detail:e.result});
++    if(wire)for(const a of objects){const rep=repFor(a);ops.push(op(a,from,'send',rep,[from,to]),op(a,to,'receive',rep,[from,to]));effects.push(own(a,to,rep,'message inbox'));}
++    else for(const a of objects)if(!ops.some(o=>o.instanceId===a.artifactId))ops.push(op(a,from,'use',localRep(a)));
++    const step=labStep(eventId,title,from,to,'SMB multichannel',wire?'backchannel':'internal',summary,summary,listed.map(a=>a.attributeId),listed.map(a=>labP(a.label,a.representations.find(r=>r.representationId===(wire?repFor(a):localRep(a))).fields[0].value,definitions[a.attributeId].meaning,a.attributeId)),['Symbolic expressions, not captured or computed bytes.','An additional TCP connection is usable only after session binding and client verification.'],ops);
++    Object.assign(step,{smbStage:stage,eventType:wire?'message':'local',protocolLabel:protocol,beginnerSummary:summary,protocolDetail:summary,layers,cryptoDetail:listed.map(a=>a.label+': '+(a.representations.find(r=>r.representationId===(wire?repFor(a):localRep(a))).fields[0].value)).join('\n'),protocolEffects:Object.entries(puts).map(([path,value])=>({op:'put',path:'smb.'+path,value}))});
++    events[eventId]={milestones:[{id:'complete',at:1,effects}],...(wire?{messages:[{messageId:eventId+':'+from+'->'+to,from,to,start:0,end:1,objects:objects.map(a=>({artifactId:a.artifactId,representationId:repFor(a)}))}]}:{})};steps.push(step);return step;
++  };
++  const local=(stage,title,actor,summary,objects,options)=>event(stage,title,actor,actor,summary,objects,options);
++  const signing=find('signing-key'),c2s=find('c2s-key'),s2c=find('s2c-key'),session=find('session-context'),tree=find('tree'),file=find('file-handle');
++  let nonceC=steps.filter(s=>s.smbFrame?.encrypted&&s.from===C).length,nonceS=steps.filter(s=>s.smbFrame?.encrypted&&s.from===S).length;
++  const nextMid=Math.max(...steps.filter(s=>s.smbFrame).map(s=>s.smbFrame.messageId))+1;
++  const packet=(stage,title,from,to,command,status,mid,objects,{connectionId='tcp-2',sessionId='session-1',treeId='0',key=null,encrypted=false,made=[],summary='',binding=false,invalidSignature=false}={})=>{
++    const signed=!!key&&!encrypted;
++    const header=object(stage+'-header',command+' '+(status||'request')+' header','packet-header',from,'Command='+command+'; MessageId='+mid+'; SessionId='+sessionId+'; TreeId='+treeId+'; Flags.SIGNED='+signed+'; '+(status?'Status='+status+'; ':'')+'Signature='+(signed?(invalidSignature?'INVALID altered AES-CMAC':'AES-CMAC('+key.key+', SMB2 message with Signature=Z(16))'):'Z(16)'),'This SMB2 header belongs to '+connectionId+'. Responses echo the request MessageId; a session identifier does not by itself authorize the new connection.');
++    const inner=[header,...objects],wireReps={};let carried=inner,created=[header,...made];
++    let layers=[{protocol:'SMB3.1.1 '+command,transport:'TCP445 '+connectionId,from,to,protection:signed?'AES-CMAC using '+key.key:'Unsigned negotiation; no TLS',...(key?{keyRef:key.artifactId}:{})}];
++    let transform=null,cipher=null;
++    if(encrypted){
++      cipher=from===C?c2s:s2c;const number=from===C?++nonceC:++nonceS;
++      transform=object(stage+'-transform','SMB3 transform on '+connectionId,'packet-header',from,'ProtocolId=0xFD534D42; Signature=<GCM tag16>; Nonce='+(from===C?'C2S':'S2C')+' nonce12 #'+number+'; padding=0; OriginalMessageSize=<inner bytes>; Flags=ENCRYPTED; SessionId=session-1','The session-wide directional nonce allocation continues across all channels; it does not restart on tcp-2. Nonce through SessionId is authenticated associated data. The retained session cipher key protects the entire inner SMB2 message.');
++      for(const a of inner){a.representations.push({representationId:'ciphertext',format:'SMB3 AES128-GCM ciphertext field',readableBy:[C,S],fields:[{attributeId:a.attributeId,name:a.label+' (encrypted)',value:'Opaque AES128-GCM field in '+stage+'; decoded '+a.key+' only after authenticated unwrap',readableBy:[C,S]}]});wireReps[a.artifactId]='ciphertext';}
++      carried=[transform,...inner];created.push(transform);layers=[{protocol:'SMB3 encryption transform',transport:'TCP445 '+connectionId,from,to,protection:'AES128-GCM with retained session directional key and session-wide unique nonce',keyRef:cipher.artifactId}];
++    }
++    const step=event(stage,title,from,to,summary,carried,{made:created,wireReps,layers,protocol:'SMB3.1.1 '+command+' / '+connectionId});
++    step.smbFrame={command,status:status||null,messageId:mid,sessionId,treeId,signed,encrypted,connectionId,binding,preauthHashed:false};
++    if(encrypted)local(stage+'-unwrap','Authenticate and decrypt on '+connectionId,to,'Validate the AEAD tag, nonce and session association before using the inner header or body. The new transport does not create new cipher keys.',[transform,cipher,...inner],{decoded:inner,checks:[see(transform,to,'accepted_AEAD_tag_and_session'),see(cipher,to,'used_retained_directional_session_key','knowledge')]});
++    return {step,header,inner};
++  };
++  const stateBinding=(path,a,actor)=>bindings.push({path:'smb.'+path,artifactId:a.artifactId,actorId:actor,representationId:'plain',store:a.store,presentWhen:'truthy'});
++  const carry=object('mc-existing-session','Existing first-channel scope','channel-context',C,'tcp-1; SessionId=session-1; TreeId=tree-1; FileId=file-1; user=CORP\\alice; signing and directional encryption keys retained','The complete preceding flow established these handles and keys. Binding attaches another transport to this session; it does not repeat share authorization, file CREATE, or desktop logon.');
++  local('mc-existing','Keep the established session and open file',C,'The first channel has completed a file read. Both peers support multichannel; the existing authenticated session, tree and file remain active throughout this bounded extension.',[session,tree,file,signing,c2s,s2c],{made:[carry],checks:[see(session,C,'retained_existing_authenticated_session','knowledge'),see(file,C,'retained_open_file','knowledge')],puts:{channel1Usable:true,sessionKeysRetained:true,treeAndFileRetained:true}});
++  const query=object('mc-interface-query','Server interface query','request',C,'CtlCode=FSCTL_QUERY_NETWORK_INTERFACE_INFO; FileId={all-ones,all-ones}; InputCount=0; Flags=IS_FSCTL','The request uses the existing tree/session. The reports share requires encryption, so the full request and response are protected by its session keys.',{source:mcSources.interfaces});
++  packet('mc-interface-request','Query server interfaces through channel1',C,S,'IOCTL',null,nextMid,[query],{connectionId:'tcp-1',treeId:'tree-1',encrypted:true,made:[query],summary:'Use the already authenticated and encrypted share connection to discover another server interface.'});
++  const interfaces=object('mc-interface-list','Server network interfaces','result',S,'NETWORK_INTERFACE_INFO: NIC1=192.0.2.10; NIC2=192.0.2.11; RSS=true; RDMA=false; selected TCP pair=clientNIC2/serverNIC2','Synthetic documentation addresses. Interface selection is implementation-specific; the SMB session identity must still be verified on the selected TCP connection.',{source:mcSources.interfaces});
++  packet('mc-interface-response','Return available server interfaces',S,C,'IOCTL','STATUS_SUCCESS',nextMid,[interfaces],{connectionId:'tcp-1',treeId:'tree-1',encrypted:true,made:[interfaces],summary:'Receiving interface information is not permission to use the existing session over a new transport.'});
++  const tcp=object('mc-tcp2','Second transport connection','transport-context',C,'tcp-2: clientNIC2 -> 192.0.2.11:445; expected logical server files.corp.example; SMB session not yet bound','An additional TCP connection has a separate negotiation transcript, credits and request sequence. It does not replace or log off tcp-1.');
++  local('mc-connect','Open a second TCP connection',C,'Select an advertised interface pair and connect to the same logical file server. This teaching profile uses TCP, without TLS or SMB over QUIC.',[interfaces],{made:[tcp],got:[own(tcp,S)],checks:[see(interfaces,C,'validated_decrypted_interface_list','knowledge')],puts:{channel2Transport:true}});
++  let hash=object('mc-preauth-0','Channel2 initial preauthentication hash','transcript-hash',C,'64 zero bytes','Each peer initializes the new connection SHA512 transcript independently; this is not the first-channel session hash.');
++  local('mc-preauth-init','Initialize the new connection transcript',C,'Create matching local initial hash states for the two endpoints; no hash is transmitted as a credential.',[tcp],{made:[hash],got:[own(hash,S)]});
++  let hashCount=0;
++  const hashPacket=(frame)=>{
++    const prev=hash;hash=object('mc-preauth-'+(++hashCount),'Channel2 transcript hash '+hashCount,'transcript-hash',C,'SHA512('+prev.key+' || exact '+frame.step.smbFrame.command+' '+(frame.step.smbFrame.status||'request')+' bytes on tcp-2, MessageId='+frame.step.smbFrame.messageId+')','Both endpoints independently hash matching serialized bytes. The final successful binding response is not included in the signing-key KDF context.');
++    frame.step.smbFrame.preauthHashed=true;
++    local('mc-hash-'+hashCount,'Advance the second-connection transcript',C,'Hash the entire preceding SMB2 message, including all negotiation contexts or the security buffer and signature. Each endpoint computes its matching local state.',[prev,frame.header],{made:[hash],got:[own(hash,S)],checks:[see(prev,C,'used_previous_transcript','knowledge'),see(prev,S,'used_previous_transcript','knowledge')],puts:{channel2PreauthHash:hash.artifactId}});
++  };
++  const offer=object('mc-negotiate-offer','Channel2 negotiation offer','negotiation',C,'ClientGUID=client-guid-1; Dialects=[0x0311]; MULTI_CHANNEL; SIGNING_REQUIRED; SHA512 fresh salt; AES-CMAC; AES128-GCM; notifications=false','Reuse the original ClientGUID, advertise multichannel, and offer the selected modern dialect and algorithms. A new TCP connection does not inherit its negotiated parameters.');
++  hashPacket(packet('mc-negotiate-request','Negotiate SMB3.1.1 on channel2',C,S,'NEGOTIATE',null,0,[offer],{sessionId:'0',made:[offer],summary:'Start an independent negotiation with the same ClientGUID and compatible capabilities.'}));
++  const selection=object('mc-negotiate-selection','Channel2 negotiation result','negotiation',S,'ServerGUID=files-server-guid-1; Dialect=0x0311; MULTI_CHANNEL; SIGNING_REQUIRED; PREAUTH=SHA512 fresh salt; SIGNING=AES-CMAC; CIPHER=AES128-GCM; notifications=false','The logical server identity, dialect, selected protection and notifications capability agree with the established session. The unsigned negotiation claim becomes cryptographically tied to binding by the transcript KDF.');
++  hashPacket(packet('mc-negotiate-response','Receive channel2 negotiation',S,C,'NEGOTIATE','STATUS_SUCCESS',0,[selection],{sessionId:'0',made:[selection],summary:'The server claims the same ServerGUID and compatible3.1.1 capabilities; no bound channel exists yet.'}));
++  local('mc-negotiate-check','Compare both connection profiles',C,'Check the claimed ServerGUID, same dialect, multichannel capability and selected algorithms against the established server/session. This preliminary check alone does not authenticate channel2.',[offer,selection,find('server-offer')],{checks:[see(selection,C,'accepted_same_server_GUID_dialect_capabilities_cipher_and_signing')],puts:{channel2Negotiated:true}});
++  const initiator=object('mc-initiator-subkey','Binding Kerberos initiator subkey','session-key',C,'Fresh AES128 initiator subkey for binding GSS context','A fresh authenticator/subkey prevents replay of the original AP exchange. The still-valid cached CIFS ticket can be reused; this bounded binding does not contact the KDC again.',{readers:[C,S]});
++  const ap=object('mc-ap-request','Binding SPNEGO Kerberos token','proof',C,'New AP-REQ for CORP\\alice to cifs/files.corp.example; cached ticket plus fresh timestamp/sequence and initiator subkey; mutual authentication required','The binding GSS context authenticates the same user as Session.UserName. Its key is distinct from the retained original Session.SessionKey.',{wire:'SPNEGO NegTokenInit(Kerberos AP-REQ: cached opaque CIFS ticket, encrypted fresh authenticator); no password or plaintext subkey'});
++  local('mc-gss-init','Build a fresh Kerberos context for binding',C,'Use the valid cached CIFS ticket and its session key to create a fresh mutual-authentication AP-REQ. Retain the existing SMB Session.SessionKey and cipher keys.',[find('cifs-ticket'),find('ticket-key'),session],{localReps:{[find('cifs-ticket').artifactId]:'wire'},made:[initiator,ap],checks:[see(find('cifs-ticket'),C,'used_opaque_cached_CIFS_ticket','knowledge','wire'),see(find('ticket-key'),C,'used_cached_ticket_key_for_fresh_authenticator','knowledge')]});
++  const bindingBody=object('mc-binding-request','Session binding request body','request',C,'Flags=SMB2_SESSION_FLAG_BINDING; PreviousSessionId=0; SecurityMode=SIGNING_REQUIRED; SecurityBuffer=SPNEGO Kerberos AP-REQ','The SMB2 header carries the existing SessionId. The binding flag attaches this transport to the session; PreviousSessionId is zero because this is not session replacement.');
++  const bindFrame=packet('mc-binding-request','Prove possession of the existing session key',C,S,'SESSION_SETUP',null,1,[bindingBody,ap],{key:signing,binding:true,invalidSignature:reject,made:[bindingBody],summary:'Send Binding with SessionId=session-1 and a signature made using existing Session.SigningKey. Binding SESSION_SETUP is signed and is not encrypted, even for an encrypted share.'});
++  local('mc-binding-preconditions',reject?'Reject the invalid binding signature':'Verify binding preconditions and original key proof',S,reject?'The binding signature is altered. Reject this request before GSS authentication with STATUS_ACCESS_DENIED; this selected path does not disconnect either transport or delete the original session.':'Locate session-1 in the global table; check dialect, ClientGUID, valid non-guest/non-anonymous session, no existing tcp-2 entry, notifications compatibility and the signature using Session.SigningKey.',[bindFrame.header,bindingBody,session,signing],{checks:[see(bindFrame.header,S,reject?'rejected_binding_signature':'accepted_binding_signature_and_preconditions'),see(signing,S,'used_existing_Session_SigningKey','knowledge')],puts:reject?{bindingRejected:true,bindingServerKnowsFailure:true}: {bindingPreconditionsAccepted:true}});
++  if(reject){
++    const err=object('mc-binding-error','Binding error body','error',S,'SMB2 ERROR Response; StructureSize=9; ByteCount=0; no new channel or handles','This is an early signature/precondition rejection, not a GSS authentication error. GSS failure cleanup in3.3.5.5.3 can delete the session and is intentionally not generalized here.',{source:mcSources.signature});
++    const errorFrame=packet('mc-binding-error','Return binding failure on channel2',S,C,'SESSION_SETUP','STATUS_ACCESS_DENIED',1,[err],{key:signing,binding:true,made:[err],summary:'The error response is signed with existing Session.SigningKey; the client still has the original accepted session.'});
++    local('mc-binding-error-check','Verify and report the binding error',C,'Verify the error response using Session.SigningKey and report only the channel-binding attempt as failed. Do not create a Channel entry or derive a channel2 signing key.',[errorFrame.header,err,signing],{checks:[see(errorFrame.header,C,'accepted_signed_binding_error'),see(signing,C,'used_existing_Session_SigningKey','knowledge')],puts:{bindingClientKnowsFailure:true}});
++  }else{
++    const gssKey=object('mc-gss-key','Binding GSS exported key','session-key',S,'Fresh AES128 KILE acceptor subkey from the binding AP-REP','This profile uses mutual-authentication KILE key selection. The server creates the acceptor subkey; the client acquires it only after validating the encrypted AP-REP. It does not overwrite original Session.SessionKey.',{source:mcSources.server,store:'binding GSS context'});
++    const aprep=object('mc-ap-reply','Binding SPNEGO Kerberos completion','proof',S,'AP-REP echoes binding authenticator time; contains fresh acceptor subkey; SPNEGO accept_completed','Client GSS processing authenticates the server and recovers the binding key before checking the final SMB response signature.',{wire:'SPNEGO NegTokenResp(AP-REP encrypted with cached CIFS ticket session key; fresh acceptor subkey protected inside)',source:mcSources.client});
++    local('mc-gss-accept','Authenticate the binding Kerberos context',S,'Decrypt the ticket/authenticator, validate freshness and replay protection, and complete the fresh mutual GSS context. The original session security context remains attached to CORP\\alice.',[ap,find('cifs-service-key'),find('ticket-key')],{decoded:[ap],made:[gssKey,aprep],got:[own(initiator,S)],checks:[see(ap,S,'accepted_fresh_AP_REQ_for_CIFS'),see(find('cifs-service-key'),S,'used_service_ticket_key','knowledge')],puts:{bindingGssServerComplete:true}});
++    local('mc-same-user','Require the same authenticated user',S,'Query the binding GSS src_name and compare it with Session.UserName. Both are CORP\\alice; a different user must not inherit this session or its existing handles.',[session,ap],{checks:[see(ap,S,'GSS_src_name_matches_Session_UserName')],puts:{bindingSameUser:true}});
++    hashPacket(bindFrame);
++    const channelKey=object('mc-channel-signing-key','Channel2 signing key','session-key',S,'KDF(first16(binding GSS key), label="SMBSigningKey", context='+hash.key+', L=128)','Use the new binding GSS context key and the new connection/binding transcript. This signing key is specific to tcp-2; session encryption keys and original Session.SigningKey remain unchanged. '+mcKdfCaveat,{source:mcSources.server,store:'channel2 security context'});
++    const channel=object('mc-channel2','Bound second SMB channel','channel-context',S,'SessionId=session-1; Connection=tcp-2; Channel.SigningKey=mc-channel-signing-key','Server allocation follows successful binding authentication; the client does not mark this channel usable until it validates the response.',{source:mcSources.server});
++    local('mc-server-channel','Derive and install the server channel key',S,'Derive Channel.SigningKey from the fresh binding context and tcp-2 transcript through the final client binding request. Keep the original session encryption/application keys, TreeId and FileId.',[gssKey,hash,session,c2s,s2c],{made:[channelKey,channel],checks:[see(gssKey,S,'used_binding_context_key_for_channel_KDF','knowledge'),see(hash,S,'used_binding_transcript_for_channel_KDF','knowledge')],puts:{channel2ServerBound:true}});
++    const success=packet('mc-binding-success','Return authenticated binding success',S,C,'SESSION_SETUP','STATUS_SUCCESS',1,[aprep],{key:channelKey,binding:true,summary:'The final success response is signed with the new Channel.SigningKey. Its encrypted AP-REP enables the client to obtain the binding GSS key; neither this response nor its signature enters the KDF transcript.'});
++    local('mc-client-gss','Validate the binding AP-REP at the client',C,'Process the final SPNEGO token and check the AP-REP time/server proof. Recover the binding acceptor subkey, while retaining the original Session.SessionKey.',[aprep,find('ticket-key')],{decoded:[aprep],got:[own(gssKey,C)],checks:[see(aprep,C,'accepted_mutual_GSS_AP_REP')],puts:{bindingGssClientComplete:true}});
++    local('mc-client-channel-key','Derive the matching channel2 signing key',C,'Use the independently retained tcp-2 transcript and binding GSS key to derive the matching channel signing key. The final successful response is excluded; it must be verified with this key next.',[gssKey,hash],{got:[own(channelKey,C)],checks:[see(gssKey,C,'used_binding_context_key_for_channel_KDF','knowledge'),see(hash,C,'used_binding_transcript_for_channel_KDF','knowledge')]});
++    local('mc-client-channel-verify','Verify the response and enable channel2',C,'Verify the final SMB success signature with the new Channel.SigningKey, check the matching SessionId/MessageId and accept the bound channel. Ignore a binding response ENCRYPT_DATA flag for session policy; retain the established share encryption requirement.',[success.header,channelKey,session],{got:[own(channel,C)],checks:[see(success.header,C,'accepted_new_Channel_SigningKey_signature'),see(channelKey,C,'used_new_channel_signature_key','knowledge')],puts:{channel2ClientVerified:true,channel2Usable:true}});
++    stateBinding('channel2ServerBound',channel,S);stateBinding('channel2Usable',channel,C);
++  }
++  const connectionId=reject?'tcp-1':'tcp-2',mid=reject?nextMid+1:2;
++  const read=object('mc-followup-read','Read through the retained open file','request',C,'SessionId=session-1; TreeId=tree-1; FileId=file-1; Offset=0; Length=4096','The same open file is selected after binding success, or on the original channel after the selected early rejection. No new TREE_CONNECT or CREATE is performed.');
++  local('mc-select-io','Select the usable channel for another read',C,reject?'Channel2 binding failed; send the next operation on the still-usable original channel. This does not assert that arbitrary GSS errors preserve the session.':'Only after final response verification, select channel2 for a real READ using the existing session/tree/open handle.',[session,tree,file,c2s],{checks:[see(file,C,'used_retained_FileId_on_'+connectionId,'knowledge')],puts:{selectedIoChannel:connectionId}});
++  packet('mc-read-request','Read the existing file on '+connectionId,C,S,'READ',null,mid,[read],{connectionId,treeId:'tree-1',encrypted:true,made:[read],summary:'Protect the request with the retained C2S session cipher key and a nonce unique across both channels.'});
++  local('mc-read-check','Validate the retained handle and access at the server',S,'After AEAD validation, locate session-1 on this bound connection and the existing tree-1/file-1 read grant. Multichannel does not grant new file permissions.',[read,session,tree,file],{checks:[see(read,S,'accepted_session_tree_open_read_grant')],puts:{followupReadAuthorized:true}});
++  const data=object('mc-read-data','Follow-up file data','resource',S,'quarterly.txt synthetic content returned via '+connectionId,'The client receives only ciphertext until authenticated decryption, and accepts the file result only after checking its response association.');
++  const response=packet('mc-read-response','Return encrypted file data on '+connectionId,S,C,'READ','STATUS_SUCCESS',mid,[data],{connectionId,treeId:'tree-1',encrypted:true,made:[data],summary:'Reuse the retained S2C session cipher key with a fresh session-wide nonce. Encryption supplies message integrity; the inner SMB2 header is not separately signed.'});
++  local('mc-read-accept','Accept the file result on '+connectionId,C,'Match the decrypted response to the outstanding request and existing handles, then deliver the file data to the caller. The local desktop logon and CORP network identity are unchanged.',[response.header,data,file],{got:[own(data,C)],checks:[see(response.header,C,'accepted_response_association'),see(data,C,'accepted_followup_file_data')],puts:{channel2FileRead:!reject,channel1ReadAfterBindingFailure:reject,followupFileRead:true}});
++  stateBinding('followupFileRead',data,C);
++  Object.assign(SMBMULTI_ATTRIBUTES,definitions);
++  const title=reject?'SMB3.1.1 multichannel: reject a bad binding proof':'SMB3.1.1 multichannel: bind and use a second connection';
++  const summary=reject?'Reject an altered binding signature before GSS; preserve the established session and continue encrypted I/O on channel1.':'Establish a Kerberos SMB session, bind a second TCP connection with existing-key proof and fresh GSS authentication, then use its existing file handle.';
++  const profile={...rewrite(base.profile),id:id+'-reference',name:title,version:'SMB3.1.1 (0x0311); two TCP connections; Kerberos session binding',multichannel:true,channelCount:reject?1:2,failureCase:reject?'early-invalid-binding-signature':null,signingAlgorithm:'AES-CMAC',encryptionAlgorithm:'AES128-GCM',bindingSigningKey:'original Session.SigningKey',channelSigningKey:'KDF(binding GSS key, SMBSigningKey, channel2 transcript)',sessionCipherKeysRetained:true,cryptoDetail:base.profile.cryptoDetail+'\nBinding: existing Session.SigningKey proves possession; fresh same-user GSS key and tcp-2 SHA512 transcript derive Channel.SigningKey. Session cipher keys and directional nonce allocation span both channels.',kdfSourceDiscrepancy:mcKdfCaveat,completion:reject?'Authenticated first channel remains usable; failed second-channel binding creates no channel2 key; encrypted read succeeds on tcp-1.':'Client verifies binding success before using tcp-2 for encrypted READ with retained SessionId, TreeId and FileId.',sources:[...(base.profile.sources||[]),...SMBMULTI_SOURCES],assumptions:['Complete first-channel Kerberos flow shown before binding; cached CIFS ticket remains valid','Same logical server and ClientGUID; both peers support multichannel; matching dialect, signing, cipher and notifications settings','Two TCP connections only; no RDMA, QUIC, reconnect, durable handle recovery or session replacement','SMB session binding is separate from TLS channel binding tokens; this TCP profile has no TLS CBT','Signing key is per-channel after binding; directional cipher keys and nonce uniqueness remain session-scoped','Symbolic reference; native interoperability unverified',mcKdfCaveat]};
++  return labScenario({id,title,summary,workspace:'windows',family:'windows-files',protocol:'SMB3.1.1 / Kerberos / multichannel',category:'Windows file access',standard:'MS-SMB2 3.3.5.5; 3.3.5.5.3; 3.2.5.3.3',source:mcSources.binding,status:'reference',supportNote:'Symbolic protocol reference with explicit source discrepancy; no native interoperability certification.',learningObjective:summary,prerequisites:[...base.prerequisites,'Two usable TCP interface pairs; server and client advertise SMB multichannel'],keywords:['SMB3.1.1','multichannel','session binding','signing','encryption','Kerberos','same user','non-domain-joined'],initialState,profile,positions:base.positions,smbInventory:{artifacts,initial,events,bindings},relatedLessons:[{id:'lab-smb-nonjoined-kerberos',title:'Single-channel Kerberos file access',summary:'Follow the prerequisites and original session establishment.'},{id:'lab-smb-multichannel-'+(reject?'binding-success':'binding-rejected'),title:reject?'Successful second-channel binding':'Early binding signature rejection',summary:'Compare when the additional transport becomes usable.'}]},definitions,steps,actors);
++}
++export const SMBMULTI_SCENARIOS=[smbMultichannelAuthor(false),smbMultichannelAuthor(true)];
+--- a/src/workspaces.js
++++ b/src/workspaces.js
+@@ -4,7 +4,7 @@
+   {id:'web',title:'Web sign-in',summary:'Keycloak, OAuth / OIDC, SAML, passkeys and MFA',defaultId:'basic-keycloak'},
+   {id:'ssh',title:'SSH access',summary:'OIDC enrollment, certificates, device login and server-side PAM',defaultId:'lab-ssh-cert-success'},
+   {id:'kerberos',title:'Kerberos',summary:'AD DS, PKINIT, FAST, forests, Keycloak and MIT standards profiles',defaultId:'lab-ad-first-sign-in'},
+-  {id:'windows',title:'Windows access',summary:'NTLMv2, Negotiate, CredSSP, remote desktop and remote management',defaultId:'lab-win-ntlmv2-domain'},
++  {id:'windows',title:'Windows access',summary:'SMB file access, NTLMv2, Negotiate, CredSSP, remote desktop and remote management',defaultId:'lab-win-ntlmv2-domain'},
+   {id:'network',title:'Network access',summary:'RADIUS, wired EAP-TLS, admission, accounting and session control',defaultId:'lab-net-eap-tls13-wired'},
+   {id:'foundations',title:'Foundations',summary:'Standalone SPAKE2 and SPAKE2+ without an implied application login',defaultId:'lab-pake-spake2-success',secondary:true},
+ ].map(Object.freeze));
+@@ -15,6 +15,7 @@
+   {workspace:'windows',id:'windows-integrated',title:'NTLM, Negotiate and CredSSP',summary:'Identity proof, mechanism selection, target binding and credential custody',defaultId:'lab-win-ntlmv2-domain',routeSegment:'integrated'},
+   {workspace:'windows',id:'windows-desktop',title:'Remote desktop',summary:'Ordinary RDP, Restricted Admin and Remote Credential Guard',defaultId:'lab-win-rdp-normal',routeSegment:'desktop'},
+   {workspace:'windows',id:'windows-management',title:'Remote management',summary:'WinRM transports, delegation and independent second-hop access',defaultId:'lab-win-winrm-second-hop-denied',routeSegment:'management'},
++  {workspace:'windows',id:'windows-files',title:'SMB file access',summary:'Workgroup client, explicit domain credentials, share and file permissions',defaultId:'lab-smb-nonjoined-kerberos',routeSegment:'files'},
+   {workspace:'network',id:'network-access',title:'Access authentication',summary:'Credentials, certificates, network policy and the controlled port',defaultId:'lab-net-eap-tls13-wired',routeSegment:'access'},
+   {workspace:'network',id:'network-lifecycle',title:'Accounting and session control',summary:'Delivery knowledge, policy changes and targeted disconnection',defaultId:'lab-net-radius-accounting-lifecycle',routeSegment:'lifecycle'},
+   {workspace:'network',id:'network-transport',title:'Transport and proxying',summary:'UDP, RadSec, adjacent-peer protection and Experimental RADIUS/1.1',defaultId:'lab-net-radius-udp-radsec',routeSegment:'transport'},
+--- /dev/null
++++ b/tests/smb-access-lab.test.mjs
+@@ -0,0 +1,101 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {SMBLAB_SCENARIOS} from '../src/smb-access-lab.js';
++import {LAB_MODELS} from '../src/lab-catalog.js';
++import {buildHeldObjects} from '../src/held-objects.js';
++import {projectHeldObjects,heldObjectTrace} from '../src/held-object-state.js';
++import {reconstructProtocolState} from '../src/protocol-state.js';
++import {parseStudioRoute,studioRoute} from '../src/workspaces.js';
++
++const model=s=>SMBLAB_SCENARIOS.find(m=>m.id==='lab-smb-nonjoined-'+s);
++const index=(m,stage)=>m.steps().findIndex(s=>s.smbStage===stage);
++const state=(m,stage)=>reconstructProtocolState(m,stage?index(m,stage):m.steps().length-1).smb;
++function fixture(s){const m=model(s),steps=m.steps(),compiled=buildHeldObjects({model:m,steps,actors:m.actors(),config:{},contextId:m.id,choiceId:m.id});return {m,compiled,id:key=>m.id+':'+key,frame:(stage,milestone='complete')=>projectHeldObjects(compiled,{eventIndex:index(m,stage),milestone})};}
++const has=(frame,id,actor,rep='plain',store)=>frame.holdings.some(h=>h.artifactId===id&&h.actorId===actor&&h.representationId===rep&&(!store||h.store===store));
++
++test('All SMB models are discoverable in the file-access family with a readable modern profile',()=>{
++  assert.equal(SMBLAB_SCENARIOS.length,10);
++  assert.equal(parseStudioRoute('#/windows/files',LAB_MODELS).scenarioId,'lab-smb-nonjoined-kerberos');
++  for(const m of SMBLAB_SCENARIOS){assert.equal(LAB_MODELS[m.id],m);assert.equal(parseStudioRoute(studioRoute(m.id,LAB_MODELS),LAB_MODELS).scenarioId,m.id);assert.equal(m.family,'windows-files');assert.equal(m.profile.dialect,'0x0311');assert.equal(typeof m.profile.cryptoDetail,'string');assert.match(m.profile.cryptoDetail,/SHA512/);assert.match(m.profile.cryptoDetail,/AES128-GCM/);assert.equal(m.profile.sources[0].revision,'88.0 / 2026-09-28; dialect0x0311');}
++});
++
++test('Local workstation identity and join state do not change at any canonical boundary',()=>{
++  for(const m of SMBLAB_SCENARIOS)for(let i=-1;i<m.steps().length;i++){const s=reconstructProtocolState(m,i).smb;assert.equal(s.clientJoined,false,m.id);assert.equal(s.localDesktopIdentity,'WORKGROUPPC\\bob');assert.equal(s.networkIdentity,'CORP\\alice');}
++});
++
++test('SMB requests and responses remain paired; continuation does not establish a session',()=>{
++  for(const m of SMBLAB_SCENARIOS){const pending=new Map();for(const step of m.steps()){if(!step.smbFrame)continue;const f=step.smbFrame;if(!f.status){assert.equal(pending.has(f.messageId),false);pending.set(f.messageId,f.command);}else{assert.equal(pending.get(f.messageId),f.command,step.id);pending.delete(f.messageId);}}assert.equal(pending.size,0,m.id);}
++  const m=model('ntlm');assert.equal(state(m,'session-challenge').sessionIdAllocated,true);assert.equal(state(m,'session-challenge').clientSessionAccepted,false);assert.equal(state(m,'session-authenticate').serverAuthenticated,false);assert.equal(state(m,'session-success').clientSessionAccepted,false);assert.equal(state(m,'client-session').clientSessionAccepted,true);
++});
++
++test('Preauthentication context includes exact exchange through final client request, not signed success',()=>{
++  for(const [suffix,count] of [['ntlm',5],['kerberos',3]]){const m=model(suffix);assert.equal(state(m).preauthMessages,count);assert.equal(state(m,'server-key-derivation').preauthHash,m.id+':preauth-'+count);assert.equal(m.steps().find(s=>s.smbStage==='session-success').smbFrame.preauthHashed,false);assert.equal(m.steps().filter(s=>s.smbFrame?.preauthHashed).length,count);const key=m.smbInventory.artifacts.find(o=>o.key==='signing-key');assert.match(key.value,new RegExp('Context=preauth-'+count));}
++});
++
++test('NTLM compatibility uses server DC validation without direct client/DC traffic or hash export',()=>{
++  const f=fixture('ntlm');assert.equal(f.m.steps().some(s=>s.from==='smbClient'&&s.to==='smbDC'||s.from==='smbDC'&&s.to==='smbClient'),false);
++  for(const stage of ['session-authenticate','dc-request','dc-result']){const frame=f.frame(stage);for(const key of ['credential','nt-hash','response-key']){assert.equal(has(frame,f.id(key),'smbServer'),false);assert.equal(has(frame,f.id(key),'smbDC'),false);}}
++  assert.equal(has(f.frame('dc-request'),f.id('ntlm-proof'),'smbDC'),false);assert.equal(has(f.frame('dc-request'),f.id('ntlm-proof'),'smbDC','netlogon'),true);assert.equal(has(f.frame('dc-verify'),f.id('ntlm-proof'),'smbDC'),true);
++  assert.equal(has(f.frame('dc-result'),f.id('session-key'),'smbServer'),false);assert.equal(has(f.frame('ntlm-accept'),f.id('session-key'),'smbServer'),true);
++  const wire=f.m.smbInventory.events[f.id('dc-request')].messages[0];assert.ok(wire.objects.every(o=>o.representationId!=='plain'));
++});
++
++test('KILE AP-REP acceptor key reaches C only after mutual verification, before client KDF',()=>{
++  const f=fixture('kerberos');assert.equal(has(f.frame('session-success'),f.id('session-key'),'smbClient'),false);assert.equal(has(f.frame('client-mechanism'),f.id('session-key'),'smbClient'),true);
++  for(const key of ['signing-key','app-key','c2s-key','s2c-key']){assert.equal(has(f.frame('client-mechanism'),f.id(key),'smbClient'),false);assert.equal(has(f.frame('client-key-derivation'),f.id(key),'smbClient'),true);assert.equal(has(f.frame('client-key-derivation'),f.id(key),'smbDC'),false);}
++  assert.equal(has(f.frame('as-reply'),f.id('dc-account-key'),'smbDC'),true);assert.equal(has(f.frame('as-reply'),f.id('tgt-key'),'smbClient'),false);assert.equal(has(f.frame('as-accept'),f.id('tgt-key'),'smbClient'),true);
++  assert.notEqual(f.id('initiator-subkey'),f.id('session-key'));assert.match(f.m.smbInventory.artifacts.find(o=>o.key==='session-key').value,/acceptor/);
++});
++
++test('Keys are derived locally and never occur as transmitted SMB or Netlogon objects',()=>{
++  for(const m of SMBLAB_SCENARIOS)for(const event of Object.values(m.smbInventory.events))for(const message of event.messages||[])for(const o of message.objects){const key=m.smbInventory.artifacts.find(a=>a.artifactId===o.artifactId).key;assert.equal(['session-key','signing-key','app-key','c2s-key','s2c-key','initiator-subkey','nt-hash','response-key','credential'].includes(key),false,m.id+'/'+key);}
++});
++
++test('Final SESSION_SETUP and TREE_CONNECT are signed; file operations use directional AEAD',()=>{
++  const m=model('kerberos');for(const stage of ['session-success','tree-request','tree-success']){const s=m.steps().find(s=>s.smbStage===stage);assert.equal(s.smbFrame.signed,true);assert.equal(s.smbFrame.encrypted,false);assert.equal(s.layers[0].keyRef,m.id+':signing-key');}
++  for(const stage of ['create-request','create-success','read-request','read-success']){const s=m.steps().find(s=>s.smbStage===stage);assert.equal(s.smbFrame.encrypted,true);assert.equal(s.smbFrame.signed,false);assert.equal(s.smbFrame.treeId,'tree-1');assert.equal(s.layers[0].keyRef,m.id+(s.from==='smbClient'?':c2s-key':':s2c-key'));}
++  const nonces=m.smbInventory.artifacts.filter(o=>o.key.endsWith('-transform')).map(o=>o.value.match(/Nonce=(.*?); remaining/)[1]);assert.equal(new Set(nonces).size,nonces.length);
++});
++
++test('Encrypted object receipt precedes authenticated plaintext acquisition and application use',()=>{
++  const f=fixture('kerberos');assert.equal(has(f.frame('create-request'),f.id('create-request'),'smbServer'),false);assert.equal(has(f.frame('create-request'),f.id('create-request'),'smbServer','ciphertext'),true);assert.equal(has(f.frame('create-request-unwrap'),f.id('create-request'),'smbServer'),true);
++  assert.equal(has(f.frame('read-success'),f.id('file-data'),'smbClient'),false);assert.equal(has(f.frame('read-success'),f.id('file-data'),'smbClient','ciphertext'),true);assert.equal(has(f.frame('read-success-unwrap'),f.id('file-data'),'smbClient'),true);assert.equal(state(f.m,'read-success-unwrap').fileRead,false);assert.equal(state(f.m,'read-accept').fileRead,true);
++  const trace=heldObjectTrace(f.compiled,f.id('file-data'));assert.ok(trace.some(t=>t.sourceStepId===f.id('read-success')&&t.representationId==='ciphertext'));assert.ok(trace.some(t=>t.sourceStepId===f.id('read-success-unwrap')&&t.representationId==='plain'));
++});
++
++test('Independent authentication, share and file denials preserve only justified earlier state',()=>{
++  const expected={
++    'ntlm-blocked':[false,false,false,'incoming NTLM blocked'],
++    'bad-credential':[false,false,false,'bad domain credential'],
++    'dc-unavailable':[false,false,false,'DC validation unavailable'],
++    'share-denied':[true,false,false,'share access denied'],
++    'file-denied':[true,true,false,'file access denied'],
++  };
++  for(const [suffix,[session,tree,file,failure]] of Object.entries(expected)){const m=model(suffix),s=state(m);assert.equal(s.clientSessionAccepted,session);assert.equal(s.treeConnected,tree);assert.equal(s.fileOpened,file);assert.equal(s.fileRead,false);assert.equal(s.failure,failure);assert.equal(s.clientKnowsFailure,true);}
++  const dc=model('dc-unavailable');assert.equal(dc.steps().some(s=>s.smbStage==='dc-request'||s.smbStage==='dc-verify'),false);
++  const bad=model('bad-credential');assert.equal(state(bad,'dc-verify').serverKnowsFailure,false);assert.equal(state(bad,'authentication-reject').clientKnowsFailure,false);
++});
++
++test('Tampered signature is visible on the wire; response discard and selected disconnect precede share access',()=>{
++  const f=fixture('signature-rejected'),m=f.m;assert.match(m.steps().find(s=>s.smbStage==='session-success').payload.map(p=>p.value).join(' '),/INVALID altered AES-CMAC/);assert.equal(state(m).clientSessionAccepted,false);assert.equal(state(m).clientDisconnected,true);assert.equal(state(m).serverAuthenticated,true);assert.equal(m.steps().some(s=>s.smbStage==='tree-request'),false);assert.equal(has(f.frame('client-disconnect'),f.id('signing-key'),'smbClient'),false);
++});
++
++test('Bad GCM tag yields no client plaintext and frees nondurable client handles',()=>{
++  const f=fixture('encryption-rejected'),m=f.m;assert.match(m.steps().find(s=>s.smbStage==='read-success').payload.map(p=>p.value).join(' '),/INVALID altered GCM/);assert.equal(has(f.frame('read-success-reject'),f.id('file-data'),'smbClient'),false);assert.equal(state(m).fileRead,false);assert.equal(state(m).clientSessionWasAccepted,true);assert.equal(state(m).treeWasConnected,true);assert.equal(state(m).fileWasOpened,true);assert.equal(state(m).clientSessionAccepted,false);assert.equal(state(m).treeConnected,false);assert.equal(state(m).fileOpened,false);
++  for(const key of ['session-context','tree','file-handle'])assert.equal(has(f.frame('client-disconnect'),f.id(key),'smbClient','plain',m.smbInventory.artifacts.find(o=>o.key===key).store),false);
++  assert.ok(m.steps().find(s=>s.smbStage==='client-disconnect').attributeOperations.some(o=>o.kind==='evict'));
++});
++
++test('No common encryption cipher is legitimate negotiation followed by an explicit local policy stop',()=>{
++  const m=model('encryption-unavailable');assert.match(m.steps().find(s=>s.smbStage==='negotiate-response').payload.map(p=>p.value).join(' '),/Ciphers\[0\]=0/);assert.equal(m.steps().find(s=>s.smbStage==='negotiate-response').smbFrame.status,'STATUS_SUCCESS');assert.equal(m.steps().some(s=>s.smbFrame?.command==='SESSION_SETUP'),false);assert.equal(state(m).clientKnowsFailure,true);assert.equal(state(m).serverKnowsFailure,false);
++});
++
++test('Local field histories expose creation before send, derivation at both endpoints and handle verification',()=>{
++  for(const m of SMBLAB_SCENARIOS)for(const step of m.steps()){const ops=step.attributeOperations;for(const [i,op] of ops.entries())if(op.kind==='send'){const c=ops.findIndex(o=>o.instanceId===op.instanceId&&['create','derive'].includes(o.kind));assert.ok(c<0||c<i,step.id);}}
++  const m=model('kerberos');for(const stage of ['server-key-derivation','client-key-derivation'])for(const key of ['signing-key','app-key','c2s-key','s2c-key'])assert.ok(m.steps().find(s=>s.smbStage===stage).attributeOperations.some(o=>o.instanceId===m.id+':'+key&&o.kind==='derive'));
++  for(const stage of ['client-session','tree-accept','create-accept'])assert.ok(m.steps().find(s=>s.smbStage===stage).attributeOperations.some(o=>o.kind==='verify'));
++});
++
++test('Every SMB boundary compiles with complete explicit ownership and observations require possession',()=>{
++  for(const m of SMBLAB_SCENARIOS){const f=fixture(m.id.slice('lab-smb-nonjoined-'.length));for(let i=-1;i<m.steps().length;i++){const frame=projectHeldObjects(f.compiled,{eventIndex:i,milestone:i<0?'initial':'complete'});assert.equal(frame.coverageStatus,'complete');if(i<0)continue;for(const observation of m.smbInventory.events[m.steps()[i].id].milestones[0].effects.filter(e=>e.op==='observe'))assert.ok(has(frame,observation.artifactId,observation.actorId,observation.representationId),m.steps()[i].id+'/'+observation.artifactId);}}
++});
+--- /dev/null
++++ b/tests/smb-multichannel-lab.test.mjs
+@@ -0,0 +1,88 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {SMBMULTI_SCENARIOS,SMBMULTI_ATTRIBUTES} from '../src/smb-multichannel-lab.js';
++import {SMBLAB_SCENARIOS} from '../src/smb-access-lab.js';
++import {LAB_MODELS} from '../src/lab-catalog.js';
++import {ATTRIBUTES} from '../src/protocol-data.js';
++import {buildHeldObjects} from '../src/held-objects.js';
++import {projectHeldObjects,inspectHeldObject,heldObjectTrace} from '../src/held-object-state.js';
++import {reconstructProtocolState} from '../src/protocol-state.js';
++import {getAttributeUsage} from '../src/attribute-usage.js';
++import {buildAttributeTrace} from '../src/attribute-trace.js';
++Object.assign(ATTRIBUTES,SMBMULTI_ATTRIBUTES);
++const model=suffix=>SMBMULTI_SCENARIOS.find(m=>m.id==='lab-smb-multichannel-binding-'+suffix);
++const index=(m,stage)=>m.steps().findIndex(s=>s.smbStage===stage);
++const at=(m,stage)=>reconstructProtocolState(m,index(m,stage)).smb;
++const obj=(m,key)=>m.smbInventory.artifacts.find(a=>a.key===key);
++const fixture=suffix=>{const m=model(suffix),steps=m.steps(),compiled=buildHeldObjects({model:m,steps,actors:m.actors(),config:{},choiceId:m.id,contextId:m.id+':test'});return {m,steps,compiled,frame:(stage,milestone='complete')=>projectHeldObjects(compiled,{eventIndex:index(m,stage),milestone})};};
++const holding=(frame,a,actor,rep)=>frame.holdings.find(h=>h.artifactId===a.artifactId&&h.actorId===actor&&(!rep||h.representationId===rep));
++
++test('Both multichannel lessons are registered modern SMB models and leave the base model untouched',()=>{
++  const base=SMBLAB_SCENARIOS.find(m=>m.id==='lab-smb-nonjoined-kerberos');
++  assert.equal(obj(base,'dialects').value.includes('MULTI_CHANNEL'),false);
++  for(const m of SMBMULTI_SCENARIOS){assert.equal(LAB_MODELS[m.id],m);assert.equal(m.profile.dialect,'0x0311');assert.equal(m.family,'windows-files');assert.match(m.profile.kdfSourceDiscrepancy,/client binding HTML/);assert.match(m.profile.kdfSourceDiscrepancy,/server/);for(const key of ['dialects','server-offer'])assert.match(obj(m,key).value,/MULTI_CHANNEL/);assert.equal(m.steps().some(s=>s.id.startsWith(base.id)),false);}
++});
++
++test('Every boundary has complete ownership and every observation is supported by possession',()=>{
++  for(const suffix of ['success','rejected']){const f=fixture(suffix);for(let i=-1;i<f.steps.length;i++){const state=projectHeldObjects(f.compiled,{eventIndex:i,milestone:i<0?'initial':'complete'});assert.equal(state.coverageStatus,'complete');if(i<0)continue;for(const e of f.m.smbInventory.events[f.steps[i].id].milestones.flatMap(m=>m.effects).filter(e=>e.op==='observe'))assert.ok(state.holdings.some(h=>h.artifactId===e.artifactId&&h.actorId===e.actorId&&h.representationId===e.representationId),f.steps[i].id+'/'+e.artifactId);}}
++});
++
++test('Second-connection messages have independent request matching and negotiation does not authenticate the channel',()=>{
++  for(const m of SMBMULTI_SCENARIOS){const pending=new Map();for(const step of m.steps()){if(!step.smbFrame)continue;const f=step.smbFrame,k=f.connectionId+':'+f.messageId;if(f.status){assert.equal(pending.get(k),f.command,step.id);pending.delete(k);}else{assert.equal(pending.has(k),false);pending.set(k,f.command);}}assert.equal(pending.size,0);assert.equal(at(m,'mc-negotiate-check').channel2Negotiated,true);assert.equal(at(m,'mc-negotiate-check').channel2Usable,false);assert.equal(at(m,'mc-negotiate-check').serverAuthenticated,true);}
++});
++
++test('Binding uses existing Session.SigningKey, a fresh same-user GSS context and a new transcript-derived channel key',()=>{
++  const m=model('success'),steps=m.steps(),binding=steps[index(m,'mc-binding-request')],reply=steps[index(m,'mc-binding-success')];
++  assert.equal(binding.smbFrame.sessionId,'session-1');assert.equal(binding.smbFrame.binding,true);assert.equal(binding.smbFrame.encrypted,false);assert.equal(binding.smbFrame.signed,true);assert.equal(binding.layers[0].keyRef,obj(m,'signing-key').artifactId);
++  assert.equal(reply.layers[0].keyRef,obj(m,'mc-channel-signing-key').artifactId);assert.equal(reply.smbFrame.preauthHashed,false);
++  assert.match(obj(m,'mc-binding-request').value,/PreviousSessionId=0/);assert.match(obj(m,'mc-channel-signing-key').value,/binding GSS key/);assert.match(obj(m,'mc-channel-signing-key').value,/SMBSigningKey/);assert.match(obj(m,'mc-channel-signing-key').value,/mc-preauth-3/);
++  assert.ok(index(m,'mc-gss-accept')<index(m,'mc-same-user'));assert.equal(at(m,'mc-same-user').bindingSameUser,true);assert.ok(index(m,'mc-same-user')<index(m,'mc-server-channel'));
++  const tail=steps.slice(index(m,'mc-existing'));assert.equal(tail.some(s=>s.from==='smbDC'||s.to==='smbDC'),false);
++});
++
++test('No client channel or key appears before AP-REP verification and derivation; response receipt does not permit I/O',()=>{
++  const f=fixture('success'),key=obj(f.m,'mc-gss-key'),signing=obj(f.m,'mc-channel-signing-key'),channel=obj(f.m,'mc-channel2');
++  assert.equal(holding(f.frame('mc-binding-success'),key,'smbClient'),undefined);assert.equal(holding(f.frame('mc-binding-success'),signing,'smbClient'),undefined);assert.equal(holding(f.frame('mc-binding-success'),channel,'smbClient'),undefined);
++  assert.ok(holding(f.frame('mc-client-gss'),key,'smbClient','plain'));assert.equal(holding(f.frame('mc-client-gss'),signing,'smbClient'),undefined);assert.ok(holding(f.frame('mc-client-channel-key'),signing,'smbClient','plain'));
++  for(const stage of ['mc-server-channel','mc-binding-success','mc-client-gss','mc-client-channel-key'])assert.equal(at(f.m,stage).channel2Usable,false,stage);
++  assert.equal(at(f.m,'mc-client-channel-verify').channel2Usable,true);assert.ok(index(f.m,'mc-client-channel-verify')<index(f.m,'mc-read-request'));
++  const wire=holding(f.frame('mc-binding-success'),obj(f.m,'mc-ap-reply'),'smbClient','wire');assert.ok(wire);assert.match(inspectHeldObject(f.frame('mc-binding-success'),wire.holdingId).fields[0].value,/encrypted/);
++});
++
++test('Session and directional cipher keys are retained and never transmitted or regenerated by binding',()=>{
++  const f=fixture('success'),keys=['session-key','signing-key','app-key','c2s-key','s2c-key'];
++  const before=f.frame('mc-existing'),after=f.frame('mc-read-accept');for(const key of keys){const a=obj(f.m,key);for(const actor of ['smbClient','smbServer']){assert.ok(holding(before,a,actor,'plain'));assert.ok(holding(after,a,actor,'plain'));}assert.equal(f.steps.slice(index(f.m,'mc-existing')).flatMap(s=>f.m.smbInventory.events[s.id].milestones.flatMap(m=>m.effects)).some(e=>e.op==='create'&&e.artifactId===a.artifactId),false);}
++  const localKeys=new Set([...keys,'mc-initiator-subkey','mc-gss-key','mc-channel-signing-key'].map(k=>obj(f.m,k).artifactId));for(const e of Object.values(f.m.smbInventory.events))for(const message of e.messages||[])for(const o of message.objects)assert.equal(localKeys.has(o.artifactId),false);
++  for(const [stage,key] of [['mc-read-request','c2s-key'],['mc-read-response','s2c-key']]){const s=f.steps[index(f.m,stage)];assert.equal(s.layers[0].keyRef,obj(f.m,key).artifactId);assert.equal(s.smbFrame.encrypted,true);assert.equal(s.smbFrame.signed,false);assert.equal(s.smbFrame.connectionId,'tcp-2');assert.equal(s.smbFrame.treeId,'tree-1');}
++  assert.match(obj(f.m,'mc-followup-read').value,/FileId=file-1/);
++  for(const direction of ['C2S','S2C']){const nonces=f.m.smbInventory.artifacts.filter(a=>a.key.endsWith('-transform')).map(a=>a.value.match(new RegExp(direction+' nonce12 #(\\d+)'))?.[1]).filter(Boolean);assert.equal(new Set(nonces).size,nonces.length,direction);assert.deepEqual(nonces.map(Number),[1,2,3,4]);}
++});
++
++test('Encrypted I/O fields remain opaque until authenticated unwrap and data accepted only afterwards',()=>{
++  for(const suffix of ['success','rejected']){const f=fixture(suffix),data=obj(f.m,'mc-read-data'),header=obj(f.m,'mc-read-response-header');for(const a of [data,header]){assert.equal(holding(f.frame('mc-read-response'),a,'smbClient','plain'),undefined);const h=holding(f.frame('mc-read-response'),a,'smbClient','ciphertext');assert.ok(h);assert.match(inspectHeldObject(f.frame('mc-read-response'),h.holdingId).fields[0].value,/Opaque AES128-GCM/);assert.ok(holding(f.frame('mc-read-response-unwrap'),a,'smbClient','plain'));}assert.equal(at(f.m,'mc-read-response-unwrap').followupFileRead,undefined);assert.equal(at(f.m,'mc-read-accept').followupFileRead,true);}
++});
++
++test('Early invalid signature rejection is learned by the client later and preserves original-session I/O',()=>{
++  const f=fixture('rejected'),m=f.m;
++  assert.equal(at(m,'mc-binding-preconditions').bindingServerKnowsFailure,true);assert.equal(at(m,'mc-binding-preconditions').bindingClientKnowsFailure,false);assert.equal(at(m,'mc-binding-error').bindingClientKnowsFailure,false);assert.equal(at(m,'mc-binding-error-check').bindingClientKnowsFailure,true);
++  assert.equal(obj(m,'mc-gss-key'),undefined);assert.equal(obj(m,'mc-channel-signing-key'),undefined);assert.equal(obj(m,'mc-channel2'),undefined);assert.equal(index(m,'mc-gss-accept'),-1);
++  assert.equal(f.steps[index(m,'mc-binding-error')].layers[0].keyRef,obj(m,'signing-key').artifactId);assert.equal(f.steps[index(m,'mc-binding-error')].smbFrame.status,'STATUS_ACCESS_DENIED');
++  for(const stage of ['mc-binding-preconditions','mc-binding-error-check','mc-read-accept']){const s=at(m,stage);for(const field of ['serverAuthenticated','clientSessionAccepted','treeConnected','fileOpened','channel1Usable'])assert.equal(s[field],true,stage+'/'+field);assert.equal(s.channel2Usable,false);}
++  assert.equal(at(m,'mc-read-accept').channel1ReadAfterBindingFailure,true);assert.equal(f.steps[index(m,'mc-read-request')].smbFrame.connectionId,'tcp-1');assert.match(obj(m,'mc-binding-error').representations[0].fields[0].value,/no new channel/);assert.match(m.profile.assumptions.join(' '),/TLS channel binding/);
++});
++
++test('Exact-object and field replay include local derivation, actual wire protection and decoding boundaries',()=>{
++  const f=fixture('success');
++  for(const [key,stage,kind] of [['mc-gss-key','mc-server-channel','use'],['mc-channel-signing-key','mc-client-channel-key','store'],['mc-channel-signing-key','mc-client-channel-verify','use'],['mc-read-data','mc-read-response-unwrap','decrypt']]){const a=obj(f.m,key),field=buildAttributeTrace(getAttributeUsage(f.steps,a.attributeId),f.m.examples());assert.ok(field.some(r=>r.sourceStepId===f.m.id+':'+stage&&r.traceKind===kind),key+'/'+stage);const exact=heldObjectTrace(f.compiled,a.artifactId);assert.ok(exact.some(r=>r.sourceStepId===f.m.id+':'+stage),key);}
++  const data=obj(f.m,'mc-read-data'),exact=heldObjectTrace(f.compiled,data.artifactId),sent=exact.find(r=>r.sourceStepId===f.m.id+':mc-read-response'),decoded=exact.find(r=>r.sourceStepId===f.m.id+':mc-read-response-unwrap');assert.equal(sent.representationId,'ciphertext');assert.match(sent.payload[0].value,/Opaque/);assert.equal(decoded.representationId,'plain');assert.match(decoded.payload[0].value,/quarterly/);
++  for(const step of f.steps)for(const [i,op] of step.attributeOperations.entries())if(op.kind==='send'){const created=step.attributeOperations.findIndex(o=>o.instanceId===op.instanceId&&['create','derive'].includes(o.kind));assert.ok(created<0||created<i,step.id);}
++});
++
++
++test('Cached CIFS ticket stays opaque when the client constructs its binding GSS token',()=>{
++  const f=fixture('success'),ticket=obj(f.m,'cifs-ticket'),step=f.steps[index(f.m,'mc-gss-init')];
++  assert.equal(holding(f.frame('mc-gss-init'),ticket,'smbClient','plain'),undefined);
++  const operation=step.attributeOperations.find(o=>o.instanceId===ticket.artifactId);assert.equal(operation.representation,'wire');assert.equal(operation.kind,'use');assert.match(operation.value,/ciphertext/);
++  const payload=step.payload.find(p=>p.attributeId===ticket.attributeId);assert.equal(payload.value,operation.value);assert.doesNotMatch(payload.value,/Decoded CIFS/);
++  const trace=buildAttributeTrace(getAttributeUsage(f.steps,ticket.attributeId),f.m.examples());const local=trace.find(r=>r.sourceStepId===step.id);assert.ok(local);assert.equal(local.payload[0].value,operation.value);assert.equal(local.from,'smbClient');const exact=heldObjectTrace(f.compiled,ticket.artifactId).find(r=>r.sourceStepId===step.id);assert.ok(exact);assert.equal(exact.representationId,'wire');assert.equal(exact.payload[0].value,operation.value);
++});
+--- /dev/null
++++ b/tests/smb-ui.test.mjs
+@@ -0,0 +1,15 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {installHarness} from './dom-harness.mjs';
++const harness=installHarness();
++const {AuthFlowStudio}=await import('../src/app.js');
++
++test('Mounted SMB family defaults to Kerberos and renders readable cryptographic parameters without changing state',()=>{
++  const app=new AuthFlowStudio();harness.document.body.appendChild(app);app.connectedCallback();
++  try{
++    app.selectWorkspace('windows');app.querySelector('[data-family="windows-files"]').click();assert.equal(app.labScenarioId,'lab-smb-nonjoined-kerberos');
++    const index=app.steps.findIndex(s=>s.smbStage==='client-key-derivation');app.selectStep(index,false);const before=app.protocolSnapshot(),held=app.heldView.snapshot();
++    app.querySelector('#learning-detail-crypto').click();const html=app.querySelector('#learning-profile-crypto').innerHTML;
++    assert.match(html,/SHA512/);assert.match(html,/AES128-GCM/);assert.match(html,/SMB/);assert.doesNotMatch(html,/\[object Object\]/);assert.doesNotMatch(html,/undefined/);assert.deepEqual(app.protocolSnapshot(),before);assert.deepEqual(app.heldView.snapshot(),held);
++  }finally{app.disconnectedCallback();harness.document.body.removeChild(app);harness.clock.frames.clear();harness.clock.timers.clear();}
++});

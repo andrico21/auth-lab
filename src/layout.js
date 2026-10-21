@@ -251,12 +251,13 @@ export function validateLayoutRoutes(positions,pairs=[]) {
 }
 
 export function channelCategory(channel='') {
-  const c=channel.toLowerCase();
-  if(c.includes('webauthn') || c.includes('ctap')) return 'passkey';
+  const c=String(channel).toLowerCase();
+  if(c.includes('webauthn')||c.includes('ctap'))return 'passkey';
   if(c.includes('ipc'))return 'ipc';
-  if(c.includes('back') || c.includes('server')) return 'server';
-  if(c.includes('local') || c.includes('internal') || c.includes('totp') || c.includes('qr')) return 'local';
-  if(/network|kerberos|\bssh\b|\bgss\b|\btcp\b|\budp\b/.test(c))return 'network';
-  if(c.includes('human') || c.includes('user')) return 'human';
-  return 'browser';
+  if(c.includes('human')||c.includes('user'))return 'human';
+  if(c.includes('local')||c.includes('internal')||c.includes('totp')||c.includes('qr'))return 'local';
+  if(/browser|front.?channel|redirect|navigation/.test(c))return 'browser';
+  if(c.includes('back')||c.includes('server'))return 'server';
+  if(/network|kerberos|\bssh\b|\bgss\b|\btcp\b|\budp\b|\bhttps?\b|\btls\b|radius|eap|credssp|netlogon|nrpc|\brdp\b|winrm|smb|spake/.test(c))return 'network';
+  return 'unknown';
 }

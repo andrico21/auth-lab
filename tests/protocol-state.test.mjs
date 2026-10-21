@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PROTOCOL_STATE_DEFAULTS, reconstructProtocolState, buildProtocolInstances, validateProtocolScenario } from '../src/protocol-state.js';
+import { WINDOWSLAB_SCENARIOS } from '../src/windows-auth-lab.js';
 
 const put = (path, value) => ({ op: 'put', path, value });
 const remove = path => ({ op: 'remove', path });
@@ -10,6 +11,24 @@ const tgt = { instanceId: 'home-tgt-1', client: 'alice@A.EXAMPLE', service: 'krb
 const unrelated = { instanceId: 'other-service-ticket', service: 'cifs/files.a.example' };
 const targetTicket = { instanceId: 'http-ticket-1', client: 'alice@A.EXAMPLE', service: 'HTTP/web.a.example', encKeyVersion: 7, expires: 500 };
 
+test('W01 response delivery, DC verification, result return, context and application authorization are independent boundaries',()=>{
+  const model=WINDOWSLAB_SCENARIOS.find(entry=>entry.id==='lab-win-ntlmv2-domain');
+  const winAt=(entry,stage)=>reconstructProtocolState(entry,entry.steps().findIndex(step=>step.winStage===stage)).windows;
+  assert.equal(winAt(model,'authenticate').responseReceived,true);
+  assert.equal(winAt(model,'authenticate').mechanismComplete,false);
+  assert.equal(winAt(model,'validation-request').validationReceived,undefined);
+  assert.equal(winAt(model,'dc-verify').dcValidated,true);
+  assert.equal(winAt(model,'dc-verify').mechanismComplete,false);
+  assert.equal(winAt(model,'validation-result').validationReceived,true);
+  assert.equal(winAt(model,'validation-result').resourceAuthorized,false);
+  assert.equal(winAt(model,'context').mechanismComplete,true);
+  assert.equal(winAt(model,'context').resourceAuthorized,false);
+  assert.equal(winAt(model,'authorize').resourceAuthorized,true);
+  assert.notEqual(winAt(model,'result').clientKnowsResourceResult,true);
+  assert.equal(winAt(model,'result-accept').clientResult,'success');
+  assert.equal(winAt(model,'result-accept').credentialsReceived,false);
+  assert.equal(model.steps().some(step=>/AS-REQ|TGS-REQ/.test(step.protocolLabel)),false);
+});
 function unknownSpnFixture() {
   return model({ credentials: { tgt, unrelated }, caches: { serviceTickets: { unrelated } } }, [
     event('request-unknown-spn', [put('pending.tgs', { spn: 'HTTP/unknown.a.example' })]),

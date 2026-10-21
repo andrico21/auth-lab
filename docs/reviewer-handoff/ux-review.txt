@@ -1,0 +1,103 @@
+Auth Flow Studio expansion — independent UX / native evidence review
+Date: 2026-10-21
+Reviewed source: /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/source
+Reviewed upload: /workspace/scratch/b1e0b9877d92/upload/auth-flow-studio-expansion.html
+No application files modified. Root owns the full regression/build review.
+
+Outcome
+-------
+One reproducible source-level keyboard focus defect remains in journey comparison/navigation. The shipped native evidence is substantial, internally consistent, and tied to the supplied source/artifact, but was not independently rerun here. Six measured interaction-latency regressions remain explicitly acknowledged by the worker. These qualifications preclude an unqualified claim of perfect ergonomics or independently verified native accessibility.
+
+UX-01 — P2: journey comparison activation removes its focused trigger without restoring focus
+------------------------------------------------------------------------------------------------
+Reproduction in the delivered app:
+1. Choose Windows NTLMv2 domain authentication (lab-win-ntlmv2-domain).
+2. Tab to the related journey button targeting lab-win-negotiate-kerberos, then activate it.
+3. The selected scenario changes, but the activated button is replaced. There is no application focus action selecting a surviving control, corresponding replacement, new heading, or Play.
+The same destruction occurs when reactivating the ready-made journey button in this Windows family.
+
+Source evidence:
+- src/app.js:293-297 delegates related-button activation directly to selectLabScenario.
+- src/app.js:415-427 selects the new model and refreshes configuration, with no general focus capture/recovery.
+- src/app.js:1034-1038 resets state and calls renderAll.
+- src/app.js:497-498 replaces every related-journey button using innerHTML.
+- src/app.js:458 likewise replaces every ready-made journey button.
+- In contrast, catalog-card rendering explicitly captures/restores focus at src/app.js:475-480. The affected navigation surfaces have no equivalent recovery.
+
+Independent probe: ux-evidence/navigation-focus-probe.mjs. Run from the review workspace with:
+  node implementation-review/expansion1/ux-evidence/navigation-focus-probe.mjs
+Result: ux-evidence/navigation-focus-result.json. For both paths, the previously focused trigger is detached, the handler completes, and there are zero subsequent focus calls. Related comparison changes the model from lab-win-ntlmv2-domain to lab-win-negotiate-kerberos.
+
+Evidence boundary: this probe uses the supplied DOM harness with explicit focus tracking, following the project's own fixture convention. It proves DOM replacement and missing application focus restoration; it does not emulate native Enter activation, native document.activeElement fallback after removal, or the next native Tab destination. Actual-browser confirmation is still needed. The practical risk is loss of keyboard position/visible focus immediately after a primary learning-navigation action.
+
+Suggested correction: preserve the selected navigation control when possible, or deliberately focus an appropriate persistent destination after scenario change. Add real keyboard activation and live connected/visible activeElement assertions for both ready-made and related-journey controls. The existing native runner enters all 61 lessons through the universal picker (tools/verification/run-expansion-native.mjs:209-210), so its passing all-preset result does not cover this path.
+
+PERF-01 — retained, measured ergonomic caveat, not newly discovered
+-----------------------------------------------------------------
+The final worker report retains six material latency flags compared with the accepted baseline. Source docs/expansion/implementation.md:46-79, with raw evidence in docs/verification/expansion/native/expansion-native-status.json:
+
+Mode                 Interaction           Baseline median -> expansion median
+Source HTTP          Replay start          144.4 -> 310.6 ms
+Source HTTP          Search during play    138.7 -> 269.3 ms
+Standalone HTTP      Search                148.7 -> 213.2 ms
+Standalone HTTP      Replay start          177.5 -> 310.6 ms
+Standalone HTTP      Search during play    153.9 -> 266.8 ms
+Standalone file      Search during play    153.3 -> 244.1 ms
+
+Threshold: both >25% and >50 ms interaction growth (>100 ms for startup). There are three fresh contexts per checkout/mode, alternating versions; these are descriptive medians, not statistical significance. The comparison uses the same human query and legacy refresh lesson. It does not establish this slowdown for every new lesson. Profile diagnostics attribute substantial work to the larger default-open global field index; closing it is an available workaround, while new profiled lessons initially scope their index to current fields. Behavioral passed:true does not mean these flags were cleared. All 24 supplied raw profile/trace hashes matched.
+
+Independent discoverability/source checks
+----------------------------------------
+ux-evidence/discoverability-probe.mjs mounts the actual source app once in the DOM harness, then uses its real picker options and filter/route functions. Result: ux-evidence/discoverability-result.json.
+- 202 total choices; all 61 expansion manifest IDs are present.
+- Every expansion ID and full title finds its corresponding option; all 61 route round-trips resolve to the same ID; every expansion option has profile text and a summary. No failed checks.
+- Five primary workspaces: Web, SSH, Kerberos, Windows, Network; Foundations is explicitly secondary. src/workspaces.js:3-10.
+- Useful searches return results: NTLMv2, CredSSP, Remote Credential Guard, RADIUS, EAP TLS, RADIUS/1.1, SPAKE, SPAKE2+, AD PKINIT, FAST, forest, wrong password, transcript, second hop.
+- Substring ID search can return both a success and longer failure ID (NTLM trust; RADIUS/1.1). This is ordinary substring behavior, not recorded as a defect; the intended exact option remains selectable.
+- The picker normalizes accents/case, matches all query terms, preserves modified editing/navigation shortcuts and composition, and scrolls the selected active row into view on reopening. src/scenario-picker.js:2-6,46-77. Native text editing and actual scroll visibility were not independently exercised here.
+- Workspace family panels expose starter journeys with an explicit instruction to use full catalog search for comparisons/failure paths; non-Web fixed profiles hide irrelevant Web controls. src/app.js:443-463,657-658.
+- Profile content exposes starting credentials/trust, completion, transport and source boundaries. Journey/Fields/Crypto switches update presentation without resetting the player. src/app.js:293-297,488-498. Native evidence independently asserts unchanged canonical state for these controls.
+
+Held-object/replay usability and source boundaries
+-------------------------------------------------
+The current source separates exact IDs from field aliases and explicitly labels creator, logical holder, representation/store, acquisition cursor, permission-scoped fields, holder observations, and authority. Historical selection cannot gain newly readable fields; related objects are only selectable if currently held by the same logical actor. src/held-object-view.js:338-372.
+Owner switching sets the logical owner and opens its complete list; exact inspector selection can remain pinned and is labeled by holder. No owner A-B-A loss was found in the inspected source. The native retained runner explicitly repeats app -> realmA -> app three times in full/compact geometries and compares complete exact holding IDs, then checks live focus through redraw and removal. tools/verification/held-objects-browser-check.mjs:465-508.
+Exact replay compiles the artifact-specific history, retaining source indices; the expansion native runner starts connection/field replay through real keyboard controls and compares completed filtered queues against the same full-source canonical prefix. Completion uses the player's seek API rather than waiting through every natural playback. tools/verification/run-expansion-native.mjs:255-290. This is credible prefix/state coverage, not a claim that every scene was watched in natural playback.
+Pending/in-flight/receipt and later local acceptance are explicitly distinguished by the inspector and state model. Retained native HC02 checks immediately before/at/after receipt across full/connection/exact replay; deep expansion cases check CredSSP wire receipt versus decoded credentials, NTLM context versus resource authorization, EAP access versus NAS enforcement, SPAKE ticket receipt/validation/cache, and PAKE handoff/receipt/confirmation. No additional mismatch was found in this bounded UX review; semantic/RFC correctness belongs to the separate protocol review.
+Reduced motion suppresses the holding acquisition animation (held-object-view.js:331-335); live region changes are tied to authored state, not every animation frame. The focused native report asserts exactly one announcement update across a playing receipt fixture and multiple frames. This does not establish how a real screen reader speaks or whether the lesson is understood.
+
+Native evidence and provenance audit
+------------------------------------
+No actual browser executable is available in this review environment. Runtime Playwright exists, but its Chromium, Firefox and WebKit executable paths do not exist; PATH/system checks found no usable browser. No browser tools are exposed. Prior download attempts were denied by the network allowlist; no retry/download was attempted for this task. No local native pass, screenshots, native zoom, touch or CSP execution is claimed.
+
+The worker supplied a complete Chromium 155.0.8059.84 report from its own environment, with pinned playwright-core 1.64.1, executable/dependency hashes, regeneration command, exact source hashes, independent worksheets and a before/after identity assertion. I inspected the actual runner assertions rather than accepting its passed flag alone.
+
+Main report: docs/verification/expansion/native/expansion-native-status.json:
+- nativeBrowser:true, passed:true, complete:true.
+- Source HTTP, standalone HTTP and standalone file; all 61 fixed presets in each mode.
+- Initial/terminal geometry at 1920, 1480 and 390 CSS pixels, active transfer/local/component scene checks, eligible internal expansion, complete owner coverage, visible targets, no document overflow, actual sampled SVG path/card/dock clearance.
+- Eight deep protocol representatives per mode; actual history Back/Forward and regression fixtures.
+- Seven actual mobile touch representatives and fourteen actual Chrome browser-zoom scenes (200%/400%) per mode; zoom is not merely CSS scale.
+- No recorded runtime errors, CSP violations or outside-origin/file requests in the three main modes or surface phases.
+- The completeness gate and frozen before/after identities are explicit at tools/verification/run-expansion-native.mjs:562-564.
+- Centerline sampling is correctly disclosed; it is not an assertion about every antialiased painted pixel.
+
+Retained current-artifact reports also supplied:
+- baseline-ui/code1-correction-native-browser-status.json: all 202 choices plus actor help/focus/F2/Tab/Escape paths.
+- baseline-held/held-objects-native-status.json: all 202 initial/final inventories per mode, 36 layout records per mode, exact holdings, HC01-HC09, owner return, focus, atomic receipt, zoom, touch and reduced motion.
+- focused-native/held-objects-focused-native-status.json: three modes with responsive/sticky focus, nested F2/Escape return, and milestone announcement cadence.
+- review-file/review-file-smoke-status.json: exact R1 replay/full-prefix equality, compact targets, actual component collection after removal, CSP/runtime/network observations.
+
+Independent identity checks:
+- ux-evidence/native-report-audit.json: 67 individual source/worksheet/runner/manifest/artifact comparisons, zero mismatches.
+- ux-evidence/native-preserved-report-audit.json: 155 further comparisons including retained runner/source/artifact hashes, source aggregates, and all 24 raw performance files, zero mismatches. Some source files are intentionally checked in multiple report identities; these are comparisons, not 222 unique files.
+- Main aggregate snapshot: 87313b2c6599bbb098ae6579c946bb138428342be05050fe92cdde680b587aea.
+- Legacy/focused byte-stream snapshot: 596241a112edd7a0db115efcb122db087ad2511fdb9fd55ff62e9c205f977895. The different aggregate algorithm explains the different digest; both recompute correctly from this source.
+- Uploaded and source/dist standalone SHA-256: 520a432945a7b628b5e029828787305cc0b3f038f100b43299d437cf6c2f4da5 (2,741,841 bytes).
+
+Unresolved evidence/acceptance limits
+------------------------------------
+1. The main expansion native report lists 28 screenshots, but none are supplied in this source archive. This is the main report only: root's broader disposition provenance audit found 1,052 missing native-capture references (references, not necessarily unique images), with 261 available hash entries matching and no mismatches. The source packaging contract intentionally excludes PNGs and describes a separate verification ZIP; only the source ZIP and standalone upload were provided. Missing images are therefore a visual-review limitation, not by themselves an unexpected source-ZIP packaging defect. Visual captures cannot be inspected or their listed hashes independently verified. No supplied personal screenshots were published.
+2. Native behavior above is audited worker evidence tied to matching artifacts, not an independent rerun. The source-harness probes explicitly do not establish layout, native focus fallback, touch, zoom or screen-reader behavior.
+3. Manual G01 (real assistive-technology speech/comprehension) remains explicitly open. Cross-engine, live service/protocol interoperability and continuous frame-rate behavior are unestablished. No blanket accessibility certification follows from the automated checks.
+4. Resolve UX-01 and carry the six retained performance flags into the final disposition. A final ergonomic signoff should include the missing captures and native keyboard coverage for the two navigation controls, while respecting the explicitly open G01 scope.

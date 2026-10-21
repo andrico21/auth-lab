@@ -181,7 +181,51 @@ const artwork = {
   `,
 };
 
+artwork.networkSwitch=p=>`
+  <ellipse cx="50" cy="84" rx="39" ry="6" fill="#294b65" opacity=".12"/>
+  <g filter="url(#${p}-shadow)">
+    <rect x="9" y="35" width="82" height="37" rx="8" fill="url(#${p}-primary)"/>
+    <path d="M18 35l9-12h47l9 12" fill="#d9e8f1"/>
+    <rect x="18" y="46" width="11" height="13" rx="2" fill="#243951"/>
+    <rect x="34" y="46" width="11" height="13" rx="2" fill="#243951"/>
+    <rect x="50" y="46" width="11" height="13" rx="2" fill="#243951"/>
+    <rect x="66" y="46" width="11" height="13" rx="2" fill="#243951"/>
+    <path d="M21 49h5m11 0h5m11 0h5m11 0h5" stroke="#a5f4d7" stroke-width="2"/>
+    <circle cx="83" cy="64" r="2" fill="#efffff"/>
+  </g>`;
+artwork.accessPoint=p=>`
+  <ellipse cx="50" cy="85" rx="35" ry="6" fill="#294b65" opacity=".12"/>
+  <path d="M22 25q28-25 56 0M31 34q19-18 38 0M40 43q10-10 20 0" fill="none" stroke="url(#${p}-primary)" stroke-width="5" stroke-linecap="round"/>
+  <g filter="url(#${p}-shadow)">
+    <path d="M24 55h52l11 19q2 5-4 5H17q-6 0-4-5z" fill="url(#${p}-primary)"/>
+    <path d="M24 55h52l-9-8H33z" fill="#d9e8f1"/>
+    <circle cx="50" cy="67" r="3" fill="#efffff"/>
+  </g>`;
+artwork.radiusServer=p=>`
+  <ellipse cx="50" cy="87" rx="31" ry="5" fill="#294b65" opacity=".12"/>
+  <g filter="url(#${p}-shadow)">
+    <rect x="25" y="15" width="50" height="66" rx="8" fill="url(#${p}-primary)"/>
+    <rect x="32" y="24" width="36" height="14" rx="3" fill="#eff5ff"/>
+    <rect x="32" y="44" width="36" height="14" rx="3" fill="#eff5ff"/>
+    <path d="M38 30h15m-15 20h15" stroke="#6479a0" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="61" cy="31" r="2.5" fill="#36a786"/><circle cx="61" cy="51" r="2.5" fill="#36a786"/>
+    <path d="M38 69h24" stroke="#eff5ff" stroke-width="3" stroke-linecap="round"/>
+  </g>`;
+artwork.pakePeer=p=>`
+  <ellipse cx="50" cy="86" rx="35" ry="6" fill="#294b65" opacity=".12"/>
+  <g filter="url(#${p}-shadow)">
+    <rect x="18" y="21" width="64" height="51" rx="8" fill="url(#${p}-primary)"/>
+    <rect x="25" y="28" width="50" height="35" rx="4" fill="#eff5ff"/>
+    <circle cx="42" cy="44" r="8" fill="none" stroke="#6479a0" stroke-width="4"/>
+    <path d="M49 49l14 11m-5-4 4-5" fill="none" stroke="#6479a0" stroke-width="4" stroke-linecap="round"/>
+    <path d="M42 74v7m16-7v7M33 82h34" stroke="#6479a0" stroke-width="4" stroke-linecap="round"/>
+  </g>`;
+
 const palettes = {
+  networkSwitch: ['#eac57b', '#bb9244'],
+  accessPoint: ['#78d4d0', '#338c9d'],
+  radiusServer: ['#7aa8ff', '#4a6ecc'],
+  pakePeer: ['#9b8cf6', '#6483e6'],
   agent: ['#78d4d0', '#338c9d'],
   smartcard: ['#e2c984', '#bd9a50'],
   user: ['#f18aab', '#cf557e'],

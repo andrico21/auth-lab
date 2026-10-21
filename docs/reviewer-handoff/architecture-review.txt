@@ -1,0 +1,89 @@
+Independent architecture/integration review — expansion1
+Reviewed 2026-10-21. Product source was not modified.
+
+Source: /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/source
+Comparison baseline: /workspace/scratch/b1e0b9877d92/implementation-review/held-code3/auth-lab-held-objects
+Plan: /workspace/scratch/b1e0b9877d92/auth-flow-studio-expansion-worker-plan.html
+
+Finding ARCH-01 — P2: Kerberos SPAKE loses all local cryptographic work in attribute replay and misidentifies derived keys as configured context.
+
+Primary location: src/kerberos-spake-lab.js:1765–1768, especially line 1766.
+Consumer establishing the defect: src/attribute-usage.js:661–678, especially line 673.
+Related authoring gap: cache and cleanup events in the SPAKE ledger have empty uses, so those meaningful lifecycle transitions likewise author no attribute operations.
+
+The SPAKE builder labels every local occurrence kind:'inspect'. That kind has a deliberate existing meaning: glossary/context reference, not a lifecycle operation. getAttributeUsage excludes it. Consequently the new module's actual initial-key derivation, shared-key derivation, local reply validation, session-key acquisition and other checks disappear from attribute playback. Full playback and exact held-object history do contain these operations, so the projections contradict one another.
+
+Confirmed using the mounted actual AuthFlowStudio class with the existing DOM harness:
+  app.selectLabScenario('lab-krb-spake-success', {navigate:false});
+  app.selectAttribute('kspInitialKeyKey', false);
+  app.traceQueue.length === 0
+  app.refs.inspector.textContent contains:
+    "No replayable operation for this attribute in the current journey. It appears only as related context here."
+    "This is configured context; it is not transmitted by the simulated exchanges."
+  The same inspector's origin says "spake-client creates key at client-derive".
+  Selecting kspClientSharedK or kspTgtSessionKey likewise produces an empty queue.
+
+Independent held-object comparison for lab-krb-spake-success:initial-key:
+  heldObjectTrace records create/acquire/observe at lab-krb-spake-success-client-derive,
+  then release at lab-krb-spake-success-session.
+  Its field kspInitialKeyKey is a real model.ids entry, so this is not an invalid-selection reproduction.
+
+Impact: the learner cannot replay the local operations that explain what SPAKE does, and the UI falsely calls a freshly derived key configured context. All eight SPAKE presets use this builder; wire-field replays also lose their local checks. The absence is particularly material given the plan's explicit requirement that full, connection, attribute and exact-object views expose the same canonical history.
+
+Requested fix: author explicit per-occurrence create/derive/use/decrypt/verify/store/evict operations, distinguishing newly created material, use of previously provisioned keys, received opaque bytes, decoded local values and cache installation. Include lifecycle operations for cache/cleanup where they genuinely occur. Preserve inspect for actual contextual references. Do not globally make inspect replayable: that would damage the existing deliberate distinction between context and transmission/lifecycle. Keep all rows mapped to the existing canonical source event/cursor.
+
+Focused regression: through the mounted app, select an initial reply key, shared key, client reply key and TGT session key; require the expected derivation/validation/cache/release source IDs and actor-qualified values. A field with only genuine glossary context must still have no lifecycle replay. Compare these rows with the same held-object occurrences before and after the source event, and ensure replay adds no protocol effects of its own.
+
+
+Finding ARCH-02 — P2: Windows Cryptographic detail discards the structured parameter profile and displays [object Object].
+
+Primary location: src/app.js:496.
+Producer: src/windows-auth-lab.js:496 and :520–525.
+
+renderLearningProfile passes profile.cryptoDetail directly to escapeHtml, whose implementation stringifies its argument. Windows profiles supply an object containing mode, fixtures, mechanism and (for CredSSP) directional binding constants, nonce, public-key encoding and fixture identity. String(object) renders the literal [object Object]. The algorithms list is separately formatted correctly, but it does not contain these missing parameters.
+
+Confirmed mounted-app reproduction:
+  app.selectLabScenario('lab-win-credssp-v6-ntlm', {navigate:false});
+  app.querySelector('[data-learning-detail="crypto"]').click();
+  app.querySelector('#learning-profile-crypto').querySelector('p').textContent
+    === '[object Object]'
+
+Impact: the expansion promises exact cryptographic parameters and source boundaries, yet the Windows profile panel hides precisely those authored values. Per-step cryptoDetail strings still render; this is the shared profile renderer, not missing source data or a cryptographic-state failure.
+
+Requested fix: define a consistent cryptoDetail schema and render it intentionally. At minimum preserve the object's shape with formatProtocolValue and an appropriately styled code/pre block; preferably render mechanism explanation plus labeled fixture/binding parameters. Preserve string profiles used by Network/SPAKE/PAKE. Do not flatten objects with String().
+
+Focused regression: mount NTLMv2, Kerberos Negotiate and CredSSP variants, select Cryptographic detail, require meaningful visible text and the authored fixture identity; for CredSSP require the directional binding constants, nonce and subject-public-key encoding. Assert no [object Object]. Check the same profile renderer with a string-valued Network or PAKE profile.
+
+
+Finding ARCH-03 — P3: PAKE cleanup introduces an unregistered attribute action and renders an undefined operation title.
+
+Primary locations: src/pake-lab.js:94 and :121.
+Consumer: src/attribute-trace.js:3 and :24.
+
+PAKE releases are correctly authored as held-object effects, but their attribute operations also use the new kind 'release'. TRACE_ACTION_LABELS has the existing eviction label 'evict' and no 'release'. buildAttributeTrace uses TRACE_ACTION_LABELS[kind] without a fallback. The result is a user-visible undefined label in the real trace queue and rendered step.
+
+Confirmed mounted-app reproduction:
+  app.selectLabScenario('lab-pake-spake2-success', {navigate:false});
+  app.selectAttribute('pake_x', false);
+  app.traceQueue gives:
+    create:  "Create First endpoint private scalar x"
+    release: "undefined First endpoint private scalar x"
+  app.stepHtml(app.traceQueue.at(-1), app.traceQueue.length - 1) contains that same undefined inspector-title.
+
+Impact: secret disposal remains represented in canonical holdings, but the explanatory lifecycle action is broken throughout the standalone PAKE cleanup traces. This is a shared authoring/renderer contract mismatch, not a cryptographic failure.
+
+Requested fix: either emit the existing attribute kind evict while keeping the held effect op:'release', or register release consistently wherever attribute kinds are labeled/validated. A shared accepted-kind contract should reject unknown authoring instead of silently producing undefined labels. Preserve endpoint-local cleanup and exact-object ownership.
+
+Focused regression: select a PAKE scalar and a received share, render every attribute-trace row through stepHtml, and assert meaningful cleanup labels with no undefined titles. Include successful cleanup and a rejected-candidate branch.
+
+
+Other independently checked integration points and limits
+
+* N01 appears fixed in this candidate. The actual mounted BFF web-bff-token-request step is app -> realmA, channel 'backchannel HTTPS'; the rendered badge is "Server exchange · backchannel HTTPS". Its response is also a backchannel. This is a focused independent observation, not an inference from the submitted tests.
+* The explicit build.mjs module list includes all four new scenario modules and all four held-object builders before their registries/consumers. The held modules retain their existing private-IIFE bundling treatment. No product build was run in this read-only review.
+* The route registry has five primary workspaces plus secondary Foundations, family-owned root defaults and family segments. New families are registered, and an unknown explicit workspace throws instead of silently falling back. The new held-object source and builder maps register all four families.
+* The previous held-object engine is effectively preserved; the observed engine change is the equal-start/end cursor return for a zero-width initial-history row. The old explicit owner/read-permission model remains in use. This review did not find a new held-object reader/ownership counterexample beyond the attribute-history mismatch above, and does not certify all scenarios or all HC01–HC09 boundaries.
+* The SPAKE held-object builder's acquire-on-use approach is permissive authoring: a use grants a requested actor/representation holding. Its current intentional receipt/decode events were inspected, but this design should remain protected by independent boundary assertions rather than being treated as proof of a valid causal sequence. No separate confirmed bug is asserted for that helper here.
+* No full unit suite, global sweep, native browser run, accessibility signoff or live protocol interoperability test was run. Existing report/test totals were not treated as evidence of correctness. G01 remains a separate human accessibility/comprehension gate.
+
+Focused probe implementation used installHarness() from tests/dom-harness.mjs, imported AuthFlowStudio afterward, appended/mounted it, selected the scenarios/fields above through actual application handlers, and disposed the app and harness frame/timer queues afterward. Separate pure calls to buildSpakeHeldObjects, compileHeldObjects and heldObjectTrace established the independent exact-object side of ARCH-01.

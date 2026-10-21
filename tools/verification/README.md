@@ -2,6 +2,65 @@
 
 Run these commands from the repository root; `--help` lists each tool's arguments. The default project is the repository containing the scripts, independent of the current working directory. General evidence goes to `docs/verification` or `AUTH_LAB_QA_EVIDENCE_DIR`; held-object evidence uses `docs/verification/held-objects` or `AUTH_LAB_HELD_EVIDENCE_DIR`. The scripts do not change application source or contact identity providers.
 
+## SMB correction recheck
+
+The current candidate addresses NET-05, WIN-09, WIN-10 and SMB-R01 from the independent review that closes the original nineteen findings. Its separate evidence is under `docs/verification/review-corrections-recheck/`. Earlier correction/expansion/native/performance reports remain tied to their recorded predecessor hashes. This flow preserves all twelve SMB scenarios without repeating full catalog, zoom, touch or performance matrices.
+
+Use an existing matching Playwright Core/Chromium installation. The application still needs no dependency installation. Numeric QA has its own exact-pinned package; install it only if it is not already provisioned. Provision the two exact Bun executables separately:
+
+```sh
+bun --cwd tools/verification/expansion-crypto install --frozen-lockfile --ignore-scripts
+# Run focused source/mounted assertions before rebuilding:
+bun test --isolate --timeout=900000 \
+  tests/windows-auth-lab.test.mjs tests/held-object-windows.test.mjs \
+  tests/network-access-lab.test.mjs tests/held-object-network.test.mjs \
+  tests/review-network-replay-ui.test.mjs \
+  tests/smb-access-lab.test.mjs tests/smb-multichannel-lab.test.mjs tests/smb-ui.test.mjs
+bun run build
+bun tools/verification/run-review-corrections-crypto.mjs \
+  --bun142=/absolute/path/to/bun-1.4.2 \
+  --bun143=/absolute/path/to/bun-1.4.3 \
+  --out=docs/verification/review-corrections-recheck/crypto
+AUTH_LAB_QA_EVIDENCE_DIR=docs/verification/review-corrections-recheck/compiled \
+  bun tools/verification/compiled-bundle-smoke.mjs
+PLAYWRIGHT_MODULE=/absolute/path/to/playwright-core/index.mjs \
+CHROMIUM_EXECUTABLE=/absolute/path/to/chrome \
+  bun tools/verification/run-review-corrections-native.mjs
+# Finish all browser work before the bounded full suite:
+AUTH_LAB_HELD_EVIDENCE_DIR=docs/verification/review-corrections-recheck/regressions \
+  bun tools/verification/run-regressions.mjs
+bun tools/verification/package-review-corrections.mjs \
+  --incoming=/absolute/path/to/auth-flow-studio-smb311-corrections-source.zip \
+  --review=/absolute/path/to/auth-flow-studio-smb311-corrections-review.html \
+  --out=/absolute/path/to/new-external-recheck-review-directory
+```
+
+Use Bun 1.4.2 for the build/native/regression/package commands to reproduce the observed CI-pinned run. `LD_LIBRARY_PATH` may be supplied when the provisioned Chromium needs external runtime libraries. `AUTH_LAB_REVIEW_EVIDENCE_DIR` overrides the targeted native directory; the package tool's `--evidence-root` selects a complete alternative evidence tree.
+
+`run-review-corrections-crypto.mjs` executes the permanent independent vector verifier with each supplied Bun binary. It retains raw JSON, actual argv/exit/runtime, output hashes, its own hash and the regeneration command; it does not manufacture expected bytes. Negative transcript fixtures are derived by the separately documented Python generator in `expansion-crypto/`.
+
+The native tool uses actual source HTTP, built HTTP and built `file:` surfaces with CSP enabled. It preserves the previous targeted SMB/navigation/profile/SPAKE/PAKE/icon coverage and adds all 53 receiver-local decoded RadSec occurrences, three actual field replay paths with exact full-prefix equality, six H-side resource receipt/acceptance paths, eleven Windows AES early/completed key contexts and five actual SMB ticket-key explanations. The three WinRM captures are accurately named `*-winrm-protected-command-result.png`. The tool has no request interception, avoiding Playwright's implicit ICO interception behavior.
+
+The package gate requires exact source/runner/artifact hashes, all current test files passing, all twelve SMB IDs and the four findings' native coverage in all three modes, numeric inputs/primary sources, the reviewed predecessor source ZIP and the immutable independent review. It writes a four-finding disposition pending independent recheck, while retaining the review's nineteen closures. It extracts the source ZIP, byte-compares every file and runs a real offline Bun rebuild that must match the standalone. The verification ZIP preserves both inputs and current failed attempts; historical captures stay in their earlier packages. No publication is performed or authorized.
+
+
+## Windows, Network and PAKE expansion
+
+The expansion retains the complete baseline gates below and adds independently authored per-preset contracts, numerical cryptographic QA and native acceptance for all 61 new IDs. See [the expansion verification contract](../../docs/expansion/native-verification.md) for exact scope, isolated dependency pins, baseline performance setup and honest manual/interoperability limits.
+
+```sh
+bun --cwd tools/verification/expansion-crypto install --frozen-lockfile --ignore-scripts
+bun run verify:crypto
+bun run build
+bun run verify:expansion
+```
+
+Native verification uses the separately pinned `tools/verification/native-qa` package or the already provisioned matching QA environment. Neither optional QA package is imported into the application or required for its offline build. The native runner creates unique result directories, records source/worksheet/manifest/standalone and runner identities, and never downloads dependencies or a browser. Run the bounded full regression generator only after CPU-heavy browser gates finish.
+
+`profile-expansion-replay.mjs` is the permanent cost-attribution diagnostic for material idle-search, replay-start or in-play search flags. It retains CPU profiles and marker-bounded Chrome traces for the same baseline/expanded app paths with the field index open and closed through its actual control. Instrumented results do not replace the uninstrumented acceptance medians or clear their flags.
+
+After all real gates pass, `expansion-disposition.mjs` produces the scenario-by-scenario review manifest. `package-expansion-review.mjs` builds the local reviewer archives and proves a fresh extracted-source Bun rebuild is byte-identical to the standalone. Both reject missing or stale evidence; see the linked contract for their invocation and archive overlay layout. Neither authorizes publication before Astra review.
+
 ## Native browser
 
 ```sh
@@ -15,13 +74,16 @@ The script serves the modular source and the compiled HTML on an ephemeral loopb
 | Check | Coverage in each of the three loading modes |
 | --- | --- |
 | Catalog/layout | Every registered scenario, collapsed and expanded internals, actual browser card rectangles and SVG path coordinates; overlaps, page overflow and unintended text clipping. Intentional CSS ellipsis/clamping is reported separately. |
+| Favicon/touch icons | The supplied SVG, ICO and Apple touch icon decode under enforced CSP. Standalone icon bytes match the supplied files and rendered 32-pixel PNGs match source HTTP. |
 | Participant help | Basic control plus SSH certificate, Device, SSSD and GSS; AD DS, Keycloak bridges with TOTP/WebAuthn, PKINIT, FAST AS/TGS, dense child-domain forest and third-forest comparison. Every visible new actor and expanded AS/TGS receives hover/focus/F2/Tab/nested field help/Escape checks, from an empty popup and after legacy help. |
 | Protocol/state | Forest search, collapse while a child is focused, field replay, complete source-prefix comparison, timeline seek, keyboard movement; SSH zero-speed pause. UI changes must retain the correct protocol state. |
 | Responsive study | Each representative new family at 1600×1050 and 390×844; additionally 800×525 and 400×263 CSS viewports to exercise the desktop reflow space equivalent to 200%/400% zoom. Reduced motion, expanded internals, viewport-contained help and reachable sticky Play controls. |
 | Runtime context | Long SSH issuer/CA/host and Kerberos realm/SPN values at narrow width. Full context remains available below the graph, no page/history storage, reset on reload. |
-| CSP/network | No application violations or external requests before deliberate probes. Eval, unapproved inline script and forbidden fetch must trigger enforcing `securitypolicyviolation` records attributed to `script-src`/`connect-src`; fetch must not reach request interception. A failed `file://` fetch alone does not pass. |
+| CSP/network | No application violations or external requests before deliberate probes. Eval, unapproved inline script, forbidden fetch and off-site images must trigger enforcing `securitypolicyviolation` records attributed to `script-src`/`connect-src`/`img-src`; neither forbidden fetch nor image may reach request interception. A failed `file://` fetch alone does not pass. |
 
-The enforcing probe uses CDP `Runtime.evaluate` with `allowUnsafeEvalBlockedByCSP: false`. Ordinary debugger evaluation permits unsafe eval by default, even when the page policy forbids it. The gate still requires all three attributable enforcing violations and proves the forbidden fetch never reaches interception/network.
+The enforcing probe uses CDP `Runtime.evaluate` with `allowUnsafeEvalBlockedByCSP: false`. Ordinary debugger evaluation permits unsafe eval by default, even when the page policy forbids it. The gate requires all four attributable enforcing violations and proves forbidden fetch/image requests never reach interception/network.
+
+Playwright automatically aborts `/favicon.ico` requests whenever interception is enabled, even if its URL does not match a route handler, and suppresses their request events. The native runner temporarily removes interception only during the three ordinary icon decodes, then restores it in `finally` before catalog acceptance and deliberate CSP probes. CSP and passive request/error observers remain active throughout; all recorded requests must still satisfy the origin/file boundary. No icon URL or application policy is changed to evade this framework behavior.
 
 Reduced CSS viewports exercise desktop zoom-equivalent reflow but **are not browser UI zoom**. The report explicitly records `zoomIsBrowserUiZoom: false`; no CSS `zoom` is applied because it would preserve a different `innerWidth` and create misleading overlay failures. Also test browser-menu 200%/400% zoom manually, including OS scale/device pixel ratio and assistive technology. Screenshots and the automated checks do not replace a visual review of typography, clipping and legibility.
 
@@ -124,7 +186,7 @@ bun tools/verification/review-file-smoke.mjs /absolute/path/to/auth-lab-held-obj
 
 The focused runner owns an ephemeral loopback server and checks source HTTP, standalone HTTP and standalone file: exact holding focus/state across full/compact/external changes, collapse recovery, viewport-contained nested F2 help and one receipt announcement across multiple animation frames. It also scrolls top-row participant/inventory targets beneath the sticky controls at 1920/1480/1050/390 pixels and requires focus recovery to clear the measured toolbar, preserve canonical state and return the target from center hit-testing. Participant help is dismissed with a real Escape before hit-testing its anchor. Its report is `held-objects-focused-native-status.json`.
 
-The file runner defaults to the checkout's `dist/auth-flow-studio.html` if no HTML argument is supplied. A delivered-file argument must match that build's SHA-256. It opens the actual file, checks exact R1 replay/full-state equality, measured compact controls and visible step names, and rejects unexpected runtime/CSP errors or external application requests. Its report is `review-file-smoke-status.json`; it does not replace the broader enforcing-CSP probes.
+The file runner defaults to the checkout's `dist/auth-flow-studio.html` if no HTML argument is supplied. A delivered-file argument must match that build's SHA-256. It opens the actual file, checks exact R1 replay/full-state equality, measured compact controls and visible step names, and rejects unexpected runtime/CSP errors or external application requests. It then removes the actual custom element and requires its WeakRef to clear after separate browser tasks and Chrome full heap collections, catching retained global listener roots. Its report is `review-file-smoke-status.json`; it does not replace the broader enforcing-CSP probes or certify all memory behavior.
 
 The regression and focused runners accept `[project-directory]`; the file runner accepts `[standalone.html] [project-directory]`. All three record their shipped runner SHA-256 and actual regeneration command. No temporary script, hardcoded checkout path or fixed preview port is required.
 
@@ -132,7 +194,7 @@ Run the full regression generator after browser acceptance jobs finish, not alon
 
 New reports/screenshots default to `docs/verification/held-objects/`; set `AUTH_LAB_HELD_EVIDENCE_DIR` to redirect them. The preserved broader runner uses `AUTH_LAB_QA_EVIDENCE_DIR`. Its accepted long-realm fixture is 244 characters; the separate 364-character rejection/recovery case retains G01-A's same-task atomicity probe. Hover fixtures leave the previous actor, reveal an unobstructed point below sticky controls, verify it with `elementFromPoint`, then send a genuine pointer move. This avoids the SDK retrying after an interactive help panel legitimately covers its trigger. No forced hover or synthetic mouse event substitutes for the user gesture.
 
-Source control retains twenty-seven representative native captures in the source ZIP: basic web/native, Kerberos folded/expanded AD and forest logical owners, SSH enrollment/agent/remote Device/GSS, active PKCE/AD/SSH local operations and folded agent IPC, SPA/BFF token-endpoint verifier replay, encrypted and decoded exact-history values, list-origin exact focus, and unobscured sticky-toolbar focus. `.gitignore` excludes other held-object PNG captures and the four named superseded reports; they remain on disk and in the separate full verification archive. Current status reports, manifests and regression logs remain in the source package.
+The accepted Held Objects submission retained twenty-seven representative native captures. The expansion additionally whitelists eight desktop/compact/mobile captures; `.gitignore` excludes other bulk PNGs and superseded attempts from future source control. The expansion source ZIP deliberately omits all verification PNGs, including representatives; its verification ZIP overlays every omitted capture at the original repository-relative path. Current status reports, manifests, raw profiling data and regression logs remain in the source package.
 
 The help panels are non-modal: Tab can leave a panel whose only control is Close. After verifying that exit, the runner focuses the actor and presses F2 again before testing Escape. It never tries to focus a now-hidden Close control or depends on completing the sequence before the blur timeout.
 

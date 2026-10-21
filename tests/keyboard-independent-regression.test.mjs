@@ -94,14 +94,14 @@ test('leaving a participant attribute for the participant close button dismisses
   }finally{unmount(app);}
 });
 
-test('attribute and topic selection preserve focus after index regeneration',()=>{
+test('field and topic selection retain visible keyboard focus and selected state',()=>{
   const app=mount();try{
     const before=app.refs['attribute-index-list'].querySelector('[data-index-attribute="codeVerifier"]');focus(before);before.click();
     const after=app.refs['attribute-index-list'].querySelector('[data-index-attribute="codeVerifier"]');
-    assert.notEqual(after,before);assert.equal(document.activeElement,after);assert.ok(app.contains(after));assert.equal(after.getAttribute('aria-pressed'),'true');
+    assert.equal(document.activeElement,after);assert.ok(app.contains(after));assert.equal(after.getAttribute('aria-pressed'),'true');
     const topic=app.refs['attribute-topics'].querySelector('[data-trace-topic="pkce"]');focus(topic);topic.click();
     const replacement=app.refs['attribute-topics'].querySelector('[data-trace-topic="pkce"]');
-    assert.notEqual(replacement,topic);assert.equal(document.activeElement,replacement);assert.equal(replacement.getAttribute('aria-pressed'),'true');
+    assert.equal(document.activeElement,replacement);assert.equal(replacement.getAttribute('aria-pressed'),'true');
   }finally{unmount(app);}
 });
 

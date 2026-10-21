@@ -1,0 +1,69 @@
+{
+  "scope": "Additive SMB follow-up; separate from original 61-scenario expansion contract",
+  "version": "1.2.1-smb.1",
+  "dialect": "0x0311",
+  "specification": "MS-SMB2 88.0 / 2026-09-28",
+  "default": "lab-smb-nonjoined-kerberos",
+  "scenarios": [
+    {
+      "code": "SMB01",
+      "id": "lab-smb-nonjoined-ntlm",
+      "boundary": "NTLMv2 compatibility; DC validation, signed session/share setup, encrypted file read"
+    },
+    {
+      "code": "SMB02",
+      "id": "lab-smb-nonjoined-kerberos",
+      "boundary": "Configured Kerberos primary; explicit credentials, KILE acceptor subkey, encrypted file read"
+    },
+    {
+      "code": "SMB03",
+      "id": "lab-smb-nonjoined-ntlm-blocked",
+      "boundary": "Server incoming NTLM policy rejects before challenge/DC validation"
+    },
+    {
+      "code": "SMB04",
+      "id": "lab-smb-nonjoined-bad-credential",
+      "boundary": "DC response rejection propagates through SMB; no accepted session"
+    },
+    {
+      "code": "SMB05",
+      "id": "lab-smb-nonjoined-dc-unavailable",
+      "boundary": "Server cannot perform DC validation; no invented DC result"
+    },
+    {
+      "code": "SMB06",
+      "id": "lab-smb-nonjoined-share-denied",
+      "boundary": "Authentication accepted; signed TREE_CONNECT denied; no tree"
+    },
+    {
+      "code": "SMB07",
+      "id": "lab-smb-nonjoined-file-denied",
+      "boundary": "Session/share accepted; encrypted CREATE denied by file ACL; no file handle"
+    },
+    {
+      "code": "SMB08",
+      "id": "lab-smb-nonjoined-signature-rejected",
+      "boundary": "Invalid final wire signature rejected; response discarded; profile elects disconnect"
+    },
+    {
+      "code": "SMB09",
+      "id": "lab-smb-nonjoined-encryption-rejected",
+      "boundary": "Invalid GCM wire tag rejected; no plaintext; required disconnect frees client handles"
+    },
+    {
+      "code": "SMB10",
+      "id": "lab-smb-nonjoined-encryption-unavailable",
+      "boundary": "No common cipher selected; explicit client required-encryption policy stops locally"
+    },
+    {
+      "code": "SMB11",
+      "id": "lab-smb-multichannel-binding-success",
+      "boundary": "Second-channel binding to existing authenticated session; separate channel transcript/signing"
+    },
+    {
+      "code": "SMB12",
+      "id": "lab-smb-multichannel-binding-rejected",
+      "boundary": "Early binding precondition rejection; established original channel/session preserved"
+    }
+  ]
+}

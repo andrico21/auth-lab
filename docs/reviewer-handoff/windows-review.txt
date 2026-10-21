@@ -1,0 +1,95 @@
+Windows review — independent source/specification audit
+Reviewed: 2026-10-21
+Source root: /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/source
+Scope: W01–W23 against auth-flow-studio-expansion-worker-plan.html. Read-only product review, source inspection and small Node import/state/held-object projections. No full regression or native/browser jobs run. Findings below concern the authored teaching model, not live Windows interoperability.
+
+Verdict: changes required before calling this Windows delivery fully conformant. The central CredSSP/RCG distinctions are substantially correct; remaining carrier and object-state errors are reproducible.
+
+F1 — P1 — A failed raw CredSSP NTLM exchange returns an HTTP response.
+File: src/windows-auth-lab.js:209–211, 323, 556.
+Scenario: W10 lab-win-credssp-v6-ntlm, named negative bad-response.
+Observed: buildWindowsNegativeFixture('lab-win-credssp-v6-ntlm','bad-response') declares profile.outerTransport='CredSSP over TCP'. After DC verification failure and Netlogon result delivery, stage failure emits 'HTTP/1.1 401 Unauthorized; WWW-Authenticate: Negotiate'. There is no HTTP carrier in this scenario. The common carrierFailure helper is unconditional.
+Expected: preserve failure at D then H, and use the selected CredSSP v6 failure contract. MS-CSSP 3.1.5 recommends a TSRequest.errorCode with unsuccessful NTSTATUS after server-side mechanism failure for client version >=3; a received error makes C stop. If choosing termination instead, describe that explicitly. Do not invent HTTP on the raw CredSSP channel.
+Fix/test: dispatch failure by actual application carrier; assert W10 bad-response has no HTTP/Negotiate response, no authInfo or accepted mechanism, and client knowledge changes only on the authored CredSSP error/termination boundary.
+Primary: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cssp/385a7489-d46b-464c-b224-f7340e308a5c
+
+F2 — P2 — HTTP authentication messages lack a valid response grouping/continuation boundary.
+File: src/windows-auth-lab.js:192, 196–198, 347–354, 369, 387–389.
+Scenarios: W06; also W20/W22/W23 HTTP-CredSSP profiles. W19 shares the non-CredSSP AP-REP branch.
+Observed: W06 wire order is C→S ap-request, S→C ap-reply, S→C result. The AP-REP is a standalone HTTP WWW-Authenticate message; final HTTP 200 is another canonical wire message, with no intervening request or shared response identity. In WinRM CredSSP, ap-reply and server-binding are independently HTTP-framed H→C messages without an intervening C request. No declared macro says these are inner records within one HTTP response.
+Expected: associate final Kerberos token and application response with the correct HTTP response, and distinguish receipt from client mutual-proof acceptance/use. RFC4559 §5 puts final server authentication data in WWW-Authenticate on the final response containing the body. Multiple inner CredSSP TLS/TSRequest messages can share one carrier response, but must be explicitly grouped or have a sourced continuation exchange; they are not independent unsolicited HTTP responses.
+Fix/test: author carrier request/response identifiers or explicit compound carrier events. Retain inner protocol/object projections without duplicating HTTP response events. Assert every noninformational HTTP response belongs to an outstanding request and that final data is unusable until mutual verification.
+Primary: https://www.rfc-editor.org/rfc/rfc4559.html#section-5
+Primary: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-wsmv/b37174e4-00cb-4830-930f-97809d3302da
+
+F3 — P2 — Cross-domain NTLM challenge identifies the account domain as the server's domain.
+File: src/windows-auth-lab.js:140–143, 275–276, 283, 549–550.
+Scenarios: W03 and W04, including their derived negative fixtures.
+Observed: topology says S is a RESOURCE member, with S→RESOURCE DC machine channel and RESOURCE→CORP trusted-domain channel. The server challenge nevertheless contains MsvAvNbDomainName=CORP because only spec.local changes the hardcoded value.
+Expected: server TargetInfo must identify RESOURCE; AUTHENTICATE DomainName and response-key account authority remain CORP. These fields identify different things. MS-NLMP 2.2.2.1 defines MsvAvNbDomainName as the server's NetBIOS domain; 3.2.5.1.1 constructs it from server NbDomainName. This matters especially when teaching modern pass-through name validation.
+Fix/test: explicit serverDomain/accountDomain configuration; assert RESOURCE challenge AV pairs and CORP user identity coexist in W03. Keep the two secure-channel identities separate, as they already are.
+Primary: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/83f5e789-660d-4781-8491-5f8c6641f75e
+Primary: https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/81d15e3e-3ac3-41f0-920d-846149f3a814
+
+F4 — P2 — The asserted peer NTLM-only offer is not present in the selected HTTP exchange.
+File: src/windows-auth-lab.js:265–266, 277–278, 553–554; docs/expansion/windows-protocol.md:13.
+Scenarios: W07/W08.
+Observed: C receives only a bare 'WWW-Authenticate: Negotiate'. It then records selectionReason='explicit-NTLM-only-offer' and claims the peer offer contains NTLM only. No server SPNEGO mechanism-list token or other authored prior configuration establishes that knowledge; the policy payload also does not state an NTLM-only list.
+Expected: bare HTTP Negotiate advertises the HTTP authentication scheme, not an NTLM-only SPNEGO mechanism list. RFC4559 explicitly says the initial challenge contains no gssapi-data. A valid fixed NTLM-only client configuration is possible, but must be described as that configuration; otherwise author the actual supported negotiation exchange that produces this selection.
+Fix/test: simplest bounded correction is an explicit client/peer configured NTLM-only profile with a local configuration artifact and accurate wording; keep the no-arbitrary-Kerberos-fallback rule. Do not teach that the bare HTTP challenge reveals the inner offered mechanisms.
+Primary: https://www.rfc-editor.org/rfc/rfc4559.html#section-4.1
+Primary: https://www.rfc-editor.org/rfc/rfc4178.html#section-3.2
+
+F5 — P2 — W19 creates a shell without its operation request and never returns the second-hop failure to C.
+File: src/windows-auth-lab.js:397–402, 403–414, 417–419.
+Scenario: W19 lab-win-winrm-second-hop-denied.
+Observed: winrm-shell-request is authored only under spec.winrm && spec.credssp. W19 uses nondelegating Kerberos, yet immediately authorizes/creates the shell and sends a shell result. It subsequently detects the missing user second-hop credential locally at H and returns from the builder. Final state has sessionEstablished=true, serverKnowsFailure=true, clientKnowsFailure=false; there is no winrm-command-result.
+Expected: complete first-hop authentication, receive the actual protected Create-shell request, authorize/create/return the shell, and return the downstream operation failure through that retained first hop. The initial authentication POST is not an authored Create-shell operation. Keep ordinary authentication, operation execution and failure delivery distinct.
+Fix/test: generalize the WSMan operation-request path to both CredSSP and nondelegating Kerberos, using each security context correctly; include the command/request or clearly declared grouped operation and protected error return. Assert C learns failure only upon that return and the shell remains usable.
+Primary: https://learn.microsoft.com/en-us/windows/win32/winrm/proxy-servers-and-winrm
+Primary: https://learn.microsoft.com/en-us/powershell/scripting/security/remoting/ps-remoting-second-hop
+
+F6 — P2 — Kerberos account-key custody is incomplete despite complete inventory coverage.
+File: src/windows-auth-lab.js:38, 188, 214, 327–335, 444–445; src/held-object-windows.js:20–25.
+Scenarios: Kerberos-based Windows presets, visible in W06/W09; analogous second-hop account keys in ordinary/Restricted Admin paths.
+Observed: AS-REP's layer keyRef is client-account-key, but that artifact has only C as reader/holder. At the completed AS-REP boundary D holds account-record, service-key, krbtgt-key, tgt, as-reply and tgt-key, with no Kerberos user account-key holding/use. The generic account-record is specifically documented as the MS-NLMP verifier for recomputing NTLMv2. The second-hop account-key artifact is similarly H-only. Inventory still reports complete.
+Expected: the selected password/AES Kerberos KDC has its own authoritative principal key for preauthentication verification and AS-REP encryption, distinct custody from the client-derived handle. Reusing a generic NTLM verifier glossary does not explain AES key availability. Represent the provisioned KDC key and correlate the corresponding key material without claiming the client transmitted it.
+Fix/test: mechanism-specific account records/keys; source each cryptographic operation from a legitimate held key at the actor performing it. This need not expose raw secrets. Assert D has the selected principal's usable key before AS response generation and H/C do not acquire the KDC database copy.
+Primary: https://www.rfc-editor.org/rfc/rfc4120.html#section-3.1.3
+
+Secondary correctness/ergonomics items
+
+S1 — P2 object-state consistency: src/windows-auth-lab.js:405, 414, 476–477. WinRM shell and command results create only C's opaque wire inbox holdings, but immediately set clientKnowsSession/clientResult knowledge; there is no decoded usable shell-handle/result acquisition or verification. Add explicit client recovery/acceptance (or declared receive+unwrap milestone) and assert the decoded shell handle exists only after that boundary. This follows the plan's explicit receipt/readability contract, not a claim that encrypted transport prevents client reading.
+
+S2 — P3 metadata: src/windows-auth-lab.js:496, 513. W06 retains profile.transports=['HTTP/1.1 Negotiate over TLS1.2','Separate Netlogon RPC secure channel'] although it uses KDC AS/TGS exchanges and has no Netlogon channel. W02 lists 'Synthetic explicit CORP credentials' while its lesson requires SERVER-local credentials. Derive prerequisites/transports from mechanism and authority; include small metadata assertions. These are visible contradictions in beginner guidance.
+
+Checked boundaries that are correct in the reviewed implementation
+
+- W09/W10 combine the last client mechanism token and pubKeyAuth in one canonical TSRequest; named structural negatives stop before accepted context/credential export.
+- CredSSP v6 binding distinguishes NUL-terminated direction strings, nonce32 and encoded SubjectPublicKey; it does not substitute SPKI/full certificate. authInfo wire receipt precedes credential recovery and separate consumer logon.
+- NTLM response/hash/exported key/validator SessionBaseKey are separate; MIC/wrapped exported key stay out of Netlogon validation. Direct trust uses two separately keyed channels and the correct reverse result route. W04 does not contact an unavailable account authority.
+- RDP required/support bits, Restricted Admin empty TSPasswordCreds, RCG credType=6 opaque package credentials, initial Kerberos-only/no downgrade, HYBRID_EX early authorization and later grouped desktop completion are represented appropriately.
+- Restricted Admin downstream HOST$ is distinct from the interactive user. RCG legitimately retains scoped service tickets at H while redirecting private operations; disconnect does not instantly revoke unrelated issued tickets/sessions. RDPEAR service-ticket calls and UnpackKdcReplyBody(Pdu=0, KeyUsage=8) match the primary example.
+- W22 has HTTP without outer HTTPS and still has independent inner CredSSP TLS. WinRM encrypted body protection uses the established inner TLS context, not the SPNEGO key.
+- LM/NTLMv1 working happy paths were not introduced.
+
+Primary RDP/WinRM references checked by delegated reviewer:
+https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-rdpear/47307202-a970-433a-b3f2-45e159ab8318
+https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-rdpear/c1801cd8-4947-4cf8-b50b-1d31b54d23d3
+https://learn.microsoft.com/en-us/windows/security/identity-protection/remote-credential-guard
+https://learn.microsoft.com/en-us/windows/win32/winrm/multi-hop-support
+
+Pending SMB scope (not a defect against W01–W23)
+
+W01/W07 use HTTP GET /reference over HTTPS, confirmed by stage http-initial-request and profile.outerTransport. The downstream RDP/WinRM file-service examples remain generic file-service/Kerberos connections, not the named non-domain-joined workstation→domain-member SMB-share journey. The next-plan backlog at full plan line392 therefore remains unimplemented. Do not describe it as already covered merely because the underlying NTLM validation primitive exists.
+
+Minimal implementation direction for the separately authorized queued SMB addition: extract a carrier adapter from winAuthor, preserving NTLM/Kerberos mechanism ledgers and Netlogon validation. Add explicit client join state/local desktop identity/entered domain identity/server membership. Author real SMB NEGOTIATE and SESSION_SETUP security buffers and continuation statuses, session-key/signing setup for one pinned SMB dialect/profile, then TREE_CONNECT share authorization and CREATE/open filesystem authorization. Keep the two authorization decisions separate. Use a configured Kerberos-capable nonjoined profile with a valid ticket acquisition/discovery prerequisite; do not infer NTLM from join state. Required outcomes are success, bad credential, blocked NTLM, unavailable DC validation and authenticated-but-denied share/file access. Before coding, select/document the SMB dialect, session-signing/encryption/preauthentication assumptions, client behavior and exact status mapping against MS-SMB2; do not route SMB failures through HTTP helpers or claim an unverified automatic Windows credential-selection behavior.
+
+Reproduction pattern used (run from source root; imports only):
+node --input-type=module
+  import {WINDOWSLAB_SCENARIOS,buildWindowsNegativeFixture} from './src/windows-auth-lab.js';
+  const m=WINDOWSLAB_SCENARIOS.find(x=>x.id==='lab-win-negotiate-kerberos');
+  console.log(m.profile.transports,m.steps().filter(x=>x.eventType==='message').map(x=>[x.winStage,x.from,x.to,x.protocolLabel]));
+  const b=buildWindowsNegativeFixture('lab-win-credssp-v6-ntlm','bad-response');
+  console.log(b.profile.outerTransport,b.steps().at(-1).payload);
+Held projections used buildWindowsHeldObjects→compileHeldObjects→projectHeldObjects at AS-REP, WinRM result and terminal W19 boundaries, with no product mutation.

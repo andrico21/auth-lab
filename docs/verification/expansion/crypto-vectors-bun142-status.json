@@ -1,0 +1,584 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Fixed official-vector and synthetic-negative offline QA, not production authentication, a password checker or live interoperability evidence",
+  "regenerationCommand": "bun tools/verification/expansion-crypto/check-vectors.mjs",
+  "frozenSetupCommand": "bun --cwd tools/verification/expansion-crypto install --frozen-lockfile --ignore-scripts",
+  "runtime": {
+    "bun": "1.4.2",
+    "platform": "linux",
+    "arch": "x64",
+    "openssl": "1.1.0"
+  },
+  "runnerSha256": "584d2394c56aace6f7895dc9bc76c69d56a9f27c65aa5ec72618f5fa092c6ff5",
+  "files": [
+    {
+      "path": "check-vectors.mjs",
+      "sha256": "584d2394c56aace6f7895dc9bc76c69d56a9f27c65aa5ec72618f5fa092c6ff5"
+    },
+    {
+      "path": "primitives.mjs",
+      "sha256": "bc829ca03f5736654c94c9e429b7392f13eee7dcd16e114769da25248feb0269"
+    },
+    {
+      "path": "pake-vectors.mjs",
+      "sha256": "91cdaebbcfcf2807f156dcd412389296c05fe93829fbcdc1c110cc0303d76717"
+    },
+    {
+      "path": "kerberos-vectors.mjs",
+      "sha256": "89b31dbdc24f2d56440c9f925896b2dd9d825f1817e60b5cee6f0164a2b8f4fc"
+    },
+    {
+      "path": "windows-vectors.mjs",
+      "sha256": "bbc1f28f7f702f80ea9baa468089c33740a85563f3242294d5c78cfeb02d9ab9"
+    },
+    {
+      "path": "derive-synthetic.py",
+      "sha256": "f1ba12b80892ed83469054875a82d58208d5c42880d6760fb8ef8727aa557223"
+    },
+    {
+      "path": "package.json",
+      "sha256": "caea1769f26aef60fd30ba7ac53a19a72b5caab0b5250a35ad97823b06b062fc"
+    },
+    {
+      "path": "bun.lock",
+      "sha256": "254991becc2b224f1acd22ee16b540e6902eda68458d2de4b662d2c7c4a5e4ea"
+    },
+    {
+      "path": "sources.json",
+      "sha256": "8b82d42a12d0d773835214d736982034bab9efa0dd0690868350cd913306e304"
+    },
+    {
+      "path": "fixtures/credssp-public-input.json",
+      "sha256": "0d85c408962be9b95a806adfafb257218f5eb41c5ce88a0eeadbe20c6c2964e9"
+    },
+    {
+      "path": "fixtures/ntlmv2.json",
+      "sha256": "aa23f9faa3cd8e996102624a68f79ee7bbc09cc00ec52818d6630d15822db3fe"
+    },
+    {
+      "path": "fixtures/rfc9382.json",
+      "sha256": "96d4d09308ee0d15e0b1992cf697c8193df2ba79046712bb67b433408f3fdbd2"
+    },
+    {
+      "path": "fixtures/rfc9383.json",
+      "sha256": "43132db8b3185f0d02e5c0b0f8c051518e894cee897c808f17aaa670be1fd177"
+    },
+    {
+      "path": "fixtures/rfc9588.json",
+      "sha256": "cadee826f8387bbe3d31776d7f70bcec78eb59d14be3b1fb7ca2524d6325b1d2"
+    },
+    {
+      "path": "fixtures/synthetic.json",
+      "sha256": "6c0460f2e87f2182ecfbedd65df8561d27f87e9871bb822e14012217d97496ec"
+    }
+  ],
+  "sources": [
+    {
+      "id": "rfc9382",
+      "url": "https://www.rfc-editor.org/rfc/rfc9382.txt",
+      "section": "sections 3.2-4,6 and Appendix B first vector",
+      "revision": "2023-09",
+      "retrieved": "2026-10-21",
+      "errata": "No matching errata found at https://www.rfc-editor.org/errata/rfc9382 on 2026-10-21",
+      "snapshot": "sources/rfc9382-selected.txt",
+      "sha256": "bdd7b1635b66a1aa82c776b7adf70dc99f72abf4078b6065f90d0a54a7653cc2",
+      "actualSha256": "bdd7b1635b66a1aa82c776b7adf70dc99f72abf4078b6065f90d0a54a7653cc2"
+    },
+    {
+      "id": "rfc9383",
+      "url": "https://www.rfc-editor.org/rfc/rfc9383.txt",
+      "section": "sections 3.2-4 and Appendix C first vector",
+      "revision": "2023-09",
+      "retrieved": "2026-10-21",
+      "errata": "No matching errata found at https://www.rfc-editor.org/errata/rfc9383 on 2026-10-21",
+      "snapshot": "sources/rfc9383-selected.txt",
+      "sha256": "1c0d12f6a887d27b7228508150454b252e1ab656173148d23dd296bb878fb5e8",
+      "actualSha256": "1c0d12f6a887d27b7228508150454b252e1ab656173148d23dd296bb878fb5e8"
+    },
+    {
+      "id": "rfc9588",
+      "url": "https://www.rfc-editor.org/rfc/rfc9588.txt",
+      "section": "sections 4-7,12.2.2.1 and Appendix C aes128-cts-hmac-sha1-96 edwards25519",
+      "revision": "2024-08",
+      "retrieved": "2026-10-21",
+      "errata": "No matching errata found at https://www.rfc-editor.org/errata/rfc9588 on 2026-10-21",
+      "snapshot": "sources/rfc9588-selected.txt",
+      "sha256": "bd0923333414366d449fd617385d8262b29b6a3cb1071a4d3dae4751d3ffd9e5",
+      "actualSha256": "bd0923333414366d449fd617385d8262b29b6a3cb1071a4d3dae4751d3ffd9e5"
+    },
+    {
+      "id": "ms-nlmp",
+      "url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/125f7a94-933e-4023-a146-a449e49bf774",
+      "section": "3.3.2, 4.2.1,4.2.2.1.2,4.2.4.1-4.2.4.2",
+      "revision": "37.0 (2026-03-30); encrypted-session-key example page last changed 2024-04-23",
+      "retrieved": "2026-10-21",
+      "errata": "Microsoft published numeric example and current processing algorithm; no local corrections",
+      "snapshot": "sources/ms-nlmp-selected.txt",
+      "sha256": "f467ab3f2fe12b5b25db689401dc6db857802854573f3bca1eb713ffeacefdb3",
+      "actualSha256": "f467ab3f2fe12b5b25db689401dc6db857802854573f3bca1eb713ffeacefdb3"
+    },
+    {
+      "id": "ms-cssp",
+      "url": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cssp/385a7489-d46b-464c-b224-f7340e308a5c",
+      "section": "3.1.5 version 6 steps 3-5",
+      "revision": "21.0 (2024-04-23)",
+      "retrieved": "2026-10-21",
+      "errata": "No local corrections; v2-v4 binding is intentionally excluded",
+      "snapshot": "sources/ms-cssp-v6.txt",
+      "sha256": "5319e3d8cadefc4b8d9828687e992909517652f2a2a7218b8c06401b1a2c09e6",
+      "actualSha256": "5319e3d8cadefc4b8d9828687e992909517652f2a2a7218b8c06401b1a2c09e6"
+    },
+    {
+      "id": "mit-aes-prf",
+      "url": "https://raw.githubusercontent.com/krb5/krb5/krb5-1.22.2-final/src/lib/crypto/krb/prf_dk.c",
+      "section": "krb5int_dk_prf AES-SHA1 cipher-block truncation",
+      "revision": "krb5-1.22.2-final blob 544418bab74e37e28bc4b85703552e633218a591",
+      "retrieved": "2026-10-21",
+      "errata": "Clarifies RFC3961 PRF hash truncation to cipher block, not 1-byte AES message unit",
+      "snapshot": "sources/mit-prf-dk.txt",
+      "sha256": "532c178e2d773dfe051bbaba5d9ce5a77ec1b75f655d6ec3acf5e462491852cc",
+      "actualSha256": "532c178e2d773dfe051bbaba5d9ce5a77ec1b75f655d6ec3acf5e462491852cc"
+    },
+    {
+      "id": "rfc7517",
+      "url": "https://www.rfc-editor.org/rfc/rfc7517.txt",
+      "section": "Appendix B public RSA certificate example",
+      "revision": "2015-05",
+      "retrieved": "2026-10-21",
+      "errata": "Used only for fixed public certificate bytes, not JOSE or certificate verification",
+      "snapshot": "sources/rfc7517-certificate.txt",
+      "sha256": "8b2321f6e4cd196a69db78605c74d29783c3f5ebf6a10a1446daae0788978009",
+      "actualSha256": "8b2321f6e4cd196a69db78605c74d29783c3f5ebf6a10a1446daae0788978009"
+    },
+    {
+      "id": "rfc3961",
+      "url": "https://www.rfc-editor.org/rfc/rfc3961.txt",
+      "section": "sections 5.1,5.3; Appendix A.1 n-fold",
+      "revision": "2005-02",
+      "retrieved": "2026-10-21",
+      "errata": "Held-for-update DES seed-length erratum does not affect AES; PRF cipher-block interpretation pinned to MIT reference",
+      "snapshot": "sources/rfc3961.txt",
+      "sha256": "1c4d7facc88d6d6d9fa4b2d0b92366e37c8f506455c545762a76fd83ecc7c970",
+      "actualSha256": "1c4d7facc88d6d6d9fa4b2d0b92366e37c8f506455c545762a76fd83ecc7c970"
+    },
+    {
+      "id": "rfc3962",
+      "url": "https://www.rfc-editor.org/rfc/rfc3962.txt",
+      "section": "sections 3-6 AES-SHA1 string-to-key and cipher rules",
+      "revision": "2005-02",
+      "retrieved": "2026-10-21",
+      "errata": "Published text used for selected AES-SHA1 profile; no local vector corrections",
+      "snapshot": "sources/rfc3962.txt",
+      "sha256": "1a6bf9edff650f92e8c5f85a450335c168545169bfdd51977393d15a6932f1f0",
+      "actualSha256": "1a6bf9edff650f92e8c5f85a450335c168545169bfdd51977393d15a6932f1f0"
+    },
+    {
+      "id": "rfc6113",
+      "url": "https://www.rfc-editor.org/rfc/rfc6113.txt",
+      "section": "section 5.1 PRF+ and KRB-FX-CF2",
+      "revision": "2011-04",
+      "retrieved": "2026-10-21",
+      "errata": "Published text used for selected AES-SHA1 profile; no local vector corrections",
+      "snapshot": "sources/rfc6113.txt",
+      "sha256": "69c49f1a5dfae03d7e1011fae7aa2e838d346b6e4b13091e0d10022e368d278c",
+      "actualSha256": "69c49f1a5dfae03d7e1011fae7aa2e838d346b6e4b13091e0d10022e368d278c"
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "@noble/curves",
+      "version": "2.4.0",
+      "license": "MIT",
+      "fileCount": 72,
+      "contentTreeSha256": "7074b9d5bfb78eabd3e5ad12b7fb8ed11995934dbd84bd9b0eaf0cae660a1cf6"
+    },
+    {
+      "name": "@noble/hashes",
+      "version": "2.4.0",
+      "license": "MIT",
+      "fileCount": 60,
+      "contentTreeSha256": "37d0742f24075efe66af25e1bb0c7cb593a2e87259fadc6c6de7f899efd8a231"
+    },
+    {
+      "name": "crypto-js",
+      "version": "4.2.0",
+      "license": "MIT",
+      "fileCount": 56,
+      "contentTreeSha256": "491be7497ba9777d466427fc7269b2a8e16f50623fd22cdf1e43af1b121888be"
+    },
+    {
+      "name": "hash-wasm",
+      "version": "4.12.0",
+      "license": "MIT",
+      "fileCount": 127,
+      "contentTreeSha256": "e193af3ed71a821026218a03fb3bf0a6e3f601b8708c0f667f816117d7b8f3a2"
+    }
+  ],
+  "cases": [
+    {
+      "id": "rfc3961-A1-nfold",
+      "source": "RFC 3961 section 5.1 and Appendix A.1",
+      "passed": true,
+      "checked": [
+        "n-fold 012345/64",
+        "n-fold password/56",
+        "n-fold password/168",
+        "n-fold kerberos/128"
+      ]
+    },
+    {
+      "id": "rfc9382-B-1-p256-sha256",
+      "source": "RFC 9382 sections 3.2-4,6; Appendix B first vector",
+      "passed": true,
+      "checked": [
+        "field prime",
+        "group order",
+        "curve a",
+        "curve b",
+        "base point",
+        "pA",
+        "pB",
+        "K from A",
+        "K from B",
+        "A TT",
+        "A Ke",
+        "A Ka",
+        "A KcA",
+        "A KcB",
+        "A Hash(TT)",
+        "A cA",
+        "A cB",
+        "B TT",
+        "B Ke",
+        "B Ka",
+        "B KcA",
+        "B KcB",
+        "B Hash(TT)",
+        "B cA",
+        "B cB"
+      ]
+    },
+    {
+      "id": "rfc9382-B-1-p256-sha256-password-mismatch",
+      "source": "RFC 9382 sections 3.2-4,6; Appendix B first vector",
+      "passed": true,
+      "checked": [
+        "A independent mismatched K",
+        "A independent cA",
+        "A independent cB",
+        "B independent mismatched K",
+        "B independent cA",
+        "B independent cB"
+      ]
+    },
+    {
+      "id": "rfc9382-B-1-p256-sha256-transcript-mismatch",
+      "source": "RFC 9382 sections 3.2-4,6; Appendix B first vector",
+      "passed": true,
+      "checked": [
+        "A independent altered cA",
+        "A independent altered cB",
+        "B independent altered cA",
+        "B independent altered cB"
+      ]
+    },
+    {
+      "id": "rfc9382-B-1-p256-sha256-invalid-point",
+      "source": "RFC 9382 sections 3.2-4,6; Appendix B first vector",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "rfc9383-C-1-p256-sha256",
+      "source": "RFC 9383 sections 3.2-4; Appendix C first vector",
+      "passed": true,
+      "checked": [
+        "field prime",
+        "group order",
+        "curve a",
+        "curve b",
+        "base point",
+        "L",
+        "shareP",
+        "shareV",
+        "ZP",
+        "ZV",
+        "VP",
+        "VV",
+        "P TT",
+        "P K_main",
+        "P K_confirmP",
+        "P K_confirmV",
+        "P K_shared",
+        "P confirmP",
+        "P confirmV",
+        "V TT",
+        "V K_main",
+        "V K_confirmP",
+        "V K_confirmV",
+        "V K_shared",
+        "V confirmP",
+        "V confirmV"
+      ]
+    },
+    {
+      "id": "rfc9383-C-1-p256-sha256-password-mismatch",
+      "source": "RFC 9383 sections 3.2-4; Appendix C first vector",
+      "passed": true,
+      "checked": [
+        "P independent mismatched Z",
+        "P independent mismatched V",
+        "P independent confirmP",
+        "P independent confirmV",
+        "P independent K_shared",
+        "V independent mismatched Z",
+        "V independent mismatched V",
+        "V independent confirmP",
+        "V independent confirmV",
+        "V independent K_shared"
+      ]
+    },
+    {
+      "id": "rfc9383-C-1-p256-sha256-transcript-mismatch",
+      "source": "RFC 9383 sections 3.2-4; Appendix C first vector",
+      "passed": true,
+      "checked": [
+        "P independent altered confirmP",
+        "P independent altered confirmV",
+        "P independent altered K_shared",
+        "V independent altered confirmP",
+        "V independent altered confirmV",
+        "V independent altered K_shared"
+      ]
+    },
+    {
+      "id": "rfc9383-C-1-p256-sha256-invalid-point",
+      "source": "RFC 9383 sections 3.2-4; Appendix C first vector",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "rfc9383-C-1-p256-sha256-confirmation-direction",
+      "source": "RFC 9383 sections 3.2-4; Appendix C first vector",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "rfc9588-C-aes128-edwards25519",
+      "source": "RFC 9588 sections 4-7,12.2.2.1 and Appendix C aes128-cts-hmac-sha1-96 edwards25519; RFC 3961/3962; RFC 6113 section 5.1",
+      "passed": true,
+      "checked": [
+        "Edwards base encoding",
+        "password PBKDF2+DK",
+        "w full PRF+ output",
+        "w reduced scalar little-endian",
+        "X",
+        "Y",
+        "T",
+        "S",
+        "K",
+        "client shared K",
+        "DER support",
+        "DER challenge",
+        "hash after challenge",
+        "hash after pubkey",
+        "DER request body",
+        "KDC K'[0]",
+        "client K'[0]",
+        "KDC K'[1]",
+        "client K'[1]",
+        "KDC K'[2]",
+        "client K'[2]",
+        "KDC K'[3]",
+        "client K'[3]"
+      ]
+    },
+    {
+      "id": "rfc9588-C-aes128-edwards25519-synthetic-protected-factor",
+      "source": "RFC 9588 sections 4-7,12.2.2.1 and Appendix C aes128-cts-hmac-sha1-96 edwards25519; RFC 3961/3962; RFC 6113 section 5.1",
+      "passed": true,
+      "checked": [
+        "AES-CTS and HMAC-SHA1-96 SF-NONE"
+      ]
+    },
+    {
+      "id": "rfc9588-C-aes128-edwards25519-password-mismatch",
+      "source": "RFC 9588 sections 4-7,12.2.2.1 and Appendix C aes128-cts-hmac-sha1-96 edwards25519; RFC 3961/3962; RFC 6113 section 5.1",
+      "passed": true,
+      "checked": [
+        "independent wrong-password KDC K",
+        "independent wrong-password client K",
+        "independent KDC mismatched K'[0]",
+        "independent client mismatched K'[0]",
+        "independent KDC mismatched K'[1]",
+        "independent client mismatched K'[1]",
+        "independent KDC mismatched K'[2]",
+        "independent client mismatched K'[2]",
+        "independent KDC mismatched K'[3]",
+        "independent client mismatched K'[3]",
+        "independent wrong-password protected factor"
+      ]
+    },
+    {
+      "id": "rfc9588-C-aes128-edwards25519-transcript-mismatch",
+      "source": "RFC 9588 sections 4-7,12.2.2.1 and Appendix C aes128-cts-hmac-sha1-96 edwards25519; RFC 3961/3962; RFC 6113 section 5.1",
+      "passed": true,
+      "checked": [
+        "independent KDC request-bound K'[0]",
+        "independent client request-bound K'[0]",
+        "independent KDC request-bound K'[1]",
+        "independent client request-bound K'[1]",
+        "independent KDC request-bound K'[2]",
+        "independent client request-bound K'[2]",
+        "independent KDC request-bound K'[3]",
+        "independent client request-bound K'[3]",
+        "independent mismatched-body protected factor"
+      ]
+    },
+    {
+      "id": "rfc9588-C-aes128-edwards25519-transcript-reset",
+      "source": "RFC 9588 sections 4-7,12.2.2.1 and Appendix C aes128-cts-hmac-sha1-96 edwards25519; RFC 3961/3962; RFC 6113 section 5.1",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "rfc9588-C-aes128-edwards25519-invalid-point",
+      "source": "RFC 9588 sections 4-7,12.2.2.1 and Appendix C aes128-cts-hmac-sha1-96 edwards25519; RFC 3961/3962; RFC 6113 section 5.1",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "rfc9588-C-aes128-edwards25519-directional-key-use",
+      "source": "RFC 9588 sections 4-7,12.2.2.1 and Appendix C aes128-cts-hmac-sha1-96 edwards25519; RFC 3961/3962; RFC 6113 section 5.1",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "ms-nlmp-4.2.4-ntlmv2",
+      "source": "MS-NLMP 37.0 (2026-03-30), sections 3.3.2,4.2.1,4.2.4.1-4.2.4.2; MD4 input from 4.2.2.1.2",
+      "passed": true,
+      "checked": [
+        "ntHash",
+        "responseKeyNT",
+        "temp",
+        "ntProofStr",
+        "lmChallengeResponse",
+        "sessionBaseKey",
+        "encryptedRandomSessionKey",
+        "full NTChallengeResponse proof plus complete blob",
+        "KeyExchangeKey",
+        "ExportedSessionKey selected random key",
+        "server recovers ExportedSessionKey"
+      ]
+    },
+    {
+      "id": "ms-nlmp-4.2.4-ntlmv2-password-mismatch",
+      "source": "MS-NLMP 37.0 (2026-03-30), sections 3.3.2,4.2.1,4.2.4.1-4.2.4.2; MD4 input from 4.2.2.1.2",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "ms-nlmp-4.2.4-ntlmv2-challenge-mismatch",
+      "source": "MS-NLMP 37.0 (2026-03-30), sections 3.3.2,4.2.1,4.2.4.1-4.2.4.2; MD4 input from 4.2.2.1.2",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "ms-nlmp-4.2.4-ntlmv2-account-authority-mismatch",
+      "source": "MS-NLMP 37.0 (2026-03-30), sections 3.3.2,4.2.1,4.2.4.1-4.2.4.2; MD4 input from 4.2.2.1.2",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "ms-nlmp-4.2.4-ntlmv2-blob-tamper",
+      "source": "MS-NLMP 37.0 (2026-03-30), sections 3.3.2,4.2.1,4.2.4.1-4.2.4.2; MD4 input from 4.2.2.1.2",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "ms-cssp-v6-directional-synthetic",
+      "source": "MS-CSSP 21.0 (2024-04-23), section 3.1.5 steps 3-5, version 6; RFC 7517 Appendix B public certificate example",
+      "passed": true,
+      "checked": [
+        "certificate actual SPKI",
+        "BIT STRING SubjectPublicKey bytes without wrapper/unused-bit octet",
+        "RSA PKCS1 public key agrees",
+        "client-to-server v6 SHA256",
+        "server-to-client v6 SHA256"
+      ]
+    },
+    {
+      "id": "ms-cssp-v6-directional-synthetic-missing-nul",
+      "source": "MS-CSSP 21.0 (2024-04-23), section 3.1.5 steps 3-5, version 6; RFC 7517 Appendix B public certificate example",
+      "passed": true,
+      "checked": [
+        "independent altered binding digest"
+      ]
+    },
+    {
+      "id": "ms-cssp-v6-directional-synthetic-nonce-mismatch",
+      "source": "MS-CSSP 21.0 (2024-04-23), section 3.1.5 steps 3-5, version 6; RFC 7517 Appendix B public certificate example",
+      "passed": true,
+      "checked": [
+        "independent altered binding digest"
+      ]
+    },
+    {
+      "id": "ms-cssp-v6-directional-synthetic-spki-substitution",
+      "source": "MS-CSSP 21.0 (2024-04-23), section 3.1.5 steps 3-5, version 6; RFC 7517 Appendix B public certificate example",
+      "passed": true,
+      "checked": [
+        "independent altered binding digest"
+      ]
+    },
+    {
+      "id": "ms-cssp-v6-directional-synthetic-certificate-substitution",
+      "source": "MS-CSSP 21.0 (2024-04-23), section 3.1.5 steps 3-5, version 6; RFC 7517 Appendix B public certificate example",
+      "passed": true,
+      "checked": [
+        "independent altered binding digest"
+      ]
+    },
+    {
+      "id": "ms-cssp-v6-directional-synthetic-thumbprint-substitution",
+      "source": "MS-CSSP 21.0 (2024-04-23), section 3.1.5 steps 3-5, version 6; RFC 7517 Appendix B public certificate example",
+      "passed": true,
+      "checked": [
+        "independent altered binding digest"
+      ]
+    },
+    {
+      "id": "ms-cssp-v6-directional-synthetic-direction-reflection",
+      "source": "MS-CSSP 21.0 (2024-04-23), section 3.1.5 steps 3-5, version 6; RFC 7517 Appendix B public certificate example",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "ms-cssp-v6-directional-synthetic-wrong-public-key",
+      "source": "MS-CSSP 21.0 (2024-04-23), section 3.1.5 steps 3-5, version 6; RFC 7517 Appendix B public certificate example",
+      "passed": true,
+      "checked": []
+    },
+    {
+      "id": "ms-cssp-v6-directional-synthetic-nonce-length",
+      "source": "MS-CSSP 21.0 (2024-04-23), section 3.1.5 steps 3-5, version 6; RFC 7517 Appendix B public certificate example",
+      "passed": true,
+      "checked": []
+    }
+  ],
+  "passed": true,
+  "summary": {
+    "total": 31,
+    "passed": 31,
+    "failed": 0
+  },
+  "recordedAt": "2026-10-21T08:14:42.866Z",
+  "pinnedRuntime": {
+    "invocation": [
+      "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+      "tools/verification/expansion-crypto/check-vectors.mjs"
+    ],
+    "release": "https://github.com/oven-sh/bun/releases/tag/bun-v1.4.2",
+    "archiveSha256": "36368faef7527875d5ffa52e53cd48021741f2a83eb6208a8dd64068d422a913"
+  }
+}

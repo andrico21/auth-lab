@@ -1,0 +1,99 @@
+Independent Network protocol review — expansion1
+Review date: 2026-10-21
+Source: /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/source
+Plan: /workspace/scratch/b1e0b9877d92/auth-flow-studio-expansion-worker-plan.html
+
+Disposition: changes requested. The 23 planned Network presets exist, and the major causal boundaries are substantially implemented. Three P2 correctness defects and one P3 standards-metadata defect remain. No P1 finding was established in this scoped review. These are educational-model findings; no real protocol implementation or live interoperability claim was tested.
+
+N-01 — P2 — RFC 9190 exporter uses the wrong context
+Location: src/network-access-lab.js:68 and :369–370.
+Scenarios: NET-E01 lab-net-eap-tls13-wired; NET-E04 lab-net-eap-policy-denied; NET-T01 lab-net-radius-udp-radsec (both independent transactions); NET-P01 lab-net-radius-proxy-realm; NET-W01 lab-net-enterprise-wifi-eap.
+
+Actual: the field help and both endpoint derivation steps teach TLS-Exporter("EXPORTER_EAP_TLS_Key_Material", empty context, 128). This occurs in twelve exporter events across five default presets. RFC 9190 section 2.3 requires the context to be the one-octet EAP Type value 0x0D. Empty context produces different key material, so the formula is incorrect even though the examples are symbolic. The 64-byte MSK / 64-byte EMSK split is correct.
+
+Reproduce: choose Wired 802.1X EAP-TLS 1.3 and inspect the Server exporter derivation and Peer exporter derivation payloads; each explicitly says "context empty". Programmatically inspect model.steps() for the :server-export / :peer-export suffixes, including :udp: and :radsec: scoped copies.
+
+Expected/fix: author the byte-valued context Type = 0x0D consistently in the canonical fields, field help, local object provenance and any derived documentation. Keep this separate from TLS 1.2's PRF formula. If Method-Id / EAP Session-Id are taught, use their distinct exporter label and Type || Method-Id formula. Add an independent assertion for label, context bytes, length and MSK/EMSK ranges; the existing tests only verify causal state and do not check this formula.
+
+Primary source: https://www.rfc-editor.org/rfc/rfc9190.html#section-2.3
+Retrieved evidence: turn293view2, lines 485–497. It specifies Type = 0x0D and uses Type as both exporter contexts.
+
+N-02 — P2 — Mandatory NAS identity is missing from canonical request packets
+Locations: src/network-access-lab.js:281–282 (EAP packet helper), :292, :300, :337, :363, :378; :671–675, :681, :693, :708 (NPS helper/requests); :647 (Disconnect accounting Stop); :766 (RADIUS/1.1 decoded request); :869 (unknown-realm request). Proxy and RadSec composition inherit the EAP omissions at :914–959 and :810–829.
+
+Actual: a read-only scan of the 23 default presets found 36 request payloads with Code Access-Request or Accounting-Request and neither NAS-Identifier nor NAS-IP-Address. This is twelve presets, not eleven. Thirty-five are Access-Request views (including the decoded RADIUS/1.1 request) and one is Accounting Stop. Some EAP initial requests include NAS-Identifier, but the attribute vanishes from subsequent requests. All NPS requests omit it. Source-address-based secret selection does not replace this required attribute, and RADIUS State does not supply it. RFC 9765 changes RADIUS protection/correlation rules; it does not repeal the NAS-identity requirement.
+
+Affected default event suffixes:
+  lab-net-eap-tls13-wired: clienthello-backend, peerflight-backend, empty-backend
+  lab-net-eap-server-cert-rejected: clienthello-backend, alert-backend
+  lab-net-eap-client-cert-rejected: clienthello-backend, peerflight-backend, alert-ack-backend
+  lab-net-eap-policy-denied: clienthello-backend, peerflight-backend, alert-ack-backend
+  lab-net-nps-ad-tls12: identity-backend, clienthello-backend, peerflight-backend, empty-backend
+  lab-net-nps-mapping-rejected: identity-backend, clienthello-backend, peerflight-backend
+  lab-net-radius-udp-radsec: udp:clienthello-backend, udp:peerflight-backend, udp:empty-backend, radsec:clienthello-backend, radsec:peerflight-backend, radsec:empty-backend
+  lab-net-radius-proxy-realm: clienthello-backend-ingress, clienthello-backend, peerflight-backend-ingress, peerflight-backend, empty-backend-ingress, empty-backend
+  lab-net-radius-proxy-unknown-realm: request
+  lab-net-radius-disconnect-ack: stop
+  lab-net-enterprise-wifi-eap: clienthello-backend, peerflight-backend, empty-backend
+  lab-net-radius11: decode-request
+
+Reproduce: inspect NPS's Relay identity to NPS packet or Wired EAP-TLS's Relay ClientHello. Their canonical payload and message artifact list no NAS identity. The omission is in the model, not merely in compact narration. The same omission is accepted as a valid packet by the subsequent local-check events.
+
+Expected/fix: include a stable NAS-Identifier (or appropriately scoped NAS address) in every applicable request, preserving the original NAS identity through the proxy. Choose the AP identifier for the bounded Wi-Fi scenario. Add it to the separate Disconnect Stop record and the decoded RADIUS/1.1 packet. Keep NAS identity distinct from the source-address/transport association used to select adjacent trust. Assert required-attribute presence over all default and named-input request packets, including their wrapped/decoded representations. The packet inspector should explicitly label any deliberately abbreviated header view rather than implying omitted mandatory fields are a complete request.
+
+Primary sources:
+  https://www.rfc-editor.org/rfc/rfc2865.html#section-4.1 (also section 5.4 and section 5.44 table note 2)
+  https://www.rfc-editor.org/rfc/rfc2866.html#section-4.1 (also section 5.13 table note 1)
+  https://www.rfc-editor.org/rfc/rfc9765.html (changes to packet protection and Token, not NAS identity)
+Retrieved evidence: turn293view0 lines 889–891 and 1535–1544; turn293view1 lines 385–391 and 1287–1288.
+
+N-03 — P2 — RadSec is added as a layer label, but its wire history remains the unwrapped RADIUS packet
+Location: src/network-access-lab.js:810–829, especially :815 and :827–829; outer-key argument supplied at :859.
+Scenario: NET-T01 lab-net-radius-udp-radsec, second transaction's eight RADIUS message events.
+
+Actual: netAppendScopedEap clones the complete UDP packet artifacts, field occurrences and message events unchanged. The RadSec branch changes a fixed-secret field and adds a TLS layer label, but never creates an outer TLS-record representation or endpoint decryption occurrence. For example, :radsec:identity-backend carries a message artifact whose only representation is "plain" containing Code, RADIUS Identifier, Request Authenticator, Message-Authenticator, EAP-Message and NAS-Identifier. :radsec:serverflight-backend calls the RADIUS fields "wire" even though outer TLS protects them. :radsec:accept similarly carries Code, Filter-Id and MS-MPPE attributes directly. Consequently exact wire/history playback cannot distinguish the TLS record from its decrypted RADIUS contents, despite the approved plan explicitly requiring that distinction. The inner TLS certificate remains opaque, which is correct but does not repair the missing outer representation.
+
+The same helper also assigns the NAS-owned outer key reference to both directions, including server-to-NAS packets, even though distinct NAS/server local key objects have been authored. This is a related ownership/provenance inconsistency; it is not evidence that a secret is actually exported.
+
+Reproduce: inspect the model.networkInventory.events entry for lab-net-radius-udp-radsec:radsec:identity-backend. Its message object references ...:identity-backend-packet:g1 with representationId "plain"; that artifact has no outer ciphertext representation. Repeat for :radsec:serverflight-backend and :radsec:accept. Compare with NET-X01's :request / :decode-request pair, which already models outer protected wire and local decoded fields separately.
+
+Expected/fix: author the actual RadSec transmission as an opaque symbolic outer TLS record; retain the RADIUS packet as a separate endpoint-decoded representation after TLS-record processing. Preserve the still-opaque inner EAP-TLS records after outer decryption. Bind exact history to the originally selected representation and directional endpoint key ownership. Extend the existing NET-T01 test beyond checking that both TLS layer labels exist: assert outer record fields at send/receive, RADIUS fields only in decoded endpoint views, and no inner TLS plaintext at NAS. No live TLS implementation is needed.
+
+Primary source: https://www.rfc-editor.org/rfc/rfc6614.html#section-2.3 and #section-6. RFC 6614 requires a confidential TLS transport; its security discussion explains that bypassing encryption exposes the entire RADIUS payload.
+Retrieved evidence: turn299view0, lines 661–667.
+Plan anchors: common contract paragraphs "Wire and local values remain distinct" / "Encrypted on the wire does not mean unreadable to the endpoint"; Network exact replay and nested-layer requirements.
+
+N-04 — P3 — Two source maturity labels are incorrect
+Location: src/network-access-lab.js:12, NETWORKLAB_SOURCES publicationStatus mapping.
+Scenarios: EAP/RADIUS profiles referencing RFC 3579, and NET-A01 referencing RFC 2869.
+
+Actual: RFC 3579 and RFC 2869 fall through to publicationStatus "Standards Track". Both are published Informational RFCs. Their normative language does not change their document category.
+
+Reproduce: inspect NETWORKLAB_SOURCES entries with standard "RFC 3579" and "RFC 2869"; both report Standards Track.
+
+Expected/fix: correct both source metadata records and any composite source/status UI derived from them. Prefer an explicit per-document category table over a catch-all Standards Track default, with a small assertion for the pinned source manifest. RFC 6614 and RFC 9765 are already correctly Experimental.
+
+Primary sources:
+  https://www.rfc-editor.org/rfc/rfc3579.html — header Category: Informational (turn297view0, lines 0–4)
+  https://www.rfc-editor.org/rfc/rfc2869.html — header Category: Informational (turn297view1, lines 0–5)
+
+Verified strengths / no additional finding established
+
+1. All 23 stable scenario IDs in the approved Network matrix are present. NET-T01 is two independent EAP transactions, with a completed UDP session before the second outer TLS association. Its layering labels, distinct inner/outer credentials, fixed historic "radsec" secret and Experimental transport status are appropriate, subject to N-03's wire-model defect.
+2. NAS is the access RADIUS client; peer is the EAP supplicant; controller is DAC and NAS is DAS for CoA/Disconnect. No mistaken reuse of access roles was found.
+3. Classic EAP-bearing RADIUS messages have Message-Authenticator; invalid-integrity fixtures silently discard rather than manufacture Access-Reject. State is echoed in continuations; proxy uses separate adjacent secrets, ordered Proxy-State, return checks and hop-level MSK unwrap/rewrap.
+4. Separate endpoint MSK/EMSK objects are authored. EMSK/private keys/inner TLS secrets are not granted to NAS or proxy. Proxy MSK access is explicitly acknowledged rather than incorrectly described as end-to-end opaque; forwarding scratch is released. TLS 1.3 certificate views remain encrypted at the relay, while TLS 1.2 public certificate flights are visible before CCS.
+5. EAP-TLS 1.3 protected success 0x00 and the empty peer response precede EAP/RADIUS success and NAS enforcement. Certificate rejection and valid-identity/policy-denied paths remain closed. Identity, policy, response receipt, response validation and service enforcement are distinct.
+6. NPS is explicitly pinned to a full TLS 1.2 profile; it does not claim NPS TLS 1.3 support or a real tested Windows build. Its AD mapping/group interaction is clearly labeled a documented teaching boundary rather than invented LDAP/Kerberos wire traffic. Strong mapping is distinguished from certificate possession and from group authorization. Microsoft currently documents no NPS TLS 1.3 support and full Windows client authentication: https://learn.microsoft.com/en-us/windows-server/networking/technologies/extensible-authentication-protocol/windows-11-changes (turn299view2, lines 67–74).
+7. Accounting Start/Interim/Stop correlates a session, uses cumulative counters, separates service termination from Stop acknowledgement, and stores before acknowledging. The retry fixture recomputes packet correlation after Acct-Delay-Time changes. Disconnect's missing NAS identity is covered by N-02.
+8. CoA/Disconnect recipient action precedes ACK creation and controller result knowledge. Invalid source/authenticator/stale timestamp is discarded; authenticated wrong NAS gets NAK403; absent context NAK503; unsupported cases NAK401/405. Unrelated session stays active. Lost ACK produces unknown sender knowledge without undoing NAS action; duplicates select cached outcomes instead of applying operations twice. This matches the relevant semantics in https://www.rfc-editor.org/rfc/rfc5176.html.
+9. UDP access retry retains the original request and models one logical authentication. Delayed, wrong-transaction and invalid-integrity replies do not admit a session. Its explicit loss events are teaching disclosures, not fictitious delivered packets. See https://www.rfc-editor.org/rfc/rfc5080.html#section-2.2.
+10. NET-W01 stays "EAP access decision complete; Wi-Fi link establishment not shown", creates no protected-link session and leaves wifiUsable false. No unsupported usable Wi-Fi/MACsec/Internet claim was found.
+11. RADIUS/1.1 is separately Experimental, explicitly ALPN-negotiated over TLS 1.3, uses the Token/reserved-byte profile, omits normal shared-secret/MD5/Message-Authenticator generation, and distinguishes missing ALPN from disjoint ALPN rejection. It does not silently upgrade UDP or claim NPS support. RFC 9765 remains Experimental: https://www.rfc-editor.org/rfc/rfc9765.html (turn299view1, lines 0–32).
+
+Validation performed and limits
+
+- Read all scenario builders in src/network-access-lab.js, explicit network held-object adapter, Network protocol documentation, scenario registry, targeted Network tests and relevant plan sections.
+- Read-only Node imports inspected all 23 default models, packet payloads, exporter payloads, RadSec message artifacts/representations and source categories. No product file changed.
+- Ran only: node --test tests/network-access-lab.test.mjs. Result: 83 tests passed, 0 failed, approximately 1.3 seconds. These passing state/variant tests do not check the three correctness defects above.
+- No global suite, native verifier, live RADIUS/NPS/TLS interoperability run, browser visual/keyboard review, or full held-object UI replay was performed by this reviewer. Parent review owns those wider gates. N-03 is established directly in the canonical packet/message representation model, not inferred from screenshots.

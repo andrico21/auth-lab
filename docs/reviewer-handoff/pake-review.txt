@@ -1,0 +1,61 @@
+SPAKE / PAKE review — expansion1 delivery
+Reviewed 2026-10-21; read-only product audit.
+Source root: /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/source
+Contract: /workspace/scratch/b1e0b9877d92/auth-flow-studio-expansion-worker-plan.html, section 6 (15 fixed presets).
+
+Verdict
+The 15 committed presets are present. The core ownership, key-boundary and endpoint-confirmation model is substantially correct, but three P2 issues remain. The delivery should not yet be called crystal-conformant. No P0/P1 defect was established in this scoped review.
+
+FINDING PAKE-01 — P2 — First KDC optimistic challenge carries the second-pass error label
+Scenario: lab-krb-spake-optimistic-accepted.
+Location: src/kerberos-spake-lab.js:1119, 1596–1601; step mapping at 1760–1763.
+Reproduction: import SPAKELAB_SCENARIOS, select this scenario, call steps({}), and inspect the first remote KDC-to-client event (suffix -challenge). The preceding remote event is an initial AS-REQ explicitly containing no preauthentication. The challenge title and protocolLabel are both “MORE_PREAUTH_DATA_REQUIRED: SPAKEChallenge”. The optimistic branch removes advertisement/support but does not replace the inherited normal challenge title.
+Expected: the first-response optimization substitutes challenge padata into the first-pass KDC_ERR_PREAUTH_REQUIRED response. The normal second-pass challenge and client-optimistic support response continue using KDC_ERR_MORE_PREAUTH_DATA_REQUIRED. Give the optimistic-rejected first response the explicit first-pass error too, so both optimistic branches have an unambiguous wire envelope.
+Impact: the central distinction the optimization lesson should explain is wrong in Journey/Fields and exported step metadata, despite the surrounding prose and transcript-reset handling being correct.
+Suggested acceptance: a table-driven assertion on the actual KRB-ERROR code/label for ordinary advertisement, supported/unsupported KDC optimistic challenge, and client-optimistic challenge. Prefer an explicit error-code field instead of relying only on a title.
+Primary source: https://datatracker.ietf.org/doc/html/rfc9588#section-4.1 and #section-4.6. Section 4.1 defines the first response; 4.6 changes its PA-SPAKE choice, while its second optimization expressly retains MORE_PREAUTH_DATA_REQUIRED after client support.
+
+FINDING PAKE-02 — P2 — Transcript-rejection fixtures describe both endpoints changing the binding, unlike the lesson
+Scenarios: lab-pake-spake2-transcript-reject and lab-pake-spake2plus-transcript-reject.
+Locations: src/pake-lab.js:134–140, 190–199; tools/verification/expansion-crypto/derive-synthetic.py:76–99 and 220; pake-vectors.mjs:89–94 and 120–126; fixtures/synthetic.json:21–33 and 51–67.
+Reproduction:
+1. The runtime profile explicitly says only A binds B='client-altered', with B retaining 'client'; the augmented profile says only the prover appends ' altered' to Context and the verifier retains the official Context. Runtime local identity/context fields implement that stated asymmetry.
+2. controlledRef nevertheless points BOTH endpoints' schedule, candidate and confirmation values to the matching role under the transcript-mismatch fixture.
+3. In the Python oracle, balanced() applies one identity argument inside the loop for both A and B. augmented() similarly applies one context argument for both P and V. Consequently synthetic.rfc9382.transcriptMismatch.A and .B are byte-for-byte identical; synthetic.rfc9383.transcriptMismatch.P and .V are also identical, including K_shared and confirmation tags. Their paired endpoint transcript inputs agree; these are not the declared mismatched exchange.
+4. The JavaScript validator independently recomputes those both-altered fixtures and passes them. Its final rejection assertion cross-compares a separate good run with an altered run. For augmented PAKE it tests good prover versus altered verifier, the opposite of the lesson's altered prover versus good verifier. Thus a passing status report does not validate the actual role-specific fixture references displayed by these two lessons.
+Expected: derive endpoint-specific bindings in a single negative exchange: changed A/prover, unchanged B/verifier. Store expected schedules/output/confirmation checkpoints under those actual role names; the unchanged endpoint should equal the relevant official vector outputs. Compare the tag actually sent against the actual receiver's expected tag, with the correct first confirmer (A for SPAKE2; verifier for SPAKE2+). Align controlledRef names with the regenerated fixtures.
+Impact: a learner following the inspector's named independent oracle sees matching values where rejection is asserted. This undermines the plan's independently checked-fixture requirement and is especially visible in SPAKE2+, where the claimed unchanged verifier sends an altered-context fixture tag.
+Suggested acceptance: assert unchanged-role outputs equal the official vector; changed-role outputs differ; the sent first confirmation fails at the specified receiver; no usable output key is installed. Require the model's exact field delta and fixture role mapping to agree. This is not a request to add runtime cryptography.
+Primary sources: https://www.rfc-editor.org/rfc/rfc9382.html#section-4 (TT-bound key schedule/confirmation) and https://www.rfc-editor.org/rfc/rfc9383.html#section-3.3 plus #section-3.4 (Context-bound schedule and verifier-first confirmation).
+
+FINDING PAKE-03 — P2 — Ordinary initial PREAUTH_REQUIRED omits PA-FX-COOKIE and the support request has nothing to echo
+Scenarios: ordinary lab-krb-spake-success, wrong-password and no-common-group; the same omitted advertisement is the basis for the downgrade branches.
+Location: src/kerberos-spake-lab.js:1053–1089; cookie definition at 343–378 and creation at 1092–1113.
+Reproduction: inspect steps for the normal advertisement and support. Advertisement payload/uses contain only empty PA-SPAKE and ETYPE-INFO2; support contains only the group list. No initial cookie object/holding exists. The first cookie is instead created with the later SPAKE challenge, which is then correctly echoed by the response.
+Expected: this selected cookie-based, RFC6113-compatible exchange includes an opaque PA-FX-COOKIE in the initial PREAUTH_REQUIRED, and the next request in that conversation echoes those exact bytes. Model the initial cookie distinctly from a later challenge-state cookie; it need not contain a scalar or transcript that has not yet been created. Preserve KDC-only decoding. If the client deliberately restarts a conversation, explicitly mark that restart instead of silently omitting the cookie.
+Impact: Fields/held-object playback teaches an incomplete state-management boundary even though later cookie confidentiality is modeled well. A strict RFC-conformance review needs the initial cookie lifecycle too.
+Suggested acceptance: at each continuable PREAUTH_REQUIRED/MORE_PREAUTH_DATA_REQUIRED response, assert the appropriate cookie holding; at the next same-conversation AS request, assert an exact opaque echo. Cover replacement and disposal independently. An explicitly abandoned optimistic conversation may drop its cookie under RFC6113, so the current optimistic restart is not separately reported as a defect.
+Primary source: https://www.rfc-editor.org/rfc/rfc6113.html#section-5.2 (continuable errors require cookies; exact echo in the next same-conversation message; explicitly discarding state may start a new conversation). RFC9588 prerequisite: https://datatracker.ietf.org/doc/html/rfc9588#section-3.2.
+
+Contract coverage and positive observations
+8 Kerberos presets: all stable IDs exist. Success and all three successful optimization/fallback branches continue through AS receipt, local validation, cache installation, TGS issuance, service-ticket validation and mutual service use. Wrong-password/no-common-group/blocked-downgrade prefixes do not acquire a usable TGT or service key, and unrelated cache state survives.
+3 SPAKE2 presets: success, wrong-input and identity mismatch exist. A/server and B/client roles are explicit, matching the selected vector rather than assuming A must be a client. A confirms first. Secret TT and confirmation keys stay local. Candidate, received confirmation, peer verification, own transport handoff and output usability are distinct.
+4 SPAKE2+ presets: registration/success, wrong-input, Context mismatch and record boundary exist. Registration is clearly a chosen authenticated/confidential teaching transport; it does not claim RFC9383 specifies registration packets. Verifier record is (w0,L), with no w1/password transfer. Verifier confirms first; prover confirms only after verifying it. Disclosure is a separate observer capability, not ordinary public recording. The caveat about offline guessing and verifier impersonation is present.
+The two transcript-negative cases' abstract failure sequencing is correct; PAKE-02 concerns the incorrect attached per-role numeric evidence.
+
+Key/state audit
+- SF-NONE only; no invented OTP factor. Successful Kerberos completion uses the strengthened AS-REP and does not invent a final KDC PA-SPAKE packet.
+- K-prime[0] is separate from K-prime[1], the KDC long-term ticket key, TGT session key and service session key. Initial reply key remains the base for all SPAKE derivations; strengthening is described once.
+- Client holds an opaque TGT without seeing its protected body. AS protected client material, receipt/decoding and cache acceptance have separate holdings. Service ticket and AP exchange preserve analogous boundaries.
+- Private scalars, local group results and local key schedules do not become peer-readable. Cookie ciphertext possession does not expose KDC state. Endpoint cleanup and rejected optimistic generations are disposed independently; a remote peer is not magically cleaned up.
+- PAKE failure does not emit an invented standardized error packet. Receiver rejection and the other endpoint's wait timeout are separate. Successful reciprocal sender completion can occur while its reply is in flight; the receiver becomes usable only after its own verification.
+- MIT/standards profile is distinct from AD DS, with configuration-required and RFC status labels. FAST is treated as a separate layer; SPAKE does not claim to replace FAST or PKINIT. Passive recording, online guessing and record/endpoint compromise are distinguished.
+
+Evidence run and limits
+Ran only the four scoped Node test files: kerberos-spake-lab.test.mjs, pake-lab.test.mjs, held-object-spake.test.mjs, held-object-pake.test.mjs. Result: 76 tests, 76 passed, zero failures. A direct model-import probe reproduced PAKE-01 and the initial-cookie omission. Direct JSON checks reproduced the identical negative per-role fixtures in PAKE-02.
+Verified all 25 runner/fixture/source-snapshot hashes declared by docs/verification/expansion/crypto-vectors-status.json against this source delivery: no mismatch. Independently reran the included Python fixture derivation read-only: all four numeric fixture sections (RFC9382, RFC9383, Kerberos and CredSSP) reproduce exactly. Only derivation metadata differs because the available cryptography version is 50.0.2 rather than the recorded 46.0.5; that is not a defect.
+The vector package uses fixed official inputs, a separate Python arithmetic/OpenSSL oracle and established curve/hash dependencies; it is materially more credible than a mirror of the UI implementation. PAKE-02 is a profile-to-oracle alignment problem, not evidence that all vectors are fabricated.
+The isolated Bun crypto package was not rerun: Bun and its nested dependencies are absent from this extracted source. Existing status says 31/31, but this review does not relabel that recorded result as a fresh Bun execution. No full regression suite or native/browser run was performed, as requested. The review does not certify visual/accessibility rendering.
+
+Worker close-out request
+Fix the three narrowly scoped issues, regenerate the two transcript-negative fixtures and vector evidence, and add focused regressions at the affected protocol boundaries. Preserve the already-correct ownership, cleanup, confirmation-order and ticket-use behavior.

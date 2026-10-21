@@ -45,6 +45,19 @@ const studyCases=[
   {id:'lab-ad-fast-tgs-success',family:'FAST TGS'},
   {id:'lab-ad-forest-child-domains',family:'Forest child domains'},
   {id:'lab-ad-forest-three-denied',family:'Third forest comparison'},
+  {id:'lab-win-ntlmv2-local',family:'Windows local SAM/LSA'},
+  {id:'lab-win-ntlmv2-trust',family:'Windows direct-trust authorities'},
+  {id:'lab-win-rdp-remote-credential-guard',family:'Windows Remote Credential Guard'},
+  {id:'lab-net-radius-password-totp',family:'Network password and TOTP component'},
+  {id:'lab-net-eap-tls13-wired',family:'Network wired EAP-TLS'},
+  {id:'lab-net-nps-ad-tls12',family:'Network NPS account mapping'},
+  {id:'lab-net-radius-accounting-lifecycle',family:'Network accounting'},
+  {id:'lab-net-radius-proxy-realm',family:'Network proxy and home AAA'},
+  {id:'lab-net-radius-coa-ack',family:'Network dynamic authorization'},
+  {id:'lab-krb-spake-optimistic-renegotiate',family:'Kerberos SPAKE negotiation'},
+  {id:'lab-pake-spake2-success',family:'PAKE balanced peers'},
+  {id:'lab-pake-spake2plus-success',family:'PAKE augmented prover/verifier'},
+  {id:'lab-pake-spake2plus-record-boundary',family:'PAKE retained observer recording'},
 ];
 
 async function choose(page,id,expanded=false){
@@ -153,6 +166,39 @@ async function help(page,mode,{everyActor=true,fresh=false,screenshots=false}={}
   check(mode+' hover/focus/F2/Tab/nested-help/Escape',{actors:everyActor?ids:ids.slice(0,1),fresh,singleControlTabExit});
 }
 async function screen(page,name,{fullPage=true}={}){const safeName=name.replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,180),file=path.join(evidenceDir,'code1-correction-'+safeName+'.png');await page.screenshot({path:file,fullPage});evidence.screenshots.push(file);}
+const faviconPixels=new Map();
+async function favicons(page,mode,origin){
+  const expected=[['favicon.ico','icon','image/x-icon','16x16 32x32 48x48'],['favicon.svg','icon','image/svg+xml','any'],['apple-touch-icon.png','apple-touch-icon','','180x180']];
+  const actual=await page.evaluate(async()=>{
+    const result=[];
+    for(const link of document.querySelectorAll('link[rel="icon"],link[rel="apple-touch-icon"]')){
+      const image=new Image();image.src=link.href;await image.decode();
+      const canvas=document.createElement('canvas');canvas.width=32;canvas.height=32;
+      canvas.getContext('2d').drawImage(image,0,0,32,32);
+      result.push({rel:link.rel,type:link.type,sizes:link.sizes.value,href:link.href,width:image.naturalWidth,height:image.naturalHeight,png:canvas.toDataURL('image/png')});
+    }
+    return result;
+  });
+  assert.equal(actual.length,expected.length,mode+' declares the supplied scalable, fallback and touch icons');
+  const icons=[];
+  for(const [index,[name,rel,type,sizes]] of expected.entries()){
+    const icon=actual[index],asset=fs.readFileSync(path.join(project,'assets',name));
+    assert.equal(icon.rel,rel);assert.equal(icon.type,type);assert.equal(icon.sizes,sizes);
+    if(mode==='source')assert.equal(icon.href,origin+'/assets/'+name);
+    else{
+      assert.match(icon.href,new RegExp('^data:'+(type||'image/png').replace('+','\\+')+';base64,'));
+      assert.deepEqual(Buffer.from(icon.href.slice(icon.href.indexOf(',')+1),'base64'),asset,mode+' embeds the unchanged supplied '+name);
+    }
+    const rendered=Buffer.from(icon.png.split(',')[1],'base64'),renderedSha256=createHash('sha256').update(rendered).digest('hex');
+    if(mode==='source')faviconPixels.set(name,renderedSha256);
+    else assert.equal(renderedSha256,faviconPixels.get(name),mode+' renders the same '+name+' as source HTTP');
+    if(name==='apple-touch-icon.png'){assert.equal(icon.width,180);assert.equal(icon.height,180);}
+    const file=path.join(evidenceDir,'code1-correction-'+mode+'-'+name.replace('.','-')+'-rendered.png');
+    fs.writeFileSync(file,rendered);evidence.screenshots.push(file);
+    icons.push({file:'assets/'+name,rel,type,sizes,width:icon.width,height:icon.height,assetSha256:createHash('sha256').update(asset).digest('hex'),renderedSha256,screenshot:file,embedded:mode!=='source'});
+  }
+  check(mode+' supplied favicons decode under enforced CSP and preserve source pixels',{icons});
+}
 async function protocolStudy(page,mode){
   await choose(page,'lab-ad-forest-child-domains',true);
   await page.evaluate(()=>document.querySelector('auth-flow-studio').selectStep(8,false));
@@ -320,7 +366,7 @@ try{
   const executable=process.env.CHROMIUM_EXECUTABLE||playwright.chromium.executablePath();evidence.browserExecutable=executable;
   if(!fs.existsSync(executable))throw new Error('No Chromium executable is installed. Native-browser checks have not run.');
   browser=await playwright.chromium.launch({headless:true,executablePath:executable,args:['--no-sandbox']});evidence.browserVersion=browser.version();evidence.status='running';save();
-  const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml'};
+  const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml','.ico':'image/x-icon','.png':'image/png'};
   server=http.createServer((req,res)=>{const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname),file=path.resolve(project,'.'+(pathname==='/'?'/index.html':pathname));if(!file.startsWith(project+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile()){res.writeHead(404);res.end();return;}res.writeHead(200,{'Content-Type':types[path.extname(file)]||'application/octet-stream','Cache-Control':'no-store'});fs.createReadStream(file).pipe(res);});
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const origin='http://127.0.0.1:'+server.address().port;
   for(const [mode,pathname]of [['source','/index.html'],['standalone','/dist/auth-flow-studio.html'],['standalone-file','/dist/auth-flow-studio.html']]){
@@ -330,8 +376,13 @@ try{
     page.on('pageerror',error=>errors.push(String(error)));page.on('request',request=>requests.push(request.url()));
     await page.exposeFunction('recordNativeQaCspViolation',record=>applicationViolations.push(record));
     await page.addInitScript(()=>{window.__qaNativeCspRecords=[];document.addEventListener('securitypolicyviolation',event=>{const record={directive:event.effectiveDirective,blocked:event.blockedURI,disposition:event.disposition,documentURI:event.documentURI};window.__qaNativeCspRecords.push(record);window.recordNativeQaCspViolation(record);});});
-    await page.route('**/*',route=>{interceptions.push(route.request().url());return allowedRequest(route.request().url())?route.continue():route.abort();});
+    const guard=route=>{interceptions.push(route.request().url());return allowedRequest(route.request().url())?route.continue():route.abort();};
+    await page.route('**/*',guard);
     await page.goto(target,{waitUntil:'networkidle'});await page.waitForFunction(()=>document.querySelector('auth-flow-studio')?.initialized);
+    // Playwright aborts ICO requests whenever interception is enabled, before
+    // matching route handlers. CSP and passive observers stay active here.
+    await page.unroute('**/*',guard);
+    try{await favicons(page,mode,origin);}finally{await page.route('**/*',guard);}
     assert.equal(await page.evaluate(()=>document.querySelector('auth-flow-studio').labScenarioId),'basic-keycloak');check(mode+' boots with ordinary Keycloak login');
     const scenarioIds=await page.evaluate(()=>[...document.querySelector('auth-flow-studio').refs['lab-scenario'].options].map(o=>o.value));assert.equal(new Set(scenarioIds).size,scenarioIds.length);
     for(const id of scenarioIds){await choose(page,id);const hasInternals=await page.evaluate(()=>Object.values(document.querySelector('auth-flow-studio').scenarioOwnedActors||{}).some(a=>a.parentId));for(const expanded of hasInternals?[false,true]:[false]){if(expanded)await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.showInternals=true;a.renderAll();});const snapshot=await scene(page,mode+' '+id,{samplePaths:true});assert.equal(snapshot.id,id);evidence.scenarios.push({mode,...snapshot});}}
@@ -360,20 +411,28 @@ try{
     check(mode+' application respects CSP and makes no external requests',{requestCount:requests.length});
     const fetchProbe=mode==='standalone-file'?'https://auth-lab-csp-probe.invalid/qa-prohibited-fetch':origin+'/qa-prohibited-fetch';
     const interceptionCountBeforeProbe=interceptions.length;
-    const cspProbe=async fetchProbe=>{window.__qaNativeCspRecords=[];let evalBlocked=false;try{Function('return 42')();}catch{evalBlocked=true;}const script=document.createElement('script');script.textContent='window.__qaInlineExecuted=true';document.head.append(script);let fetchRejected=false;try{await fetch(fetchProbe);}catch{fetchRejected=true;}return {evalBlocked,inlineBlocked:!window.__qaInlineExecuted,fetchRejected};};
+    const cspProbe=async fetchProbe=>{
+      window.__qaNativeCspRecords=[];let evalBlocked=false;
+      try{Function('return 42')();}catch{evalBlocked=true;}
+      const script=document.createElement('script');script.textContent='window.__qaInlineExecuted=true';document.head.append(script);
+      let fetchRejected=false;try{await fetch(fetchProbe);}catch{fetchRejected=true;}
+      const remoteImageBlocked=await new Promise(resolve=>{const image=new Image();image.onload=()=>resolve(false);image.onerror=()=>resolve(true);image.src='https://auth-lab-csp-probe.invalid/qa-prohibited-image.png';});
+      return {evalBlocked,inlineBlocked:!window.__qaInlineExecuted,fetchRejected,remoteImageBlocked};
+    };
     // DevTools defaults to bypassing unsafe-eval CSP inside evaluate calls.
     // Disable that exception so this probes the page policy, not debugger privileges.
     const probeSession=await context.newCDPSession(page);
     const probeResult=await probeSession.send('Runtime.evaluate',{expression:'('+cspProbe.toString()+')('+JSON.stringify(fetchProbe)+')',awaitPromise:true,returnByValue:true,allowUnsafeEvalBlockedByCSP:false});
     await probeSession.detach();assert.equal(probeResult.exceptionDetails,undefined,mode+' CSP probe executes in the protected page context');
     const csp=probeResult.result.value;
-    await page.waitForFunction(()=>window.__qaNativeCspRecords.length>=3);const violations=await page.evaluate(()=>window.__qaNativeCspRecords);
-    assert.equal(csp.evalBlocked,true);assert.equal(csp.inlineBlocked,true);assert.equal(csp.fetchRejected,true);
+    await page.waitForFunction(()=>window.__qaNativeCspRecords.length>=4);const violations=await page.evaluate(()=>window.__qaNativeCspRecords);
+    assert.equal(csp.evalBlocked,true);assert.equal(csp.inlineBlocked,true);assert.equal(csp.fetchRejected,true);assert.equal(csp.remoteImageBlocked,true);
     assert.ok(violations.some(v=>/^script-src/.test(v.directive)&&v.blocked==='eval'&&v.disposition==='enforce'),mode+' eval attributed to script-src');
     assert.ok(violations.some(v=>/^script-src/.test(v.directive)&&v.blocked==='inline'&&v.disposition==='enforce'),mode+' arbitrary inline script attributed to script-src');
     assert.ok(violations.some(v=>v.directive==='connect-src'&&v.blocked.startsWith(new URL(fetchProbe).origin)&&v.disposition==='enforce'),mode+' fetch attributed to connect-src');
-    assert.equal(interceptions.length,interceptionCountBeforeProbe,mode+' forbidden fetch never reaches request interception/network');
-    check(mode+' actual CSP enforcement rejects eval/inline/fetch with attributable violation events',{...csp,violations});
+    assert.ok(violations.some(v=>v.directive==='img-src'&&v.blocked.startsWith('https://auth-lab-csp-probe.invalid')&&v.disposition==='enforce'),mode+' remote image attributed to img-src');
+    assert.equal(interceptions.length,interceptionCountBeforeProbe,mode+' forbidden fetch/image never reaches request interception/network');
+    check(mode+' actual CSP enforcement rejects eval/inline/fetch/remote images with attributable violation events',{...csp,violations});
     await context.close();save();
   }
   evidence.artifactAfterChecks={sourceEntry:digest(path.join(project,'index.html')),standalone:digest(path.join(project,'dist/auth-flow-studio.html')),sourceSnapshotSha256:sourceSnapshot()};

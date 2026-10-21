@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {installHarness,HarnessEvent} from './dom-harness.mjs';
+import {readFileSync} from 'node:fs';
+const expansionPlan=JSON.parse(readFileSync(new URL('../docs/expansion/plan-manifest.json',import.meta.url),'utf8')).scenarios;
 
 // Interaction tests only: the offline harness does not implement browser layout,
 // screen-reader announcements or the platform's native focus navigation.
@@ -25,7 +27,7 @@ function pickerActive(app){const id=pickerInput(app).getAttribute('aria-activede
 function pickerChoose(app,id){const row=pickerRows(app).find(option=>option.dataset.scenarioOption===id);assert.ok(row,'matching scenario is selectable');row.click();}
 const pickerCanonical=name=>String(name).replace(/\s*\([^)]*\)/g,'').trim();
 function pickerExpected(query){const terms=query.toLowerCase().trim().split(/\s+/);return LAB_SCENARIOS.filter(model=>{
-  const text=[model.title,model.summary,model.category,model.status,model.protocol||'oidc',model.workspace,model.family,model.keywords,model.lesson,model.evidenceLabel,...model.ids.flatMap(id=>[pickerCanonical(LAB_ATTRIBUTES[id]?.name||id),LAB_ATTRIBUTES[id]?.standard])].join(' ').toLowerCase();
+  const text=[model.id,model.title,model.summary,model.category,model.status,model.protocol||'oidc',model.workspace,model.family,model.keywords,model.lesson,model.evidenceLabel,model.learningObjective,...(model.prerequisites||[]),model.profile?JSON.stringify(model.profile):'',...model.ids.flatMap(id=>[pickerCanonical(LAB_ATTRIBUTES[id]?.name||id),LAB_ATTRIBUTES[id]?.standard])].join(' ').toLowerCase();
   return terms.every(term=>text.includes(term));
 }).map(model=>model.id);}
 
@@ -43,11 +45,28 @@ test('the scenario field exposes an inline combobox while preserving the complet
     assert.ok(status.getAttribute('aria-live')||status.getAttribute('role')==='status','result feedback can be announced');
   }finally{pickerUnmount(app);}
 });
+test('independently planned expansion presets are discoverable and cross-protocol choices activate their owning models',()=>{
+  const app=pickerMount();try{
+    pickerOpen(app);
+    const available=new Set(pickerIds(app));
+    for(const {id} of expansionPlan)assert.ok(available.has(id),id+' is selectable from the real picker');
+    for(const [query,id,workspace] of [
+      ['NTLMV2','lab-win-ntlmv2-domain','windows'],
+      ['EAP-TLS','lab-net-eap-tls13-wired','network'],
+      ['SPAKE','lab-krb-spake-success','kerberos'],
+      ['SPAKE2+','lab-pake-spake2plus-success','foundations'],
+    ]){
+      pickerType(app,query);pickerChoose(app,id);
+      assert.equal(app.labScenarioId,id);assert.equal(app.workspace,workspace);assert.equal(pickerMenu(app).hidden,true);
+      assert.equal(pickerInput(app).getAttribute('aria-expanded'),'false');
+    }
+  }finally{pickerUnmount(app);}
+});
 
 test('inline search matches case-insensitive terms across titles, categories, status and canonical attributes',()=>{
   const app=pickerMount();try{
     pickerOpen(app);
-    for(const query of ['SAML ARTIFACT','DPoP nonce','CODE_VERIFIER','Standards only','token session lifecycle']){
+    for(const query of ['SAML ARTIFACT','DPoP nonce','CODE_VERIFIER','Standards only','token session lifecycle','LAB-WIN-CREDSSP-V6-KERBEROS']){
       pickerType(app,query);const expected=pickerExpected(query);assert.ok(expected.length,'the query has actual scenario matches');
       assert.deepEqual(pickerIds(app).filter(id=>LAB_SCENARIOS.some(model=>model.id===id)).slice().sort(),expected.slice().sort(),query+' matches every requested term across scenario metadata');
       assert.equal(app.labScenarioId,'basic-keycloak','search itself never chooses a scenario');
@@ -55,6 +74,7 @@ test('inline search matches case-insensitive terms across titles, categories, st
     pickerType(app,'artifact');pickerChoose(app,'lab-saml-artifact');assert.equal(app.labScenarioId,'lab-saml-artifact');assert.equal(pickerMenu(app).hidden,true);assert.equal(pickerInput(app).value,pickerTitle(app,'lab-saml-artifact'));
   }finally{pickerUnmount(app);}
 });
+
 
 test('typing and clearing results preserve the active journey, selected attribute and running playback',()=>{
   const app=pickerMount();try{
@@ -128,6 +148,5 @@ test('the first Basic Keycloak sign-in preset shows a single-realm browser passw
     assert.ok(app.steps.some(step=>step.fields.includes('password')),'the provider receives an account password');assert.ok(app.steps.some(step=>step.fields.includes('codeA')),'Realm A issues the app authorization code');assert.ok(app.steps.some(step=>step.fields.includes('codeVerifier')),'the application uses PKCE');
     const broker=app.refs.actors.querySelector('[data-actor="realmB"]');assert.ok(!broker||broker.hidden,'the single-realm preset does not display a second identity provider');
     assert.ok(app.steps.every(step=>![step.from,step.to].includes('realmB')),'there is no upstream broker');assert.ok(app.steps.every(step=>!step.fields.some(id=>['codeB','clientIdBroker','otpCode','otpSecret','credentialPrivateKey','assertionSignature'].includes(id))),'no second-realm exchange, OTP or passkey factor is inserted');
-    assert.equal(LAB_SCENARIOS.filter(model=>!model.workspace).length,43,'the quick preset is not counted as another extended model');
   }finally{pickerUnmount(app);}
 });

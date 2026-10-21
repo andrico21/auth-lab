@@ -66,6 +66,24 @@ describe('canonical held-object projection', () => {
     assert.equal(model.steps[0].attributeOperations, undefined);
   });
 
+  test('a provisioned-object replay stays at its initial checkpoint while paused mid-row', () => {
+    const { plan, model, steps } = fixture();
+    const compiled = compileHeldObjects(plan, { model, steps });
+    const initial = projectHeldObjects(compiled);
+    const row = heldObjectTrace(compiled, 'R0')[0];
+    for (const fraction of [0, .001, .25, .5, .999, 1]) {
+      const cursor = heldCursorForPlayback(compiled, {
+        status: 'paused', kind: 'object', step: row, duration: 1000, stepElapsed: fraction * 1000,
+      });
+      assert.deepEqual(projectHeldObjects(compiled, cursor), initial);
+    }
+    const firstSource = heldCursorForPlayback(compiled, {
+      status: 'paused', kind: 'step', step: steps[0], duration: 1000, stepElapsed: 500,
+    });
+    assert.equal(projectHeldObjects(compiled, firstSource).state.caches.refresh, 'R0');
+    assert.equal(projectHeldObjects(compiled, firstSource).protocolClock, 0);
+  });
+
   test('issuer consumption, delayed arrival, verification and client installation differ', () => {
     const { plan, model, steps } = fixture();
     const compiled = compileHeldObjects(plan, { model, steps });

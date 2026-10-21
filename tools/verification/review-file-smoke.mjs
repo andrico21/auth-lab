@@ -5,7 +5,7 @@ import path from 'node:path';
 import {createRequire} from 'node:module';
 import {createHash} from 'node:crypto';
 import {fileURLToPath,pathToFileURL} from 'node:url';
-if(process.argv.includes('--help')){console.log('Usage: bun tools/verification/review-file-smoke.mjs [standalone.html] [project-directory]\nBuild first. Defaults to this checkout and dist/auth-flow-studio.html; optionally pass the actual delivered HTML. Requires Playwright/PLAYWRIGHT_MODULE and installed Chromium/CHROMIUM_EXECUTABLE. Checks exact R1 replay, measured compact targets, file-mode CSP and no external application requests. Evidence: AUTH_LAB_HELD_EVIDENCE_DIR or docs/verification/held-objects.');process.exit(0);}
+if(process.argv.includes('--help')){console.log('Usage: bun tools/verification/review-file-smoke.mjs [standalone.html] [project-directory]\nBuild first. Defaults to this checkout and dist/auth-flow-studio.html; optionally pass the actual delivered HTML. Requires Playwright/PLAYWRIGHT_MODULE and installed Chromium/CHROMIUM_EXECUTABLE. Checks exact R1 replay, measured compact targets, file-mode CSP, no external application requests and collection of the disconnected component. Evidence: AUTH_LAB_HELD_EVIDENCE_DIR or docs/verification/held-objects.');process.exit(0);}
 const root=path.resolve(process.argv[3]||path.join(path.dirname(fileURLToPath(import.meta.url)),'../..')),out=path.resolve(process.env.AUTH_LAB_HELD_EVIDENCE_DIR||path.join(root,'docs/verification/held-objects')),file=path.resolve(process.argv[2]||path.join(root,'dist/auth-flow-studio.html'));
 fs.mkdirSync(out,{recursive:true});
 const require=createRequire(import.meta.url),playwright=process.env.PLAYWRIGHT_MODULE?await import(pathToFileURL(path.resolve(process.env.PLAYWRIGHT_MODULE)).href):require('playwright');
@@ -33,6 +33,12 @@ try{
  assert.equal(report.compact.geometry,'compact');for(const actor of report.compact.actors){assert.equal(actor.width,82);assert.equal(actor.height,132);}for(const target of report.compact.targets){assert.ok(target.width>=44&&target.height>=44);}assert.equal(report.compact.stepAttributes.visible,true);
  await page.locator('#graph').screenshot({path:out+'/review-file-compact-inventory.png'});report.screenshots.push('review-file-compact-inventory.png');
  if(report.compact.stepAttributes.external){await page.locator('#step-attributes-external').screenshot({path:out+'/review-file-compact-step-attributes.png'});report.screenshots.push('review-file-compact-step-attributes.png');}
+ const lifecycleSession=await page.context().newCDPSession(page);
+ await page.evaluate(()=>{const app=document.querySelector('auth-flow-studio');globalThis.__reviewDisconnectedStudio=new WeakRef(app);app.remove();});
+ for(let turn=0;turn<2;turn++){await page.evaluate(()=>new Promise(resolve=>setTimeout(resolve,0)));await lifecycleSession.send('HeapProfiler.collectGarbage');}
+ report.lifecycle={disconnectedComponentCollected:await page.evaluate(()=>globalThis.__reviewDisconnectedStudio.deref()===undefined),method:'Actual custom-element removal, two separate browser task boundaries and Chrome HeapProfiler full collections'};
+ assert.equal(report.lifecycle.disconnectedComponentCollected,true,'Disconnected component must not remain rooted by window listeners');
+ await page.evaluate(()=>delete globalThis.__reviewDisconnectedStudio);await lifecycleSession.detach();
  assert.deepEqual(errors,[]);assert.deepEqual(await page.evaluate(()=>window.__violations),[]);assert.ok(requests.every(r=>r===url));report.applicationRequests=requests;report.passed=true;
 }catch(error){report.failures=[{message:error.message,stack:error.stack}];process.exitCode=1;}
 finally{await browser.close();fs.writeFileSync(out+'/review-file-smoke-status.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));}

@@ -154,3 +154,71 @@ test('L1: code_verifier focused end-seek and Play preserve terminal local verifi
     assert.deepEqual(visitedState(app), natural);
   } finally { unmount(app); }
 });
+
+const expansionReceiptCases=[
+  {
+    id:'lab-win-credssp-v6-kerberos',suffix:'authinfo-receive',
+    before:{'windows.authInfoReceived':false,'windows.credentialsReceived':false},
+    after:{'windows.authInfoReceived':true,'windows.credentialsReceived':false,'windows.logonAuthorized':false},
+    holding:{actorId:'winHost',artifactId:'lab-win-credssp-v6-kerberos:delegated-credentials',representationId:'wire'},
+  },
+  {
+    id:'lab-net-eap-tls13-wired',suffix:'accept',
+    before:{'network.port':'unauthorized'},
+    after:{'network.reply':'received-unverified','network.port':'unauthorized','network.mskReleased':false},
+    holding:{actorId:'netNas',artifactId:'lab-net-eap-tls13-wired:msk:g1',representationId:'wire'},
+  },
+  {
+    id:'lab-krb-spake-success',suffix:'as-receive',
+    before:{'credentials.tgt':false},
+    after:{'credentials.tgt':false,'as.received':true},
+    holding:{actorId:'spake-client',artifactId:'lab-krb-spake-success:tgt',representationId:'opaque'},
+  },
+  {
+    id:'lab-pake-spake2plus-success',suffix:'send-confirm-a',
+    before:{'sessions.pake.pake-verifier.receivedConfirmation':false,'sessions.pake.pake-verifier.usable':false},
+    after:{'sessions.pake.pake-verifier.receivedConfirmation':true,'sessions.pake.pake-verifier.usable':false},
+  },
+];
+for(const fixture of expansionReceiptCases)test(fixture.id+' presentation changes preserve a paused atomic receipt boundary',()=>{
+  const app=mount();try{
+    app.selectLabScenario(fixture.id);
+    const step=app.steps.find(step=>step.id.endsWith(':'+fixture.suffix)||step.id.endsWith('-'+fixture.suffix));
+    assert.ok(step,'The required independent receipt event exists');
+    app.player.seek([step],.5,'step');app.player.pause();
+    const snapshot={protocol:app.protocolSnapshot(),held:app.heldView.snapshot(),elapsed:app.player.elapsed};
+    const valueAt=(state,path)=>path.split('.').reduce((value,key)=>value?.[key],state);
+    for(const [path,expected] of Object.entries(fixture.before))assert.deepEqual(valueAt(snapshot.protocol.state,path),expected,path);
+    const hasReceipt=frame=>frame.holdings.some(holding=>Object.entries(fixture.holding).every(([key,value])=>holding[key]===value));
+    if(fixture.holding)assert.equal(hasReceipt(snapshot.held),false,'No receiver acquisition halfway through the message');
+    for(const detail of ['fields','crypto','journey']){
+      app.querySelector('#learning-detail-'+detail).click();
+      clock.advance(120);
+      assert.equal(app.player.status,'paused');assert.equal(app.player.elapsed,snapshot.elapsed);
+      assert.deepEqual(app.protocolSnapshot(),snapshot.protocol);
+      assert.deepEqual(app.heldView.snapshot(),snapshot.held);
+    }
+    app.player.seek([step],1,'step');
+    const received=app.protocolSnapshot();
+    for(const [path,expected] of Object.entries(fixture.after))assert.deepEqual(valueAt(received.state,path),expected,path);
+    if(fixture.holding)assert.equal(hasReceipt(app.heldView.snapshot()),true,'The exact wire acquisition begins only at whole-message receipt');
+  }finally{unmount(app);}
+});
+
+for(const id of ['lab-win-credssp-delegation-denied','lab-win-winrm-delegation-denied'])test(id+' exposes its local rejection through actual field replay without inventing networking',()=>{
+  const app=mount();try{
+    app.selectLabScenario(id);
+    const errorId=app.labModel.ids.find(attributeId=>attributeId.endsWith('export-policy-error'));
+    const field=app.refs['attribute-index-list'].querySelector('[data-index-attribute="'+errorId+'"]');
+    field.click();app.player.pause();
+    assert.ok(app.traceQueue.some(step=>step.traceKind==='create'&&step.from==='winClient'&&step.to==='winClient'));
+    assert.equal(app.traceQueue.some(step=>step.from!==step.to),false);
+    app.player.seek(app.traceQueue,1,'attribute');
+    const state=app.protocolSnapshot().state.windows;
+    assert.equal(state.failure,'delegation-policy');assert.equal(state.clientKnowsFailure,true);
+    assert.equal(state.transportReady,false);assert.equal(state.authInfoReceived,false);
+    assert.equal(state.credentialsReceived,false);assert.equal(state.sessionEstablished,false);
+    app.clearAttribute();app.selectStep(app.steps.length-1,false);
+    assert.deepEqual(app.protocolSnapshot().state.windows,state);
+  }finally{unmount(app);}
+});

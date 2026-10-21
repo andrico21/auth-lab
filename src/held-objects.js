@@ -4,6 +4,11 @@ import {buildSSHHeldObjects} from './held-object-ssh.js';
 import {buildProtectionHeldObjects} from './held-object-protection.js';
 import {buildWebHeldObjects} from './held-object-web.js';
 import {buildCoreHeldObjects} from './held-object-core.js';
+import {buildWindowsHeldObjects} from './held-object-windows.js';
+import {buildSMBHeldObjects} from './held-object-smb.js';
+import {buildNetworkHeldObjects} from './held-object-network.js';
+import {buildSpakeHeldObjects} from './held-object-spake.js';
+import {buildPakeHeldObjects} from './held-object-pake.js';
 import {compileHeldObjects,assertHeldObjectCoverage} from './held-object-state.js';
 import {ADLAB_SCENARIOS} from './kerberos-ad-lab.js';
 import {CRYPTOLAB_SCENARIOS} from './kerberos-crypto-lab.js';
@@ -15,6 +20,12 @@ import {LIFELAB_SCENARIOS} from './lifecycle-lab.js';
 import {GRANTLAB_SCENARIOS} from './extended-grants-lab.js';
 import {SAMLLAB_SCENARIOS} from './saml-advanced-lab.js';
 import {BRANCHLAB_SCENARIOS} from './branching-lab.js';
+import {WINDOWSLAB_SCENARIOS} from './windows-auth-lab.js';
+import {SMBLAB_SCENARIOS} from './smb-access-lab.js';
+import {SMBMULTI_SCENARIOS} from './smb-multichannel-lab.js';
+import {NETWORKLAB_SCENARIOS} from './network-access-lab.js';
+import {SPAKELAB_SCENARIOS} from './kerberos-spake-lab.js';
+import {PAKELAB_SCENARIOS} from './pake-lab.js';
 
 const heldObjectSources=new Map([
   [ADLAB_SCENARIOS,'src/kerberos-ad-lab.js'],[CRYPTOLAB_SCENARIOS,'src/kerberos-crypto-lab.js'],
@@ -22,6 +33,9 @@ const heldObjectSources=new Map([
   [PROTLAB_SCENARIOS,'src/protection-lab.js'],[WEBLAB_SCENARIOS,'src/web-api-lab.js'],
   [LIFELAB_SCENARIOS,'src/lifecycle-lab.js'],[GRANTLAB_SCENARIOS,'src/extended-grants-lab.js'],
   [SAMLLAB_SCENARIOS,'src/saml-advanced-lab.js'],[BRANCHLAB_SCENARIOS,'src/branching-lab.js'],
+  [WINDOWSLAB_SCENARIOS,'src/windows-auth-lab.js'],[NETWORKLAB_SCENARIOS,'src/network-access-lab.js'],
+  [SMBLAB_SCENARIOS,'src/smb-access-lab.js'],[SMBMULTI_SCENARIOS,'src/smb-multichannel-lab.js'],
+  [SPAKELAB_SCENARIOS,'src/kerberos-spake-lab.js'],[PAKELAB_SCENARIOS,'src/pake-lab.js'],
 ].flatMap(([models,source])=>models.map(model=>[model.id,source])));
 const heldObjectBuilders=new Map([
   ['src/kerberos-ad-lab.js',buildADHeldObjects],['src/kerberos-crypto-lab.js',buildKerberosHeldObjects],
@@ -29,6 +43,9 @@ const heldObjectBuilders=new Map([
   ['src/protection-lab.js',buildProtectionHeldObjects],['src/web-api-lab.js',buildProtectionHeldObjects],
   ['src/lifecycle-lab.js',buildWebHeldObjects],['src/extended-grants-lab.js',buildWebHeldObjects],
   ['src/saml-advanced-lab.js',buildWebHeldObjects],['src/branching-lab.js',buildWebHeldObjects],
+  ['src/windows-auth-lab.js',buildWindowsHeldObjects],['src/network-access-lab.js',buildNetworkHeldObjects],
+  ['src/smb-access-lab.js',buildSMBHeldObjects],['src/smb-multichannel-lab.js',buildSMBHeldObjects],
+  ['src/kerberos-spake-lab.js',buildSpakeHeldObjects],['src/pake-lab.js',buildPakeHeldObjects],
 ]);
 
 /** Build once per immutable scenario/configuration/context revision, not frame. */

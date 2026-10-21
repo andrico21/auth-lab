@@ -1,0 +1,31 @@
+bun test v1.4.2 (744846f84)
+
+tests/network-access-lab.test.mjs:
+321 |       assert.equal(action.sourceEventId,decode.id);assert.equal(action.fieldPath,field.name);
+322 |       assert.equal(action.instanceId,decode.id+':fields');
+323 |       assert.equal(action.exactValueRef,decode.id+':fields:radius-decoded:'+field.name);
+324 |       assert.deepEqual(action.holders,[wire.to]);
+325 |       const trace=buildAttributeTrace(getAttributeUsage(steps,field.attributeId));
+326 |       assert.equal(trace.length,1);assert.equal(trace[0].traceKind,'decrypt');
+                   ^
+AssertionError: Expected values to be strictly equal:
+
+0 !== 1
+
+ generatedMessage: true,
+     actual: 0,
+   expected: 1,
+   operator: "strictEqual",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/andrico/auth-lab-held-objects/tests/network-access-lab.test.mjs:326:14
+      at run (node:async_hooks:144:29)
+      at node:test:1445:26
+      at executeTestNode (node:test:1448:45)
+      at node:test:1591:20
+(fail) NET-05 all 53 recovered RadSec fields are receiver-local decrypt replays with exact canonical provenance [2.23ms]
+
+ 384 pass
+ 1 fail
+Ran 385 tests across 11 files. [21.44s]

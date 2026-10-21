@@ -432,6 +432,7 @@ export function heldCursorForPlayback(compiled, playerSnapshot = {}, selectedSte
   if (row.heldCursorStart && row.heldCursorEnd) {
     const start = canonical(data, row.heldCursorStart), end = canonical(data, row.heldCursorEnd);
     requireValue(data.positions.get(start) <= data.positions.get(end), 'Trace cursor interval is reversed.');
+    if(start===end)return start;
     if (progress >= 1) return end;
     if (progress <= 0) return start;
     if (start.eventIndex === end.eventIndex) {

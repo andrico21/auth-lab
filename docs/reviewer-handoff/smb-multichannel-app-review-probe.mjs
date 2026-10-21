@@ -1,0 +1,55 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {createHash} from 'node:crypto';
+const base=new URL('./smb-candidate/',import.meta.url);
+const hash=path=>createHash('sha256').update(fs.readFileSync(new URL(path,base))).digest('hex');
+const before=hash('src/smb-multichannel-lab.js');
+const {installHarness}=await import(new URL('tests/dom-harness.mjs',base));
+const {document,clock}=installHarness();
+const {AuthFlowStudio}=await import(new URL('src/app.js',base));
+const {SMBMULTI_SCENARIOS}=await import(new URL('src/smb-multichannel-lab.js',base));
+const {LAB_MODELS}=await import(new URL('src/lab-catalog.js',base));
+const {studioRoute,parseStudioRoute}=await import(new URL('src/workspaces.js',base));
+const {projectHeldObjects,heldObjectTrace}=await import(new URL('src/held-object-state.js',base));
+const app=new AuthFlowStudio();document.body.appendChild(app);app.connectedCallback();
+const observed=[];
+try{
+ for(const model of SMBMULTI_SCENARIOS){
+  if(app.hasTrace)app.clearAttribute();app.selectLabScenario(model.id,{navigate:false});
+  const suffix=model.id.endsWith('rejected')?'binding_rejected':'binding_success';
+  const route=studioRoute(model.id,LAB_MODELS);
+  assert.equal(route,'#/windows/files/'+model.id);assert.equal(parseStudioRoute(route,LAB_MODELS).scenarioId,model.id);
+  assert.match(app.querySelector('#learning-profile-content').textContent,/Source discrepancy/);
+  const init=app.steps.find(s=>s.smbStage==='mc-gss-init');
+  const attr='smb_mc_'+suffix+'_cifs-ticket';
+  assert.match(init.payload.find(p=>p.attributeId===attr).value,/Ticket\(cifs/);
+  assert.doesNotMatch(init.payload.find(p=>p.attributeId===attr).value,/Decoded/);
+  app.selectAttribute(attr,false);
+  const use=app.traceQueue.find(row=>row.sourceStepId.endsWith(':mc-gss-init'));
+  assert.ok(use);assert.equal(use.from,'smbClient');assert.equal(use.to,'smbClient');
+  assert.ok(use.traceActions.every(op=>op.representation==='wire'&&op.inspectors.includes('smbClient')));
+  assert.match(use.payload[0].value,/Ticket\(cifs/);assert.doesNotMatch(use.payload[0].value,/Decoded/);
+  app.clearAttribute();app.selectStep(app.steps.length-1,false);
+  const compiled=app.heldView.compiled(),final=projectHeldObjects(compiled,{eventIndex:app.steps.length-1});
+  const ticketUse=heldObjectTrace(compiled,model.id+':cifs-ticket').find(row=>row.sourceStepId?.endsWith(':mc-gss-init'));
+  assert.ok(ticketUse);assert.equal(ticketUse.inspectionActorId,'smbClient');assert.equal(ticketUse.representationId,'wire');
+  assert.match(ticketUse.payload[0].value,/Ticket\(cifs/);assert.doesNotMatch(ticketUse.payload[0].value,/Decoded/);
+  const state=final.state.smb;
+  assert.equal(state.clientJoined,false);assert.equal(state.localDesktopIdentity,'WORKGROUPPC\\bob');
+  assert.equal(state.clientSessionAccepted,true);assert.equal(state.treeConnected,true);assert.equal(state.fileOpened,true);
+  assert.equal(state.followupFileRead,true);assert.equal(state.channel2Usable,!model.id.endsWith('rejected'));
+  const artifact=model.id+':mc-read-data';
+  const holding=final.holdings.find(h=>h.artifactId===artifact&&h.actorId==='smbClient'&&h.store==='multichannel state');
+  assert.ok(holding);app.heldView.select(holding);app.querySelector('#held-inspector [data-held-trace]').click();app.player.stop(false);
+  const wire=app.traceQueue.findIndex(row=>row.sourceStepId?.endsWith(':mc-read-response'));
+  const decoded=app.traceQueue.findIndex(row=>row.sourceStepId?.endsWith(':mc-read-response-unwrap'));
+  assert.ok(wire>=0&&decoded>wire);assert.equal(app.traceQueue[wire].representationId,'ciphertext');
+  assert.equal(app.traceQueue[decoded].inspectionActorId,'smbClient');
+  app.selectStep(wire,false);assert.match(app.refs.inspector.querySelector('.field-value').textContent,/Opaque AES128-GCM/);
+  assert.doesNotMatch(app.refs.inspector.querySelector('.field-value').textContent,/quarterly.txt synthetic/);
+  app.selectStep(decoded,false);assert.match(app.refs.inspector.querySelector('.field-value').textContent,/quarterly.txt synthetic/);
+  observed.push({id:model.id,route,selectedIoChannel:state.selectedIoChannel,channel2Usable:state.channel2Usable,opaqueCachedTicket:true,exactEncryptedRead:true});
+ }
+ const after=hash('src/smb-multichannel-lab.js');assert.equal(after,before,'MC source changed during probe');
+ console.log(JSON.stringify({result:'PASS',baseSourceSha256:hash('src/smb-access-lab.js'),multichannelSourceSha256:after,observed},null,2));
+}finally{app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();}

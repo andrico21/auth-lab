@@ -1,0 +1,93 @@
+Independent SMB architecture / replay recheck — ten base presets plus two multichannel presets
+2026-10-21
+
+Result: no remaining blocking issue found within this bounded architecture/held-state/replay review of ten base SMB3.1.1 presets and the two multichannel presets covered by the addendum below. This is not approval of the original expansion's 19 findings, native usability, a complete protocol implementation, or live interoperability. The multichannel profile explicitly discloses a client/server specification-page discrepancy; it is not an unconditional protocol-conformance certification.
+
+Reviewed candidate:
+  /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/smb-candidate
+
+Stable source SHA-256 at both independent focused probes:
+  src/smb-access-lab.js
+    d90435bb96d795bbdbf577e8d057cf4d1d1bd987a7a4493826c0432b6da0988d
+  src/held-object-smb.js
+    cff4792d0479bc4bfb22d38f1321855e9cf326c37b9087cb154bd9caf1fbf04b
+
+Corrections independently confirmed during development:
+
+* Local keys and validation/install operations now have meaningful field histories. The former helper classified these as context-only inspect operations, leaving Kerberos TGT/CIFS keys without a replay. The final helper records local creation, storage/acquisition, decryption, verification and use without inventing independent wire transmission of secret keys.
+* A newly issued handle or ticket is created before its field history transmits it. The former helper emitted Send before Create.
+* The Netlogon request carries protected challenge/response representations. DC-local decoding and response verification are later replayable occurrences. Plain inner challenge/proof fields no longer appear alongside the protected wrapper as unprotected sidecars.
+* The SMB cryptographic profile is meaningful rendered text, not [object Object]. Its current profile identifies SMB3.1.1, SHA512 preauthentication, separately derived keys, selected AES-CMAC signing and AES128-GCM share encryption.
+* The invalid final-signature branch contains an actually altered symbolic signature in its wire header, rather than relying solely on a later rejection statement. The GCM branch likewise contains an invalid tag fixture.
+* Client disconnect now records supported evict attribute operations alongside held-object releases. It no longer renders disposal as Use. The integrity-negative branches preserve historical events while clearing active client context/handle bindings according to their declared disconnect behavior.
+
+Actual application checks performed:
+
+The probe mounted AuthFlowStudio through tests/dom-harness.mjs, selected scenarios and fields through the real app methods, then exercised the real held-object inspector's Replay exact object history button. It did not substitute a standalone rendering mock.
+
+1. All ten scenario IDs have #/windows/files/<scenario> routes and the SMB3.1.1 profile. Source inspection confirms the catalog, family route, held-object source/builder maps and explicit bundle module list include the SMB modules.
+2. NTLM response field history contains protected Netlogon transmission, DC-local decode and DC-local verification. Session-key field history includes server acquisition after validation. Tree history creates the handle before sending it, then shows client verification/installation.
+3. Kerberos TGT and CIFS session keys have local issuance and later client acquisition rows. The exported KILE session key has server creation and client acquisition during validated final mechanism processing. SMB signing-key histories include both endpoints' local derivation/acquisition; no such secret key is replayed as an independent wire field.
+4. Starting from the client's accepted file-data holding, the actual inspector → exact-history button produces a wire occurrence in ciphertext representation followed by the client's plain occurrence at authenticated unwrap. The rendered wire field contains the opaque AES-GCM fixture and no Quarterly report plaintext. The rendered decoded occurrence contains the plaintext and identifies smbClient as the inspector.
+5. Both signature and encryption rejection paths expose client-disconnect eviction in field history. The bad-tag branch has ciphertext receipt at the client but no client plain file-data occurrence. The local desktop identity stays WORKGROUPPC\\bob.
+
+Reproducible mounted-app probe:
+  /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/smb-app-review-probe.mjs
+Run:
+  node /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/smb-app-review-probe.mjs
+It records the source hash and fails if that file changes during its execution. Final result at the hash above: PASS.
+
+Independent pure held-state review, performed by a separate reviewer:
+
+* Every authored observation uses a representation actually held by that actor at the corresponding checkpoint, including same-event acquisition where declared.
+* No exported SMB base key, signing key, application key or directional cipher key reaches the DC. Provisioned account/service keys and KDC-issued ticket keys retain their legitimate owners.
+* In the KILE AES mutual profile, the server-selected AP-REP acceptor subkey is distinct from the initiator and ticket keys. The client acquires it during AP-REP validation, then derives its own SMB keys before accepting the signed final response.
+* Preauthentication context ends at the final client SESSION_SETUP request: five SMB messages for the selected NTLM exchange and three for the selected Kerberos exchange. The signed successful final response is excluded from that key-derivation context. Preauth hashes are local objects, not transmitted tokens.
+* Signed plaintext SESSION_SETUP/TREE_CONNECT and encrypted CREATE/READ have distinct protection boundaries. Receipt of encrypted inner fields yields ciphertext holdings; authenticated local unwrap precedes plain holdings and usable-handle/data acceptance.
+* Server accepted session and client accepted session occur at separate boundaries. Share denial preserves the authenticated session; file denial preserves the authenticated session and accepted tree. Neither grants a file handle or file data. Integrity-disconnect branches clear active client keys/handles as declared, without retroactively deleting successful source history or the independent desktop logon.
+
+Evidence:
+  /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/smb-held-review-evidence.json
+The focused audit covered 253 observation-possession checks, 450 cursor invariants and 28 encrypted receipts across these ten presets. These counts describe the bounded checks; they are not a substitute for the concrete invariants above.
+
+Primary specification points consulted for the new key/protection interpretation:
+  MS-KILE 3.1.1.2, Cryptographic Material:
+  https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/7a7b081d-c0c6-46f4-acbf-a439664270b8
+  MS-SMB2 3.3.5.5.3, Handling GSS-API Authentication:
+  https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-smb2/5ed93f06-a1d2-4837-8954-fa8b833c2654
+
+Limits: no product edits by these reviewers; no global/full suite; no native browser run; no screen-reader/comprehension signoff; no live AD DS/SMB interoperability; no independently computed packet-crypto vector verification. The product remains a symbolic offline teaching model. Source/bundle parity and any subsequent module additions need the owner's final build and exact-delivery checks.
+
+
+Multichannel final addendum — both success and early binding rejection
+
+Final reviewed module SHA-256:
+  src/smb-multichannel-lab.js
+    cfb6e051f18af47e2c79033765bcd985646e37d16b3511715cfb7f376dfc9eda
+  Its imported base remains d90435bb96d795bbdbf577e8d057cf4d1d1bd987a7a4493826c0432b6da0988d.
+
+One blocking representation defect was found and corrected: mc-gss-init originally treated the client's cached opaque CIFS ticket as its decoded plain representation. The final source selects the wire representation for full-step payload, field operations and a held knowledge observation. The client is not granted decoded ticket-body access. Mounted field replay and exact-object history now both show the original opaque ticket value for the client's local reuse.
+
+Actual mounted checks pass for:
+  lab-smb-multichannel-binding-success
+  lab-smb-multichannel-binding-rejected
+
+Both remain discoverable through the owning Windows/file-access routes and registered source/held builders. Their profile visibly discloses the KDF source discrepancy. Successful binding enables tcp-2 only after client mechanism processing, key derivation and final response verification. The selected early signature rejection leaves tcp-2 unusable, retains the original session/tree/file, and follows with a successful encrypted read over tcp-1. It does not generalize that result to later GSS failures.
+
+For each model, selecting the client's final follow-up data holding and clicking the real exact-history control renders opaque ciphertext on the READ response and plaintext only at the client's later authenticated unwrap. The original local desktop identity, nonjoined status and legitimately retained first-channel handles remain consistent.
+
+The separate pure audit checks fresh binding GSS/channel signing key custody and acquisition, no replacement of original session cipher keys or security context, no additional DC/password exchange, and separate server/client channel acceptance. It also extracts the concrete symbolic encryption nonces: each direction continues #1, #2, #3, #4 under the same retained directional session key. The interface IOCTL increments the original channel sequence; the successful follow-up #4 uses tcp-2, while rejection uses tcp-1. Neither branch resets the counter or repeats a key-plus-nonce pair when changing channel.
+
+Mounted probe:
+  /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/smb-multichannel-app-review-probe.mjs
+Run:
+  node /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/smb-multichannel-app-review-probe.mjs
+Final result: PASS, including a source-hash stability check.
+
+Pure evidence:
+  /workspace/scratch/b1e0b9877d92/implementation-review/expansion1/smb-multichannel-held-review-evidence.json
+Final evidence refreshed at the frozen multichannel hash above: PASS. It checks 144 observations against actual possession, including both new opaque-ticket history observations, 161 tail local-event operations, and all 16 generated directional nonce records across the two presets. Base and held-builder hashes are unchanged. No remaining blocking issue was found in this bounded pure-state and mounted-replay scope.
+
+Specific source limit: the supplied client binding HTML section 3.2.5.3.3 retains the older SMB2AESCMAC/SmbSign labels, whereas the server 3.1.1 branch specifies SMBSigningKey with the new connection's preauthentication context. The candidate explicitly uses the server's 3.1.1 rule at both peers and exposes this assumption in its profile. The current PDF/DOCX was not available to the authoring review to reconcile those pages. This bounded consistency review does not erase that documented source limit or establish live interoperability.
+
+No product edits or global/native runs were performed for the addendum. The original 19 expansion findings remain outside this correction/recheck scope.

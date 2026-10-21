@@ -1,6 +1,6 @@
 # Held objects implementation handoff
 
-Review candidate for Astra. No push, Pages deployment or repository upload has been performed. Publication to `andrico21/auth-lab` remains gated on the user's successful independent review.
+Historical handoff for the accepted Held Objects Code3 baseline `22242f2`, published to `andrico21/auth-lab` after successful independent review. Its reports describe that submitted artifact, not subsequent changes. The Windows, Network and PAKE expansion has a [separate handoff](expansion/implementation.md) and remains unpublished pending its own successful Astra review.
 
 ## Baseline and scope
 
@@ -12,7 +12,7 @@ All 130 fixed extended scenarios, the Core-backed presets and configurable Core 
 
 ## Code1 implementation corrections
 
-This candidate addresses the independent HC01-HC09 findings and the Code2 recheck's remaining SPA/BFF HC03 reader omission. The approved pure checkpoint and explicit-family architecture is retained; independent acceptance is still required.
+The accepted candidate addresses the independent HC01-HC09 findings and the Code2 recheck's remaining SPA/BFF HC03 reader omission. The approved pure checkpoint and explicit-family architecture is retained. Code3 closure accepted these contracts for the submitted baseline; later expansion changes need their own independent acceptance.
 
 | Finding | Corrected contract |
 | --- | --- |
@@ -190,4 +190,4 @@ Both archives use the `auth-lab-held-objects/` project root. Extracting the veri
 
 ## Review and manual limits
 
-Use the final machine-readable status reports for observed pass/fail counts and exact artifact hashes. Historical 802-test evidence is baseline evidence only. Automated native acceptance is established for the recorded Chromium version; this handoff does not declare the overall manual G01 gate closed. No live KDC, Keycloak, SSH server, CA or security-key interoperability is claimed. Screen-reader speech/comprehension and cross-engine behavior are not inferred from Chromium or an accessibility tree. Astra's independent implementation review remains required before publication.
+Use the final machine-readable status reports for observed pass/fail counts and exact artifact hashes. Historical 802-test evidence is baseline evidence only. Automated native acceptance is established for the recorded Chromium version; this handoff does not declare the overall manual G01 gate closed. No live KDC, Keycloak, SSH server, CA or security-key interoperability is claimed. Screen-reader speech/comprehension and cross-engine behavior are not inferred from Chromium or an accessibility tree. Code3 acceptance applies only to its exact submitted artifact, not to the later expansion.

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 /** Parse and evaluate the actual emitted script in the existing offline harness.
  * This establishes bundle compilation/boot, not native CSP or visual correctness.
  */
@@ -10,7 +10,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
-if(process.argv.includes('--help')||process.argv.includes('-h')){console.log('Usage: node tools/verification/compiled-bundle-smoke.mjs [project-directory]\nDefaults to this repository. Run the application build first.\nEvidence: docs/verification, or AUTH_LAB_QA_EVIDENCE_DIR. Offline harness smoke check.');process.exit(0);}
+if(process.argv.includes('--help')||process.argv.includes('-h')){console.log('Usage: bun tools/verification/compiled-bundle-smoke.mjs [project-directory]\nDefaults to this repository. Run the application build first.\nEvidence: docs/verification, or AUTH_LAB_QA_EVIDENCE_DIR. Offline harness smoke check. Report records the exact runner hash, runtime and regeneration argv.');process.exit(0);}
 const project=path.resolve(process.argv[2]||path.join(here,'../..'));
 const evidenceDir=path.resolve(process.env.AUTH_LAB_QA_EVIDENCE_DIR||path.join(project,'docs/verification'));fs.mkdirSync(evidenceDir,{recursive:true});
 const {installHarness}=await import(pathToFileURL(path.join(project,'tests/dom-harness.mjs')).href);
@@ -18,7 +18,7 @@ const harness=installHarness();
 const html=fs.readFileSync(path.join(project,'dist/auth-flow-studio.html'),'utf8');
 const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
 const styles=[...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(m=>m[1]);
-const report={kind:'compiled-bundle-offline-smoke',nativeBrowser:false,timestamp:new Date().toISOString(),project,htmlSha256:createHash('sha256').update(html).digest('hex'),scenarios:[]};
+const report={kind:'compiled-bundle-offline-smoke',nativeBrowser:false,timestamp:new Date().toISOString(),project,htmlSha256:createHash('sha256').update(html).digest('hex'),runnerSha256:createHash('sha256').update(fs.readFileSync(fileURLToPath(import.meta.url))).digest('hex'),regenerationCommand:[process.execPath,...process.argv.slice(1)],runtime:{executable:process.execPath,version:process.version,bun:process.versions.bun||null},scenarios:[]};
 let app;
 try{
   assert.equal(scripts.length,1);assert.equal(styles.length,1);

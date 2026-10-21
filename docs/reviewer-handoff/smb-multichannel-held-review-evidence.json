@@ -1,0 +1,144 @@
+{
+  "status": "passed focused pure multichannel held/canonical review",
+  "hashes": {
+    "src/smb-multichannel-lab.js": "cfb6e051f18af47e2c79033765bcd985646e37d16b3511715cfb7f376dfc9eda",
+    "src/smb-access-lab.js": "d90435bb96d795bbdbf577e8d057cf4d1d1bd987a7a4493826c0432b6da0988d",
+    "src/held-object-smb.js": "cff4792d0479bc4bfb22d38f1321855e9cf326c37b9087cb154bd9caf1fbf04b"
+  },
+  "observationChecks": 144,
+  "localOperationPossessionChecks": 200,
+  "tailCursorChecks": 108,
+  "correctionVerified": "mc-gss-init uses cached opaque wire CIFS ticket; client never receives decoded ticket holding",
+  "scenarios": [
+    {
+      "id": "lab-smb-multichannel-binding-success",
+      "steps": 67,
+      "baseSteps": 37,
+      "nonceRecords": [
+        {
+          "stage": "create-request",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-success:c2s-key",
+          "nonce": "C2S nonce12 #1"
+        },
+        {
+          "stage": "create-success",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-success:s2c-key",
+          "nonce": "S2C nonce12 #1"
+        },
+        {
+          "stage": "read-request",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-success:c2s-key",
+          "nonce": "C2S nonce12 #2"
+        },
+        {
+          "stage": "read-success",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-success:s2c-key",
+          "nonce": "S2C nonce12 #2"
+        },
+        {
+          "stage": "mc-interface-request",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-success:c2s-key",
+          "nonce": "C2S nonce12 #3"
+        },
+        {
+          "stage": "mc-interface-response",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-success:s2c-key",
+          "nonce": "S2C nonce12 #3"
+        },
+        {
+          "stage": "mc-read-request",
+          "channel": "tcp-2",
+          "key": "lab-smb-multichannel-binding-success:c2s-key",
+          "nonce": "C2S nonce12 #4"
+        },
+        {
+          "stage": "mc-read-response",
+          "channel": "tcp-2",
+          "key": "lab-smb-multichannel-binding-success:s2c-key",
+          "nonce": "S2C nonce12 #4"
+        }
+      ],
+      "finalIoChannel": "tcp-2",
+      "channel2Usable": true,
+      "originalSessionPreserved": true
+    },
+    {
+      "id": "lab-smb-multichannel-binding-rejected",
+      "steps": 61,
+      "baseSteps": 37,
+      "nonceRecords": [
+        {
+          "stage": "create-request",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-rejected:c2s-key",
+          "nonce": "C2S nonce12 #1"
+        },
+        {
+          "stage": "create-success",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-rejected:s2c-key",
+          "nonce": "S2C nonce12 #1"
+        },
+        {
+          "stage": "read-request",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-rejected:c2s-key",
+          "nonce": "C2S nonce12 #2"
+        },
+        {
+          "stage": "read-success",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-rejected:s2c-key",
+          "nonce": "S2C nonce12 #2"
+        },
+        {
+          "stage": "mc-interface-request",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-rejected:c2s-key",
+          "nonce": "C2S nonce12 #3"
+        },
+        {
+          "stage": "mc-interface-response",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-rejected:s2c-key",
+          "nonce": "S2C nonce12 #3"
+        },
+        {
+          "stage": "mc-read-request",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-rejected:c2s-key",
+          "nonce": "C2S nonce12 #4"
+        },
+        {
+          "stage": "mc-read-response",
+          "channel": "tcp-1",
+          "key": "lab-smb-multichannel-binding-rejected:s2c-key",
+          "nonce": "S2C nonce12 #4"
+        }
+      ],
+      "finalIoChannel": "tcp-1",
+      "channel2Usable": false,
+      "originalSessionPreserved": true
+    }
+  ],
+  "remainingBlockers": [],
+  "scope": "No product edits; no global/full suite or native browser run. Explicit source discrepancy in channel KDF profile remains disclosed by model and is outside this held-state judgment.",
+  "priorReviewHashes": {
+    "src/smb-multichannel-lab.js": "85e20d4de4c5ff79b1d61a040c7028fa90c551c8ebb260111510e02baa10554d",
+    "src/smb-access-lab.js": "d90435bb96d795bbdbf577e8d057cf4d1d1bd987a7a4493826c0432b6da0988d",
+    "src/held-object-smb.js": "cff4792d0479bc4bfb22d38f1321855e9cf326c37b9087cb154bd9caf1fbf04b"
+  },
+  "finalDeltaVerification": {
+    "description": "Added exact opaque cached CIFS-ticket use observation at mc-gss-init in each model. Refreshed full observation-possession scan, tail local-event operation custody, exact opaque trace, unchanged base/helper hashes and generated session-wide nonce sequences.",
+    "exactOpaqueTicketTraceChecks": 2,
+    "tailLocalEventOperationChecks": 161,
+    "nonceRecordsRechecked": 16,
+    "stableHashes": true
+  }
+}
