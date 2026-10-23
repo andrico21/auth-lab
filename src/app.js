@@ -20,7 +20,7 @@ import { ScenarioPicker, filterScenarioOptions } from './scenario-picker.js';
 import { captureFocusTarget, resolveFocusTarget, isVisibleFocusTarget } from './focus-target.js';
 import { LEARNING_PRESETS, PROVIDER_PROFILES, getLearningPreset, getProviderProfile, getPresetConfiguration, applyProviderProfile } from './learning-presets.js';
 import { RuntimeEnvironment, RUNTIME_ENVIRONMENT_FIELDS, RUNTIME_PROVIDER_FIELDS } from './runtime-environment.js';
-import { STUDIO_WORKSPACES, STUDIO_FAMILIES, workspaceOf, studioRoute, parseStudioRoute, visibleActorId, scenarioPositions } from './workspaces.js';
+import { STUDIO_WORKSPACES, STUDIO_FAMILIES, workspaceOf, studioRoute, parseStudioRoute, visibleActorId, scenarioPositions, studioWorkspaceOptions } from './workspaces.js';
 import { scenarioContextRows, projectScenarioContext, scenarioBindingValue } from './scenario-context.js';
 import { buildProtocolInstances } from './protocol-state.js';
 import { HeldObjectView } from './held-object-view.js';
@@ -77,7 +77,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.initialized=true;
     Object.assign(this,getPresetConfiguration('basic-keycloak'));this.index=0;
     this.labScenarioId='basic-keycloak';this.catalogQuery='';this.customLayouts={};this.moveParticipants=false;this.dragState=null;
-    this.workspace='web';this.family='ad-ds';this.showInternals=false;this.learningDetail='journey';
+    this.workspace='web';this.family='ad-ds';this.showInternals=false;this.learningDetail='journey';this.lessonVariant='default';
     this.runtimeEnvironment=new RuntimeEnvironment();this.scenarioMemo=new Map();
     this.attributeSelection=null;this.attributeQuery='';this.traceQueue=[];this.traceIndex=0;this.activeSteps=null;
     this.inspection={type:'step'}; this.visited=new Set(); this.packetIdentity='';
@@ -86,7 +86,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.unsubscribe=this.player.subscribe(event=>this.onPlayer(event));
     this.innerHTML=this.shell();
     this.refs={};
-    ['studio','graph','connections','actors','packet','packet-name','packet-value','packet-count','timeline','inspector','inspector-heading','progress','story','play','speed','speed-label','seek','seek-position','mode','authenticator','architecture','upstream','status','actor-popup','attribute-popup','toast','attribute-index','attribute-search','attribute-index-list','attribute-topics','attribute-focus','attribute-index-meta','attribute-index-empty','app-protocol','broker-protocol','saml-binding','saml-initiation','token-protection','assertion-protection','protocol-summary','step-attributes','step-attributes-tether','show-step-attributes','oidc-flow','lab-scenario','lab-catalog','lab-search','lab-cards','lab-support','move-participants','provider-settings','provider-profile','provider-note','environment-fields','environment-errors','environment-status'].forEach(id=>this.refs[id]=this.querySelector('#'+id));
+    ['studio','graph','connections','actors','packet','packet-name','packet-value','packet-count','timeline','inspector','inspector-heading','progress','story','play','speed','speed-label','seek','seek-position','mode','authenticator','architecture','upstream','status','actor-popup','attribute-popup','toast','attribute-index','attribute-search','attribute-index-list','attribute-topics','attribute-focus','attribute-index-meta','attribute-index-empty','app-protocol','broker-protocol','saml-binding','saml-initiation','token-protection','assertion-protection','protocol-summary','step-attributes','step-attributes-tether','show-step-attributes','oidc-flow','lab-catalog','lab-search','lab-cards','lab-support','move-participants','provider-settings','provider-profile','provider-note','environment-fields','environment-errors','environment-status'].forEach(id=>this.refs[id]=this.querySelector('#'+id));
     this.refs['step-attributes-external']=this.querySelector('#step-attributes-external');
     this.refs['show-step-attributes'].checked=this.showStepAttributes;
     this.heldView=new HeldObjectView(this);
@@ -97,20 +97,25 @@ export class AuthFlowStudio extends HTMLElement {
       ...LAB_SCENARIOS.filter(model=>!presetIds.has(model.id)).map(model=>({
         id:model.id,title:model.title,category:model.category,summary:model.summary,
         profileLabel:model.profile?[model.profile.name,model.profile.publicationStatus,model.profile.supportStatus].filter(Boolean).join(' · '):'',
-        searchText:[model.id,model.title,model.summary,model.category,model.status,model.protocol||'oidc',model.workspace,model.family,model.keywords,model.lesson,model.evidenceLabel,model.learningObjective,...(model.prerequisites||[]),model.profile?formatProtocolValue(model.profile,true):'',...model.ids.map(id=>[ATTRIBUTES[id]?.name,ATTRIBUTES[id]?.standard].join(' '))].join(' '),
+        searchText:[model.id,model.title,model.summary,model.category,model.status,model.protocol||'oidc',model.workspace,model.family,model.keywords,model.lesson,model.evidenceLabel,model.learningObjective,...(model.prerequisites||[]),...(model.variantChoices||[]).flatMap(choice=>[choice.id,choice.label,choice.description]),model.profile?formatProtocolValue(model.profile,true):'',...(model.catalogAttributeIds||model.ids).map(id=>[ATTRIBUTES[id]?.name,ATTRIBUTES[id]?.standard].join(' '))].join(' '),
       })),
     ];
     this.scenarioPicker=new ScenarioPicker(this.querySelector('#lab-scenario-picker'),pickerOptions,id=>this.selectLabScenario(id),this);
+    this.workspaceOptions=studioWorkspaceOptions(LAB_MODELS);
+    this.workspacePicker=new ScenarioPicker(this.querySelector('#workspace-navigation'),this.workspaceOptions,id=>{const target=this.workspaceOptions.find(option=>option.id===id);if(target)this.selectLabScenario(target.scenarioId);},this,{prefix:'workspace',optionPrefix:'workspace-option',optionAttribute:'data-workspace-option',singular:'learning destination',plural:'learning destinations',emptyMessage:'No matching workspace or family. Try a protocol, platform or access task.'});
     this.bind(); this.renderAll();this.openRoute();
   }
-  disconnectedCallback() { this.heldView?.destroy();this.player?.stop(false); this.unsubscribe?.();this.scenarioPicker?.destroy();window.removeEventListener('hashchange',this.routeListener);window.removeEventListener('pagehide',this.environmentPageHide);window.removeEventListener('pageshow',this.environmentPageShow);window.removeEventListener('resize',this.windowResizeListener);window.removeEventListener('blur',this.windowBlurListener); clearTimeout(this.closeTimer); clearTimeout(this.attributeTimer); }
+  disconnectedCallback() { this.heldView?.destroy();this.player?.stop(false); this.unsubscribe?.();this.scenarioPicker?.destroy();this.workspacePicker?.destroy();window.removeEventListener('hashchange',this.routeListener);window.removeEventListener('pagehide',this.environmentPageHide);window.removeEventListener('pageshow',this.environmentPageShow);window.removeEventListener('resize',this.windowResizeListener);window.removeEventListener('blur',this.windowBlurListener); clearTimeout(this.closeTimer); clearTimeout(this.attributeTimer); }
   get learningPreset() {return getLearningPreset(this.labScenarioId);}
   get baseLabModel() {return LAB_MODELS[this.learningPreset?.modelId||this.labScenarioId]||null;}
   get labModel() {
     const base=this.baseLabModel;
-    if(!base?.contextualize||!this.runtimeEnvironment)return base;
-    const key=base.id+'@'+this.runtimeEnvironment.revision;
-    if(this.contextModelMemo?.key!==key)this.contextModelMemo={key,model:base.contextualize(this.runtimeEnvironment.applied,{revision:this.runtimeEnvironment.revision})};
+    if(!base||(!base.contextualize&&!base.withVariant)||!this.runtimeEnvironment)return base;
+    const variant=this.lessonVariant||'default',key=JSON.stringify([base.id,variant,this.runtimeEnvironment.revision]);
+    if(this.contextModelMemo?.key!==key){
+      const selected=variant==='default'?base:base.withVariant(variant);
+      this.contextModelMemo={key,model:selected.contextualize?selected.contextualize(this.runtimeEnvironment.applied,{revision:this.runtimeEnvironment.revision}):selected};
+    }
     return this.contextModelMemo.model;
   }
   get providerProfile() {return getProviderProfile(this.providerProfileId)||getProviderProfile('generic');}
@@ -133,7 +138,7 @@ export class AuthFlowStudio extends HTMLElement {
   }
   scenarioSnapshot(mode=this.mode,overrides={}) {
     const config={...this.protocolConfig(mode),...overrides};
-    const signature=JSON.stringify([this.labScenarioId,config,this.oidcFlow,this.tokenProtection,this.runtimeEnvironment.revision]);
+    const signature=JSON.stringify([this.labScenarioId,this.lessonVariant,config,this.oidcFlow,this.tokenProtection,this.runtimeEnvironment.revision]);
     if(this.scenarioMemo.has(signature))return this.scenarioMemo.get(signature);
     const raw=this.baseJourneyFor(mode,overrides);
     const saml=config.applicationProtocol==='saml'||config.upstream!=='single'&&config.brokerProtocol==='saml';
@@ -157,10 +162,24 @@ export class AuthFlowStudio extends HTMLElement {
   get visibleSteps() {return this.hasTrace?this.traceQueue:this.steps;}
   get visibleIndex() {return this.hasTrace?this.traceIndex:this.index;}
   get currentStep() { return this.visibleSteps[this.visibleIndex]; }
-  get layoutKey() {return this.labModel?.id||(this.learningPreset?this.learningPreset.id:'core-'+this.architecture);}
+  get graphChapter(){
+    const chapters=this.labModel?.chapters;if(!chapters?.length)return null;
+    const step=this.currentStep,sourceId=step?.sourceStepId||step?.id||this.steps[0]?.id;
+    return chapters.find(chapter=>chapter.stepIds.includes(sourceId))||chapters[0];
+  }
+  get graphSteps(){
+    const steps=this.steps,trace=this.hasTrace?this.traceQueue:null,chapter=this.graphChapter;
+    if(!chapter)return trace?[...steps,...trace]:steps;
+    if(this.graphProjection?.steps!==steps||this.graphProjection.trace!==trace||this.graphProjection.chapter!==chapter){
+      const ids=new Set(chapter.stepIds),source=steps.filter(step=>ids.has(step.id));
+      this.graphProjection={steps,trace,chapter,projected:trace?[...source,...trace.filter(step=>ids.has(step.sourceStepId||step.id))]:source};
+    }
+    return this.graphProjection.projected;
+  }
+  get layoutKey() {const base=this.labModel?.id||(this.learningPreset?this.learningPreset.id:'core-'+this.architecture);return this.graphChapter?base+'@chapter-'+this.graphChapter.id:base;}
   get positions() {return this.heldGeometry?.positions||this.basePositions;}
   get basePositions() {
-    const layoutSteps=this.hasTrace?[...this.steps,...this.traceQueue]:this.steps;
+    const layoutSteps=this.graphSteps;
     const positions={...(this.scenarioOwnedActors?scenarioPositions(this.labModel,layoutSteps,this.scenarioOwnedActors,this.showInternals):getPositions(this.architecture)),...(this.customLayouts[this.layoutKey]||{})};
     if(!this.labModel&&!this.learningPreset)return positions;
     const ids=new Set(layoutSteps.flatMap(s=>[this.nodeId(s.from),this.nodeId(s.to),...(s.attributeOperations||[]).map(op=>this.nodeId(op.actorId))]));
@@ -192,7 +211,7 @@ export class AuthFlowStudio extends HTMLElement {
     return this.runtimeEnvironment.projectActor(a,this.environmentOptions);
   }
   definition(id) {
-    const signature=JSON.stringify([this.mode,this.authenticator,this.architecture,this.upstream,this.applicationProtocol,this.brokerProtocol,this.samlBinding,this.samlInitiation,this.tokenProtection,this.assertionProtection,this.oidcFlow,this.labScenarioId,this.providerProfileId,this.providerManaged,this.runtimeEnvironment.revision]);
+    const signature=JSON.stringify([this.mode,this.authenticator,this.architecture,this.upstream,this.applicationProtocol,this.brokerProtocol,this.samlBinding,this.samlInitiation,this.tokenProtection,this.assertionProtection,this.oidcFlow,this.labScenarioId,this.lessonVariant,this.providerProfileId,this.providerManaged,this.runtimeEnvironment.revision]);
     if(this.definitionMemo?.signature!==signature){
       const overrides={...(this.isDirectFido?getFidoAttributeOverrides(this.mode):getAttributeOverrides(this.architecture,this.upstream)),...(this.isUsingSaml?getSamlAttributeOverrides(this.protocolConfig()):{}),...(this.isAdvancedFlow?this.advancedFlow.definitions(this.protocolConfig()):{}),...(!this.isDirectFido?getJweAttributeOverrides({protection:this.tokenProtection,steps:this.steps}):{}),...this.scenarioSnapshot().attributeOverrides};
       this.definitionMemo={signature,overrides,values:new Map()};
@@ -211,17 +230,64 @@ export class AuthFlowStudio extends HTMLElement {
     return `<main class="studio" id="studio" data-theme="dark">
       <header class="app-header">
         <div class="brand"><span class="brand-mark">${uiIcon('shield')}</span><div><div class="brand-title">Auth Flow Studio</div><div class="brand-subtitle">Trust, made visible</div></div></div>
-        <div class="header-actions"><span class="lab-label">INTERACTIVE LEARNING LAB</span><button class="button quiet" id="index-open">${uiIcon('book')}<span>Attribute index</span></button><button class="button quiet" id="glossary-open"><span>Field guide</span></button><button class="icon-button" id="theme-toggle" aria-label="Switch color theme">${uiIcon('sun')}</button></div>
+        <div class="header-actions"><span class="lab-label">INTERACTIVE LEARNING LAB</span><button class="button quiet" id="index-open" aria-label="Attribute index" title="Attribute index">${uiIcon('book')}<span>Attribute index</span></button><button class="button quiet" id="glossary-open" aria-label="Field guide" title="Field guide">${uiIcon('info')}<span>Field guide</span></button><button class="icon-button" id="theme-toggle" aria-label="Switch color theme">${uiIcon('sun')}</button></div>
       </header>
-      <section class="hero"><div class="eyebrow">WEB · SSH · KERBEROS · WINDOWS · NETWORK · PAKE</div><h1>Follow every proof.<br><span>Understand every handoff.</span></h1><p>Explore identity proof, credential custody and access decisions. Follow the whole journey, or trace one exact object.</p></section>
-      <nav class="workspace-navigation" id="workspace-navigation" aria-label="Learning workspaces"><div class="workspace-primary">${STUDIO_WORKSPACES.filter(item=>!item.secondary).map(item=>`<button class="workspace-card" data-workspace="${item.id}" aria-pressed="${item.id==='web'}"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.summary)}</span></button>`).join('')}</div><div class="workspace-secondary">${STUDIO_WORKSPACES.filter(item=>item.secondary).map(item=>`<button class="workspace-card secondary-workspace" data-workspace="${item.id}" aria-pressed="false"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.summary)}</span></button>`).join('')}</div></nav>
-      <section class="workspace-families" id="workspace-families" aria-label="Protocol families" hidden></section>
+      <div class="learning-navigation"><nav class="workspace-navigation select-field scenario-picker" id="workspace-navigation" aria-label="Learning workspaces"><label for="workspace-search">Workspace or family</label><div class="scenario-picker-control"><span class="scenario-picker-icon" aria-hidden="true">${uiIcon('search')}</span><input id="workspace-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="workspace-results" aria-describedby="workspace-hint" autocomplete="off" spellcheck="false" placeholder="Search workspaces and families"><button type="button" id="workspace-clear" aria-label="Clear workspace search" hidden>×</button><button type="button" id="workspace-toggle" tabindex="-1" aria-label="Show workspace and family choices" aria-expanded="false" aria-controls="workspace-results">${uiIcon('next')}</button></div><span class="scenario-picker-hint" id="workspace-hint">Grouped destinations · choosing starts a fresh lesson</span><div class="scenario-picker-menu" id="workspace-menu" hidden><div class="scenario-picker-menu-heading"><span id="workspace-search-status" role="status" aria-live="polite"></span><span>↑ ↓ to navigate · Enter to choose</span></div><div class="scenario-picker-results" id="workspace-results" role="listbox" aria-label="Workspaces and families"></div></div></nav>
+      <section class="lab-navigation"><div class="select-field scenario-picker" id="lab-scenario-picker"><label for="lab-scenario-search">Universal lab scenario</label><div class="scenario-picker-control"><span class="scenario-picker-icon" aria-hidden="true">${uiIcon('search')}</span><input id="lab-scenario-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="lab-scenario-results" aria-describedby="lab-scenario-hint" autocomplete="off" spellcheck="false" placeholder="Search scenarios, protocols or attributes…"><button type="button" id="lab-scenario-clear" aria-label="Clear scenario search" hidden>×</button><button type="button" id="lab-scenario-toggle" tabindex="-1" aria-label="Show scenario choices" aria-expanded="false" aria-controls="lab-scenario-results">${uiIcon('next')}</button></div><span class="scenario-picker-hint" id="lab-scenario-hint">Type to search · Start with Basic Keycloak sign-in</span><div class="scenario-picker-menu" id="lab-scenario-menu" hidden><div class="scenario-picker-menu-heading"><span id="lab-scenario-search-status" role="status" aria-live="polite"></span><span>↑ ↓ to navigate · Enter to choose</span></div><div class="scenario-picker-results" id="lab-scenario-results" role="listbox" aria-label="Lab scenarios"></div></div></div></section>
+      </div>
+      <section class="journey-introduction" aria-label="Learning question and starting context"><h1 id="learning-question"></h1><p id="learning-start"></p><div id="learning-boundary"></div></section>
+      <div class="workspace">
+        <div class="diagram-column"><div class="map-controls" id="map-controls" role="group" aria-label="Animation controls">
+        <div class="playback-controls"><button class="button primary" id="play">${uiIcon('play',true)}<span>Play demo</span></button><button class="icon-button" id="reset" aria-label="Reset demo">${uiIcon('reset')}</button></div>
+        <div class="speed-control"><label for="speed">Playback speed <output class="speed-value" id="speed-label">1×</output></label><input id="speed" type="range" min="0" max="4" step="0.01" value="1" aria-label="Playback speed" title="0 pauses; speeds start at 0.01×. Play restores the last non-zero speed."></div>
+        </div>
+        <section class="map-panel" aria-label="Interactive authentication map">
+          <div class="map-heading"><div><h2 id="scenario-title">Sign in with a passkey</h2></div><span class="live-status" id="status">READY TO EXPLORE</span></div>
+          <section class="lesson-chapters" id="lesson-chapters" aria-label="Linked canonical journey chapters" hidden></section>
+          <div class="attribute-focus-bar" id="attribute-focus" hidden></div>
+          <div class="map-scroll"><div class="graph-canvas" id="graph">
+            <div class="trust-zones" id="trust-zones" aria-hidden="true"></div>
+            <div class="zone-label device">${uiIcon('info')}<span>YOUR DEVICE</span></div><div class="zone-label cloud">IDENTITY SERVICES</div>
+            <svg class="graph-connections" id="connections" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-label="Connections between authentication participants"><defs>${Object.keys(channelLabels).map(c=>`<marker id="arrow-${c}" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto-start-reverse" viewBox="0 0 7 7"><path d="M0 0 7 3.5 0 7" class="arrow-fill ${c}"/></marker>`).join('')}</defs><g id="connection-paths"></g></svg>
+            <div id="actors"></div>
+            <div id="held-docks" class="held-docks"></div>
+            <svg class="step-attributes-tether" id="step-attributes-tether" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-hidden="true" hidden><path/></svg>
+            <div class="step-attributes" id="step-attributes" role="group" aria-label="Attribute names in the active step" hidden></div>
+            <div class="packet-position" id="packet" hidden><div class="packet-chip"><span class="packet-orb"></span><div><span class="packet-name" id="packet-name"></span><code class="packet-value" id="packet-value"></code></div><span class="packet-count" id="packet-count"></span></div></div>
+          </div></div>
+          <div class="map-display-controls" role="group" aria-label="Map display options">
+            <label class="overlay-toggle"><input type="checkbox" id="show-step-attributes" checked><span>Show step attributes</span></label>
+            <label class="overlay-toggle" id="internals-control" hidden><input type="checkbox" id="show-internals"><span>Show component internals</span></label>
+            <label class="overlay-toggle"><input type="checkbox" id="show-held-objects" checked><span>Show held objects</span></label>
+          </div>
+        <div class="seek-control"><label for="seek"><span>Explore the timeline</span><output id="seek-position">Step 1</output></label><input id="seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek through the current journey" aria-describedby="seek-hint"><span id="seek-hint">Drag to inspect any moment · playback stays paused · press Play to continue</span></div>
+          <section id="step-attributes-external" class="step-attributes-external" aria-label="Attribute names in the active step" hidden></section>
+          <div id="held-active-message" class="held-active-message" aria-label="Active message" hidden></div>
+          <section class="lesson-decisions" id="lesson-decisions" aria-label="Current identity, trust and access decisions" hidden></section>
+          <section class="lifetime-strip" id="lifetime-strip" aria-label="Four independent credential and session lifetimes" hidden></section>
+          <p class="map-description" id="scenario-description"></p>
+          <div class="scenario-environment" id="scenario-environment" hidden></div>
+          <div class="map-footer"><div class="legend">${Object.entries(channelLabels).map(([key,label])=>`<span class="legend-item"><span class="legend-dot" data-channel="${key}"></span>${label}</span>`).join('')}</div><p class="map-hint">Hover or focus a participant for help. F2 moves keyboard focus inside the help panel; Tab explores its controls, Escape returns. Click a connection to replay its exchanges.</p></div>
+          <div class="current-story" id="story" aria-live="polite"></div>
+          <div class="progress-track" role="progressbar" aria-label="Journey progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar" id="progress"></div></div>
+        </section></div>
+        <div class="study-sidebar"><aside class="attribute-index-panel" id="attribute-index" aria-label="Separate attribute index"><div class="attribute-index-heading"><div><h2>Attribute index</h2><p>Click a field to animate its path. Hover or focus it for help. F2 moves focus inside that help panel; Tab explores, Escape returns.</p></div><button class="icon-button" id="attribute-index-toggle" aria-label="Hide attribute index">${uiIcon('close')}</button></div><label class="sr-only" for="attribute-search">Search attributes, PKCE or purpose</label><input class="glossary-search" id="attribute-search" type="search" placeholder="Search client_id, PKCE, secret…"><div class="attribute-topic-list" id="attribute-topics"></div><p class="attribute-index-meta" id="attribute-index-meta"></p><div class="attribute-index-list" id="attribute-index-list"></div><p id="attribute-index-empty" hidden>No matching attributes.</p></aside>
+        <aside class="inspector-panel" aria-label="Participant and exchange inspector"><div class="inspector-top"><span id="inspector-heading">EXCHANGE INSPECTOR</span><button class="icon-button" id="follow" aria-label="Follow the current demo step" title="Follow the current step">${uiIcon('arrow')}</button></div><div class="inspector-content" id="inspector"></div></aside></div>
+      </div>
+      <section id="held-objects" class="held-objects" aria-label="Current logical-owner inventory"></section>
+      <section id="held-inspector" class="held-inspector" aria-label="Exact held object inspector" hidden></section>
+      <section class="timeline-panel" aria-label="Ordered journey steps"><div class="timeline-head"><div><span class="eyebrow">THE JOURNEY</span><h2>One exchange at a time</h2></div><div class="timeline-controls"><button class="icon-button" id="previous" aria-label="Previous step">${uiIcon('previous')}</button><button class="icon-button" id="next" aria-label="Next step">${uiIcon('next')}</button></div></div><div class="timeline-strip" id="timeline"></div></section>
+      <details class="protocol-state-panel" id="protocol-state-panel" hidden><summary><strong>Current protocol state and object history</strong><span id="protocol-state-summary"></span></summary><p class="environment-note">Current state uses the same authored cursor as held objects. The cumulative field-instance ledger below is history, not current possession. Playback speed and card movement do not change protocol time. Values are symbolic examples; private keys and opaque ciphertext are not decrypted by this lab.</p><h3>Field-instance history</h3><div id="protocol-instance-list"></div><h3>Current protocol state</h3><pre id="protocol-state-value"></pre></details>
+      <details class="ready-journeys" id="ready-journeys"><summary>More ready-made journeys and the full library</summary>
+      <button class="button quiet" id="lab-open">Browse the full scenario library</button>
       <section class="workspace-presets" id="workspace-presets" aria-label="Ready-made workspace scenarios" hidden></section>
       <section class="quick-start" id="quick-start" aria-label="Ready-made corporate scenarios"><div class="quick-start-heading"><h2>Choose a ready-made scenario</h2><p>Choose a scenario, then press Play. The settings are already selected.</p></div><div class="quick-start-grid">${[...LEARNING_PRESETS.filter(p=>['basic-keycloak','basic-saml'].includes(p.id)),...LEARNING_PRESETS.filter(p=>p.common&&!['basic-keycloak','basic-saml'].includes(p.id))].map(p=>`<button class="quick-preset" data-learning-preset="${p.id}" aria-pressed="${p.id===this.labScenarioId}"><strong>${escapeHtml(p.title)}</strong><span>${escapeHtml(p.summary)}</span></button>`).join('')}</div></section>
-      <section class="lab-navigation"><div class="select-field scenario-picker" id="lab-scenario-picker"><label for="lab-scenario-search">Universal lab scenario</label><div class="scenario-picker-control"><span class="scenario-picker-icon" aria-hidden="true">${uiIcon('search')}</span><input id="lab-scenario-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="lab-scenario-results" aria-describedby="lab-scenario-hint" autocomplete="off" spellcheck="false" placeholder="Search scenarios, protocols or attributes…"><button type="button" id="lab-scenario-clear" aria-label="Clear scenario search" hidden>×</button><button type="button" id="lab-scenario-toggle" tabindex="-1" aria-label="Show scenario choices" aria-expanded="false" aria-controls="lab-scenario-results">${uiIcon('next')}</button></div><span class="scenario-picker-hint" id="lab-scenario-hint">Type to search · Start with Basic Keycloak sign-in</span><div class="scenario-picker-menu" id="lab-scenario-menu" hidden><div class="scenario-picker-menu-heading"><span id="lab-scenario-search-status" role="status" aria-live="polite"></span><span>↑ ↓ to navigate · Enter to choose</span></div><div class="scenario-picker-results" id="lab-scenario-results" role="listbox" aria-label="Lab scenarios"></div></div><select id="lab-scenario" hidden aria-hidden="true" tabindex="-1">${LEARNING_PRESETS.map(p=>`<option value="${p.id}">${escapeHtml(p.title)}</option>`).join('')}<option value="core">Core lab · configurable sign-in, SAML, FIDO and grants</option>${LAB_CATEGORIES.map(category=>`<optgroup label="${escapeHtml(category)}">${LAB_SCENARIOS.filter(model=>model.category===category&&!getLearningPreset(model.id)).map(model=>`<option value="${model.id}">${escapeHtml(model.title)}</option>`).join('')}</optgroup>`).join('')}</select></div><button class="button quiet" id="lab-open">Browse ${LAB_SCENARIOS.length} extended scenarios</button></section>
       <details class="lab-catalog" id="lab-catalog"><summary><strong>Scenario library</strong><span>Applications · token lifecycle · protections · protocol variants · failure paths</span></summary><label class="sr-only" for="lab-search">Find a scenario</label><input id="lab-search" class="glossary-search" type="search" placeholder="Search SPA, refresh, DPoP, logout, Artifact, consent…"><div class="lab-cards" id="lab-cards"></div></details>
+      </details><details class="lesson-reference" id="lesson-reference" hidden><summary>Cases, profile, primary sources and related journeys</summary>
+      <section class="lesson-inputs" id="lesson-inputs" aria-label="Selected lesson profile and case" hidden></section>
       <div class="lab-support" id="lab-support" hidden></div>
       <section class="learning-profile" id="learning-profile" aria-label="Selected teaching profile and completion boundary" hidden><div id="learning-profile-content"></div><div class="learning-detail-controls" role="group" aria-label="Lesson detail"><button class="button quiet" id="learning-detail-journey" data-learning-detail="journey" aria-pressed="true">Journey</button><button class="button quiet" id="learning-detail-fields" data-learning-detail="fields" aria-pressed="false">Fields</button><button class="button quiet" id="learning-detail-crypto" data-learning-detail="crypto" aria-pressed="false">Cryptographic detail</button></div><div id="learning-profile-crypto" hidden></div><div class="related-journeys" id="related-journeys" aria-label="Compare related journeys" hidden></div></section>
+      </details>
       <section class="provider-settings" id="provider-settings" hidden><div class="select-field"><label for="provider-profile">External identity provider</label><select id="provider-profile">${PROVIDER_PROFILES.map(profile=>`<option value="${profile.id}">${escapeHtml(profile.title)}</option>`).join('')}</select></div><div class="provider-description"><p id="provider-note"></p><p id="provider-protection-note" hidden></p><div id="provider-sources" class="provider-sources"></div></div></section>
       <details class="advanced-configuration" id="advanced-configuration"><summary><strong>Advanced configuration</strong><span>Optional · explore another combination</span></summary><div class="advanced-layout-controls"><label class="overlay-toggle"><input type="checkbox" id="move-participants"><span>Move participants</span></label><button class="button quiet" id="layout-reset">Reset layout</button></div>
       <section class="toolbar" aria-label="Scenario settings">
@@ -241,43 +307,6 @@ export class AuthFlowStudio extends HTMLElement {
         <div class="select-field"><label for="assertion-protection">SAML assertion protection</label><select id="assertion-protection"><option value="signed">Signed assertion</option><option value="encrypted">Signed + XML Encryption</option></select></div>
       </div><p class="protocol-note">SAML responses use HTTP-POST. Encryption protects the message; signatures and recipient checks still establish trust. JWE applies to OIDC ID tokens, while SAML uses XML Encryption.</p></details></details>
       <details class="environment-panel" id="environment-panel"><summary><strong>Use your environment</strong><span>Optional · addresses for this open page</span></summary><p class="environment-note">Show your application and identity-provider addresses in the animation. Values stay in this open page and return to examples on reload, navigation away or Reset environment. The animation makes no requests to these addresses.</p><div id="environment-fields"></div><p class="environment-errors" id="environment-errors" role="alert" hidden></p><div class="environment-actions"><button class="button primary" id="environment-apply">Apply to animation</button><button class="button quiet" id="environment-reset">Reset environment</button><span id="environment-status" role="status"></span></div></details>
-      <div class="workspace">
-        <div class="diagram-column"><div class="map-controls" id="map-controls" role="group" aria-label="Animation controls">
-        <div class="playback-controls"><button class="button primary" id="play">${uiIcon('play',true)}<span>Play demo</span></button><button class="icon-button" id="reset" aria-label="Reset demo">${uiIcon('reset')}</button></div>
-        <div class="speed-control"><label for="speed">Playback speed <output class="speed-value" id="speed-label">1×</output></label><input id="speed" type="range" min="0" max="4" step="0.01" value="1" aria-label="Playback speed" title="0 pauses; speeds start at 0.01×. Play restores the last non-zero speed."></div>
-        <label class="overlay-toggle"><input type="checkbox" id="show-step-attributes" checked><span>Show step attributes</span></label>
-        <label class="overlay-toggle" id="internals-control" hidden><input type="checkbox" id="show-internals"><span>Show component internals</span></label>
-        <label class="overlay-toggle"><input type="checkbox" id="show-held-objects" checked><span>Show held objects</span></label>
-        <div class="seek-control"><label for="seek"><span>Explore the timeline</span><output id="seek-position">Step 1</output></label><input id="seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek through the current journey" aria-describedby="seek-hint"><span id="seek-hint">Drag to inspect any moment · playback stays paused · press Play to continue</span></div>
-        </div>
-        <section class="map-panel" aria-label="Interactive authentication map">
-          <div class="map-heading"><div><h2 id="scenario-title">Sign in with a passkey</h2><p id="scenario-description"></p></div><span class="live-status" id="status">READY TO EXPLORE</span></div>
-          <div class="attribute-focus-bar" id="attribute-focus" hidden></div>
-          <div class="map-scroll"><div class="graph-canvas" id="graph">
-            <div class="trust-zones" id="trust-zones" aria-hidden="true"></div>
-            <div class="zone-label device">${uiIcon('info')}<span>YOUR DEVICE</span></div><div class="zone-label cloud">IDENTITY SERVICES</div>
-            <svg class="graph-connections" id="connections" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-label="Connections between authentication participants"><defs>${Object.keys(channelLabels).map(c=>`<marker id="arrow-${c}" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="7" refY="3.5" orient="auto-start-reverse" viewBox="0 0 7 7"><path d="M0 0 7 3.5 0 7" class="arrow-fill ${c}"/></marker>`).join('')}</defs><g id="connection-paths"></g></svg>
-            <div id="actors"></div>
-            <div id="held-docks" class="held-docks"></div>
-            <svg class="step-attributes-tether" id="step-attributes-tether" viewBox="0 0 ${GRAPH_WIDTH} ${GRAPH_HEIGHT}" aria-hidden="true" hidden><path/></svg>
-            <div class="step-attributes" id="step-attributes" role="group" aria-label="Attribute names in the active step" hidden></div>
-            <div class="packet-position" id="packet" hidden><div class="packet-chip"><span class="packet-orb"></span><div><span class="packet-name" id="packet-name"></span><code class="packet-value" id="packet-value"></code></div><span class="packet-count" id="packet-count"></span></div></div>
-          </div></div>
-          <section id="step-attributes-external" class="step-attributes-external" aria-label="Attribute names in the active step" hidden></section>
-          <div id="held-active-message" class="held-active-message" aria-label="Active message" hidden></div>
-          <section class="lifetime-strip" id="lifetime-strip" aria-label="Four independent credential and session lifetimes" hidden></section>
-          <div class="scenario-environment" id="scenario-environment" hidden></div>
-          <div class="map-footer"><div class="legend">${Object.entries(channelLabels).map(([key,label])=>`<span class="legend-item"><span class="legend-dot" data-channel="${key}"></span>${label}</span>`).join('')}</div><p class="map-hint">Hover or focus a participant for help. F2 moves keyboard focus inside the help panel; Tab explores its controls, Escape returns. Click a connection to replay its exchanges.</p></div>
-          <div class="current-story" id="story" aria-live="polite"></div>
-          <div class="progress-track" role="progressbar" aria-label="Journey progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="progress-bar" id="progress"></div></div>
-        </section></div>
-        <div class="study-sidebar"><aside class="attribute-index-panel" id="attribute-index" aria-label="Separate attribute index"><div class="attribute-index-heading"><div><h2>Attribute index</h2><p>Click a field to animate its path. Hover or focus it for help. F2 moves focus inside that help panel; Tab explores, Escape returns.</p></div><button class="icon-button" id="attribute-index-toggle" aria-label="Hide attribute index">${uiIcon('close')}</button></div><label class="sr-only" for="attribute-search">Search attributes, PKCE or purpose</label><input class="glossary-search" id="attribute-search" type="search" placeholder="Search client_id, PKCE, secret…"><div class="attribute-topic-list" id="attribute-topics"></div><p class="attribute-index-meta" id="attribute-index-meta"></p><div class="attribute-index-list" id="attribute-index-list"></div><p id="attribute-index-empty" hidden>No matching attributes.</p></aside>
-        <aside class="inspector-panel" aria-label="Participant and exchange inspector"><div class="inspector-top"><span id="inspector-heading">EXCHANGE INSPECTOR</span><button class="icon-button" id="follow" aria-label="Follow the current demo step" title="Follow the current step">${uiIcon('arrow')}</button></div><div class="inspector-content" id="inspector"></div></aside></div>
-      </div>
-      <section id="held-objects" class="held-objects" aria-label="Current logical-owner inventory"></section>
-      <section id="held-inspector" class="held-inspector" aria-label="Exact held object inspector" hidden></section>
-      <section class="timeline-panel" aria-label="Ordered journey steps"><div class="timeline-head"><div><span class="eyebrow">THE JOURNEY</span><h2>One exchange at a time</h2></div><div class="timeline-controls"><button class="icon-button" id="previous" aria-label="Previous step">${uiIcon('previous')}</button><button class="icon-button" id="next" aria-label="Next step">${uiIcon('next')}</button></div></div><div class="timeline-strip" id="timeline"></div></section>
-      <details class="protocol-state-panel" id="protocol-state-panel" hidden><summary><strong>Current protocol state and object history</strong><span id="protocol-state-summary"></span></summary><p class="environment-note">Current state uses the same authored cursor as held objects. The cumulative field-instance ledger below is history, not current possession. Playback speed and card movement do not change protocol time. Values are symbolic examples; private keys and opaque ciphertext are not decrypted by this lab.</p><h3>Field-instance history</h3><div id="protocol-instance-list"></div><h3>Current protocol state</h3><pre id="protocol-state-value"></pre></details>
       <details class="coverage-panel"><summary><strong>SPA, API & coverage</strong><span>Core controls + ${LAB_SCENARIOS.length} extended scenarios</span></summary><div class="coverage-content"><div><h3>SPA and API are different roles</h3><p>A <strong>Single Page Application (SPA)</strong> runs in the browser. A pure browser OAuth client cannot keep a client secret. The SPA walkthrough shows its HTTPS callback, Code + PKCE, token handling, CORS and a separate resource API.</p><p>An <strong>API</strong> checks the access token’s trust, intended audience, lifetime and permissions. API introspection, 401/403, JWKS rotation, certificate binding and DPoP are distinct scenarios. An ID token is the client’s login result, not an API credential.</p><p>A <strong>Backend for Frontend (BFF)</strong> retains credentials and tokens on the server and gives the browser an opaque session cookie. The BFF → API scenario shows this boundary.</p><h3>How to use the lab</h3><p>Choose a scenario above or browse the searchable library. Play the entire process, click a connection, or select one attribute. Enable Show step attributes to keep the message’s complete names beside its active link. Enable Move participants to drag cards or use arrow keys; Reset layout restores their positions.</p></div><div><h3>Animated coverage</h3><ul><li>Core configurable OIDC/SAML sign-in: one realm, two realms, independent upstream IdP, native loopback and confidential web callback; passwords, passkeys, FIDO2, TOTP and configured MFA.</li>${LAB_CATEGORIES.map(category=>'<li>'+escapeHtml(category)+' · '+LAB_SCENARIOS.filter(model=>model.category===category).length+' scenarios</li>').join('')}</ul><h3>Support is visible</h3><p>Each scenario links to primary documentation and identifies supported/configured Keycloak behavior, Preview/deprecated behavior or a standards-only profile. CIBA Push and alternate signed-hint profiles are not presented as built-in Keycloak features. Legacy grants are educational comparisons.</p><h3>Practical limits</h3><p>This is an offline protocol simulator. Values and cryptographic operations are schematic; it does not configure or contact a live server. Provider-specific policies and every combination of extensions are not expanded into separate presets. Detailed factor ceremonies remain available in the core journeys. Version-specific support is stated in the scenario’s note.</p></div></div></details>
       <footer class="sources-footer"><p class="documentation-baseline">Expansion journeys declare their own pinned source revision, implementation assumptions and completion boundary before Play. The Web documentation baseline is <a href="https://www.keycloak.org/2026/10/keycloak-2680-released" target="_blank" rel="noopener noreferrer">Keycloak 26.8.0</a> · checked 8 October 2026; Windows, Network, MIT Kerberos and PAKE use their separate profiles. Reference and Experimental do not certify product support. This offline symbolic model is not a live compatibility test.</p><details><summary>Protocol notes & primary sources</summary><div class="source-notes">${(LEARNING_NOTES||[]).filter(note=>['One authenticator per attempt','Sessions can shorten real sign-in','Passkey plus TOTP is an explicit flow','TOTP codes can be phished'].includes(note.title)).map(note=>`<p>${escapeHtml(note.text)}</p>`).join('')}<p>Illustrative messages and values. Login assumes a fresh session. Registration starts with a verified relying-party account. FIDO2 combines WebAuthn and CTAP: external FIDO2 keys use CTAP2 locally; Windows Hello uses the platform authenticator path. In single-realm sign-in, Realm A verifies the selected method and returns the selected protocol’s identity result. In brokered sign-in the upstream provider verifies WebAuthn. For OIDC, application client_id is a configured public identifier; the app validates the ID token’s aud against it. For SAML, Keycloak’s registered client identifier is the SP entity ID, used as AuthnRequest Issuer and assertion Audience; the XML does not gain an OAuth client_id parameter. In direct FIDO2 sign-in the web application itself is the relying party, using its own RP ID and public-key credential records.</p><p>Passkey + TOTP and passwordless TOTP require explicit configured flows. TOTP alone is one factor. External providers must support and configure the chosen method; login-form field names and credential policies are provider-specific.</p><p>SAML Web SSO uses Redirect/POST requests and POST responses. Assertion encryption uses XML Encryption. JWE protects OIDC ID tokens; recipients decrypt locally before verifying the inner signature and applicable claims. Device and CIBA tokens have no invented Authorization Code, PKCE or nonce stages.</p><p>Service accounts act as the application’s own identity and receive an access token without a human login or MFA. Device user_code is not TOTP: it links a separate browser to a private device_code. CIBA uses an administrator-controlled authentication-channel service; its illustrated password/passkey/TOTP policy is a service implementation, not a built-in CIBA browser redirect flow. Standard Token Exchange V2 here is same-realm and access-token-to-access-token; strict downscoping is explicitly configured, not assumed from the grant.</p></div><p>Animated coverage and remaining variants are listed in SPA, API & coverage above. These examples illustrate messages, not live authentication or exhaustive Keycloak configuration.</p><div class="source-links">${[...SOURCES,...FIDO_SOURCES,...SAML_SOURCES,...JWE_SOURCES,...SERVICE_SOURCES,...DEVICE_SOURCES,...CIBA_SOURCES,...EXCHANGE_SOURCES,...LAB_SOURCES].map(source=>`<a href="${escapeHtml(source.url||source.source)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.label||source.name||source.title)}</a>`).join('')}</div></details><span>Built to explore · RFC / Microsoft / IEEE / OASIS / W3C / FIDO names, plain-language explanations</span></footer>
       <div id="actor-popup" class="floating-panel" role="dialog" aria-modal="false" aria-label="Participant attributes" hidden></div>
@@ -287,9 +316,22 @@ export class AuthFlowStudio extends HTMLElement {
     </main>`;
   }
   bind() {
-    this.querySelector('#workspace-navigation').addEventListener('click',event=>{const button=event.target.closest('[data-workspace]');if(button)this.selectWorkspace(button.dataset.workspace);});
-    this.querySelector('#workspace-families').addEventListener('click',event=>{const button=event.target.closest('[data-family]'),family=button&&STUDIO_FAMILIES.find(item=>item.workspace===this.workspace&&item.id===button.dataset.family);if(family){const model=LAB_MODELS[family.defaultId]||LAB_SCENARIOS.find(item=>workspaceOf(item)===this.workspace&&item.family===family.id);if(model)this.selectLabScenario(model.id);}});
     this.querySelector('#workspace-presets').addEventListener('click',event=>{const button=event.target.closest('[data-lab-scenario]');if(button)this.selectJourneyFromControl(button,button.dataset.labScenario);});
+    this.querySelector('#lesson-inputs').addEventListener('change',event=>{
+      const control=event.target,returnTarget=captureFocusTarget(this,control);
+      if(control.id==='lesson-case')this.selectLessonVariant(control.value);
+      else if(control.dataset.profileControl){
+        const profile=this.labModel?.profileControls?.find(item=>item.id===control.dataset.profileControl),option=profile?.options.find(item=>item.value===control.value);
+        if(option)this.selectLabScenario(option.scenarioId||this.labScenarioId,{variant:option.variantId||'default'});
+      }
+      if(returnTarget)this.restoreTargetFocus(returnTarget,{fallbackSelector:'#play'});
+    });
+    this.querySelector('#lesson-chapters').addEventListener('click',event=>{
+      const button=event.target.closest('[data-lesson-chapter]'),chapter=this.labModel?.chapters?.find(item=>item.id===button?.dataset.lessonChapter);
+      if(!chapter?.stepIds.length)return;
+      if(this.hasTrace)this.clearAttribute();
+      const index=this.steps.findIndex(step=>step.id===chapter.stepIds[0]);if(index>=0)this.selectStep(index,false);
+    });
     this.querySelector('#learning-profile').addEventListener('click',event=>{
       const detail=event.target.closest('[data-learning-detail]'),related=event.target.closest('[data-compare-scenario]');
       if(detail&&['journey','fields','crypto'].includes(detail.dataset.learningDetail)){
@@ -308,8 +350,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.querySelector('#environment-reset').addEventListener('click',()=>this.resetEnvironment());
     this.environmentPageHide=()=>this.resetEnvironment();this.environmentPageShow=e=>{if(e.persisted)this.resetEnvironment();};
     window.addEventListener('pagehide',this.environmentPageHide);window.addEventListener('pageshow',this.environmentPageShow);
-    this.refs['lab-scenario'].addEventListener('change',()=>this.selectLabScenario(this.refs['lab-scenario'].value));
-    this.querySelector('#lab-open').addEventListener('click',()=>{this.refs['lab-catalog'].open=!this.refs['lab-catalog'].open;if(this.refs['lab-catalog'].open)this.refs['lab-search'].focus();});
+    this.querySelector('#lab-open').addEventListener('click',()=>{this.querySelector('#ready-journeys').open=true;this.refs['lab-catalog'].open=!this.refs['lab-catalog'].open;if(this.refs['lab-catalog'].open)this.refs['lab-search'].focus();});
     this.refs['lab-search'].addEventListener('input',()=>{this.catalogQuery=this.refs['lab-search'].value;this.renderCatalog();});
     this.refs['lab-cards'].addEventListener('click',event=>{const card=event.target.closest('[data-lab-scenario]');if(card)this.selectLabScenario(card.dataset.labScenario);});
     this.refs['move-participants'].addEventListener('change',()=>{this.moveParticipants=!!this.refs['move-participants'].checked;this.refs.graph.classList.toggle('is-move-mode',this.moveParticipants);this.heldView.configureGeometry();this.renderActors();this.renderConnections();this.renderPacket(this.player.snapshot());});
@@ -407,7 +448,7 @@ export class AuthFlowStudio extends HTMLElement {
         else if(card){e.preventDefault();if(this.showActorPopup(card.dataset.actor,card))this.refs['actor-popup'].querySelector('[data-attribute], [data-close]')?.focus();}
       }
     });
-    this.windowResizeListener=()=>{this.resizeHelpPanels();this.renderStepAttributes(this.player.snapshot(),true);};
+    this.windowResizeListener=()=>{this.resizeHelpPanels();const state=this.player.snapshot();this.renderPacket(state);this.renderStepAttributes(state,true);};
     this.windowBlurListener=()=>{if(this.player.status==='playing')this.player.pause();};
     window.addEventListener('resize',this.windowResizeListener);
     window.addEventListener('blur',this.windowBlurListener);
@@ -417,14 +458,15 @@ export class AuthFlowStudio extends HTMLElement {
     this.selectLabScenario(id);
     // These surfaces replace their buttons on selection. Return keyboard focus
     // to the chosen starter when available, otherwise to the persistent Play.
-    if(returnTarget)this.restoreTargetFocus({...returnTarget,scenarioId:id,region:'workspace-presets'},{fallbackSelector:'#play'});
+    if(returnTarget)this.restoreTargetFocus({...returnTarget,scenarioId:id,region:'workspace-presets'},{fallbackSelector:'#play',preventScroll:false});
   }
-  selectLabScenario(id,{navigate=true}={}) {
-    const preset=getLearningPreset(id);
-    if(id!=='core'&&!preset&&!LAB_MODELS[id])return;
+  selectLabScenario(id,{navigate=true,variant='default'}={}) {
+    const preset=getLearningPreset(id),base=LAB_MODELS[preset?.modelId||id];
+    if(id!=='core'&&!preset&&!base)return;
+    if(variant!=='default'&&!base?.variantChoices?.some(choice=>choice.id===variant))return;
     const keys=['mode','authenticator','architecture','upstream','applicationProtocol','brokerProtocol','samlBinding','samlInitiation','tokenProtection','assertionProtection','oidcFlow','providerProfileId','providerManaged'];
     if(this.labScenarioId==='core')this.coreConfiguration=Object.fromEntries(keys.map(key=>[key,this[key]]));
-    this.labScenarioId=id;
+    this.labScenarioId=id;this.lessonVariant=variant;
     this.workspace=workspaceOf(LAB_MODELS[preset?.modelId||id]);this.family=this.labModel?.family||'ad-ds';this.showInternals=false;this.learningDetail='journey';
     if(preset){const profile=preset.providerSelectable?(this.providerProfileId==='generic'?'entra':this.providerProfileId):'generic';Object.assign(this,getPresetConfiguration(id,profile));this.labScenarioId=id;}
     if(id==='core'&&this.coreConfiguration)Object.assign(this,this.coreConfiguration);
@@ -432,6 +474,12 @@ export class AuthFlowStudio extends HTMLElement {
     if(this.labModel&&this.attributeSelection)this.attributeSelection=this.labAttributeAlias(this.attributeSelection);
     this.dragState=null;this.refreshConfiguration();
     if(navigate)this.writeRoute();
+  }
+  selectLessonVariant(id){
+    const base=this.baseLabModel;
+    if(!base?.withVariant||!base.variantChoices?.some(choice=>choice.id===id))return;
+    this.lessonVariant=id;this.attributeSelection=null;this.objectTraceSelection=null;this.definitionMemo=null;
+    this.refreshConfiguration();
   }
   selectWorkspace(id){
     const workspace=STUDIO_WORKSPACES.find(item=>item.id===id);if(!workspace)return;
@@ -449,15 +497,10 @@ export class AuthFlowStudio extends HTMLElement {
   }
   renderWorkspace(){
     this.workspace=workspaceOf(this.labModel);
-    const workspace=STUDIO_WORKSPACES.find(item=>item.id===this.workspace),families=STUDIO_FAMILIES.filter(item=>item.workspace===this.workspace),familyPanel=this.querySelector('#workspace-families');
-    this.querySelector('#workspace-navigation').querySelectorAll('[data-workspace]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.workspace===this.workspace)));
+    const workspace=STUDIO_WORKSPACES.find(item=>item.id===this.workspace),families=STUDIO_FAMILIES.filter(item=>item.workspace===this.workspace);
+    const selected=this.workspaceOptions.find(option=>option.workspace===this.workspace&&option.family===this.family)||this.workspaceOptions.find(option=>option.id==='workspace-'+this.workspace);
+    if(selected)this.workspacePicker.setSelected(selected.id);
     this.querySelector('#quick-start').hidden=this.workspace!=='web';
-    familyPanel.hidden=!families.length;familyPanel.setAttribute('aria-label',workspace.title+' families');
-    if(familyPanel.dataset.workspace!==this.workspace){
-      familyPanel.innerHTML=families.map(family=>`<button class="family-card" id="studio-family-${family.id}" data-family="${family.id}"><strong>${escapeHtml(family.title)}</strong><span>${escapeHtml(family.summary)}</span></button>`).join('');
-      familyPanel.dataset.workspace=this.workspace;
-    }
-    familyPanel.querySelectorAll('[data-family]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.family===this.family)));
     const panel=this.querySelector('#workspace-presets');panel.hidden=this.workspace==='web';
     const models=LAB_SCENARIOS.filter(model=>workspaceOf(model)===this.workspace&&(!families.length||model.family===this.family));
     const family=families.find(item=>item.id===this.family),defaultId=family?.defaultId||workspace.defaultId;
@@ -488,12 +531,19 @@ export class AuthFlowStudio extends HTMLElement {
   }
   renderLabSupport() {
     const model=this.labModel,panel=this.refs['lab-support'];panel.hidden=!model;
+    this.querySelector('#lesson-reference').hidden=!model;
     if(!model){panel.innerHTML='';return;}
     panel.dataset.level=/reference|experimental|legacy|deprecated|discouraged|preview|standard.*only/i.test(model.status)?'special':'supported';
     panel.innerHTML=`<div><span class="lab-support-badge">${escapeHtml(model.status)}</span><strong>${escapeHtml(model.category)}</strong><p>${escapeHtml(model.supportNote)}</p></div><a href="${escapeHtml(model.source)}" target="_blank" rel="noopener noreferrer">Primary documentation</a>`;
   }
   renderLearningProfile(){
     const model=this.labModel,profile=model?.profile,panel=this.querySelector('#learning-profile');
+    const starting=profile?.startingSummary||model?.prerequisites?.slice(0,2);
+    const actors=[...new Set(this.steps.flatMap(step=>[this.nodeId(step.from),this.nodeId(step.to)]))].map(id=>this.actor(id).name);
+    this.querySelector('#learning-question').textContent=model?.learningObjective||'What establishes trust during '+(this.learningPreset?.title||this.advancedFlow?.title||modeMetadata[this.mode]?.title||'this journey')+'?';
+    this.querySelector('#learning-start').textContent='Start: '+(starting?(Array.isArray(starting)?starting.join(' '):starting):actors.join(' · ')+(this.learningPreset?.summary?' - '+this.learningPreset.summary:''));
+    this.querySelector('#learning-boundary').innerHTML=(profile?`<span class="profile-pin">${escapeHtml(profile.name===model.title?model.protocol||profile.name:profile.name)} · ${escapeHtml(profile.version)}</span>`:'')+`<p><strong>Finish:</strong> ${escapeHtml(profile?.completion||this.steps.at(-1)?.summary||'Follow the authored outcome and its acceptance boundary.')}</p>`;
+    this.renderLessonInputs();
     panel.hidden=!profile;
     if(!profile)return;
     const assumptions=[...new Set([...(model.prerequisites||[]),...(profile.assumptions||[])])];
@@ -504,6 +554,15 @@ export class AuthFlowStudio extends HTMLElement {
     crypto.innerHTML=`<h3>Exact parameters and source boundary</h3>${cryptoDetail}<pre>${escapeHtml(formatProtocolValue(profile.algorithms))}</pre><ul class="profile-sources">${(profile.sources||[]).map(source=>`<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.standard)} · ${escapeHtml(source.section)}</a><span>Revision ${escapeHtml(source.revision)} · retrieved ${escapeHtml(source.retrieved)}</span><span>${escapeHtml(source.errata)}</span></li>`).join('')}</ul>`;
     const related=this.querySelector('#related-journeys'),lessons=(model.relatedLessons||[]).filter(lesson=>LAB_MODELS[lesson.id]);related.hidden=!lessons.length;
     related.innerHTML=lessons.map(lesson=>`<button class="related-journey" data-compare-scenario="${escapeHtml(lesson.id)}"><strong>${escapeHtml(lesson.title)}</strong><span>${escapeHtml(lesson.summary)}</span></button>`).join('');
+  }
+  renderLessonInputs(){
+    const model=this.labModel,panel=this.querySelector('#lesson-inputs'),cases=model?.variantChoices||[],controls=model?.profileControls||[];
+    panel.hidden=cases.length<2&&!controls.length;
+    if(panel.hidden){panel.innerHTML='';return;}
+    const selected=cases.find(choice=>choice.id===(this.lessonVariant||'default'));
+    const profiles=controls.map(control=>`<label class="select-field" for="lesson-profile-${escapeHtml(control.id)}"><span>${escapeHtml(control.label)}</span><select id="lesson-profile-${escapeHtml(control.id)}" data-profile-control="${escapeHtml(control.id)}">${control.options.map(option=>`<option value="${escapeHtml(option.value)}" ${option.value===control.value?'selected':''}>${escapeHtml(option.label)}</option>`).join('')}</select></label>`).join('');
+    const caseControl=cases.length>1?`<label class="select-field" for="lesson-case"><span>Compare a case</span><select id="lesson-case">${cases.map(choice=>`<option value="${escapeHtml(choice.id)}" ${choice.id===(this.lessonVariant||'default')?'selected':''}>${escapeHtml(choice.label)}</option>`).join('')}</select></label>`:'';
+    panel.innerHTML=`<div id="lesson-input-controls" class="lesson-profile-controls"><h3>Case / supported profile${selected?' - '+escapeHtml(selected.id):''}</h3><div class="lesson-profile-control-list">${caseControl}${profiles}</div></div>`;
   }
   environmentFields(model=this.labModel) {
     if(model?.workspace){const wanted=new Set((model.runtimeBindings||[]).map(binding=>binding.field));return RUNTIME_ENVIRONMENT_FIELDS.filter(field=>wanted.has(field.key)).map(field=>({...field,path:field.key}));}
@@ -534,12 +593,12 @@ export class AuthFlowStudio extends HTMLElement {
   applyEnvironment() {
     // Read the immutable base registry, not a reconstruction of the current
     // applied model: even a constructor failure must leave correction possible.
-    const base=this.baseLabModel,fields=this.environmentFields(base),options={...this.environmentOptionsFor(base),activeFields:fields.map(field=>field.path)};
+    const registry=this.baseLabModel,base=this.lessonVariant!=='default'&&registry?.withVariant?registry.withVariant(this.lessonVariant):registry,fields=this.environmentFields(base),options={...this.environmentOptionsFor(base),activeFields:fields.map(field=>field.path)};
     this.refs['environment-fields'].querySelectorAll('[data-environment-field]').forEach(field=>{const key=field.dataset.environmentField;this.runtimeEnvironment.updateDraft(key.startsWith('provider.')?{provider:{[key.slice(9)]:field.value}}:{[key]:field.value},{profileId:this.providerProfile.id});});
     const result=this.runtimeEnvironment.apply(options,base?.contextualize?(context,metadata)=>base.contextualize(context,metadata):null),errors=this.refs['environment-errors'];
     errors.hidden=result.ok;errors.textContent=result.ok?'':Object.entries(result.errors).map(([key,message])=>(fields.find(field=>field.path===key)?.label||key)+': '+message).join(' ');
     this.refs['environment-fields'].querySelectorAll('[data-environment-field]').forEach(field=>{const invalid=!!result.errors?.[field.dataset.environmentField];field.setAttribute('aria-invalid',String(invalid));if(invalid)field.setAttribute('aria-errormessage','environment-errors');else field.removeAttribute('aria-errormessage');});
-    if(result.ok){if(base?.contextualize)this.contextModelMemo={key:base.id+'@'+result.revision,model:result.model};this.refreshConfiguration();}
+    if(result.ok){if(base?.contextualize)this.contextModelMemo={key:JSON.stringify([base.id,this.lessonVariant||'default',result.revision]),model:result.model};this.refreshConfiguration();}
     return result;
   }
   resetEnvironment() {
@@ -556,7 +615,7 @@ export class AuthFlowStudio extends HTMLElement {
     const candidate={x:Math.max(hx,Math.min(GRAPH_WIDTH-hx,x)),y:Math.max(hy,Math.min(GRAPH_HEIGHT-hy,y))};
     if(Object.entries(current).some(([other,p])=>other!==id&&Math.abs(p.x-candidate.x)<CARD_BOUNDS.width+margin&&Math.abs(p.y-candidate.y)<CARD_BOUNDS.height+margin))return false;
     const proposed={...current,[id]:candidate};
-    const pairs=[...this.steps,...this.traceQueue].map(step=>[this.nodeId(step.from),this.nodeId(step.to)]);
+    const pairs=this.graphSteps.map(step=>[this.nodeId(step.from),this.nodeId(step.to)]);
     const routes=validateLayoutRoutes(proposed,pairs);
     if(!routes.ok){this.showToast('Leave more room for connections and local processing around participants.');return false;}
     if(this.player.status==='playing')this.player.pause();
@@ -569,7 +628,8 @@ export class AuthFlowStudio extends HTMLElement {
     this.renderScenarioEnvironment();this.renderConnections();this.updateStep();this.renderPacket(this.player.snapshot());this.renderStepAttributes(this.player.snapshot(),true);
   }
   ensureLayoutRoutes(extraSteps=[]) {
-    const pairs=[...this.steps,...extraSteps].map(step=>[this.nodeId(step.from),this.nodeId(step.to)]);
+    const chapter=this.graphChapter,extra=chapter?extraSteps.filter(step=>chapter.stepIds.includes(step.sourceStepId||step.id)):extraSteps;
+    const pairs=[...this.graphSteps,...extra].map(step=>[this.nodeId(step.from),this.nodeId(step.to)]);
     if(validateLayoutRoutes(this.positions,pairs).ok)return false;
     delete this.customLayouts[this.layoutKey];
     this.showToast('Layout reset to leave room for this scenario’s connections.');
@@ -601,6 +661,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs.upstream.value=this.upstream;
     this.updateProtocolControls();
     this.activeSteps=this.journeyFor();this.renderWorkspace();
+    this.graphChapterKey=this.graphChapter?.id||null;
     this.heldView?.configureGeometry();
     if(!this.heldGeometry)this.ensureLayoutRoutes(this.traceQueue);
     const meta=modeMetadata[this.mode];
@@ -624,7 +685,6 @@ export class AuthFlowStudio extends HTMLElement {
     if(this.isAdvancedFlow){this.refs.architecture.querySelector('[value="web"]').textContent=this.oidcFlow==='device'?'Device service · confidential backend':this.oidcFlow==='ciba'?'Consumption app · confidential backend':this.oidcFlow==='token-exchange'?'Token requester · confidential backend':'Background service · confidential client';this.refs.architecture.title=this.oidcFlow==='device'?'Choose public or confidential device-client authentication; neither variant has an inbound application callback.':'This example authenticates its confidential backend directly to Realm A.';}
     this.refs.upstream.querySelector('[value="external"]').textContent='Keycloak + external '+(this.brokerProtocol==='saml'?'SAML':'OIDC')+' IdP';
     this.refs.upstream.title=this.isDirectFido?'The web application verifies the credential directly; no upstream IdP participates.':this.isAdvancedFlow?'This grant walkthrough uses one Keycloak realm. CIBA’s controlled authentication service is a separate integration, not another realm.':'';
-    this.refs['lab-scenario'].value=this.labScenarioId;
     this.scenarioPicker.setSelected(this.labScenarioId);
     if(this.labModel){
       this.refs.mode.disabled=true;this.refs.authenticator.disabled=true;this.refs.architecture.disabled=true;this.refs.upstream.disabled=true;
@@ -666,7 +726,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.querySelector('.toolbar').hidden=fixedProfile;this.querySelector('.protocol-toolbar').hidden=fixedProfile;
   }
   renderActors() {
-    const activeActors=new Set(this.steps.flatMap(s=>[this.nodeId(s.from),this.nodeId(s.to)]));
+    const activeActors=new Set(this.graphSteps.flatMap(s=>[this.nodeId(s.from),this.nodeId(s.to)]));
     this.refs.actors.innerHTML=Object.keys(this.scenarioOwnedActors||ACTORS).map(id=>{
       if(this.scenarioOwnedActors&&this.nodeId(id)!==id)return '';
       const a=this.actor(id),p=this.positions[a.id];if(!p)return '';
@@ -694,7 +754,7 @@ export class AuthFlowStudio extends HTMLElement {
   }
   protocolSnapshot(){
     const snapshot=this.scenarioSnapshot();
-    if(this.protocolMemo?.source!==snapshot){const model={...this.labModel,instanceScope:this.labScenarioId+'@context-'+this.runtimeEnvironment.revision,steps:()=>snapshot.steps,initialState:snapshot.initialState||this.labModel?.initialState||{},protocolValues:snapshot.protocolValues||this.labModel?.protocolValues||{}};this.protocolMemo={source:snapshot,model,instances:new Map()};}
+    if(this.protocolMemo?.source!==snapshot){const variant=this.lessonVariant&&this.lessonVariant!=='default'?':variant-'+this.lessonVariant:'',model={...this.labModel,instanceScope:this.labScenarioId+'@context-'+this.runtimeEnvironment.revision+variant,steps:()=>snapshot.steps,initialState:snapshot.initialState||this.labModel?.initialState||{},protocolValues:snapshot.protocolValues||this.labModel?.protocolValues||{}};this.protocolMemo={source:snapshot,model,instances:new Map()};}
     const held=this.heldView.snapshot(),sourceIndex=held.cursor.milestone==='complete'?held.cursor.eventIndex:Math.max(-1,held.cursor.eventIndex-1);
     if(!this.protocolMemo.instances.has(sourceIndex))this.protocolMemo.instances.set(sourceIndex,buildProtocolInstances(this.protocolMemo.model,sourceIndex));
     return {model:this.protocolMemo.model,sourceIndex,selectedSourceIndex:held.cursor.eventIndex,cursor:held.cursor,state:held.state,instances:this.protocolMemo.instances.get(sourceIndex)};
@@ -704,10 +764,38 @@ export class AuthFlowStudio extends HTMLElement {
     if(this.protocolRenderKey===key)return;this.protocolRenderKey=key;
     const panel=this.querySelector('#protocol-state-panel'),snapshot=this.protocolSnapshot();panel.hidden=!snapshot;this.renderLifetimes(snapshot);
     if(!snapshot)return;
+    this.renderLessonDecisions(snapshot);
     this.querySelector('#protocol-state-summary').textContent=(snapshot.cursor.eventIndex<0?'Before step 1':'Source event '+(snapshot.cursor.eventIndex+1)+' / '+snapshot.cursor.milestone)+' / '+snapshot.model.steps().length+' · protocol clock '+snapshot.state.protocolClock+' · fixture '+this.labScenarioId+'@context-'+this.runtimeEnvironment.revision;
     this.querySelector('#protocol-state-value').textContent=JSON.stringify(snapshot.state,null,2);
     const records=snapshot.instances.filter(record=>!this.attributeSelection||record.definitionIds?.includes(this.attributeSelection)||record.definitionId===this.attributeSelection);
     this.querySelector('#protocol-instance-list').innerHTML=records.length?'<div class="instance-table-scroll"><table class="instance-table"><thead><tr><th>Object instance</th><th>Creator / holders / inspectors</th><th>Exact field occurrence</th></tr></thead><tbody>'+records.map(record=>`<tr><td><code>${escapeHtml(record.qualifiedInstanceId||record.instanceId)}</code></td><td>${escapeHtml(record.creator||'Configured before the journey')}<br>Observed holders: ${escapeHtml((record.holders||[]).join(', '))}<br>Inspectors across fields: ${escapeHtml((record.inspectors||[]).join(', '))}</td><td>${record.occurrences.map(occurrence=>`<div class="instance-occurrence"><code>${escapeHtml(occurrence.fieldPath)}</code> · ${escapeHtml(occurrence.representation)} · ${escapeHtml(occurrence.eventId)}<br>Actor: ${escapeHtml(occurrence.actorId)} · ${escapeHtml(occurrence.kind)}<br>Permitted inspectors of this occurrence: ${escapeHtml((occurrence.inspectors||[]).join(', ')||'not declared')}<br><code>${escapeHtml(occurrence.value===undefined?'Exact bytes are intentionally not exposed':typeof occurrence.value==='string'?occurrence.value:JSON.stringify(occurrence.value))}</code></div>`).join('')}</td></tr>`).join('')+'</tbody></table></div>':'<p class="environment-note">No instantiated object is visible in this prefix.</p>';
+  }
+  renderLessonDecisions(snapshot){
+    const panel=this.querySelector('#lesson-decisions'),bindings=this.labModel?.decisionBindings||[];
+    panel.hidden=!bindings.length;
+    const rows=bindings.map(binding=>{
+      const value=binding.path.split('.').reduce((current,key)=>current&&Object.hasOwn(current,key)?current[key]:undefined,snapshot.state);
+      const display=binding.values&&Object.hasOwn(binding.values,String(value))?binding.values[String(value)]:value===undefined?'Not declared':value===null?'Not reached':value===true?'Yes':value===false?'No':formatProtocolValue(value,true);
+      return `<div><dt>${escapeHtml(binding.label)}</dt><dd>${escapeHtml(display)}</dd></div>`;
+    }).join('');
+    const markup=bindings.length?'<dl>'+rows+'</dl>':'';if(panel.innerHTML!==markup)panel.innerHTML=markup;
+    const chapters=this.labModel?.chapters||[],controls=this.querySelector('#lesson-chapters');controls.hidden=!chapters.length;
+    if(!chapters.length){if(controls.children.length)controls.innerHTML='';this.chapterControlsModel=null;return;}
+    if(this.chapterControlsModel!==this.labModel){
+      this.chapterControlsModel=this.labModel;
+      controls.innerHTML='<p>Linked chapters share one canonical history. Jumping seeks that history, not a new grant.</p><div class="chapter-buttons">'+chapters.map(chapter=>`<button type="button" class="button quiet" data-lesson-chapter="${escapeHtml(chapter.id)}" ${chapter.stepIds.length?'':'disabled'}>${escapeHtml(chapter.label)}${chapter.stepIds.length?'':' - not reached in this case'}</button>`).join('')+'</div><div id="chapter-token-comparison"></div>';
+    }
+    controls.querySelectorAll('[data-lesson-chapter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.lessonChapter===this.graphChapter?.id)));
+    const comparison=controls.querySelector('#chapter-token-comparison'),tokens=this.labModel?.chapterComparison||[];
+    const holdings=tokens.length?this.heldView.snapshot().holdings:null;
+    if(comparison)comparison.innerHTML=tokens.length?'<div class="instance-table-scroll"><table class="instance-table"><thead><tr><th>Separate credential</th><th>Issuer</th><th>Resource</th><th>Current prefix</th></tr></thead><tbody>'+tokens.map(token=>`<tr><td>${escapeHtml(token.label)}<br><code>${escapeHtml(token.artifactId)}</code></td><td>${escapeHtml(token.issuer)}</td><td>${escapeHtml(token.resource)}</td><td>${holdings.some(holding=>holding.artifactId===token.artifactId)?'A representation is held; this alone is not validation or permission.':'Not held in this source prefix.'}</td></tr>`).join('')+'</tbody></table></div>':'';
+  }
+  refreshChapterProjection(){
+    const chapter=this.graphChapter,key=chapter?.id||null;
+    if(this.graphChapterKey===key)return;
+    this.graphChapterKey=key;this.heldGeometry=null;this.heldView.geometrySignature=null;this.heldView.configureGeometry();
+    if(!this.heldGeometry)this.ensureLayoutRoutes(this.traceQueue);
+    this.renderActors();this.renderConnections();
   }
   renderLifetimes(snapshot){
     const panel=this.querySelector('#lifetime-strip'),state=snapshot?.state;panel.hidden=!state?.lifetimes;
@@ -763,7 +851,7 @@ export class AuthFlowStudio extends HTMLElement {
   renderConnections() {
     const pairs=new Map();
     const focusPairs=new Set(this.traceQueue.map(s=>pairKey(this.nodeId(s.from),this.nodeId(s.to))));
-    [...this.steps,...(this.hasTrace?this.traceQueue:[])].forEach(s=>{
+    this.graphSteps.forEach(s=>{
       const from=this.nodeId(s.from),to=this.nodeId(s.to),key=pairKey(from,to);
       if(!pairs.has(key))pairs.set(key,{from,to,channel:channelCategory(s.channel),count:0});
       pairs.get(key).count++;
@@ -802,6 +890,7 @@ export class AuthFlowStudio extends HTMLElement {
   inspectActor(id) {this.hidePopups();this.inspection={type:'actor',id};this.renderInspector();this.updateNodeSelection();}
   updateNodeSelection() {this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>n.classList.toggle('is-selected',this.inspection.type==='actor'&&n.dataset.actor===this.inspection.id));}
   updateStep() {
+    this.refreshChapterProjection();
     this.renderProtocolState();
     this.heldView?.render();
     const s=this.currentStep;
@@ -939,8 +1028,13 @@ export class AuthFlowStudio extends HTMLElement {
     if(event.visible){
       const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       const point=path.getPointAtLength(path.getTotalLength()*((presentation==='local'||reduced)? .5:event.progress));
-      this.refs.packet.style.left=Math.max(112,Math.min(GRAPH_WIDTH-112,point.x))/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=Math.max(40,Math.min(GRAPH_HEIGHT-40,point.y))/GRAPH_HEIGHT*100+'%';
-      if(this.heldGeometry||presentation==='local'){this.refs.packet.style.left=point.x/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=point.y/GRAPH_HEIGHT*100+'%';}
+      const graphRect=this.refs.graph.getBoundingClientRect(),packetRect=this.refs.packet.getBoundingClientRect();
+      const width=graphRect.width||GRAPH_WIDTH,height=graphRect.height||GRAPH_HEIGHT,x=point.x/GRAPH_WIDTH*width,y=point.y/GRAPH_HEIGHT*height;
+      // Keep the route point inside the complete chip, anchoring its edge
+      // instead of moving the packet's logical position off the path.
+      const left=Math.max(0,Math.min(width-packetRect.width,x-packetRect.width/2)),top=Math.max(0,Math.min(height-packetRect.height,y-packetRect.height/2));
+      this.refs.packet.style.left=point.x/GRAPH_WIDTH*100+'%';this.refs.packet.style.top=point.y/GRAPH_HEIGHT*100+'%';
+      this.refs.packet.style.transform=`translate(${left-x}px, ${top-y}px)`;
     }
     const external=this.querySelector('#held-active-message');external.hidden=presentation!=='local'&&(!this.heldGeometry||event.messagePhase==='local');
     if(!external.hidden){
@@ -1160,21 +1254,24 @@ export class AuthFlowStudio extends HTMLElement {
       if(query&&!search.includes(query))return null;
       const count=hasUsage(id)?getAttributeUsage(steps,id,this.authenticator).length:0,pressed=String(id===this.attributeSelection);
       const className='attribute-index-item '+(id===this.attributeSelection?'is-selected':'')+' '+(count?'':'is-unavailable');
-      const contents=`<code>${escapeHtml(a.name)}</code><span class="attribute-index-count" title="Journey steps with an operation">${count}</span><span class="attribute-index-context">${escapeHtml(this.indexContext(id))}</span>`;
-      return {id,search,pressed,className,contents,markup:`<button class="${className}" data-index-attribute="${id}" aria-haspopup="dialog" aria-controls="attribute-popup" aria-keyshortcuts="F2" data-index-search="${escapeHtml(search)}" aria-pressed="${pressed}">${contents}</button>`};
+      const context=this.indexContext(id),label=a.name+'. '+count+' source steps in this journey. '+context;
+      const contents=`<code>${escapeHtml(a.name)}</code><span class="attribute-index-count" title="Journey steps with an operation">${count}</span><span class="attribute-index-context">${escapeHtml(context)}</span>`;
+      return {id,search,pressed,className,contents,label,markup:`<button class="${className}" data-index-attribute="${id}" aria-label="${escapeHtml(label)}" aria-haspopup="dialog" aria-controls="attribute-popup" aria-keyshortcuts="F2" aria-pressed="${pressed}">${contents}</button>`};
     }).filter(Boolean);
     const list=this.refs['attribute-index-list'],signature=rows.map(row=>row.id).join('\0');
     if(this.attributeIndexRows?.list===list&&this.attributeIndexRows.signature===signature){
       for(const row of rows){
         const previous=this.attributeIndexRows.entries.get(row.id);
+        previous.search=row.search;
         if(previous.markup===row.markup)continue;
-        previous.node.setAttribute('class',row.className);previous.node.dataset.indexSearch=row.search;
+        previous.node.setAttribute('class',row.className);
+        previous.node.setAttribute('aria-label',row.label);
         previous.node.setAttribute('aria-pressed',row.pressed);previous.node.innerHTML=row.contents;previous.markup=row.markup;
       }
     }else{
       list.innerHTML=rows.map(row=>row.markup).join('');
       const entries=new Map();let index=0;
-      for(const node of list.querySelectorAll('[data-index-attribute]')){const row=rows[index++];entries.set(row.id,{node,markup:row.markup});}
+      for(const node of list.querySelectorAll('[data-index-attribute]')){const row=rows[index++];entries.set(row.id,{node,markup:row.markup,search:row.search});}
       this.attributeIndexRows={list,signature,entries};
     }
     this.refs['attribute-search'].placeholder='Search fields across every journey';
@@ -1189,7 +1286,7 @@ export class AuthFlowStudio extends HTMLElement {
   }
   filterAttributeIndex() {
     const q=this.attributeQuery.trim().toLowerCase();let count=0;
-    this.refs['attribute-index-list'].querySelectorAll('[data-index-attribute]').forEach(button=>{button.hidden=!button.dataset.indexSearch.includes(q);if(!button.hidden)count++;});
+    for(const {node,search} of this.attributeIndexRows.entries.values()){node.hidden=!search.includes(q);if(!node.hidden)count++;}
     let topics=0;this.refs['attribute-topics'].querySelectorAll('[data-trace-topic]').forEach(button=>{const topic=ATTRIBUTE_TOPICS[button.dataset.traceTopic];button.hidden=!!q&&!((topic.name+' '+topic.summary+' '+topic.attributeIds.map(id=>this.definition(id).name).join(' ')).toLowerCase().includes(q));if(!button.hidden)topics++;});
     this.refs['attribute-index-meta'].textContent=count+(q?' matching attributes · global catalog search · numbers count current-journey steps':this.labModel?.profile?' current-journey attributes · type to search all protocols':' attributes · numbers count journey steps · 0 means unused in this setup');
     this.refs['attribute-index-empty'].hidden=!!(count||topics);
@@ -1319,7 +1416,7 @@ export class AuthFlowStudio extends HTMLElement {
     if(kind==='actor')this.hidePopups();else{clearTimeout(this.attributeTimer);this.closePopup('attribute');}
     this.restoreTargetFocus(target);
   }
-  restoreTargetFocus(target,options={}){const node=resolveFocusTarget(this,target,options);if(node&&node!==document.activeElement){this.restoringPopupFocus=true;try{node.focus({preventScroll:true});}finally{this.restoringPopupFocus=false;}}}
+  restoreTargetFocus(target,options={}){const node=resolveFocusTarget(this,target,options);if(node&&node!==document.activeElement){this.restoringPopupFocus=true;try{node.focus({preventScroll:options.preventScroll!==false});}finally{this.restoringPopupFocus=false;}}}
   deferCloseActor(next){clearTimeout(this.closeTimer);if(this.popupOwnsFocus('actor',next))return;this.closeTimer=setTimeout(()=>{if(!this.popupOwnsFocus('actor'))this.closePopup('actor');},250);}
   deferCloseAttribute(next){clearTimeout(this.attributeTimer);if(this.popupOwnsFocus('attribute',next))return;this.attributeTimer=setTimeout(()=>{if(!this.popupOwnsFocus('attribute'))this.closePopup('attribute');},180);}
   hidePopups(){clearTimeout(this.closeTimer);clearTimeout(this.attributeTimer);if(this.refs?.['actor-popup'])this.closePopup('actor');if(this.refs?.['attribute-popup'])this.closePopup('attribute');}

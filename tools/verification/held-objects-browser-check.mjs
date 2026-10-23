@@ -409,7 +409,7 @@ async function heldNativeFocusState(page){
   return page.evaluate(()=>{const a=document.querySelector('auth-flow-studio'),e=document.activeElement;return {action:e?.dataset.heldAction||null,holdingId:e?.dataset.holdingId||null,actorId:e?.dataset.heldActor||e?.dataset.heldCollapse||null,region:e?.closest('#held-objects,#held-docks,#held-inspector')?.id||null,selected:a.heldView.selection?.holdingId||null,connected:!!e?.isConnected,visible:!!e&&e.getClientRects().length>0};});
 }
 async function heldNativeActionFocus(page,mode){
-  const records=[],choices=await page.evaluate(()=>[...document.querySelector('auth-flow-studio').refs['lab-scenario'].options].map(o=>o.value));
+  const records=[],choices=await page.evaluate(()=>document.querySelector('auth-flow-studio').scenarioPicker.options.map(option=>option.id));
   const redraw=async(action,region,label)=>{
     const before=await heldNativeFocusState(page);
     assert.equal(before.action,action,mode+' '+label+' starts on exact action');assert.equal(before.region,region,mode+' '+label+' starts in exact region');
@@ -791,8 +791,10 @@ try{
     record.localProcessing=await heldNativeLocalProcessing(page,mode);record.checks.push('Actual PKCE, AD/FAST and SSH CLI/agent local fields across full/compact/external and internal folding; fixed local midpoint, no directional flow, exact field/control/canonical state, painted stroke/focus/glyph clearance, and folded SSH IPC motion/direction');
     // Start the catalog sweep from a fresh configuration, retaining host-side CSP evidence.
     await page.goto(target,{waitUntil:'networkidle'});await page.setViewportSize({width:1920,height:1200});
-    const choices=await page.evaluate(()=>[...document.querySelector('auth-flow-studio').refs['lab-scenario'].options].map(option=>option.value));
-    assert.equal(choices.length,214,mode+' full inventory gate: accepted 141 choices, 61 expansion presets and 12 SMB lessons');
+    const choices=await page.evaluate(()=>document.querySelector('auth-flow-studio').scenarioPicker.options.map(option=>option.id));
+    assert.ok(choices.length>0,mode+' live ScenarioPicker registry is nonempty');
+    assert.equal(new Set(choices).size,choices.length,mode+' live ScenarioPicker IDs are unique');
+    if(mode!=='source-http')assert.deepEqual(new Set(choices),new Set(fingerprints.keys()),mode+' source/emitted live ScenarioPicker registry sets match');
     for(const id of choices){
       await heldNativeChoose(page,id);
       const initial=await heldNativeScene(page,mode+' '+id+' initial');

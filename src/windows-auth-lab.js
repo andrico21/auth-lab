@@ -395,7 +395,16 @@ function winAuthor(spec) {
     pendingApReply=object('ap-reply','Kerberos AP-REP','proof','winHost','EncAPRepPart{matching ctime/cusec, subkey=distinct Windows AES256 acceptor subkey}',['winHost','winClient'],{wire:'EncryptedData(ticket-session-key, EncAPRepPart{matching ctime/cusec, subkey=<acceptor-subkey ciphertext>})'});
     pendingTicketKey=ticketKey;
     if(spec.credssp&&!spec.winrm){
-      apReplyLayer(packet('ap-reply','Return mutual-authentication token','winHost','winClient','TSRequest.negoTokens / SPNEGO','AP-REP proves service possession of the ticket key and carries the distinct protected acceptor subkey. The client must validate it locally.',{objects:[pendingApReply],creates:[pendingApReply,acceptorSubkey],observations:[observe(ticketKey,'winHost','knowledge','used_for_AP_REP_protection')],puts:{hostCompletedContextKey:acceptorSubkey.artifactId}}));
+      const reply=packet('ap-reply','Return mutual-authentication token','winHost','winClient','TSRequest.negoTokens / SPNEGO','AP-REP proves service possession of the ticket key and carries the distinct protected acceptor subkey. The client must validate it locally.',{objects:[pendingApReply],creates:[pendingApReply,acceptorSubkey],observations:[observe(ticketKey,'winHost','knowledge','used_for_AP_REP_protection')],puts:{hostCompletedContextKey:acceptorSubkey.artifactId}});
+      reply.attributeOperations.unshift({
+        attributeId:acceptorSubkey.attributeId,kind:'create',actorId:acceptorSubkey.creator,
+        instanceId:acceptorSubkey.artifactId,creator:acceptorSubkey.creator,holders:[acceptorSubkey.creator],
+        inspectors:acceptorSubkey.readers,fieldPath:'decoded.'+acceptorSubkey.key,
+        representation:'plain',value:acceptorSubkey.value,
+        sourceEventId:reply.id,exactValueRef:acceptorSubkey.artifactId+':plain',
+        detail:'H creates the distinct Windows AES acceptor subkey locally before protecting it inside EncAPRepPart; the plain key is not transmitted.',
+      });
+      apReplyLayer(reply);
       mutualVerify();
     }else{
       local('ap-reply','Prepare reciprocal proof for the pending carrier response','winHost','Kerberos acceptor','Prepare AP-REP carrying the distinct acceptor subkey under the ticket session key. No client receipt or mutual acceptance occurs until the grouped HTTP response is delivered and verified.',{objects:[pendingApReply],creates:[pendingApReply,acceptorSubkey],observations:[observe(ticketKey,'winHost','knowledge','used_for_AP_REP_protection')],puts:{hostCompletedContextKey:acceptorSubkey.artifactId}});

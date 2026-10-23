@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "kind": "p6c-focused-collector-boundary-corrections",
+  "failedAttempts": [
+    {
+      "report": {
+        "path": "docs/verification/p6c-mcp01-correction/response-smoke-01/response-smoke-status.json",
+        "sha256": "d7e1bab4ae3e9472b8211085d4d59ddbe75a2fd7d2fd4dc2e557eddd86ef9067",
+        "bytes": 6392
+      },
+      "producer": {
+        "path": "docs/verification/p6c-mcp01-correction/response-smoke-01/runner-input.txt",
+        "sha256": "3a28e85632dea8dfdef40434081478850bac5d7dd5361c363d96c665072a94cb",
+        "bytes": 7411
+      },
+      "reason": "The Body field is an actor-local observation record, not a separately stored body holding. Inspect/trace the actual temporary TLS carrier and retain the Body field replay instead of inventing custody."
+    },
+    {
+      "report": {
+        "path": "docs/verification/p6c-mcp01-correction/response-smoke-02/response-smoke-status.json",
+        "sha256": "d7edef5ff04d75125b0079f9b09695db1cc9528cf9bcde5659798b0da19e0483",
+        "bytes": 15111
+      },
+      "producer": {
+        "path": "docs/verification/p6c-mcp01-correction/response-smoke-02/runner-input.txt",
+        "sha256": "080f150e5312e5685fcac77f0947390947ab4e176f1940090ab2ebf2c7e37951",
+        "bytes": 7708
+      },
+      "reason": "Successful decoded response receipt precedes the later local acceptance. Field replay correctly ends before resultLearned becomes true; compare that prefix separately from the full journey end."
+    }
+  ],
+  "successfulFocusedRun": {
+    "path": "docs/verification/p6c-mcp01-correction/response-smoke-03/response-smoke-status.json",
+    "sha256": "2063290e050ddde61000e17321a901e35c50a084f280b4dcfddd4c1de067e03e",
+    "bytes": 19499
+  },
+  "productChangesForCollectorAssumptions": false,
+  "assertionsNotSuppressed": true,
+  "boundary": "Both failed collector assumptions remain recorded; the correction changes only the required resultType field in production."
+}

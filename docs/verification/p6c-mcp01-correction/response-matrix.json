@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "kind": "p6c-mcp01-worker-response",
+  "authority": {
+    "path": "/mnt/c/TempPersistent/oauth-lab/auth-flow-studio-p6-corrections-independent-review.html",
+    "sha256": "8f7ff51191d9328a968a34f672406846a605960b5b7283a4ccdbcc6c8816c147",
+    "bytes": 1729585
+  },
+  "finding": {
+    "id": "P6C-MCP-01",
+    "priority": "P2",
+    "workerStatus": "corrected-and-current-automated-verified-independent-recheck-pending",
+    "independentStatus": "pending-recheck"
+  },
+  "before": {
+    "source": "434995d653550b3296ab294d0aa2ea90e63b79470a8bb7ecc1792d3f065ba53e",
+    "standalone": {
+      "path": "dist/auth-flow-studio.html",
+      "sha256": "b081e1b4dbcbbdadd4b01228b6d7fea48fc0dcde0df5cab7a35edbffd7f2aec6",
+      "bytes": 3749651
+    },
+    "groundTruth": "The independent review directly observed the two missing resultType fields; no redundant pre-fix defect-confirmation run was made."
+  },
+  "current": {
+    "source": "51cb94f385143c9569241d2eac958f090034c2582087d0f3c4ce6174e4fe5298",
+    "standalone": {
+      "path": "dist/auth-flow-studio.html",
+      "sha256": "23d6c61d861a37705122915a11923d43d610723664a28caa6df89cfcaae71de6",
+      "bytes": 3749673
+    }
+  },
+  "change": "Author resultType:complete in the existing shared MCP09 current-profile tool-error result. Receiver fallback for older versions does not remove the selected sender requirement.",
+  "affected": {
+    "scenario": "lab-mcp09",
+    "variants": [
+      "upstream-expired",
+      "upstream-wrong-audience"
+    ],
+    "event": "lab-mcp09:proxy-upstream-error-recover",
+    "eventIndex": 49,
+    "displayedStep": 50
+  },
+  "successComparison": {
+    "variant": "default",
+    "event": "lab-mcp09:proxy-result-wire-recover",
+    "eventIndex": 52
+  },
+  "requiredResponse": {
+    "HTTP": 200,
+    "jsonrpc": "2.0",
+    "resultType": "complete",
+    "isError": true,
+    "id": "matches the actual downstream Request.body.id"
+  },
+  "preserved": [
+    "downstreamTokenAccepted=true",
+    "upstreamTokenAccepted=false on both error paths",
+    "protected output/operation remains unavailable",
+    "no upstream/downstream token bytes in the returned body",
+    "existing upstream-only recovery explanation and separate downstream grant",
+    "successful decoded receipt precedes later local acceptance"
+  ],
+  "changedFiles": [
+    {
+      "path": "src/mcp-auth-lab.js",
+      "sha256": "9670373b1f828e96f73a0b08ed192504304edaef71936d27bae2cbd85bf56674",
+      "bytes": 134109
+    },
+    {
+      "path": "tests/p6-review-mcp.test.mjs",
+      "sha256": "e0d68aa2e1006c51cd8d9e71a4688dbbe5cac2874537b93cd80a8bbd506617a5",
+      "bytes": 16661
+    },
+    {
+      "path": "docs/next-expansion/mcp-worksheet.json",
+      "sha256": "15d86830a8f295a6b4fb2aecca4542fb4224b6b4e4c52c540c41037281423ab2",
+      "bytes": 500933
+    },
+    {
+      "path": "docs/next-expansion/implementation.md",
+      "sha256": "969265697e5e0c61dc2a6f0c74720dcffac8897803d4c4d723ae9998e7fbf3f9",
+      "bytes": 26093
+    },
+    {
+      "path": "docs/next-expansion/implementation-ledger.json",
+      "sha256": "63da7a5cd768a3ab5eaf386698a4705dc5a0d21e9d9b6c7ed933dad5c1dcd2aa",
+      "bytes": 339496
+    },
+    {
+      "path": "docs/next-expansion/open-gates.json",
+      "sha256": "222ab507fe4f3d30335ed9c66f57e95e16a257d1d3e8abc33f39baf2bd92ee51",
+      "bytes": 7889
+    }
+  ],
+  "evidence": {
+    "focusedMcp": {
+      "path": "docs/verification/p6c-mcp01-correction/focused-mcp-after.json",
+      "sha256": "cfe1daed6f4e049b407b1d6c97a0e07fe3d8c85db2b3cf37e0b454e819ae91d6",
+      "bytes": 5005
+    },
+    "emittedAndFieldTrace": {
+      "path": "docs/verification/p6c-mcp01-correction/response-smoke-03/response-smoke-status.json",
+      "sha256": "2063290e050ddde61000e17321a901e35c50a084f280b4dcfddd4c1de067e03e",
+      "bytes": 19499
+    },
+    "retainedCollectorFailures": {
+      "path": "docs/verification/p6c-mcp01-correction/smoke-boundary-dispositions.json",
+      "sha256": "46b72c5a153f14e904aa4a54be2127a5fb671a3b87d0dc4e6b568c2392d05d74",
+      "bytes": 1960
+    },
+    "allCanonicalCases": {
+      "path": "docs/verification/p6c-mcp01-correction/canonical-final/contracts-status.json",
+      "sha256": "2f1bd0cfa68a6b4a4192ffda786ed5ad7f5a421ab24dc9373eb25007f9bd9912",
+      "bytes": 10773381
+    },
+    "finalGates": {
+      "path": "docs/verification/p6c-mcp01-correction/final-gate-status.json",
+      "sha256": "20503c08b1b433351ad1302e257c448f8d34688f849adcd4386e422ea2167f87",
+      "bytes": 25407
+    },
+    "fullRegression": {
+      "path": "docs/verification/p6c-mcp01-correction/regression-final/held-objects-regression-status.json",
+      "sha256": "941f188965faa826324e14fa39d8afe305943a92d37190e9a0d189463f224352",
+      "bytes": 109791
+    }
+  },
+  "retainedIndependentClosures": {
+    "count": 20,
+    "record": {
+      "path": "docs/verification/p6c-mcp01-correction/independent-closure-status.json",
+      "sha256": "2e088669dfa4d4dafc0319c80001d1f1d1cc180ff5fb17c5007b36c3cda42782",
+      "bytes": 4516
+    },
+    "notReopened": "P6-MCP-A1 actor/verdict/custody objective remains independently accepted."
+  },
+  "releaseConditions": {
+    "G01": "unperformed-human-owner",
+    "performance": {
+      "openConditions": 6,
+      "originalKeyDocumentation": "independently-satisfied",
+      "freshTimingCollection": false,
+      "ownerAcceptanceRecorded": false
+    },
+    "historicalLimitsPreserved": true,
+    "releaseAccepted": false
+  },
+  "scope": "No optional extension, new native/performance sweep or broad protocol certification.",
+  "publicationPerformed": false
+}

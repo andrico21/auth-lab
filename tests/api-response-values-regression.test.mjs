@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {ATTRIBUTES} from '../src/protocol-data.js';
-import {WEBLAB_ATTRIBUTES,WEBLAB_SCENARIOS} from '../src/web-api-lab.js';
+import {WEBLAB_SCENARIOS} from '../src/web-api-lab.js';
 import {getAttributeUsage} from '../src/attribute-usage.js';
 import {buildAttributeTrace} from '../src/attribute-trace.js';
 import {installHarness} from './dom-harness.mjs';
@@ -16,7 +15,6 @@ const outcomes=[
   {create:'web-error-success-response',send:'web-error-success-response',status:'200 OK'},
 ];
 const fields={webHttpStatus:'status',webChallengeHeader:'challenge',webBearerError:'error'};
-Object.assign(ATTRIBUTES,WEBLAB_ATTRIBUTES);
 const model=WEBLAB_SCENARIOS.find(item=>item.id==='lab-api-errors');
 const stage=id=>model.steps().find(item=>item.id===id);
 const expectedFrames=id=>outcomes.filter(outcome=>Object.hasOwn(outcome,fields[id])).flatMap(outcome=>[

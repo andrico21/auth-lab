@@ -214,7 +214,9 @@ export class HeldObjectView {
     if(!compiled){
       const actors=logicalActorsForView(app);
       const config={...app.protocolConfig(),oidcFlow:app.oidcFlow,tokenProtection:app.tokenProtection};
-      const contextId=JSON.stringify([app.labScenarioId,config,app.runtimeEnvironment.revision]);
+      const contextParts=[app.labScenarioId,config,app.runtimeEnvironment.revision];
+      if(app.labModel?.variantId&&app.labModel.variantId!=='default')contextParts.push('variant='+app.labModel.variantId);
+      const contextId=JSON.stringify(contextParts);
       const model=app.labModel?{...app.labModel,steps:()=>source.steps,initialState:source.initialState||app.labModel.initialState,protocolValues:source.protocolValues||app.labModel.protocolValues}:null;
       compiled=buildHeldObjects({model,steps:source.steps,actors,config,contextId,choiceId:app.labScenarioId});this.memo.set(source,compiled);
     }
@@ -227,22 +229,22 @@ export class HeldObjectView {
     return projectHeldObjects(compiled,cursor);
   }
   configureGeometry(){
-    const app=this.app,actors=logicalActorsForView(app),layoutSteps=[...app.steps,...(app.hasTrace?app.traceQueue:[])];
+    const app=this.app,actors=logicalActorsForView(app),layoutSteps=app.graphSteps;
     const participants=new Set(layoutSteps.flatMap(step=>[step.from,step.to,...(step.attributeOperations||[]).map(op=>op.actorId)]).map(id=>app.nodeId(id)));
     const ids=[...new Set(Object.keys(actors).map(id=>app.nodeId(id)))].filter(id=>participants.has(id)),all=ids,aliases={};
     if(app.showInternals){
-      const active=new Set(app.steps.flatMap(step=>[step.from,step.to,...(step.attributeOperations||[]).map(op=>op.actorId)]));
+      const active=new Set(layoutSteps.flatMap(step=>[step.from,step.to,...(step.attributeOperations||[]).map(op=>op.actorId)]));
       for(const parent of new Set(Object.values(actors).map(actor=>actor.parentId).filter(Boolean))){
         const children=Object.keys(actors).filter(id=>actors[id].parentId===parent);
         if(!active.has(parent)&&children.length)aliases[children[0]]=parent;
       }
     }
     const base=app.basePositions,visible=ids.filter(id=>base[id]),rect=app.refs.graph.getBoundingClientRect(),viewport=app.refs.graph.parentElement.getBoundingClientRect();
-    const pairs=[...app.steps,...(app.hasTrace?app.traceQueue:[])].map(step=>[app.nodeId(step.from),app.nodeId(step.to)]);
+    const pairs=layoutSteps.map(step=>[app.nodeId(step.from),app.nodeId(step.to)]);
     const width=Math.min(rect.width,viewport.width),height=rect.height;
     const compactPositions=Object.fromEntries(visible.map(id=>[id,base[id]]));
     const authored=app.labModel?.positions||app.labModel?.actorPositions||app.labModel?.layout?.positions||app.labModel?.layout||{};
-    const reference=app.scenarioOwnedActors?{...scenarioPositions(app.labModel,app.steps,actors,true),...authored}:getPositions(app.architecture);
+    const reference=app.scenarioOwnedActors?{...scenarioPositions(app.labModel,layoutSteps,actors,true),...authored}:getPositions(app.architecture);
     for(const [child,parent] of Object.entries(aliases))if(reference[child])reference[parent]=reference[child];
     const anchors=Object.fromEntries([...new Set([...all,...Object.values(aliases)])].map(id=>[id,reference[id]||actors[id]?.position]));
     const signature=JSON.stringify([all,visible,pairs,width>=1120,height>=730,viewport.width,app.moveParticipants,!!app.customLayouts[app.layoutKey],aliases,compactPositions,anchors]);
@@ -254,6 +256,17 @@ export class HeldObjectView {
       if(app.heldGeometry?.mode==='compact'&&app.heldGeometry.key===this.rejectedCompactKey)app.heldGeometry=null;
     }
     app.refs.graph.dataset.heldGeometry=app.heldGeometry?.mode||'external';
+  }
+  ensureInitialGraphView(contextId){
+    if(this.initialGraphContext===contextId&&this.initialGraphGeometry===this.geometrySignature)return;
+    const app=this.app,viewport=app.refs.graph.parentElement;
+    const cards=[...app.refs.actors.querySelectorAll('.actor-card:not(.is-muted)')].filter(card=>!card.hidden);
+    if(!cards.length)return;
+    this.initialGraphContext=contextId;this.initialGraphGeometry=this.geometrySignature;
+    if(app.refs.graph.dataset.heldGeometry!=='external'||viewport.scrollWidth<=viewport.clientWidth)return;
+    const bounds=viewport.getBoundingClientRect();let first;
+    for(const card of cards){const rect=card.getBoundingClientRect();if(rect.width&&rect.height&&(!first||rect.left<first.left))first=rect;}
+    if(first&&(first.left<bounds.left||first.right>bounds.right))viewport.scrollLeft+=first.left-bounds.left-16;
   }
   reset(){const owned=!!document.activeElement?.closest?.('#held-objects, #held-inspector, #held-docks');this.initial=true;this.selected=false;this.selection=null;this.inventoryTrigger=null;this.helpOpen=false;this.expanded.clear();this.lastKey='';this.app.objectTraceSelection=null;if(owned)this.app.querySelector('#lab-scenario-search').focus();}
   event(event){if(event.step){this.initial=false;this.selected=false;}if(['step','frame','stepcomplete','complete','state'].includes(event.type))this.render(event);}
@@ -291,6 +304,7 @@ export class HeldObjectView {
   }
   render(event){
     const snapshot=this.snapshot(event),compiled=this.compiled(),app=this.app;
+    this.ensureInitialGraphView(compiled.plan.contextId);
     if(this.selection){const moved=snapshot.holdings.find(item=>item.holdingId===this.selection.holdingId || item.actorId===this.selection.actorId&&item.artifactId===this.selection.artifactId&&item.representationId===this.selection.representationId&&item.ordinal===this.selection.ordinal);if(moved)this.selection={...this.selection,...moved};}
     const row=event?.step||app.currentStep;
     const key=JSON.stringify([snapshot.cursor,this.visible,this.selection?.holdingId,this.selection?.store,this.actorId,[...this.expanded],app.heldGeometry?.key,app.showInternals,this.helpOpen,this.focusedId,row?.id]);if(key===this.lastKey)return;this.lastKey=key;

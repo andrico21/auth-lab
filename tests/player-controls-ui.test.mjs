@@ -347,3 +347,45 @@ test('SSH signing and agent IPC preserve visible fields, actual-packet highlight
     }
   } finally { unmount(app); }
 });
+
+test('complete packet bounds stay on their route anchor at graph edges for local, transfer and folded steps', () => {
+  const app = mount(); try {
+    // Explicit measured boxes test placement, not browser CSS layout or text
+    // wrapping. Native acceptance still owns the actual rendered dimensions.
+    let surface={width:1120,height:730},box={width:12,height:12};
+    app.refs.graph.getBoundingClientRect = () => ({width:surface.width,height:surface.height});
+    app.refs.packet.getBoundingClientRect = () => ({width:box.width,height:box.height});
+    for (const presentation of ['local','transfer','folded']) {
+      surface={width:1120,height:730};box={width:12,height:12};
+      if(presentation!=='local')app.selectLabScenario('lab-ssh-cert-success', {navigate:false});
+      const step = app.steps.find(row => row.payload.length && (presentation === 'local'
+        ? row.from === row.to
+        : row.from !== row.to && (app.nodeId(row.from) === app.nodeId(row.to)) === (presentation === 'folded')));
+      assert.ok(step, presentation + ' has an actual authored operation');
+      app.selectStep(app.steps.indexOf(step), false); app.player.seek([step], .35, 'step');
+      const state = app.player.snapshot(), line = app.refs.connections.querySelector('.connection-group.is-active .connection-line');
+      const length = line.getTotalLength();
+      let anchor, sampled;
+      line.getPointAtLength = distance => { sampled = distance / length; return anchor; };
+      for (const width of [860,1120]) for (const size of [{width:12,height:12},{width:238.875,height:47},{width:245,height:82}]) {
+        surface = {width,height:width * 730 / 1120}; box = size;
+        for (anchor of [{x:18,y:18},{x:1102,y:18},{x:1102,y:712},{x:18,y:712},{x:145,y:486.732},{x:560,y:365}]) {
+          for (const progress of [.1,.9]) {
+            app.renderPacket({...state,visible:true,progress});
+            assert.ok(Math.abs(sampled - (presentation === 'local' ? .5 : progress)) < 1e-8);
+            assert.equal(app.refs.packet.hidden,false);
+            const x = parseFloat(app.refs.packet.style.left) / 100 * surface.width;
+            const y = parseFloat(app.refs.packet.style.top) / 100 * surface.height;
+            assert.ok(Math.abs(x - anchor.x / 1120 * surface.width) < 1e-8, 'the logical x stays on the path');
+            assert.ok(Math.abs(y - anchor.y / 730 * surface.height) < 1e-8, 'the logical y stays on the path');
+            const transform = app.refs.packet.style.transform.match(/^translate\(([-\d.e+]+)px, ([-\d.e+]+)px\)$/);
+            assert.ok(transform, 'placement provides measured chip offsets');
+            const left = x + Number(transform[1]), top = y + Number(transform[2]), right = left + box.width, bottom = top + box.height;
+            assert.ok(left >= -1e-8 && top >= -1e-8 && right <= surface.width + 1e-8 && bottom <= surface.height + 1e-8, 'the full packet stays inside the graph');
+            assert.ok(left <= x && right >= x && top <= y && bottom >= y, 'the packet footprint remains attached to its true route point');
+          }
+        }
+      }
+    }
+  } finally { unmount(app); }
+});

@@ -66,6 +66,8 @@ async function choose(page,id){
   const option=page.locator('[data-scenario-option='+JSON.stringify(id)+']');
   await option.waitFor({state:'visible'});await option.click();await settle(page);
   assert.equal(await page.evaluate(()=>document.querySelector('auth-flow-studio').labScenarioId),id,'Actual picker selected '+id);
+  // This predecessor profile-oriented collector deliberately opens reference details.
+  const reference=page.locator('#lesson-reference');if(await reference.isVisible()&&await reference.getAttribute('open')===null)await reference.locator(':scope > summary').click();
 }
 async function checkpoint(page,suffix,progress=1){
   return page.evaluate(({suffix,progress})=>{

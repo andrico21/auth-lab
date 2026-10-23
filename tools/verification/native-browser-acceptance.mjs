@@ -384,10 +384,10 @@ try{
     await page.unroute('**/*',guard);
     try{await favicons(page,mode,origin);}finally{await page.route('**/*',guard);}
     assert.equal(await page.evaluate(()=>document.querySelector('auth-flow-studio').labScenarioId),'basic-keycloak');check(mode+' boots with ordinary Keycloak login');
-    const scenarioIds=await page.evaluate(()=>[...document.querySelector('auth-flow-studio').refs['lab-scenario'].options].map(o=>o.value));assert.equal(new Set(scenarioIds).size,scenarioIds.length);
+    const scenarioIds=await page.evaluate(()=>document.querySelector('auth-flow-studio').scenarioPicker.options.map(option=>option.id));assert.equal(new Set(scenarioIds).size,scenarioIds.length);
     for(const id of scenarioIds){await choose(page,id);const hasInternals=await page.evaluate(()=>Object.values(document.querySelector('auth-flow-studio').scenarioOwnedActors||{}).some(a=>a.parentId));for(const expanded of hasInternals?[false,true]:[false]){if(expanded)await page.evaluate(()=>{const a=document.querySelector('auth-flow-studio');a.showInternals=true;a.renderAll();});const snapshot=await scene(page,mode+' '+id,{samplePaths:true});assert.equal(snapshot.id,id);evidence.scenarios.push({mode,...snapshot});}}
     check(mode+' all catalog scenarios render without path/card overlap or actual text clipping',{count:scenarioIds.length});
-    for(const workspace of ['web','ssh','kerberos']){await page.locator('[data-workspace="'+workspace+'"]').click();assert.equal(await page.evaluate(()=>document.querySelector('auth-flow-studio').workspace),workspace);await screen(page,mode+'-workspace-'+workspace);}
+    for(const workspace of ['web','ssh','kerberos']){await page.locator('#workspace-search').fill(workspace);await page.locator('[data-workspace-option="workspace-'+workspace+'"]').click();assert.equal(await page.evaluate(()=>document.querySelector('auth-flow-studio').workspace),workspace);await screen(page,mode+'-workspace-'+workspace);}
     await choose(page,'basic-keycloak');await help(page,mode+' Basic control',{everyActor:false,fresh:true});
     // Run every new visible participant against both an empty popup and legacy
     // help left in memory. This would reproduce F19 on the delivered code1.

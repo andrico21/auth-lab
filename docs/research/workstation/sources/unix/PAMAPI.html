@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>pam(3) - Linux manual page</title>
+    <link rel="stylesheet" type="text/css" href="../../../style.css" title="style" />
+    <link rel="stylesheet" type="text/css" href="../style.css" title="style" />
+</head>
+
+<body>
+
+<div class="page-top"><a id="top_of_page"></a></div>
+<!--%%%TOP_BAR%%%-->
+    <div class="nav-bar">
+        <table class="nav-table">
+            <tr>
+                <td class="nav-cell">
+                    <p class="nav-text">
+                        <a href="../../../index.html">man7.org</a> &gt; Linux &gt; <a href="../index.html">man-pages</a>
+                    </p>
+                </td>
+                <td class="training-cell">
+                    <p class="training-text"><a class="training-link" href="http://man7.org/training/">Linux/UNIX system programming training</a></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+<hr class="nav-end" />
+
+<!--%%%PAGE_START%%%-->
+<h1>pam(3) &mdash; Linux manual page</h1>
+
+
+<table class="sec-table">
+<tr>
+    <td>
+        <p class="section-dir">
+<a href="#NAME">NAME</a> | <a href="#SYNOPSIS">SYNOPSIS</a> | <a href="#DESCRIPTION">DESCRIPTION</a> | <a href="#RETURN_VALUES">RETURN&nbsp;VALUES</a> | <a href="#SEE_ALSO">SEE&nbsp;ALSO</a> | <a href="#NOTES">NOTES</a> | <a href="#COLOPHON">COLOPHON</a>
+        </p>
+    </td>
+</tr>
+<tr>
+    <td class="search-box">
+        <div class="man-search-box">
+
+            <form method="get" action="https://www.google.com/search">
+                <fieldset class="man-search">
+                    <input type="text" name="q" size="10" maxlength="255" value="" />
+                    <input type="hidden" name="sitesearch" value="man7.org/linux/man-pages" />
+                    <input type="submit" name="sa" value="Search online pages" />
+                </fieldset>
+            </form>
+
+        </div>
+    </td>
+    <td> </td>
+</tr>
+</table>
+
+<!--%%%TEXT_START%%%-->
+<pre>
+<span class="headline"><i>PAM</i>(3)                       Linux-PAM Manual                      <i>PAM</i>(3)</span>
+</pre>
+<h2><a id="NAME" href="#NAME"></a>NAME  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#top_of_page"><span class="top-link">top</span></a></h2><pre>
+       pam - Pluggable Authentication Modules Library
+</pre>
+<h2><a id="SYNOPSIS" href="#SYNOPSIS"></a>SYNOPSIS  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#top_of_page"><span class="top-link">top</span></a></h2><pre>
+       <b>#include &lt;security/pam_appl.h&gt;</b>
+
+       <b>#include &lt;security/pam_modules.h&gt;</b>
+
+       <b>#include &lt;security/pam_ext.h&gt;</b>
+</pre>
+<h2><a id="DESCRIPTION" href="#DESCRIPTION"></a>DESCRIPTION  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#top_of_page"><span class="top-link">top</span></a></h2><pre>
+       <b>PAM </b>is a system of libraries that handle the authentication tasks
+       of applications (services) on the system. The library provides a
+       stable general interface (Application Programming Interface - API)
+       that privilege granting programs (such as <a href="../man1/login.1.html">login(1)</a> and <a href="../man1/su.1.html">su(1)</a>)
+       defer to to perform standard authentication tasks.
+
+   <b>Initialization and Cleanup</b>
+       The <a href="../man3/pam_start.3.html">pam_start(3)</a> function creates the PAM context and initiates
+       the PAM transaction. It is the first of the PAM functions that
+       needs to be called by an application. The transaction state is
+       contained entirely within the structure identified by this handle,
+       so it is possible to have multiple transactions in parallel. But
+       it is not possible to use the same handle for different
+       transactions, a new one is needed for every new context.
+
+       The <a href="../man3/pam_end.3.html">pam_end(3)</a> function terminates the PAM transaction and is the
+       last function an application should call in the PAM context. Upon
+       return the handle pamh is no longer valid and all memory
+       associated with it will be invalid. It can be called at any time
+       to terminate a PAM transaction.
+
+   <b>Authentication</b>
+       The <a href="../man3/pam_authenticate.3.html">pam_authenticate(3)</a> function is used to authenticate the user.
+       The user is required to provide an authentication token depending
+       upon the authentication service, usually this is a password, but
+       could also be a finger print.
+
+       The <a href="../man3/pam_setcred.3.html">pam_setcred(3)</a> function manages the user's credentials.
+
+   <b>Account Management</b>
+       The <a href="../man3/pam_acct_mgmt.3.html">pam_acct_mgmt(3)</a> function is used to determine if the user's
+       account is valid. It checks for authentication token and account
+       expiration and verifies access restrictions. It is typically
+       called after the user has been authenticated.
+
+   <b>Password Management</b>
+       The <a href="../man3/pam_chauthtok.3.html">pam_chauthtok(3)</a> function is used to change the authentication
+       token for a given user on request or because the token has
+       expired.
+
+   <b>Session Management</b>
+       The <a href="../man3/pam_open_session.3.html">pam_open_session(3)</a> function sets up a user session for a
+       previously successful authenticated user. The session should later
+       be terminated with a call to <a href="../man3/pam_close_session.3.html">pam_close_session(3)</a>.
+
+   <b>Conversation</b>
+       The PAM library uses an application-defined callback to allow a
+       direct communication between a loaded module and the application.
+       This callback is specified by the <i>struct pam_conv</i> passed to
+       <a href="../man3/pam_start.3.html">pam_start(3)</a> at the start of the transaction. See <a href="../man3/pam_conv.3.html">pam_conv(3)</a> for
+       details.
+
+   <b>Data Objects</b>
+       The <a href="../man3/pam_set_item.3.html">pam_set_item(3)</a> and <a href="../man3/pam_get_item.3.html">pam_get_item(3)</a> functions allow
+       applications and PAM service modules to set and retrieve PAM
+       information.
+
+       The <a href="../man3/pam_get_user.3.html">pam_get_user(3)</a> function is the preferred method to obtain the
+       username.
+
+       The <a href="../man3/pam_set_data.3.html">pam_set_data(3)</a> and <a href="../man3/pam_get_data.3.html">pam_get_data(3)</a> function allows PAM
+       service modules to set and retrieve free-form data from one
+       invocation to another.
+
+   <b>Environment and Error Management</b>
+       The <a href="../man3/pam_putenv.3.html">pam_putenv(3)</a>, <a href="../man3/pam_getenv.3.html">pam_getenv(3)</a> and <a href="../man3/pam_getenvlist.3.html">pam_getenvlist(3)</a> functions
+       are for maintaining a set of private environment variables.
+
+       The <a href="../man3/pam_strerror.3.html">pam_strerror(3)</a> function returns a pointer to a string
+       describing the given PAM error code.
+</pre>
+<h2><a id="RETURN_VALUES" href="#RETURN_VALUES"></a>RETURN VALUES  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#top_of_page"><span class="top-link">top</span></a></h2><pre>
+       The following return codes are known by PAM:
+
+       PAM_ABORT
+           Critical error, immediate abort.
+
+       PAM_ACCT_EXPIRED
+           User account has expired.
+
+       PAM_AUTHINFO_UNAVAIL
+           Authentication service cannot retrieve authentication info.
+
+       PAM_AUTHTOK_DISABLE_AGING
+           Authentication token aging disabled.
+
+       PAM_AUTHTOK_ERR
+           Authentication token manipulation error.
+
+       PAM_AUTHTOK_EXPIRED
+           Authentication token expired.
+
+       PAM_AUTHTOK_LOCK_BUSY
+           Authentication token lock busy.
+
+       PAM_AUTHTOK_RECOVERY_ERR
+           Authentication information cannot be recovered.
+
+       PAM_AUTH_ERR
+           Authentication failure.
+
+       PAM_BUF_ERR
+           Memory buffer error.
+
+       PAM_CONV_ERR
+           Conversation failure.
+
+       PAM_CRED_ERR
+           Failure setting user credentials.
+
+       PAM_CRED_EXPIRED
+           User credentials expired.
+
+       PAM_CRED_INSUFFICIENT
+           Insufficient credentials to access authentication data.
+
+       PAM_CRED_UNAVAIL
+           Authentication service cannot retrieve user credentials.
+
+       PAM_IGNORE
+           The return value should be ignored by PAM dispatch.
+
+       PAM_MAXTRIES
+           Have exhausted maximum number of retries for service.
+
+       PAM_MODULE_UNKNOWN
+           Module is unknown.
+
+       PAM_NEW_AUTHTOK_REQD
+           Authentication token is no longer valid; new one required.
+
+       PAM_NO_MODULE_DATA
+           No module specific data is present.
+
+       PAM_OPEN_ERR
+           Failed to load module.
+
+       PAM_PERM_DENIED
+           Permission denied.
+
+       PAM_SERVICE_ERR
+           Error in service module.
+
+       PAM_SESSION_ERR
+           Cannot make/remove an entry for the specified session.
+
+       PAM_SUCCESS
+           Success.
+
+       PAM_SYMBOL_ERR
+           Symbol not found.
+
+       PAM_SYSTEM_ERR
+           System error.
+
+       PAM_TRY_AGAIN
+           Failed preliminary check by password service.
+
+       PAM_USER_UNKNOWN
+           User not known to the underlying authentication module.
+</pre>
+<h2><a id="SEE_ALSO" href="#SEE_ALSO"></a>SEE ALSO  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#top_of_page"><span class="top-link">top</span></a></h2><pre>
+       <a href="../man3/pam_acct_mgmt.3.html">pam_acct_mgmt(3)</a>, <a href="../man3/pam_authenticate.3.html">pam_authenticate(3)</a>, <a href="../man3/pam_chauthtok.3.html">pam_chauthtok(3)</a>,
+       <a href="../man3/pam_close_session.3.html">pam_close_session(3)</a>, <a href="../man3/pam_conv.3.html">pam_conv(3)</a>, <a href="../man3/pam_end.3.html">pam_end(3)</a>, <a href="../man3/pam_get_data.3.html">pam_get_data(3)</a>,
+       <a href="../man3/pam_getenv.3.html">pam_getenv(3)</a>, <a href="../man3/pam_getenvlist.3.html">pam_getenvlist(3)</a>, <a href="../man3/pam_get_item.3.html">pam_get_item(3)</a>,
+       <a href="../man3/pam_get_user.3.html">pam_get_user(3)</a>, <a href="../man3/pam_open_session.3.html">pam_open_session(3)</a>, <a href="../man3/pam_putenv.3.html">pam_putenv(3)</a>,
+       <a href="../man3/pam_set_data.3.html">pam_set_data(3)</a>, <a href="../man3/pam_set_item.3.html">pam_set_item(3)</a>, <a href="../man3/pam_setcred.3.html">pam_setcred(3)</a>, <a href="../man3/pam_start.3.html">pam_start(3)</a>,
+       <a href="../man3/pam_strerror.3.html">pam_strerror(3)</a>
+</pre>
+<h2><a id="NOTES" href="#NOTES"></a>NOTES  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#top_of_page"><span class="top-link">top</span></a></h2><pre>
+       The <i>libpam</i> interfaces are only thread-safe if each thread within
+       the multithreaded application uses its own PAM handle.
+</pre>
+<h2><a id="COLOPHON" href="#COLOPHON"></a>COLOPHON  &nbsp; &nbsp; &nbsp; &nbsp; <a href="#top_of_page"><span class="top-link">top</span></a></h2><pre>
+       This page is part of the <i>linux-pam</i> (Pluggable Authentication
+       Modules for Linux) project.  Information about the project can be
+       found at ⟨<a href="http://www.linux-pam.org/">http://www.linux-pam.org/</a>⟩.  If you have a bug report
+       for this manual page, see ⟨//www.linux-pam.org/⟩.  This page was
+       obtained from the project's upstream Git repository
+       ⟨<a href="https://github.com/linux-pam/linux-pam.git">https://github.com/linux-pam/linux-pam.git</a>⟩ on 2026-08-04.  (At
+       that time, the date of the most recent commit that was found in
+       the repository was 2026-07-30.)  If you discover any rendering
+       problems in this HTML version of the page, or you believe there is
+       a better or more up-to-date source for the page, or you have
+       corrections or improvements to the information in this COLOPHON
+       (which is <i>not</i> part of the original manual page), send a mail to
+       man-pages@man7.org
+
+<span class="footline">Linux-PAM                       08/04/2026                         <i>PAM</i>(3)</span>
+</pre>
+
+<hr class="end-man-text" />
+<p>Pages that refer to this page:
+    <a href="../man3/pam_sm_acct_mgmt.3.html">pam_sm_acct_mgmt(3)</a>,&nbsp;
+    <a href="../man3/pam_sm_authenticate.3.html">pam_sm_authenticate(3)</a>,&nbsp;
+    <a href="../man3/pam_sm_chauthtok.3.html">pam_sm_chauthtok(3)</a>,&nbsp;
+    <a href="../man3/pam_sm_close_session.3.html">pam_sm_close_session(3)</a>,&nbsp;
+    <a href="../man3/pam_sm_open_session.3.html">pam_sm_open_session(3)</a>,&nbsp;
+    <a href="../man3/pam_sm_setcred.3.html">pam_sm_setcred(3)</a>,&nbsp;
+    <a href="../man5/pam.conf.5.html">pam.conf(5)</a>,&nbsp;
+    <a href="../man8/PAM.8.html">PAM(8)</a>,&nbsp;
+    <a href="../man8/pam_filter.8.html">pam_filter(8)</a>
+</p>
+<hr/>
+
+ 
+<hr class="start-footer" />
+
+<div class="footer">
+
+<table class="colophon-table">
+    <tr>
+    <td class="pub-info">
+        <p>
+            HTML rendering created 2026-09-09
+            by <a href="https://man7.org/mtk/index.html">Michael Kerrisk</a>,
+            author of
+            <a href="https://man7.org/tlpi/"><em>The Linux Programming Interface</em></a>.
+        </p>
+        <p>
+            For details of in-depth
+            <strong>Linux/UNIX system programming training courses</strong>
+            that I teach, look <a href="https://man7.org/training/">here</a>.
+        </p>
+        <p>
+            Hosting by <a href="https://www.jambit.com/index_en.html">jambit GmbH</a>.
+        </p>
+    </td>
+    <td class="colophon-divider">
+    </td>
+    <td class="tlpi-cover">
+        <a href="https://man7.org/tlpi/"><img src="https://man7.org/tlpi/cover/TLPI-front-cover-vsmall.png" alt="Cover of TLPI" /></a>
+    </td>
+    </tr>
+</table>
+
+</div>
+
+<hr class="end-footer" />
+
+
+
+<!--BEGIN-SITETRACKING-->
+<!-- SITETRACKING.man7.org_linux_man-pages -->
+
+<!-- Default Statcounter code for man7.org/linux/man-pages
+http://www.man7.org/linux/man-pages -->
+<script type="text/javascript">
+var sc_project=7422636;
+var sc_invisible=1;
+var sc_security="9b6714ff";
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics
+Made Easy - StatCounter" href="https://statcounter.com/"
+target="_blank"><img class="statcounter"
+src="https://c.statcounter.com/7422636/0/9b6714ff/1/"
+alt="Web Analytics Made Easy -
+StatCounter"></a></div></noscript>
+<!-- End of Statcounter Code -->
+
+
+
+<!-- Start of Google Analytics Code -->
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-9830363-8']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<!-- End of Google Analytics Code -->
+
+<!--END-SITETRACKING-->
+
+</body>
+</html>

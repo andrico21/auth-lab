@@ -9,6 +9,12 @@ import {buildSMBHeldObjects} from './held-object-smb.js';
 import {buildNetworkHeldObjects} from './held-object-network.js';
 import {buildSpakeHeldObjects} from './held-object-spake.js';
 import {buildPakeHeldObjects} from './held-object-pake.js';
+import {buildNFSHeldObjects} from './held-object-nfs.js';
+import {buildWindowsWorkstationHeldObjects} from './held-object-windows-workstation.js';
+import {buildUnixWorkstationHeldObjects} from './held-object-unix-workstation.js';
+import {buildJWTHeldObjects} from './held-object-jwt.js';
+import {buildKubernetesHeldObjects} from './held-object-kubernetes.js';
+import {buildMCPHeldObjects} from './held-object-mcp.js';
 import {compileHeldObjects,assertHeldObjectCoverage} from './held-object-state.js';
 import {ADLAB_SCENARIOS} from './kerberos-ad-lab.js';
 import {CRYPTOLAB_SCENARIOS} from './kerberos-crypto-lab.js';
@@ -26,6 +32,17 @@ import {SMBMULTI_SCENARIOS} from './smb-multichannel-lab.js';
 import {NETWORKLAB_SCENARIOS} from './network-access-lab.js';
 import {SPAKELAB_SCENARIOS} from './kerberos-spake-lab.js';
 import {PAKELAB_SCENARIOS} from './pake-lab.js';
+import {NFSLAB_SCENARIOS} from './nfs-access-lab.js';
+import {WINDOWSLOGONLAB_SCENARIOS} from './windows-logon-lab.js';
+import {WINDOWSELEVLAB_SCENARIOS} from './windows-elevation-lab.js';
+import {LINUXLOGONLAB_SCENARIOS} from './linux-logon-lab.js';
+import {LINUXELEVLAB_SCENARIOS} from './linux-elevation-lab.js';
+import {MACOSLOGONLAB_SCENARIOS} from './macos-logon-lab.js';
+import {MACOSELEVLAB_SCENARIOS} from './macos-elevation-lab.js';
+import {JWTLAB_SCENARIOS} from './jwt-validation-lab.js';
+import {KUBERNETESAUTHLAB_SCENARIOS} from './kubernetes-auth-lab.js';
+import {KUBERNETESRBACLAB_SCENARIOS} from './kubernetes-rbac-lab.js';
+import {MCPLAB_SCENARIOS} from './mcp-auth-lab.js';
 
 const heldObjectSources=new Map([
   [ADLAB_SCENARIOS,'src/kerberos-ad-lab.js'],[CRYPTOLAB_SCENARIOS,'src/kerberos-crypto-lab.js'],
@@ -36,6 +53,12 @@ const heldObjectSources=new Map([
   [WINDOWSLAB_SCENARIOS,'src/windows-auth-lab.js'],[NETWORKLAB_SCENARIOS,'src/network-access-lab.js'],
   [SMBLAB_SCENARIOS,'src/smb-access-lab.js'],[SMBMULTI_SCENARIOS,'src/smb-multichannel-lab.js'],
   [SPAKELAB_SCENARIOS,'src/kerberos-spake-lab.js'],[PAKELAB_SCENARIOS,'src/pake-lab.js'],
+  [NFSLAB_SCENARIOS,'src/nfs-access-lab.js'],[WINDOWSLOGONLAB_SCENARIOS,'src/windows-logon-lab.js'],
+  [WINDOWSELEVLAB_SCENARIOS,'src/windows-elevation-lab.js'],[LINUXLOGONLAB_SCENARIOS,'src/linux-logon-lab.js'],
+  [LINUXELEVLAB_SCENARIOS,'src/linux-elevation-lab.js'],[MACOSLOGONLAB_SCENARIOS,'src/macos-logon-lab.js'],
+  [MACOSELEVLAB_SCENARIOS,'src/macos-elevation-lab.js'],[JWTLAB_SCENARIOS,'src/jwt-validation-lab.js'],
+  [KUBERNETESAUTHLAB_SCENARIOS,'src/kubernetes-auth-lab.js'],[KUBERNETESRBACLAB_SCENARIOS,'src/kubernetes-rbac-lab.js'],
+  [MCPLAB_SCENARIOS,'src/mcp-auth-lab.js'],
 ].flatMap(([models,source])=>models.map(model=>[model.id,source])));
 const heldObjectBuilders=new Map([
   ['src/kerberos-ad-lab.js',buildADHeldObjects],['src/kerberos-crypto-lab.js',buildKerberosHeldObjects],
@@ -46,6 +69,12 @@ const heldObjectBuilders=new Map([
   ['src/windows-auth-lab.js',buildWindowsHeldObjects],['src/network-access-lab.js',buildNetworkHeldObjects],
   ['src/smb-access-lab.js',buildSMBHeldObjects],['src/smb-multichannel-lab.js',buildSMBHeldObjects],
   ['src/kerberos-spake-lab.js',buildSpakeHeldObjects],['src/pake-lab.js',buildPakeHeldObjects],
+  ['src/nfs-access-lab.js',buildNFSHeldObjects],['src/windows-logon-lab.js',buildWindowsWorkstationHeldObjects],
+  ['src/windows-elevation-lab.js',buildWindowsWorkstationHeldObjects],['src/linux-logon-lab.js',buildUnixWorkstationHeldObjects],
+  ['src/linux-elevation-lab.js',buildUnixWorkstationHeldObjects],['src/macos-logon-lab.js',buildUnixWorkstationHeldObjects],
+  ['src/macos-elevation-lab.js',buildUnixWorkstationHeldObjects],['src/jwt-validation-lab.js',buildJWTHeldObjects],
+  ['src/kubernetes-auth-lab.js',buildKubernetesHeldObjects],['src/kubernetes-rbac-lab.js',buildKubernetesHeldObjects],
+  ['src/mcp-auth-lab.js',buildMCPHeldObjects],
 ]);
 
 /** Build once per immutable scenario/configuration/context revision, not frame. */

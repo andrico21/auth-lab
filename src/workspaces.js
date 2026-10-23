@@ -6,7 +6,11 @@ export const STUDIO_WORKSPACES = Object.freeze([
   {id:'kerberos',title:'Kerberos',summary:'AD DS, PKINIT, FAST, forests, Keycloak and MIT standards profiles',defaultId:'lab-ad-first-sign-in'},
   {id:'windows',title:'Windows access',summary:'NTLMv2, Negotiate, CredSSP, remote desktop and remote management',defaultId:'lab-win-ntlmv2-domain'},
   {id:'network',title:'Network access',summary:'RADIUS, wired EAP-TLS, admission, accounting and session control',defaultId:'lab-net-eap-tls13-wired'},
-  {id:'foundations',title:'Foundations',summary:'Standalone SPAKE2 and SPAKE2+ without an implied application login',defaultId:'lab-pake-spake2-success',secondary:true},
+  {id:'foundations',title:'Foundations',summary:'SPAKE2, SPAKE2+ and JWT validation without implied application authorization',defaultId:'lab-pake-spake2-success',secondary:true},
+  {id:'workstations',title:'Workstations',summary:'Windows, Linux and macOS local sign-in, sessions and privilege boundaries',defaultId:'lab-wlog01'},
+  {id:'files',title:'Files',summary:'NFS identity, transport and file policy; shortcut to the accepted SMB lessons',defaultId:'lab-nfs-v42-kerberos-read'},
+  {id:'kubernetes',title:'Kubernetes',summary:'Human and workload credentials, accepted identities and API authorization',defaultId:'lab-k8s01'},
+  {id:'mcp',title:'MCP',summary:'Protected-resource discovery, independent grants and host/tool policy',defaultId:'lab-mcp01'},
 ].map(Object.freeze));
 export const STUDIO_FAMILIES = Object.freeze([
   {workspace:'kerberos',id:'ad-ds',title:'AD DS Kerberos',summary:'Password sign-in, smart cards, armoring and forests',defaultId:'lab-ad-first-sign-in',routeSegment:''},
@@ -21,6 +25,20 @@ export const STUDIO_FAMILIES = Object.freeze([
   {workspace:'network',id:'network-transport',title:'Transport and proxying',summary:'UDP, RadSec, adjacent-peer protection and Experimental RADIUS/1.1',defaultId:'lab-net-radius-udp-radsec',routeSegment:'transport'},
   {workspace:'foundations',id:'pake-spake2',title:'SPAKE2',summary:'Balanced password-equivalent setup and endpoint-specific confirmation',defaultId:'lab-pake-spake2-success',routeSegment:'spake2'},
   {workspace:'foundations',id:'pake-spake2plus',title:'SPAKE2+',summary:'Augmented registration records and verifier-first confirmation',defaultId:'lab-pake-spake2plus-success',routeSegment:'spake2plus'},
+  {workspace:'files',id:'nfs',title:'NFS file access',summary:'NFS versions, security flavors, TLS transport and server-side permission',defaultId:'lab-nfs-v42-kerberos-read',routeSegment:'nfs'},
+  {workspace:'workstations',id:'windows-logon',title:'Windows sign-in',summary:'Local and domain identities, LSASS packages, session creation and network credentials',defaultId:'lab-wlog01',routeSegment:'windows-logon'},
+  {workspace:'workstations',id:'windows-elevation',title:'Windows elevation',summary:'Tokens, UAC, consent or credentials and service-side access checks',defaultId:'lab-welev01',routeSegment:'windows-elevation'},
+  {workspace:'workstations',id:'linux-logon',title:'Linux sign-in',summary:'Identity lookup, configured PAM processing, admission and sessions',defaultId:'lab-llog01',routeSegment:'linux-logon'},
+  {workspace:'workstations',id:'linux-elevation',title:'Linux elevation',summary:'sudo, su, polkit and distinct mandatory kernel policy',defaultId:'lab-lelev01',routeSegment:'linux-elevation'},
+  {workspace:'workstations',id:'macos-logon',title:'macOS sign-in',summary:'Local login, FileVault, directory/Kerberos and bounded Platform SSO profiles',defaultId:'lab-mlog01',routeSegment:'macos-logon'},
+  {workspace:'workstations',id:'macos-elevation',title:'macOS elevation',summary:'Scoped authorization, sudo/PAM and bounded network authorization',defaultId:'lab-melev01',routeSegment:'macos-elevation'},
+  {workspace:'foundations',id:'jwt',title:'JWT validation',summary:'Readable untrusted structure, verifier trust, claims and separate authorization',defaultId:'lab-jwt01',routeSegment:'jwt'},
+  {workspace:'kubernetes',id:'human-access',title:'Human access',summary:'External credentials and client certificates become API identities only after checks',defaultId:'lab-k8s01',routeSegment:'human-access'},
+  {workspace:'kubernetes',id:'token-validation',title:'Token validation',summary:'Issuer, audience, signature evidence and configured claim mapping',defaultId:'lab-k8s03',routeSegment:'token-validation'},
+  {workspace:'kubernetes',id:'authorization-rbac',title:'API authorization / RBAC',summary:'Request attributes, role rules, privilege safeguards and admission',defaultId:'lab-k8s04',routeSegment:'authorization-rbac'},
+  {workspace:'kubernetes',id:'workload-identity',title:'Workload identity',summary:'Bound service-account tokens, rotation and independent resource grants',defaultId:'lab-k8s09',routeSegment:'workload-identity'},
+  {workspace:'kubernetes',id:'delegation-extensions',title:'Delegation and extensions',summary:'Impersonation and extension-service trust boundaries',defaultId:'lab-k8s14',routeSegment:'delegation-extensions'},
+  {workspace:'mcp',id:'authorization',title:'MCP authorization',summary:'Dated HTTP authorization profiles, proxy boundaries and distinct stdio/host policy',defaultId:'lab-mcp01',routeSegment:'authorization'},
 ].map(Object.freeze));
 export function workspaceOf(model){
   if(model?.workspace===undefined)return 'web';
@@ -37,6 +55,20 @@ function studioDefaultScenario(workspace,models,family){
   const preferred=family?.defaultId||workspace.defaultId;
   if(Object.hasOwn(models,preferred)||workspace.id==='web'&&!family)return preferred;
   return Object.values(models).find(model=>workspaceOf(model)===workspace.id&&(!family||model.family===family.id))?.id||null;
+}
+
+/** Navigation destinations are shortcuts to existing choices, never new models. */
+export function studioWorkspaceOptions(models){
+  return STUDIO_WORKSPACES.flatMap(workspace=>{
+    const scenarioId=studioDefaultScenario(workspace,models);if(!scenarioId)return [];
+    const options=[{id:'workspace-'+workspace.id,workspace:workspace.id,scenarioId,title:workspace.title,category:workspace.title,summary:workspace.summary,searchText:workspace.id}];
+    for(const family of STUDIO_FAMILIES.filter(item=>item.workspace===workspace.id)){
+      const target=studioDefaultScenario(workspace,models,family);if(!target)continue;
+      options.push({id:'family-'+workspace.id+'-'+family.id,workspace:workspace.id,family:family.id,scenarioId:target,title:family.title,selectedLabel:workspace.title+' / '+family.title,category:workspace.title,summary:family.summary,searchText:workspace.id+' '+family.id});
+    }
+    if(workspace.id==='files'&&models['lab-smb-nonjoined-kerberos'])options.push({id:'files-smb-shortcut',workspace:'windows',family:'windows-files',scenarioId:'lab-smb-nonjoined-kerberos',title:'SMB file access (Windows access)',category:workspace.title,summary:'Open the existing SMB3.1.1 lesson with explicit domain credentials; no duplicated model.',searchText:'smb cifs file share nonjoined workgroup kerberos'});
+    return options;
+  });
 }
 export function parseStudioRoute(hash,models,presetIds=[]){
   const fallback={workspace:'web',scenarioId:'basic-keycloak',valid:false};

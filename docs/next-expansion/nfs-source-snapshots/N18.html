@@ -1,0 +1,2191 @@
+
+<!DOCTYPE html>
+
+
+
+
+
+
+
+<html data-bs-theme="auto" lang="en">
+    <head>
+        
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>
+            
+                RFC 9266 - Channel Bindings for TLS 1.3
+            
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://static.ietf.org/fonts/inter/import.css" rel="stylesheet">
+        <link href="https://static.ietf.org/fonts/noto-sans-mono/import.css" rel="stylesheet">
+        
+            <link rel="stylesheet" href="https://static.ietf.org/dt/12.81.0/ietf/css/document_html_referenced.css">
+            
+                <link rel="stylesheet" href="https://static.ietf.org/dt/12.81.0/ietf/css/document_html_txt.css">
+            
+            <script type="module" crossorigin="" src="https://static.ietf.org/dt/12.81.0/assets/embedded-3b17fb74.js"></script>
+<link href="https://static.ietf.org/dt/12.81.0/assets/create-pinia-singleton-b0dffb83.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+<link href="https://static.ietf.org/dt/12.81.0/assets/Scrollbar-46ca4ed8.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+            <script src="https://static.ietf.org/dt/12.81.0/ietf/js/document_html.js"></script>
+            <script src="https://static.ietf.org/dt/12.81.0/ietf/js/theme.js"></script>
+        
+        <link rel="alternate" type="application/atom+xml" title="Document changes" href="/feed/document-changes/rfc9266/">
+        <meta name="description"
+            
+                content="Channel Bindings for TLS 1.3 (RFC 9266, )"
+            >
+        
+
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-180.png">
+<link rel="icon"
+      sizes="32x32"
+      href="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-32.png">
+<link rel="icon"
+      sizes="16x16"
+      href="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon"
+      href="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-mask.svg"
+      color="#ffffff">
+<meta name="msapplication-TileColor"
+      content="#ffffff">
+<meta name="theme-color"
+      content="#ffffff">
+        
+
+
+
+
+<meta property="og:title" content="RFC 9266: Channel Bindings for TLS 1.3">
+<meta property="og:url" content="https://datatracker.ietf.org/doc/html/rfc9266">
+
+
+<link rel="canonical" href="https://www.rfc-editor.org/info/rfc9266/">
+
+<meta property="og:site_name" content="IETF Datatracker">
+<meta property="og:description" content="This document defines a channel binding type, tls-exporter, that is compatible with TLS 1.3 in accordance with RFC 5056, &quot;On the Use of Channel Bindings to Secure Channels&quot;. Furthermore, it updates the default channel binding to the new binding for versions of TLS greater than 1.2. This document updates RFCs 5801, 5802, 5929, and 7677.">
+<meta property="og:type" content="article">
+
+<meta property="og:image" content="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-card.png">
+<meta property="og:image:alt" content="Logo of the IETF">
+<meta property="article:section" content="IETF - Internet Engineering Task Force">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<meta property="article:author" content="Sam Whited">
+
+
+
+        
+        <style>
+            
+            .diff-form .select2-selection__rendered {
+                direction: rtl;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <noscript><iframe class="status" title="Site status" src="/status/latest"></iframe></noscript>
+<div class="vue-embed" data-component="Status"></div>
+        <div class="btn-toolbar sidebar-toolbar position-fixed top-0 end-0 m-2 m-lg-3 d-print-none">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary btn-sm me-1 dropdown-toggle d-flex align-items-center"
+                    id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+                    aria-label="Toggle theme">
+                        <i class="theme-icon-active bi bi-circle-half"></i>
+                </button>
+
+                <ul class="dropdown-menu" aria-labelledby="bd-theme">
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center"
+                            data-bs-theme-value="light" aria-pressed="false">
+                            <i class="me-2 opacity-50 theme-icon bi bi-sun-fill"></i>
+                            Light<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center"
+                            data-bs-theme-value="dark" aria-pressed="false">
+                            <i class="me-2 opacity-50 theme-icon bi bi-moon-stars-fill"></i>
+                            Dark<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center active"
+                            data-bs-theme-value="auto" aria-pressed="true">
+                            <i class="me-2 opacity-50 theme-icon bi bi-circle-half"></i>
+                            Auto<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm sidebar-toggle"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#sidebar"
+                    aria-expanded="true"
+                    aria-controls="sidebar"
+                    aria-label="Toggle metadata sidebar"
+                    title="Toggle metadata sidebar">
+            <i class="bi bi-arrow-bar-left sidebar-shown"></i>
+            <i class="bi bi-arrow-bar-right sidebar-collapsed"></i>
+            </button>
+        </div>
+        <nav class="navbar bg-light-subtle px-1 fixed-top d-print-none d-md-none">
+            <a class="nav-link ps-1"
+               href="/doc/rfc9266/">
+                
+                    RFC 9266
+                
+                <br class="d-sm-none">
+
+                <span class="ms-sm-3 badge rounded-pill badge-ps">
+                    
+                        Proposed Standard
+                    
+                </span>
+            </a>
+            <button class="navbar-toggler p-1"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#docinfo-collapse"
+                    aria-controls="docinfo-collapse"
+                    aria-expanded="false"
+                    aria-label="Show document information">
+                <span class="navbar-toggler-icon small"></span>
+            </button>
+            <div class="navbar-nav navbar-nav-scroll overscroll-none collapse pt-1" id="docinfo-collapse">
+                <div class="bg-light-subtle p-0">
+                    <table class="table table-sm table-borderless small">
+                        <tbody class="meta align-top">
+                            <tr>
+                                <th scope="row"></th>
+                                <th scope="row">Title</th>
+                                <td class="edit"></td>
+                                <td>Channel Bindings for TLS 1.3</td>
+                            </tr>
+                        </tbody>
+                        
+
+
+
+
+
+
+
+<tbody class="meta align-top ">
+    <tr>
+        <th scope="row">Document</th>
+        <th scope="row">Document type</th>
+        <td class="edit"></td>
+        <td>
+            
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Proposed Standard
+    
+</span>
+
+            
+                
+                    <br>July 2022
+                
+                <br>
+                
+                
+                    <a class="btn btn-sm btn-warning"
+                       title="Click to report an error in the document."
+                       href="https://www.rfc-editor.org/errata.php#reportnew"
+                       target="_blank">
+                        Report errata
+                    </a>
+                
+                
+                
+                
+                
+                <div>Updates <a href="/doc/html/rfc5801" title="Using Generic Security Service Application Program Interface (GSS-API) Mechanisms in Simple Authentication and Security Layer (SASL): The GS2 Mechanism Family">RFC 5801</a>, <a href="/doc/html/rfc7677" title="SCRAM-SHA-256 and SCRAM-SHA-256-PLUS Simple Authentication and Security Layer (SASL) Mechanisms">RFC 7677</a>, <a href="/doc/html/rfc5929" title="Channel Bindings for TLS">RFC 5929</a>, <a href="/doc/html/rfc5802" title="Salted Challenge Response Authentication Mechanism (SCRAM) SASL and GSS-API Mechanisms">RFC 5802</a></div>
+                
+                
+                
+                    <div>
+                        Was
+                        <a href="/doc/draft-ietf-kitten-tls-channel-bindings-for-tls13/16/">draft-ietf-kitten-tls-channel-bindings-for-tls13</a>
+                        (<a href="/wg/kitten/about/">kitten WG</a>)
+                    </div>
+                
+            
+            
+            
+                
+
+
+
+
+    
+
+
+            
+        </td>
+    </tr>
+    
+        <tr>
+            <td></td>
+            <th scope="row">Select version</th>
+            <td class="edit"></td>
+            <td>
+                
+
+
+
+    <ul class="revision-list pagination pagination-sm text-center flex-wrap my-0">
+        
+            
+            
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-00"
+                        rel="nofollow">
+                            00
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-01"
+                        rel="nofollow">
+                            01
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-02"
+                        rel="nofollow">
+                            02
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-03"
+                        rel="nofollow">
+                            03
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-04"
+                        rel="nofollow">
+                            04
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-05"
+                        rel="nofollow">
+                            05
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-06"
+                        rel="nofollow">
+                            06
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-07"
+                        rel="nofollow">
+                            07
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-08"
+                        rel="nofollow">
+                            08
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-09"
+                        rel="nofollow">
+                            09
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-10"
+                        rel="nofollow">
+                            10
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-11"
+                        rel="nofollow">
+                            11
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-12"
+                        rel="nofollow">
+                            12
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-13"
+                        rel="nofollow">
+                            13
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-14"
+                        rel="nofollow">
+                            14
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-15"
+                        rel="nofollow">
+                            15
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-16"
+                        rel="nofollow">
+                            16
+                        </a>
+                    </li>
+                
+            
+            
+            <li class="page-item rfc active">
+                <a class="page-link"
+                href="/doc/html/rfc9266">
+                    RFC 9266
+                </a>
+            </li>
+        
+    </ul>
+
+            </td>
+        </tr>
+        
+            <tr>
+                <td></td>
+                <th scope="row">Compare versions</th>
+                <td class="edit"></td>
+                <td>
+                    
+
+
+
+<form class="form-horizontal diff-form"
+      action="https://author-tools.ietf.org/iddiff"
+      method="get"
+      target="_blank">
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="From revision"
+                    name="url1">
+                
+                    <option value="rfc9266">
+                        RFC 9266
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-16" selected>
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-16
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-15">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-15
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-14">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-14
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-13">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-13
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-12">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-12
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-11">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-11
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-10">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-09">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-08">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-07">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-06">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-05">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-04">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-03">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-02">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-01">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-00">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="To revision"
+                    name="url2">
+                
+                    <option value="rfc9266" selected>
+                        RFC 9266
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-16">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-16
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-15">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-15
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-14">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-14
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-13">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-13
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-12">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-12
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-11">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-11
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-10">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-09">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-08">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-07">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-06">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-05">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-04">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-03">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-02">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-01">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-00">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--html"
+                    name="difftype">
+                Side-by-side
+            </button>
+            
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--hwdiff"
+                    name="difftype">
+                Inline
+            </button>
+
+</form>
+                </td>
+            </tr>
+        
+    
+    <tr>
+        <td></td>
+        <th scope="row">Author</th>
+        <td class="edit">
+            
+        </td>
+        <td>
+            
+            
+                <span ><a 
+           title="Datatracker profile of Sam Whited"
+            href="/person/sam@samwhited.com" >S. Whited</a> <a 
+               href="mailto:sam%40samwhited.com"
+               aria-label="Compose email to sam@samwhited.com"
+               title="Compose email to sam@samwhited.com">
+                <i class="bi bi-envelope"></i></a></span>
+            
+            
+                <br>
+                <a class="btn btn-primary btn-sm mt-1" href="mailto:rfc9266@ietf.org?subject=rfc9266" title="Send email to the document authors">Email authors</a>
+            
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            RFC stream
+        </th>
+        <td class="edit">
+            
+        </td>
+        <td >
+            
+                
+                
+                    
+                        
+
+
+
+<img alt="IETF Logo"
+     class="d-lm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-white.svg"
+        
+     
+     >
+
+<img alt="IETF Logo"
+     class="d-dm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor.svg"
+        
+     
+     >
+                    
+                
+                
+            
+        </td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            Other formats
+        </th>
+        <td class="edit">
+        </td>
+        <td>
+            
+                
+    <div class="buttonlist">
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9266.txt">
+            
+                <i class="bi bi-file-text"></i> txt
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9266.html">
+            
+                <i class="bi bi-file-code"></i> html
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9266.xml">
+            
+                <i class="bi bi-file-code"></i> xml
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+            download="rfc9266.pdf"
+          
+         
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9266.pdf">
+            
+                <i class="bi bi-file-pdf"></i> pdf
+            
+        </a>
+        
+    
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/rfc9266/bibtex/">
+            
+                <i class="bi bi-file-ruled"></i> bibtex
+            
+        </a>
+        
+    
+</div>
+
+            
+        </td>
+    </tr>
+    
+    
+        
+            <tr>
+                <td>
+                </td>
+                <th scope="row">
+                    Additional resources
+                </th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                        
+                            
+                                <a href="https://mailarchive.ietf.org/arch/browse/kitten/?q=rfc9266 OR %22draft-ietf-kitten-tls-channel-bindings-for-tls13%22">
+                                    Mailing list discussion
+                                </a>
+                            
+                        
+                    
+                </td>
+            </tr>
+        
+    
+</tbody>
+                        <tr>
+                            <th scope="row"></th>
+                            <th scope="row"></th>
+                            <td class="edit"></td>
+                            <td>
+                                <a class="btn btn-sm btn-warning mb-3"
+                                target="_blank"
+                                href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+                                    Report a bug
+                                    <i class="bi bi-bug"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </nav>
+        <div class="row g-0">
+            <div class="col-md-9 d-flex justify-content-center lh-sm"
+                 data-bs-spy="scroll"
+                 data-bs-target="#toc-nav"
+                 data-bs-smooth-scroll="true"
+                 tabindex="0"
+                 id="content">
+                
+                    <div class="rfchtml">
+                        <br class="noprint">
+                        <div>
+<table class="ears">
+<thead><tr>
+<td class="left">RFC 9266</td>
+<td class="center">Channel Bindings for TLS 1.3</td>
+<td class="right">July 2022</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Whited</td>
+<td class="center">Standards Track</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-stream">Stream:</dt>
+<dd class="stream">Internet Engineering Task Force (IETF)</dd>
+<dt class="label-rfc">RFC:</dt>
+<dd class="rfc"><a href="https://www.rfc-editor.org/rfc/rfc9266" class="eref">9266</a></dd>
+<dt class="label-updates">Updates:</dt>
+<dd class="updates">
+<a href="https://www.rfc-editor.org/rfc/rfc5801" class="eref">5801</a>, <a href="https://www.rfc-editor.org/rfc/rfc5802" class="eref">5802</a>, <a href="https://www.rfc-editor.org/rfc/rfc5929" class="eref">5929</a>, <a href="https://www.rfc-editor.org/rfc/rfc7677" class="eref">7677</a> </dd>
+<dt class="label-category">Category:</dt>
+<dd class="category">Standards Track</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2022-07" class="published">July 2022</time>
+    </dd>
+<dt class="label-issn">ISSN:</dt>
+<dd class="issn">2070-1721</dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">S. Whited</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="rfcnum">RFC 9266</h1>
+<h1 id="title">Channel Bindings for TLS 1.3</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">
+        This document defines a channel binding type, tls-exporter, that is
+        compatible with TLS 1.3 in accordance with RFC 5056, "On the Use of
+        Channel Bindings to Secure Channels".  Furthermore, it updates the
+        default channel binding to the new binding for versions of TLS greater
+        than 1.2.  This document updates RFCs 5801, 5802, 5929, and 7677.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+            This is an Internet Standards Track document.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+            This document is a product of the Internet Engineering Task Force
+            (IETF).  It represents the consensus of the IETF community.  It has
+            received public review and has been approved for publication by
+            the Internet Engineering Steering Group (IESG).  Further
+            information on Internet Standards is available in Section 2 of 
+            RFC 7841.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+            Information about the current status of this document, any
+            errata, and how to provide feedback on it may be obtained at
+            <span><a href="https://www.rfc-editor.org/info/rfc9266">https://www.rfc-editor.org/info/rfc9266</a></span>.<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2022 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-conventions-and-terminology" class="xref">Conventions and Terminology</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="xref">2</a>.  <a href="#name-the-tls-exporter-channel-bi" class="xref">The 'tls-exporter' Channel Binding Type</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-tls-13-with-scram-or-gss-ap" class="xref">TLS 1.3 with SCRAM or GSS-API over SASL</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="xref">4.1</a>.  <a href="#name-uniqueness-of-channel-bindi" class="xref">Uniqueness of Channel Bindings</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="xref">4.2</a>.  <a href="#name-use-with-legacy-tls" class="xref">Use with Legacy TLS</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="xref">5.1</a>.  <a href="#name-registration-of-channel-bin" class="xref">Registration of Channel Binding Type</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="xref">5.2</a>.  <a href="#name-registration-of-channel-bind" class="xref">Registration of Channel Binding TLS Exporter Label</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-references" class="xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="xref">6.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="xref">6.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#appendix-A" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">
+        The "tls-unique" channel binding type defined in
+        <span>[<a href="#RFC5929" class="xref">RFC5929</a>]</span> was found to be susceptible to the "triple
+        handshake vulnerability" <span>[<a href="#TRIPLE-HANDSHAKE" class="xref">TRIPLE-HANDSHAKE</a>]</span> without the
+        extended master secret extension defined in <span>[<a href="#RFC7627" class="xref">RFC7627</a>]</span>.
+        While TLS 1.3 uses a complete transcript hash akin to the extended
+        master secret procedures, the safety of channel bindings with TLS 1.3
+        was not analyzed as part of the core protocol work, so the
+        specification of channel bindings for TLS 1.3 was deferred.
+        <span><a href="https://www.rfc-editor.org/rfc/rfc8446#appendix-C.5" class="relref">Appendix C.5</a> of [<a href="#RFC8446" class="xref">RFC8446</a>]</span> notes the lack of channel bindings
+        for TLS 1.3; this document defines such channel bindings and fills that
+        gap.
+        Furthermore, this document updates <span>[<a href="#RFC5929" class="xref">RFC5929</a>]</span> by adding an
+        additional unique channel binding type, "tls-exporter", that replaces
+        some usage of "tls-unique".<a href="#section-1-1" class="pilcrow">¶</a></p>
+<div id="conventions-and-terminology">
+<section id="section-1.1">
+        <h3 id="name-conventions-and-terminology">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-conventions-and-terminology" class="section-name selfRef">Conventions and Terminology</a>
+        </h3>
+<p id="section-1.1-1">
+          Throughout this document, the acronym "EKM" is used to refer to
+          "Exported Keying Material" as defined in <span>[<a href="#RFC5705" class="xref">RFC5705</a>]</span>.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">
+    The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+    "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+    described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span>
+    when, and only when, they appear in all capitals, as shown here.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="tls-exporter">
+<section id="section-2">
+      <h2 id="name-the-tls-exporter-channel-bi">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-the-tls-exporter-channel-bi" class="section-name selfRef">The 'tls-exporter' Channel Binding Type</a>
+      </h2>
+<p id="section-2-1">
+        Channel binding mechanisms are not useful until TLS implementations
+        expose the required data.  To facilitate this, "tls-exporter" uses
+        Exported Keying Material (EKM), which is already widely exposed by TLS
+        implementations.  The EKM is obtained using the keying material
+        exporters for TLS, as defined in <span>[<a href="#RFC5705" class="xref">RFC5705</a>]</span> and <span><a href="https://www.rfc-editor.org/rfc/rfc8446#section-7.5" class="relref">Section 7.5</a> of [<a href="#RFC8446" class="xref">RFC8446</a>]</span>, by supplying the
+        following inputs:<a href="#section-2-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-2-2">
+        <dt id="section-2-2.1">Label:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.2">
+          The ASCII string "EXPORTER-Channel-Binding" with no terminating NUL.<a href="#section-2-2.2" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-2.3">Context value:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.4">
+          Zero-length string.<a href="#section-2-2.4" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-2-2.5">Length:</dt>
+        <dd style="margin-left: 1.5em" id="section-2-2.6">
+          32 bytes.<a href="#section-2-2.6" class="pilcrow">¶</a>
+</dd>
+      <dd class="break"></dd>
+</dl>
+<p id="section-2-3">
+        This channel binding mechanism is defined only when the TLS handshake
+        results in unique master secrets. This is true of TLS versions prior to
+        1.3 when the extended master secret extension of
+        <span>[<a href="#RFC7627" class="xref">RFC7627</a>]</span> is in use, and it is always true for TLS 1.3
+        (see <span><a href="https://www.rfc-editor.org/rfc/rfc8446#appendix-D" class="relref">Appendix D</a> of [<a href="#RFC8446" class="xref">RFC8446</a>]</span>).<a href="#section-2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="scram">
+<section id="section-3">
+      <h2 id="name-tls-13-with-scram-or-gss-ap">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-tls-13-with-scram-or-gss-ap" class="section-name selfRef">TLS 1.3 with SCRAM or GSS-API over SASL</a>
+      </h2>
+<p id="section-3-1">
+        The specifications for Salted Challenge Response Authentication Mechanism (SCRAM) <span>[<a href="#RFC5802" class="xref">RFC5802</a>]</span> <span>[<a href="#RFC7677" class="xref">RFC7677</a>]</span> and Generic Security
+        Service Application Program Interface (GSS-API) over Simple
+        Authentication and Security Layer (SASL) <span>[<a href="#RFC5801" class="xref">RFC5801</a>]</span>
+        define "tls-unique" as the default channel binding to use over TLS.
+        As "tls-unique" is not defined for TLS 1.3 (and greater), this
+        document updates <span>[<a href="#RFC5801" class="xref">RFC5801</a>]</span>, <span>[<a href="#RFC5802" class="xref">RFC5802</a>]</span>,
+        and <span>[<a href="#RFC7677" class="xref">RFC7677</a>]</span> to use "tls-exporter" as the default
+        channel binding over TLS 1.3 (and greater).
+        Note that this document does not change the default channel
+        binding for SCRAM mechanisms over TLS 1.2 <span>[<a href="#RFC5246" class="xref">RFC5246</a>]</span>,
+        which is still "tls-unique" (also note that RFC 5246 has been obsoleted
+        by RFC 8446).<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">
+        Additionally, this document updates the aforementioned documents to make
+        "tls-exporter" the mandatory-to-implement channel binding if any channel
+        bindings are implemented for TLS 1.3.
+        Implementations that support channel binding over TLS 1.3
+        <span class="bcp14">MUST</span> implement "tls-exporter".<a href="#section-3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-4">
+      <h2 id="name-security-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-4-1">
+        The channel binding type defined in this document is constructed so that
+        disclosure of the channel binding data does not leak secret information
+        about the TLS channel and does not affect the security of the TLS
+        channel.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">
+        The derived data <span class="bcp14">MUST NOT</span> be used for any purpose other
+        than channel bindings as described in <span>[<a href="#RFC5056" class="xref">RFC5056</a>]</span>.
+        In particular, implementations <span class="bcp14">MUST NOT</span> use channel binding as a
+        secret key to protect privileged information.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">
+        The Security Considerations sections of <span>[<a href="#RFC5056" class="xref">RFC5056</a>]</span>, <span>[<a href="#RFC5705" class="xref">RFC5705</a>]</span>, and <span>[<a href="#RFC8446" class="xref">RFC8446</a>]</span> apply to this document.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<div id="unique-bindings">
+<section id="section-4.1">
+        <h3 id="name-uniqueness-of-channel-bindi">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-uniqueness-of-channel-bindi" class="section-name selfRef">Uniqueness of Channel Bindings</a>
+        </h3>
+<p id="section-4.1-1">
+          The definition of channel bindings in <span>[<a href="#RFC5056" class="xref">RFC5056</a>]</span>
+          defines the concept of a "unique" channel binding as being one that
+          is unique to the channel endpoints and unique over time, that is,
+          a value that is unique to a specific instance of the lower-layer
+          security protocol.
+          When TLS is the lower-layer security protocol, as for the channel binding
+          type defined in this document, this concept of uniqueness
+          corresponds to uniquely identifying the specific TLS connection.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2">
+          However, a stronger form of uniqueness is possible, which would entail
+          uniquely identifying not just the lower-layer protocol but also the
+          upper-layer application or authentication protocol that is consuming
+          the channel binding.
+          The distinction is relevant only when there are multiple instances of
+          an authentication protocol, or multiple distinct authentication
+          protocols, that run atop the same lower-layer protocol.
+          Such a situation is rare; most consumers of channel bindings
+          establish an instance of the lower-layer secure protocol, run a single
+          application or authentication protocol as the upper-layer protocol,
+          then terminate both upper and lower-layer protocols.
+          In this situation, the stronger form of uniqueness is trivially
+          achieved, given that the channel binding value is unique in the sense
+          of <span>[<a href="#RFC5056" class="xref">RFC5056</a>]</span>.<a href="#section-4.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.1-3">
+          The channel binding type defined by this document provides only the
+          weaker type of uniqueness, as per <span>[<a href="#RFC5056" class="xref">RFC5056</a>]</span>; it does
+          not achieve the stronger uniqueness per the upper-layer protocol
+          instance described above.  This stronger form of uniqueness would be
+          useful in that it provides protection against cross-protocol attacks
+          for the multiple authentication protocols running over the same
+          instance of the lower-layer protocol, and it provides protection
+          against replay attacks that seek to replay a message from one
+          instance of an authentication protocol in a different instance of
+          the same authentication protocol, again running over the same
+          instance of the lower-layer protocol.  Both of these properties are
+          highly desirable when performing formal analysis of upper-layer
+          protocols; if these properties are not provided, such formal
+          analysis is essentially impossible.  In some cases, one or both of
+          these properties may already be provided by specific upper-layer
+          protocols, but that is dependent on the mechanism(s) in question,
+          and formal analysis requires that the property is provided in a
+          generic manner across all potential upper-layer protocols that
+          exist or might exist in the future.<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.1-4">
+          Accordingly, applications that make use of the channel binding type
+          defined in this document <span class="bcp14">MUST NOT</span> use the channel
+          binding for more than one authentication mechanism instance on a given
+          TLS connection.
+          Such applications <span class="bcp14">MUST</span> immediately close the TLS
+          connection after the conclusion of the upper-layer protocol.<a href="#section-4.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="legacy-tls">
+<section id="section-4.2">
+        <h3 id="name-use-with-legacy-tls">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-use-with-legacy-tls" class="section-name selfRef">Use with Legacy TLS</a>
+        </h3>
+<p id="section-4.2-1">
+          While it is possible to use this channel binding mechanism with TLS
+          versions below 1.3, extra precaution must be taken to ensure that
+          the chosen cipher suites always result in unique master secrets.
+          For more information, see <span>[<a href="#RFC7627" class="xref">RFC7627</a>]</span> and the Security
+          Considerations section of <span>[<a href="#RFC5705" class="xref">RFC5705</a>]</span> (TLS 1.3 always
+          provides unique master secrets, as discussed in <span><a href="https://www.rfc-editor.org/rfc/rfc8446#appendix-D" class="relref">Appendix D</a> of [<a href="#RFC8446" class="xref">RFC8446</a>]</span>).<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">
+          When TLS renegotiation is enabled on a connection, the "tls-exporter"
+          channel binding type is not defined for that connection, and
+          implementations <span class="bcp14">MUST NOT</span> support it.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2-3">
+          In general, users wishing to take advantage of channel binding should
+          upgrade to TLS 1.3 or later.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-5">
+      <h2 id="name-iana-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<div id="cb-type-registration">
+<section id="section-5.1">
+        <h3 id="name-registration-of-channel-bin">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-registration-of-channel-bin" class="section-name selfRef">Registration of Channel Binding Type</a>
+        </h3>
+<p id="section-5.1-1">
+          IANA has registered tls-exporter in the "Channel-Binding
+          Types" registry:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-5.1-2">
+          <dt id="section-5.1-2.1">Channel-binding unique prefix:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.2">tls-exporter<a href="#section-5.1-2.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.3">Channel-binding type:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.4">unique<a href="#section-5.1-2.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.5">Channel type:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.6">TLS <span>[<a href="#RFC8446" class="xref">RFC8446</a>]</span><a href="#section-5.1-2.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.7">Published specification:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.8">RFC 9266<a href="#section-5.1-2.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.9">Channel-binding is secret:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.10">no<a href="#section-5.1-2.10" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.11">Description:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.12">The EKM value obtained from the current TLS connection.<a href="#section-5.1-2.12" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.13">Intended usage:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.14">COMMON<a href="#section-5.1-2.14" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.15">
+            Person and email address to contact for further information:
+          </dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.16">Sam Whited &lt;sam@samwhited.com&gt;<a href="#section-5.1-2.16" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.17">Owner/Change controller name and email address:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.18">IESG<a href="#section-5.1-2.18" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.19">Expert reviewer name and contact information:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.20">
+            IETF KITTEN WG &lt;kitten@ietf.org&gt; or IETF TLS WG &lt;tls@ietf.org&gt;<a href="#section-5.1-2.20" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.1-2.21">Note:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.1-2.22">
+            See the published specification for advice on the applicability of
+            this channel binding type.<a href="#section-5.1-2.22" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="exporter-registration">
+<section id="section-5.2">
+        <h3 id="name-registration-of-channel-bind">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-registration-of-channel-bind" class="section-name selfRef">Registration of Channel Binding TLS Exporter Label</a>
+        </h3>
+<p id="section-5.2-1">
+          IANA has added the following registration in the "TLS Exporter
+          Labels" registry under the "Transport Layer Security (TLS)
+          Parameters" registry:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlParallel" id="section-5.2-2">
+          <dt id="section-5.2-2.1">Value:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.2-2.2">EXPORTER-Channel-Binding<a href="#section-5.2-2.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.2-2.3">DTLS-OK:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.2-2.4">Y<a href="#section-5.2-2.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.2-2.5">Recommended:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.2-2.6">Y<a href="#section-5.2-2.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-5.2-2.7">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-5.2-2.8">RFC 9266<a href="#section-5.2-2.8" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<section id="section-6">
+      <h2 id="name-references">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-6.1">
+        <h3 id="name-normative-references">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5056">[RFC5056]</dt>
+        <dd>
+<span class="refAuthor">Williams, N.</span>, <span class="refTitle">"On the Use of Channel Bindings to Secure Channels"</span>, <span class="seriesInfo">RFC 5056</span>, <span class="seriesInfo">DOI 10.17487/RFC5056</span>, <time datetime="2007-11" class="refDate">November 2007</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5056">https://www.rfc-editor.org/info/rfc5056</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5705">[RFC5705]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"Keying Material Exporters for Transport Layer Security (TLS)"</span>, <span class="seriesInfo">RFC 5705</span>, <span class="seriesInfo">DOI 10.17487/RFC5705</span>, <time datetime="2010-03" class="refDate">March 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5705">https://www.rfc-editor.org/info/rfc5705</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5801">[RFC5801]</dt>
+        <dd>
+<span class="refAuthor">Josefsson, S.</span> and <span class="refAuthor">N. Williams</span>, <span class="refTitle">"Using Generic Security Service Application Program Interface (GSS-API) Mechanisms in Simple Authentication and Security Layer (SASL): The GS2 Mechanism Family"</span>, <span class="seriesInfo">RFC 5801</span>, <span class="seriesInfo">DOI 10.17487/RFC5801</span>, <time datetime="2010-07" class="refDate">July 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5801">https://www.rfc-editor.org/info/rfc5801</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5802">[RFC5802]</dt>
+        <dd>
+<span class="refAuthor">Newman, C.</span>, <span class="refAuthor">Menon-Sen, A.</span>, <span class="refAuthor">Melnikov, A.</span>, and <span class="refAuthor">N. Williams</span>, <span class="refTitle">"Salted Challenge Response Authentication Mechanism (SCRAM) SASL and GSS-API Mechanisms"</span>, <span class="seriesInfo">RFC 5802</span>, <span class="seriesInfo">DOI 10.17487/RFC5802</span>, <time datetime="2010-07" class="refDate">July 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5802">https://www.rfc-editor.org/info/rfc5802</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5929">[RFC5929]</dt>
+        <dd>
+<span class="refAuthor">Altman, J.</span>, <span class="refAuthor">Williams, N.</span>, and <span class="refAuthor">L. Zhu</span>, <span class="refTitle">"Channel Bindings for TLS"</span>, <span class="seriesInfo">RFC 5929</span>, <span class="seriesInfo">DOI 10.17487/RFC5929</span>, <time datetime="2010-07" class="refDate">July 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5929">https://www.rfc-editor.org/info/rfc5929</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7677">[RFC7677]</dt>
+        <dd>
+<span class="refAuthor">Hansen, T.</span>, <span class="refTitle">"SCRAM-SHA-256 and SCRAM-SHA-256-PLUS Simple Authentication and Security Layer (SASL) Mechanisms"</span>, <span class="seriesInfo">RFC 7677</span>, <span class="seriesInfo">DOI 10.17487/RFC7677</span>, <time datetime="2015-11" class="refDate">November 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7677">https://www.rfc-editor.org/info/rfc7677</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8446">[RFC8446]</dt>
+      <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8446">https://www.rfc-editor.org/info/rfc8446</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-6.2">
+        <h3 id="name-informative-references">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC5246">[RFC5246]</dt>
+        <dd>
+<span class="refAuthor">Dierks, T.</span> and <span class="refAuthor">E. Rescorla</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.2"</span>, <span class="seriesInfo">RFC 5246</span>, <span class="seriesInfo">DOI 10.17487/RFC5246</span>, <time datetime="2008-08" class="refDate">August 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5246">https://www.rfc-editor.org/info/rfc5246</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7627">[RFC7627]</dt>
+        <dd>
+<span class="refAuthor">Bhargavan, K., Ed.</span>, <span class="refAuthor">Delignat-Lavaud, A.</span>, <span class="refAuthor">Pironti, A.</span>, <span class="refAuthor">Langley, A.</span>, and <span class="refAuthor">M. Ray</span>, <span class="refTitle">"Transport Layer Security (TLS) Session Hash and Extended Master Secret Extension"</span>, <span class="seriesInfo">RFC 7627</span>, <span class="seriesInfo">DOI 10.17487/RFC7627</span>, <time datetime="2015-09" class="refDate">September 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7627">https://www.rfc-editor.org/info/rfc7627</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="TRIPLE-HANDSHAKE">[TRIPLE-HANDSHAKE]</dt>
+      <dd>
+<span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Delignat-Lavaud, A.</span>, <span class="refAuthor">Fournet, C.</span>, <span class="refAuthor">Pironti, A.</span>, and <span class="refAuthor">P. Strub</span>, <span class="refTitle">"Triple Handshakes Considered Harmful: Breaking and Fixing Authentication over TLS"</span>, <time datetime="2014-03" class="refDate">March 2014</time>, <span>&lt;<a href="https://www.mitls.org/pages/attacks/3SHAKE">https://www.mitls.org/pages/attacks/3SHAKE</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="authors-addresses">
+<section id="appendix-A">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Sam Whited</span></div>
+<div dir="auto" class="left">
+<span class="locality">Atlanta</span>, <span class="region">GA</span> </div>
+<div dir="auto" class="left"><span class="country-name">United States of America</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:sam@samwhited.com" class="email">sam@samwhited.com</a>
+</div>
+<div class="url">
+<span>URI:</span>
+<a href="https://blog.samwhited.com/" class="url">https://blog.samwhited.com/</a>
+</div>
+</address>
+</section>
+</div>
+</div>
+
+                    </div>
+                
+            </div>
+            <div class="d-print-none col-md-3 bg-light-subtle collapse show" id="sidebar">
+                <div class="position-fixed border-start sidebar overflow-scroll overscroll-none no-scrollbar">
+                    <div class="d-flex flex-column vh-100 pt-2 pt-lg-3 ps-3 pl-md-2 pl-lg-3">
+                        <div>
+                            <a class="btn btn-primary btn-sm" href="/doc/rfc9266/">Datatracker</a>
+                            <p class="fw-bold pt-2">
+                                
+                                    RFC 9266
+                                
+                                <br>
+                                
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Proposed Standard
+    
+</span>
+
+                            </p>
+                        </div>
+                        
+                        <ul class="nav nav-tabs nav-fill small me-2" role="tablist">
+                            <li class="nav-item" role="presentation" title="Document information">
+                                <button class="nav-link px-2"
+                                        id="docinfo-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#docinfo-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="docinfo-tab-pane"
+                                        aria-selected="true">
+                                    <i class="bi bi-info-circle"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Info</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation" title="Table of contents">
+                                <button class="nav-link px-2"
+                                        id="toc-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#toc-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="toc-tab-pane"
+                                        aria-selected="false">
+                                    <i class="bi bi-list-ol"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Contents</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation" title="Preferences">
+                                <button class="nav-link px-2"
+                                        id="pref-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#pref-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="pref-tab-pane"
+                                        aria-selected="false">
+                                    <i class="bi bi-gear"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Prefs</span>
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="overflow-auto tab-content pt-2 me-2">
+                            <div class="tab-pane"
+                                 id="docinfo-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="docinfo-tab"
+                                 tabindex="0">
+                                <table class="table table-sm table-borderless">
+                                    
+
+
+
+
+
+
+
+<tbody class="meta align-top ">
+    <tr>
+        <th scope="row">Document</th>
+        <th scope="row">Document type</th>
+        <td class="edit"></td>
+        <td>
+            
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Proposed Standard
+    
+</span>
+
+            
+                
+                    <br>July 2022
+                
+                <br>
+                
+                
+                    <a class="btn btn-sm btn-warning"
+                       title="Click to report an error in the document."
+                       href="https://www.rfc-editor.org/errata.php#reportnew"
+                       target="_blank">
+                        Report errata
+                    </a>
+                
+                
+                
+                
+                
+                <div>Updates <a href="/doc/html/rfc5801" title="Using Generic Security Service Application Program Interface (GSS-API) Mechanisms in Simple Authentication and Security Layer (SASL): The GS2 Mechanism Family">RFC 5801</a>, <a href="/doc/html/rfc7677" title="SCRAM-SHA-256 and SCRAM-SHA-256-PLUS Simple Authentication and Security Layer (SASL) Mechanisms">RFC 7677</a>, <a href="/doc/html/rfc5929" title="Channel Bindings for TLS">RFC 5929</a>, <a href="/doc/html/rfc5802" title="Salted Challenge Response Authentication Mechanism (SCRAM) SASL and GSS-API Mechanisms">RFC 5802</a></div>
+                
+                
+                
+                    <div>
+                        Was
+                        <a href="/doc/draft-ietf-kitten-tls-channel-bindings-for-tls13/16/">draft-ietf-kitten-tls-channel-bindings-for-tls13</a>
+                        (<a href="/wg/kitten/about/">kitten WG</a>)
+                    </div>
+                
+            
+            
+            
+                
+
+
+
+
+    
+
+
+            
+        </td>
+    </tr>
+    
+        <tr>
+            <td></td>
+            <th scope="row">Select version</th>
+            <td class="edit"></td>
+            <td>
+                
+
+
+
+    <ul class="revision-list pagination pagination-sm text-center flex-wrap my-0">
+        
+            
+            
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-00"
+                        rel="nofollow">
+                            00
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-01"
+                        rel="nofollow">
+                            01
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-02"
+                        rel="nofollow">
+                            02
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-03"
+                        rel="nofollow">
+                            03
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-04"
+                        rel="nofollow">
+                            04
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-05"
+                        rel="nofollow">
+                            05
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-06"
+                        rel="nofollow">
+                            06
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-07"
+                        rel="nofollow">
+                            07
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-08"
+                        rel="nofollow">
+                            08
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-09"
+                        rel="nofollow">
+                            09
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-10"
+                        rel="nofollow">
+                            10
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-11"
+                        rel="nofollow">
+                            11
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-12"
+                        rel="nofollow">
+                            12
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-13"
+                        rel="nofollow">
+                            13
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-14"
+                        rel="nofollow">
+                            14
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-15"
+                        rel="nofollow">
+                            15
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-kitten-tls-channel-bindings-for-tls13-16"
+                        rel="nofollow">
+                            16
+                        </a>
+                    </li>
+                
+            
+            
+            <li class="page-item rfc active">
+                <a class="page-link"
+                href="/doc/html/rfc9266">
+                    RFC 9266
+                </a>
+            </li>
+        
+    </ul>
+
+            </td>
+        </tr>
+        
+            <tr>
+                <td></td>
+                <th scope="row">Compare versions</th>
+                <td class="edit"></td>
+                <td>
+                    
+
+
+
+<form class="form-horizontal diff-form"
+      action="https://author-tools.ietf.org/iddiff"
+      method="get"
+      target="_blank">
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="From revision"
+                    name="url1">
+                
+                    <option value="rfc9266">
+                        RFC 9266
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-16" selected>
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-16
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-15">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-15
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-14">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-14
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-13">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-13
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-12">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-12
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-11">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-11
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-10">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-09">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-08">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-07">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-06">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-05">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-04">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-03">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-02">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-01">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-00">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="To revision"
+                    name="url2">
+                
+                    <option value="rfc9266" selected>
+                        RFC 9266
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-16">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-16
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-15">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-15
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-14">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-14
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-13">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-13
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-12">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-12
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-11">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-11
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-10">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-09">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-08">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-07">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-06">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-05">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-04">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-03">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-02">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-01">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-kitten-tls-channel-bindings-for-tls13-00">
+                        draft-ietf-kitten-tls-channel-bindings-for-tls13-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--html"
+                    name="difftype">
+                Side-by-side
+            </button>
+            
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--hwdiff"
+                    name="difftype">
+                Inline
+            </button>
+
+</form>
+                </td>
+            </tr>
+        
+    
+    <tr>
+        <td></td>
+        <th scope="row">Author</th>
+        <td class="edit">
+            
+        </td>
+        <td>
+            
+            
+                <span ><a 
+           title="Datatracker profile of Sam Whited"
+            href="/person/sam@samwhited.com" >S. Whited</a> <a 
+               href="mailto:sam%40samwhited.com"
+               aria-label="Compose email to sam@samwhited.com"
+               title="Compose email to sam@samwhited.com">
+                <i class="bi bi-envelope"></i></a></span>
+            
+            
+                <br>
+                <a class="btn btn-primary btn-sm mt-1" href="mailto:rfc9266@ietf.org?subject=rfc9266" title="Send email to the document authors">Email authors</a>
+            
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            RFC stream
+        </th>
+        <td class="edit">
+            
+        </td>
+        <td >
+            
+                
+                
+                    
+                        
+
+
+
+<img alt="IETF Logo"
+     class="d-lm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-white.svg"
+        
+     
+     >
+
+<img alt="IETF Logo"
+     class="d-dm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor.svg"
+        
+     
+     >
+                    
+                
+                
+            
+        </td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            Other formats
+        </th>
+        <td class="edit">
+        </td>
+        <td>
+            
+                
+    <div class="buttonlist">
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9266.txt">
+            
+                <i class="bi bi-file-text"></i> txt
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9266.html">
+            
+                <i class="bi bi-file-code"></i> html
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9266.xml">
+            
+                <i class="bi bi-file-code"></i> xml
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+            download="rfc9266.pdf"
+          
+         
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9266.pdf">
+            
+                <i class="bi bi-file-pdf"></i> pdf
+            
+        </a>
+        
+    
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/rfc9266/bibtex/">
+            
+                <i class="bi bi-file-ruled"></i> bibtex
+            
+        </a>
+        
+    
+</div>
+
+            
+        </td>
+    </tr>
+    
+    
+        
+            <tr>
+                <td>
+                </td>
+                <th scope="row">
+                    Additional resources
+                </th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                        
+                            
+                                <a href="https://mailarchive.ietf.org/arch/browse/kitten/?q=rfc9266 OR %22draft-ietf-kitten-tls-channel-bindings-for-tls13%22">
+                                    Mailing list discussion
+                                </a>
+                            
+                        
+                    
+                </td>
+            </tr>
+        
+    
+</tbody>
+                                </table>
+                                <a class="btn btn-sm btn-warning mb-3"
+                                target="_blank"
+                                href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+                                    Report a datatracker bug
+                                    <i class="bi bi-bug"></i>
+                                </a>
+                            </div>
+                            <div class="tab-pane mb-5"
+                                 id="toc-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="toc-tab"
+                                 tabindex="0">
+                                <nav class="nav nav-pills flex-column small" id="toc-nav">
+                                </nav>
+                            </div>
+                            <div class="tab-pane mb-5 small"
+                                 id="pref-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="pref-tab"
+                                 tabindex="0">
+                                <label class="form-label fw-bold mb-2">Show sidebar by default</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="sidebar" id="on-radio">
+                                    <label class="btn btn-outline-primary" for="on-radio">Yes</label>
+                                    <input type="radio" class="btn-check" name="sidebar" id="off-radio">
+                                    <label class="btn btn-outline-primary" for="off-radio">No</label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">Tab to show by default</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="deftab" id="docinfo-radio">
+                                    <label class="btn btn-outline-primary" for="docinfo-radio">
+                                        <i class="bi bi-info-circle me-1"></i>Info
+                                    </label>
+                                    <input type="radio" class="btn-check" name="deftab" id="toc-radio">
+                                    <label class="btn btn-outline-primary" for="toc-radio">
+                                        <i class="bi bi-list-ol me-1"></i>Contents
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">HTMLization configuration</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="htmlconf" id="txt-radio">
+                                    <label class="btn btn-outline-primary" for="txt-radio" title="This is the traditional HTMLization method.">
+                                        <i class="bi bi-badge-sd me-1"></i>HTMLize the plaintext
+                                    </label>
+                                    <input type="radio" class="btn-check" name="htmlconf" id="html-radio">
+                                    <label class="btn btn-outline-primary" for="html-radio" title="This is the modern HTMLization method.">
+                                        <i class="bi bi-badge-hd me-1"></i>Plaintextify the HTML
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2" for="ptsize">Maximum font size</label>
+                                <input type="range" class="form-range" min="7" max="16" id="ptsize" oninput="ptdemo.value = ptsize.value">
+                                <label class="form-label fw-bold mt-4 mb-2">Page dependencies</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="pagedeps" id="inline-radio">
+                                    <label class="btn btn-outline-primary" for="inline-radio" title="Generate larger, standalone web pages that do not require network access to render.">
+                                        <i class="bi bi-box me-1"></i>Inline
+                                    </label>
+                                    <input type="radio" class="btn-check" name="pagedeps" id="reference-radio">
+                                    <label class="btn btn-outline-primary" for="reference-radio" title="Generate regular web pages that require network access to render.">
+                                        <i class="bi bi-link-45deg me-1"></i>Reference
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">Citation links</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="reflinks" id="refsection-radio">
+                                    <label class="btn btn-outline-primary" for="refsection-radio" title="Citation links go to the reference section.">
+                                        <i class="bi bi-arrow-clockwise"></i> Go to reference section
+                                    </label>
+                                    <input type="radio" class="btn-check" name="reflinks" id="citation-radio">
+                                    <label class="btn btn-outline-primary" for="citation-radio" title="Citation links go directly to the cited document.">
+                                        <i class="bi bi-link-45deg me-1"></i>Go to linked document
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+<script>
+  var _paq = window._paq || [];
+  
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.ietf.org/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', 7]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//analytics.ietf.org/matomo.php?idsite=7" style="border:0;" alt="" /></p></noscript>
+
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4e2f9ff29f224fe',t:'MTc5MjYxNDE2OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

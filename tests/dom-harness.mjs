@@ -132,6 +132,7 @@ export function installHarness(target=globalThis){
   document.body=new HarnessElement('body');document.appendChild(document.body);document.documentElement=new HarnessElement('html');document.createElement=tag=>registry.has(tag)?new (registry.get(tag))():new HarnessElement(tag);document.createElementNS=(_,tag)=>document.createElement(tag);document.getElementById=id=>document.querySelector('#'+id);
   Object.assign(window,{innerWidth:1440,innerHeight:1000,matchMedia:()=>({matches:false,addEventListener(){},removeEventListener(){}}),document});
   const globals={HTMLElement:HarnessElement,customElements:{define:(name,klass)=>registry.set(name,klass),get:name=>registry.get(name)},document,window,matchMedia:window.matchMedia,requestAnimationFrame:cb=>clock.requestFrame(cb),cancelAnimationFrame:id=>clock.cancelFrame(id),setTimeout:(cb,delay)=>clock.setTimeout(cb,delay),clearTimeout:id=>clock.clearTimeout(id)};
+  Object.assign(globals,{atob:globalThis.atob,btoa:globalThis.btoa,TextEncoder:globalThis.TextEncoder,TextDecoder:globalThis.TextDecoder,URL:globalThis.URL,URLSearchParams:globalThis.URLSearchParams});
   for(const [key,value]of Object.entries(globals))target[key]=value;
   return {clock,window,document,registry};
 }

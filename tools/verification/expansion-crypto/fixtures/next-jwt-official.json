@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "provenance": {
+    "rsa": "RFC7515 Appendix A.2.1-A.2.2; official encoded signing input/signature and public n,e; line breaks only removed",
+    "source": "docs/next-expansion/sources/jwt/rfc7515.txt",
+    "sha256": "ecbf84674118e62526511c1237e1deaa86aada86d25b247623a2a7e04ae62e40",
+    "gcm": "NIST CAVS14.0 gcmEncryptExtIV128.rsp; IVlen96/PTlen128/AADlen128/Taglen128 Count0; official archive SHA256 f9fc479e134cde2980b3bb7cddbcb567b2cd96fd753835243ed067699f26a023"
+  },
+  "rsa": {
+    "publicJwk": {
+      "kty": "RSA",
+      "n": "ofgWCuLjybRlzo0tZWJjNiuSfb4p4fAkd_wWJcyQoTbji9k0l8W26mPddxHmfHQp-Vaw-4qPCJrcS2mJPMEzP1Pt0Bm4d4QlL-yRT-SFd2lZS-pCgNMsD1W_YpRPEwOWvG6b32690r2jZ47soMZo9wGzjb_7OMg0LOL-bSf63kpaSHSXndS5z5rexMdbBYUsLA9e-KXBdQOS-UTo7WTBEMa2R2CapHg665xsmtdVMTBQY4uDZlxvb3qCo5ZwKh9kG4LT6_I5IhlJH7aGhyxXFvUK-DWNmoudF8NAco9_h9iaGNj8q2ethFkMLs91kzk2PAcDTW9gb54h4FRWyuXpoQ",
+      "e": "AQAB"
+    },
+    "compact": "eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.cC4hiUPoj9Eetdgtv3hF80EGrhuB__dzERat0XF9g2VtQgr9PJbu3XOiZj5RZmh7AAuHIm4Bh-0Qc_lF5YKt_O8W2Fp5jujGbds9uJdbF9CUAr7t1dnZcAcQjbKBYNX4BAynRFdiuB--f_nZLgrnbyTyWzO75vRK5h6xBArLIARNPvkSjtQBMHlb1L07Qe7K0GarZRmB_eSN9383LcOLn6_dO--xi12jzDwusC-eOkHWEsqtFZESc6BfI7noOPqvhJ1phCnvWh6IeYI2w9QOYEUipUTI8np6LbgGY9Fs98rqVt5AXLIhWkWywlVmtVrBp0igcN_IoypGlUPQGe77Rw"
+  },
+  "gcm": {
+    "key": "c939cc13397c1d37de6ae0e1cb7c423c",
+    "iv": "b3d8cc017cbb89b39e0f67e2",
+    "plaintext": "c3b3c41f113a31b73d9a5cd432103069",
+    "aad": "24825602bd12a984e0092d3e448eda5f",
+    "ciphertext": "93fe7d9e9bfd10348a5606e5cafa7354",
+    "tag": "0032a1dc85f1c9786925a2e71d8272dd"
+  },
+  "claims": {
+    "numerical": [
+      "RFC7515 RS256 exact signature over retained encoded bytes",
+      "AES128-GCM authenticated decryption fragment"
+    ],
+    "notNumerical": [
+      "Runtime SYM signatures or ciphertext",
+      "RSA-OAEP-256 key transport",
+      "Full nested JWE profile",
+      "Platform interoperability"
+    ]
+  },
+  "negatives": [
+    {
+      "id": "payload-byte",
+      "mutation": "Flip a signing-input byte",
+      "expected": "RSA signature rejection"
+    },
+    {
+      "id": "signature-byte",
+      "mutation": "Flip a signature byte",
+      "expected": "RSA signature rejection"
+    },
+    {
+      "id": "wrong-rsa-key",
+      "mutation": "Change RSA public exponent to 3",
+      "expected": "RSA signature rejection"
+    },
+    {
+      "id": "wrong-recipient-key",
+      "mutation": "Change AES key byte",
+      "expected": "No plaintext returned by authenticated decrypt helper"
+    },
+    {
+      "id": "changed-tag",
+      "mutation": "Change tag byte",
+      "expected": "No plaintext returned"
+    },
+    {
+      "id": "wrong-aad-context",
+      "mutation": "Supply different associated-data bytes",
+      "expected": "No plaintext returned"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "revision": "UNIX-COMPOSED-2026-10-22",
+  "deploymentStatus": "Authored deterministic fixture; not installed or executed",
+  "linux": {
+    "osBuild": null,
+    "nsswitch": "passwd: files sss\ngroup: files sss\nshadow: files\n",
+    "pamLocalService": "auth required pam_unix.so\naccount required pam_unix.so\npassword required pam_unix.so\nsession required pam_unix.so\nsession optional pam_systemd.so\n",
+    "pamDirectoryService": "auth required pam_sss.so\naccount required pam_sss.so\npassword required pam_sss.so\nsession required pam_sss.so\nsession optional pam_systemd.so\n",
+    "applicationOrder": ["pam_start", "pam_authenticate", "pam_acct_mgmt", "pam_chauthtok when required and supported", "pam_setcred(PAM_ESTABLISH_CRED)", "pam_open_session", "process", "pam_close_session", "pam_setcred(PAM_DELETE_CRED)", "pam_end"],
+    "sssd": "[sssd]\nservices = nss, pam\ndomains = CORP.EXAMPLE\n[pam]\noffline_credentials_expiration = 7\noffline_failed_login_attempts = 3\noffline_failed_login_delay = 5\n[domain/CORP.EXAMPLE]\nid_provider = ad\nauth_provider = ad\naccess_provider = ad\nldap_id_mapping = true\nad_gpo_access_control = enforcing\ncache_credentials = true\ncached_auth_timeout = 0\nkrb5_ccname_template = KCM:\nkrb5_store_password_if_offline = false\n",
+    "offlineAssumptions": ["Prior successful online password authentication populated verifier and identity", "One day cache age, seven-day expiry", "Zero failed attempts baseline; three-attempt limit with five-minute delay", "Cached host admission allows this synthetic identity", "No retained plaintext or new TGT while offline", "RHEL9 documentation could not be captured; these are selected upstream-backed values, not vendor defaults"],
+    "sudoers": "Defaults timestamp_type=tty,timestamp_timeout=5,runas_default=operator\nalice ALL=(backup:backup) /usr/bin/id\nroot ALL=(ALL:ALL) ALL\n",
+    "suPam": "auth sufficient pam_rootok.so\nauth required pam_unix.so\naccount required pam_unix.so\naccount required pam_access.so\nsession required pam_unix.so\n",
+    "polkit": {"action": "org.freedesktop.systemd1.manage-units", "source": "systemd v257 org.freedesktop.systemd1.policy.in", "localActive": "auth_admin_keep", "inactive": "auth_admin", "remote": "auth_admin", "details": {"unit": "demo.service", "verb": "restart"}, "detailRuleAlternative": "auth_admin; no KEEP so unit-dependent rule is reevaluated"},
+    "selinux": {"enforcing": true, "loaded": true, "subject": "system_u:system_r:backup_t:s0", "target": "system_u:object_r:secret_t:s0", "request": "file:read", "allowRules": ["allow backup_t backup_data_t:file { open read getattr };"], "kernelVersion": null, "loadedPolicyHash": null},
+    "apparmor": {"enforcing": true, "loaded": true, "profile": "afs-backup", "rules": ["/srv/public/** r,", "deny /srv/private/** r,"], "kernelVersion": null, "loadedPolicyHash": null}
+  },
+  "macos": {
+    "selectedOS": "macOS26 documentation capability profile",
+    "actualBuild": null,
+    "hardware": "Apple silicon MacBook Pro with configured Touch ID; no actual machine available",
+    "bundledSudoVersion": null,
+    "pamIncludeChain": "Explicit fixture, not observed /etc/pam.d/sudo: password baseline; optional sufficient pam_tid then required password only for explicit fallback branch",
+    "pamTidSourceCommit": "a8705983365bdb9b5c6c1ff5fd55c321dc01deec",
+    "platformSSOExtension": {"name": "Apple PlatformSSO capability fixture", "version": "2026-10-22", "deploymentStatus": "No provider binary asserted; opaque provider proof result only", "methods": ["password", "secure-enclave"], "unsupportedInSelectedProfile": ["web", "QR", "required-Touch-ID"]},
+    "registration": {"device": true, "user": true, "localAccountAssociation": "alice uid501", "sharedDeviceKeys": true},
+    "passwordLoginPolicy": {"loginWindow": "require", "offlineGraceDays": 0},
+    "secureEnclaveMethod": {"localPasswordRequired": true, "loginPolicies": "Not applied as though password method", "privateKeyExport": false},
+    "filevault": {"storage": "internal APFS", "enabled": true, "eligibleUnlockUser": "alice", "secureToken": true, "volumeOwner": true, "administrator": false, "bootstrapEscrow": true, "bootstrapProvisioning": "macOS26 device enrollment with supporting MDM"},
+    "guiRight": "system.preferences.datetime",
+    "networkAdministrator": {"subject": "netadmin@example.test", "localAccount": false, "administratorGroupMapping": "IT-Admins", "eligibleRight": "system.preferences.datetime", "excludedRequirements": ["secure-token", "volume-owner", "current-user"]},
+    "authorizationImplementation": "Conceptual scoped OS right validation; no privileged helper implementation and no deprecated execution API"
+  }
+}

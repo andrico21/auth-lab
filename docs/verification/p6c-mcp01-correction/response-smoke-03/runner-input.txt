@@ -1,0 +1,61 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {pathToFileURL,fileURLToPath} from 'node:url';
+const root=process.argv[2],out=process.argv[3];
+const load=name=>import(pathToFileURL(path.join(root,name)).href);
+const hash=file=>createHash('sha256').update(fs.readFileSync(file)).digest('hex');
+const parse=value=>{if(typeof value!=='string')return value;try{return JSON.parse(value);}catch{return value;}};
+const fields=step=>Object.fromEntries(step.attributeOperations.filter(op=>op.attributeId.startsWith('mcp_field_')).map(op=>[op.fieldPath,parse(op.value)]));
+fs.mkdirSync(out,{recursive:false});
+const report={schemaVersion:1,kind:'p6c-mcp01-source-and-emitted-response-smoke',passed:false,argv:process.argv,runtime:{bun:process.versions.bun,version:process.version},producer:{path:fileURLToPath(import.meta.url),sha256:hash(fileURLToPath(import.meta.url))},inputs:{source:hash(path.join(root,'src/mcp-auth-lab.js')),standalone:hash(path.join(root,'dist/auth-flow-studio.html'))},sourceScan:{cases:0,recoveredResults:[]},emitted:[],limits:['Focused offline emitted-app/field/exact-object execution, not native browser paint, new performance collection, human AT or live MCP interoperability.']};
+let app,harness;
+try{
+  const {MCPLAB_SCENARIOS,buildMCPScenarioFixture}=await load('src/mcp-auth-lab.js');
+  for(const base of MCPLAB_SCENARIOS)for(const choice of base.variantChoices){
+    const model=buildMCPScenarioFixture(base.id,{variant:choice.id});report.sourceScan.cases++;
+    for(const [index,step] of model.steps().entries())if(step.id.endsWith('-recover')){
+      const value=fields(step);
+      if(value.Body?.jsonrpc==='2.0'&&value.Body.result){
+        assert.equal(value.Body.result.resultType,'complete','Current-profile sender result is complete: '+base.id+'/'+choice.id);
+        report.sourceScan.recoveredResults.push({id:base.id,variant:choice.id,event:step.id,index,resultType:value.Body.result.resultType,isError:value.Body.result.isError===true});
+      }
+    }
+  }
+  assert.equal(report.sourceScan.cases,117);assert.equal(report.sourceScan.recoveredResults.length,22);
+  const {installHarness}=await load('tests/dom-harness.mjs');harness=installHarness();
+  const html=fs.readFileSync(path.join(root,'dist/auth-flow-studio.html'),'utf8'),scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)];assert.equal(scripts.length,1);
+  new vm.Script(scripts[0][1],{filename:'auth-flow-studio.p6c-emitted.js'}).runInThisContext();
+  const Klass=harness.registry.get('auth-flow-studio');assert.ok(Klass);app=new Klass();harness.document.body.appendChild(app);app.connectedCallback();
+  const {buildHeldObjects}=await load('src/held-objects.js');
+  const {projectHeldObjects,heldObjectTrace,inspectHeldObject}=await load('src/held-object-state.js');
+  for(const variant of ['upstream-expired','upstream-wrong-audience','default']){
+    app.selectLabScenario('lab-mcp09',{variant});assert.equal(app.lessonVariant,variant);
+    const success=variant==='default',steps=app.steps,event='lab-mcp09:'+(success?'proxy-result-wire-recover':'proxy-upstream-error-recover'),index=steps.findIndex(step=>step.id===event);assert.ok(index>=0);
+    const response=fields(steps[index]),request=fields(steps.find(step=>step.id==='lab-mcp09:downstream-request-recover')).Request;
+    assert.equal(response.HTTP,200);assert.equal(response.Body.jsonrpc,'2.0');assert.equal(response.Body.id,request.body.id);assert.equal(response.Body.result.resultType,'complete');assert.equal(response.Body.result.isError===true,!success);
+    const bodyOperation=steps[index].attributeOperations.find(op=>op.attributeId.startsWith('mcp_field_')&&op.fieldPath==='Body');assert.ok(bodyOperation);
+    const compiled=buildHeldObjects({model:app.labModel,steps,actors:app.labModel.actors(),config:{},contextId:'p6c-emitted:'+variant,choiceId:'lab-mcp09'}),frame=projectHeldObjects(compiled,{eventIndex:index,milestone:'complete'});
+    const carrier='lab-mcp09:'+(success?'proxy-result-wire':'proxy-upstream-error')+'-tls-record',wireIndex=index-1,wireFrame=projectHeldObjects(compiled,{eventIndex:wireIndex,milestone:'complete'});
+    const holding=wireFrame.holdings.find(h=>h.actorId==='mcpC'&&h.artifactId===carrier&&h.representationId==='wire');assert.ok(holding,'The actual TLS carrier is held at receipt');
+    const inspectedWire=inspectHeldObject(wireFrame,holding.holdingId);assert.equal(frame.holdings.some(h=>h.actorId==='mcpC'&&h.artifactId===carrier),false,'Recovery retires the temporary carrier');
+    const exact=heldObjectTrace(compiled,carrier),boundary=exact.findLast(step=>step.sourceStepId===event);assert.ok(boundary,'Exact carrier history reaches recovery/disposal');assert.deepEqual(projectHeldObjects(compiled,boundary.heldCursorEnd),frame);
+    app.selectAttribute(bodyOperation.attributeId,false);const fieldTrace=app.traceQueue.map(step=>({sourceStepId:step.sourceStepId,sourceIndex:step.sourceIndex,traceKind:step.traceKind}));assert.ok(fieldTrace.some(step=>step.sourceStepId===event));
+    app.player.setSpeed(4);app.playAttribute();harness.clock.until(()=>app.player.status!=='playing');
+    const fieldReplayState=app.heldView.snapshot().state.mcp;assert.equal(fieldReplayState.downstreamTokenAccepted,true);assert.equal(fieldReplayState.upstreamTokenAccepted,success);assert.equal(fieldReplayState.resultLearned,false,'Decoded receipt is not the later successful local result acceptance');assert.equal(fieldReplayState.operationExecuted,success);
+    const clear=app.querySelector('#attribute-focus [data-clear-trace]');assert.ok(clear);clear.click();app.player.seek(app.steps,1,'full');
+    const state=app.heldView.snapshot().state.mcp;assert.equal(state.downstreamTokenAccepted,true);assert.equal(state.upstreamTokenAccepted,success);assert.equal(state.resultLearned,success);assert.equal(state.operationExecuted,success);
+    if(!success){assert.equal(state.upstreamRenewalRequired,true);assert.equal(frame.holdings.some(h=>h.artifactId==='lab-mcp09:upstream-result'&&h.actorId==='mcpR'),false);}
+    const tokens=app.labModel.mcpInventory.artifacts.filter(a=>['lab-mcp09:downstream-access-g1','lab-mcp09:upstream-access-g1'].includes(a.artifactId)).map(a=>a.representations[0].fields[0].value);
+    assert.equal(tokens.length,2);for(const token of tokens)assert.equal(JSON.stringify(response).includes(token),false);
+    report.emitted.push({variant,event,index,step:index+1,HTTP:response.HTTP,requestId:request.body.id,responseBody:response.Body,fieldId:bodyOperation.attributeId,observationInstanceId:bodyOperation.instanceId,fieldIsLocalObservationNotStoredBody:true,carrierArtifactId:carrier,wireHoldingId:holding.holdingId,inspectedWire,fieldTrace,exactTrace:exact.map(step=>({sourceStepId:step.sourceStepId,sourceIndex:step.sourceIndex,heldCursorEnd:step.heldCursorEnd})),fieldReplayState:{downstreamTokenAccepted:fieldReplayState.downstreamTokenAccepted,upstreamTokenAccepted:fieldReplayState.upstreamTokenAccepted,resultLearned:fieldReplayState.resultLearned,operationExecuted:fieldReplayState.operationExecuted},state:{downstreamTokenAccepted:state.downstreamTokenAccepted,upstreamTokenAccepted:state.upstreamTokenAccepted,resultLearned:state.resultLearned,operationExecuted:state.operationExecuted,upstreamRenewalRequired:state.upstreamRenewalRequired??false},noTokensInResponse:true});
+  }
+  assert.equal(report.inputs.source,hash(path.join(root,'src/mcp-auth-lab.js')));assert.equal(report.inputs.standalone,hash(path.join(root,'dist/auth-flow-studio.html')));report.passed=true;
+}catch(error){report.error=String(error.stack||error);process.exitCode=1;}
+finally{
+  if(app){app.disconnectedCallback();harness.document.body.removeChild(app);}if(harness){harness.clock.frames.clear();harness.clock.timers.clear();}
+  fs.writeFileSync(path.join(out,'response-smoke-status.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});fs.copyFileSync(fileURLToPath(import.meta.url),path.join(out,'runner-input.txt'),fs.constants.COPYFILE_EXCL);
+  console.log(JSON.stringify({passed:report.passed,sourceCases:report.sourceScan.cases,recoveredResultBodies:report.sourceScan.recoveredResults.length,emittedCases:report.emitted.map(c=>({variant:c.variant,event:c.event,index:c.index,resultType:c.responseBody.result.resultType,isError:c.responseBody.result.isError===true})),error:report.error||null},null,2));
+}

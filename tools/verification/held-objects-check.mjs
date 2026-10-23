@@ -10,16 +10,14 @@ import {projectHeldObjects,assertHeldObjectCoverage,heldObjectTrace,heldCursorFo
 import {CORE_HELD_OBJECT_INTERACTIONS,CORE_HELD_OBJECT_SCOPE} from '../../src/held-object-core.js';
 import {reconstructProtocolState} from '../../src/protocol-state.js';
 import {FlowPlayer,pairKey,resolveActor} from '../../src/player.js';
+import {captureReviewInputs} from './review-input-identity.mjs';
 
 const heldCheckRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
 const heldCheckOutput=path.resolve(process.env.AUTH_LAB_HELD_EVIDENCE_DIR||path.join(heldCheckRoot,'docs/verification/held-objects'));
 if(process.argv.includes('--help')){console.log('Usage: bun tools/verification/held-objects-check.mjs\nChecks all picker choices and applicable normalized Core configurations. Uses actual source generation with no rendered DOM. Writes manifest and observed semantic evidence to AUTH_LAB_HELD_EVIDENCE_DIR or docs/verification/held-objects.');process.exit(0);}
 fs.mkdirSync(heldCheckOutput,{recursive:true});
-const heldCheckDigest=filename=>{const bytes=fs.readFileSync(path.join(heldCheckRoot,filename));return {path:filename,bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')};};
-const heldCheckReport={kind:'held-objects-source-semantic-acceptance',nativeBrowser:false,timestamp:new Date().toISOString(),runtime:process.versions.bun?'Bun '+process.versions.bun:process.version,choices:[],coreConfigurations:[],interactionCases:[],scopeExclusions:HELD_OBJECT_SCOPE_EXCLUSIONS,failures:[],passed:false};
+const heldCheckReport={kind:'held-objects-source-semantic-acceptance',nativeBrowser:false,timestamp:new Date().toISOString(),runtime:{executable:process.execPath,version:process.version,bun:process.versions.bun||null},regenerationCommand:[process.execPath,...process.argv.slice(1)],inputIdentity:captureReviewInputs(heldCheckRoot,fileURLToPath(import.meta.url)),choices:[],coreConfigurations:[],interactionCases:[],scopeExclusions:HELD_OBJECT_SCOPE_EXCLUSIONS,failures:[],passed:false};
 const heldCheckManifest=[];
-const heldCheckSourceFiles=['index.html','build.mjs','security-policy.mjs',...fs.readdirSync(path.join(heldCheckRoot,'src')).filter(name=>/\.(?:js|css)$/.test(name)).sort().map(name=>'src/'+name),...fs.readdirSync(path.join(heldCheckRoot,'tests')).filter(name=>/^held-object.*\.test\.mjs$/.test(name)).sort().map(name=>'tests/'+name),'tools/verification/held-objects-check.mjs','tools/verification/held-object-fixtures.mjs'];
-heldCheckReport.inputs=heldCheckSourceFiles.map(heldCheckDigest);
 
 function heldCheckAtQueue(compiled,queue,index,progress) {
   const player=new FlowPlayer({requestFrame:()=>null,cancelFrame:()=>{}});
@@ -89,6 +87,9 @@ try{
   heldCheckReport.passed=true;
 }catch(error){heldCheckReport.failures.push({message:error.message,stack:error.stack});process.exitCode=1;}
 finally{
+  try{assert.deepEqual(captureReviewInputs(heldCheckRoot,fileURLToPath(import.meta.url)),heldCheckReport.inputIdentity);heldCheckReport.sourceUnchanged=true;}
+  catch(error){heldCheckReport.sourceUnchanged=false;heldCheckReport.passed=false;heldCheckReport.failures.push({message:error.message,stack:error.stack});process.exitCode=1;}
+  heldCheckReport.status=heldCheckReport.passed?'passed':'failed';heldCheckReport.exitCode=heldCheckReport.passed?0:1;
   fs.writeFileSync(path.join(heldCheckOutput,'held-objects-source-status.json'),JSON.stringify(heldCheckReport,null,2)+'\n');
   fs.writeFileSync(path.join(heldCheckOutput,'held-objects-coverage-manifest.json'),JSON.stringify({kind:'authored-held-object-manifest',reviewDisposition:'Pending independent Astra implementation review',choices:heldCheckManifest,core:{normalizedConfigurationCount:heldCheckReport.coreConfigurations.length,configurations:heldCheckReport.coreConfigurations,interactions:CORE_HELD_OBJECT_INTERACTIONS,authoredScope:CORE_HELD_OBJECT_SCOPE,exclusions:HELD_OBJECT_SCOPE_EXCLUSIONS}},null,2)+'\n');
   console.log(JSON.stringify({passed:heldCheckReport.passed,choices:heldCheckReport.choices.length,coreConfigurations:heldCheckReport.coreConfigurations.length,interactionCases:heldCheckReport.interactionCases.length,equalCursorComparisons:heldCheckReport.choices.reduce((total,choice)=>total+choice.equalCursorComparisons,0)+heldCheckReport.interactionCases.reduce((total,choice)=>total+choice.equalCursorComparisons,0),failures:heldCheckReport.failures.map(failure=>failure.message),evidenceDirectory:heldCheckOutput},null,2));

@@ -11,6 +11,7 @@ const {document,clock}=harness;
 function mount(){
   const app=new AuthFlowStudio();document.body.appendChild(app);document.activeElement=document.body;
   app.connectedCallback();app.addEventListener('focusin',event=>{document.activeElement=event.target;});
+  app.querySelector('#ready-journeys').open=true;app.querySelector('#lesson-reference').open=true;
   for(const id of ['workspace-presets','related-journeys'])modelFocusRemoval(app.querySelector('#'+id));
   return app;
 }

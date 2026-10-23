@@ -1,0 +1,393 @@
+import {labAttribute,labP,labStep,labScenario} from './lab-common.js';
+
+const unixWsStarting={
+  'lab-llog01':['alice resolves to local uid1000; identity lookup is not password proof.','files NSS and pam_unix; no directory or KDC dependency.','Account and configured session gates still follow authentication.'],
+  'lab-llog02':['CORP alice maps to local uid200100; realm principal remains separate.','Host machine keytab is provisioned; user KCM cache initially has no TGT.','Selected AD GPO host admission can deny after Kerberos success.'],
+  'lab-llog03':['Prior online login populated a one-day-old offline verifier; expiry7days.','Central authority is disconnected; no new TGT can be issued.','Cached identity/access can be stale; unrelated local session remains.'],
+  'lab-llog04':['The current credential is correct baseline, but authentication token expired.','Local pam_unix authority generation1; explicit directory alternative.','No session until selected authority password update and admission succeed.'],
+  'lab-llog05':['Existing local uid1000 desktop on a nonjoined Linux workstation.','alice@CORP.EXAMPLE is separately selected for explicit kinit.','Network tickets never replace local UID or grant administrator rights.'],
+  'lab-lelev03':['Existing unprivileged uid1000 client is active/local baseline.','Privileged service requests org.freedesktop.systemd1.manage-units.','polkit scopes authorization to subject/action; no root client token.'],
+  'lab-mlog01':['Local standard alice uid501; FileVault already unlocked or excluded.','Initial login requires local Mac account password, not Apple Account password.','Existing-session Touch ID unlock and login-keychain unlock are distinct.'],
+  'lab-mlog02':['Internal APFS data begins encrypted; eligible standard user owns volume baseline.','Secure token, escrowed bootstrap token and volume ownership are separate.','macOS26 enrollment provisioning fixture; disk unlock still precedes OS login.'],
+  'lab-mlog03':['Mac uses an explicitly bound AD connector and modern Kerberos profile.','Online baseline explicitly creates mobile cache; offline needs a prior cache.','Directory identity, ticket issuance, local admission and keychain are separate.'],
+  'lab-mlog04':['Existing local uid501 session; no AD binding or mobile account required.','Managed Kerberos SSO extension explicitly authenticates to reachable AD.','Local password synchronization disabled; tickets do not change local UID.'],
+  'lab-mlog05':['Device and user registered; existing local alice uid501 association.','macOS26 password method requires online proof baseline; grace is explicit.','Secure Enclave method keeps local password login separate from IdP key proof.'],
+  'lab-melev01':['Standard uid501 app requests system.preferences.datetime only.','Eligible administrator can differ from the logged-in user.','Privileged service verifies scoped authorization; client remains unprivileged.'],
+  'lab-melev02':['Local uid501 Terminal session; allowed /usr/bin/id root target baseline.','Independent Mac sudo/PAM fixture, password baseline, empty tty timestamp.','Touch ID needs declared module/user/Aqua support; no automatic fallback.'],
+  'lab-melev03':['Existing local uid501 requester; netadmin has no local Mac account.','Shared device keys and explicit IT-Admins mapping enable eligible prompts.','Network authorization cannot supply secure token, ownership or current-user proof.'],
+};
+const unixWsSourceRefs={
+  'lab-llog01':['UPAM','PAMAPI','PAMUNIX','LOGIND'],
+  'lab-llog02':['SSSDAD','SSSDNSS','UPAM','KINITPIN','SSSDCONF'],
+  'lab-llog03':['SSSDCONF','SSSDNSS','KINITPIN'],
+  'lab-llog04':['PAMUNIX','UPAM','PAMAPI','SSSDCONF'],
+  'lab-llog05':['KINITPIN','SSSDNSS','UPAM','KRBRESOURCE'],
+  'lab-lelev01':['SUDO','SUDOTS','PAMAPI'],
+  'lab-lelev02':['SU','PAMROOT','PAMAPI'],
+  'lab-lelev03':['POLKIT','POLKITAGENT','POLKITACTION'],
+  'lab-lelev04':['SELINUX','APPARMOR','LSM'],
+  'lab-mlog01':['MACLOCAL','MACTOUCH26','KEYCHAIN'],
+  'lab-mlog02':['MACFV','MACTOKENS'],
+  'lab-mlog03':['MACAD','MACMOBILE26','KEYCHAIN','KINITPIN'],
+  'lab-mlog04':['MACKRB','MACPSSO','KINITPIN','KRBRESOURCE'],
+  'lab-mlog05':['MACPSSO','MACTOKENS','MACLOCAL'],
+  'lab-melev01':['MACADMIN','MACAUTHTASKS','MACAUTH','MACPSSO'],
+  'lab-melev02':['SUDO','SUDOTS','MACTID','MACTOUCH26'],
+  'lab-melev03':['MACPSSO','MACTOKENS','MACAUTH'],
+};
+const unixWsLessonLinks={"lab-llog01":{"id":"lab-llog01","title":"Linux local workstation login through PAM","summary":"Explain the local identity, authentication, account-policy and session boundaries using a declared PAM service stack. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-llog02":{"id":"lab-llog02","title":"Linux online directory logon with SSSD and Kerberos","summary":"Show how a domain identity becomes an authorized Linux session without equating directory lookup, Kerberos proof and host admission. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-llog03":{"id":"lab-llog03","title":"Linux cached directory logon while offline","summary":"Demonstrate local verification of previously cached credentials and the limits of offline knowledge and tickets. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-llog04":{"id":"lab-llog04","title":"Linux expired password and PAM token change","summary":"Explain why a correct old password can require a password-management step before login succeeds. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-llog05":{"id":"lab-llog05","title":"Nonjoined Linux workstation: local login then explicit Kerberos","summary":"Separate the local desktop account from an explicitly selected domain principal used for network access. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-lelev01":{"id":"lab-lelev01","title":"sudo: policy, authenticated identity and timestamp reuse","summary":"Show who is requesting, whose identity is checked and which account executes the requested command. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-lelev02":{"id":"lab-lelev02","title":"su and configured root bypass","summary":"Contrast substitute-user authentication with sudo delegation, including policy-driven passwordless root use. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-lelev03":{"id":"lab-lelev03","title":"polkit: authorize one privileged operation","summary":"Explain a service authorization decision, its optional authentication challenge and the service action that follows. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-lelev04":{"id":"lab-lelev04","title":"LSM enforcement after login or elevation","summary":"Correct the LSM terminology and show why authenticated or elevated processes can still be denied resource access. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-mlog01":{"id":"lab-mlog01","title":"Mac local login, screen unlock and local identity","summary":"Establish the local-account boundary before directory SSO and privileged-operation lessons. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-mlog02":{"id":"lab-mlog02","title":"Mac FileVault unlock, secure token and volume ownership","summary":"Show disk-key access before OS-session and administrator decisions, and distinguish the different Apple token concepts. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-mlog03":{"id":"lab-mlog03","title":"Mac AD network/mobile account: online and cached login","summary":"Cover bound-directory workstation login and its explicitly configured offline mobile-account variant. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-mlog04":{"id":"lab-mlog04","title":"Mac local account with Kerberos SSO extension","summary":"Demonstrate domain resource SSO without AD binding or a directory-backed workstation account. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-mlog05":{"id":"lab-mlog05","title":"Mac Platform SSO: registration, login policy and IdP identity","summary":"Explain managed Platform SSO without treating local login, IdP authentication and account privilege as one token exchange. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-melev01":{"id":"lab-melev01","title":"Mac administrator authorization for a scoped GUI operation","summary":"Explain operation-specific authorization without turning the whole desktop or application into root. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-melev02":{"id":"lab-melev02","title":"Mac sudo with password or configured Touch ID","summary":"Show macOS command elevation as sudo policy plus its actual PAM/authentication configuration. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-melev03":{"id":"lab-melev03","title":"Mac Platform SSO network administrator authorization","summary":"Show the distinct case where an IdP identity without a local account can authorize a supported administrator prompt. Opens its own fixed fixture; no live credential or privilege is transferred."},"lab-ad-first-sign-in":{"id":"lab-ad-first-sign-in","title":"Accepted Kerberos acquisition and resource access","summary":"Expand the existing AS/preauthentication lesson; no hidden ticket transfer between lessons."},"lab-smb-nonjoined-kerberos":{"id":"lab-smb-nonjoined-kerberos","title":"Accepted nonjoined Kerberos SMB access","summary":"Keep local desktop identity separate from explicit domain resource credentials."},"lab-nfs-v42-kerberos-read":{"id":"lab-nfs-v42-kerberos-read","title":"NFSv4.2 Kerberos resource authorization","summary":"Start a separately configured NFS fixture; local login does not imply export or file permission."},"lab-ssh-sssd-success":{"id":"lab-ssh-sssd-success","title":"Existing SSH SSSD remote access","summary":"Compare remote SSH authentication/account admission without duplicating its userauth flow."}};
+const unixWsRelated={"lab-llog01":["lab-llog05","lab-lelev01","lab-ssh-sssd-success"],"lab-llog02":["lab-ad-first-sign-in","lab-nfs-v42-kerberos-read","lab-ssh-sssd-success"],"lab-llog03":["lab-llog02","lab-ssh-sssd-success"],"lab-llog04":["lab-llog01"],"lab-llog05":["lab-ad-first-sign-in","lab-smb-nonjoined-kerberos","lab-nfs-v42-kerberos-read"],"lab-lelev01":["lab-lelev04","lab-llog01"],"lab-lelev02":["lab-lelev01"],"lab-lelev03":["lab-lelev01"],"lab-lelev04":["lab-lelev01"],"lab-mlog01":["lab-mlog02","lab-mlog04","lab-melev01"],"lab-mlog02":["lab-mlog01","lab-melev03"],"lab-mlog03":["lab-mlog04","lab-ad-first-sign-in"],"lab-mlog04":["lab-ad-first-sign-in","lab-smb-nonjoined-kerberos","lab-nfs-v42-kerberos-read"],"lab-mlog05":["lab-melev03","lab-melev01"],"lab-melev01":["lab-melev02","lab-melev03"],"lab-melev02":["lab-melev01","lab-lelev01"],"lab-melev03":["lab-mlog05","lab-mlog02"]};
+
+export const LINUXLOGONLAB_ATTRIBUTES={};
+export const LINUXLOGONLAB_SOURCES=[
+{"name":"Linux-PAM pam(3)","url":"https://man7.org/linux/man-pages/man3/pam.3.html","revision":"Upstream Linux-PAM manual reproduced by man7","section":"Initialization; Authentication; Account; Password; Session","retrieved":"2026-10-22","sourceRowId":"next-unix-PAMAPI","snapshot":"docs/research/workstation/sources/unix/PAMAPI.html","sha256":"3c3bad56e609299c0966a0d07bbf62df6fcff81ea849b21bc25737f4baa5058c"},
+{"name":"Linux-PAM pam_unix(8)","url":"https://man7.org/linux/man-pages/man8/pam_unix.8.html","revision":"Upstream Linux-PAM manual reproduced by man7","section":"Description; module types; nullok","retrieved":"2026-10-22","sourceRowId":"next-unix-PAMUNIX","snapshot":"docs/research/workstation/sources/unix/PAMUNIX.html","sha256":"bd458738e5a48ee19b45427ce96f01e9469af37eea745784fa16461c8efc0106"},
+{"name":"pam_systemd","url":"https://www.freedesktop.org/software/systemd/man/latest/pam_systemd.html","revision":"Retrieved page header: systemd 262","section":"Description; session classes","retrieved":"2026-10-22","sourceRowId":"next-unix-LOGIND","snapshot":"docs/research/workstation/sources/unix/LOGIND.html","sha256":"0dd0795be009c9ecaaf698cc276bd60adacb0271f6a8a3dea912149fd2dd00ac"},
+{"name":"SSSD AD provider","url":"https://sssd.io/docs/ad/ad-provider.html","revision":"Live upstream documentation; immutable version not exposed in retrieved page","section":"Joining AD; identity mapping; access-provider note","retrieved":"2026-10-22","sourceRowId":"next-unix-SSSDAD","snapshot":"docs/research/workstation/sources/unix/SSSDAD.html","sha256":"c30667188e09fcce1d8ac9d6f6000bd935a1380b661c23cdcda9ffa707c4f821"},
+  {name:'Linux-PAM application guide',url:'https://github.com/linux-pam/linux-pam/blob/584ef2275254016ee68126f90dab6df3604124b9/doc/adg/Linux-PAM_ADG.xml',revision:'584ef2275254016ee68126f90dab6df3604124b9',section:'Authentication, account, password, session API',retrieved:'2026-10-22',sourceRowId:'next-unix-UPAM'},
+  {name:'SSSD2.11.1 explicit offline configuration',url:'https://github.com/SSSD/sssd/blob/2.11.1/src/man/sssd.conf.5.xml',revision:'2.11.1',section:'cache_credentials; offline_credentials_expiration; cached_auth_timeout',retrieved:'2026-10-22',sourceRowId:'next-unix-SSSDCONF'},
+  {name:'SSSD identity and PAM responder boundaries',url:'https://sssd.io/troubleshooting/basics.html',revision:'Captured2026-10-22; see unix-workstation-sources.json hash',section:'NSS and PAM requests',retrieved:'2026-10-22',sourceRowId:'next-unix-SSSDNSS'},
+  {name:'MIT Kerberos1.22 kinit',url:'https://web.mit.edu/kerberos/krb5-1.22/doc/user/user_commands/kinit.html',revision:'1.22 documentation',section:'Principal and credential cache',retrieved:'2026-10-22',sourceRowId:'next-unix-KINITPIN'},
+  {name:'Kerberos V5 service authentication and protected application messages',url:'https://www.rfc-editor.org/rfc/rfc4120.html',revision:'RFC4120, July2005; Standards Track; modern symbolic AES selection, not historical mandatory algorithms',section:'1.4; 3.2.2-3.2.6; 3.3.1-3.3.4; 3.5; 5.7.1; 7.1 directional addresses',retrieved:'2026-10-22',sourceRowId:'next-unix-KRBRESOURCE'},
+];
+export const UNIXWS_LIMIT='Documentation-backed fixture only. No installed distro, OS build, PAM include chain, directory deployment or hardware conformance verified. Local calls and IPC are not network packets. Symbolic credentials are not production crypto.';
+export function unixWsFreeze(value){if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.values(value).forEach(unixWsFreeze);Object.freeze(value);}return value;}
+export function unixWsVariants(make,baseline,cases){
+  const choices=unixWsFreeze([{id:'default',label:'Declared baseline',description:'Run the explicit reference fixture.'},...Object.entries(cases).map(([id,changes])=>({id,label:id.replaceAll('-',' '),description:'Changed fixture inputs: '+Object.keys(changes).join(', ')}))]);
+  const construct=variantId=>{if(variantId!=='default'&&!Object.hasOwn(cases,variantId))throw new RangeError('Unknown Unix workstation variant: '+variantId);const fixture=unixWsFreeze({...baseline,...(cases[variantId]||{})});return unixWsFreeze({...make(fixture,variantId),fixture,variantId,variantChoices:choices,withVariant:construct});};
+  return construct('default');
+}
+// Shared only for genuinely identical source-event/custody authoring semantics.
+// Domain gates are authored below/in each OS module, not inferred from prose.
+const unixWsControlSchema={
+  'lab-llog01':['lookup','unknown','pam-start','auth-deny','account-deny','setcred','open-session','close-session'],
+  'lab-llog02':['identity-query','identity-deny','pam-request','provider-unavailable','provider-auth','host-denied','setcred','session-open'],
+  'lab-llog03':['cache-deny','cached-deny','offline-session'],
+  'lab-llog04':['account-token-expired','password-policy-deny','password-authority-request','password-authority-result','session-open'],
+  'lab-lelev01':['request','policy-deny','noninteractive-deny','password-deny','account-deny','pam-result','pam-session','command-start'],
+  'lab-lelev02':['target-lookup','missing-target','su-auth-deny','su-account-deny','target-process'],
+  'lab-lelev03':['policy-deny','no-agent','agent-challenge','agent-deny','identity-deny'],
+  'lab-lelev04':['access-request'],
+  'lab-mlog01':['identify','touch-unavailable','deny','local-admission'],
+  'lab-mlog02':['unlock-credential','volume-available'],
+  'lab-mlog03':['admission-denied','session-open'],
+  'lab-mlog04':['extension-trigger'],
+  'lab-mlog05':['local-session','method-selection','idp-request','method-deny'],
+  'lab-melev01':['right-request','right-denied','administrator-deny','service-reference'],
+  'lab-melev02':['command-request','sudo-deny','authentication-deny','pam-result','command-start'],
+  'lab-melev03':['network-request','network-authentication-request'],
+};
+const unixWsResourceFields=['resource-service-key','resource-krbtgt-key','service-tgs-request','service-ticket','service-session-key','service-tgs-reply','service-authenticator','service-ap-reply','resource-request','resource-acl'];
+const unixWsLearningQuestions=Object.freeze({
+  'lab-llog01':'Where do identity lookup, PAM authentication and session admission differ?',
+  'lab-llog02':'Why does a Kerberos proof not by itself admit a Linux session?',
+  'lab-llog03':'What can an offline cached login verify, and what can it not know?',
+  'lab-llog04':'Why can a correct old password still require a password change?',
+  'lab-llog05':'Why are local desktop identity and an explicit Kerberos principal separate?',
+  'lab-lelev01':'Who requests sudo, whose identity is checked, and who runs the command?',
+  'lab-lelev02':'When does configured su policy permit a root caller without a password?',
+  'lab-lelev03':'Who authorizes one privileged operation, and when is authentication needed?',
+  'lab-lelev04':'Why can an authenticated or elevated process still fail kernel policy?',
+  'lab-mlog01':'How do local login, screen unlock and keychain access differ?',
+  'lab-mlog02':'Why does FileVault unlock not itself grant an OS session or administrator rights?',
+  'lab-mlog03':'What changes between online AD login and an offline mobile-account check?',
+  'lab-mlog04':'How can a local Mac account use Kerberos SSO without AD binding?',
+  'lab-mlog05':'Why are Platform SSO registration, IdP proof and local login distinct?',
+  'lab-melev01':'How does one administrator approval avoid making the whole desktop root?',
+  'lab-melev02':'Which sudo and PAM policies allow a password or configured Touch ID?',
+  'lab-melev03':'When can an IdP identity without a local account authorize a Mac admin prompt?'
+});
+export function unixWsAuthor(meta,attributes,sources,actorLabels,initial={}){
+  const id=meta.id,steps=[],definitions={},artifacts=[],initialEffects=[],events={},bindings=[];
+  sources=unixWsSourceRefs[id].map(key=>{const source=sources.find(s=>s.sourceRowId==='next-unix-'+key);if(!source)throw new TypeError('Missing declared Unix source metadata: '+key);return source;});
+  meta.sourceRowIds=sources.map(source=>source.sourceRowId);
+  meta.relatedLessons=[...new Set([...(unixWsRelated[id]||[]),...(meta.relatedLessons||[]).map(lesson=>typeof lesson==='string'?lesson:lesson.id)])].map(key=>unixWsLessonLinks[key]);
+  const actorIds=Object.keys(actorLabels),actors=Object.fromEntries(Object.entries(actorLabels).map(([key,label],index)=>[key,{id:key,name:label,role:label,plainRole:label,kind:index===0?'client':'service',color:['#2563eb','#08916d','#7c3aed','#b45309','#be185d'][index%5],position:{x:[145,560,975][index%3],y:120+245*Math.floor(index/3)},...(index>0?{parentId:actorIds[0]}:{}),notes:['Distinct logical local owner; folding never merges custody.']} ]));
+  const state={workstation:{localIdentity:null,networkIdentity:null,identityResolved:false,authenticated:false,authenticatedIdentity:null,admitted:false,session:false,sessionLocked:false,operation:false,tgt:false,tgtWasIssued:false,kdcAuthenticated:false,kdcRejected:false,clientKnowsAuthentication:false,clientKnowsServiceAuthentication:false,clientKnowsFailure:false,resourceDecisionKnown:false,idpSSO:false,administrator:false,executionTarget:null,mandatoryDecision:'not evaluated',failure:null,unrelatedSession:'other-user-session-retained',...initial}};
+  const own=(o,actor=o.creator,store=o.store,representationId='plain')=>({op:'acquire',artifactId:o.artifactId,actorId:actor,representationId,store,holdingId:[actor,o.artifactId,representationId,store].join('|'),retention:'retained'});
+  const release=(o,actor=o.creator,store=o.store,representationId='plain')=>({op:'release',holdingId:own(o,actor,store,representationId).holdingId});
+  function object(key,label,type,creator,value,readers=[creator],{seed=false,store='local owner state',generation=1,wire=null}={}){
+    const artifactId=id+':'+key,attributeId='unixws_'+id.replaceAll('-','_')+'_'+key.replaceAll('-','_');
+    definitions[attributeId]=labAttribute(label,'Explicit '+type+' at its logical owner. '+UNIXWS_LIMIT,creator,'Separate identity, proof, admission, custody and authority.',value,sources[0]?.name||'Unix workstation primary source',sources[0]?.url||'https://man7.org/linux/man-pages/man3/pam.3.html');if(!Object.hasOwn(attributes,attributeId))attributes[attributeId]=definitions[attributeId];
+    const rep=(representationId,val,allowed)=>({representationId,format:representationId==='wire'?'Opaque protected envelope':'Symbolic local fixture',readableBy:allowed,fields:[{attributeId,name:label,value:val,readableBy:allowed}]});
+    const o={artifactId,attributeId,key,label,type,creator,value,store,generation,representations:[rep('plain',value,readers),...(wire?[rep('wire',wire,[])]:[])]};artifacts.push(o);if(seed)initialEffects.push({op:'create',artifactId},own(o));return o;
+  }
+  function event(key,title,from,to,objects=[],{made=[],got=[],checks=[],drop=[],puts={},inspect=[],use=[],encrypt=[],network=false,representations={},control=null}={}){
+    // Call sites supply actual arguments/status, never a placeholder inferred from prose.
+    // Callee-local objects in `made` are not included in the transferred payload.
+    if(control){
+      if(from===to||network)throw new TypeError('Unix call control requires a distinct local receiver.');
+      const argument=object(key+'-control',control.label,'local-call-control',from,control.value,[from,to],{store:'local call arguments / return status'});
+      objects=[...objects,argument];made=[argument,...made];
+    }
+    if(from!==to&&!objects.length)throw new TypeError('Unix IPC requires authored arguments or return status: '+id+':'+key);
+    if(from!==to){
+      const senderMade=made.filter(o=>o.creator===from),senderEncrypt=encrypt.filter(e=>e.actor===from),senderGot=got.filter(g=>g.actor===from);
+      if(senderMade.length||senderEncrypt.length||senderGot.length){
+        const senderUse=use.filter(u=>u.actor===from);
+        event(key+'-prepare','Prepare sender-local arguments and representations before '+title,from,from,[],{made:senderMade,encrypt:senderEncrypt,got:senderGot,use:senderUse});
+        made=made.filter(o=>!senderMade.includes(o));encrypt=encrypt.filter(e=>!senderEncrypt.includes(e));got=got.filter(g=>!senderGot.includes(g));use=use.filter(u=>!senderUse.includes(u));
+      }
+    }
+    const eventId=id+':'+key,effects=made.flatMap(o=>[{op:'create',artifactId:o.artifactId},own(o)]),ops=[];
+    const occurrence=(o,actor,kind,rep='plain')=>{const r=o.representations.find(r=>r.representationId===rep);return {attributeId:o.attributeId,instanceId:o.artifactId,creator:o.creator,holders:[actor],inspectors:r.readableBy,fieldPath:rep+'.'+o.key,representation:rep,value:r.fields[0].value,sourceEventId:eventId,exactValueRef:o.artifactId+':g'+o.generation+':'+rep,kind,actorId:actor,detail:title};};
+    for(const o of made)ops.push(occurrence(o,o.creator,'create'));
+    for(const e of encrypt){effects.push(own(e.object,e.actor,'outbound protected envelope','wire'));ops.push(occurrence(e.object,e.actor,'encrypt','wire'));}
+    for(const o of objects){const rep=representations[o.key]||'plain';if(from!==to){ops.push(occurrence(o,from,'send',rep),occurrence(o,to,'receive',rep));effects.push(own(o,to,network?'protected response inbox':'local IPC inbox',rep));}else if(!made.includes(o))ops.push(occurrence(o,from,inspect.includes(o)?'inspect':'use',rep));}
+    for(const g of got){effects.push(own(g.object,g.actor,g.store||g.object.store,g.rep||'plain'));ops.push(occurrence(g.object,g.actor,g.kind||'store',g.rep||'plain'));}
+    for(const u of use)ops.push(occurrence(u.object,u.actor,'use',u.rep||'plain'));
+    for(const c of checks){effects.push({op:'observe',artifactId:c.object.artifactId,actorId:c.actor||from,representationId:c.rep||'plain',kind:'verification',result:c.result});ops.push({...occurrence(c.object,c.actor||from,'verify',c.rep||'plain'),detail:c.result});}
+    for(const d of drop){effects.push(release(d.object,d.actor,d.store||d.object.store,d.rep||'plain'));ops.push(occurrence(d.object,d.actor||d.object.creator,'evict',d.rep||'plain'));}
+    for(const op of ops)if(op.kind==='use'&&!effects.some(effect=>effect.op==='observe'&&effect.artifactId===op.instanceId&&effect.actorId===op.actorId&&effect.representationId===op.representation)){
+      effects.push({op:'observe',artifactId:op.instanceId,actorId:op.actorId,representationId:op.representation,kind:'knowledge',result:'use at '+key});
+    }
+    const listed=[...new Set([...objects,...made,...encrypt.map(e=>e.object),...got.map(g=>g.object),...use.map(u=>u.object),...checks.map(c=>c.object),...drop.map(d=>d.object)])];
+    const networkLabel=network===true?'Protected Kerberos subflow result':network;
+    const step=labStep(eventId,title,from,to,networkLabel||'Local authentication / IPC / policy',network?'backchannel':'internal',title,title,listed.map(o=>o.attributeId),listed.map(o=>labP(o.label,o.representations.find(r=>r.representationId===(representations[o.key]||'plain')).fields[0].value,definitions[o.attributeId].meaning,o.attributeId)),[UNIXWS_LIMIT],ops);
+    step.eventType=from===to?'local':'message';step.protocolLabel=networkLabel||'Local operation / IPC';step.beginnerSummary=title;step.protocolEffects=Object.entries(puts).map(([path,value])=>({op:'put',path:'workstation.'+path,value}));
+    events[eventId]={milestones:[{id:'complete',at:1,effects}],...(from!==to?{messages:[{messageId:eventId+':'+from+'->'+to,from,to,objects:objects.map(o=>({artifactId:o.artifactId,representationId:representations[o.key]||'plain'})),start:0,end:1}]}:{})};steps.push(step);return step;
+  }
+  meta.positions=Object.fromEntries(Object.entries(actors).map(([actorId,actor])=>[actorId,{...actor.position}]));
+  meta.startingSummary=meta.startingSummary||unixWsStarting[id];
+  meta.supportNote=UNIXWS_LIMIT;
+  meta.summary=meta.title;meta.learningObjective=unixWsLearningQuestions[id];
+  const resourceReference=id==='lab-llog05'||id==='lab-mlog04';
+  if(resourceReference){
+    const reference='Service continuation is a lab-owned RFC4120 reference application: host/lab-resource.corp.example@CORP.EXAMPLE; symbolic modern AES; no subkeys/delegation; mutual AP authentication followed by sequenced KRB_PRIV READ /reports/quarterly and protected success/denial. It is not SMB/NFS or a native Linux/macOS service deployment.';
+    meta.prerequisites=[...meta.prerequisites,reference];meta.supportNote+=' '+reference;
+  }
+  function finish(){return labScenario({...meta,unixWorkstation:true,workspace:'workstations',catalogAttributeIds:Object.keys(attributes).filter(key=>key.startsWith('unixws_'+id.replaceAll('-','_')+'_')),decisionBindings:[{label:'Local identity',path:'workstation.localIdentity'},{label:'Network identity',path:'workstation.networkIdentity'},{label:'Authenticated identity',path:'workstation.authenticatedIdentity'},{label:'Admission',path:'workstation.admitted'},{label:'Session',path:'workstation.session'},{label:'Execution target',path:'workstation.executionTarget'},{label:'Operation permitted',path:'workstation.operation'},{label:'Kernel policy',path:'workstation.mandatoryDecision'}],initialState:state,workstationInventory:{artifacts,initial:initialEffects,events,bindings},profile:{name:meta.profileName||meta.title,version:'Authored source/config fixture2026-10-22',publicationStatus:'Captured upstream/vendor documentation',supportStatus:'Native configuration unverified',implementation:meta.supportNote,assumptions:meta.prerequisites||[],transports:resourceReference?['Local function calls and declared IPC','Kerberos AS via accepted subflow; explicit TGS over configured TCP88','Lab-owned RFC4120 AP / KRB_PRIV reference service; not SMB/NFS']:['Local function calls','Documented local IPC only; Kerberos via linked accepted subflow'],completion:'Only the explicitly granted session or scoped operation; unrelated state preserved',algorithms:resourceReference?['Symbolic modern AES Kerberos protection; no subkeys/delegation','Opaque OS/backend verdicts; symbolic handles']:['Opaque OS/backend verdicts; symbolic handles'],cryptoDetail:'No numeric cryptographic claims',sources,startingSummary:meta.startingSummary||['Local identity and network principal are separate.','Authentication is not admission or administrator permission.']},learningObjective:meta.learningObjective||meta.title,prerequisites:meta.prerequisites||[],sourceSupportNote:meta.supportNote,relatedLessons:meta.relatedLessons||[]},definitions,steps,actors);}
+  const remote=ids=>{for(const actorId of ids){if(!Object.hasOwn(actors,actorId))throw new RangeError('Unknown physical remote actor: '+actorId);delete actors[actorId].parentId;}};
+  const unrelated=object('unrelated-session','Unrelated pre-existing local session','session',actorIds[0],'HANDLE(other-user-session-retained; outside this request)',[actorIds[0]],{seed:true,store:'unrelated pre-existing local session'});
+  bindings.push({path:'workstation.unrelatedSession',artifactId:unrelated.artifactId,actorId:actorIds[0],representationId:'plain',store:unrelated.store,presentWhen:'truthy'});
+  return {object,event,finish,remote,own,release,steps,artifacts,initialEffects,bindings,state};
+}
+
+export function unixWsDeclareCatalog(attributes,schema,sources){
+  for(const source of sources){source.standard=source.standard||source.name;source.errata=source.errata||'Captured reference/configuration evidence only; installed build and native conformance unverified. See unix-workstation-sources.json for hashes/applicability.';}
+  for(const [modelId,declaredKeys] of Object.entries(schema)){
+    const keys=[...declaredKeys,...(unixWsControlSchema[modelId]||[]).map(key=>key+'-control'),...(declaredKeys.includes('tgt')?['tgt-session-key']:[]),...(['lab-llog05','lab-mlog04'].includes(modelId)?unixWsResourceFields:[])];
+    for(const key of keys){
+      const attributeId='unixws_'+modelId.replaceAll('-','_')+'_'+key.replaceAll('-','_');
+      if(!Object.hasOwn(attributes,attributeId))attributes[attributeId]=labAttribute(key.replaceAll('-',' '),'Declared field schema across explicit fixed variants.','Selected logical owner in source event','Inspect exact selected-case value and custody; static example is not an instance.','SYM(selected fixture instance)',sources[0]?.name||'Unix primary sources',sources[0]?.url||'https://man7.org/linux/man-pages/man3/pam.3.html');
+    }
+  }
+}
+
+export function createLinuxLocalLogonCase(f,variantId='default'){
+  const A='llogLogin',P='llogPAM',D='llogFiles',S='llogSession';
+  const w=unixWsAuthor({id:'lab-llog01',title:'Linux local login through configured PAM',family:'linux-logon',topic:'Local login',profileName:'L-PAM composed Linux-PAM commit584ef227; files NSS; explicit setcred then open_session',prerequisites:['Synthetic afs-login service: auth/account/password required pam_unix; session required pam_unix; optional pam_systemd when selected. No nullok baseline.','Application order is this fixture, not a universal Linux order.']},LINUXLOGONLAB_ATTRIBUTES,LINUXLOGONLAB_SOURCES,{[A]:'Console login application',[P]:'PAM transaction / pam_unix',[D]:'Local files identity / shadow authority',[S]:'Session manager / optional logind'});
+  const identity=w.object('identity','UID/GID identity record','identity',D,'alice; uid1000; gid1000; groups1000; /home/alice; /bin/sh',[D,A,P],{seed:true,store:'files NSS database'});
+  const verifier=w.object('verifier','Stored password verifier','verifier',P,'HANDLE(shadow-verifier-g1)',[P],{seed:true,store:'privileged pam_unix backend'});
+  w.event('lookup','Request local files NSS identity lookup - not authentication',A,D,[],{control:{label:'Local NSS lookup arguments',value:'SYM(getpwnam_r; name=alice; files NSS)'}});
+  if(!f.accountExists){w.event('unknown','Unknown account: stop before authentication',D,A,[],{control:{label:'Local NSS lookup status',value:'SYM(getpwnam_r; name=alice; result=not found)'},puts:{failure:'unknown user'}});return w.finish();}
+  w.event('identity-result','Return public identity record only',D,A,[identity],{puts:{identityResolved:true,localIdentity:'uid1000'}});
+  const tx=w.object('pam-transaction','PAM transaction','transaction',P,'HANDLE(pam_start afs-login alice)',[P]);
+  w.event('pam-start','pam_start selects the explicit service stack',A,P,[],{control:{label:'PAM initialization arguments',value:'SYM(pam_start; service=afs-login; user=alice; conversation=login application callback)'},made:[tx]});
+  const secret=w.object('entered-secret','Transient conversation secret','secret',A,'SYM('+f.password+' local password)',[A,P],{store:'conversation transient'});
+  w.event('conversation','Conversation supplies transient secret to pam_unix only',A,P,[secret],{made:[secret]});
+  const auth=f.password==='correct'||f.password==='blank'&&f.blankAllowed;
+  w.event('pam-auth','pam_authenticate evaluates pam_unix control result',P,P,[verifier,secret],{checks:[{object:verifier,result:auth?'credential accepted':'credential rejected; blank denied without nullok'}],puts:{authenticated:auth,authenticatedIdentity:auth?'alice':null,passwordCompared:true}});
+  const cleanup=()=>{w.event('pam-end','pam_end clears conversation and transaction; authority record retained',P,P,[tx],{drop:[{object:secret,actor:P,store:'local IPC inbox'},{object:tx,actor:P}]});w.event('caller-clear','Login application discards transient entered secret',A,A,[],{drop:[{object:secret,actor:A}]});};
+  if(!auth){w.event('auth-deny','Authentication failed; no admission or session',P,A,[],{control:{label:'PAM authentication return status',value:'SYM(pam_authenticate; PAM_AUTH_ERR)'},puts:{failure:'PAM_AUTH_ERR'}});cleanup();return w.finish();}
+  w.event('account-record','Privileged module obtains account-policy identity record through local backend',D,P,[identity]);
+  w.event('account','pam_acct_mgmt separately checks account admission',P,P,[identity],{puts:{admitted:f.accountAllowed}});
+  if(!f.accountAllowed){w.event('account-deny','Authenticated account denied; no session created',P,A,[],{control:{label:'PAM account return status',value:'SYM(pam_acct_mgmt; PAM_ACCT_EXPIRED or configured access denial)'},puts:{failure:'PAM_ACCT_EXPIRED or access denial'}});cleanup();return w.finish();}
+  const cred=w.object('process-credentials','Established local process credentials','process-credential',A,'HANDLE(uid1000 gid1000 groups1000)',[A]);
+  w.event('setcred','Application calls pam_setcred ESTABLISH_CRED before open_session',A,P,[],{control:{label:'PAM credential establishment arguments',value:'SYM(pam_setcred; alice transaction; PAM_ESTABLISH_CRED)'},made:[cred]});
+  w.event('open-session','Configured pam_open_session checks resources',P,S,[],{control:{label:'Local session setup request',value:'SYM(open_session; uid1000; service=afs-login; logind='+f.logind+')'},puts:{sessionSetup:f.sessionReady,logindRegistered:f.sessionReady&&f.logind}});
+  if(!f.sessionReady){w.event('session-deny','Session setup fails; delete established credentials',A,A,[],{drop:[{object:cred,actor:A}],puts:{failure:'PAM_SESSION_ERR'}});cleanup();return w.finish();}
+  const session=w.object('session','Local session handle','session',S,'HANDLE(alice-local-session-1)',[S,A]);
+  w.event('session-register',f.logind?'Configured pam_systemd registers this local logind session':'Selected stack opens session without logind integration',S,S,[],{made:[session],puts:{session:true}});
+  w.event('process-start','Login application installs admitted process identity',S,A,[session],{puts:{processIdentity:'uid1000;gid1000;groups1000'}});
+  w.event('close-session','At logout pam_close_session closes only this session',P,S,[],{control:{label:'Local session teardown request',value:'SYM(close_session; alice-local-session-1; service=afs-login)'},drop:[{object:session,actor:S},{object:session,actor:A,store:'local IPC inbox'}],puts:{session:false,sessionWasCreated:true,logindRegistered:false}});
+  w.event('delete-credentials','Configured application deletes established credentials',A,A,[],{drop:[{object:cred,actor:A}]});cleanup();return w.finish();
+}
+unixWsDeclareCatalog(LINUXLOGONLAB_ATTRIBUTES,{"lab-llog01":["identity","verifier","pam-transaction","entered-secret","process-credentials","session"],"lab-llog02":["machine-keytab","directory-identity","tgt","as-client-result","as-error","host-policy","session","pam-secret"],"lab-llog03":["cache-policy","central-state","cached-verifier","retained-tgt","cached-identity","cached-secret","session"],"lab-llog04":["post-change-account-policy","authority","old-secret","new-secret","authority-g2","backend-generation","backend-generation-g2","session-credentials","session"],"lab-llog05":["desktop","tgt","as-client-result","as-error","resource-result"]},LINUXLOGONLAB_SOURCES);
+export const LINUXLOGONLAB_SCENARIOS=[unixWsVariants(createLinuxLocalLogonCase,{accountExists:true,password:'correct',accountAllowed:true,sessionReady:true,blankAllowed:false,logind:true},{'unknown-user':{accountExists:false},'wrong-password':{password:'wrong'},'account-denied':{accountAllowed:false},'session-failure':{sessionReady:false},'blank-password':{password:'blank'},'nullok-explicit':{password:'blank',blankAllowed:true},'without-logind':{logind:false}})];
+
+
+// This is the explicit boundary to the accepted AS/preauthentication lesson,
+// not a second Kerberos cryptographic engine or an invented local login packet.
+export function unixWsAcquireTicket(w,owner,kdc,f,{issued='ticket-issued',install='ticket-install',prefix='',generation=1,generationBinding=false}={}){
+  const event=(key,...args)=>w.event(prefix+key,...args);
+  const object=(key,label,type,creator,value,readers,options={})=>w.object(prefix+key,label,type,creator,value,readers,{...options,generation});
+  event('kerberos-handoff','Invoke selected Kerberos AS/preauthentication subflow; see AD-01',owner,owner,[],{puts:{networkIdentity:'alice@CORP.EXAMPLE',kerberosSubflow:'lab-ad-first-sign-in'}});
+  if(!f.online){event('kdc-unavailable','No reachable KDC: local acquisition failure, no invented KDC error or fresh ticket',owner,owner,[],{puts:{failure:'KDC unavailable',clientKnowsFailure:true}});return {issued:false,usable:false};}
+  if(f.password!=='correct'){
+    const error=object('as-error','Kerberos credential error from selected AS subflow','error',kdc,'SYM(KRB_ERROR KDC_ERR_PREAUTH_FAILED; not an authenticated server proof)',[kdc,owner]);
+    event('kerberos-deny','KDC rejects selected initial proof; client has not received that result',kdc,kdc,[],{made:[error],puts:{kdcRejected:true}});
+    event('kerberos-error-receipt','Receive existing AS subflow error without installing any credential',kdc,owner,[error],{network:'Kerberos AS error handoff - no password or TGT'});
+    event('kerberos-error-process','Client learns acquisition failure; an unprotected error does not authenticate the KDC',owner,owner,[error],{puts:{failure:'Kerberos credential rejected',clientKnowsFailure:true}});
+    return {issued:false,usable:false};
+  }
+  const ticket=object('tgt','Opaque KDC-issued TGT','ticket',kdc,'HANDLE(opaque krbtgt/CORP.EXAMPLE ticket; not plaintext password; generation'+generation+')',[kdc,owner],{store:'user credential cache',wire:'SYM(Ticket krbtgt/CORP.EXAMPLE; generation'+generation+'; EncTicketPart encrypted under KDC-local krbtgt key)'});
+  w.bindings.push({path:generationBinding?'workstation.activeTgtGeneration':'workstation.tgt',artifactId:ticket.artifactId,actorId:owner,representationId:'plain',store:ticket.store,...(generationBinding?{equals:generation}:{presentWhen:'truthy'})});
+  const reply=object('as-client-result','Protected AS client result','protected-result',kdc,'HANDLE(accepted nonce, client, realm, lifetime and session-key binding; generation'+generation+')',[kdc,owner],{wire:'SYM(EncASRepPart under selected reply key)'});
+  const tgtKey=object('tgt-session-key','AS-issued client/TGS session key','session-key',kdc,'HANDLE(AS client/TGS AES session key g'+generation+'; protected inside EncASRepPart)',[kdc,owner],{store:'user credential cache'});
+  reply.related=[tgtKey.artifactId,ticket.artifactId];
+  event(issued,'Accepted existing AS subflow issues separate ticket and protected client reply',kdc,kdc,[],{made:[ticket,reply,tgtKey],encrypt:[{object:ticket,actor:kdc},{object:reply,actor:kdc}],puts:{tgtWasIssued:true,kdcAuthenticated:true}});
+  event('ticket-receipt','Receive protected AS result, not yet a usable cache credential',kdc,owner,[ticket,reply],{network:true,representations:{[ticket.key]:'wire',[reply.key]:'wire'},puts:{ticketResponseReceived:true}});
+  if(f.cacheWritable===false){event('cache-install-deny','User cache is inaccessible; received ticket is not installed',owner,owner,[],{puts:{failure:'credential cache inaccessible',tgtUsable:false,clientKnowsFailure:true}});return {issued:true,usable:false,ticket,reply,tgtKey};}
+  event(install,'Locally validate accepted AS reply binding and install user-owned cache credential',owner,owner,[],{got:[{object:reply,actor:owner,kind:'decrypt'},{object:ticket,actor:owner},{object:tgtKey,actor:owner,kind:'decrypt'}],checks:[{object:reply,actor:owner,result:'accepted protected reply nonce/client/realm/lifetime and enclosed TGS key from selected AS subflow'}],puts:{authenticated:true,authenticatedIdentity:'alice@CORP.EXAMPLE',tgt:true,tgtUsable:true,tgtGeneration:generation,...(generationBinding?{activeTgtGeneration:generation}:{}),clientKnowsAuthentication:true,...(prefix?{failure:null,clientKnowsFailure:false}:{})}});
+  return {issued:true,usable:true,ticket,reply,tgtKey};
+}
+
+// Bounded RFC4120 reference continuation, not invented SMB/NFS packets or an OS
+// interoperability claim. AS orchestration remains linked to the accepted lesson.
+// No subkeys/delegation; the service ticket key protects AP-REP and KRB_PRIV.
+export function unixWsResourceAccess(w,owner,kdc,resource,credential,f){
+  const target='host/lab-resource.corp.example@CORP.EXAMPLE';
+  const serviceKey=w.object('resource-service-key','Provisioned reference-service long-term AES key','private-key',kdc,'HANDLE(service AES key kvno1; '+target+')',[kdc,resource],{seed:true,store:'KDC service principal database'});
+  w.initialEffects.push(w.own(serviceKey,resource,'reference service keytab'));
+  const krbtgtKey=w.object('resource-krbtgt-key','KDC-local krbtgt key','private-key',kdc,'HANDLE(krbtgt/CORP.EXAMPLE long-term key)',[kdc],{seed:true,store:'KDC principal database'});
+  const request=w.object('service-tgs-request','Target-specific TGS request','request',owner,'SYM(TGS-REQ; sname='+target+'; nonce=2001; PA-TGS-REQ Authenticator alice@CORP.EXAMPLE ctime1000/cusec200001; keyed checksum binds KDC-REQ-BODY)',[owner,kdc],{wire:'SYM(TGS-REQ body target/nonce; PA-TGS-REQ contains opaque TGT and Authenticator encrypted under AS client/TGS key)'});
+  request.related=[credential.ticket.artifactId,credential.tgtKey.artifactId];
+  w.event('service-tgs-proof','Create fresh TGS authenticator with a checksum over the exact service request',owner,owner,[credential.ticket,credential.tgtKey],{made:[request],encrypt:[{object:request,actor:owner}]});
+  w.event('service-tgs-request','Request only the configured reference service, never send a plaintext session key',owner,kdc,[request,credential.ticket],{network:'Kerberos TGS-REQ / configured TCP88',representations:{'service-tgs-request':'wire',[credential.ticket.key]:'wire'}});
+  w.event('service-tgs-check','KDC decrypts TGT and validates principal, lifetime, fresh authenticator, request checksum and exact SPN',kdc,kdc,[krbtgtKey,serviceKey],{got:[{object:request,actor:kdc,kind:'decrypt'}],checks:[{object:request,actor:kdc,rep:'wire',result:'valid TGT and AS-issued client/TGS key; fresh proof; checksum bound to target/nonce; SPN resolves to kvno1'}]});
+  const ticket=w.object('service-ticket','Service-encrypted ticket','ticket',kdc,'SYM(EncTicketPart; alice@CORP.EXAMPLE; '+target+'; service session key; validity1000..5000)',[kdc,resource],{wire:'SYM(Ticket '+target+'; kvno1; EncTicketPart encrypted under provisioned service AES key)'});
+  const key=w.object('service-session-key','KDC-issued client/service session key','session-key',kdc,'HANDLE(reference service AES session key g1)',[kdc,owner,resource],{store:'user service credential cache'});
+  const reply=w.object('service-tgs-reply','Protected TGS client reply','protected-result',kdc,'SYM(EncTGSRepPart; nonce2001; '+target+'; validity1000..5000; service session key)',[kdc,owner],{wire:'SYM(EncTGSRepPart encrypted under AS client/TGS key; no TGS subkey)'});
+  ticket.related=[key.artifactId,serviceKey.artifactId];reply.related=[key.artifactId,credential.tgtKey.artifactId,ticket.artifactId];
+  w.event('service-ticket-issued','Issue service ticket and matching protected client key reply only after TGS checks',kdc,kdc,[serviceKey,credential.tgtKey],{made:[ticket,key,reply],encrypt:[{object:ticket,actor:kdc},{object:reply,actor:kdc}]});
+  w.event('service-ticket-receipt','Client receives opaque service ticket and still-protected matching key reply',kdc,owner,[ticket,reply],{network:'Kerberos TGS-REP / configured TCP88',representations:{'service-ticket':'wire','service-tgs-reply':'wire'}});
+  w.event('service-ticket-install','Decrypt TGS reply with retained TGS key; check nonce, target, principal and lifetime before installing key',owner,owner,[credential.tgtKey],{got:[{object:reply,actor:owner,kind:'decrypt'},{object:key,actor:owner,kind:'decrypt'}],checks:[{object:reply,actor:owner,rep:'wire',result:'integrity accepted; nonce2001; exact target and client; validity1000..5000'}]});
+  const proof=w.object('service-authenticator','Fresh mutual AP request','proof',owner,'SYM(AP-REQ; mutual-required; alice@CORP.EXAMPLE; ctime1000/cusec300001; seq-number=0; no subkey)',[owner,resource],{wire:'SYM(AP-REQ; opaque service ticket; Authenticator encrypted under service ticket session key; mutual-required)'});
+  proof.related=[ticket.artifactId,key.artifactId];
+  w.event('service-proof','Create a fresh service authenticator using the installed service key, not the TGT key',owner,owner,[key],{made:[proof],encrypt:[{object:proof,actor:owner}]});
+  w.event('service-auth','Present actual service ticket and encrypted authenticator to the selected reference service',owner,resource,[ticket,proof],{network:'Kerberos AP-REQ / reference service',representations:{'service-ticket':'wire','service-authenticator':'wire'}});
+  w.event('service-check','Acceptor verifies ticket integrity/SPN/kvno/lifetime and matching fresh nonreplayed authenticator',resource,resource,[serviceKey],{got:[{object:ticket,actor:resource,kind:'decrypt'},{object:key,actor:resource,kind:'decrypt'},{object:proof,actor:resource,kind:'decrypt'}],checks:[{object:ticket,actor:resource,rep:'wire',result:'service key kvno1 authenticates exact SPN and valid ticket; session key recovered only here'},{object:proof,actor:resource,rep:'wire',result:'client/realm match ticket; ctime1000/cusec300001 fresh; replay tuple absent, then recorded'}],puts:{serviceAuthenticated:true,serviceReplayRecorded:true}});
+  const reciprocal=w.object('service-ap-reply','Protected reciprocal service proof','proof',resource,'SYM(EncAPRepPart; ctime1000/cusec300001; seq-number=1; no subkey)',[resource,owner],{wire:'SYM(AP-REP EncAPRepPart encrypted under ticket session key; matching ctime/cusec)'});
+  reciprocal.related=[proof.artifactId,key.artifactId];
+  w.event('service-reply-create','Create reciprocal service proof only after accepting the AP request',resource,resource,[key],{made:[reciprocal],encrypt:[{object:reciprocal,actor:resource}]});
+  w.event('service-reply-receipt','Receive protected AP-REP without yet treating the service as proven',resource,owner,[reciprocal],{network:'Kerberos AP-REP / reference service',representations:{'service-ap-reply':'wire'}});
+  w.event('service-reply-check','Client decrypts and verifies echoed authenticator timestamp before accepting mutual authentication',owner,owner,[key],{got:[{object:reciprocal,actor:owner,kind:'decrypt'}],checks:[{object:reciprocal,actor:owner,rep:'wire',result:'integrity and ctime1000/cusec300001 match pending AP request'}],puts:{clientKnowsServiceAuthentication:true}});
+  const read=w.object('resource-request','Reference service read request','request',owner,'SYM(request-id=read1; READ /reports/quarterly; seq-number=0; s-address=directional initiator)',[owner,resource],{wire:'SYM(KRB_PRIV; encrypted EncKrbPrivPart user-data=read1 READ /reports/quarterly; seq0; directional initiator; ticket session key)'});
+  read.related=[key.artifactId,proof.artifactId,reciprocal.artifactId];
+  w.event('resource-request-create','Protect exact application request under the mutually authenticated reference context',owner,owner,[key],{made:[read],encrypt:[{object:read,actor:owner}]});
+  w.event('resource-request-receipt','Service receives protected request, not a grant from possession of a ticket',owner,resource,[read],{network:'RFC4120 KRB_PRIV reference application; not SMB/NFS',representations:{'resource-request':'wire'}});
+  w.event('resource-request-check','Service authenticates/decrypts request and checks message type, direction, sequence and exact operation',resource,resource,[key],{got:[{object:read,actor:resource,kind:'decrypt'}],checks:[{object:read,actor:resource,rep:'wire',result:'KRB_PRIV integrity; directional initiator address; expected seq0; read1 READ /reports/quarterly'}]});
+  const policy=w.object('resource-acl','Reference report ACL','policy',resource,'SYM(alice@CORP.EXAMPLE READ /reports/quarterly = '+(f.remoteAllowed?'allow':'deny')+')',[resource],{seed:true,store:'reference service ACL store'});
+  w.event('service-acl', 'Evaluate exact resource permission independently from Kerberos authentication', resource, resource, [policy,read], {puts:{operation:f.remoteAllowed,failure:f.remoteAllowed?null:'remote ACL denied'}});
+  const outcome=w.object('resource-result','Protected correlated resource outcome','result',resource,'SYM(request-id=read1; status='+(f.remoteAllowed?'OK; data=synthetic quarterly report':'ACCESS_DENIED; no data')+'; seq-number=1; s-address=directional acceptor)',[resource,owner],{wire:'SYM(KRB_PRIV; EncKrbPrivPart encrypted under service ticket key; read1 '+(f.remoteAllowed?'OK + synthetic report':'ACCESS_DENIED')+'; seq1; directional acceptor)'});
+  outcome.related=[read.artifactId,key.artifactId];
+  w.event('resource-response-create','Create a protected correlated success or denial, not an unprotected synthetic callback',resource,resource,[key],{made:[outcome],encrypt:[{object:outcome,actor:resource}]});
+  w.event('resource-response-receipt','Client receives protected application result without prematurely learning its plaintext status',resource,owner,[outcome],{network:'RFC4120 KRB_PRIV reference application result',representations:{'resource-result':'wire'}});
+  w.event('resource-result','Client authenticates/decrypts result and checks direction, sequence and pending read1 before learning outcome',owner,owner,[key],{got:[{object:outcome,actor:owner,kind:'decrypt'}],checks:[{object:outcome,actor:owner,rep:'wire',result:'KRB_PRIV integrity; directional acceptor address; expected seq1; correlated read1'}],puts:{resourceDecisionKnown:true,clientKnowsFailure:!f.remoteAllowed}});
+  w.event('service-credential-cleanup','Discard only this client service key and cached opaque ticket; keep server authority and local desktop',owner,owner,[],{drop:[{object:key,actor:owner},{object:ticket,actor:owner,rep:'wire',store:'protected response inbox'}]});
+}
+
+export function createLinuxDirectoryLogonCase(f){
+  const A='llogApp',N='llogNSS',P='llogSSSD',D='llogDirectory',S='llogManager';
+  const w=unixWsAuthor({id:'lab-llog02',title:'Linux AD identity, Kerberos proof and host admission',family:'linux-logon',topic:'Directory login',profileName:'L-SSSD-AD composed SSSD2.11.1; AD provider; KCM; explicit GPO enforcing',prerequisites:['NSS files sss; id/auth/access_provider=ad; ldap_id_mapping=true; ad_gpo_access_control=enforcing; KCM user cache.','Enrolled machine keytab, modern AES, DNS/time/reachability explicitly provisioned. Auth then account/session is the selected application stack. User TGT retained after host admission denial in this fixture.'],relatedLessons:['lab-ad-first-sign-in','lab-smb-nonjoined-kerberos']},LINUXLOGONLAB_ATTRIBUTES,LINUXLOGONLAB_SOURCES,{[A]:'Login application / PAM client',[N]:'SSSD NSS responder',[P]:'SSSD PAM responder / AD provider',[D]:'AD directory / KDC',[S]:'PAM session manager'});
+  w.object('machine-keytab','Separate enrolled machine keytab','machine-credential',P,'HANDLE(LINUXHOST$ machine keytab)',[P],{seed:true,store:'SSSD machine authority'});
+  w.remote([D]);
+  const identity=w.object('directory-identity','Mapped directory identity','identity',D,'CORP alice; uid200100; gid200100; group mapping',[D,N,A],{seed:true,wire:'SYM(TLS-protected directory identity result)'});
+  w.event('identity-query','NSS lookup asks SSSD NSS responder; lookup is not password proof',A,N,[],{control:{label:'SSSD NSS lookup arguments',value:'SYM(getpwnam; CORP alice; requested UID/GID/groups)'}});
+  w.event('directory-lookup','SSSD provider evaluates configured LDAP identity lookup and UID/GID mapping',N,N,[],{puts:{mappingConfigured:f.mapping}});
+  if(!f.mapping){w.event('identity-deny','No usable UID mapping: stop before local admission',N,A,[],{control:{label:'SSSD NSS mapping status',value:'SYM(CORP alice; no usable local UID mapping)'},puts:{failure:'missing UID mapping'}});return w.finish();}
+  w.event('directory-response-prepare', 'Directory protects its existing identity record for the selected LDAP provider connection before sending', D, D, [identity], {encrypt:[{object:identity,actor:D}]});
+  w.event('identity-result','Receive mapped directory identity over the selected protected LDAP provider connection',D,N,[identity],{network:'LDAPv3 over configured TLS - identity only, not user password proof',representations:{'directory-identity':'wire'}});
+  w.event('identity-decode','SSSD provider accepts protected directory result and decodes mapped identity locally',N,N,[],{got:[{object:identity,actor:N,kind:'decrypt'}],checks:[{object:identity,actor:N,result:'accepted configured TLS/provider identity result; no password authentication claim'}]});
+  w.event('nss-result','NSS returns public mapped identity to login application over local IPC',N,A,[identity],{puts:{identityResolved:true,localIdentity:'uid200100'}});
+  const secret=w.object('pam-secret','Transient directory authentication password','secret',A,'SYM('+f.password+' CORP alice password)',[A,P],{store:'PAM conversation transient'});
+  w.event('pam-request','PAM application sends authentication request to SSSD PAM responder',A,P,[secret],{made:[secret],control:{label:'SSSD PAM authentication arguments',value:'SYM(pam_authenticate; service=afs-login; user=CORP alice)'}});
+  const clear=()=>w.event('pam-secret-cleanup','End directory conversation at both local owners; no password reaches NSS/session manager',A,A,[],{drop:[{object:secret,actor:A},{object:secret,actor:P,store:'local IPC inbox'}]});
+  if(!f.online){w.event('provider-unavailable','KDC unavailable and cache disabled: fail authentication',P,A,[],{control:{label:'SSSD PAM offline return status',value:'SYM(PAM_AUTHINFO_UNAVAIL; cache_credentials=false)'},puts:{failure:'KDC unavailable; cache_credentials=false'}});clear();return w.finish();}
+  const acquired=unixWsAcquireTicket(w,P,D,f);
+  w.event('provider-auth','SSSD PAM responder reports the selected Kerberos authentication outcome',P,A,[],{control:{label:'SSSD PAM authentication return status',value:'SYM(pam_authenticate; '+(acquired.usable?'PAM_SUCCESS':'PAM_AUTH_ERR')+'; no session grant)'},puts:{authenticated:acquired.usable}});clear();
+  if(!acquired.usable)return w.finish();
+  const policy=w.object('host-policy','SSSD AD GPO host/service access policy','policy',P,'access_provider=ad; GPO enforcing; afs-login '+(f.accessAllowed?'allowed':'denied'),[P],{seed:true});
+  w.event('host-access', 'SSSD account/access provider evaluates host and PAM-service policy after auth', P, P, [policy], {puts:{admitted:f.accessAllowed}});
+  if(!f.accessAllowed){w.event('host-denied','Host admission denies session; configured KCM ticket retention remains explicit',P,A,[],{control:{label:'SSSD PAM account return status',value:'SYM(pam_acct_mgmt; PAM_PERM_DENIED; AD GPO enforcing)'},puts:{failure:'host access policy denied',tgt:true}});return w.finish();}
+  const session=w.object('session','Admitted directory-backed local session','session',S,'HANDLE(uid200100 local session)',[S,A]);
+  w.event('setcred','Selected PAM application establishes mapped local credentials',A,P,[],{control:{label:'Mapped PAM credential establishment arguments',value:'SYM(pam_setcred; CORP alice; uid200100; PAM_ESTABLISH_CRED)'}});
+  w.event('session-open','Configured PAM open_session/logind creates local process session',P,S,[],{control:{label:'Directory-backed local session request',value:'SYM(open_session; uid200100; mapped groups; service=afs-login)'},made:[session],puts:{session:true,processIdentity:'uid200100; mapped groups',resourceAuthorized:false}});return w.finish();
+}
+
+export function createLinuxOfflineLogonCase(f){
+  const A='llogOfflineApp',C='llogCache',S='llogOfflineSession',D='llogOfflineDirectory';
+  const w=unixWsAuthor({id:'lab-llog03',title:'Linux offline cached directory login without a fresh TGT',family:'linux-logon',topic:'Offline directory login',profileName:'L-SSSD-CACHE upstream2.11.1; selected RHEL9-inspired offline assumptions',prerequisites:['SSSD AD provider, cached identity/host admission, cache_credentials=true, offline_credentials_expiration=7 days, failed attempts3/delay5min, cached_auth_timeout=0.','One-day cache populated at prior online password login; krb5_store_password_if_offline=false. RHEL9 vendor page unavailable; these are selected upstream-backed assumptions, not verified distro defaults.']},LINUXLOGONLAB_ATTRIBUTES,LINUXLOGONLAB_SOURCES,{[A]:'Offline PAM login application',[C]:'SSSD offline AD cache/provider',[S]:'Local session manager',[D]:'Unreachable central authority - no result delivered'},{centralKnowledge:'stale',centralPasswordGeneration:f.centralChanged?2:1,centralRevoked:f.centralRevoked,tgt:f.retainedTgt,providerOnline:false,offlineFailures:f.failedAttempts??0});
+  w.remote([D]);
+  const central=w.object('central-state','Authoritative state not delivered while disconnected','authority-state',D,'HANDLE(password generation='+(f.centralChanged?2:1)+'; revoked='+f.centralRevoked+'; cache snapshot generation1)',[D],{seed:true});
+  w.event('central-snapshot','Central password/revocation state is authority-local; no notification reaches offline client',D,D,[central],{inspect:[central]});
+  const policy=w.object('cache-policy','Explicit offline cache policy','policy',C,'cache_credentials='+f.cacheEnabled+'; age='+f.cacheAgeDays+' days; expiry='+f.expirationDays+'; failures='+(f.failedAttempts??0)+'/3; minutesSinceFailure='+(f.minutesSinceFailure??10)+'; delay5min; no plaintext deferred password',[C],{seed:true});
+  const verifier=f.cacheExists?w.object('cached-verifier','Previously populated offline verifier','verifier',C,'HANDLE(salted cached verifier from prior successful online password login)',[C],{seed:true,store:'privileged offline cache'}):null;
+  if(f.retainedTgt){const retained=w.object('retained-tgt','Separately declared previously issued TGT','ticket',A,'HANDLE(unexpired TGT from earlier online exchange)',[A],{seed:true,store:'user cache'});w.bindings.push({path:'workstation.tgt',artifactId:retained.artifactId,actorId:A,representationId:'plain',store:retained.store,presentWhen:'truthy'});}
+  w.event('provider-offline','Provider is offline; prior online checkpoint is an initial cache, not a new credential',C,C,[policy],{inspect:[policy],puts:{centralKnowledge:'stale'}});
+  const failedAttempts=f.failedAttempts??0,delayElapsed=(f.minutesSinceFailure??10)>=5;
+  const cacheOk=f.cacheExists&&f.cacheEnabled&&f.cacheAgeDays<=f.expirationDays&&(failedAttempts<3||delayElapsed);
+  w.event('cache-policy', 'Check configured cache presence, age and failure thresholds', C, C, [policy], {puts:{identityResolved:cacheOk}});
+  if(!cacheOk){w.event('cache-deny','No usable offline cache; do not manufacture a first-login verifier',C,A,[],{control:{label:'Offline cache policy return status',value:'SYM(PAM_AUTHINFO_UNAVAIL; offline cache missing, disabled, expired or delayed)'},puts:{failure:'offline cache missing, disabled or expired'}});return w.finish();}
+  const identity=w.object('cached-identity','Cached mapped local identity','identity',C,'alice uid200100; previously cached groups/access',[C,A],{seed:true});
+  w.event('cached-identity','Return previously cached identity through NSS/PAM boundary',C,A,[identity],{puts:{localIdentity:'uid200100'}});
+  const secret=w.object('cached-secret','Transient entered offline password','secret',A,'SYM('+f.password+' password)',[A,C]);w.event('offline-secret','Pass transient password to SSSD cached verifier',A,C,[secret],{made:[secret]});
+  const ok=f.password==='cached';w.event('cached-verify','Verify only cached credential; remote changes are not learned while disconnected',C,C,[verifier],{checks:[{object:verifier,result:ok?'cached password accepted':'cached password rejected'}],drop:[{object:secret,actor:A},{object:secret,actor:C,store:'local IPC inbox'}],puts:{authenticated:ok,authenticatedIdentity:ok?'cached CORP alice':null,offlineFailures:ok?0:(delayElapsed?1:failedAttempts+1)}});
+  if(!ok){w.event('cached-deny','Offline credential rejected; central new password cannot refresh this disconnected cache',C,A,[],{control:{label:'Offline authentication return status',value:'SYM(PAM_AUTH_ERR; cached password mismatch)'},puts:{failure:'cached password mismatch'}});return w.finish();}
+  w.event('cached-account','Apply retained AD host access decision; central revocation may remain unknown',C,C,[identity],{puts:{admitted:true,centralKnowledge:'stale'}});
+  const session=w.object('session','Offline local session','session',S,'HANDLE(cached uid200100 local session)',[S,A]);w.event('offline-session','Open local session with no AS exchange or freshly issued ticket',C,S,[],{control:{label:'Cached-identity local session request',value:'SYM(open_session; uid200100; cached groups/access; no fresh TGT)'},made:[session],puts:{session:true,tgt:f.retainedTgt}});
+  w.event('reconnect','Connectivity returns; require a fresh explicit authentication before any new TGT',C,C,[],{puts:{providerOnline:true,reconnectNeedsFreshAuthentication:true}});return w.finish();
+}
+
+export function createLinuxPasswordChangeCase(f){
+  const A='pamChangeApp',P='pamChange',S='pamChangeSession',D='pamPasswordAuthority';
+  const w=unixWsAuthor({id:'lab-llog04',title:'Linux expired authentication token and explicit password authority',family:'linux-logon',topic:'Password change',profileName:'L-PAM-CHANGE explicit local/directory password authority',prerequisites:['afs-login consumer supports pam_chauthtok and explicitly resumes remaining PAM account/access policy after token change before credentials/session. This selected continuation is not a universal second pam_acct_mgmt call.','Local pam_unix baseline; selected directory alternative uses pam_sss authority and explicit reachability. Account expiry differs from expired authentication token.']},LINUXLOGONLAB_ATTRIBUTES,LINUXLOGONLAB_SOURCES,{[A]:'PAM login/password-change consumer',[P]:'Selected local PAM password/account stack',[D]:'Selected credential authority',[S]:'Local session manager'},{authorityGeneration:1,credentialAuthority:f.authority,postChangeAccountAllowed:f.postChangeAccountAllowed,postChangeAccountChecked:false});
+  const accountPolicy=w.object('post-change-account-policy','Selected consumer remaining account/access policy','policy',P,'afs-login remaining account/access policy after successful token change; allowed='+f.postChangeAccountAllowed,[P],{seed:true});
+  const old=w.object('authority','Selected-authority verifier handle generation1','verifier',P,'HANDLE('+f.authority+' authority verifier g1; password expired; backend interface handle, not exported verifier bytes)',[P],{seed:true,generation:1});
+  const backend=w.object('backend-generation','Selected credential backend generation1','credential-authority-state',D,'HANDLE('+f.authority+' authority generation1; opaque backend update interface)',[D],{seed:true,generation:1});
+  const secret=w.object('old-secret','Transient old password','secret',A,'SYM('+f.password+' old password)',[A,P]);w.event('old-secret','Conversation provides current secret only to selected PAM backend',A,P,[secret],{made:[secret]});
+  const auth=f.password==='correct';w.event('old-auth','Authenticate the current credential independently of token expiry',P,P,[old],{checks:[{object:old,result:auth?'current credential accepted':'current credential rejected'}],puts:{authenticated:auth}});
+  const clean=()=>w.event('secret-cleanup','Release old/new plaintext conversation state at PAM transaction end',P,P,[],{drop:[{object:secret,actor:A},{object:secret,actor:P,store:'local IPC inbox'}]});
+  if(!auth){clean();return w.finish();}
+  if(f.accountExpired){w.event('account-expired','Account itself is expired: token change cannot repair account admission',P,P,[],{puts:{failure:'PAM_ACCT_EXPIRED'}});clean();return w.finish();}
+  w.event('account-token-expired','pam_acct_mgmt returns PAM_NEW_AUTHTOK_REQD, not account expiry',P,A,[],{control:{label:'PAM expired authentication-token status',value:'SYM(pam_acct_mgmt; PAM_NEW_AUTHTOK_REQD)'},puts:{passwordChangeRequired:true}});
+  if(!f.changeSupported){w.event('unsupported-change','Consumer cannot handle token change; no login continuation',A,A,[],{puts:{failure:'consumer lacks token-change support'}});clean();return w.finish();}
+  w.event('password-preliminary','pam_chauthtok preliminary verifies old credential and password-change readiness, not the uncollected candidate',P,P,[old,secret],{puts:{passwordChangeReady:true}});
+  const nextSecret=w.object('new-secret','Transient new password','secret',A,'SYM(new local conversation password)',[A,P,D]);w.event('new-secret','Conversation sends new password to configured password module',A,P,[nextSecret],{made:[nextSecret]});
+  const cleanNew=(contacted=false)=>w.event('new-secret-cleanup','Discard candidate at prompt, password module and any contacted credential backend',P,P,[],{drop:[{object:nextSecret,actor:A},{object:nextSecret,actor:P,store:'local IPC inbox'},...(contacted?[{object:nextSecret,actor:D,store:'local IPC inbox'}]:[])]});
+  w.event('password-policy','Evaluate the collected new authentication token against the selected password policy',P,P,[nextSecret],{checks:[{object:nextSecret,result:f.newPolicy?'candidate accepted by configured new-password policy':'candidate rejected by configured new-password policy'}],puts:{newPasswordPolicyAccepted:f.newPolicy}});
+  if(!f.newPolicy){w.event('password-policy-deny','Collected new password rejected; authority generation remains unchanged',P,A,[],{control:{label:'PAM password policy return status',value:'SYM(pam_chauthtok; new authentication token rejected by selected policy)'},puts:{failure:'new password policy denied'}});cleanNew();clean();return w.finish();}
+  const reachable=f.authority!=='directory'||f.online;
+  if(!reachable){w.event('authority-unavailable','Selected directory update authority is unreachable; local shadow is not updated instead',P,P,[],{puts:{failure:'directory authority unreachable'}});}else{
+    w.event('password-authority-request','Password module calls only the selected credential backend update interface',P,D,[nextSecret],{control:{label:'Selected password authority update arguments',value:'SYM(UPDATE_AUTHTOK; user=alice; authority='+f.authority+'; expected generation1; no substitute authority)'}});
+    if(!f.writeOk){w.event('password-update','Selected backend rejects atomic UPDATE_AUTHTOK without advancing authority generation',D,D,[backend,nextSecret],{checks:[{object:backend,result:'selected backend write failed; generation1 retained'}],puts:{failure:'credential write failed'}});}else{
+      const committed=w.object('backend-generation-g2','Selected credential backend generation2','credential-authority-state',D,'HANDLE('+f.authority+' authority generation2; opaque committed backend state)',[D],{generation:2});
+      committed.replaces=[backend.artifactId];
+      w.event('password-update','Selected credential backend atomically commits generation2; its new authority state stays backend-local',D,D,[nextSecret],{made:[committed],drop:[{object:backend,actor:D}],puts:{authorityGeneration:2,passwordChangeRequired:false}});
+    }
+    w.event('password-authority-result','Return update status without sending verifier or new authority state to the application',D,P,[],{control:{label:'Selected password authority update result',value:'SYM(UPDATE_AUTHTOK; '+(f.writeOk?'PAM_SUCCESS; generation2 committed':'PAM_AUTHTOK_ERR; generation1 retained')+')'}});
+    if(f.writeOk){
+      const replacement=w.object('authority-g2','Updated selected-authority verifier handle generation2','verifier',P,'HANDLE('+f.authority+' verifier g2; refreshed backend interface handle, not exported verifier bytes)',[P],{generation:2});
+      replacement.replaces=[old.artifactId];
+      w.event('password-reference-refresh','Password module locally refreshes its backend reference after the committed update status',P,P,[],{made:[replacement],drop:[{object:old,actor:P}]});
+      w.event('post-change-account','Selected local PAM stack resumes afs-login remaining account/access checks after successful token change',P,P,[accountPolicy],{checks:[{object:accountPolicy,result:f.postChangeAccountAllowed?'remaining account/access policy accepted':'remaining account/access policy denied'}],puts:{postChangeAccountChecked:true,admitted:f.postChangeAccountAllowed,...(!f.postChangeAccountAllowed?{failure:'post-change account policy denied'}:{})}});
+      if(f.postChangeAccountAllowed){
+        const credentials=w.object('session-credentials','Admitted local process credential context','process-credentials',P,'HANDLE(alice local process credentials after remaining PAM account/access acceptance)',[P]);
+        w.event('setcred','Selected local PAM stack establishes credentials only after remaining account admission succeeds',P,P,[],{made:[credentials]});
+        const session=w.object('session','Session after completed password change','session',S,'HANDLE(local session after authority g2 update)',[S]);w.event('session-open','Establish credentials/open session only after password update and admission',P,S,[],{control:{label:'Post-password-update session request',value:'SYM(open_session; alice; selected authority generation2; admitted account)'},made:[session],puts:{session:true}});
+      }
+    }
+  }
+  cleanNew(reachable);clean();return w.finish();
+}
+
+export function createLinuxExplicitKerberosCase(f){
+  const A='kinitUser',K='kinitKDC',R='kinitResource';
+  const w=unixWsAuthor({id:'lab-llog05',title:'Nonjoined Linux local desktop then explicit Kerberos',family:'linux-logon',topic:'Local versus network identity',profileName:'L-KINIT nonjoined local UID and explicit MIT1.22 realm credentials',prerequisites:['Existing uid1000 local login; no machine account/domain enrollment; selected user FILE cache.','Explicit alice@CORP.EXAMPLE Kerberos acquisition linked to AD-01. No Linux mount command/native client compatibility claim.'],relatedLessons:['lab-ad-first-sign-in','lab-smb-nonjoined-kerberos']},LINUXLOGONLAB_ATTRIBUTES,LINUXLOGONLAB_SOURCES,{[A]:'Local uid1000 user / kinit cache',[K]:'Realm KDC',[R]:'Selected remote resource authorization'},{session:true,localIdentity:'uid1000',domainJoined:false,tgtWasIssued:false,serviceAuthenticated:false});
+  w.remote([K,R]);
+  const desktop=w.object('desktop','Existing local uid1000 session','session',A,'HANDLE(nonjoined local desktop uid1000)',[A],{seed:true});
+  w.event('local-boundary','Keep local UID and selected realm principal distinct; kinit never enrolls workstation',A,A,[desktop]);
+  const result=unixWsAcquireTicket(w,A,K,f);
+  if(result.usable){if(f.ticketExpired){w.event('ticket-expired','Selected credential expired before service use; require reacquisition',A,A,[result.ticket],{puts:{failure:'ticket expired',tgtUsable:false}});}else{
+    unixWsResourceAccess(w,A,K,R,result,f);
+  }
+  w.event('ticket-cleanup','kdestroy/expiry removes only this user cache credential, preserving local login',A,A,[],{drop:[{object:result.ticket,actor:A,store:'user credential cache'},{object:result.reply,actor:A},{object:result.tgtKey,actor:A}],puts:{tgt:false,tgtUsable:false}});
+  }return w.finish();
+}
+
+LINUXLOGONLAB_SCENARIOS.push(unixWsVariants(createLinuxDirectoryLogonCase,{"mapping":true,"password":"correct","online":true,"accessAllowed":true,"cacheEnabled":false,"ccache":"KCM","provider":"ad","accessProvider":"ad","idMapping":true,"retainTicketOnDeny":true},{"wrong-password":{"password":"wrong"},"host-policy-denied":{"accessAllowed":false},"missing-uid-mapping":{"mapping":false},"kdc-unavailable-cache-disabled":{"online":false}}));
+LINUXLOGONLAB_SCENARIOS.push(unixWsVariants(createLinuxOfflineLogonCase,{"cacheExists":true,"cacheEnabled":true,"cacheAgeDays":1,"expirationDays":7,"password":"cached","centralChanged":false,"centralRevoked":false,"offline":true,"retainedTgt":false,"failedAttempts":0,"minutesSinceFailure":10},{"first-offline":{"cacheExists":false},"cache-disabled":{"cacheEnabled":false},"cache-expired":{"cacheAgeDays":8},"wrong-cached-password":{"password":"wrong"},"remote-password-new":{"centralChanged":true,"password":"new-remote"},"remote-password-old":{"centralChanged":true},"central-revoked-unknown":{"centralRevoked":true},"retained-ticket":{"retainedTgt":true},"offline-failure-limit":{"failedAttempts":3,"minutesSinceFailure":1},"offline-delay-elapsed":{"failedAttempts":3,"minutesSinceFailure":6}}));
+LINUXLOGONLAB_SCENARIOS.push(unixWsVariants(createLinuxPasswordChangeCase,{"password":"correct","newPolicy":true,"writeOk":true,"changeSupported":true,"authority":"local","online":true,"accountExpired":false,"postChangeAccountAllowed":true},{"new-policy-denied":{"newPolicy":false},"wrong-current-password":{"password":"wrong"},"update-failed":{"writeOk":false},"consumer-no-change":{"changeSupported":false},"directory-unreachable":{"authority":"directory","online":false},"account-expired":{"accountExpired":true},"directory-online":{"authority":"directory"},"post-change-account-denied":{"postChangeAccountAllowed":false}}));
+LINUXLOGONLAB_SCENARIOS.push(unixWsVariants(createLinuxExplicitKerberosCase,{"online":true,"password":"correct","cacheWritable":true,"ticketExpired":false,"remoteAllowed":true},{"wrong-realm-password":{"password":"wrong"},"kdc-unreachable":{"online":false},"cache-inaccessible":{"cacheWritable":false},"ticket-expired":{"ticketExpired":true},"remote-acl-denied":{"remoteAllowed":false}}));
+

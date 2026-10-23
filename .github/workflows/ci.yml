@@ -3,16 +3,26 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      publish_pages:
+        description: Publish Pages after all CI checks (main only)
+        type: boolean
+        required: true
+        default: false
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   test:
     runs-on: ubuntu-26.04
+    permissions:
+      contents: read
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -27,3 +37,49 @@ jobs:
         run: bun run verify:crypto
       - name: Run the test suite
         run: bun run test
+      - name: Stage the verified standalone bundle
+        if: >-
+          github.repository == 'andrico21/auth-lab' &&
+          github.ref == 'refs/heads/main' &&
+          (github.event_name == 'push' ||
+           (github.event_name == 'workflow_dispatch' && inputs.publish_pages))
+        run: |
+          mkdir -p _site
+          cp dist/auth-flow-studio.html _site/index.html
+      - name: Upload verified Pages artifact
+        if: >-
+          github.repository == 'andrico21/auth-lab' &&
+          github.ref == 'refs/heads/main' &&
+          (github.event_name == 'push' ||
+           (github.event_name == 'workflow_dispatch' && inputs.publish_pages))
+        uses: actions/upload-pages-artifact@v5
+        with:
+          name: github-pages
+          path: _site
+
+  deploy:
+    needs: test
+    if: >-
+      needs.test.result == 'success' &&
+      github.repository == 'andrico21/auth-lab' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.publish_pages))
+    runs-on: ubuntu-26.04
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v6
+      - name: Deploy verified CI artifact to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+        with:
+          artifact_name: github-pages

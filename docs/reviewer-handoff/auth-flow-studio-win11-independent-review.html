@@ -1,0 +1,952 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>WIN-11 independent review — Auth Flow Studio</title><style>*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#1b2d42;font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif}main{max-width:1120px;margin:auto;padding:32px 22px 70px}header{background:#18344e;color:white;border-radius:13px;padding:30px}h1{font-size:32px;line-height:1.2}h2{font-size:24px}h3{font-size:18px}.eyebrow{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#d0e1f2}.decision{background:#e7f4eb;border-left:5px solid #33734b;padding:20px;margin:24px 0}nav{display:flex;flex-wrap:wrap;gap:10px}nav a{padding:7px 12px;background:#e3edf8;border-radius:6px}section{margin:24px 0;padding:26px;background:white;border:1px solid #d7e1ec;border-radius:10px;scroll-margin-top:16px}article{margin:22px 0;border-top:1px solid #d7e1ec;padding-top:6px}a{color:#175c96;overflow-wrap:anywhere}code,pre{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}code{background:#eff3f8;overflow-wrap:anywhere}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#eff3f8;padding:15px;border-radius:6px}table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0}th,td{padding:12px;text-align:left;vertical-align:top;border-bottom:1px solid #d8e2ed}th{background:#e9f0f8}td:first-child{width:29%}li{margin:12px 0}details{border:1px solid #dae2ec;padding:12px 16px;margin:14px 0;border-radius:6px}summary{cursor:pointer;font-weight:700}details pre{max-height:60vh;overflow:auto}a:focus-visible,summary:focus-visible{outline:3px solid #b66c13;outline-offset:3px}@media(max-width:700px){main{padding:12px}header,section{padding:20px 16px}h1{font-size:27px}table{font-size:12px}th,td{padding:8px}}@media print{body{background:white;font-size:10pt}main{padding:0}nav{display:none}header{background:white;color:#1b2d42;padding:0}.eyebrow{color:#536b82}section{border:0;border-top:1px solid #ddd;padding:14px 0}h2,h3{break-after:avoid}tr{break-inside:avoid}details pre{max-height:none}#appendix{display:none}}</style></head><body><main><header><p class="eyebrow">Independent review · 21 October 2026</p><h1>WIN-11 accepted within its stated scope</h1><p>Auth Flow Studio · acceptor-subkey field history · reviewer-to-worker handoff</p></header>
+<div class="decision"><strong>No blocking defect found in this change.</strong> The thirteen intended CredSSP/RDP profiles now begin the acceptor-key field history at H’s local creation. Existing wire data, canonical custody and client validation boundaries are preserved. This accepts WIN-11; it does not mark every key-origin history or the next expansion plan complete.</div>
+<nav aria-label="Review contents"><a href="#decision">Decision</a><a href="#evidence">Evidence</a><a href="#protocol">Protocol check</a><a href="#ux">Usability</a><a href="#comments">Worker comments</a><a href="#next">Next work</a><a href="#appendix">Evidence appendix</a></nav>
+
+<section id="decision"><h2>1. Exact accepted inputs and scope</h2>
+<table><thead><tr><th>Artifact</th><th>SHA-256</th></tr></thead><tbody>
+<tr><td>auth-flow-studio-win11.html<br>2,899,536 bytes</td><td><code>91cd57f410eede179cc8f464b717a76cee3d93a115e6e544d23406e86f26e257</code></td></tr>
+<tr><td>auth-flow-studio-win11-source.zip</td><td><code>c08bb5e2159364871edb1feff0be071d99c03d6b6996208d0fb22b4a2f238071</code></td></tr>
+<tr><td>auth-flow-studio-win11-verification.zip</td><td><code>1b087f99aa71084d7b961b1203be17833d48717d76362a4e00e676889520ba58</code></td></tr>
+<tr><td>Accepted predecessor HTML</td><td><code>9a3fc759c77502b52dd7b4d5da0851d706b36e7a0bf0afbe73aca0555798e924</code></td></tr>
+<tr><td>Predecessor independent review<br>Uploaded with “(1)” filename suffix</td><td><code>d83a8930e52a4f6e7630e7cee7a71dfac116bb15305ef9795f025fa71bf3128c</code></td></tr>
+</tbody></table>
+<p>The reviewed product delta is <code>src/windows-auth-lab.js</code>, around lines 397–409, plus the regression in <code>tests/held-object-windows.test.mjs</code>, starting at line 363. The source archive also contains disclosed documentation and CI-install-command corrections inherited since the earlier accepted archive. They are distinguished from the WIN-11 runtime change.</p>
+<p>Affected fixed presets: W09, W11, W13, W14, W15 and W16. The seven named derivatives are W09 binding-direction/binding-nonce/binding-public-key; W14 and W15 hybrid-without-early-result; W16 redirect-disconnect/hybrid-without-early-result. These derivatives remain test-only profiles. No catalog choice, public route, SMB scenario, favicon or new expansion family is added or removed by the runtime change.</p>
+<p>Record WIN-11 as accepted against the exact bytes above. Preserve the previous twenty-three closures and their original evidence identities. The published commit identifier and external CI-run history in the handoff were not independently authenticated here; source/artifact bytes were checked directly. No commit, push, deployment or product edit was performed by this review.</p></section>
+
+<section id="evidence"><h2>2. What was independently verified</h2>
+<table><thead><tr><th>Check</th><th>Result and practical boundary</th></tr></thead><tbody>
+<tr><td>Focused source tests</td><td><strong>54/54 pass</strong> across the two Windows test files under Node v24.19.0. Bun was unavailable in this reviewer environment; the worker’s Bun 1.4.2 run remains separately attributed.</td></tr>
+<tr><td>Regression sensitivity</td><td>The candidate WIN-11 regression, with imports retargeted to the unchanged accepted baseline, fails as expected: the first field moment is <code>verify</code> instead of <code>create</code>. No assertions were weakened or changed.</td></tr>
+<tr><td>Independent model comparison</td><td>All <strong>62 fixed/named Windows profiles</strong> compared. Exactly thirteen gain the intended field origin; forty-nine preserve their field operations. Canonical inventory, protocol state, wire payloads/layers and previous trace suffixes remain unchanged. Existing local-preparation paths are controls.</td></tr>
+<tr><td>State and field projections</td><td>The independent probe checks 2,036 held-state projections and 1,435 attribute traces. The key has one canonical creation; C has no plaintext key at receipt and obtains it only at mutual verification. No plaintext acceptor key is introduced into transmitted objects.</td></tr>
+<tr><td>Expected presentation change</td><td>In the thirteen affected H actor summaries, the key now appears as generated rather than static and sorts before AP-REP. This follows from the restored creator operation and is appropriate. Therefore, “everything rendered is byte-identical” would be an inaccurate claim.</td></tr>
+<tr><td>Mounted application replay</td><td>Three fresh checks use the actual field-index and complete-path replay handlers in the deterministic DOM harness: ordinary CredSSP, binding-rejected CredSSP and Remote Credential Guard. Replay completes with the same canonical prefix as the source journey. These are mounted state/content checks, not native browser/layout tests.</td></tr>
+<tr><td>Rebuild</td><td><code>node build.mjs</code> reproduces the supplied standalone <strong>byte-for-byte</strong>. Source and test input hashes remain unchanged during review.</td></tr>
+<tr><td>Package provenance</td><td>788 hash checks pass with no mismatch or missing target; 758 distinct paths checked. The declared 747-file source inventory matches extraction; all fourteen verification entries and all nine overlapping files are consistent. Renaming the predecessor upload with “(1)” changes its filename, not its content identity.</td></tr>
+<tr><td>Worker collectors reproduced</td><td>The supplied comparison and sibling collectors reproduce their 62 before rows, 62 after rows and sixteen sibling/control rows under Node. Only the runtime-version reporting expression is substituted; data rows match the worker’s reports.</td></tr>
+</tbody></table>
+<p>The new regression exercises the actual attribute-usage and trace consumers, checks exact artifact/value/source references and restores the global glossary after each case. It is meaningful coverage of the reported defect. The independent comparison additionally verifies unaffected local-preparation controls. A new full 87-file suite, universal catalog sweep or numeric-vector run was not necessary to resolve this narrow projection change and was not performed.</p>
+<h3>Focused reproduction from the extracted candidate source</h3><pre>node --test tests/windows-auth-lab.test.mjs tests/held-object-windows.test.mjs
+node build.mjs
+sha256sum dist/auth-flow-studio.html</pre>
+<p>For the project-pinned Bun reproduction, retain the worker’s documented <code>bun test --isolate --timeout=900000</code> invocation on the same two files, followed by <code>bun build.mjs</code>. Do not merge historical and current runner identities into one result.</p></section>
+
+<section id="protocol"><h2>3. RFC alignment of this change</h2>
+<p><strong>The reviewed change preserves the relevant Kerberos boundaries.</strong> <a href="https://www.rfc-editor.org/rfc/rfc4120#section-3.2.4">RFC 4120 §3.2.4</a> permits a server-selected subkey in AP-REP and protects the reply with the ticket session key. <a href="https://www.rfc-editor.org/rfc/rfc4120#section-3.2.5">§3.2.5</a> requires client decryption and matching authenticator timestamps before retaining the returned subkey. The candidate keeps those modeled stages and adds only the missing host-local provenance.</p>
+<p><a href="https://www.rfc-editor.org/rfc/rfc4121#section-2">RFC 4121 §2</a> defines the acceptor-subkey preference for subsequent per-message protection when that key is asserted. The selected Windows AES profile already models this distinction; WIN-11 neither changes the early initiator key nor substitutes the acceptor key for AP-REP protection. The RFC permits an acceptor subkey; this report does not claim that every Kerberos exchange must generate one.</p>
+<p><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/7a7b081d-c0c6-46f4-acbf-a439664270b8">MS-KILE §3.1.1.2</a> supplies the selected Windows AES distinction between AP-REQ and AP-REP subkeys. <a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cssp/385a7489-d46b-464c-b224-f7340e308a5c">MS-CSSP §3.1.5</a> supplies the last-client-token/public-key-binding ordering. The preserved early-binding model is consistent with that timing; the local-origin operation does not move the exchange or credential-disclosure boundary.</p>
+<p>Primary RFC text was consulted for this review. The result is a scoped conformance check of the changed educational model and preserved transitions. It is not fresh certification of every existing protocol, a numerical cryptography audit or a live Windows/CredSSP interoperability result.</p></section>
+
+<section id="ux"><h2>4. Usability and native-evidence assessment</h2>
+<p>Starting replay at H’s creation fixes the concrete learning problem: the key no longer first appears when C verifies it. Local operation, creator, current holder and later client acquisition remain distinguishable. The inspected final RCG origin capture visibly shows the H-local creation and CREATE field-history step.</p>
+<p>The fresh mounted checks verify the interval boundary explicitly: no holder before creation begins, H alone after creation completes, then one plaintext holding per peer after C’s validation. The three-moment key path ends at accepted mechanism context; completing it does not by itself exercise a later binding or logon denial. An initial reviewer probe selected Resume for a single-step queue instead of the inspector’s complete-path replay control. That setup failure is retained and explained; the corrected checks pass without a product change.</p>
+<p>The worker reports eighteen browser cases: six fixed presets in source HTTP, standalone HTTP and standalone <code>file:</code>, using Chromium 155.0.8059.84. The record identifies actual picker, field-index and seek-control interactions, captures and candidate hash. These records were checked, and supplied images were visually inspected; <strong>no independent native browser run was performed here</strong>. No browser executable was available in this reviewer environment.</p>
+<p>The accepted image uses a taller 1480 × 1600 capture viewport to show the map without the sticky-toolbar overlap seen in a retained rejected attempt; the recorded interaction cases use 1480 × 1000. That capture is useful origin evidence, not proof of every viewport or general accessibility. The absent retained native runner/session command record is a reproducibility limitation, not proof that the reported session did not occur. G01 speech/comprehension, actual touch/zoom, cross-engine checks and performance remain outside this narrow acceptance.</p></section>
+
+<section id="comments"><h2>5. Detailed comments for the worker</h2>
+<article><h3>W11-F1 · Preserve a bounded creator-origin follow-up</h3>
+<p>The disclosed sibling omissions are real, unchanged teaching gaps. Keep them tracked separately from the accepted acceptor-subkey repair. Current representative examples include KDC-created TGT/service-ticket keys whose field history starts at the recipient’s store, downstream equivalents, an inner TLS key starting at verification, and an outer TLS key with no field-only moment. The current evidence is a representative inspection, not an exhaustive audit.</p>
+<p>Before claiming general origin completeness, inventory keys with canonical creation but missing creator-local field operations. Derive any operation from the artifact’s actual creator, not the carrier sender: the grouped TLS response is H-to-C while these modeled TLS key artifacts declare C as creator. Preserve canonical effects, receipt/verification boundaries and current wire membership. Never “fix” discoverability by sending plaintext secret keys. Include an existing correct local-create path and a key whose creator differs from the carrier sender as controls. Keep this work bounded and do not silently fold it into WIN-11’s completed claim.</p></article>
+<article><h3>W11-F2 · Make the next package portable</h3>
+<p><code>review-package-status.json</code> and <code>SHA256SUMS.txt</code> are valid supplied attachments, but neither is inside the verification archive. This is nonblocking for this review because the full supplied set is available. It falls short of the next plan’s portable-handoff requirement. The copied handoff also keeps repository-relative links, so it is not independently navigable from an arbitrary downloads folder.</p>
+<p>At the next packaging step, include an internal package manifest/checksum list covering the source archive, standalone and evidence members, and retain an external final-artifact checksum list for the completed verification ZIP. Avoid a self-referential requirement for a ZIP to contain its own final hash. Clearly label internal versus outer-package checksums. Preserve old packages, make extraction instructions explicit, and ensure handoff links resolve within the delivered layout. This metadata correction does not require another product test sweep.</p></article>
+<article><h3>W11-F3 · Retain reproducible native evidence</h3>
+<p>For the next actual native validation, retain the runnable check or exact session-command/action record with hashes, runtime/browser version, viewport and source/standalone identities. Keep interactive browser observations separate from mounted DOM tests and from source-model comparisons. The current manual instructions help reproduction, but cannot reproduce the eighteen captured session snapshots as a program. Do not retroactively invent a runner for a past session or claim this reviewer reran it.</p></article>
+<article><h3>W11-F4 · Gate deployment before the next publication</h3>
+<p>The supplied <code>.github/workflows/pages.yml</code> starts on main pushes and its deploy job depends only on its own build job. The separate CI workflow runs vectors/tests, but Pages does not depend on its success. This confirms the disclosed pipeline gap from the archived workflow configuration; external run history was not checked.</p>
+<p>Fix this separately before a future publication: deployment must consume a successful CI result for the same trusted main commit/artifact. A failed CI result must prevent deploy, and a manual path must preserve the intended gate. Do not treat this WIN-11 acceptance as authorization to publish or as evidence that the pipeline has been corrected.</p></article>
+</section>
+
+<section id="next"><h2>6. Next step and worker handoff</h2>
+<p><strong>Send this HTML review to the worker.</strong> It is the complete review handoff; there is no second reviewer-notes file to merge. Keep <code>auth-flow-studio-next-expansion-worker-plan.html</code> as the implementation plan.</p>
+<ol><li>Update the candidate disposition to record scoped independent WIN-11 acceptance and retain the exact reviewed hashes. Keep the sibling-origin follow-up and the packaging/native-evidence comments visible.</li>
+<li>Continue P0-B: accepted-build performance characterization and measured optimization. Preserve the exact previous accepted HTML and this candidate as separately identified inputs; neither this review nor a new baseline clears older performance flags.</li>
+<li>Continue P0-C navigation and accessibility preparation, then P1 NFS according to the existing phase order. G01 remains open until the required human assistive-technology observation is recorded.</li>
+<li>Keep the remainder of the plan unchanged: 81 core scenarios, four optional extensions, and the existing accepted catalog preserved. This delivery adds none of those new scenarios and does not complete P0 as a whole.</li></ol>
+<p>Stop additional testing of unchanged WIN-11 code once these bounded results are recorded. Broaden testing when a later shared authoring, state, renderer or navigation change creates a concrete new regression risk.</p></section>
+<section id="appendix"><h2>7. Embedded review evidence</h2><p>The records below preserve the independent results and their scope inside this single handoff. Local runner paths identify the reviewer environment; reproduce commands from your own extracted source root.</p><details><summary>Structured review record</summary><pre>{
+  &quot;reviewDisposition&quot;: {
+    &quot;review&quot;: &quot;WIN-11 independent review&quot;,
+    &quot;reviewDate&quot;: &quot;2026-10-21&quot;,
+    &quot;timezone&quot;: &quot;Asia/Dubai&quot;,
+    &quot;disposition&quot;: &quot;accepted-for-bounded-WIN-11-scope&quot;,
+    &quot;blockingFindings&quot;: 0,
+    &quot;standaloneSha256&quot;: &quot;91cd57f410eede179cc8f464b717a76cee3d93a115e6e544d23406e86f26e257&quot;,
+    &quot;standaloneBytes&quot;: 2899536,
+    &quot;independentRuntime&quot;: &quot;v24.19.0&quot;,
+    &quot;focusedTests&quot;: 54,
+    &quot;baselineRegressionFailedAsExpected&quot;: true,
+    &quot;rebuildByteIdentical&quot;: true,
+    &quot;windowsProfilesCompared&quot;: 62,
+    &quot;changedFieldProfiles&quot;: 13,
+    &quot;unchangedFieldProfiles&quot;: 49,
+    &quot;independentHeldProjectionsCompared&quot;: 2036,
+    &quot;independentAttributeTracesCompared&quot;: 1435,
+    &quot;independentMountedReplayCases&quot;: 3,
+    &quot;sourceAndTestsUnchanged&quot;: true,
+    &quot;packageHashAudit&quot;: {
+      &quot;match&quot;: 788,
+      &quot;mismatch&quot;: 0,
+      &quot;missing&quot;: 0
+    },
+    &quot;nativeBrowser&quot;: &quot;worker-supplied record and captures reviewed; not independently rerun&quot;,
+    &quot;manualG01&quot;: &quot;open&quot;,
+    &quot;performance&quot;: &quot;open; not measured in this follow-up&quot;,
+    &quot;wholeApplicationRFCConformance&quot;: &quot;not claimed by this bounded review&quot;,
+    &quot;openFollowups&quot;: [
+      &quot;Known other key creator-origin omissions&quot;,
+      &quot;Portable packaging metadata&quot;,
+      &quot;Retain reproducible native runner or session record&quot;,
+      &quot;Gate Pages on successful CI before future publication&quot;
+    ],
+    &quot;nextPlanStep&quot;: &quot;P0-B performance characterization/optimization and P0-C navigation/accessibility work; then P1 NFS&quot;
+  },
+  &quot;focusedValidation&quot;: {
+    &quot;runtime&quot;: &quot;v24.19.0&quot;,
+    &quot;startedAt&quot;: &quot;2026-10-21T19:42:15.874884+00:00&quot;,
+    &quot;inputHashes&quot;: {
+      &quot;src/windows-auth-lab.js&quot;: &quot;b72940b52b56429c9d4a902b59429612b2be095c611cbaa3033477f02c77090d&quot;,
+      &quot;tests/windows-auth-lab.test.mjs&quot;: &quot;858f6e17f5c0db724ecdef171f18541e33f0a66ce756de3db3447852239fdc9c&quot;,
+      &quot;tests/held-object-windows.test.mjs&quot;: &quot;51eb92b2179ffa7ab3a646e946fe6c23f517161b85d02dc7059f6cfe36ca304f&quot;,
+      &quot;build.mjs&quot;: &quot;d86564fde58daebe6d3b6b0fa7a301f3b1742a73e22e52ae990ac9d1cd83462e&quot;
+    },
+    &quot;checks&quot;: [
+      {
+        &quot;name&quot;: &quot;focused-tests&quot;,
+        &quot;command&quot;: [
+          &quot;node&quot;,
+          &quot;--test&quot;,
+          &quot;tests/windows-auth-lab.test.mjs&quot;,
+          &quot;tests/held-object-windows.test.mjs&quot;
+        ],
+        &quot;exitCode&quot;: 0,
+        &quot;log&quot;: &quot;focused-tests.log&quot;,
+        &quot;tail&quot;: &quot; a real protected operation and returns decoded failure without destroying shell (0.426105ms)\n✔ WIN-08 guidance uses the selected authority and mechanism, not generic CORP/Netlogon defaults (0.206042ms)\n✔ WIN-09 winrm-credssp-second-hop accepts the exact resource result before learning or forwarding it (0.362199ms)\n✔ WIN-09 winrm-credssp-http accepts the exact resource result before learning or forwarding it (0.285963ms)\n✔ WIN-09 winrm-resource-denied accepts the exact resource result before learning or forwarding it (0.279674ms)\n✔ WIN-09 rdp-normal accepts the exact resource result before learning or forwarding it (0.140032ms)\n✔ WIN-09 rdp-restricted-admin accepts the exact resource result before learning or forwarding it (0.127133ms)\n✔ WIN-09 rdp-remote-credential-guard accepts the exact resource result before learning or forwarding it (0.272974ms)\n✔ WIN-10 shared Windows AES profiles select a distinct completed context key without rewriting early CredSSP or TLS keys (1.488004ms)\n✔ WIN-10 paths stopping before AP acceptance and all NTLM profiles have no acceptor key (7.413911ms)\nℹ tests 54\nℹ suites 0\nℹ pass 54\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 867.641612\n\n&quot;
+      },
+      {
+        &quot;name&quot;: &quot;build&quot;,
+        &quot;command&quot;: [
+          &quot;node&quot;,
+          &quot;build.mjs&quot;
+        ],
+        &quot;exitCode&quot;: 0,
+        &quot;log&quot;: &quot;build.log&quot;,
+        &quot;tail&quot;: &quot;Built dist/auth-flow-studio.html (2899536 bytes)\n\n&quot;
+      }
+    ],
+    &quot;sourceAndTestsUnchanged&quot;: true,
+    &quot;rebuildByteIdentical&quot;: true,
+    &quot;candidateSha256&quot;: &quot;91cd57f410eede179cc8f464b717a76cee3d93a115e6e544d23406e86f26e257&quot;
+  },
+  &quot;baselineRegressionSensitivity&quot;: {
+    &quot;command&quot;: [
+      &quot;node&quot;,
+      &quot;--test&quot;,
+      &quot;--test-name-pattern=WIN-11&quot;,
+      &quot;/workspace/scratch/b1e0b9877d92/implementation-review/win11/independent-validation/baseline-win11-regression.test.mjs&quot;
+    ],
+    &quot;exitCode&quot;: 1,
+    &quot;expectedFailureObserved&quot;: true,
+    &quot;log&quot;: &quot;baseline-win11-regression.log&quot;,
+    &quot;testDerivation&quot;: &quot;Candidate regression with source import URLs retargeted to immutable accepted baseline; no assertion changes&quot;,
+    &quot;candidateRegressionSha256&quot;: &quot;51eb92b2179ffa7ab3a646e946fe6c23f517161b85d02dc7059f6cfe36ca304f&quot;
+  },
+  &quot;mountedReplayValidation&quot;: {
+    &quot;kind&quot;: &quot;independent-WIN11-mounted-UX&quot;,
+    &quot;nativeBrowser&quot;: false,
+    &quot;scope&quot;: &quot;Actual attribute-index button, trace replay button and application player in supplied deterministic DOM harness; no paint, real keyboard, viewport, mobile or AT claims.&quot;,
+    &quot;cases&quot;: [
+      {
+        &quot;id&quot;: &quot;lab-win-credssp-v6-kerberos&quot;,
+        &quot;attributeId&quot;: &quot;win_credssp_v6_kerberos_acceptor-subkey&quot;,
+        &quot;trace&quot;: [
+          {
+            &quot;kind&quot;: &quot;create&quot;,
+            &quot;from&quot;: &quot;winHost&quot;,
+            &quot;to&quot;: &quot;winHost&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-credssp-v6-kerberos:ap-reply&quot;,
+            &quot;sourceIndex&quot;: 12,
+            &quot;title&quot;: &quot;Create Windows AES acceptor subkey&quot;
+          },
+          {
+            &quot;kind&quot;: &quot;verify&quot;,
+            &quot;from&quot;: &quot;winClient&quot;,
+            &quot;to&quot;: &quot;winClient&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-credssp-v6-kerberos:mutual-verify&quot;,
+            &quot;sourceIndex&quot;: 13,
+            &quot;title&quot;: &quot;Check Windows AES acceptor subkey&quot;
+          },
+          {
+            &quot;kind&quot;: &quot;verify&quot;,
+            &quot;from&quot;: &quot;winHost&quot;,
+            &quot;to&quot;: &quot;winHost&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-credssp-v6-kerberos:context&quot;,
+            &quot;sourceIndex&quot;: 14,
+            &quot;title&quot;: &quot;Check Windows AES acceptor subkey&quot;
+          }
+        ],
+        &quot;originStart&quot;: [],
+        &quot;originComplete&quot;: [
+          {
+            &quot;actorId&quot;: &quot;winHost&quot;,
+            &quot;representationId&quot;: &quot;plain&quot;
+          }
+        ],
+        &quot;verified&quot;: [
+          {
+            &quot;actorId&quot;: &quot;winHost&quot;,
+            &quot;representationId&quot;: &quot;plain&quot;
+          },
+          {
+            &quot;actorId&quot;: &quot;winClient&quot;,
+            &quot;representationId&quot;: &quot;plain&quot;
+          }
+        ],
+        &quot;inspectorText&quot;: &quot;CREATION · TRANSFER · LOCAL CHECKSWindows AES acceptor subkeyThe selected Windows AES mutual-authentication profile uses this key for completed-context signing/confidentiality; corresponding per-message tokens set AcceptorSubkey=1.Replay complete attribute pathCURRENT MOMENT · 1 / 3Create Windows AES acceptor subkeyH creates the distinct Windows AES acceptor subkey locally before protecting it inside EncAPRepPart; the plain key is not transmitted.H - Remote Windows host → H - Remote Windows host · journey step 13Where and how it is used1Create Windows AES acceptor subkeyH - Remote Windows host → H - Remote Windows host · journey 13Create2Check Windows AES acceptor subkeyC - Alice workstation → C - Alice workstation · journey 14Check3Check Windows AES acceptor subkeyH - Remote Windows host → H - Remote Windows host · journey 15CheckReturn to full journeyMeaning, origin &amp; primary sourceMS-KILE 3.1.1.2; RFC4121 2; 4.2.2Windows AES acceptor subkeyThe selected Windows AES mutual-authentication profile uses this key for completed-context signing/confidentiality; corresponding per-message tokens set AcceptorSubkey=1.Where it comes fromAfter accepting AP-REQ, H selects a distinct AES acceptor subkey for EncAPRepPart.Why it existsAP-REP encrypts this key under the ticket session key. C obtains it only after mutual verification; early client pubKeyAuth uses the initiator key with AcceptorSubkey=0. Declared decoded readers: winHost, winClient. Acquisition and release are explicitly authored; permission alone never grants possession.Examplesymbolic distinct Windows AES256 acceptor subkeyRead the primary specification &quot;,
+        &quot;replayNaturalCompletion&quot;: true,
+        &quot;canonicalPrefixEqual&quot;: true,
+        &quot;endpointIsKeyContextNotWholeScenario&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-credssp-binding-rejected&quot;,
+        &quot;attributeId&quot;: &quot;win_credssp_binding_rejected_acceptor-subkey&quot;,
+        &quot;trace&quot;: [
+          {
+            &quot;kind&quot;: &quot;create&quot;,
+            &quot;from&quot;: &quot;winHost&quot;,
+            &quot;to&quot;: &quot;winHost&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-credssp-binding-rejected:ap-reply&quot;,
+            &quot;sourceIndex&quot;: 12,
+            &quot;title&quot;: &quot;Create Windows AES acceptor subkey&quot;
+          },
+          {
+            &quot;kind&quot;: &quot;verify&quot;,
+            &quot;from&quot;: &quot;winClient&quot;,
+            &quot;to&quot;: &quot;winClient&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-credssp-binding-rejected:mutual-verify&quot;,
+            &quot;sourceIndex&quot;: 13,
+            &quot;title&quot;: &quot;Check Windows AES acceptor subkey&quot;
+          },
+          {
+            &quot;kind&quot;: &quot;verify&quot;,
+            &quot;from&quot;: &quot;winHost&quot;,
+            &quot;to&quot;: &quot;winHost&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-credssp-binding-rejected:context&quot;,
+            &quot;sourceIndex&quot;: 14,
+            &quot;title&quot;: &quot;Check Windows AES acceptor subkey&quot;
+          }
+        ],
+        &quot;originStart&quot;: [],
+        &quot;originComplete&quot;: [
+          {
+            &quot;actorId&quot;: &quot;winHost&quot;,
+            &quot;representationId&quot;: &quot;plain&quot;
+          }
+        ],
+        &quot;verified&quot;: [
+          {
+            &quot;actorId&quot;: &quot;winHost&quot;,
+            &quot;representationId&quot;: &quot;plain&quot;
+          },
+          {
+            &quot;actorId&quot;: &quot;winClient&quot;,
+            &quot;representationId&quot;: &quot;plain&quot;
+          }
+        ],
+        &quot;inspectorText&quot;: &quot;CREATION · TRANSFER · LOCAL CHECKSWindows AES acceptor subkeyThe selected Windows AES mutual-authentication profile uses this key for completed-context signing/confidentiality; corresponding per-message tokens set AcceptorSubkey=1.Replay complete attribute pathCURRENT MOMENT · 1 / 3Create Windows AES acceptor subkeyH creates the distinct Windows AES acceptor subkey locally before protecting it inside EncAPRepPart; the plain key is not transmitted.H - Remote Windows host → H - Remote Windows host · journey step 13Where and how it is used1Create Windows AES acceptor subkeyH - Remote Windows host → H - Remote Windows host · journey 13Create2Check Windows AES acceptor subkeyC - Alice workstation → C - Alice workstation · journey 14Check3Check Windows AES acceptor subkeyH - Remote Windows host → H - Remote Windows host · journey 15CheckReturn to full journeyMeaning, origin &amp; primary sourceMS-KILE 3.1.1.2; RFC4121 2; 4.2.2Windows AES acceptor subkeyThe selected Windows AES mutual-authentication profile uses this key for completed-context signing/confidentiality; corresponding per-message tokens set AcceptorSubkey=1.Where it comes fromAfter accepting AP-REQ, H selects a distinct AES acceptor subkey for EncAPRepPart.Why it existsAP-REP encrypts this key under the ticket session key. C obtains it only after mutual verification; early client pubKeyAuth uses the initiator key with AcceptorSubkey=0. Declared decoded readers: winHost, winClient. Acquisition and release are explicitly authored; permission alone never grants possession.Examplesymbolic distinct Windows AES256 acceptor subkeyRead the primary specification &quot;,
+        &quot;replayNaturalCompletion&quot;: true,
+        &quot;canonicalPrefixEqual&quot;: true,
+        &quot;endpointIsKeyContextNotWholeScenario&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-rdp-remote-credential-guard&quot;,
+        &quot;attributeId&quot;: &quot;win_rdp_remote_credential_guard_acceptor-subkey&quot;,
+        &quot;trace&quot;: [
+          {
+            &quot;kind&quot;: &quot;create&quot;,
+            &quot;from&quot;: &quot;winHost&quot;,
+            &quot;to&quot;: &quot;winHost&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-rdp-remote-credential-guard:ap-reply&quot;,
+            &quot;sourceIndex&quot;: 14,
+            &quot;title&quot;: &quot;Create Windows AES acceptor subkey&quot;
+          },
+          {
+            &quot;kind&quot;: &quot;verify&quot;,
+            &quot;from&quot;: &quot;winClient&quot;,
+            &quot;to&quot;: &quot;winClient&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-rdp-remote-credential-guard:mutual-verify&quot;,
+            &quot;sourceIndex&quot;: 15,
+            &quot;title&quot;: &quot;Check Windows AES acceptor subkey&quot;
+          },
+          {
+            &quot;kind&quot;: &quot;verify&quot;,
+            &quot;from&quot;: &quot;winHost&quot;,
+            &quot;to&quot;: &quot;winHost&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-rdp-remote-credential-guard:context&quot;,
+            &quot;sourceIndex&quot;: 16,
+            &quot;title&quot;: &quot;Check Windows AES acceptor subkey&quot;
+          }
+        ],
+        &quot;originStart&quot;: [],
+        &quot;originComplete&quot;: [
+          {
+            &quot;actorId&quot;: &quot;winHost&quot;,
+            &quot;representationId&quot;: &quot;plain&quot;
+          }
+        ],
+        &quot;verified&quot;: [
+          {
+            &quot;actorId&quot;: &quot;winHost&quot;,
+            &quot;representationId&quot;: &quot;plain&quot;
+          },
+          {
+            &quot;actorId&quot;: &quot;winClient&quot;,
+            &quot;representationId&quot;: &quot;plain&quot;
+          }
+        ],
+        &quot;inspectorText&quot;: &quot;CREATION · TRANSFER · LOCAL CHECKSWindows AES acceptor subkeyThe selected Windows AES mutual-authentication profile uses this key for completed-context signing/confidentiality; corresponding per-message tokens set AcceptorSubkey=1.Replay complete attribute pathCURRENT MOMENT · 1 / 3Create Windows AES acceptor subkeyH creates the distinct Windows AES acceptor subkey locally before protecting it inside EncAPRepPart; the plain key is not transmitted.H - Remote Windows host → H - Remote Windows host · journey step 15Where and how it is used1Create Windows AES acceptor subkeyH - Remote Windows host → H - Remote Windows host · journey 15Create2Check Windows AES acceptor subkeyC - Alice workstation → C - Alice workstation · journey 16Check3Check Windows AES acceptor subkeyH - Remote Windows host → H - Remote Windows host · journey 17CheckReturn to full journeyMeaning, origin &amp; primary sourceMS-KILE 3.1.1.2; RFC4121 2; 4.2.2Windows AES acceptor subkeyThe selected Windows AES mutual-authentication profile uses this key for completed-context signing/confidentiality; corresponding per-message tokens set AcceptorSubkey=1.Where it comes fromAfter accepting AP-REQ, H selects a distinct AES acceptor subkey for EncAPRepPart.Why it existsAP-REP encrypts this key under the ticket session key. C obtains it only after mutual verification; early client pubKeyAuth uses the initiator key with AcceptorSubkey=0. Declared decoded readers: winHost, winClient. Acquisition and release are explicitly authored; permission alone never grants possession.Examplesymbolic distinct Windows AES256 acceptor subkeyRead the primary specification &quot;,
+        &quot;replayNaturalCompletion&quot;: true,
+        &quot;canonicalPrefixEqual&quot;: true,
+        &quot;endpointIsKeyContextNotWholeScenario&quot;: true
+      }
+    ],
+    &quot;siblings&quot;: [
+      {
+        &quot;key&quot;: &quot;tgt-key&quot;,
+        &quot;visibleIndexButton&quot;: true,
+        &quot;trace&quot;: [
+          {
+            &quot;kind&quot;: &quot;store&quot;,
+            &quot;from&quot;: &quot;winClient&quot;,
+            &quot;to&quot;: &quot;winClient&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-winrm-credssp-second-hop:as-verify&quot;,
+            &quot;title&quot;: &quot;Store TGT session key&quot;
+          }
+        ],
+        &quot;playDisabled&quot;: false,
+        &quot;inspectorText&quot;: &quot;CREATION · TRANSFER · LOCAL CHECKSTGT session keyThe TGT session key protects subsequent authenticators and selected TGS client reply parts, not the TGT ticket encryption.Replay complete attribute pathCURRENT MOMENT · 1 / 1Store TGT session keyC - Alice workstation → C - Alice workstation · journey step 12Where and how it is used1Store TGT session keyC - Alice workstation → C - Alice workstation · journey 12StoreReturn to full journeyMeaning, origin &amp; primary sourceRFC4120 3.1.3; 5.4.2TGT session keyThe TGT session key protects subsequent authenticators and selected TGS client reply parts, not the TGT ticket encryption.Where it comes fromThe KDC issues the client-TGS session key while creating the AS reply.Why it existsD holds it at issue; C acquires its decoded copy only after AS reply validation. It is separate from client long-term, krbtgt, TLS and service-session keys. Declared decoded readers: winClient, winDC. Acquisition and release are explicitly authored; permission alone never grants possession.Examplesymbolic client-TGS session keyRead the primary specification &quot;
+      },
+      {
+        &quot;key&quot;: &quot;tls-inner-key&quot;,
+        &quot;visibleIndexButton&quot;: true,
+        &quot;trace&quot;: [
+          {
+            &quot;kind&quot;: &quot;verify&quot;,
+            &quot;from&quot;: &quot;winClient&quot;,
+            &quot;to&quot;: &quot;winClient&quot;,
+            &quot;sourceStepId&quot;: &quot;lab-win-winrm-credssp-second-hop:inner-tls&quot;,
+            &quot;title&quot;: &quot;Check Inner CredSSP TLS traffic keys&quot;
+          }
+        ],
+        &quot;playDisabled&quot;: false,
+        &quot;inspectorText&quot;: &quot;CREATION · TRANSFER · LOCAL CHECKSInner CredSSP TLS traffic keysCredSSP inner TLS protects all TSRequest records and is separate from mechanism sealing and optional outer HTTPS.Replay complete attribute pathCURRENT MOMENT · 1 / 1Check Inner CredSSP TLS traffic keysaccepted_selected_TLS_associationC - Alice workstation → C - Alice workstation · journey step 8Where and how it is used1Check Inner CredSSP TLS traffic keysC - Alice workstation → C - Alice workstation · journey 8CheckReturn to full journeyMeaning, origin &amp; primary sourceMS-CSSP 3.1.5 step1Inner CredSSP TLS traffic keysCredSSP inner TLS protects all TSRequest records and is separate from mechanism sealing and optional outer HTTPS.Where it comes fromTLS handshake endpoints derive traffic secrets after their certificate/Finished checks.Why it existsNo client certificate or TLS resumption is used in this profile. Keys remain at C/H and are scoped to this association. Declared decoded readers: winClient, winHost. Acquisition and release are explicitly authored; permission alone never grants possession.Examplesymbolic TLS1.2 ECDHE_RSA AES128_GCM traffic keysRead the primary specification &quot;
+      },
+      {
+        &quot;key&quot;: &quot;outer-tls-key&quot;,
+        &quot;visibleIndexButton&quot;: false,
+        &quot;trace&quot;: [],
+        &quot;playDisabled&quot;: true,
+        &quot;inspectorText&quot;: &quot;CREATION · TRANSFER · LOCAL CHECKSOuter HTTPS traffic keysOuter HTTPS frames HTTP and its CredSSP base64 tokens; it does not replace inner CredSSP TLS or the mechanism key.No replayable operation for this attribute in the current journey.Available journeysThis is configured context; it is not transmitted by the simulated exchanges.Return to full journeyMeaning, origin &amp; primary sourceMS-WSMV security / WinRM multi-hopOuter HTTPS traffic keysOuter HTTPS frames HTTP and its CredSSP base64 tokens; it does not replace inner CredSSP TLS or the mechanism key.Where it comes fromThe HTTPS listener handshake endpoints derive independent outer transport traffic keys.Why it existsOnly HTTPS presets acquire these keys. The HTTP preset still requires inner CredSSP safety boundaries and never turns a password into a clear HTTP header. Declared decoded readers: winClient, winHost. Acquisition and release are explicitly authored; permission alone never grants possession.Examplesymbolic independent HTTPS listener traffic keysRead the primary specification &quot;
+      }
+    ],
+    &quot;passed&quot;: true
+  },
+  &quot;independentWindowsComparison&quot;: {
+    &quot;finding&quot;: &quot;WIN-11&quot;,
+    &quot;reviewedAt&quot;: &quot;2026-10-21T19:43:58.101Z&quot;,
+    &quot;runtime&quot;: &quot;v24.19.0&quot;,
+    &quot;baseline&quot;: &quot;/workspace/scratch/b1e0b9877d92/implementation-review/corrections2/source/&quot;,
+    &quot;candidate&quot;: &quot;/workspace/scratch/b1e0b9877d92/implementation-review/win11/source/&quot;,
+    &quot;assertions&quot;: 4921,
+    &quot;projectionsCompared&quot;: 2036,
+    &quot;attributeTracesCompared&quot;: 1435,
+    &quot;changedProfiles&quot;: [
+      &quot;lab-win-credssp-v6-kerberos&quot;,
+      &quot;lab-win-credssp-v6-kerberos-negative-binding-direction&quot;,
+      &quot;lab-win-credssp-v6-kerberos-negative-binding-nonce&quot;,
+      &quot;lab-win-credssp-v6-kerberos-negative-binding-public-key&quot;,
+      &quot;lab-win-credssp-binding-rejected&quot;,
+      &quot;lab-win-credssp-logon-denied&quot;,
+      &quot;lab-win-rdp-normal&quot;,
+      &quot;lab-win-rdp-normal-negative-hybrid-without-early-result&quot;,
+      &quot;lab-win-rdp-restricted-admin&quot;,
+      &quot;lab-win-rdp-restricted-admin-negative-hybrid-without-early-result&quot;,
+      &quot;lab-win-rdp-remote-credential-guard&quot;,
+      &quot;lab-win-rdp-remote-credential-guard-negative-redirect-disconnect&quot;,
+      &quot;lab-win-rdp-remote-credential-guard-negative-hybrid-without-early-result&quot;
+    ],
+    &quot;unchangedProfiles&quot;: [
+      &quot;lab-win-ntlmv2-domain&quot;,
+      &quot;lab-win-ntlmv2-domain-negative-bad-response&quot;,
+      &quot;lab-win-ntlmv2-domain-negative-ntlm-policy-server&quot;,
+      &quot;lab-win-ntlmv2-domain-negative-ntlm-policy-domain&quot;,
+      &quot;lab-win-ntlmv2-domain-negative-wrong-account-authority&quot;,
+      &quot;lab-win-ntlmv2-domain-negative-expired-prerequisite&quot;,
+      &quot;lab-win-ntlmv2-domain-negative-failed-prerequisite&quot;,
+      &quot;lab-win-ntlmv2-domain-negative-missing-target-info&quot;,
+      &quot;lab-win-ntlmv2-domain-negative-insufficient-key-strength&quot;,
+      &quot;lab-win-ntlmv2-local&quot;,
+      &quot;lab-win-ntlmv2-local-negative-wrong-account-authority&quot;,
+      &quot;lab-win-ntlmv2-local-negative-bad-response&quot;,
+      &quot;lab-win-ntlmv2-local-negative-missing-target-info&quot;,
+      &quot;lab-win-ntlmv2-trust&quot;,
+      &quot;lab-win-ntlmv2-trust-negative-bad-response&quot;,
+      &quot;lab-win-ntlmv2-trust-negative-expired-prerequisite&quot;,
+      &quot;lab-win-ntlmv2-trust-negative-wrong-account-authority&quot;,
+      &quot;lab-win-ntlmv2-trust-denied&quot;,
+      &quot;lab-win-ntlmv2-response-rejected&quot;,
+      &quot;lab-win-negotiate-kerberos&quot;,
+      &quot;lab-win-negotiate-kerberos-negative-expired-prerequisite&quot;,
+      &quot;lab-win-negotiate-kerberos-negative-failed-prerequisite&quot;,
+      &quot;lab-win-negotiate-ntlm-allowed&quot;,
+      &quot;lab-win-negotiate-ntlm-allowed-negative-ntlm-policy-server&quot;,
+      &quot;lab-win-negotiate-ntlm-allowed-negative-ntlm-policy-domain&quot;,
+      &quot;lab-win-negotiate-ntlm-blocked&quot;,
+      &quot;lab-win-credssp-v6-kerberos-negative-missing-last-token&quot;,
+      &quot;lab-win-credssp-v6-kerberos-negative-missing-pubKeyAuth&quot;,
+      &quot;lab-win-credssp-v6-kerberos-negative-credential-protection-restriction&quot;,
+      &quot;lab-win-credssp-v6-ntlm&quot;,
+      &quot;lab-win-credssp-v6-ntlm-negative-binding-direction&quot;,
+      &quot;lab-win-credssp-v6-ntlm-negative-binding-nonce&quot;,
+      &quot;lab-win-credssp-v6-ntlm-negative-binding-public-key&quot;,
+      &quot;lab-win-credssp-v6-ntlm-negative-missing-last-token&quot;,
+      &quot;lab-win-credssp-v6-ntlm-negative-missing-pubKeyAuth&quot;,
+      &quot;lab-win-credssp-v6-ntlm-negative-bad-response&quot;,
+      &quot;lab-win-credssp-delegation-denied&quot;,
+      &quot;lab-win-rdp-rcg-kerberos-unavailable&quot;,
+      &quot;lab-win-rdp-required-mode-unsupported&quot;,
+      &quot;lab-win-rdp-required-mode-unsupported-negative-required-mode-restricted-admin&quot;,
+      &quot;lab-win-rdp-required-mode-unsupported-negative-required-mode-remote-credential-guard&quot;,
+      &quot;lab-win-winrm-second-hop-denied&quot;,
+      &quot;lab-win-winrm-credssp-second-hop&quot;,
+      &quot;lab-win-winrm-credssp-second-hop-negative-credential-protection-restriction&quot;,
+      &quot;lab-win-winrm-delegation-denied&quot;,
+      &quot;lab-win-winrm-delegation-denied-negative-credential-protection-restriction&quot;,
+      &quot;lab-win-winrm-credssp-http&quot;,
+      &quot;lab-win-winrm-credssp-http-negative-credential-protection-restriction&quot;,
+      &quot;lab-win-winrm-resource-denied&quot;
+    ],
+    &quot;keyLifecycleControls&quot;: [
+      {
+        &quot;id&quot;: &quot;lab-win-negotiate-kerberos&quot;,
+        &quot;changed&quot;: false,
+        &quot;replyIndex&quot;: 12,
+        &quot;mutualIndex&quot;: 16,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-credssp-v6-kerberos&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 12,
+        &quot;mutualIndex&quot;: 13,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-credssp-v6-kerberos-negative-binding-direction&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 12,
+        &quot;mutualIndex&quot;: 13,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-credssp-v6-kerberos-negative-binding-nonce&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 12,
+        &quot;mutualIndex&quot;: 13,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-credssp-v6-kerberos-negative-binding-public-key&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 12,
+        &quot;mutualIndex&quot;: 13,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-credssp-binding-rejected&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 12,
+        &quot;mutualIndex&quot;: 13,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-credssp-logon-denied&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 12,
+        &quot;mutualIndex&quot;: 13,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-rdp-normal&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 14,
+        &quot;mutualIndex&quot;: 15,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-rdp-normal-negative-hybrid-without-early-result&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 14,
+        &quot;mutualIndex&quot;: 15,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-rdp-restricted-admin&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 14,
+        &quot;mutualIndex&quot;: 15,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-rdp-restricted-admin-negative-hybrid-without-early-result&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 14,
+        &quot;mutualIndex&quot;: 15,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-rdp-remote-credential-guard&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 14,
+        &quot;mutualIndex&quot;: 15,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-rdp-remote-credential-guard-negative-redirect-disconnect&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 14,
+        &quot;mutualIndex&quot;: 15,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-rdp-remote-credential-guard-negative-hybrid-without-early-result&quot;,
+        &quot;changed&quot;: true,
+        &quot;replyIndex&quot;: 14,
+        &quot;mutualIndex&quot;: 15,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-winrm-second-hop-denied&quot;,
+        &quot;changed&quot;: false,
+        &quot;replyIndex&quot;: 12,
+        &quot;mutualIndex&quot;: 15,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-winrm-credssp-second-hop&quot;,
+        &quot;changed&quot;: false,
+        &quot;replyIndex&quot;: 18,
+        &quot;mutualIndex&quot;: 22,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-winrm-credssp-http&quot;,
+        &quot;changed&quot;: false,
+        &quot;replyIndex&quot;: 17,
+        &quot;mutualIndex&quot;: 21,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      },
+      {
+        &quot;id&quot;: &quot;lab-win-winrm-resource-denied&quot;,
+        &quot;changed&quot;: false,
+        &quot;replyIndex&quot;: 18,
+        &quot;mutualIndex&quot;: 22,
+        &quot;canonicalHeldTraceUnchanged&quot;: true
+      }
+    ],
+    &quot;sourceHashes&quot;: {
+      &quot;src/windows-auth-lab.js&quot;: {
+        &quot;before&quot;: &quot;7bc24cfd6cb669c67657f09703c42489982aa705f174ae903a2f16597eb0adeb&quot;,
+        &quot;after&quot;: &quot;b72940b52b56429c9d4a902b59429612b2be095c611cbaa3033477f02c77090d&quot;
+      },
+      &quot;src/held-object-windows.js&quot;: {
+        &quot;before&quot;: &quot;72998568b16a1b7c21c443d6953f8ce581d73cfb03d397cfb420c3e0d1b14305&quot;,
+        &quot;after&quot;: &quot;72998568b16a1b7c21c443d6953f8ce581d73cfb03d397cfb420c3e0d1b14305&quot;
+      },
+      &quot;src/attribute-usage.js&quot;: {
+        &quot;before&quot;: &quot;a1098914f862225d423eca51bcc091a77c7967d0a28aa29199db3eb1293be689&quot;,
+        &quot;after&quot;: &quot;a1098914f862225d423eca51bcc091a77c7967d0a28aa29199db3eb1293be689&quot;
+      },
+      &quot;src/attribute-trace.js&quot;: {
+        &quot;before&quot;: &quot;66d990e7f4c483968bce7ba9be697cc37ef611a367fa9ea72ca33734ab159037&quot;,
+        &quot;after&quot;: &quot;66d990e7f4c483968bce7ba9be697cc37ef611a367fa9ea72ca33734ab159037&quot;
+      },
+      &quot;src/held-object-state.js&quot;: {
+        &quot;before&quot;: &quot;174f43eae051d2530877c7960d26bf1bc857171cb45ebfccda04dd2f43a9f4ad&quot;,
+        &quot;after&quot;: &quot;174f43eae051d2530877c7960d26bf1bc857171cb45ebfccda04dd2f43a9f4ad&quot;
+      },
+      &quot;tests/held-object-windows.test.mjs&quot;: {
+        &quot;before&quot;: &quot;e531a4e51141d5afdec365a2d6c05538e31c0145454954b1b7730e2804e50c81&quot;,
+        &quot;after&quot;: &quot;51eb92b2179ffa7ab3a646e946fe6c23f517161b85d02dc7059f6cfe36ca304f&quot;
+      }
+    },
+    &quot;status&quot;: &quot;passed&quot;
+  },
+  &quot;packageAudit&quot;: {
+    &quot;scope&quot;: &quot;Read-only package/hash/log/static provenance audit plus independent execution of inspected model collectors under Node. No native browser, Bun suite, crypto, full-suite or deployment execution.&quot;,
+    &quot;aliasMapping&quot;: {
+      &quot;auth-flow-studio-smb311-recheck-review.html&quot;: &quot;auth-flow-studio-smb311-recheck-review(1).html&quot;
+    },
+    &quot;hashSummary&quot;: {
+      &quot;match&quot;: 788,
+      &quot;mismatch&quot;: 0,
+      &quot;missing&quot;: 0
+    },
+    &quot;distinctHashedPaths&quot;: 758,
+    &quot;sourceInventory&quot;: {
+      &quot;actual&quot;: 747,
+      &quot;declared&quot;: 747,
+      &quot;mapsMatch&quot;: true
+    },
+    &quot;duplicates&quot;: [
+      {
+        &quot;path&quot;: &quot;docs/expansion/windows-protocol.md&quot;,
+        &quot;sourceSha256&quot;: &quot;924935362906775dfcfe0904c8efe68aff180c9ae30152033e671a47a413e8a8&quot;,
+        &quot;verificationSha256&quot;: &quot;924935362906775dfcfe0904c8efe68aff180c9ae30152033e671a47a413e8a8&quot;,
+        &quot;match&quot;: true
+      },
+      {
+        &quot;path&quot;: &quot;docs/expansion/implementation.md&quot;,
+        &quot;sourceSha256&quot;: &quot;a22a14c7adf07b922c5658c32330fecc2b64f2a6b022280de3f4ab8254aca429&quot;,
+        &quot;verificationSha256&quot;: &quot;a22a14c7adf07b922c5658c32330fecc2b64f2a6b022280de3f4ab8254aca429&quot;,
+        &quot;match&quot;: true
+      },
+      {
+        &quot;path&quot;: &quot;docs/reviewer-handoff/auth-flow-studio-smb311-recheck-review.html&quot;,
+        &quot;sourceSha256&quot;: &quot;d83a8930e52a4f6e7630e7cee7a71dfac116bb15305ef9795f025fa71bf3128c&quot;,
+        &quot;verificationSha256&quot;: &quot;d83a8930e52a4f6e7630e7cee7a71dfac116bb15305ef9795f025fa71bf3128c&quot;,
+        &quot;match&quot;: true
+      },
+      {
+        &quot;path&quot;: &quot;docs/verification/win11/known-sibling-origins.json&quot;,
+        &quot;sourceSha256&quot;: &quot;f194929a8d456bd815ab67bb6ccadba4806d3111a5e8cf53cb660a8a042bb404&quot;,
+        &quot;verificationSha256&quot;: &quot;f194929a8d456bd815ab67bb6ccadba4806d3111a5e8cf53cb660a8a042bb404&quot;,
+        &quot;match&quot;: true
+      },
+      {
+        &quot;path&quot;: &quot;docs/verification/win11/field-history-status.json&quot;,
+        &quot;sourceSha256&quot;: &quot;8951612da96d901ded3e88083813f7a0cec603d33a9051b59b47b34c790d433e&quot;,
+        &quot;verificationSha256&quot;: &quot;8951612da96d901ded3e88083813f7a0cec603d33a9051b59b47b34c790d433e&quot;,
+        &quot;match&quot;: true
+      },
+      {
+        &quot;path&quot;: &quot;docs/verification/win11/windows-models-before-after.json&quot;,
+        &quot;sourceSha256&quot;: &quot;1500e9dad940ec6d8fbfa48f0f275b1582b1dcdfe8a18144c4d642e8d751aec6&quot;,
+        &quot;verificationSha256&quot;: &quot;1500e9dad940ec6d8fbfa48f0f275b1582b1dcdfe8a18144c4d642e8d751aec6&quot;,
+        &quot;match&quot;: true
+      },
+      {
+        &quot;path&quot;: &quot;docs/verification/win11/native-status.json&quot;,
+        &quot;sourceSha256&quot;: &quot;572c30183c9fd88edf312b9b6045a518f98a5e2ea8a9e362113c681d36e63581&quot;,
+        &quot;verificationSha256&quot;: &quot;572c30183c9fd88edf312b9b6045a518f98a5e2ea8a9e362113c681d36e63581&quot;,
+        &quot;match&quot;: true
+      },
+      {
+        &quot;path&quot;: &quot;docs/verification/win11/regression-before.log&quot;,
+        &quot;sourceSha256&quot;: &quot;e4e78970d217814c18eefa4d1076b957526bf813480d103850f9b43d5f9214b2&quot;,
+        &quot;verificationSha256&quot;: &quot;e4e78970d217814c18eefa4d1076b957526bf813480d103850f9b43d5f9214b2&quot;,
+        &quot;match&quot;: true
+      },
+      {
+        &quot;path&quot;: &quot;docs/verification/win11/regression-after.log&quot;,
+        &quot;sourceSha256&quot;: &quot;47f53a03baef90d388c33ed16fcd7f0f14b430655e886bd6c6e543533ee92a38&quot;,
+        &quot;verificationSha256&quot;: &quot;47f53a03baef90d388c33ed16fcd7f0f14b430655e886bd6c6e543533ee92a38&quot;,
+        &quot;match&quot;: true
+      }
+    ],
+    &quot;overlayOnly&quot;: [
+      &quot;docs/verification/win11/attempts/notes.txt&quot;,
+      &quot;docs/verification/win11/attempts/source-http-oversized-studio.png&quot;,
+      &quot;docs/verification/win11/attempts/source-http-svg-only-crop.png&quot;,
+      &quot;docs/verification/win11/attempts/standalone-http-sticky-toolbar-overlay.png&quot;,
+      &quot;docs/verification/win11/standalone-file-rdp-remote-credential-guard-origin.png&quot;
+    ],
+    &quot;comparison&quot;: {
+      &quot;beforeRows&quot;: 62,
+      &quot;afterRows&quot;: 62,
+      &quot;idsMatch&quot;: true,
+      &quot;differences&quot;: {
+        &quot;inventory&quot;: [],
+        &quot;stepSurface&quot;: [],
+        &quot;operations&quot;: [
+          &quot;lab-win-credssp-v6-kerberos&quot;,
+          &quot;lab-win-credssp-v6-kerberos-negative-binding-direction&quot;,
+          &quot;lab-win-credssp-v6-kerberos-negative-binding-nonce&quot;,
+          &quot;lab-win-credssp-v6-kerberos-negative-binding-public-key&quot;,
+          &quot;lab-win-credssp-binding-rejected&quot;,
+          &quot;lab-win-credssp-logon-denied&quot;,
+          &quot;lab-win-rdp-normal&quot;,
+          &quot;lab-win-rdp-normal-negative-hybrid-without-early-result&quot;,
+          &quot;lab-win-rdp-restricted-admin&quot;,
+          &quot;lab-win-rdp-restricted-admin-negative-hybrid-without-early-result&quot;,
+          &quot;lab-win-rdp-remote-credential-guard&quot;,
+          &quot;lab-win-rdp-remote-credential-guard-negative-redirect-disconnect&quot;,
+          &quot;lab-win-rdp-remote-credential-guard-negative-hybrid-without-early-result&quot;
+        ],
+        &quot;normalizedOperations&quot;: [],
+        &quot;fieldTrace&quot;: [
+          &quot;lab-win-credssp-v6-kerberos&quot;,
+          &quot;lab-win-credssp-v6-kerberos-negative-binding-direction&quot;,
+          &quot;lab-win-credssp-v6-kerberos-negative-binding-nonce&quot;,
+          &quot;lab-win-credssp-v6-kerberos-negative-binding-public-key&quot;,
+          &quot;lab-win-credssp-binding-rejected&quot;,
+          &quot;lab-win-credssp-logon-denied&quot;,
+          &quot;lab-win-rdp-normal&quot;,
+          &quot;lab-win-rdp-normal-negative-hybrid-without-early-result&quot;,
+          &quot;lab-win-rdp-restricted-admin&quot;,
+          &quot;lab-win-rdp-restricted-admin-negative-hybrid-without-early-result&quot;,
+          &quot;lab-win-rdp-remote-credential-guard&quot;,
+          &quot;lab-win-rdp-remote-credential-guard-negative-redirect-disconnect&quot;,
+          &quot;lab-win-rdp-remote-credential-guard-negative-hybrid-without-early-result&quot;
+        ]
+      },
+      &quot;oldFieldTraceSuffixesPreserved&quot;: true
+    },
+    &quot;independentCollectorRuns&quot;: [
+      {
+        &quot;name&quot;: &quot;comparison-before&quot;,
+        &quot;argv&quot;: [
+          &quot;node&quot;,
+          &quot;--input-type=module&quot;
+        ],
+        &quot;cwd&quot;: &quot;/workspace/scratch/b1e0b9877d92/implementation-review/corrections2/source&quot;,
+        &quot;runtimeSubstitution&quot;: &quot;Bun.version -&gt; process.version only&quot;,
+        &quot;runtime&quot;: &quot;v24.19.0&quot;,
+        &quot;exit&quot;: 0,
+        &quot;stderr&quot;: &quot;&quot;,
+        &quot;rows&quot;: 62,
+        &quot;rowsMatchWorkerReport&quot;: true,
+        &quot;outputPath&quot;: &quot;/workspace/scratch/b1e0b9877d92/implementation-review/win11/independent-validation/comparison-before.json&quot;,
+        &quot;outputSha256&quot;: &quot;3736004537ec331dd9ecce2464f398e379af6451ccc9ac7ab16a689bdd878b9b&quot;
+      },
+      {
+        &quot;name&quot;: &quot;comparison-after&quot;,
+        &quot;argv&quot;: [
+          &quot;node&quot;,
+          &quot;--input-type=module&quot;
+        ],
+        &quot;cwd&quot;: &quot;/workspace/scratch/b1e0b9877d92/implementation-review/win11/source&quot;,
+        &quot;runtimeSubstitution&quot;: &quot;Bun.version -&gt; process.version only&quot;,
+        &quot;runtime&quot;: &quot;v24.19.0&quot;,
+        &quot;exit&quot;: 0,
+        &quot;stderr&quot;: &quot;&quot;,
+        &quot;rows&quot;: 62,
+        &quot;rowsMatchWorkerReport&quot;: true,
+        &quot;outputPath&quot;: &quot;/workspace/scratch/b1e0b9877d92/implementation-review/win11/independent-validation/comparison-after.json&quot;,
+        &quot;outputSha256&quot;: &quot;f7b502a2cb03fa2954feeccc35defb8793246105c5c537ca6b83564bf242ca59&quot;
+      },
+      {
+        &quot;name&quot;: &quot;siblings-current&quot;,
+        &quot;argv&quot;: [
+          &quot;node&quot;,
+          &quot;--input-type=module&quot;
+        ],
+        &quot;cwd&quot;: &quot;/workspace/scratch/b1e0b9877d92/implementation-review/win11/source&quot;,
+        &quot;runtimeSubstitution&quot;: &quot;Bun.version -&gt; process.version only&quot;,
+        &quot;runtime&quot;: &quot;v24.19.0&quot;,
+        &quot;exit&quot;: 0,
+        &quot;stderr&quot;: &quot;&quot;,
+        &quot;rows&quot;: 16,
+        &quot;rowsMatchWorkerReport&quot;: true,
+        &quot;outputPath&quot;: &quot;/workspace/scratch/b1e0b9877d92/implementation-review/win11/independent-validation/siblings-current.json&quot;,
+        &quot;outputSha256&quot;: &quot;0cc2364def5ab74b70b5023d60086613d47e378bea028e02a16cba4e01a9c097&quot;
+      }
+    ],
+    &quot;collectorProgramHashes&quot;: [
+      {
+        &quot;name&quot;: &quot;comparison&quot;,
+        &quot;expectedSha256&quot;: &quot;54c9a067aaa6b4a4b773834f287c58fd80c477fd5ea3ca7cd56b2bfa2ebea747&quot;,
+        &quot;actualSha256&quot;: &quot;54c9a067aaa6b4a4b773834f287c58fd80c477fd5ea3ca7cd56b2bfa2ebea747&quot;,
+        &quot;match&quot;: true
+      },
+      {
+        &quot;name&quot;: &quot;siblings&quot;,
+        &quot;expectedSha256&quot;: &quot;2cd5faf072e6a9ffd386fcc433a16e0dc7879d223c50b437bf5ed599d11c6b71&quot;,
+        &quot;actualSha256&quot;: &quot;2cd5faf072e6a9ffd386fcc433a16e0dc7879d223c50b437bf5ed599d11c6b71&quot;,
+        &quot;match&quot;: true
+      }
+    ],
+    &quot;nativeReported&quot;: {
+      &quot;browser&quot;: &quot;Chrome/155.0.8059.84&quot;,
+      &quot;standalone&quot;: {
+        &quot;bytes&quot;: 2899536,
+        &quot;sha256&quot;: &quot;91cd57f410eede179cc8f464b717a76cee3d93a115e6e544d23406e86f26e257&quot;
+      },
+      &quot;cases&quot;: 18,
+      &quot;modes&quot;: {
+        &quot;source-http&quot;: 6,
+        &quot;standalone-http&quot;: 6,
+        &quot;standalone-file&quot;: 6
+      },
+      &quot;ids&quot;: {
+        &quot;lab-win-credssp-v6-kerberos&quot;: 3,
+        &quot;lab-win-credssp-binding-rejected&quot;: 3,
+        &quot;lab-win-credssp-logon-denied&quot;: 3,
+        &quot;lab-win-rdp-normal&quot;: 3,
+        &quot;lab-win-rdp-restricted-admin&quot;: 3,
+        &quot;lab-win-rdp-remote-credential-guard&quot;: 3
+      },
+      &quot;pageErrors&quot;: [],
+      &quot;captures&quot;: {
+        &quot;standalone-file-rdp-remote-credential-guard-origin.png&quot;: {
+          &quot;bytes&quot;: 154857,
+          &quot;sha256&quot;: &quot;73cc056fd822d3f7acdaded25af18634097932c283f2801c689cca6c828ce363&quot;,
+          &quot;acceptedVisualEvidence&quot;: true
+        },
+        &quot;attempts/source-http-oversized-studio.png&quot;: {
+          &quot;bytes&quot;: 1011220,
+          &quot;sha256&quot;: &quot;9b8355080b9cbd36e26cc403b8e575452a9d3cc66cbaabfdccc5fb7141680c6d&quot;,
+          &quot;acceptedVisualEvidence&quot;: false
+        },
+        &quot;attempts/source-http-svg-only-crop.png&quot;: {
+          &quot;bytes&quot;: 48752,
+          &quot;sha256&quot;: &quot;413e13969d0df2f38591d2e1244a7d603a2170f06784328cc97bddfd52e52dbd&quot;,
+          &quot;acceptedVisualEvidence&quot;: false
+        },
+        &quot;attempts/standalone-http-sticky-toolbar-overlay.png&quot;: {
+          &quot;bytes&quot;: 148894,
+          &quot;sha256&quot;: &quot;8a0c83007df5537d1030b5bfed1a7c21701dd513906794c6c07455a73c41ca3d&quot;,
+          &quot;acceptedVisualEvidence&quot;: false
+        }
+      },
+      &quot;method&quot;: &quot;Visible scenario search + Enter, exact field-index button click, Home/PageUp/End on the actual seek control; read-only application state uses main-world tab.evaluate.&quot;,
+      &quot;permanentRunnerOrSessionCommandLogSupplied&quot;: false,
+      &quot;independentlyExecuted&quot;: false
+    },
+    &quot;handoff&quot;: {
+      &quot;matchesSourceImplementationDoc&quot;: true,
+      &quot;relativeLinks&quot;: [
+        &quot;../../tools/verification/README.md#smb-correction-recheck&quot;,
+        &quot;../reviewer-handoff/auth-flow-studio-smb311-recheck-review.html&quot;,
+        &quot;../smb-scenarios.json&quot;,
+        &quot;plan-manifest.json&quot;,
+        &quot;windows-protocol.md#win-11---nonblocking-field-history-cleanup&quot;
+      ]
+    },
+    &quot;limitations&quot;: [
+      &quot;Package baseline is reported published commit 4c32a3c; git commit/publication/CI-run history not independently authenticated in this read-only archive review.&quot;,
+      &quot;The 292 omitted source files are historical/superseded evidence, retained in the earlier accepted source archive; their deletion from this smaller package is not a product deletion or rewritten final result.&quot;,
+      &quot;Package status and checksum list are separate supplied attachments, absent from both ZIPs; verification-only handoff loses this metadata.&quot;,
+      &quot;Native report is an interactive-session record and captures, not a supplied executable runner/session trace; this auditor verifies identity and record consistency only.&quot;,
+      &quot;No fresh full suite, numeric vectors, performance, cross-engine, platform interoperability or manual G01 claims.&quot;
+    ],
+    &quot;status&quot;: &quot;pass-with-handoff-limitations&quot;,
+    &quot;archives&quot;: [
+      {
+        &quot;name&quot;: &quot;auth-flow-studio-win11-source.zip&quot;,
+        &quot;files&quot;: 747,
+        &quot;unsafe&quot;: [],
+        &quot;extractedInventoryMatches&quot;: true,
+        &quot;allBytesMatch&quot;: true,
+        &quot;containsPackageStatus&quot;: false,
+        &quot;containsChecksums&quot;: false
+      },
+      {
+        &quot;name&quot;: &quot;auth-flow-studio-win11-verification.zip&quot;,
+        &quot;files&quot;: 14,
+        &quot;unsafe&quot;: [],
+        &quot;extractedInventoryMatches&quot;: true,
+        &quot;allBytesMatch&quot;: true,
+        &quot;containsPackageStatus&quot;: false,
+        &quot;containsChecksums&quot;: false
+      }
+    ]
+  }
+}</pre></details><details><summary>Independent focused test output</summary><pre>✔ Every Windows representative has explicit complete actor coverage at every canonical boundary (132.304002ms)
+✔ W01 response does not disclose NT hash and receipt-only negotiate remains historical (3.123822ms)
+✔ NTLM acceptor retains its transcript, unwraps a candidate key and verifies MIC without sending either field to the DC (13.529005ms)
+✔ credssp-v6-kerberos sealed receipt never grants readable delegated password before unwrap (6.403882ms)
+✔ credssp-v6-ntlm sealed receipt never grants readable delegated password before unwrap (2.592447ms)
+✔ Kerberos client holds opaque ticket without ticket-decryption permission (2.499766ms)
+✔ credssp-v6-kerberos exact delegated credential replay includes the real protected transfer and local recovery observation (2.562092ms)
+✔ credssp-v6-ntlm exact delegated credential replay includes the real protected transfer and local recovery observation (2.550033ms)
+✔ Exact proof and mechanism-key history records authored local verification and use, not inferred operations (5.595547ms)
+✔ All named negative fixtures compile with complete inventory coverage and exact histories at every before/complete cursor (104.691493ms)
+✔ Every actual message receipt has an explicit matching receiver acquisition, and scratch releases remain replayable (113.551615ms)
+✔ Successful NTLM validation returns a distinct validator-owned SessionBaseKey without forwarding its account verifier (16.856996ms)
+✔ Local SAM and accepting application retain distinct stores and receipt histories (3.865396ms)
+✔ A post-disclosure logon denial retains the real host password holding and its exact received history (4.036345ms)
+✔ All three RDP modes have different credential inventories and the correct downstream principal (25.704589ms)
+✔ Remote Guard forwards the same exact KDC reply ciphertext to C, then legitimately installs scoped service material at H (8.812099ms)
+✔ Remote Guard disconnect closes redirection/desktop without revoking already-issued service ticket or resource session (14.061912ms)
+✔ WinRM ACL denial preserves delegated credentials and first-hop session; HTTP has no outer HTTPS objects (22.749622ms)
+✔ WIN-06 KDC authoritative AES principal keys are provisioned, used and never transferred as client-derived or NTLM records (39.459126ms)
+✔ WIN-02 final HTTP resource body and AP-REP share receipt but have separate validated client acquisition (1.932337ms)
+✔ WIN-07 WinRM wire shell/output receipt grants no decoded handle or outcome until protected-response acceptance (24.439513ms)
+✔ WIN-09 shared file results acquire plaintext and outcome knowledge only at H protected-result acceptance (47.49631ms)
+✔ WIN-10 shared AES acceptor key exists first at H and never reaches C before validated AP-REP acquisition (60.88094ms)
+✔ WIN-11 raw CredSSP/RDP field replay starts at H creation without duplicate custody or key transmission (73.512381ms)
+✔ credssp-v6-kerberos pins v6 binding and never creates a logon/session at mechanism or credential receipt (2.906553ms)
+✔ credssp-v6-ntlm pins v6 binding and never creates a logon/session at mechanism or credential receipt (0.902306ms)
+✔ W09 includes independent Kerberos acquisition and validation boundaries; W10 uses NTLM key terminology (0.418824ms)
+✔ W01 has no CredSSP-only nonce/binding artifacts or field definitions (0.146421ms)
+✔ All23 fixed Windows presets meet independently authored terminal predicates (1.112786ms)
+✔ Local account validation uses a separate SAM actor and local IPC without any DC/Kerberos query (0.34347ms)
+✔ Direct trust has two independent secure channels and no validation at uncontacted account authority on route denial (0.365153ms)
+✔ RDP NLA, early authorization and desktop finalization are different boundaries (5.376194ms)
+✔ Required-mode support checks cover both exact modes without ordinary credential fallback (0.782795ms)
+✔ Remote Guard uses actual RDPEAR call pairs with H-to-KDC traffic and scoped host service tickets (0.577565ms)
+✔ WinRM HTTP/HTTPS have identical inner CredSSP boundaries and distinct outer associations; failed second hop preserves shell (0.799611ms)
+✔ Named negative profiles reject exact bad inputs and do not mutate registered definitions or invent success (21.073944ms)
+✔ NTLM successful authority return does not bypass acceptor exported-key recovery and transcript MIC validation (1.693255ms)
+✔ Named reverse-binding negatives mutate exact hash inputs rather than a generic failure switch (2.31044ms)
+✔ Fresh-credential protection is an explicit exact-SPN DenyFreshCredentials policy, not an invented platform-wide ban (0.441089ms)
+✔ WinRM CredSSP body protection uses the inner TLS context; outer HTTP completion is not an inner TSRequest (0.301928ms)
+✔ WIN-01 raw CredSSP NTLM failure remains a v6 TSRequest error and changes client knowledge only at receipt (1.701047ms)
+✔ WIN-02 every HTTP response consumes exactly one pending request, including grouped CredSSP inner records (7.529766ms)
+✔ WIN-03 RESOURCE TargetInfo and CORP response-key/account authority coexist across direct-trust variants (1.408794ms)
+✔ WIN-04 NTLM-only selection cites local configuration, never a bare HTTP mechanism offer (0.527349ms)
+✔ WIN-05 and WIN-07 nondelegating WinRM executes a real protected operation and returns decoded failure without destroying shell (0.426105ms)
+✔ WIN-08 guidance uses the selected authority and mechanism, not generic CORP/Netlogon defaults (0.206042ms)
+✔ WIN-09 winrm-credssp-second-hop accepts the exact resource result before learning or forwarding it (0.362199ms)
+✔ WIN-09 winrm-credssp-http accepts the exact resource result before learning or forwarding it (0.285963ms)
+✔ WIN-09 winrm-resource-denied accepts the exact resource result before learning or forwarding it (0.279674ms)
+✔ WIN-09 rdp-normal accepts the exact resource result before learning or forwarding it (0.140032ms)
+✔ WIN-09 rdp-restricted-admin accepts the exact resource result before learning or forwarding it (0.127133ms)
+✔ WIN-09 rdp-remote-credential-guard accepts the exact resource result before learning or forwarding it (0.272974ms)
+✔ WIN-10 shared Windows AES profiles select a distinct completed context key without rewriting early CredSSP or TLS keys (1.488004ms)
+✔ WIN-10 paths stopping before AP acceptance and all NTLM profiles have no acceptor key (7.413911ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 54
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 867.641612
+
+</pre></details><details><summary>Expected baseline regression failure</summary><pre>✖ WIN-11 raw CredSSP/RDP field replay starts at H creation without duplicate custody or key transmission (13.411562ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 146.198151
+
+✖ failing tests:
+
+test at implementation-review/win11/independent-validation/baseline-win11-regression.test.mjs:363:1
+✖ WIN-11 raw CredSSP/RDP field replay starts at H creation without duplicate custody or key transmission (13.411562ms)
+  AssertionError [ERR_ASSERTION]: lab-win-credssp-v6-kerberos must expose the host origin before client validation
+  
+  &#x27;verify&#x27; !== &#x27;create&#x27;
+  
+      at TestContext.&lt;anonymous&gt; (file:///workspace/scratch/b1e0b9877d92/implementation-review/win11/independent-validation/baseline-win11-regression.test.mjs:382:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: &#x27;ERR_ASSERTION&#x27;,
+    actual: &#x27;verify&#x27;,
+    expected: &#x27;create&#x27;,
+    operator: &#x27;strictEqual&#x27;,
+    diff: &#x27;simple&#x27;
+  }
+
+</pre></details><details><summary>Independent build output</summary><pre>Built dist/auth-flow-studio.html (2899536 bytes)
+
+</pre></details></section></main></body></html>

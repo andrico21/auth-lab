@@ -2,13 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {installHarness,HarnessEvent} from './dom-harness.mjs';
 import {readFileSync} from 'node:fs';
+import {filterScenarioOptions} from '../src/scenario-picker.js';
 const expansionPlan=JSON.parse(readFileSync(new URL('../docs/expansion/plan-manifest.json',import.meta.url),'utf8')).scenarios;
 
 // Interaction tests only: the offline harness does not implement browser layout,
 // screen-reader announcements or the platform's native focus navigation.
 const pickerHarness=installHarness();
 const {AuthFlowStudio}=await import('../src/app.js');
-const {LAB_SCENARIOS,LAB_ATTRIBUTES}=await import('../src/lab-catalog.js');
+const {LAB_SCENARIOS}=await import('../src/lab-catalog.js');
 const {LEARNING_PRESETS}=await import('../src/learning-presets.js');
 const pickerAllIds=[...new Set([...LEARNING_PRESETS.map(preset=>preset.id),'core',...LAB_SCENARIOS.map(model=>model.id)])];
 const {clock,document}=pickerHarness;
@@ -22,25 +23,18 @@ function pickerIds(app){return pickerRows(app).map(row=>row.dataset.scenarioOpti
 function pickerOpen(app){pickerInput(app).dispatchEvent(new HarnessEvent('focusin'));}
 function pickerType(app,value){const input=pickerInput(app);input.value=value;input.dispatchEvent(new HarnessEvent('input'));}
 function pickerKey(app,key){const event=new HarnessEvent('keydown',{key});pickerInput(app).dispatchEvent(event);return event;}
-function pickerTitle(app,id){return pickerText(app.refs['lab-scenario'].querySelector('[value="'+id+'"]'));}
+function pickerTitle(app,id){const option=app.scenarioPicker.options.find(option=>option.id===id);assert.ok(option,'selected scenario has picker metadata');return option.selectedLabel||option.title;}
 function pickerActive(app){const id=pickerInput(app).getAttribute('aria-activedescendant');return id?app.querySelector('#'+id):null;}
 function pickerChoose(app,id){const row=pickerRows(app).find(option=>option.dataset.scenarioOption===id);assert.ok(row,'matching scenario is selectable');row.click();}
-const pickerCanonical=name=>String(name).replace(/\s*\([^)]*\)/g,'').trim();
-function pickerExpected(query){const terms=query.toLowerCase().trim().split(/\s+/);return LAB_SCENARIOS.filter(model=>{
-  const text=[model.id,model.title,model.summary,model.category,model.status,model.protocol||'oidc',model.workspace,model.family,model.keywords,model.lesson,model.evidenceLabel,model.learningObjective,...(model.prerequisites||[]),model.profile?JSON.stringify(model.profile):'',...model.ids.flatMap(id=>[pickerCanonical(LAB_ATTRIBUTES[id]?.name||id),LAB_ATTRIBUTES[id]?.standard])].join(' ').toLowerCase();
-  return terms.every(term=>text.includes(term));
-}).map(model=>model.id);}
 
-test('the scenario field exposes an inline combobox while preserving the complete native selection contract',()=>{
+test('the scenario field exposes the complete journey inventory through an inline combobox',()=>{
   const app=pickerMount();try{
     const input=pickerInput(app),menu=pickerMenu(app),list=app.querySelector('#lab-scenario-results'),status=app.querySelector('#lab-scenario-search-status');
     assert.ok(app.querySelector('#lab-scenario-picker'));assert.ok(input);assert.ok(menu);assert.ok(status);
     assert.equal(input.getAttribute('role'),'combobox');assert.equal(input.getAttribute('aria-expanded'),'false');assert.equal(input.getAttribute('aria-controls'),list.id);assert.equal(list.getAttribute('role'),'listbox');assert.equal(menu.hidden,true);
-    const options=app.refs['lab-scenario'].querySelectorAll('option').map(option=>option.getAttribute('value'));
-    assert.deepEqual(options.slice().sort(),pickerAllIds.slice().sort());assert.equal(new Set(options).size,pickerAllIds.length);
-    assert.equal(app.refs['lab-scenario'].hidden,true,'the old native selector is retained without a duplicate visible control');
-    assert.equal(input.value,pickerTitle(app,'basic-keycloak'));
-    pickerOpen(app);assert.equal(menu.hidden,false);assert.equal(input.getAttribute('aria-expanded'),'true');assert.equal(pickerRows(app).length,pickerAllIds.length);assert.equal(pickerIds(app)[0],'basic-keycloak','the basic sign-in preset is the first suggestion');
+    assert.equal(input.value,pickerTitle(app,'basic-keycloak'));assert.equal(app.scenarioPicker.selectedId,app.labScenarioId);
+    pickerOpen(app);assert.equal(menu.hidden,false);assert.equal(input.getAttribute('aria-expanded'),'true');
+    assert.deepEqual(pickerIds(app).slice().sort(),pickerAllIds.slice().sort());assert.equal(new Set(pickerIds(app)).size,pickerAllIds.length);assert.equal(pickerIds(app)[0],'basic-keycloak','the basic sign-in preset is the first suggestion');
     assert.ok(pickerRows(app).every(row=>row.getAttribute('role')==='option'&&row.id),'results have usable option identities');
     assert.ok(status.getAttribute('aria-live')||status.getAttribute('role')==='status','result feedback can be announced');
   }finally{pickerUnmount(app);}
@@ -63,12 +57,18 @@ test('independently planned expansion presets are discoverable and cross-protoco
   }finally{pickerUnmount(app);}
 });
 
-test('inline search matches case-insensitive terms across titles, categories, status and canonical attributes',()=>{
+test('inline search matches folded terms, canonical fields and named cases without activating a result',()=>{
   const app=pickerMount();try{
     pickerOpen(app);
-    for(const query of ['SAML ARTIFACT','DPoP nonce','CODE_VERIFIER','Standards only','token session lifecycle','LAB-WIN-CREDSSP-V6-KERBEROS']){
-      pickerType(app,query);const expected=pickerExpected(query);assert.ok(expected.length,'the query has actual scenario matches');
-      assert.deepEqual(pickerIds(app).filter(id=>LAB_SCENARIOS.some(model=>model.id===id)).slice().sort(),expected.slice().sort(),query+' matches every requested term across scenario metadata');
+    for(const [query,included,excluded] of [
+      ['SAML ARTIFACT','lab-saml-artifact','lab-dpop'],
+      ['DPoP nonce','lab-dpop','lab-smb-nonjoined-kerberos'],
+      ['CODE_VERIFIER','lab-mcp02','lab-ad-first-sign-in'],
+      ['LAB-WIN-CREDSSP-V6-KERBEROS','lab-win-credssp-v6-kerberos','lab-win-credssp-v6-ntlm'],
+      ['post-change-account-denied','lab-llog04','lab-llog01'],
+    ]){
+      pickerType(app,query);const matches=pickerIds(app);
+      assert.ok(matches.includes(included),query+' finds its declared journey');assert.equal(matches.includes(excluded),false,query+' excludes a different protocol/case');
       assert.equal(app.labScenarioId,'basic-keycloak','search itself never chooses a scenario');
     }
     pickerType(app,'artifact');pickerChoose(app,'lab-saml-artifact');assert.equal(app.labScenarioId,'lab-saml-artifact');assert.equal(pickerMenu(app).hidden,true);assert.equal(pickerInput(app).value,pickerTitle(app,'lab-saml-artifact'));
@@ -114,11 +114,12 @@ test('Escape, Tab and outside focus dismiss a query and restore the selected tit
   }finally{pickerUnmount(app);}
 });
 
-test('native, catalog and programmatic selections all synchronize the inline scenario title',()=>{
+test('visible picker, catalog and programmatic selections synchronize the inline scenario title and identity',()=>{
   const app=pickerMount();try{
-    const native=app.refs['lab-scenario'];native.value='lab-dpop';native.dispatchEvent(new HarnessEvent('change'));assert.equal(pickerInput(app).value,pickerTitle(app,'lab-dpop'));
-    pickerOpen(app);pickerType(app,'nonce');app.refs['lab-cards'].querySelector('[data-lab-scenario="lab-saml-artifact"]').click();assert.equal(app.labScenarioId,'lab-saml-artifact');assert.equal(pickerInput(app).value,pickerTitle(app,'lab-saml-artifact'));assert.equal(pickerMenu(app).hidden,true);
-    app.selectLabScenario('lab-bff-api');assert.equal(pickerInput(app).value,pickerTitle(app,'lab-bff-api'));app.selectLabScenario('this-id-does-not-exist');assert.equal(pickerInput(app).value,pickerTitle(app,'lab-bff-api'));
+    pickerOpen(app);pickerType(app,'DPoP nonce');pickerChoose(app,'lab-dpop');assert.equal(app.labScenarioId,'lab-dpop');assert.equal(app.scenarioPicker.selectedId,'lab-dpop');assert.equal(pickerInput(app).value,pickerTitle(app,'lab-dpop'));
+    app.querySelector('#ready-journeys').open=true;app.querySelector('#lab-open').click();
+    pickerOpen(app);pickerType(app,'nonce');app.refs['lab-cards'].querySelector('[data-lab-scenario="lab-saml-artifact"]').click();assert.equal(app.labScenarioId,'lab-saml-artifact');assert.equal(app.scenarioPicker.selectedId,'lab-saml-artifact');assert.equal(pickerInput(app).value,pickerTitle(app,'lab-saml-artifact'));assert.equal(pickerMenu(app).hidden,true);
+    app.selectLabScenario('lab-bff-api');assert.equal(app.scenarioPicker.selectedId,'lab-bff-api');assert.equal(pickerInput(app).value,pickerTitle(app,'lab-bff-api'));app.selectLabScenario('this-id-does-not-exist');assert.equal(app.labScenarioId,'lab-bff-api');assert.equal(app.scenarioPicker.selectedId,'lab-bff-api');assert.equal(pickerInput(app).value,pickerTitle(app,'lab-bff-api'));
   }finally{pickerUnmount(app);}
 });
 
@@ -128,7 +129,7 @@ test('typing into a closed field preserves the query, including immediately afte
     pickerChoose(app,'lab-saml-artifact');assert.equal(pickerMenu(app).hidden,true);assert.equal(app.labScenarioId,'lab-saml-artifact');
     // Clicking an option keeps focus in the editable field in the real browser;
     // the next input event must work even though no new focusin event fires.
-    pickerType(app,'DPoP nonce');assert.equal(pickerMenu(app).hidden,false);assert.equal(pickerInput(app).value,'DPoP nonce');assert.deepEqual(pickerIds(app).filter(id=>LAB_SCENARIOS.some(model=>model.id===id)).slice().sort(),pickerExpected('DPoP nonce').slice().sort());assert.equal(app.labScenarioId,'lab-saml-artifact','a reopened search still does not select a result');
+    pickerType(app,'DPoP nonce');assert.equal(pickerMenu(app).hidden,false);assert.equal(pickerInput(app).value,'DPoP nonce');assert.ok(pickerIds(app).includes('lab-dpop'));assert.equal(pickerIds(app).includes('lab-saml-artifact'),false);assert.equal(app.labScenarioId,'lab-saml-artifact','a reopened search still does not select a result');
   }finally{pickerUnmount(app);}
 });
 
@@ -149,4 +150,18 @@ test('the first Basic Keycloak sign-in preset shows a single-realm browser passw
     const broker=app.refs.actors.querySelector('[data-actor="realmB"]');assert.ok(!broker||broker.hidden,'the single-realm preset does not display a second identity provider');
     assert.ok(app.steps.every(step=>![step.from,step.to].includes('realmB')),'there is no upstream broker');assert.ok(app.steps.every(step=>!step.fields.some(id=>['codeB','clientIdBroker','otpCode','otpSecret','credentialPrivateKey','assertionSignature'].includes(id))),'no second-realm exchange, OTP or passkey factor is inserted');
   }finally{pickerUnmount(app);}
+});
+
+test('repeated folded search reflects changes to the actual option metadata',()=>{
+  const option={id:'mutable',title:'Café sign-in',category:'Web',summary:'Code with PKCE',searchText:'code_verifier'},options=[option];
+  const ids=query=>filterScenarioOptions(options,query).map(value=>value.id);
+  assert.deepEqual(ids('CAFE code_verifier'),['mutable']);
+  option.title='Directory logon';
+  assert.deepEqual(ids('cafe'),[]);
+  option.searchText='kerberos ticket';
+  assert.deepEqual(ids('directory ticket'),['mutable']);
+  assert.deepEqual(ids('code_verifier'),[]);
+  option.category='Mac';option.summary='Platform SSO';
+  assert.deepEqual(ids('mac platform'),['mutable']);
+  assert.deepEqual(ids('web pkce'),[]);
 });

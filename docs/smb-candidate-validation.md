@@ -4,7 +4,7 @@
 
 Version: 1.2.1-smb.1. Standalone: **2,898,880 bytes**, SHA-256 `9a3fc759c77502b52dd7b4d5da0851d706b36e7a0bf0afbe73aca0555798e924`.
 
-The immutable requesting review, SHA-256 `c67d9fa079e9af33d3d8f392028702a898d2f0e401fb92643aa72d81d56a6abe`, closed the original nineteen findings. The subsequent accepting review, SHA-256 `d83a8930e52a4f6e7630e7cee7a71dfac116bb15305ef9795f025fa71bf3128c`, independently closes NET-05, WIN-09, WIN-10 and SMB-R01 and retains those earlier closures. WIN-11 is a nonblocking P3 follow-up queued for the next small cleanup. The accepted standalone and archives are unchanged.
+The immutable requesting review, SHA-256 `c67d9fa079e9af33d3d8f392028702a898d2f0e401fb92643aa72d81d56a6abe`, closed the original nineteen findings. The subsequent accepting review, SHA-256 `d83a8930e52a4f6e7630e7cee7a71dfac116bb15305ef9795f025fa71bf3128c`, independently closes NET-05, WIN-09, WIN-10 and SMB-R01 and retains those earlier closures. That review deferred the nonblocking P3 WIN-11 follow-up; its [separate independent review](reviewer-handoff/auth-flow-studio-win11-independent-review.html) now accepts its bounded repair against HTML `91cd57f410eede179cc8f464b717a76cee3d93a115e6e544d23406e86f26e257`. The original accepted standalone, archives and execution reports remain unchanged, with the later acceptance recorded in its own sidecar.
 
 Fresh checks use Bun, not Node:
 

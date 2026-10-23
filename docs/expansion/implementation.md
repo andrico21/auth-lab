@@ -1,8 +1,51 @@
-# Expansion and SMB review-correction handoff
+# Expansion, SMB and WIN-11 implementation handoff
 
-The [independent acceptance recheck](../reviewer-handoff/auth-flow-studio-smb311-recheck-review.html) accepts NET-05, WIN-09, WIN-10 and SMB-R01 and preserves all original nineteen closures in their reported scope. No new blocking defect was found in the reviewed changes. All twelve SMB scenarios and the supplied favicon remain intact. WIN-11 is a nonblocking P3 field-history omission queued for the next small cleanup, not a reason to reopen WIN-10. Publication uses the unchanged reviewed application bytes. Post-acceptance changes are limited to review/closure/publication documentation and the CI/QA setup-command correction noted below. The original reviewed archives and run evidence remain unchanged. Manual G01 and the broader/performance gates remain open.
+Published checkpoint `4c32a3c` preserves the application accepted by the [independent acceptance recheck](../reviewer-handoff/auth-flow-studio-smb311-recheck-review.html): NET-05, WIN-09, WIN-10 and SMB-R01 accepted, all original nineteen closures preserved, no new blocking defect in those reviewed changes. All twelve SMB scenarios and the supplied favicon remain intact. The subsequent [independent WIN-11 review](../reviewer-handoff/auth-flow-studio-win11-independent-review.html) accepts the bounded follow-up below, bringing the independently closed total to 24 scoped findings without reopening earlier closures. The original reviewed archives and run evidence remain unchanged. Manual G01 and broader/performance gates remain open; acceptance is not publication authorization.
 
 Publication CI correction (21 October 2026): the [first CI run](https://github.com/andrico21/auth-lab/actions/runs/39648583034) stopped before vectors/tests because `bun --cwd ... install` was interpreted as a script named `install`. The workflow and current QA instructions now use `bun install --cwd ...`; the vector reporter's setup-command metadata is corrected too. The exact frozen-install command succeeded with Bun 1.4.2 without dependency changes, followed by 31/31 passing numeric cases via `bun run verify:crypto`. No application code, tests or numeric inputs changed. Historical JSON reports retain their original setup-command strings and runner hashes; use the corrected current instructions when regenerating evidence.
+
+## WIN-11 field-history follow-up
+
+- Status: independently accepted for bounded WIN-11 scope by the supplied review, SHA-256 `e1c7af3b593161ab4cb49792a3f044e52760a27e3383f7a4cc8eb1fd21064177`. Branch `fix/win11-field-history` starts from published `origin/main` commit `4c32a3c12f408485e06331586381fb80dcdb8307`, not the older local `main`. No candidate commit, push or deployment has been performed or newly authorized.
+- Accepted WIN-11 standalone: **2,899,536 bytes**, SHA-256 `91cd57f410eede179cc8f464b717a76cee3d93a115e6e544d23406e86f26e257`. It is separate from the accepted and still-published `9a3fc759...` release below; preserve both exact baselines for the next plan.
+- Scope: the [six fixed CredSSP/RDP presets and seven named derivatives](windows-protocol.md#win-11---nonblocking-field-history-cleanup), thirteen acceptor-subkey cases only. Named derivatives remain test-only profiles; no hidden UI toggle or extra catalog choice is added. Related missing creator origins for other keys remain unchanged and are explicitly disclosed below.
+- Change: one H-local plain `create` operation precedes AP-REP wire operations and uses the existing acceptor-subkey artifact, source event, value and exact-value reference. The packet object list, canonical create/acquire effects, client verification boundary, early/completed-context keys and ticket-key protection are unchanged.
+- Failing-before regression: the real field-trace consumer began at C's `verify` instead of H's `create`. The retained log records that failure. After the fix, **54 focused Windows tests across two files pass**, including one WIN-11 regression covering all thirteen cases.
+- Runtime comparison: all **62 fixed/named Windows profiles** retain byte-equivalent serialized canonical inventory ledgers, wire payloads/layers/protocol effects and all pre-existing field operations. Only the intended thirteen field ledgers gain the local creation; their prior replay suffixes are identical.
+- Native Chromium **155.0.8059.84**: the six fixed presets pass actual picker/field/range-control interaction in source HTTP, standalone HTTP and standalone `file:` mode, **18 UI cases at 1480 x 1000**. Each shows the H-local origin with no C key possession there, then one plain key holding per peer after validated client acquisition. No browser page errors were recorded. The retained RCG origin image uses 1480 x 1600 solely to capture the full map panel without sticky-toolbar screenshot overlap.
+- Current evidence: `docs/verification/win11/`. The source/verification ZIP identities and extracted-source Bun 1.4.2 rebuild gate are recorded separately in the external reviewer folder's `review-package-status.json`; accepted predecessor packages are not overwritten.
+
+Focused regeneration, using the pinned Bun 1.4.2 executable:
+
+```sh
+bun test --isolate --timeout=900000 tests/windows-auth-lab.test.mjs tests/held-object-windows.test.mjs
+bun build.mjs
+```
+
+For native reproduction, open the source or standalone, choose each listed fixed preset through the visible scenario picker, select **Windows AES acceptor subkey** in the attribute index, and seek through the three local moments. The first is H's creation at AP-REP, the second is C's validated acquisition, and the last is H's accepted context. No field-only moment is a wire transfer. Use the focused regression for the seven explicitly test-only derivatives.
+
+The independent reviewer ran 54 focused tests under Node v24.19.0, confirmed the failing-baseline sensitivity, compared all 62 Windows profiles and exercised three mounted field replays. Its inspection of the worker's eighteen native cases did not independently rerun them. The acceptance sidecar records the exact reviewed HTML/source/verification hashes and twelve product-input hash checks; recording acceptance did not rebuild or rerun unchanged code. No new full 87-file suite, numeric vectors, broad browser matrix, performance comparison, cross-engine/live Windows interoperability or manual G01 is claimed.
+
+Separate pre-publication issue, not changed by WIN-11: `pages.yml` currently deploys main pushes independently of CI. The initial `0252153` Pages run succeeded while its CI failed at setup. Gate Pages on successful main-push CI before a future publication; do not mix that pipeline change into this field-history review or claim it is already fixed.
+
+### Known siblings: unchanged and outside WIN-11 scope
+
+This is not a general repair of every generated key's field history. The shared wire helper derives operations from transmitted `objects`; a key listed only in `creates` can retain correct canonical custody while omitting its creator-local field operation. A focused inspection of three representative presets confirms the following unfixed examples. The table uses W20 `lab-win-winrm-credssp-second-hop`; C/H/D mean `winClient`/`winHost`/`winDC`.
+
+| Key kind | Canonical creator / creation event | First field-only moment currently exposed |
+| --- | --- | --- |
+| `tgt-key` | D / `as-reply` | C `store` at `as-verify` |
+| `ticket-session-key` | D / `tgs-reply` | C `store` at `ticket-verify` |
+| `downstream-tgt-key` | D / `downstream-as-reply` | H `store` at `downstream-as-verify` |
+| `downstream-session-key` | D / `downstream-tgs-reply` | H `store` at `downstream-ticket-verify` |
+| `tls-inner-key` | C / `inner-tls` | C `verify` at `inner-tls`, without a local creation entry |
+| `outer-tls-key` | C / `outer-https` | No field-only replay moments |
+
+These are known sibling omissions, unchanged and outside the bounded WIN-11 acceptor-subkey fix. They are not claimed fixed, independently accepted or exhaustively audited. `docs/verification/win11/known-sibling-origins.json` retains the actual consumer results, collector program and corrected acceptor-key controls. The existing before/after comparison shows the sibling operation ledgers were not changed by this patch.
+
+A broader creator-origin projection fix would require a separately agreed scope. It must use the artifact's actual creator, not blindly the carrier sender: the grouped TLS response is H-to-C while these TLS keys declare C as creator. It must preserve verification operations, wire membership and canonical create/acquire effects rather than placing secret keys in transmitted `objects`.
+
+
 
 ## Accepted baseline and fixed scope
 
@@ -43,7 +86,7 @@ Current native coverage remains targeted: source HTTP, standalone HTTP and stand
 
 Acceptance recording matched all 154 application/build/configuration/test/asset files against the reviewed source package and matched the standalone and both reviewed ZIP hashes. No product code or tests changed, and no new build, suite or browser run was performed. Original reports, disposition, captures and package metadata remain immutable evidence for their recorded execution.
 
-WIN-11 is queued with its full [six-fixed/seven-derived scope and constraints](windows-protocol.md#win-11---queued-nonblocking-field-history-cleanup). Its raw CredSSP/RDP field-only path omits H's local acceptor-key creation; exact held history, key custody and completed-context selection are already correct. Do not add the plain key to transmitted packet objects. The broader next-plan scope in the preserved acceptance review remains queued.
+The accepted review originally deferred WIN-11 with its [six-fixed/seven-derived scope and constraints](windows-protocol.md#win-11---nonblocking-field-history-cleanup). The separate working-tree follow-up above now exposes H's local acceptor-key origin without changing the already-correct held history, custody or completed-context selection. WIN-11 still awaits its independent recheck. The broader next-plan scope in the preserved acceptance review remains queued.
 
 ## Reviewed predecessor: original nineteen closures
 

@@ -169,7 +169,7 @@ test('F05: active-step overlays and focused CTAP transfers show canonical member
       assert.equal(control.disabled, false, id + ' is available for configuration');
       control.value = value; control.dispatchEvent(new HarnessEvent('change'));
     };
-    select('lab-scenario', 'core');
+    app.selectLabScenario('core');
     select('mode', 'passkey');
     for (const [id, value] of [['architecture', 'web'], ['upstream', 'external'], ['authenticator', 'yubikey'], ['app-protocol', 'oidc'], ['broker-protocol', 'oidc'], ['oidc-flow', 'authorization-code']]) select(id, value);
     for (const mode of ['passkey', 'enrollment', 'fido-login', 'fido-enrollment']) {

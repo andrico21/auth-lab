@@ -7,7 +7,7 @@ import {installHarness,HarnessEvent} from './dom-harness.mjs';
 // cryptography, a browser layout engine or native authentication devices.
 const universalHarness=installHarness();
 const {AuthFlowStudio}=await import('../src/app.js');
-const {LAB_SCENARIOS:ALL_LAB_SCENARIOS,LEGACY_LAB_SCENARIOS:LAB_SCENARIOS,LAB_ATTRIBUTES}=await import('../src/lab-catalog.js');
+const {LAB_SCENARIOS:ALL_LAB_SCENARIOS,LEGACY_LAB_SCENARIOS,LAB_ATTRIBUTES}=await import('../src/lab-catalog.js');
 const {LEARNING_PRESETS}=await import('../src/learning-presets.js');
 const {GRAPH_WIDTH,GRAPH_HEIGHT,CARD_BOUNDS}=await import('../src/layout.js');
 const {clock,document}=universalHarness;
@@ -16,24 +16,32 @@ const universalLegacyControls=['mode','authenticator','architecture','upstream',
 function universalMount(){const app=new AuthFlowStudio();document.body.appendChild(app);app.connectedCallback();return app;}
 function universalUnmount(app){app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();}
 function universalSelect(app,id,value){const control=app.querySelector('#'+id);assert.ok(control,id+' selector exists');control.value=value;control.dispatchEvent(new HarnessEvent('change'));}
+function universalChoose(app,id){
+  const input=app.querySelector('#lab-scenario-search');input.value=id;input.dispatchEvent(new HarnessEvent('input'));
+  const option=app.querySelector('#lab-scenario-results').querySelector('[data-scenario-option="'+id+'"]');assert.ok(option,id+' is selectable in the visible chooser');option.click();
+  assert.equal(app.labScenarioId,id);assert.equal(app.scenarioPicker.selectedId,id);
+}
 function universalToggle(app,id,value){const control=app.querySelector('#'+id);control.checked=value;control.dispatchEvent(new HarnessEvent('change'));}
 function universalFinish(app){clock.until(()=>app.player.status!=='playing');}
 function universalHover(node){assert.ok(node,'hover target exists');node.dispatchEvent(new HarnessEvent('mouseover',{relatedTarget:null}));}
 function universalTrace(app,id){app.selectAttribute(id,false);assert.equal(app.attributeSelection,id);assert.ok(app.traceQueue.length,id+' has real operations');return app.traceQueue;}
 
-test('the universal selector exposes every model with its own participants, support note and primary source',()=>{
+test('the visible chooser exposes every registered journey without duplicate choices',()=>{
   const app=universalMount();try{
-    assert.equal(LAB_SCENARIOS.length,43,'all 43 extended scenarios are registered');
-    const options=app.refs['lab-scenario'].querySelectorAll('option').map(option=>option.getAttribute('value'));
+    app.scenarioPicker.open();
+    const options=app.querySelector('#lab-scenario-results').querySelectorAll('[data-scenario-option]').map(option=>option.dataset.scenarioOption);
     const expectedIds=[...new Set([...LEARNING_PRESETS.map(preset=>preset.id),'core',...ALL_LAB_SCENARIOS.map(model=>model.id)])];
-    assert.deepEqual(options.slice().sort(),expectedIds.sort());assert.equal(options.length,54+ALL_LAB_SCENARIOS.length-LAB_SCENARIOS.length,'ready-to-run presets and extended models have no duplicate choices');
-    assert.equal(new Set(options).size,options.length);
-    for(const model of LAB_SCENARIOS){
-      universalSelect(app,'lab-scenario',model.id);assert.equal(app.labModel,model);assert.equal(app.labScenarioId,model.id);
+    assert.deepEqual(options.slice().sort(),expectedIds.sort());assert.equal(new Set(options).size,options.length);
+  }finally{universalUnmount(app);}
+});
+
+test('legacy-web models project their participants, support notes and primary sources',()=>{
+  const app=universalMount();try{
+    for(const model of LEGACY_LAB_SCENARIOS){
+      universalChoose(app,model.id);assert.equal(app.labModel,model);
       assert.deepEqual(app.steps.map(step=>step.id),model.steps(app.protocolConfig()).map(step=>step.id));
       assert.equal(app.refs.timeline.querySelectorAll('[data-step]').length,app.steps.length);
       for(const id of universalLegacyControls)assert.equal(app.refs[id].disabled,true,model.id+' fixes '+id+' to its own policy');
-      assert.equal(universalText(app.refs.mode.querySelector('[value="'+app.mode+'"]')),'Defined by this scenario');
       const preset=LEARNING_PRESETS.find(preset=>preset.id===model.id);
       assert.equal(app.querySelector('#scenario-title').textContent,preset?.title||model.title);
       assert.equal(app.querySelector('#scenario-description').textContent,preset?.summary||model.summary);
@@ -49,11 +57,11 @@ test('the universal selector exposes every model with its own participants, supp
   }finally{universalUnmount(app);}
 });
 
-test('all extended demos complete in exact model order and update the names-only overlay for each stage',()=>{
+test('legacy-web demos complete in exact model order and update the names-only overlay for each stage',()=>{
   const app=universalMount();try{
     app.player.setSpeed(4);
-    for(const model of LAB_SCENARIOS){
-      app.clearAttribute();universalSelect(app,'lab-scenario',model.id);const seen=[];
+    for(const model of LEGACY_LAB_SCENARIOS){
+      app.clearAttribute();universalChoose(app,model.id);const seen=[];
       const unsubscribe=app.player.subscribe(event=>{if(event.type!=='step')return;seen.push(event.step.id);
         const overlay=app.refs['step-attributes'];if(!event.step.attributeOperations.some(op=>op.kind!=='inspect')){assert.equal(overlay.hidden,true,'plain UI actions have no protocol-attribute context');return;}assert.equal(overlay.hidden,false,model.id+' stage '+event.step.id+' has names-only context');assert.equal(overlay.dataset.step,event.step.id);
         const names=overlay.querySelectorAll('code').map(universalText);assert.ok(names.length);let rest=overlay.textContent;for(const name of names)rest=rest.replace(name,'');assert.equal(rest.trim(),'','context lists names without values or descriptions');
@@ -65,22 +73,23 @@ test('all extended demos complete in exact model order and update the names-only
   }finally{universalUnmount(app);}
 });
 
-test('catalog browsing searches scenario titles and attributes and opens the selected model',()=>{
+test('legacy-web catalog browsing searches titles and attributes and opens the selected model',()=>{
   const app=universalMount();try{
-    assert.equal(app.refs['lab-cards'].querySelectorAll('[data-lab-scenario]').length,LAB_SCENARIOS.length);
-    app.querySelector('#lab-open').click();assert.equal(app.refs['lab-catalog'].open,true);
+    const initialIds=app.refs['lab-cards'].querySelectorAll('[data-lab-scenario]').map(card=>card.dataset.labScenario);
+    assert.ok(initialIds.includes('lab-saml-artifact'));assert.ok(initialIds.every(id=>ALL_LAB_SCENARIOS.some(model=>model.id===id)));
+    app.querySelector('#ready-journeys').open=true;app.querySelector('#lab-open').click();assert.equal(app.refs['lab-catalog'].open,true);
     const search=app.refs['lab-search'];search.value='Artifact';search.dispatchEvent(new HarnessEvent('input'));
     const artifact=app.refs['lab-cards'].querySelector('[data-lab-scenario="lab-saml-artifact"]');assert.ok(artifact);artifact.querySelector('strong').click();assert.equal(app.labModel.id,'lab-saml-artifact');
     assert.equal(app.refs['lab-cards'].querySelector('[data-lab-scenario="lab-saml-artifact"]').getAttribute('aria-pressed'),'true');
     search.value='code_verifier';search.dispatchEvent(new HarnessEvent('input'));assert.ok(app.refs['lab-cards'].querySelector('[data-lab-scenario="lab-bff-api"]'),'parameter-name searches find actual owning models');
     search.value='zzzz-no-such-scenario-zzzz';search.dispatchEvent(new HarnessEvent('input'));assert.equal(app.refs['lab-cards'].querySelectorAll('[data-lab-scenario]').length,0);assert.match(universalText(app.refs['lab-cards']),/No matching scenarios/);
-    search.value='';search.dispatchEvent(new HarnessEvent('input'));assert.equal(app.refs['lab-cards'].querySelectorAll('[data-lab-scenario]').length,LAB_SCENARIOS.length);
+    search.value='';search.dispatchEvent(new HarnessEvent('input'));assert.deepEqual(app.refs['lab-cards'].querySelectorAll('[data-lab-scenario]').map(card=>card.dataset.labScenario),initialIds);
   }finally{universalUnmount(app);}
 });
 
-test('scenario-specific scalar fields and topics offer working switches from an inactive index',()=>{
+test('legacy-web scalar fields and topics offer working switches from an inactive index',()=>{
   const app=universalMount();try{
-    for(const model of LAB_SCENARIOS){
+    for(const model of LEGACY_LAB_SCENARIOS){
       app.clearAttribute();app.selectLabScenario('core');
       const id=model.ids[0],field=app.refs['attribute-index'].querySelector('[data-index-attribute="'+id+'"]');assert.ok(field,id+' appears in the separate attribute index');field.click();
       assert.equal(app.attributeSelection,id);assert.equal(app.traceQueue.length,0,'extended scalar has no fabricated core operations');
@@ -115,13 +124,12 @@ test('inactive lab fields retain their exact participant identity instead of ali
     const helper=app.refs.inspector.querySelector('[data-trace-lab="lab-saml-sp-slo"]');assert.ok(helper,'the actual second-SP lifecycle is offered');helper.click();
     assert.equal(app.labModel.id,'lab-saml-sp-slo');assert.equal(app.attributeSelection,id);assert.ok(app.traceQueue.length);assert.ok(app.traceQueue.every(moment=>moment.payload.every(p=>p.attributeId===id&&p.value==='pairwise-person-for-sp2')));
     app.player.stop();app.clearAttribute();app.selectLabScenario('lab-hybrid');app.selectAttribute('branchExternalIssuer',false);assert.equal(app.attributeSelection,'branchExternalIssuer','an upstream issuer must never become the realm issuer merely because both claims are iss');assert.equal(app.traceQueue.length,0);assert.ok(app.refs.inspector.querySelector('[data-trace-lab="lab-broker-account-link"]'));
-    app.selectAttribute('codeVerifier',false);assert.equal(app.attributeSelection,'branchVerifier','the existing core alias still selects the current model’s canonical PKCE proof');assert.ok(app.traceQueue.length);
   }finally{universalUnmount(app);}
 });
 
-test('participant and parameter hovers expose complete model metadata with API and secondary-SP roles',()=>{
+test('legacy-web participant and parameter hovers expose metadata with API and secondary-SP roles',()=>{
   const app=universalMount();try{
-    for(const model of LAB_SCENARIOS){
+    for(const model of LEGACY_LAB_SCENARIOS){
       app.clearAttribute();app.selectLabScenario(model.id);
       for(const card of app.refs.actors.querySelectorAll('[data-actor]')){
         universalHover(card.querySelector('.actor-art'));const actor=app.actor(card.dataset.actor),popup=app.refs['actor-popup'];assert.equal(popup.hidden,false);assert.ok(universalText(popup).includes(actor.name));
@@ -165,6 +173,7 @@ test('participant movement clamps to the canvas, rejects card collisions and rec
     const after=app.refs.connections.querySelectorAll('.connection-line').map(node=>node.getAttribute('d'));assert.notDeepEqual(after,before,'routing is recomputed after movement');assert.equal(app.refs['step-attributes'].hidden,false);assert.equal(app.refs['step-attributes'].dataset.step,app.steps[wire].id);
     assert.equal(app.moveActor('no-such-actor',2,3),false);assert.equal(app.moveActor('app',NaN,100),false);
     assert.equal(app.moveActor('app',10000,10000),true);assert.deepEqual(app.positions.app,{x:GRAPH_WIDTH-CARD_BOUNDS.width/2-24,y:GRAPH_HEIGHT-CARD_BOUNDS.height/2-24});
+    app.querySelector('#advanced-configuration').open=true;
     app.querySelector('#layout-reset').click();assert.deepEqual(app.positions,initial);assert.equal(app.player.status,'paused');assert.equal(app.refs['step-attributes'].hidden,false);
     app.selectLabScenario('lab-saml-artifact');assert.ok(!app.customLayouts[app.layoutKey],'scenario layouts are isolated');app.selectLabScenario('lab-api-errors');assert.deepEqual(app.positions,initial,'reset persists on return to the scenario');
   }finally{universalUnmount(app);}
@@ -184,6 +193,6 @@ test('moving participants supports explicit pointer and keyboard controls and co
     card.dispatchEvent(new HarnessEvent('pointermove',{pointerId:8,clientX:103,clientY:100}));assert.deepEqual(app.positions.app,before,'another pointer cannot move the selected card');
     card.dispatchEvent(new HarnessEvent('pointermove',{pointerId:7,clientX:103,clientY:100}));assert.deepEqual(app.positions.app,{x:before.x+3*GRAPH_WIDTH/graphWidth,y:before.y});
     card.dispatchEvent(new HarnessEvent('pointerup',{pointerId:7}));assert.equal(app.dragState,null);assert.equal(card.classList.contains('is-dragging'),false);
-    app.selectLabScenario('lab-saml-metadata');app.selectLabScenario('lab-spa-api');universalSelect(app,'lab-scenario','core');assert.equal(app.labModel,null);for(const key of keys)assert.equal(app[key],saved[key],key+' returns to its prior core preference');assert.equal(app.refs['show-step-attributes'].checked,false);assert.equal(app.refs['lab-support'].hidden,true);assert.equal(app.refs.mode.disabled,false);
+    app.selectLabScenario('lab-saml-metadata');app.selectLabScenario('lab-spa-api');universalChoose(app,'core');assert.equal(app.labModel,null);for(const key of keys)assert.equal(app[key],saved[key],key+' returns to its prior core preference');assert.equal(app.refs['show-step-attributes'].checked,false);assert.equal(app.refs['lab-support'].hidden,true);assert.equal(app.refs.mode.disabled,false);
   }finally{universalUnmount(app);}
 });

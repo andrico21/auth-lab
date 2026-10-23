@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import {WINDOWSLAB_SCENARIOS,buildWindowsNegativeFixture} from '../src/windows-auth-lab.js';
 import {buildWindowsHeldObjects} from '../src/held-object-windows.js';
 import {compileHeldObjects,projectHeldObjects,inspectHeldObject,heldObjectTrace} from '../src/held-object-state.js';
+import {ATTRIBUTES} from '../src/protocol-data.js';
+import {getAttributeUsage} from '../src/attribute-usage.js';
+import {buildAttributeTrace} from '../src/attribute-trace.js';
 
 function winFixture(suffix){
   const model=typeof suffix==='string'?WINDOWSLAB_SCENARIOS.find(item=>item.id==='lab-win-'+suffix):suffix,steps=model.steps();
@@ -354,5 +357,52 @@ test('WIN-10 shared AES acceptor key exists first at H and never reaches C befor
     const trace=heldObjectTrace(f.compiled,f.id('acceptor-subkey'));
     assert.ok(trace.some(item=>item.sourceStepId===f.id('mutual-verify')&&item.traceKind.includes('observe')));
     assert.equal(trace.some(item=>item.from==='winHost'&&item.to==='winClient'&&item.representationId==='plain'&&item.messageId),false);
+  }
+});
+
+test('WIN-11 raw CredSSP/RDP field replay starts at H creation without duplicate custody or key transmission',()=>{
+  const cases=[
+    ['credssp-v6-kerberos',['binding-direction','binding-nonce','binding-public-key']],
+    ['credssp-binding-rejected',[]],
+    ['credssp-logon-denied',[]],
+    ['rdp-normal',['hybrid-without-early-result']],
+    ['rdp-restricted-admin',['hybrid-without-early-result']],
+    ['rdp-remote-credential-guard',['redirect-disconnect','hybrid-without-early-result']],
+  ];
+  for(const [suffix,variants] of cases){
+    const model=WINDOWSLAB_SCENARIOS.find(item=>item.id==='lab-win-'+suffix);
+    for(const candidate of [model,...variants.map(variant=>buildWindowsNegativeFixture(model.id,variant))]){
+      const f=winFixture(candidate),key=candidate.windowsInventory.artifacts.find(item=>item.key==='acceptor-subkey');
+      const replyIndex=f.steps.findIndex(step=>step.winStage==='ap-reply'),mutualIndex=f.steps.findIndex(step=>step.winStage==='mutual-verify');
+      const previous=ATTRIBUTES[key.attributeId];
+      ATTRIBUTES[key.attributeId]=candidate.definitions()[key.attributeId];
+      try{
+        const trace=buildAttributeTrace(getAttributeUsage(f.steps,key.attributeId),candidate.examples(),candidate.protocolValues||{});
+        const origin=trace[0];
+        assert.equal(origin?.traceKind,'create',candidate.id+' must expose the host origin before client validation');
+        assert.deepEqual([origin.from,origin.to],['winHost','winHost']);
+        assert.equal(origin.sourceStepId,f.id('ap-reply'));
+        assert.equal(origin.sourceIndex,replyIndex);
+        assert.deepEqual(origin.payload.map(field=>[field.attributeId,field.value]),[[key.attributeId,key.value]]);
+        const operation=origin.traceActions[0];
+        assert.equal(operation.instanceId,key.artifactId);
+        assert.equal(operation.creator,'winHost');
+        assert.deepEqual(operation.holders,['winHost']);
+        assert.equal(operation.representation,'plain');
+        assert.equal(operation.sourceEventId,f.id('ap-reply'));
+        assert.equal(operation.exactValueRef,key.artifactId+':plain');
+        assert.ok(trace.every(step=>step.from===step.to),'A local secret must never become a field-only wire replay');
+        const client=trace.filter(step=>step.from==='winClient');
+        assert.ok(client.some(step=>step.sourceIndex===mutualIndex));
+        assert.ok(client.every(step=>step.sourceIndex>=mutualIndex&&step.payload.every(field=>field.value===key.value)));
+        const effects=Object.values(f.plan.events).flatMap(event=>event.milestones.flatMap(milestone=>milestone.effects)).filter(effect=>effect.artifactId===key.artifactId);
+        assert.equal(effects.filter(effect=>effect.op==='create').length,1);
+        for(const actor of ['winHost','winClient'])assert.equal(effects.filter(effect=>effect.op==='acquire'&&effect.actorId===actor&&effect.representationId==='plain').length,1);
+        const messages=Object.values(f.plan.events).flatMap(event=>event.messages||[]);
+        assert.equal(messages.some(message=>message.objects.some(object=>object.artifactId===key.artifactId)),false);
+      }finally{
+        if(previous)ATTRIBUTES[key.attributeId]=previous;else delete ATTRIBUTES[key.attributeId];
+      }
+    }
   }
 });

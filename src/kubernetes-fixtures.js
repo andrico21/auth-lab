@@ -1,0 +1,1529 @@
+// Exact synthetic plan bundles. Never applied; no live cluster or runtime network.
+export const K8S_PLAN_BUNDLES = [
+  {
+    "id": "core-rbac",
+    "classification": "core",
+    "scenarioIds": [
+      "K8S01",
+      "K8S02",
+      "K8S03",
+      "K8S04"
+    ],
+    "instructions": "Base objects; Bob and reader ServiceAccount have no resource grant yet. Bootstrap/install is done by fixture owner, never by Alice/Bob.",
+    "objects": [
+      {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+          "name": "demo-dev",
+          "labels": {
+            "authflow.example/fixture": "true"
+          }
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "Namespace",
+        "metadata": {
+          "name": "demo-prod",
+          "labels": {
+            "authflow.example/fixture": "true"
+          }
+        }
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "reader",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "pods"
+            ],
+            "verbs": [
+              "get",
+              "list",
+              "watch"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "read-pods",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "Group",
+            "name": "team:readers",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "kind": "Role",
+          "name": "reader",
+          "apiGroup": "rbac.authorization.k8s.io"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "ServiceAccount",
+        "metadata": {
+          "name": "reader",
+          "namespace": "demo-dev"
+        }
+      }
+    ]
+  },
+  {
+    "id": "namespaced-clusterrole-use",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S05"
+    ],
+    "instructions": "Start from core. This RoleBinding grants Bob only demo-dev pod reads.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRole",
+        "metadata": {
+          "name": "demo-pod-reader"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "pods"
+            ],
+            "verbs": [
+              "get",
+              "list",
+              "watch"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "bob-pods-in-dev",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:bob",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "ClusterRole",
+          "name": "demo-pod-reader"
+        }
+      }
+    ]
+  },
+  {
+    "id": "clusterwide-pod-read",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S05"
+    ],
+    "instructions": "Reset before use. Not cumulative with the previous variant; grants pod reads, not node or secret access.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRole",
+        "metadata": {
+          "name": "demo-pod-reader"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "pods"
+            ],
+            "verbs": [
+              "get",
+              "list",
+              "watch"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRoleBinding",
+        "metadata": {
+          "name": "bob-pods-all-namespaces"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:bob",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "ClusterRole",
+          "name": "demo-pod-reader"
+        }
+      }
+    ]
+  },
+  {
+    "id": "named-node-read",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S05"
+    ],
+    "instructions": "Reset before use. Named get of a cluster-scoped object only.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRole",
+        "metadata": {
+          "name": "demo-node-reader"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "nodes"
+            ],
+            "verbs": [
+              "get"
+            ],
+            "resourceNames": [
+              "demo-node"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRoleBinding",
+        "metadata": {
+          "name": "bob-one-node"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:bob",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "ClusterRole",
+          "name": "demo-node-reader"
+        }
+      }
+    ]
+  },
+  {
+    "id": "subresource-and-name",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S06"
+    ],
+    "instructions": "Add only to this scenario; reader does not already include these rights.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-log-reader",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "pods/log"
+            ],
+            "verbs": [
+              "get"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "alice-log-read",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:alice",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "demo-log-reader"
+        }
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-named-config-reader",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "configmaps"
+            ],
+            "verbs": [
+              "get"
+            ],
+            "resourceNames": [
+              "demo-config"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "alice-named-config-read",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:alice",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "demo-named-config-reader"
+        }
+      }
+    ]
+  },
+  {
+    "id": "additive-groups",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S07"
+    ],
+    "instructions": "Issuer fixture gives Bob raw groups readers and log-readers. Mapping produces team:readers and team:log-readers; bindings still supply the permissions.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-log-reader",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "pods/log"
+            ],
+            "verbs": [
+              "get"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "group-log-read",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "Group",
+            "name": "team:log-readers",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "demo-log-reader"
+        }
+      }
+    ]
+  },
+  {
+    "id": "admission-write",
+    "classification": "core scenario extension",
+    "scenarioIds": [
+      "K8S08"
+    ],
+    "instructions": "Install only for admission scenario. Core mutating phase is a no-op. Submit each ConfigMap as a separate request; the rejected proposal must never be persisted.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-writer",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "configmaps"
+            ],
+            "verbs": [
+              "create",
+              "get"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "alice-demo-writer",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:alice",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "demo-writer"
+        }
+      },
+      {
+        "apiVersion": "admissionregistration.k8s.io/v1",
+        "kind": "ValidatingAdmissionPolicy",
+        "metadata": {
+          "name": "demo-training-label"
+        },
+        "spec": {
+          "failurePolicy": "Fail",
+          "matchConstraints": {
+            "resourceRules": [
+              {
+                "apiGroups": [
+                  ""
+                ],
+                "apiVersions": [
+                  "v1"
+                ],
+                "operations": [
+                  "CREATE"
+                ],
+                "resources": [
+                  "configmaps"
+                ],
+                "scope": "Namespaced"
+              }
+            ]
+          },
+          "validations": [
+            {
+              "expression": "has(object.metadata.labels) && 'training' in object.metadata.labels && object.metadata.labels['training'] == 'approved'",
+              "message": "demo ConfigMaps require training=approved"
+            }
+          ]
+        }
+      },
+      {
+        "apiVersion": "admissionregistration.k8s.io/v1",
+        "kind": "ValidatingAdmissionPolicyBinding",
+        "metadata": {
+          "name": "demo-training-label"
+        },
+        "spec": {
+          "policyName": "demo-training-label",
+          "validationActions": [
+            "Deny"
+          ],
+          "matchResources": {
+            "namespaceSelector": {
+              "matchLabels": {
+                "authflow.example/fixture": "true"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "admission-proposals",
+    "classification": "request fixtures",
+    "scenarioIds": [
+      "K8S08"
+    ],
+    "instructions": "First object should pass, second should fail policy; these are requests, not preloaded storage state.",
+    "objects": [
+      {
+        "apiVersion": "v1",
+        "kind": "ConfigMap",
+        "metadata": {
+          "name": "demo-config",
+          "namespace": "demo-dev",
+          "labels": {
+            "training": "approved"
+          }
+        },
+        "data": {
+          "message": "synthetic training data"
+        }
+      },
+      {
+        "apiVersion": "v1",
+        "kind": "ConfigMap",
+        "metadata": {
+          "name": "demo-config-rejected",
+          "namespace": "demo-dev"
+        },
+        "data": {
+          "message": "synthetic training data"
+        }
+      }
+    ]
+  },
+  {
+    "id": "projected-workload",
+    "classification": "core scenario extension",
+    "scenarioIds": [
+      "K8S09",
+      "K8S12"
+    ],
+    "instructions": "Worker builds the local demo reader image and pins its digest for any live run. The example is deliberately not a downloadable third-party workload. Explicit projection still works with automatic mounting disabled. For API TLS, provide trusted CA separately; never skip server verification.",
+    "objects": [
+      {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "metadata": {
+          "name": "demo-reader",
+          "namespace": "demo-dev"
+        },
+        "spec": {
+          "serviceAccountName": "reader",
+          "automountServiceAccountToken": false,
+          "containers": [
+            {
+              "name": "reader",
+              "image": "authflow-reader:local",
+              "imagePullPolicy": "Never",
+              "volumeMounts": [
+                {
+                  "name": "identity",
+                  "mountPath": "/var/run/demo-identity",
+                  "readOnly": true
+                }
+              ]
+            }
+          ],
+          "volumes": [
+            {
+              "name": "identity",
+              "projected": {
+                "sources": [
+                  {
+                    "serviceAccountToken": {
+                      "path": "api-token",
+                      "audience": "https://kubernetes.demo.example",
+                      "expirationSeconds": 3600
+                    }
+                  },
+                  {
+                    "serviceAccountToken": {
+                      "path": "vault-token",
+                      "audience": "vault.demo.example",
+                      "expirationSeconds": 3600
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "serviceaccount-reader",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S10"
+    ],
+    "instructions": "This is the success grant; omit it for the authenticated-but-forbidden branch.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "reader-serviceaccount",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "ServiceAccount",
+            "name": "reader",
+            "namespace": "demo-dev"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "reader"
+        }
+      }
+    ]
+  },
+  {
+    "id": "namespace-serviceaccount-group",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S10"
+    ],
+    "instructions": "Reset before use. Grants reader within demo-dev to its ServiceAccounts only.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "namespace-serviceaccounts-read",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "Group",
+            "name": "system:serviceaccounts:demo-dev",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "reader"
+        }
+      }
+    ]
+  },
+  {
+    "id": "all-serviceaccount-group",
+    "classification": "isolated comparison only",
+    "scenarioIds": [
+      "K8S10"
+    ],
+    "instructions": "Reset before use. The global subject group expands who may read demo-dev, but this RoleBinding still limits granted resource scope to demo-dev.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "all-serviceaccounts-read-dev",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "Group",
+            "name": "system:serviceaccounts",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "reader"
+        }
+      }
+    ]
+  },
+  {
+    "id": "tokenreview-reviewer",
+    "classification": "core scenario extension",
+    "scenarioIds": [
+      "K8S11"
+    ],
+    "instructions": "Dedicated reviewer credential; never confuse this with the token submitted for review.",
+    "objects": [
+      {
+        "apiVersion": "v1",
+        "kind": "ServiceAccount",
+        "metadata": {
+          "name": "token-reviewer",
+          "namespace": "demo-dev"
+        }
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRole",
+        "metadata": {
+          "name": "demo-token-reviewer"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              "authentication.k8s.io"
+            ],
+            "resources": [
+              "tokenreviews"
+            ],
+            "verbs": [
+              "create"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRoleBinding",
+        "metadata": {
+          "name": "demo-token-reviewer"
+        },
+        "subjects": [
+          {
+            "kind": "ServiceAccount",
+            "name": "token-reviewer",
+            "namespace": "demo-dev"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "ClusterRole",
+          "name": "demo-token-reviewer"
+        }
+      }
+    ]
+  },
+  {
+    "id": "token-request-and-review",
+    "classification": "request templates",
+    "scenarioIds": [
+      "K8S11",
+      "K8S12"
+    ],
+    "instructions": "Substitute observed UID and exact issued token; templates are not ready-to-send credentials. TokenRequest POST /api/v1/namespaces/demo-dev/serviceaccounts/reader/token; TokenReview POST /apis/authentication.k8s.io/v1/tokenreviews. Authorization header on review uses the reviewer credential, not spec.token.",
+    "objects": [
+      {
+        "apiVersion": "authentication.k8s.io/v1",
+        "kind": "TokenRequest",
+        "spec": {
+          "audiences": [
+            "vault.demo.example"
+          ],
+          "expirationSeconds": 3600,
+          "boundObjectRef": {
+            "kind": "Pod",
+            "apiVersion": "v1",
+            "name": "demo-reader",
+            "uid": "${OBSERVED_POD_UID}"
+          }
+        }
+      },
+      {
+        "apiVersion": "authentication.k8s.io/v1",
+        "kind": "TokenReview",
+        "spec": {
+          "token": "${PRESENTED_VAULT_TOKEN}",
+          "audiences": [
+            "vault.demo.example"
+          ]
+        }
+      }
+    ]
+  },
+  {
+    "id": "classic-impersonation",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S14"
+    ],
+    "instructions": "Operator is separately authenticated. Bob has direct reader permission; group impersonation is not assumed. Header Impersonate-User: oidc:bob.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "bob-direct-reader",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:bob",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "reader"
+        }
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRole",
+        "metadata": {
+          "name": "demo-impersonate-bob"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "users"
+            ],
+            "verbs": [
+              "impersonate"
+            ],
+            "resourceNames": [
+              "oidc:bob"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRoleBinding",
+        "metadata": {
+          "name": "operator-impersonates-bob"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:operator",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "ClusterRole",
+          "name": "demo-impersonate-bob"
+        }
+      }
+    ]
+  },
+  {
+    "id": "constrained-impersonation",
+    "classification": "optional beta variant",
+    "scenarioIds": [
+      "K8S14"
+    ],
+    "instructions": "ConstrainedImpersonation enabled. Reset/remove all legacy impersonate grants before this variant. Omit either identity or action grant for a negative branch; no node scope.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "bob-direct-reader",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:bob",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "reader"
+        }
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRole",
+        "metadata": {
+          "name": "demo-constrained-bob"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              "authentication.k8s.io"
+            ],
+            "resources": [
+              "users"
+            ],
+            "verbs": [
+              "impersonate:user-info"
+            ],
+            "resourceNames": [
+              "oidc:bob"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "ClusterRoleBinding",
+        "metadata": {
+          "name": "operator-constrained-bob"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:operator",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "ClusterRole",
+          "name": "demo-constrained-bob"
+        }
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-constrained-list",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "pods"
+            ],
+            "verbs": [
+              "impersonate-on:user-info:list"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "operator-constrained-list",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:operator",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "demo-constrained-list"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rbac-editor-baseline",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S15"
+    ],
+    "instructions": "Editor possesses pod-read and RBAC object create/get only. Role create and binding create still face anti-escalation checks.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-policy-editor",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              "rbac.authorization.k8s.io"
+            ],
+            "resources": [
+              "roles",
+              "rolebindings"
+            ],
+            "verbs": [
+              "create",
+              "get"
+            ]
+          },
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "pods"
+            ],
+            "verbs": [
+              "get",
+              "list",
+              "watch"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "limited-editor",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:editor",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "demo-policy-editor"
+        }
+      }
+    ]
+  },
+  {
+    "id": "rejected-escalation-request",
+    "classification": "request fixture",
+    "scenarioIds": [
+      "K8S15"
+    ],
+    "instructions": "Submitting this as oidc:editor must fail. It is not preinstalled.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-excessive-secret-reader",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "secrets"
+            ],
+            "verbs": [
+              "get"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "owner-seeded-high-role",
+    "classification": "isolated precondition",
+    "scenarioIds": [
+      "K8S15"
+    ],
+    "instructions": "Fixture owner creates this role before testing a forbidden binding. Role existence alone gives editor no secret access.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-owner-secret-reader",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              ""
+            ],
+            "resources": [
+              "secrets"
+            ],
+            "verbs": [
+              "get"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "rejected-bind-request",
+    "classification": "request fixture",
+    "scenarioIds": [
+      "K8S15"
+    ],
+    "instructions": "Submit as oidc:editor against the owner-seeded role. Editor can create RoleBindings but cannot bind this role; no binding may persist.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "editor-secret-read",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:editor",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "demo-owner-secret-reader"
+        }
+      }
+    ]
+  },
+  {
+    "id": "explicit-narrow-bind",
+    "classification": "optional permission comparison",
+    "scenarioIds": [
+      "K8S15"
+    ],
+    "instructions": "A different principal oidc:binding-editor has no reader rights. It receives only RoleBinding create and bind of reader, demonstrating both necessary permissions.",
+    "objects": [
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-binding-create",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              "rbac.authorization.k8s.io"
+            ],
+            "resources": [
+              "rolebindings"
+            ],
+            "verbs": [
+              "create"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "binding-editor-create",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:binding-editor",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "demo-binding-create"
+        }
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "Role",
+        "metadata": {
+          "name": "demo-bind-reader",
+          "namespace": "demo-dev"
+        },
+        "rules": [
+          {
+            "apiGroups": [
+              "rbac.authorization.k8s.io"
+            ],
+            "resources": [
+              "roles"
+            ],
+            "verbs": [
+              "bind"
+            ],
+            "resourceNames": [
+              "reader"
+            ]
+          }
+        ]
+      },
+      {
+        "apiVersion": "rbac.authorization.k8s.io/v1",
+        "kind": "RoleBinding",
+        "metadata": {
+          "name": "binding-editor-can-bind-reader",
+          "namespace": "demo-dev"
+        },
+        "subjects": [
+          {
+            "kind": "User",
+            "name": "oidc:binding-editor",
+            "apiGroup": "rbac.authorization.k8s.io"
+          }
+        ],
+        "roleRef": {
+          "apiGroup": "rbac.authorization.k8s.io",
+          "kind": "Role",
+          "name": "demo-bind-reader"
+        }
+      }
+    ]
+  }
+];
+export const K8S_PLAN_CONFIGURATIONS = [
+  {
+    "id": "core-api-configuration",
+    "classification": "core",
+    "scenarioIds": [
+      "K8S01",
+      "K8S02",
+      "K8S09"
+    ],
+    "configurationFiles": {
+      "authentication.yaml": {
+        "apiVersion": "apiserver.config.k8s.io/v1",
+        "kind": "AuthenticationConfiguration",
+        "anonymous": {
+          "enabled": false
+        },
+        "jwt": [
+          {
+            "issuer": {
+              "url": "https://issuer.demo.example",
+              "audiences": [
+                "kubernetes-demo"
+              ],
+              "audienceMatchPolicy": "MatchAny"
+            },
+            "claimValidationRules": [
+              {
+                "claim": "tenant",
+                "requiredValue": "demo"
+              }
+            ],
+            "claimMappings": {
+              "username": {
+                "claim": "sub",
+                "prefix": "oidc:"
+              },
+              "groups": {
+                "claim": "groups",
+                "prefix": "team:"
+              }
+            },
+            "userValidationRules": [
+              {
+                "expression": "!user.username.startsWith('system:')",
+                "message": "human username must not use a system prefix"
+              },
+              {
+                "expression": "user.groups.all(group, !group.startsWith('system:'))",
+                "message": "mapped human groups must not use a system prefix"
+              }
+            ]
+          }
+        ]
+      },
+      "authorization.yaml": {
+        "apiVersion": "apiserver.config.k8s.io/v1",
+        "kind": "AuthorizationConfiguration",
+        "authorizers": [
+          {
+            "type": "Node",
+            "name": "node"
+          },
+          {
+            "type": "RBAC",
+            "name": "rbac"
+          }
+        ]
+      }
+    },
+    "arguments": [
+      "--authentication-config=/etc/demo/authentication.yaml",
+      "--authorization-config=/etc/demo/authorization.yaml",
+      "--service-account-issuer=https://kubernetes.demo.example",
+      "--api-audiences=https://kubernetes.demo.example",
+      "--service-account-signing-key-file=/etc/demo/sa-signing.key",
+      "--service-account-key-file=/etc/demo/sa-verification.pub",
+      "--service-account-extend-token-expiration=false"
+    ],
+    "instructions": "Partial API-server security configuration, not a complete cluster bootstrap command. Add independently provisioned TLS, etcd and node credentials. Signing private key remains server-local. No --oidc-* or --anonymous-auth flags with this authentication file; no --authorization-mode with this authorization file."
+  },
+  {
+    "id": "anonymous-livez",
+    "classification": "isolated variant",
+    "scenarioIds": [
+      "K8S13"
+    ],
+    "configurationFiles": {
+      "authentication.yaml": {
+        "apiVersion": "apiserver.config.k8s.io/v1",
+        "kind": "AuthenticationConfiguration",
+        "anonymous": {
+          "enabled": true,
+          "conditions": [
+            {
+              "path": "/livez"
+            }
+          ]
+        },
+        "jwt": [
+          {
+            "issuer": {
+              "url": "https://issuer.demo.example",
+              "audiences": [
+                "kubernetes-demo"
+              ],
+              "audienceMatchPolicy": "MatchAny"
+            },
+            "claimValidationRules": [
+              {
+                "claim": "tenant",
+                "requiredValue": "demo"
+              }
+            ],
+            "claimMappings": {
+              "username": {
+                "claim": "sub",
+                "prefix": "oidc:"
+              },
+              "groups": {
+                "claim": "groups",
+                "prefix": "team:"
+              }
+            },
+            "userValidationRules": [
+              {
+                "expression": "!user.username.startsWith('system:')",
+                "message": "human username must not use a system prefix"
+              },
+              {
+                "expression": "user.groups.all(group, !group.startsWith('system:'))",
+                "message": "mapped human groups must not use a system prefix"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "instructions": "This alters authentication eligibility only. Verify actual non-resource authorization grants separately; never assume path eligibility grants resource access."
+  },
+  {
+    "id": "exec-credential-client",
+    "classification": "core client template",
+    "scenarioIds": [
+      "K8S01"
+    ],
+    "configurationFiles": {
+      "kubeconfig": {
+        "apiVersion": "v1",
+        "kind": "Config",
+        "clusters": [
+          {
+            "name": "demo",
+            "cluster": {
+              "server": "https://kubernetes.demo.example",
+              "certificate-authority-data": "${DEMO_API_CA_BASE64}"
+            }
+          }
+        ],
+        "users": [
+          {
+            "name": "alice",
+            "user": {
+              "exec": {
+                "apiVersion": "client.authentication.k8s.io/v1",
+                "command": "authflow-oidc-demo",
+                "args": [
+                  "--issuer=https://issuer.demo.example",
+                  "--client-id=kubernetes-demo"
+                ],
+                "interactiveMode": "IfAvailable"
+              }
+            }
+          }
+        ],
+        "contexts": [
+          {
+            "name": "demo-alice",
+            "context": {
+              "cluster": "demo",
+              "user": "alice",
+              "namespace": "demo-dev"
+            }
+          }
+        ],
+        "current-context": "demo-alice"
+      }
+    },
+    "instructions": "authflow-oidc-demo is a worker-supplied synthetic plugin fixture, not a claimed installed tool. Implement code+PKCE and proper local cache. interactiveMode concerns stdin availability, not a promise that a browser exists. Replace CA placeholder before any live use."
+  },
+  {
+    "id": "external-webhooks",
+    "classification": "optional extension",
+    "scenarioIds": [
+      "K8S16"
+    ],
+    "configurationFiles": {
+      "authorization.yaml": {
+        "apiVersion": "apiserver.config.k8s.io/v1",
+        "kind": "AuthorizationConfiguration",
+        "authorizers": [
+          {
+            "type": "Webhook",
+            "name": "demo-external-policy",
+            "webhook": {
+              "authorizedTTL": "30s",
+              "unauthorizedTTL": "5s",
+              "timeout": "2s",
+              "subjectAccessReviewVersion": "v1",
+              "matchConditionSubjectAccessReviewVersion": "v1",
+              "failurePolicy": "Deny",
+              "matchConditions": [],
+              "connectionInfo": {
+                "type": "KubeConfigFile",
+                "kubeConfigFile": "/etc/demo/authz-webhook.kubeconfig"
+              }
+            }
+          },
+          {
+            "type": "RBAC",
+            "name": "rbac"
+          }
+        ]
+      },
+      "authn-webhook.kubeconfig": {
+        "apiVersion": "v1",
+        "kind": "Config",
+        "clusters": [
+          {
+            "name": "hook",
+            "cluster": {
+              "server": "https://authn.demo.example/tokenreview",
+              "certificate-authority": "/etc/demo/hook-ca.pem"
+            }
+          }
+        ],
+        "users": [
+          {
+            "name": "api-server",
+            "user": {
+              "client-certificate": "/etc/demo/api-client.pem",
+              "client-key": "/etc/demo/api-client.key"
+            }
+          }
+        ],
+        "contexts": [
+          {
+            "name": "hook",
+            "context": {
+              "cluster": "hook",
+              "user": "api-server"
+            }
+          }
+        ],
+        "current-context": "hook"
+      },
+      "authz-webhook.kubeconfig": {
+        "apiVersion": "v1",
+        "kind": "Config",
+        "clusters": [
+          {
+            "name": "hook",
+            "cluster": {
+              "server": "https://authz.demo.example/subjectaccessreview",
+              "certificate-authority": "/etc/demo/hook-ca.pem"
+            }
+          }
+        ],
+        "users": [
+          {
+            "name": "api-server",
+            "user": {
+              "client-certificate": "/etc/demo/api-client.pem",
+              "client-key": "/etc/demo/api-client.key"
+            }
+          }
+        ],
+        "contexts": [
+          {
+            "name": "hook",
+            "context": {
+              "cluster": "hook",
+              "user": "api-server"
+            }
+          }
+        ],
+        "current-context": "hook"
+      }
+    },
+    "arguments": [
+      "--authentication-token-webhook-config-file=/etc/demo/authn-webhook.kubeconfig",
+      "--authentication-token-webhook-version=v1",
+      "--authentication-token-webhook-cache-ttl=30s"
+    ],
+    "instructions": "Fixture endpoints and certs must be supplied by worker for live tests. Swap authorizer list for ordering comparison. Authentication webhook has no invented failurePolicy field. No AdmissionReview endpoint is implied by these files."
+  }
+];
+export const K8S_SOURCE_PROFILE = {
+  "version": "v1.37.1",
+  "commit": "f78e722310e50bcaca9276be22276d9e91d91308",
+  "support": "Official release record: actively supported",
+  "schema": "Selected-tag fields/source inspected; no executable schema/live cluster conformance",
+  "discrepancies": [
+    "OIDC documentation default disagreement resolved explicitly by selected-tag RS256 implementation default; no signingAlgs field.",
+    "Release page date and published tag date retained separately."
+  ],
+  "maturity": [
+    "AuthenticationConfiguration and configurable anonymous endpoints: stable since v1.34.",
+    "client-go exec credential plugins: stable since v1.22; use ExecCredential v1.",
+    "ValidatingAdmissionPolicy: stable since v1.30; K8S08 uses admissionregistration.k8s.io/v1.",
+    "AuthorizationConfiguration: stable since v1.32.",
+    "ServiceAccount token volume projection: stable since v1.20; bound-token default volume mechanism: stable since v1.22. Keep these distinct feature names.",
+    "SelfSubjectReview: stable since v1.28.",
+    "Constrained impersonation: beta since v1.36, enabled by default in current docs; label and record gate state separately.",
+    "StructuredAuthenticationConfigurationEgressSelector is beta in current docs; not needed by default demo.",
+    "APIServerWebhookAuthenticationToken is alpha in v1.37; excluded from default profile."
+  ]
+};

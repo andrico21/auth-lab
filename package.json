@@ -1,13 +1,13 @@
 {
   "name": "auth-flow-studio",
-  "version": "1.2.1-smb.1",
+  "version": "1.3.0-next.1",
   "private": true,
   "type": "module",
-  "description": "An offline Web, Windows, Kerberos, SSH, Network and PAKE learning lab with 203 extended reference scenarios including SMB 3.1.1, exact object histories, deterministic state replay and one self-contained HTML build.",
+  "description": "An offline authentication and authorization learning lab with explicit platform profiles, canonical protocol state, exact object histories and one self-contained HTML build.",
   "scripts": {
     "build": "bun ./build.mjs",
     "test": "bun test --isolate --timeout=900000 tests/*.test.mjs",
-    "verify:crypto": "bun tools/verification/expansion-crypto/check-vectors.mjs",
+    "verify:crypto": "bun tools/verification/expansion-crypto/check-vectors.mjs && bun tools/verification/expansion-crypto/next-jwt-vectors.mjs",
     "verify:expansion": "bun tools/verification/run-expansion-native.mjs",
     "start": "python3 -m http.server 8080 --bind 127.0.0.1"
   }

@@ -1,0 +1,305 @@
+{
+  "kind": "kubernetes-implementation-handoff",
+  "revision": "2026-10-22-r1",
+  "coreRows": [
+    {
+      "planId": "K8S01",
+      "runtimeId": "lab-k8s01",
+      "family": "human-access",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "wrong-state",
+        "wrong-pkce",
+        "wrong-nonce",
+        "no-binding",
+        "cache-hit"
+      ]
+    },
+    {
+      "planId": "K8S02",
+      "runtimeId": "lab-k8s02",
+      "family": "human-access",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "bob",
+        "missing-sub",
+        "wrong-sub-type",
+        "wrong-groups-type",
+        "missing-tenant",
+        "wrong-tenant",
+        "failed-user-validation",
+        "unprefixed-group",
+        "group-string-mismatch",
+        "email-verified",
+        "email-unverified"
+      ]
+    },
+    {
+      "planId": "K8S03",
+      "runtimeId": "lab-k8s03",
+      "family": "token-validation",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "bad-signature",
+        "expired",
+        "wrong-audience",
+        "issuer-mismatch",
+        "unknown-key",
+        "rotated-key",
+        "discovery-outage",
+        "jwks-outage"
+      ]
+    },
+    {
+      "planId": "K8S04",
+      "runtimeId": "lab-k8s04",
+      "family": "authorization-rbac",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "bob",
+        "wrong-namespace",
+        "delete",
+        "group-name-only"
+      ]
+    },
+    {
+      "planId": "K8S05",
+      "runtimeId": "lab-k8s05",
+      "family": "authorization-rbac",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "namespaced-other-namespace",
+        "namespaced-nodes",
+        "clusterwide-dev",
+        "clusterwide-prod",
+        "clusterwide-not-nodes",
+        "named-node",
+        "unbound-clusterrole",
+        "cross-namespace-role",
+        "immutable-roleref"
+      ]
+    },
+    {
+      "planId": "K8S06",
+      "runtimeId": "lab-k8s06",
+      "family": "authorization-rbac",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "named-pod",
+        "pod-log-denied",
+        "pod-log-granted",
+        "named-config",
+        "other-config",
+        "unrestricted-config-list",
+        "cluster-scope",
+        "non-resource",
+        "review-then-policy-change"
+      ]
+    },
+    {
+      "planId": "K8S07",
+      "runtimeId": "lab-k8s07",
+      "family": "authorization-rbac",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "log-union",
+        "secrets-denied",
+        "remove-log-still-pods",
+        "restrictive-role-no-subtraction",
+        "group-without-bindings"
+      ]
+    },
+    {
+      "planId": "K8S08",
+      "runtimeId": "lab-k8s08",
+      "family": "authorization-rbac",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "missing-label",
+        "invalid-schema",
+        "storage-conflict",
+        "read-bypass"
+      ]
+    },
+    {
+      "planId": "K8S09",
+      "runtimeId": "lab-k8s09",
+      "family": "workload-identity",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "cached-old-expired",
+        "automount-disabled",
+        "no-projection"
+      ]
+    },
+    {
+      "planId": "K8S10",
+      "runtimeId": "lab-k8s10",
+      "family": "workload-identity",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "explicit-binding",
+        "same-name-other-namespace",
+        "namespace-group",
+        "global-group-other-sa",
+        "human-copied-sa-group"
+      ]
+    },
+    {
+      "planId": "K8S11",
+      "runtimeId": "lab-k8s11",
+      "family": "workload-identity",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "missing-returned-audience",
+        "pod-deleted",
+        "pod-uid-changed",
+        "pending-delete-within-grace",
+        "pending-delete-after-grace",
+        "offline-deleted-pod",
+        "reviewer-denied",
+        "external-policy-denied"
+      ]
+    },
+    {
+      "planId": "K8S12",
+      "runtimeId": "lab-k8s12",
+      "family": "workload-identity",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "vault-token-at-api",
+        "api-token-at-vault",
+        "unauthorized-tokenrequest",
+        "returned-shorter-lifetime"
+      ]
+    },
+    {
+      "planId": "K8S13",
+      "runtimeId": "lab-k8s13",
+      "family": "token-validation",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "invalid-no-fallback",
+        "livez-eligible-no-grant",
+        "livez-explicit-route-grant",
+        "endpoint-only-pods",
+        "full-anonymous-pods"
+      ]
+    },
+    {
+      "planId": "K8S14",
+      "runtimeId": "lab-k8s14",
+      "family": "delegation-extensions",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "unauthorized-user",
+        "unauthorized-group",
+        "unauthorized-extra",
+        "constrained",
+        "constrained-no-action",
+        "constrained-no-identity",
+        "legacy-fallback",
+        "target-denied"
+      ]
+    },
+    {
+      "planId": "K8S15",
+      "runtimeId": "lab-k8s15",
+      "family": "delegation-extensions",
+      "status": "implemented",
+      "variantIds": [
+        "default",
+        "bind-excess",
+        "create-held-rights",
+        "bind-held-rights",
+        "explicit-narrow-bind",
+        "narrow-other-role",
+        "namespace-not-cluster"
+      ]
+    }
+  ],
+  "optionalDeferred": [
+    {
+      "planId": "K8S16",
+      "reason": "Optional webhook extension remains explicitly deferred; not registered"
+    }
+  ],
+  "interfaces": {
+    "modules": [
+      "src/kubernetes-fixtures.js",
+      "src/kubernetes-case-data.js",
+      "src/kubernetes-request-model.js",
+      "src/kubernetes-auth-lab.js",
+      "src/kubernetes-rbac-lab.js",
+      "src/held-object-kubernetes.js"
+    ],
+    "sourceOnlyFunctionsDependency": "request-model.js contains function declarations only and imports auth helpers; standalone can place it before auth-lab.js. Source ES import cycle does not invoke helpers at dependency initialization.",
+    "exports": [
+      "KUBERNETESAUTHLAB_ATTRIBUTES",
+      "KUBERNETESAUTHLAB_SOURCES",
+      "KUBERNETESAUTHLAB_SCENARIOS",
+      "KUBERNETESRBACLAB_ATTRIBUTES",
+      "KUBERNETESRBACLAB_SOURCES",
+      "KUBERNETESRBACLAB_SCENARIOS",
+      "createKubernetesAuthCase(planId,variantId)",
+      "createKubernetesRBACCase(planId,variantId)",
+      "buildKubernetesHeldObjects(args)"
+    ],
+    "modelContract": [
+      "Same-ID immutable withVariant; invalid names throw RangeError",
+      "catalogAttributeIds/catalogDefinitions statically cover branch-only fields without eager construction of every case",
+      "decisionBindings use six initialized public kubernetes.decisionStrip leaves",
+      "kubernetesInventory explicitly owns artifacts, initial effects, exact event messages and canonical local stages"
+    ]
+  },
+  "contracts": {
+    "worksheet": "docs/next-expansion/kubernetes-worksheet.json",
+    "canonicalCases": "rows[].canonicalCases",
+    "nativeReplay": "rows[].nativeReplay",
+    "sources": "docs/next-expansion/kubernetes-sources.json",
+    "exactBundles": "docs/next-expansion/kubernetes-manifests.json",
+    "worksheetSha256": "18af8eb4f31a44a9db4ec512b4449193ef39c64ce9d97c79f21569c52da73f1a",
+    "sourcesSha256": "f3a6a904864a24ef031cdb15ea095b94a29a2e68c36e5021a98c1ae4048ddb1b",
+    "exactBundlesSha256": "0ae69be21589ff4d9ac39b6cca3804883621ad437f1a5f9b78041e54ba972b4d"
+  },
+  "sourceDecisions": [
+    "v1.37.1 annotated tag d2b770f4c94636a992534a8d3156b6b2d8e82ac3 resolves to f78e722310e50bcaca9276be22276d9e91d91308; no patch upgrade",
+    "Release page 2026-09-15 and GitHub published_at 2026-09-23 retained separately",
+    "Pinned OIDC source defaults RS256; no signingAlgs AuthenticationConfiguration field",
+    "Candidate mapping stays distinct from later tenant/user acceptance",
+    "Exact VAP missing-label fixture422 Invalid; numeric ConfigMap data decode400 before admission; storage conflict409",
+    "K8S09 bounded issuance/rotation succeeds but protected pods remain403 absent the separate ServiceAccount grant",
+    "TokenReview reviewer credential distinct from reviewed token; negative subject review remains HTTP201 authenticated=false, then external denial401",
+    "ServiceAccount aud array, nbf and GA JTI sourced from selected implementation; JTI alone does not prevent bearer replay",
+    "TokenRequest node-bound issuance authority is an explicit scoped precondition fixture, not full Node-authorizer graph conformance"
+  ],
+  "tests": [
+    "tests/kubernetes-auth-lab.test.mjs",
+    "tests/kubernetes-rbac-lab.test.mjs",
+    "tests/kubernetes-workload-lab.test.mjs",
+    "tests/kubernetes-canonical-cases.test.mjs",
+    "tests/held-object-kubernetes.test.mjs"
+  ],
+  "verification": {
+    "workerExecution": "No build, lint, test, formatter, browser or cluster gates executed, as assigned.",
+    "parentShouldRun": "Focused six Kubernetes test files; integrated canonical and native collectors; standalone compiled smoke and universal held coverage after all source owners land.",
+    "sourceSchema": "Selected-tag API definitions/validation/order inspected; exact synthetic bundles retained. Executable schema validation and live cluster application remain unverified.",
+    "crypto": "Symbolic signature evidence; no numerical verification or production cryptography claim.",
+    "manual": "G01 remains open; no screen-reader or live interoperability acceptance claim."
+  },
+  "publication": "No commit, push or deployment performed or authorized"
+}

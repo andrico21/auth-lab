@@ -1,0 +1,2392 @@
+
+<!DOCTYPE html>
+
+
+
+
+
+
+<html data-bs-theme="auto" lang="en" prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#">
+    <head>
+        
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>
+            
+    
+        draft-ietf-oauth-client-id-metadata-document-02 - OAuth Client ID Metadata Document
+    
+
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="traceparent" content="">
+        <link href="https://static.ietf.org/fonts/inter/import.css" rel="stylesheet">
+        <link href="https://static.ietf.org/fonts/noto-sans-mono/import.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://static.ietf.org/dt/12.81.0/ietf/css/ietf.css">
+        <link rel="stylesheet" href="https://static.ietf.org/dt/12.81.0/ietf/css/select2.css">
+        
+        <script src="https://static.ietf.org/dt/12.81.0/ietf/js/theme.js"></script>
+        <style>
+            .inline { display: inline; }
+        </style>
+        
+        
+    
+
+
+
+
+<meta property="og:title" content="OAuth Client ID Metadata Document">
+<meta property="og:url" content="https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/">
+
+
+<link rel="canonical" href="https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/">
+
+<meta property="og:site_name" content="IETF Datatracker">
+<meta property="og:description" content="This specification defines a mechanism through which an OAuth client can identify itself to authorization servers, without prior dynamic client registration or other existing registration. This is through the usage of a URL as a client_id in an OAuth flow, where the URL refers to a document containing the necessary client metadata, enabling the authorization server to fetch the metadata about the client as needed.">
+<meta property="og:type" content="article">
+
+<meta property="og:image" content="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-card.png">
+<meta property="og:image:alt" content="Logo of the IETF">
+<meta property="article:section" content="IETF - Internet Engineering Task Force">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<meta property="article:author" content="Aaron Parecki">
+<meta property="article:author" content="Emelia Smith">
+
+
+
+    <link rel="alternate"
+          type="application/atom+xml"
+          title="Document changes"
+          href="/feed/document-changes/draft-ietf-oauth-client-id-metadata-document/">
+    <meta name="description"
+          content="OAuth Client ID Metadata Document ">
+
+        <script type="module" crossorigin="" src="https://static.ietf.org/dt/12.81.0/assets/embedded-3b17fb74.js"></script>
+<link href="https://static.ietf.org/dt/12.81.0/assets/create-pinia-singleton-b0dffb83.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+<link href="https://static.ietf.org/dt/12.81.0/assets/Scrollbar-46ca4ed8.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+        
+
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-180.png">
+<link rel="icon"
+      sizes="32x32"
+      href="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-32.png">
+<link rel="icon"
+      sizes="16x16"
+      href="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon"
+      href="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-mask.svg"
+      color="#ffffff">
+<meta name="msapplication-TileColor"
+      content="#ffffff">
+<meta name="theme-color"
+      content="#ffffff">
+        <script src="https://static.ietf.org/dt/12.81.0/ietf/js/ietf.js"></script>
+        
+    </head>
+    <body  class="navbar-offset position-relative"
+          data-group-menu-data-url="/group/groupmenu.json">
+        
+        <noscript><iframe class="status" title="Site status" src="/status/latest"></iframe></noscript>
+<div class="vue-embed" data-component="Status"></div>
+        <a class="visually-hidden visually-hidden-focusable" href="#content">Skip to main content</a>
+        <nav class="navbar navbar-expand-lg fixed-top bg-secondary-subtle">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    
+
+
+
+<img alt="IETF Logo"
+     class="d-lm-none me-2"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor-white.svg"
+        
+     
+     >
+
+<img alt="IETF Logo"
+     class="d-dm-none me-2"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.81.0/ietf/images/ietf-logo-nor.svg"
+        
+     
+     >
+                    Datatracker
+                    
+                </a>
+                <div class="collapse navbar-collapse" id="navbar-collapse">
+                    <ul class="nav navbar-nav flex-nowrap">
+                        
+
+
+
+
+<li class="nav-item dropdown">
+    
+        <a href="#"
+           class="nav-link dropdown-toggle"
+           role="button"
+           data-bs-toggle="dropdown"
+           aria-expanded="false">
+            Groups
+        </a>
+        <ul class="dropdown-menu mt-n1">
+        
+    <li class="dropdown-header">By area/parent</li>
+    
+
+
+
+    
+    <li class="dropend group-menu group-parent-2010">
+        <a class="dropdown-item dropdown-toggle "
+           href="/wg/#ART">
+            Apps &amp; Realtime
+        </a>
+    </li>
+
+    
+    <li class="dropend group-menu group-parent-1008">
+        <a class="dropdown-item dropdown-toggle "
+           href="/wg/#GEN">
+            General
+        </a>
+    </li>
+
+    
+    <li class="dropend group-menu group-parent-1052">
+        <a class="dropdown-item dropdown-toggle "
+           href="/wg/#INT">
+            Internet
+        </a>
+    </li>
+
+    
+    <li class="dropend group-menu group-parent-1193">
+        <a class="dropdown-item dropdown-toggle "
+           href="/wg/#OPS">
+            Ops &amp; Management
+        </a>
+    </li>
+
+    
+    <li class="dropend group-menu group-parent-1249">
+        <a class="dropdown-item dropdown-toggle "
+           href="/wg/#RTG">
+            Routing
+        </a>
+    </li>
+
+    
+    <li class="dropend group-menu group-parent-1260">
+        <a class="dropdown-item dropdown-toggle "
+           href="/wg/#SEC">
+            Security
+        </a>
+    </li>
+
+    
+    <li class="dropend group-menu group-parent-2412">
+        <a class="dropdown-item dropdown-toggle "
+           href="/wg/#WIT">
+            Web and Internet Transport
+        </a>
+    </li>
+
+    
+        <li><a class="dropdown-item" href="/group/iesg/about/">IESG</a></li>
+    
+    <li class="dropend group-menu group-parent-7">
+        <a class="dropdown-item dropdown-toggle "
+           href="/program/">
+            IAB
+        </a>
+    </li>
+
+    
+    <li class="dropend group-menu group-parent-3">
+        <a class="dropdown-item dropdown-toggle "
+           href="/rg/">
+            IRTF
+        </a>
+    </li>
+
+    
+    <li class="dropend group-menu group-parent-2309">
+        <a class="dropdown-item dropdown-toggle "
+           href="/adm/">
+            IETF LLC
+        </a>
+    </li>
+
+    
+    <li class="dropend group-menu group-parent-1876">
+        <a class="dropdown-item dropdown-toggle "
+           href="/rfcedtyp/">
+            RFC Editor
+        </a>
+    </li>
+
+
+    <li class="dropend">
+        <a class="dropdown-item dropdown-toggle "
+           href="/group/">
+            Other
+        </a>
+        
+
+
+<ul class="dropdown-menu ms-n1">
+    
+        <li>
+            <a class="dropdown-item "
+               href="/ag/">Active AGs</a>
+        </li>
+    
+        <li>
+            <a class="dropdown-item "
+               href="/area/">Active Areas</a>
+        </li>
+    
+        <li>
+            <a class="dropdown-item "
+               href="/dir/">Active Directorates</a>
+        </li>
+    
+        <li>
+            <a class="dropdown-item "
+               href="/iabworkshop/">Active IAB Workshops</a>
+        </li>
+    
+        <li>
+            <a class="dropdown-item "
+               href="/program/">Active Programs</a>
+        </li>
+    
+        <li>
+            <a class="dropdown-item "
+               href="/rag/">Active RAGs</a>
+        </li>
+    
+        <li>
+            <a class="dropdown-item "
+               href="/team/">Active Teams</a>
+        </li>
+    
+    
+</ul>
+
+    </li>
+    <li><hr class="dropdown-divider"></li>
+    <li class="dropdown-header">New work</li>
+    <li>
+        <a class="dropdown-item"
+           href="/group/chartering/">
+            Chartering groups
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/wg/bofs/">
+            BOFs
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/doc/bof-requests">
+            BOF Requests
+        </a>
+    </li>
+    <li><hr class="dropdown-divider"></li>
+    <li class="dropdown-header">Other groups</li>
+    <li>
+        <a class="dropdown-item"
+           href="/group/concluded/">
+            Concluded groups
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/list/nonwg">
+            Non-WG lists
+        </a>
+    </li>
+    
+    </ul>
+</li>
+
+<li class="nav-item dropdown">
+    
+        <a href="#"
+           class="nav-link dropdown-toggle"
+           role="button"
+           data-bs-toggle="dropdown"
+           aria-expanded="false">
+            Documents
+        </a>
+        <ul class="dropdown-menu mt-n1">
+        
+    <li>
+        <a class="dropdown-item"
+           href="/doc/search">
+            Search
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/doc/recent">
+            Recent I-Ds
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/submit/">
+            Submit an Internet-Draft
+        </a>
+    </li>
+    
+    
+        <li><hr class="dropdown-divider">
+        </li>
+    
+    <li class="dropdown-header">
+        RFC streams
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/stream/iab/">
+            IAB
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/stream/irtf/">
+            IRTF
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/stream/ise/">
+            ISE
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/stream/editorial/">
+            Editorial
+        </a>
+    </li>
+    
+        <li><hr class="dropdown-divider">
+        </li>
+    
+    <li class="dropdown-header">
+        Subseries
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/doc/std">
+            STD
+        </a>
+        <a class="dropdown-item"
+           href="/doc/bcp">
+            BCP
+        </a>
+        <a class="dropdown-item"
+           href="/doc/fyi">
+            FYI
+        </a>
+    </li>
+    
+    </ul>
+</li>
+
+<li class="nav-item dropdown">
+    
+        <a href="#"
+           class="nav-link dropdown-toggle"
+           role="button"
+           data-bs-toggle="dropdown"
+           aria-expanded="false">
+            Meetings
+        </a>
+        <ul class="dropdown-menu mt-n1">
+        
+    <li>
+        <a class="dropdown-item"
+           href="/meeting/agenda">
+            Agenda
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/meeting/materials">
+            Materials
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/meeting/floor-plan">
+            Floor plan
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="https://www.ietf.org/how/meetings/register/">
+            Registration
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/meeting/important-dates/">
+            Important dates
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/meeting/session/request/">
+            Request a session
+        </a>
+    </li>
+    
+    <li>
+        <a class="dropdown-item"
+           href="/meeting/requests">
+            Session requests
+        </a>
+    </li>
+    
+    
+        
+            <li><hr class="dropdown-divider">
+            </li>
+        
+        <li class="dropdown-header">
+            Upcoming meetings
+        </li>
+    
+    <li>
+        <a class="dropdown-item"
+           href="/meeting/upcoming">
+            Upcoming meetings
+        </a>
+    </li>
+    
+        
+            <li><hr class="dropdown-divider">
+            </li>
+        
+        <li class="dropdown-header">
+            Past meetings
+        </li>
+    
+    <li>
+        <a class="dropdown-item"
+           href="/meeting/past">
+            Past meetings
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="https://www.ietf.org/how/meetings/past/">
+            Meeting proceedings
+        </a>
+    </li>
+    
+    </ul>
+</li>
+
+<li class="nav-item dropdown">
+    
+        <a href="#"
+           class="nav-link dropdown-toggle"
+           role="button"
+           data-bs-toggle="dropdown"
+           aria-expanded="false">
+            Other
+        </a>
+        <ul class="dropdown-menu mt-n1">
+        
+    <li>
+        <a class="dropdown-item"
+           href="/ipr/">
+            IPR disclosures
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/liaison/">
+            Liaison statements
+        </a>
+    </li>
+    
+    <li>
+        <a class="dropdown-item"
+           href="/iesg/agenda/">
+            IESG agenda
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/nomcom/">
+            NomComs
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/doc/downref">
+            Downref registry
+        </a>
+    </li>
+    <li class="dropend">
+        <a class="dropdown-item dropdown-toggle" href="#">
+            Statistics
+        </a>
+        <ul class="dropdown-menu">
+            <li>
+                <a class="dropdown-item"
+                   href="/stats/document/">
+                    I-Ds/RFCs
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item"
+                   href="/stats/meeting/">
+                    Meetings
+                </a>
+            </li>
+            
+            
+        </ul>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/api/">
+            API Help
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           href="/release/">
+            Release notes
+        </a>
+    </li>
+    <li>
+        <a class="dropdown-item"
+           target="_blank" href="https://status.ietf.org">
+            System status
+        </a>
+    </li>
+    
+        <li><hr class="dropdown-divider">
+        </li>
+    
+    <li>
+        <a class="dropdown-item text-danger "
+           target="_blank" href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+            <i class="bi bi-bug">
+            </i>
+            Report a bug
+        </a>
+    </li>
+    
+    </ul>
+</li>
+
+
+    
+
+
+
+<li class="nav-item dropdown">
+    
+        <a href="#"
+           class="nav-link dropdown-toggle"
+           role="button"
+           data-bs-toggle="dropdown"
+           aria-expanded="false">
+            
+                User
+            
+        </a>
+        <ul class="dropdown-menu  mt-n1 ">
+        
+    
+    
+        
+            <li>
+                <a class="dropdown-item "
+                   rel="nofollow"
+                   href="/accounts/login/?next=/doc/draft-ietf-oauth-client-id-metadata-document/">
+                    Sign in
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item "
+                   rel="nofollow"
+                   href="/accounts/reset/">
+                    Password reset
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item "
+                   href="/accounts/settings/"
+                   rel="nofollow">
+                    Preferences
+                </a>
+            </li>
+        
+    
+    
+        <li>
+            <a class="dropdown-item "
+               href="/accounts/create/">
+                New account
+            </a>
+        </li>
+    
+    <li class="dropend">
+      <a class="dropdown-item dropdown-toggle" href="#">
+        List subscriptions
+      </a>
+      <ul class="dropdown-menu">
+            <li>
+                <a class="dropdown-item "
+                href="https://mailman3.ietf.org/mailman3/lists/">
+                    IETF Lists
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item "
+                href="https://mailman3.irtf.org/mailman3/lists/">
+                IRTF Lists
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item "
+                href="https://mailman3.iab.org/mailman3/lists/">
+                    IAB Lists
+                </a>
+            </li>
+            <li>
+                <a class="dropdown-item "
+                href="https://mailman3.rfc-editor.org/mailman3/lists/">
+                    RFC-Editor Lists
+                </a>
+            </li>
+        </ul>
+    </li>
+    
+    
+    
+    </ul></li>
+
+
+                    </ul>
+                </div>
+                <div class="d-flex align-items-center">
+                    <a class="nav-link text-danger d-none d-xl-inline me-xl-4"
+                       target="_blank"
+                       href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+                        Report a bug
+                        <i class="bi bi-bug"></i>
+                    </a>
+
+                    
+                        <a class="btn me-1  btn-warning  d-none d-sm-block"
+                           rel="nofollow"
+                           href="/accounts/login/?next=/doc/draft-ietf-oauth-client-id-metadata-document/">
+                            Sign in
+                        </a>
+                    
+
+                    <div class="d-none d-md-block dropdown" id="navbar-doc-search-wrapper">
+                        <input class="form-control"
+                               id="navbar-doc-search"
+                               type="text"
+                               placeholder="Document search"
+                               autocomplete="off"
+                               data-ajax-url="/doc/select2search/document/all/"
+                               aria-label="Document search">
+                        <ul class="dropdown-menu" id="navbar-doc-search-results">
+                        </ul>
+                    </div>
+                </div>
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbar-collapse"
+                        aria-controls="navbar-collapse"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <i class="navbar-toggler-icon"></i>
+                </button>
+            </div>
+        </nav>
+        
+        <main class="pt-3 container-fluid" id="main">
+            <div class="row">
+                
+                <div class="col mx-lg-3 ietf-auto-nav" id="content">
+                    <noscript data-nosnippet>
+                        <div class="alert alert-danger alert-ignore my-3">
+                            <b>Javascript disabled?</b> Like other modern websites, the IETF Datatracker relies on Javascript.
+                            Please enable Javascript for full functionality.
+                        </div>
+                    </noscript>
+                    
+                    
+    
+    
+
+
+
+<h1>
+    OAuth Client ID Metadata Document
+    <br>
+    <small class="text-body-secondary">draft-ietf-oauth-client-id-metadata-document-02</small>
+</h1>
+<ul class="nav nav-tabs my-3">
+    
+        <li  class="nav-item">
+            <a class="nav-link active"
+               href="/doc/draft-ietf-oauth-client-id-metadata-document/">
+                Status
+            </a>
+        </li>
+    
+        <li  class="nav-item">
+            <a class="nav-link disabled"
+               >
+                IESG evaluation record
+            </a>
+        </li>
+    
+        <li  class="nav-item">
+            <a class="nav-link "
+               href="/doc/draft-ietf-oauth-client-id-metadata-document/writeup/">
+                IESG writeups
+            </a>
+        </li>
+    
+        <li  class="nav-item">
+            <a class="nav-link "
+               href="/doc/draft-ietf-oauth-client-id-metadata-document/email/">
+                Email expansions
+            </a>
+        </li>
+    
+        <li  class="nav-item">
+            <a class="nav-link "
+               href="/doc/draft-ietf-oauth-client-id-metadata-document/history/">
+                History
+            </a>
+        </li>
+    
+</ul>
+
+    
+
+
+
+    <label class="my-1 fw-bold">Versions:</label>
+    <nav class="mb-3">
+
+    <ul class="revision-list pagination pagination-sm text-center flex-wrap">
+        
+            
+                 
+                    <li class="page-item ">
+                        <a class="page-link"
+                        href="/doc/draft-ietf-oauth-client-id-metadata-document/00/"
+                        >
+                            00
+                        </a>
+                    </li>
+                
+            
+                 
+                    <li class="page-item ">
+                        <a class="page-link"
+                        href="/doc/draft-ietf-oauth-client-id-metadata-document/01/"
+                        rel="nofollow">
+                            01
+                        </a>
+                    </li>
+                
+            
+                 
+                    <li class="page-item active">
+                        <a class="page-link"
+                        href="/doc/draft-ietf-oauth-client-id-metadata-document/02/"
+                        >
+                            02
+                        </a>
+                    </li>
+                
+            
+            
+        
+    </ul>
+
+    </nav>
+
+    
+
+
+
+
+    
+
+
+    <div id="doc-timeline"></div>
+    
+        
+    
+    <table class="table table-sm table-borderless">
+        
+
+
+
+
+
+
+
+<tbody class="meta align-top  border-top">
+    <tr>
+        <th scope="row">Document</th>
+        <th scope="row">Type</th>
+        <td class="edit"></td>
+        <td>
+            
+
+
+
+
+
+
+
+    <span class="text-success">Active Internet-Draft</span>
+    (<a href="/wg/oauth/about/">oauth WG</a>)
+    
+
+            
+            
+            
+        </td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">Authors</th>
+        <td class="edit">
+            
+        </td>
+        <td>
+            
+            
+                <span ><a 
+           title="Datatracker profile of Aaron Parecki"
+            href="/person/aaron@parecki.com" >Aaron Parecki</a> <a 
+               href="mailto:aaron%40parecki.com"
+               aria-label="Compose email to aaron@parecki.com"
+               title="Compose email to aaron@parecki.com">
+                <i class="bi bi-envelope"></i></a></span>,
+            
+                <span ><a 
+           title="Datatracker profile of Emelia Smith"
+            href="/person/emelia@brandedcode.com" >Emelia Smith</a> <a 
+               href="mailto:emelia%40brandedcode.com"
+               aria-label="Compose email to emelia@brandedcode.com"
+               title="Compose email to emelia@brandedcode.com">
+                <i class="bi bi-envelope"></i></a></span>
+            
+            
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td></td>
+        <th scope="row">Last updated</th>
+        <td class="edit"></td>
+        <td>
+            2026-07-06
+            
+        </td>
+    </tr>
+    
+    
+        
+            <tr>
+                <td></td>
+                <th scope="row">Replaces</th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                            <a href="/doc/draft-parecki-oauth-client-id-metadata-document/" title="OAuth Client ID Metadata Document">draft-parecki-oauth-client-id-metadata-document</a>
+                        
+                    
+                </td>
+            </tr>
+        
+        
+        
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            RFC stream
+        </th>
+        <td class="edit">
+            
+        </td>
+        <td >
+            
+                
+                
+                    Internet Engineering Task Force (IETF)
+                
+                
+            
+        </td>
+    </tr>
+    
+        <tr>
+            <td></td>
+            <th scope="row">
+                Intended RFC status
+            </th>
+            <td class="edit">
+                
+            </td>
+            <td>
+                
+                    <span class="text-body-secondary">
+                        (None)
+                    </span>
+                
+            </td>
+        </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            Formats
+        </th>
+        <td class="edit">
+        </td>
+        <td>
+            
+                
+    <div class="buttonlist">
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.txt">
+            
+                <i class="bi bi-file-text"></i> txt
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.html">
+            
+                <i class="bi bi-file-code"></i> html
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.xml">
+            
+                <i class="bi bi-file-code"></i> xml
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          
+          href="/doc/html/draft-ietf-oauth-client-id-metadata-document-02">
+            
+                <i class="bi bi-file-code"></i> htmlized
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/draft-ietf-oauth-client-id-metadata-document/02/bibtex/">
+            
+                <i class="bi bi-file-ruled"></i> bibtex
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/bibxml3/draft-ietf-oauth-client-id-metadata-document-02.xml">
+            
+                <i class="bi bi-file-code"></i> bibxml
+            
+        </a>
+        
+    
+</div>
+
+            
+        </td>
+    </tr>
+    
+    
+        
+    
+        
+            
+            
+        
+    
+    
+        
+            <tr>
+                <td>
+                </td>
+                <th scope="row">
+                    Additional resources
+                </th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                        
+                            
+                                <a href="https://mailarchive.ietf.org/arch/browse/oauth/?q=draft-ietf-oauth-client-id-metadata-document">
+                                    Mailing list discussion
+                                </a>
+                            
+                        
+                    
+                </td>
+            </tr>
+        
+    
+</tbody>
+        <tbody class="meta border-top">
+            <tr>
+                <th scope="row">
+                    Stream
+                </th>
+                
+                    <th scope="row">
+                        
+                            <a href="/doc/help/state/draft-stream-ietf/">
+                                
+                                    WG
+                                
+                                state
+                            </a>
+                        
+                    </th>
+                    <td class="edit">
+                        
+                    </td>
+                    <td>
+                        
+                            <span class="">
+                                WG Document
+                            </span>
+                        
+                        
+                        
+                    </td>
+                
+            </tr>
+            
+            
+            
+            
+                <tr>
+                    <td></td>
+                    <th scope="row">
+                        Document shepherd
+                    </th>
+                    <td class="edit">
+                        
+                    </td>
+                    <td>
+                        
+                            <span class="text-body-secondary">
+                                    (None)
+                                </span>
+                        
+                    </td>
+                </tr>
+                
+            
+            
+        </tbody>
+        
+            <tbody class="meta border-top">
+                <tr>
+                    <th scope="row">
+                        IESG
+                    </th>
+                    <th scope="row">
+                        <a href="/doc/help/state/draft-iesg/">
+                            IESG state
+                        </a>
+                    </th>
+                    <td class="edit">
+                        
+                    </td>
+                    <td>
+                        <span class="">
+                            
+                                I-D Exists
+                            
+                        </span>
+                    </td>
+                </tr>
+                
+                    
+                        <tr>
+                            <td></td>
+                            <th scope="row">
+                                Consensus boilerplate
+                            </th>
+                            <td class="edit">
+                                
+                            </td>
+                            <td>
+                                <span class="text-danger"
+                                      title="Whether the document is the result of a community consensus process as defined in RFC 5741">
+                                    Unknown
+                                </span>
+                            </td>
+                        </tr>
+                    
+                    <tr>
+                        <td></td>
+                        <th scope="row">
+                            Telechat date
+                        </th>
+                        <td class="edit">
+                            
+                        </td>
+                        <td>
+                            
+                                <span class="text-body-secondary">
+                                    (None)
+                                </span>
+                            
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <th scope="row">
+                            Responsible AD
+                        </th>
+                        <td class="edit">
+                            
+                        </td>
+                        <td>
+                            
+                                <span class="text-body-secondary">
+                                    (None)
+                                </span>
+                            
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <td></td>
+                        <th scope="row">
+                            Send notices to
+                        </th>
+                        <td class="edit">
+                            
+                        </td>
+                        <td>
+                            
+                                <span class="text-body-secondary">
+                                    (None)
+                                </span>
+                            
+                        </td>
+                    </tr>
+                </tbody>
+            
+            
+                
+            
+            
+        </table>
+        <div class="buttonlist">
+            <a class="btn btn-primary btn-sm"
+               href="mailto:draft-ietf-oauth-client-id-metadata-document@ietf.org?subject=Mail%20regarding%20draft-ietf-oauth-client-id-metadata-document">
+                <i class="bi bi-envelope">
+                </i>
+                Email authors
+            </a>
+            
+                <a class="btn btn-primary btn-sm"
+                   href="mailto:oauth@ietf.org?subject=Mail%20regarding%20draft-ietf-oauth-client-id-metadata-document">
+                    <i class="bi bi-envelope">
+                    </i>
+                    Email WG
+                </a>
+            
+            <a class="btn btn-primary btn-sm"
+               href="/ipr/search/?submit=draft&amp;id=draft-ietf-oauth-client-id-metadata-document"
+               rel="nofollow">
+                <i class="bi bi-lightning">
+                </i>
+                IPR
+                
+            </a>
+            <a class="btn btn-primary btn-sm"
+               href="/doc/draft-ietf-oauth-client-id-metadata-document/references/"
+               rel="nofollow">
+                <i class="bi bi-arrow-left">
+                </i>
+                References
+            </a>
+            <a class="btn btn-primary btn-sm"
+               href="/doc/draft-ietf-oauth-client-id-metadata-document/referencedby/"
+               rel="nofollow">
+                <i class="bi bi-arrow-right">
+                </i>
+                Referenced by
+            </a>
+            <a class="btn btn-primary btn-sm"
+               href="https://author-tools.ietf.org/api/idnits?url=https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.txt"
+               rel="nofollow"
+               target="_blank">
+                <i class="bi bi-exclamation">
+                </i>
+                Nits
+            </a>
+             <a class="btn btn-primary btn-sm"
+               href="https://author-tools.ietf.org/idnits3/results?url=https://www.ietf.org/archive/id/draft-ietf-oauth-client-id-metadata-document-02.txt"
+               rel="nofollow"
+               target="_blank">
+                <i class="bi bi-exclamation-diamond">
+                </i>
+                Nits v3
+            </a>           
+            <a class="btn btn-primary btn-sm"
+               href="https://mailarchive.ietf.org/arch/search/?q=%22draft-ietf-oauth-client-id-metadata-document%22"
+               rel="nofollow"
+               target="_blank">
+                <i class="bi bi-search">
+                </i>
+                Search email archive
+            </a>
+            
+            
+            
+            
+        </div>
+        
+            <div class="card mt-5">
+                <div class="card-header">
+                    
+                        draft-ietf-oauth-client-id-metadata-document-02
+                    
+                </div>
+                <div class="card-body">
+                    <pre>Web Authorization Protocol                                    A. Parecki
+Internet-Draft                                                      Okta
+Intended status: Standards Track                                E. Smith
+Expires: 7 January 2027                                      6 July 2026
+
+                   OAuth Client ID Metadata Document
+            draft-ietf-oauth-client-id-metadata-document-02
+
+<span>Abstract</span>
+
+   This specification defines a mechanism through which an OAuth client
+   can identify itself to authorization servers, without prior dynamic
+   client registration or other existing registration.  This is through
+   the usage of a URL as a client_id in an OAuth flow, where the URL
+   refers to a document containing the necessary client metadata,
+   enabling the authorization server to fetch the metadata about the
+   client as needed.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://drafts.oauth.net/draft-ietf-oauth-client-id-metadata-
+   document/draft-ietf-oauth-client-id-metadata-document.html.  Status
+   information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-
+   document/.
+
+   Discussion of this document takes place on the Web Authorization
+   Protocol Working Group mailing list (mailto:oauth@ietf.org), which is
+   archived at https://mailarchive.ietf.org/arch/browse/oauth/.
+   Subscribe at https://www.ietf.org/mailman/listinfo/oauth/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/oauth-wg/draft-ietf-oauth-client-id-metadata-
+   document.
+
+<span>Status of This Memo</span>
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                 [Page 1]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as &quot;work in progress.&quot;
+
+   This Internet-Draft will expire on 7 January 2027.
+
+<span>Copyright Notice</span>
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust&#x27;s Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+<span>Table of Contents</span>
+
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
+   2.  Conventions and Definitions . . . . . . . . . . . . . . . . .   4
+   3.  Client Identifier URL . . . . . . . . . . . . . . . . . . . .   4
+   4.  Client ID Metadata Document . . . . . . . . . . . . . . . . .   5
+     4.1.  Credential and Key Material Restrictions  . . . . . . . .   6
+     4.2.  Redirect URL Registration . . . . . . . . . . . . . . . .   6
+     4.3.  Relationship with software_statement  . . . . . . . . . .   6
+   5.  Client Information Discovery  . . . . . . . . . . . . . . . .   7
+     5.1.  Metadata Discovery Errors . . . . . . . . . . . . . . . .   7
+     5.2.  Metadata Caching  . . . . . . . . . . . . . . . . . . . .   7
+   6.  Authorization Server Metadata . . . . . . . . . . . . . . . .   8
+   7.  Implementation Considerations . . . . . . . . . . . . . . . .   8
+     7.1.  Supporting Both Pre-Registered and Unregistered
+           Clients . . . . . . . . . . . . . . . . . . . . . . . . .   8
+     7.2.  Pre-Registering Client Identifier URLs  . . . . . . . . .   9
+   8.  Security Considerations . . . . . . . . . . . . . . . . . . .   9
+     8.1.  Relationship between redirect_uris and client_id or
+            client_uri . . . . . . . . . . . . . . . . . . . . . . .   9
+     8.2.  Client Authentication . . . . . . . . . . . . . . . . . .  10
+     8.3.  Changes in Client Identifier URL  . . . . . . . . . . . .  11
+     8.4.  Changes in Client Metadata  . . . . . . . . . . . . . . .  11
+       8.4.1.  Changes in Client Keys  . . . . . . . . . . . . . . .  11
+     8.5.  OAuth Phishing Attacks  . . . . . . . . . . . . . . . . .  12
+     8.6.  Server Side Request Forgery (SSRF) Attacks  . . . . . . .  12
+     8.7.  Maximum Response Size for Client ID Metadata Documents  .  13
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                 [Page 2]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+     8.8.  Displaying Logos to End-Users . . . . . . . . . . . . . .  13
+     8.9.  Client ID Domain Trust  . . . . . . . . . . . . . . . . .  13
+     8.10. CIMD Services . . . . . . . . . . . . . . . . . . . . . .  13
+   9.  Privacy Considerations  . . . . . . . . . . . . . . . . . . .  14
+     9.1.  Authorization Server Fetch Side Channel . . . . . . . . .  14
+     9.2.  URLs Referenced in Client ID Metadata Documents . . . . .  14
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  15
+     10.1.  OAuth Authorization Server Metadata Registry . . . . . .  15
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  15
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  15
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  16
+   Appendix A.  CIMD Services for Development Purposes . . . . . . .  17
+   Acknowledgments . . . . . . . . . . . . . . . . . . . . . . . . .  18
+   Document History  . . . . . . . . . . . . . . . . . . . . . . . .  18
+   Authors&#x27; Addresses  . . . . . . . . . . . . . . . . . . . . . . .  20
+
+1.  Introduction
+
+   In order for an OAuth 2.0 [RFC6749] client to utilize an OAuth 2.0
+   authorization server, the client needs to establish a unique
+   identifier, and needs to provide the server with metadata about the
+   application, such as the application name, icon and redirect URIs.
+   In cases where a client is interacting with authorization servers
+   that it has no relationship with, manual registration is impossible.
+
+   While Dynamic Client Registration [RFC7591] can provide a method for
+   a previously unknown client to establish itself at an authorization
+   server and obtain a client identifier, this is not always practical
+   in some deployments and can create additional challenges around
+   management of the registration data and cleanup of inactive clients.
+
+   This specification describes how an OAuth 2.0 client can publish its
+   own registration information and avoid the need for pre-registering
+   at each authorization server.
+
+   This approach works best for clients that have an established,
+   stable, and publicly accessible web presence, such as a web service,
+   a website for a mobile app, or a service that controls its own
+   domain.  Clients that do not control a stable public URL, such as
+   clients under active development on a developer&#x27;s local machine, or
+   clients that cannot guarantee the longevity of a URL, are less well
+   served by this mechanism.  Deployments that need to support such
+   clients should consider the guidance in Section 7 and Section 8.10.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                 [Page 3]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+2.  Conventions and Definitions
+
+   The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;REQUIRED&quot;, &quot;SHALL&quot;, &quot;SHALL NOT&quot;,
+   &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;RECOMMENDED&quot;, &quot;NOT RECOMMENDED&quot;, &quot;MAY&quot;, and
+   &quot;OPTIONAL&quot; in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+3.  Client Identifier URL
+
+   This specification defines a URL format used as a client&#x27;s
+   identifier, referred to in this document as a Client Identifier URL.
+
+   A Client Identifier URL:
+
+   *  MUST use the https URL scheme
+
+   *  MUST NOT contain a userinfo component defined by [RFC3986]
+
+   *  MAY contain a port
+
+   *  MUST contain a path component
+
+   *  MUST NOT contain single-dot or double-dot path components
+
+   *  SHOULD NOT contain a query component
+
+   *  MUST NOT contain a fragment component
+
+   Client Identifier URLs MUST be compared using simple string
+   comparison, as defined in Section 6.2.1 of [RFC3986].  For example,
+   https://example.com/client and https://example.com:443/client are not
+   equivalent even though 443 is the default port for the https scheme.
+
+   This specification places no restrictions on the brevity or longevity
+   of a Client Identifier URL beyond the requirements listed above.  A
+   short URL is RECOMMENDED, since the URI may be displayed to the end
+   user in the authorization interface or in management interfaces.
+   Usage of a stable URL that does not change frequently for the client
+   is also RECOMMENDED, as changing the URL will appear to the
+   authorization server to be an entirely different Client Identifier
+   URL as described in Section 8.3.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                 [Page 4]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   Note that URL shortening services are generally not suitable as
+   Client Identifier URLs, since they typically operate using HTTP
+   redirects, which conflicts with the requirement in Section 5 when
+   fetching the Client ID Metadata Document.  Using a path of / (e.g.,
+   https://example.com/) is NOT RECOMMENDED, since the Client ID
+   Metadata Document would then be served at the root of the domain,
+   conflicting with existing content that may be published there.
+
+   A Client Identifier URL MUST be associated with a set of client
+   metadata, in the form of a Client ID Metadata Document as described
+   in Section 4, available at the Client Identifier URL.
+
+4.  Client ID Metadata Document
+
+   The Client ID Metadata Document is a JSON ([RFC8259]) document
+   containing the metadata of the client.  The client metadata values
+   are the values defined in the OAuth Dynamic Client Registration
+   Metadata OAuth Parameters registry https://www.iana.org/assignments/
+   oauth-parameters/oauth-parameters.xhtml#client-metadata
+   (https://www.iana.org/assignments/oauth-parameters/oauth-
+   parameters.xhtml#client-metadata) as established by [RFC7591].
+
+   The Client ID Metadata Document MUST contain a client_id property
+   whose value MUST match the Client Identifier URL, which MUST also
+   match the URL that the authorization server used to fetch the
+   document; comparisons MUST be made using simple string comparison as
+   defined in Section 6.2.1 of [RFC3986].  The authorization server is
+   responsible for validating this match as part of processing the
+   fetched document.
+
+   The Client ID Metadata Document MUST be served with a 200 OK HTTP
+   status code.  The Client ID Metadata Document MAY also be served with
+   more specific content types as long as the response is JSON and
+   conforms to application/&lt;AS-defined&gt;+json.
+
+   Other specifications MAY place additional restrictions on the
+   contents of the Client ID Metadata Document accepted by authorization
+   servers implementing their specification.  For example, requiring the
+   token_endpoint_auth_method property be set to &quot;private_key_jwt&quot;,
+   effectively requiring confidential clients.
+
+   TBD: We may want a property such as client_id_expires_at for
+   indicating that the client is ephemeral and not valid after a given
+   timestamp, especially for documents issued by a service for
+   development purposes.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                 [Page 5]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+4.1.  Credential and Key Material Restrictions
+
+   As there is no way to establish a shared secret to be used with
+   client metadata documents, the following restrictions apply to the
+   contents of the Client ID Metadata Document:
+
+   *  the token_endpoint_auth_method property MUST NOT include
+      client_secret_post, client_secret_basic, client_secret_jwt, or any
+      other method based around a shared symmetric secret
+
+   *  the client_secret and client_secret_expires_at properties MUST NOT
+      be used
+
+   *  private key material MUST NOT be included in the Client ID
+      Metadata Document; only public keys, such as those published via
+      the jwks or jwks_uri properties, are permitted
+
+   See Section 8.2 for more details on establishing client
+   authentication using public/private key pairs.
+
+4.2.  Redirect URL Registration
+
+   According to [RFC9700], the authorization server MUST require
+   registration of redirect URLs, and MUST ensure that the redirect URL
+   in an authorization request is an exact match, using simple string
+   comparison, of a registered redirect URL.
+
+   This method of client information discovery establishes registered
+   redirect URL(s) when the authorization server fetches the contents of
+   the Client ID Metadata Document.
+
+   This specification is not limited to grant types that use a redirect
+   URL.  For grant types that do not involve a redirect URL, such as the
+   Client Credentials Grant, or extension grants such as Token Exchange,
+   the requirements of this section do not apply, since no redirect URL
+   is registered or used.  The other mechanisms described in this
+   specification, namely client identification and client metadata
+   discovery, apply regardless of which grant type is used.
+
+4.3.  Relationship with software_statement
+
+   The software_statement parameter defined in [RFC7591] MAY be used
+   together with a Client Identifier URL, for example by including it as
+   a property of the Client ID Metadata Document.  Doing so can provide
+   the authorization server with an additional, independently verifiable
+   signal about the client&#x27;s identity or provenance.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                 [Page 6]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   Operators combining software statements with this specification
+   should note that the software statement is no longer presented inline
+   by the client during the authorization request; instead, it is
+   retrieved by the authorization server as part of fetching the Client
+   ID Metadata Document.  This means the trustworthiness of the software
+   statement&#x27;s claims depends not only on the issuer&#x27;s signature over
+   the statement itself, but also on the integrity of the process used
+   to retrieve the Client ID Metadata Document (including the
+   protections described in Section 8.6), as well as the relationship
+   between the client instance and the Client ID Metadata Document.
+   Authorization servers should evaluate whether this combination meets
+   their assurance requirements before relying on software statements
+   delivered this way.
+
+5.  Client Information Discovery
+
+   Authorization servers SHOULD automatically fetch the Client ID
+   Metadata Document at the Client Identifier URL to retrieve the client
+   metadata.  Authorization servers SHOULD periodically re-fetch the
+   Client ID Metadata Document as the contents may change over time.
+   See Section 5.2 and Section 8.4 for additional considerations.
+
+   An authorization server MAY instead associate a Client Identifier URL
+   with client metadata through other means, such as by pre-registering
+   the URL as described in Section 7.2.
+
+   The Client ID Metadata Document MUST be served with a 200 OK HTTP
+   status code.  The authorization server MUST treat all other HTTP
+   status codes as an error response, as described in Section 5.1.  The
+   authorization server MUST NOT automatically follow HTTP redirects
+   when fetching the Client ID Metadata Document.
+
+   Special care should be taken to avoid Server Side Request Forgery
+   (SSRF) Attacks when fetching Client ID Metadata Documents, as
+   described in Section 8.6.
+
+5.1.  Metadata Discovery Errors
+
+   If the authorization server attempts to fetch the Client ID Metadata
+   Document, and fetching the metadata document fails, the authorization
+   server SHOULD abort the authorization request.
+
+5.2.  Metadata Caching
+
+   The authorization server MAY cache the client metadata it discovers
+   at the Client ID Metadata Document URL.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                 [Page 7]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   The authorization server SHOULD respect HTTP cache headers [RFC9111]
+   when caching client metadata, but MAY define its own upper and/or
+   lower bounds on an acceptable cache lifetime as well.
+
+   The authorization server MUST NOT cache error responses.  The
+   authorization server also MUST NOT cache documents which are invalid
+   or malformed.
+
+6.  Authorization Server Metadata
+
+   Authorization servers that publish Authorization Server Metadata
+   [RFC8414] MUST include the following property to signal support for
+   Client ID Metadata Documents as described in this specification.
+
+   client_id_metadata_document_supported:  OPTIONAL.  Boolean value
+      specifying whether the authorization server supports retrieving
+      client metadata from a client_id URL as described in this
+      specification.
+
+   This enables clients to avoid sending the user to a dead end, by only
+   redirecting the user to an authorization server that supports this
+   specification.  Otherwise, the client would redirect the user and the
+   user would be met with an error about an invalid client as described
+   in Section 4.1.2.1 of [RFC6749].
+
+7.  Implementation Considerations
+
+7.1.  Supporting Both Pre-Registered and Unregistered Clients
+
+   If an authorization server wishes to support clients using Client ID
+   Metadata Documents as well as clients where the authorization server
+   generates the client_id, it SHOULD ensure that the client_id strings
+   it generates do not start with https://. Given that most
+   implementations of authorization servers generate random values for
+   the client_id, this is not expected to be a problem in practice.
+
+   The presence of the https:// scheme in a client_id is not by itself a
+   reliable signal of whether a client was registered using this
+   specification, such as if an authorization server issues https://
+   URLs as client_id values for other purposes like vanity identifiers
+   or stable developer-facing identifiers, without treating them as
+   Client Identifier URLs to be fetched.  The determining factor for
+   whether a client_id is subject to this specification is whether the
+   authorization server fetches, or otherwise associates, a Client ID
+   Metadata Document for that client_id.  Authorization servers that
+   support both approaches need a reliable way, internal to their own
+   implementation, to distinguish clients registered via this
+   specification from those registered by other means.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                 [Page 8]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+7.2.  Pre-Registering Client Identifier URLs
+
+   An authorization server MAY pre-register Client Identifier URLs.
+   This is a valid deployment pattern that leverages the namespacing and
+   key-binding properties of Client Identifier URLs described in this
+   specification, while not relying on the authorization server
+   automatically fetching client metadata at request time.  The
+   authorization server SHOULD fetch the Client ID Metadata Document at
+   the URL at the time of establishing this pre-registration, although
+   other means of registering the metadata document are also valid.
+
+   This deployment pattern is expected to be common in enterprise
+   environments where enterprise customers wish to explicitly onboard
+   particular clients into their environment.  The Client Identifier URL
+   can be registered with the identity provider, including establishing
+   client authentication as described in Section 8.2, where it can
+   behave the same way as a pre-registered client.  There is no
+   obligation to support dynamic client onboarding by using the
+   mechanisms described in this document.
+
+8.  Security Considerations
+
+   In addition to the security considerations in OAuth 2.0 Core
+   [RFC6749], and OAuth 2.0 Threat Model and Security Considerations
+   [RFC6819], and [RFC9700] the additional considerations apply.
+
+8.1.  Relationship between redirect_uris and client_id or client_uri
+
+   An authorization server may impose restrictions or relationships
+   between the redirect_uris and the client_id or client_uri properties,
+   for example to restrict the redirect_uri to the same-origin as the
+   Client ID Metadata Document.  Without restrictions like these, there
+   are potential trust and safety issues where the client attempts to
+   impersonate a more well-known client or otherwise act in a way which
+   is malicious or puts the end-user at risk.
+
+   Having no restrictions on the relationship between redirect_uris and
+   client_id or client_uri was a common practice with [Solid-OIDC]&#x27;s
+   Client ID Documents, so this ability is preserved for backwards
+   compatibility between [Solid-OIDC] and this specification.
+
+   Some restrictions on redirect_uris can make developer usage of Client
+   ID Metadata Documents difficult.  Section 8.10 discusses how a
+   service offered by the authorization server can enable development
+   usage of Client ID Metadata Documents for authorization servers that
+   impose restrictions on the redirect_uri.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                 [Page 9]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+8.2.  Client Authentication
+
+   Since the client establishes its own registration data at the
+   authorization server, prior coordination of client credentials is not
+   possible.  However, establishing credentials at the authorization
+   server by using authentication methods that use public/private key
+   pairs is possible by publishing the public key in their metadata
+   document.
+
+   Clients that are capable of maintaining private key material and
+   performing client authentication SHOULD do so with an acceptable
+   method, such as a method in the OAuth Token Endpoint Authentication
+   Methods registry (https://www.iana.org/assignments/oauth-parameters/
+   oauth-parameters.xhtml#token-endpoint-auth-method).
+
+   For example, the client MAY include the following properties in its
+   metadata document to establish a public key and advertise the
+   private_key_jwt authentication method defined in [OpenID]:
+
+   {
+     ...
+     &quot;token_endpoint_auth_method&quot;: &quot;private_key_jwt&quot;,
+     &quot;jwks_uri&quot;: &quot;https://client.example.com/jwks.json&quot;
+     ...
+   }
+
+   This establishes this client as a confidential client, and any
+   communication with the authorization server MUST include client
+   authentication of the registered type.
+
+   When a client declares token_endpoint_auth_method as private_key_jwt,
+   the authorization server MUST require client authentication according
+   to Section 2.2 of [RFC7523] using the corresponding key discovered
+   from the client&#x27;s metadata document.
+
+   The particular method of how the client manages the private key is
+   out of scope of this specification, but may include manual
+   provisioning or methods such as &quot;Attestation Based Client
+   Authentication&quot; [I-D.draft-ietf-oauth-attestation-based-client-auth]
+   or &quot;OAuth SPIFFE Client Authentication&quot;
+   [I-D.draft-ietf-oauth-spiffe-client-auth].  For example, the client
+   developer could run a Client Attester Backend, using a native
+   application&#x27;s platform-specific APIs to authenticate to the backend
+   service, where the private key corresponding to the jwks_uri key is
+   managed by the backend service.  This would allow a mobile app to
+   request JWTs from the backend service that the mobile app could then
+   use as client authentication to the authorization server.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 10]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+8.3.  Changes in Client Identifier URL
+
+   The Client Identifier URL is the client&#x27;s identity from the
+   perspective of the authorization server.  Because OAuth treats two
+   different client_id values as two entirely unrelated clients, a
+   client that changes its Client Identifier URL is, as far as any
+   authorization server is concerned, a brand new client with no
+   relationship to the previous one.  Any grants, tokens, or user
+   consent that had been associated with the old URL may not be
+   transferable to the new URL, and users may be prompted to re-
+   authorize as if encountering the client for the first time.
+
+   Clients should therefore treat their Client Identifier URL with the
+   same degree of stability as they would treat any persistent identity.
+   Operators should plan for the URL to remain resolvable and under
+   their control indefinitely, as loss of control over the URL — for
+   example through domain expiry or reassignment — would allow a third
+   party to assume the client&#x27;s identity.
+
+8.4.  Changes in Client Metadata
+
+   Authorization servers should be aware that Client ID Metadata
+   Documents can change over time since they are served from URLs under
+   client control.  Authorization servers should consider the security
+   implications when metadata properties change, such as redirect_uris,
+   token_endpoint_auth_method, scope, grant_types, jwks, jwks_uri, or
+   display properties like client_name and logo_uri.
+
+   Significant changes to client metadata may affect the trust
+   relationship between the authorization server and the client, and
+   could impact the validity of previously granted user consent.
+   Authorization servers may choose to invalidate existing grants,
+   require fresh user consent, or implement other policies when certain
+   types of metadata changes are detected.  The appropriate response
+   will depend on the authorization server&#x27;s risk tolerance and
+   operational requirements.
+
+8.4.1.  Changes in Client Keys
+
+   If the authorization server notices that the jwks, jwks_uri or the
+   contents at the jwks_uri have changed compared to the last time it
+   fetched the metadata, the authorization server may take actions such
+   as revoking any tokens issued to this client, or revoking the user&#x27;s
+   consent for this client.  The particular actions to take are left up
+   to the discretion of the authorization server based on its own risk
+   assessment.  However, periodic rotation of keys can also be expected
+   as good security hygiene by the client.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 11]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+8.5.  OAuth Phishing Attacks
+
+   Authorization servers SHOULD fetch the client_id metadata document
+   provided in the authorization request in order to provide users with
+   additional information about the request, such as the application
+   name and logo.  If the server does not fetch the Client ID Metadata
+   Document, then it SHOULD take additional measures to ensure the user
+   is provided with as much information as possible about the request.
+
+   The authorization server SHOULD display the hostname of the client_id
+   on the authorization interface, in addition to displaying the fetched
+   client information if any.  Displaying the hostname helps users know
+   that they are authorizing the expected application.
+
+   If fetching the Client ID Metadata Document fails for any reason, the
+   client_id URL is the only piece of information the user has as an
+   indication of which application they are authorizing.
+
+8.6.  Server Side Request Forgery (SSRF) Attacks
+
+   Authorization servers fetching the Client ID Metadata Document and
+   resolving URLs contained within it should be aware of possible SSRF
+   attacks.  Authorization servers MUST NOT fetch a Client ID Metadata
+   Document URL or any URLs contained within a Client ID Metadata
+   Document that resolve to special-use IP addresses as defined in
+   [RFC6890].
+
+   Authorization servers deployed for development or testing purposes
+   MAY relax this restriction to allow fetching from loopback addresses
+   when the authorization server itself is also running on a loopback
+   address and the resolved address matches the same loopback interface.
+   Authorization servers MUST NOT apply this exception in production
+   deployments, since doing so would allow an attacker-controlled Client
+   Identifier URL to cause the authorization server to make requests
+   against itself or other services on the loopback interface or
+   special-use IP addresses.
+
+   Authorization servers SHOULD consider network policies or other
+   measures to prevent making requests to special-use addresses.
+   Authorization servers which support non-http-based URI schemes are at
+   additional risk of SSRF attacks.
+
+   Authorization servers SHOULD ensure they only fetch or parse URLs
+   with known and supported URI schemes.  This can help avoid leading to
+   compromises if a client uses a URI scheme such as javascript: in a
+   metadata property.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 12]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+8.7.  Maximum Response Size for Client ID Metadata Documents
+
+   Since the authorization server does not control the size of the
+   Client ID Metadata Document served by the client, it cannot limit the
+   size of the response itself.  Instead, authorization servers SHOULD
+   limit the amount of data they read and process when fetching a Client
+   ID Metadata Document, for example by stopping after a maximum number
+   of bytes and treating the response as an error if that limit is
+   reached before the document has been fully read.  The recommended
+   maximum size to read is 5 kilobytes.
+
+8.8.  Displaying Logos to End-Users
+
+   Authorization servers that wish to make use of the logo_uri property
+   within Client ID Metadata Document SHOULD prefetch the file at
+   logo_uri and cache it for the cache duration of the Client ID
+   Metadata Document.  This allows for moderation tools to verify the
+   file contents (e.g., preventing usage of logos that look like other
+   logos), as well as preventing the logo from being dynamically changed
+   to confuse an end-user.
+
+   Caching of the logo_uri response can additionally prevent cross-
+   domain tracking through the logo_uri being requested by the client,
+   since the cached file would be served not from the remote URI but
+   instead from a URI that the Authorization server trusts.
+
+8.9.  Client ID Domain Trust
+
+   The authorization server may choose to have its own heuristics and
+   policies around the trust of domain names used as client IDs.
+
+   For example, the authorization server could require that the first
+   100 users to authorize a client_id see an additional warning screen
+   before the OAuth consent screen.  The authorization server could
+   check attributes of the domain reputation, such as how recently the
+   domain was registered, and put up extra warnings for new domains.  An
+   authorization server may also maintain allowlists of trusted domain
+   patterns, such as treating any Client Identifier URL under
+   *.example.com as belonging to a known and trusted operator, and apply
+   reduced friction for clients matching such patterns.
+
+8.10.  CIMD Services
+
+   This section describes a pattern, referred to as a CIMD Service,
+   through which an authorization server can offer developers a way to
+   obtain Client Identifier URIs for use during development, without
+   requiring the developer to host a publicly accessible document
+   themselves.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 13]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   Operating a CIMD Service has security and reputation implications,
+   since it is effectively acting as a proxy for static client
+   registration for any client it provisions.  An authorization server
+   operating a CIMD Service should ensure that clients provisioned this
+   way are clearly distinguished from other clients when presented to
+   end users, and should consider the implications on the trust model
+   described in this specification, since a CIMD Service intermediates
+   the relationship between the client and the authorization server
+   rather than the client publishing its own metadata directly.
+
+9.  Privacy Considerations
+
+9.1.  Authorization Server Fetch Side Channel
+
+   When the authorization server fetches a Client Identifier URL or
+   other URLs referenced within a Client ID Metadata Document, the act
+   of fetching may reveal information about end-user activity to the
+   operator of the server hosting those URLs.  For example, the timing
+   and frequency of requests to a Client Identifier URI can indicate
+   when, and how often, users are attempting to authorize with a
+   particular authorization server.
+
+   Authorization servers that fetch client metadata on every
+   authorization request, rather than relying on cached data, are more
+   susceptible to this side channel.  Authorization servers SHOULD
+   respect cache headers as described in Section 5.2 to reduce the
+   frequency of unnecessary fetches.
+
+9.2.  URLs Referenced in Client ID Metadata Documents
+
+   Client ID Metadata Documents may contain URLs, such as logo_uri,
+   jwks_uri, policy_uri, or tos_uri, that the authorization server
+   fetches directly or exposes to the end user, for example by rendering
+   them or linking to them in the authorization interface.  When these
+   URLs are fetched by the authorization server, or their content is
+   served to the end user&#x27;s browser, they may create cross-domain
+   tracking opportunities for the operator of the referenced URL.
+
+   As described in Section 8.8, authorization servers that fetch and
+   cache the content of logo_uri rather than linking to it directly
+   mitigate the risk of cross-domain tracking through logo requests
+   initiated by the end user&#x27;s browser.  Authorization servers should
+   consider similar precautions for other URLs contained in the Client
+   ID Metadata Document before exposing them to end users.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 14]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+10.  IANA Considerations
+
+10.1.  OAuth Authorization Server Metadata Registry
+
+   The following authorization server metadata value is defined by this
+   specification and registered in the IANA &quot;OAuth Authorization Server
+   Metadata&quot; registry established in OAuth 2.0 Authorization Server
+   Metadata [RFC8414].
+
+   *  Metadata Name: client_id_metadata_document_supported:
+
+   *  Metadata Description: JSON boolean value specifying whether the
+      authorization server supports retrieving client metadata from a
+      client_id URL.
+
+   *  Change Controller: IETF
+
+   *  Specification Document: Section 6 of [draft-ietf-oauth-client-id-
+      metadata-document-02]
+
+11.  References
+
+11.1.  Normative References
+
+   [RFC2119]  Bradner, S., &quot;Key words for use in RFCs to Indicate
+              Requirement Levels&quot;, BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              &lt;https://www.rfc-editor.org/rfc/rfc2119&gt;.
+
+   [RFC3986]  Berners-Lee, T., Fielding, R., and L. Masinter, &quot;Uniform
+              Resource Identifier (URI): Generic Syntax&quot;, STD 66,
+              RFC 3986, DOI 10.17487/RFC3986, January 2005,
+              &lt;https://www.rfc-editor.org/rfc/rfc3986&gt;.
+
+   [RFC6749]  Hardt, D., Ed., &quot;The OAuth 2.0 Authorization Framework&quot;,
+              RFC 6749, DOI 10.17487/RFC6749, October 2012,
+              &lt;https://www.rfc-editor.org/rfc/rfc6749&gt;.
+
+   [RFC6819]  Lodderstedt, T., Ed., McGloin, M., and P. Hunt, &quot;OAuth 2.0
+              Threat Model and Security Considerations&quot;, RFC 6819,
+              DOI 10.17487/RFC6819, January 2013,
+              &lt;https://www.rfc-editor.org/rfc/rfc6819&gt;.
+
+   [RFC6890]  Cotton, M., Vegoda, L., Bonica, R., Ed., and B. Haberman,
+              &quot;Special-Purpose IP Address Registries&quot;, BCP 153,
+              RFC 6890, DOI 10.17487/RFC6890, April 2013,
+              &lt;https://www.rfc-editor.org/rfc/rfc6890&gt;.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 15]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   [RFC7591]  Richer, J., Ed., Jones, M., Bradley, J., Machulak, M., and
+              P. Hunt, &quot;OAuth 2.0 Dynamic Client Registration Protocol&quot;,
+              RFC 7591, DOI 10.17487/RFC7591, July 2015,
+              &lt;https://www.rfc-editor.org/rfc/rfc7591&gt;.
+
+   [RFC8174]  Leiba, B., &quot;Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words&quot;, BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, &lt;https://www.rfc-editor.org/rfc/rfc8174&gt;.
+
+   [RFC8259]  Bray, T., Ed., &quot;The JavaScript Object Notation (JSON) Data
+              Interchange Format&quot;, STD 90, RFC 8259,
+              DOI 10.17487/RFC8259, December 2017,
+              &lt;https://www.rfc-editor.org/rfc/rfc8259&gt;.
+
+   [RFC8414]  Jones, M., Sakimura, N., and J. Bradley, &quot;OAuth 2.0
+              Authorization Server Metadata&quot;, RFC 8414,
+              DOI 10.17487/RFC8414, June 2018,
+              &lt;https://www.rfc-editor.org/rfc/rfc8414&gt;.
+
+   [RFC9700]  Lodderstedt, T., Bradley, J., Labunets, A., and D. Fett,
+              &quot;Best Current Practice for OAuth 2.0 Security&quot;, BCP 240,
+              RFC 9700, DOI 10.17487/RFC9700, January 2025,
+              &lt;https://www.rfc-editor.org/rfc/rfc9700&gt;.
+
+11.2.  Informative References
+
+   [I-D.draft-ietf-oauth-attestation-based-client-auth]
+              Looker, T., Bastian, P., and C. Bormann, &quot;OAuth 2.0
+              Attestation-Based Client Authentication&quot;, Work in
+              Progress, Internet-Draft, draft-ietf-oauth-attestation-
+              based-client-auth-09, 25 May 2026,
+              &lt;https://datatracker.ietf.org/doc/html/draft-ietf-oauth-
+              attestation-based-client-auth-09&gt;.
+
+   [I-D.draft-ietf-oauth-spiffe-client-auth]
+              Schwenkschuster, A., Kasselman, P., Rose, S., Thorgersen,
+              S., and N. Cam-Winget, &quot;OAuth SPIFFE Client
+              Authentication&quot;, Work in Progress, Internet-Draft, draft-
+              ietf-oauth-spiffe-client-auth-02, 15 June 2026,
+              &lt;https://datatracker.ietf.org/doc/html/draft-ietf-oauth-
+              spiffe-client-auth-02&gt;.
+
+   [IndieAuth]
+              Parecki, A., &quot;IndieAuth&quot;, 12 February 2022,
+              &lt;https://indieauth.spec.indieweb.org/&gt;.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 16]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   [OpenID]   Sakimura, N., Bradley, J., Jones, M., Medeiros, B. de.,
+              and C. Mortimore, &quot;OpenID Connect Core 1.0&quot;, 15 December
+              2023,
+              &lt;https://openid.net/specs/openid-connect-core-1_0.html&gt;.
+
+   [OpenID.Federation]
+              Hedberg, R., Jones, M.B., Solberg, A.Å., Bradley, J.,
+              Marco, G. D., and V. Dzhuvinov, &quot;OpenID Federation 1.0&quot;,
+              17 May 2024,
+              &lt;https://openid.net/specs/openid-federation-1_0.html&gt;.
+
+   [RFC7523]  Jones, M., Campbell, B., and C. Mortimore, &quot;JSON Web Token
+              (JWT) Profile for OAuth 2.0 Client Authentication and
+              Authorization Grants&quot;, RFC 7523, DOI 10.17487/RFC7523, May
+              2015, &lt;https://www.rfc-editor.org/rfc/rfc7523&gt;.
+
+   [RFC9111]  Fielding, R., Ed., Nottingham, M., Ed., and J. Reschke,
+              Ed., &quot;HTTP Caching&quot;, STD 98, RFC 9111,
+              DOI 10.17487/RFC9111, June 2022,
+              &lt;https://www.rfc-editor.org/rfc/rfc9111&gt;.
+
+   [Solid-OIDC]
+              Coburn, A., elf Pavlik, and D. Zagidulin, &quot;Solid-OIDC&quot;, 28
+              March 2022,
+              &lt;https://solidproject.org/TR/2022/oidc-20220328&gt;.
+
+<span>Appendix A.  CIMD Services for Development Purposes</span>
+
+   This appendix describes a non-normative pattern, referred to as a
+   CIMD Service, that an authorization server MAY offer to make
+   development against this specification easier.
+
+   An authorization server may have restrictions on what it accepts as
+   valid redirect_uris, for instance, limiting them to the same-origin
+   as the client_id or client_uri properties, as discussed in
+   Section 8.1.  However, if an authorization server does place
+   additional restrictions on the accepted redirect_uris then it is
+   RECOMMENDED that it provide at least one CIMD Service which is exempt
+   from these restrictions, to support developers as described below.
+
+   When developing applications against an authorization server which
+   uses this specification, developers often encounter the issue of &quot;how
+   do I serve a Client ID Metadata Document at a publicly accessible
+   https URL whilst developing my application on my localhost?&quot;.
+
+   To enable developers to author applications on their machines,
+   without exposing their machines to the public internet, an
+   authorization server MAY offer a CIMD Service.
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 17]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   A CIMD Service is a web service through which developers can acquire
+   a stable Client Identifier URL that resolves to a Client ID Metadata
+   Document.  This service MAY expire clients from time to time, and MAY
+   require developers to provide additional information about the client
+   being developed.
+
+   The only requirement on a CIMD Service is that it MUST return valid
+   Client ID Metadata Documents for the client_ids that it provisions,
+   or return a status code indicating an error response (e.g., 404 Not
+   Found).  How a CIMD Service creates or stores metadata documents is
+   outside of the scope of this document.
+
+   By providing at least one CIMD Service, an authorization server can
+   enable developers to create applications, and still indicate to non-
+   technical people that the client that they are about to authorize is
+   currently under-development and may not be trustworthy or secure.
+
+   Operating a CIMD Service effectively means the authorization server
+   is performing a form of static client registration on behalf of the
+   developer, mediated through a URL rather than a direct registration
+   API.  Authorization servers offering a CIMD Service should consider
+   the security and reputation implications discussed in Section 8.10,
+   and should ensure that clients provisioned through a CIMD Service are
+   not afforded the same level of trust as clients that publish their
+   own Client ID Metadata Document.
+
+<span>Acknowledgments</span>
+
+   The idea of using URIs as the client_id in OAuth based authorization
+   requests is not new, and has previously been specified in varying
+   ways by [IndieAuth], [Solid-OIDC], and [OpenID.Federation].  This
+   specification is largely inspired by the work of Aaron Coburn, elf
+   Pavlik, and Dmitri Zagidulin in their [Solid-OIDC] specification
+   which defined dereferenceable Client Identifier Documents.
+
+   The authors would like to thank the following people for their
+   contributions and reviews of this specification: Bobby Tiernay, Brian
+   Campbell, Bryan Newbold, Dick Hardt, Filip Skokan, Jeff Lombardo, Joe
+   DeCock, Justin Richer, Leif Johansson, Matthieu Sieben, Meghna Dubey,
+   Orie Steele, Pieter Kasselman, and Takahiko Kawasaki.
+
+Document History
+
+   (This appendix to be deleted by the RFC editor in the final
+   specification.)
+
+   -02
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 18]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   *  Clarified loopback exception for SSRF checks
+
+   *  More strongly recommend doing client authentication
+
+   *  Clarified scope of applicability in the Introduction
+
+   *  Renamed &quot;client identifier&quot; to &quot;Client Identifier URL&quot; to avoid
+      implying all OAuth client identifiers are URLs
+
+   *  Reformatted Client Identifier URL requirements as a list, and
+      aligned terminology with RFC3986 (userinfo, authority)
+
+   *  Clarified that Client Identifier URL comparison uses simple string
+      comparison without default port normalization
+
+   *  Clarified that URL shorteners are incompatible with the no-
+      redirect requirement
+
+   *  Clarified the relationship between associating and fetching client
+      metadata
+
+   *  Split &quot;what is in the document&quot; and &quot;how to fetch the document&quot;
+      into separate top-level sections
+
+   *  Moved the 200 OK requirement to the fetching process rather than
+      the document definition
+
+   *  Split client credential/key restrictions into their own
+      subsection, and added a discussion of software_statement
+
+   *  Moved Client ID Metadata Documents for Development Purposes to a
+      non-normative appendix, and added discussion of its security and
+      reputation implications
+
+   *  Clarified applicability of redirect URI registration requirements
+      to non-redirect-based grant types
+
+   *  Moved Supporting Both Pre-Registered and Unregistered Clients and
+      Pre-Registering Client ID Metadata Document URLs to a new
+      Implementation Considerations section
+
+   *  Removed normative language from Security Considerations where it
+      was purely explanatory
+
+   *  Clarified the SSRF loopback exception applies only to development
+      and testing deployments
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 19]</span>
+<span>Internet-Draft                    CIMD                         July 2026</span>
+
+   *  Clarified the maximum response size guidance applies to how much
+      data the authorization server reads, not the size of the file
+      itself
+
+   *  Added discussion of domain allowlists to Client ID Domain Trust
+
+   *  Added a Privacy Considerations section
+
+   -01
+
+   *  Added security consideration for changes in Client Metadata
+
+   *  Added guidance for an AS that supports both registered and
+      unregistered clients
+
+   *  Require HTTP 200 response for fetching metadata
+
+   *  Added additional SSRF considerations
+
+   -00
+
+   *  Initial draft
+
+<span>Authors&#x27; Addresses</span>
+
+   Aaron Parecki
+   Okta
+   Email: aaron@parecki.com
+   URI:   https://aaronparecki.com
+
+   Emelia Smith
+   Email: emelia@brandedcode.com
+   URI:   https://thisismissem.social
+
+<span>Parecki &amp; Smith          Expires 7 January 2027                [Page 20]</span>
+</pre>
+                </div>
+            </div>
+            
+        
+    
+                    
+                </div>
+            </div>
+        </main>
+        
+            <footer class="col-md-12 col-sm-12 border-top mt-5 py-5 bg-light-subtle text-center position-sticky">
+                <a href="https://www.ietf.org/" class="p-3">IETF</a>
+                <a href="https://www.ietf.org/iesg/" class="p-3">IESG</a>
+                <a href="https://www.iab.org/" class="p-3">IAB</a>
+                <a href="https://www.irtf.org/" class="p-3">IRTF</a>
+                <a href="https://www.ietf.org/llc/" class="p-3 text-nowrap">IETF LLC</a>
+                <a href="https://trustee.ietf.org/" class="p-3 text-nowrap">IETF Trust</a>
+                <a href="https://www.rfc-editor.org/" class="p-3 text-nowrap">RFC Editor</a>
+                <a href="https://www.iana.org/" class="p-3">IANA</a>
+                <a href="https://www.ietf.org/privacy-statement/" class="p-3 text-nowrap">Privacy Statement</a>
+                <div class="small text-body-secondary py-3">
+                    
+                        <a class="mx-2" href="/release/about">About IETF Datatracker</a>
+                        <span class="mx-2">
+                            
+                                <a href="https://github.com/ietf-tools/datatracker/releases/tag/12.81.0">
+                            
+                            Version 12.81.0
+                            (release - 87a47c6)
+                            
+                                </a>
+                            
+                        </span>
+                    
+                    <a class="mx-2" href="https://status.ietf.org" target="_blank">System Status</a>
+                    <span class="mx-2 text-danger">
+                        <i class="bi bi-bug"></i>
+                        Report a bug:
+                        <a class="text-reset" target="_blank" href="https://github.com/ietf-tools/datatracker/issues/new/choose">GitHub</a>
+                        
+                            <a class="text-reset" href="mailto:tools-help@ietf.org">Email</a>
+                        
+                    </span>
+                    
+                </div>
+            </footer>
+        
+        
+        <script src="https://static.ietf.org/dt/12.81.0/ietf/js/d3.js">
+        </script>
+        <script src="https://static.ietf.org/dt/12.81.0/ietf/js/document_timeline.js">
+        </script>
+    
+        <script src="https://static.ietf.org/dt/12.81.0/ietf/js/select2.js"></script>
+        <script src="https://static.ietf.org/dt/12.81.0/ietf/js/navbar-doc-search.js"></script>
+      
+<script>
+  var _paq = window._paq || [];
+  
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.ietf.org/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', 7]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//analytics.ietf.org/matomo.php?idsite=7" style="border:0;" alt="" /></p></noscript>
+
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4e2f929ed659955',t:'MTc5MjYxNDEzNQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -152,6 +152,7 @@ test('Basic startup hides advanced controls from focus targets and Custom config
 
 test('ready-made SAML selection keeps its stable quick-preset button focused',()=>{
   const app=mount();try{
+    app.querySelector('#ready-journeys').open=true;
     const preset=app.querySelector('[data-learning-preset="basic-saml"]');focus(preset);preset.click();
     assert.equal(app.labScenarioId,'basic-saml');assert.equal(app.applicationProtocol,'saml');
     assert.ok(app.contains(preset));returnedFocus(preset);
@@ -215,6 +216,7 @@ test('inspector playback updates never take focus away from another control',()=
 
 test('R5: selecting the DPoP catalog card restores focus to its rebuilt selected card',()=>{
   const app=mount();try{
+    app.querySelector('#ready-journeys').open=true;
     const removed=modelFocusRemoval(app.refs['lab-cards']);app.querySelector('#lab-open').click();
     const card=app.refs['lab-cards'].querySelector('[data-lab-scenario="lab-dpop"]');assert.ok(card);focus(card);card.click();
     const replacement=app.refs['lab-cards'].querySelector('[data-lab-scenario="lab-dpop"]');
@@ -226,6 +228,7 @@ test('R5: selecting the DPoP catalog card restores focus to its rebuilt selected
 
 test('a removed or hidden catalog card hands focus to the scenario picker, then Play if needed',()=>{
   const app=mount();try{
+    app.querySelector('#ready-journeys').open=true;
     modelFocusRemoval(app.refs['lab-cards']);app.querySelector('#lab-open').click();
     focus(app.refs['lab-cards'].querySelector('[data-lab-scenario="lab-dpop"]'));
     app.catalogQuery='no-matching-scenario-in-this-fixture';app.renderCatalog();
@@ -238,6 +241,7 @@ test('a removed or hidden catalog card hands focus to the scenario picker, then 
 
 test('catalog refresh does not take focus from its search field or another region',()=>{
   const app=mount();try{
+    app.querySelector('#ready-journeys').open=true;
     modelFocusRemoval(app.refs['lab-cards']);app.querySelector('#lab-open').click();
     focus(app.refs['lab-search']);app.catalogQuery='DPoP';app.renderCatalog();returnedFocus(app.refs['lab-search']);
     focus(app.refs.speed);app.catalogQuery='';app.renderCatalog();returnedFocus(app.refs.speed);

@@ -5,6 +5,7 @@ import {projectScenarioContext,scenarioContextRows} from '../src/scenario-contex
 import {RuntimeEnvironment} from '../src/runtime-environment.js';
 import {readFileSync} from 'node:fs';
 import {LAB_MODELS} from '../src/lab-catalog.js';
+import {CARD_BOUNDS,GRAPH_WIDTH,GRAPH_HEIGHT,validateLayoutRoutes} from '../src/layout.js';
 const planned=JSON.parse(readFileSync(new URL('../docs/expansion/plan-manifest.json',import.meta.url),'utf8')).scenarios;
 const plannedWorkspace={windows:'windows',network:'network','kerberos-spake':'kerberos',pake:'foundations'};
 const roots=[
@@ -49,6 +50,21 @@ test('parent grouping changes visible ownership only and positions remain actor-
   assert.equal(visibleActorId('as',actors),'kdc');assert.equal(visibleActorId('as',actors,true),'as');
   assert.deepEqual(Object.keys(scenarioPositions(model,steps,actors)),['client','kdc']);
   assert.deepEqual(Object.keys(scenarioPositions(model,steps,actors,true)),['client','as']);assert.equal(steps[0].to,'as');
+});
+test('expanded Windows roles retain separated cards and usable local/IPC graph ports',()=>{
+  for(const [id,variant]of [['lab-wlog08','default'],['lab-welev03','domain-admin-credential']]){
+    const model=variant==='default'?LAB_MODELS[id]:LAB_MODELS[id].withVariant(variant),steps=model.steps();
+    const positions=scenarioPositions(model,steps,model.actors(),true),entries=Object.entries(positions);
+    for(const [actor,{x,y}]of entries){
+      assert.ok(x-CARD_BOUNDS.width/2>=10&&x+CARD_BOUNDS.width/2<=GRAPH_WIDTH-10,id+' '+actor+' horizontal bounds');
+      assert.ok(y-CARD_BOUNDS.height/2>=10&&y+CARD_BOUNDS.height/2<=GRAPH_HEIGHT-10,id+' '+actor+' vertical bounds');
+    }
+    for(let i=0;i<entries.length;i++)for(let j=i+1;j<entries.length;j++){
+      const [a,p]=entries[i],[b,q]=entries[j];
+      assert.ok(Math.abs(p.x-q.x)>=CARD_BOUNDS.width+20||Math.abs(p.y-q.y)>=CARD_BOUNDS.height+20,id+' overlapping roles '+a+' / '+b);
+    }
+    assert.deepEqual(validateLayoutRoutes(positions,steps.map(step=>[step.from,step.to])),{ok:true},id+' retains routes for the actual IPC and local operations');
+  }
 });
 test('runtime binding rebuilds declared scalar occurrences without inventing credentials or patching ciphertext',()=>{
   const model={initialState:{policy:{realm:'CORP.EXAMPLE'},credentials:{}},protocolValues:{realm:'CORP.EXAMPLE',opaque:'ciphertext(CORP.EXAMPLE)'},runtimeBindings:[{field:'kerberosRealm',attributeId:'realm',actorId:'kdc',label:'Realm',example:'CORP.EXAMPLE',statePaths:['policy.realm','credentials.tgt.realm'],valueRefs:['realm','opaque']}],actors:()=>({kdc:{context:[]}}),definitions:()=>({})};

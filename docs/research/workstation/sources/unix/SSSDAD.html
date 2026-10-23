@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Joining AD Domain - sssd.io</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="../../_static/css/normalize.css">
+        <link rel="stylesheet" href="../../_static/css/pygments.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.css" integrity="sha512-Woz+DqWYJ51bpVk5Fv0yES/edIMXjj3Ynda+KWTIkGoynAMHrqTcDUQltbipuiaD5ymEo9520lyoVOo9jCQOCA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="../../_static/css/main.css">
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/wade"></script>
+        <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+        <script src="../../_static/scripts/codetabs.js"></script>
+        <script src="../../_static/scripts/search.js" data-root="../../"></script>
+        <script src="../../_static/scripts/search-index.js" async></script>
+        <script src="../../_static/scripts/utils.js" async></script>
+    <script async type="text/javascript" src="/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="sssdio" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/docs/ad/ad-provider.html" /><meta name="readthedocs-http-status" content="200" /></head>
+    <body>
+        <header id="page-header" aria-label="Site">
+            <a href="../../index.html" title="Go to index page"><img src="../../_static/images/logo.svg" alt="SSSD Logo"></a>
+            <div class="flex-fill"></div>
+            <nav>
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contrib/introduction.html">Contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Learn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../community.html">Community</a></li>
+</ul>
+            </nav>
+            <input id="search-field" type="text" autocomplete="off" placeholder="Search ...">
+        </header>
+        <div id="overlay" style="display: none;"></div>
+        <div id="search-results"><ul style="display: none;"></ul></div>
+        
+    
+        
+<div id="page-content">
+    <aside id="hamburger-menu" onclick="$('#hamburger-menu, #hamburger-menu-nav').toggleClass('active')"></aside>
+    <nav id="hamburger-menu-nav">
+        
+
+
+
+
+
+
+
+
+
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../quick-start.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reporting-bugs.html">Reporting bugs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../files-provider-deprecation.html">Files Provider Removal</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Active Directory</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="ad-introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Joining AD Domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ad-provider-manual.html">Joining AD Domain Manually</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ad-ldap-provider.html">LDAP provider with AD domain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ad-service-discovery.html">Service Discovery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ad-autofs.html">Using AutoFS</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">FreeIPA</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ipa/ipa-introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">LDAP</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ldap/ldap-introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Kerberos</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../krb/krb-introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../krb/krb-migration.html">Migrating from pam_krb5</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Identity Providers (IdP)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../idp/idp-introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Troubleshooting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting/basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting/backend.html">Backend</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting/errors.html">SSSD Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting/analyzer.html">Log Analyzer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting/fleet-commander.html">Fleet Commander</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting/sudo.html">SUDO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting/ad_provider.html">Common AD Provider issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting/ldap_provider.html">Common LDAP Provider issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../troubleshooting/ipa_provider.html">Common IPA Provider issues</a></li>
+</ul>
+
+
+    </nav>
+    <main>
+        <article>
+            <aside class="last-update">This page was last updated on Jun 07, 2024.
+            </aside>
+            
+            
+<h1 class="permalink" id="joining-ad-domain"><a href="#joining-ad-domain" title="Permalink to this headline">Joining AD Domain</a></h1>
+<p>This page describes how to configure SSSD to authenticate with a Windows 2008 or later Domain Server using the Active Directory provider (<code class="docutils literal notranslate"><span class="pre">id_provider=ad</span></code>). The AD provider was introduced with SSSD 1.9.0. Follow <a class="reference internal" href="ad-provider-manual.html"><span class="doc">Joining AD Domain Manually</span></a> to join AD manually without realmd.</p>
+
+<h2 class="permalink" id="joining-the-gnu-linux-client-using-realmd-recommended"><a href="#joining-the-gnu-linux-client-using-realmd-recommended" title="Permalink to this headline">Joining the GNU/Linux client using realmd (Recommended)</a></h2>
+<p>The realmd (Realm Discovery) project is a system service that manages discovery and enrolment to several centralized domains including AD or IPA. realmd is included in several popular GNU/Linux distributions including:</p>
+<ul class="simple">
+<li><p>Red Hat Enterprise Linux 7.0 and later</p></li>
+<li><p>Fedora 19 and later</p></li>
+<li><p>Ubuntu 13.04 and later</p></li>
+<li><p>Debian 8.0 and later</p></li>
+</ul>
+<p>Run <code class="docutils literal notranslate"><span class="pre">realm</span> <span class="pre">discover</span></code> to see what domains realmd can find. Note that this functionality relies on NetworkManager being up and running in order to read the DHCP domain:</p>
+<div class="code-block docutils container">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>realm<span class="w"> </span>discover
+realm<span class="w"> </span>discover<span class="w"> </span>AD.EXAMPLE.COM
+</pre></div>
+</div>
+</div>
+<p>Finally, joining the Active Directory domain is as easy as:</p>
+<div class="code-block docutils container">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>realm<span class="w"> </span>join<span class="w"> </span>AD.EXAMPLE.COM
+</pre></div>
+</div>
+</div>
+<p>You will be prompted for Administrator password. However, realmd supports more enrolment options, including using a one-time password or selecting a custom OU. Refer to the <a class="reference external" href="https://www.freedesktop.org/software/realmd/docs/">realmd documentation</a> for more details.</p>
+<p>Note that the <code class="docutils literal notranslate"><span class="pre">realm</span> <span class="pre">permit</span></code> command configures the simple access provider.</p>
+
+
+<h2 class="permalink" id="additional-reading"><a href="#additional-reading" title="Permalink to this headline">Additional reading</a></h2>
+<p>The following sections are optional reading, it contains information which may be useful to administrators using SSSD with the AD Provider.</p>
+
+<h3 class="permalink" id="testing-with-a-clean-cache"><a href="#testing-with-a-clean-cache" title="Permalink to this headline">Testing with a clean cache</a></h3>
+<p>You may have made iterative changes to your setup while learning about SSSD. To make sure that your setup actually works, and that you’re not relying on cached credentials, or cached LDAP information, you may want to clear out the local cache. Obviously this will erase local credentials, and all cached user information, so you should only do this for testing, and while on the network with network access to the AD servers:</p>
+<div class="code-block docutils container">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sssctl<span class="w"> </span>cache-remove
+getent<span class="w"> </span>passwd<span class="w"> </span>administrator@ad.example.com
+</pre></div>
+</div>
+</div>
+<p>If all looks well on your system after this, you know that sssd is able to use the kerberos and ldap services you’ve configured.</p>
+
+
+<h3 class="permalink" id="configuring-active-directory-to-use-posix-attributes"><a href="#configuring-active-directory-to-use-posix-attributes" title="Permalink to this headline">Configuring Active Directory to use POSIX attributes</a></h3>
+<p>The Active Directory provider is able to either map the Windows Security Identifiers (SIDs) into POSIX IDs or use the POSIX IDs that are set on the AD server. By default, the AD provider uses the automatic ID mapping method. In order to use the POSIX IDs, you need to set up <a class="reference external" href="https://technet.microsoft.com/en-us/library/cc731178.aspx">Identity Management for UNIX</a>. Note that starting with Windows Server 2016, the <a class="reference external" href="https://blogs.technet.microsoft.com/activedirectoryua/2016/02/09/identity-management-for-unix-idmu-is-deprecated-in-windows-server/">Identity Management for UNIX UI is deprecated</a>. However, it is still possible to set the POSIX attributes. For managing POSIX attributes in environments with IPA-AD trusts (Indirect AD integration) deployed, the <a class="reference external" href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Linux_Domain_Identity_Authentication_and_Policy_Guide/id-views.html">ID views</a> feature of IDM might also be interesting.</p>
+<p>When working with multiple trusted domains, SSSD often reads the data from the Global Catalog first. However, POSIX attributes such as UIDs or GIDs are not replicated to the Global Catalog by default. For performance reasons, it might be a good idea to set them to be replicated manually. This recommendation applies to setups that do not use automatic ID mapping and use <code class="docutils literal notranslate"><span class="pre">ldap_id_mapping=False</span></code> instead.</p>
+<ul class="simple">
+<li><p>Install the Identity Management for UNIX Components</p>
+<ul>
+<li><p>Follow this <a class="reference external" href="https://technet.microsoft.com/en-us/library/cc731178.aspx">technet article</a> to install Identity Management for UNIX on primary and child domains controllers</p></li>
+<li><p>After the installation has finished, you’ll be able to assign POSIX UID, GID and other attributes using a tab called UNIX Attributes in the Properties menu</p></li>
+</ul>
+</li>
+<li><p>Add Schema Snap-in</p>
+<ul>
+<li><p>To enable new attributes to replicate to the GC we need an Active Directory Schema snap-in. Use <a class="reference external" href="https://serverfault.com/questions/609592/where-is-active-directory-snap-in-for-server-2012-r2">these steps</a> to install the Schema Snap-In if you are having trouble.</p></li>
+</ul>
+</li>
+<li><p>Modify Attributes for replication</p>
+<ul>
+<li><p>The <a class="reference external" href="https://docs.microsoft.com/en-us/windows/win32/ad/attributes-included-in-the-global-catalog">article</a> explains how to select any attribute for replication</p></li>
+<li><p>In our case, select <code class="docutils literal notranslate"><span class="pre">uidNumber</span></code>, <code class="docutils literal notranslate"><span class="pre">gidNumber</span></code>, <code class="docutils literal notranslate"><span class="pre">unixHomeDirectory</span></code> and <code class="docutils literal notranslate"><span class="pre">loginShell</span></code></p></li>
+</ul>
+</li>
+<li><p>Verifying Attributes replication to Global Catalog</p>
+<ul>
+<li><p>In general, search for a user entry that has the POSIX attributes set on port 3268 of a Domain Controller</p></li>
+<li><p>You can use the Windows <code class="docutils literal notranslate"><span class="pre">LDP</span></code> tool or after the GNU/Linux machine is joined, simply <code class="docutils literal notranslate"><span class="pre">ldapsearch</span></code></p></li>
+</ul>
+</li>
+</ul>
+
+
+<h3 class="permalink" id="dns-validation"><a href="#dns-validation" title="Permalink to this headline">DNS validation</a></h3>
+<p>It is recommended that the GNU/Linux client you are enrolling is able to resolve the SRV records the Active directory publishes. In order to do so, the clients would typically point at the AD DCs in <code class="docutils literal notranslate"><span class="pre">/etc/resolv.conf</span></code>. You can verify this using dig:</p>
+<div class="code-block docutils container">
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>dig<span class="w"> </span>-t<span class="w"> </span>SRV<span class="w"> </span>_ldap._tcp.ad.example.com<span class="w"> </span>@server.ad.example.com
+</pre></div>
+</div>
+</div>
+
+
+<h3 class="permalink" id="unreachable-ad-servers-domains"><a href="#unreachable-ad-servers-domains" title="Permalink to this headline">Unreachable AD servers/domains</a></h3>
+<p>If any DNS-advertised (see dig command above) AD servers are unreachable (usually for firewall reasons), you need to list the reachable servers using the <code class="docutils literal notranslate"><span class="pre">ad_server</span></code> configuration option. The same is true for AD domains, SSSD auto-discovers all domains in the forest by default, so if any of the DCs in other domains are not reachable, either exclude that domain with <code class="docutils literal notranslate"><span class="pre">ad_enabled_domains</span></code> or, if only some DCs from that trusted domain are reachable, define a per-subdomain section in the config file (see below for an example).</p>
+
+
+<h3 class="permalink" id="fully-qualified-names"><a href="#fully-qualified-names" title="Permalink to this headline">Fully qualified names</a></h3>
+<p>The AD provider sets the option <code class="docutils literal notranslate"><span class="pre">use_fully_qualified_names</span></code> to false, manually setting this option to <code class="docutils literal notranslate"><span class="pre">true</span></code> forces all lookups to contain the domain name as well, either the full domain name as specified in sssd.conf (<code class="docutils literal notranslate"><span class="pre">getent</span> <span class="pre">passwd</span> <span class="pre">administrator@ad.example.com</span></code>) or the short NetBIOS name (<code class="docutils literal notranslate"><span class="pre">getent</span> <span class="pre">passwd</span> <span class="pre">AD\\Administrator</span></code>). This restriction helps separate users from different domains, especially in setups with multiple domains in a trusted environment, or in cases where local UNIX users might have the same user names as AD users.</p>
+
+
+<h3 class="permalink" id="access-control-options"><a href="#access-control-options" title="Permalink to this headline">Access control options</a></h3>
+<p>There is a number of access control options available to a directly-enrolled AD client machine.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>access provider</p></th>
+<th class="head"><p>simple</p></th>
+<th class="head"><p>ad</p></th>
+<th class="head"><p>ad_access_filter</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pros</p></td>
+<td><p>Very simple,
+supports nested groups</p></td>
+<td><p>Supports fully centralized environments by using GPOs</p></td>
+<td><p>Very expressive,
+can be used to allow/deny based on any properties of the LDAP user object.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cons</p></td>
+<td><p>Only supports allow/deny
+user or group</p></td>
+<td><p>Not supported with older releases,
+may not be desirable in a mixed GNU/Linux and
+Windows environment</p></td>
+<td><p>Cumbersome to write</p></td>
+</tr>
+</tbody>
+</table>
+<p>It is also possible to use completely external means of access control, such as <code class="docutils literal notranslate"><span class="pre">pam_access.so</span></code>. Those might be useful when supporting legacy stack alongside SSSD or when defining access control by means SSSD doesn’t support (such as per netgroup).</p>
+
+
+<h3 class="permalink" id="other-documentation"><a href="#other-documentation" title="Permalink to this headline">Other documentation</a></h3>
+<p>Red Hat maintains a very in-depth <a class="reference external" href="https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/7/html/Windows_Integration_Guide/index.html">guide about SSSD and Windows integration</a>. Some of the commands such as setting up the PAM stack or installing packages are specific to RHEL, CentOS or Fedora, but the general information are useful for all distributions.</p>
+<p>See the <a class="reference external" href="http://technet.microsoft.com/en-us/library/cc772815%28WS.10%29.aspx">following article on Technet site</a> for more in-depth Kerberos understanding</p>
+<p>If there is a specific document for your distribution or environment, such as the RHEL guide below, please let us know so that we can include it!</p>
+
+
+
+
+            <aside class="prev-next">
+                
+                    <a href="ad-introduction.html">Go back: Introduction to Active Directory</a>
+                
+
+                
+                    <a href="ad-provider-manual.html">See next: Joining AD Domain Manually</a>
+                
+            </aside>
+        </article>
+    </main>
+</div>
+    
+
+        <footer id="page-footer">
+            <a href="https://www.redhat.com/en/about/open-source" title="Go to Red Hat"><img src="../../_static/images/supported-by-redhat.svg" alt="Supported by RedHat"></a>
+        </footer>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js" integrity="sha512-k2GFCTbp9rQU412BStrcD/rlwv1PYec9SNrkbQlo6RZCf75l6KcC3UwDY8H5n5hl4v77IDtIPwOk9Dqjs/mMBQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </body>
+</html>

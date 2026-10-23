@@ -131,11 +131,11 @@ Completed server reverse binding, client reverse-binding unwrap and subsequent a
 
 Focused behavior, custody and provenance regressions were authored for the three WinRM resource cases, all shared RDP result consumers and shared AES acceptance paths, including early-stop absence and unchanged NTLM/TLS choices. No checks were run by this worker; integrated verification is owned by the parent. Independent worksheet entries were updated directly, without importing the model builder.
 
-## WIN-11 - queued nonblocking field-history cleanup
+## WIN-11 - nonblocking field-history cleanup
 
-Status: P3, nonblocking, deferred to the next small cleanup. The [independent acceptance recheck](../reviewer-handoff/auth-flow-studio-smb311-recheck-review.html) closes WIN-09/WIN-10 and the other requested repairs; WIN-11 does not reopen them. No product change is made as part of recording this follow-up.
+Status: P3, nonblocking, independently accepted for bounded WIN-11 scope by the [supplied independent review](../reviewer-handoff/auth-flow-studio-win11-independent-review.html), SHA-256 `e1c7af3b593161ab4cb49792a3f044e52760a27e3383f7a4cc8eb1fd21064177`. The preceding correction review's 23 scoped closures remain preserved, for 24 total. This does not accept the sibling origins below or authorize a commit, push or deployment.
 
-The raw CredSSP/RDP AP-REP packet creates H's acceptor subkey in the canonical held effects, but its field-operation list includes only wire objects and omits the local secret-key creation. Exact held history and custody are correct. The field-only path therefore starts later at C's mutual verification instead of H's origin.
+The raw CredSSP/RDP AP-REP packet already created H's acceptor subkey in the canonical held effects, but its field-operation list omitted that local origin. The packet now prepends an H-local plain `create` operation for the same artifact and exact value before its unchanged wire operations. Field replay therefore begins at H's creation, not C's later mutual verification.
 
 The affected scope is six fixed presets and seven named derivatives, thirteen cases total:
 
@@ -148,6 +148,15 @@ The affected scope is six fixed presets and seven named derivatives, thirteen ca
 | W15 `lab-win-rdp-restricted-admin` | `hybrid-without-early-result` |
 | W16 `lab-win-rdp-remote-credential-guard` | `redirect-disconnect`, `hybrid-without-early-result` |
 
-Future acceptance: expose an H-local `create` attribute operation for the same acceptor-subkey artifact, plain local representation, source index/event and exact value provenance at or before AP-REP transmission. Preserve the existing held create/acquire history without duplicate effects. Later field replay must retain C's post-verification acquisition/use. Do not add the secret key to the packet's transmitted-object list or invent plain-key send/receive actions. C must still lack the plain key at actual wire receipt; early initiator/completed acceptor-key selection, AP-REP ticket-key protection and carrier grouping must remain unchanged.
+Preserved constraints: the new operation uses the same acceptor-subkey artifact, plain local representation, AP-REP source index/event and exact value provenance. The packet's transmitted-object list and existing held create/acquire history are unchanged, with no duplicate effects. Later field replay retains C's post-verification acquisition/use. There is no plain-key send/receive action; C still lacks the plain key at actual AP-REP wire receipt. Early initiator/completed acceptor-key selection, AP-REP ticket-key protection and carrier grouping are unchanged.
 
-The review explicitly says one focused regression across the affected builder paths is sufficient for this future presentation cleanup; a fresh broad suite is not required solely for WIN-11. No implementation or new runtime verification is claimed by this queued record.
+One focused consumer regression now covers all thirteen cases and was observed failing before the fix and passing afterward. Both Windows test files pass: 54 tests, zero failures. An actual before/after runtime comparison preserves all 62 fixed/named Windows canonical ledgers and non-target operations. The six real presets also pass source HTTP, built HTTP and offline-file UI checks, eighteen cases total; the seven derivatives remain test-only, not extra browser choices. Evidence and exact candidate identity are in the [current handoff](implementation.md#win-11-field-history-follow-up) and `docs/verification/win11/`.
+
+The review explicitly permits this focused verification rather than a fresh broad suite solely for WIN-11. No new full-catalog, numeric, performance, manual assistive-technology or live interoperability acceptance is claimed.
+
+### Known siblings: unchanged and outside WIN-11 scope
+
+The thirteen-case acceptor-subkey repair is not a general field-origin repair. Confirmed related omissions remain for `tgt-key`, `ticket-session-key`, `downstream-tgt-key`, `downstream-session-key`, `tls-inner-key` and `outer-tls-key`. The first four examples start field replay at a receiver's validated store; the inner TLS key starts at client verification without a creation entry, and the outer TLS key has no field-only replay moments.
+
+These known siblings are unchanged and outside WIN-11 scope, not fixed or newly accepted by this follow-up. See the [handoff's representative observations](implementation.md#known-siblings-unchanged-and-outside-win-11-scope) and `docs/verification/win11/known-sibling-origins.json`. No exhaustive key-origin audit is claimed. A future generalized fix must respect the actual artifact creator, including client-created TLS keys in an H-to-C grouped carrier, and retain existing verification, protection and custody boundaries.
+

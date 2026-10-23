@@ -4,8 +4,10 @@ import { readFile, readdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { join, relative, sep } from 'node:path';
+import {captureReviewInputs} from '../review-input-identity.mjs';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
+const project = fileURLToPath(new URL('../../../', import.meta.url));
 const command = 'bun tools/verification/expansion-crypto/check-vectors.mjs';
 const setup = 'bun install --cwd tools/verification/expansion-crypto --frozen-lockfile --ignore-scripts';
 const digest = (data) => createHash('sha256').update(data).digest('hex');
@@ -18,6 +20,9 @@ const report = {
   frozenSetupCommand: setup,
   runtime: { bun: typeof Bun === 'undefined' ? null : Bun.version, platform: process.platform, arch: process.arch, openssl: process.versions.openssl ?? null },
   runnerSha256: null,
+  argv: [...process.argv],
+  inputIdentity: captureReviewInputs(project, fileURLToPath(import.meta.url)),
+  identityContext: 'Review byte identity only; product behavior is not numerically verified by hashing it.',
   files: [],
   sources: [],
   dependencies: [],
@@ -91,6 +96,11 @@ try {
 } catch (error) {
   report.fatal = String(error.message ?? error).slice(0, 800);
 }
+const afterInputs = captureReviewInputs(project, fileURLToPath(import.meta.url));
+report.sourceUnchanged = JSON.stringify(afterInputs) === JSON.stringify(report.inputIdentity);
+if (!report.sourceUnchanged) { report.passed = false; report.fatal = 'Review input bytes changed during numeric execution'; }
+report.status = report.passed ? 'passed' : 'failed';
+report.exitCode = report.passed ? 0 : 1;
 report.summary = { total: report.cases.length, passed: report.cases.filter((x) => x.passed).length, failed: report.cases.filter((x) => !x.passed).length };
 let output = JSON.stringify(report, null, 2);
 if (Buffer.byteLength(output) > 128 * 1024) {

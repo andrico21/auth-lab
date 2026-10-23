@@ -191,6 +191,7 @@ for(const fixture of expansionReceiptCases)test(fixture.id+' presentation change
     for(const [path,expected] of Object.entries(fixture.before))assert.deepEqual(valueAt(snapshot.protocol.state,path),expected,path);
     const hasReceipt=frame=>frame.holdings.some(holding=>Object.entries(fixture.holding).every(([key,value])=>holding[key]===value));
     if(fixture.holding)assert.equal(hasReceipt(snapshot.held),false,'No receiver acquisition halfway through the message');
+    app.querySelector('#lesson-reference').open=true;
     for(const detail of ['fields','crypto','journey']){
       app.querySelector('#learning-detail-'+detail).click();
       clock.advance(120);

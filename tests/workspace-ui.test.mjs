@@ -6,8 +6,9 @@ const {AuthFlowStudio}=await import('../src/app.js');
 const {LAB_MODELS}=await import('../src/lab-catalog.js');
 const {reconstructProtocolState}=await import('../src/protocol-state.js');
 const {pairKey}=await import('../src/player.js');
-function mount(){const app=new AuthFlowStudio();harness.document.body.appendChild(app);app.connectedCallback();return app;}
+function mount(){const app=new AuthFlowStudio();harness.document.body.appendChild(app);app.connectedCallback();app.querySelector('#ready-journeys').open=true;app.querySelector('#lesson-reference').open=true;return app;}
 function cleanup(app){app.disconnectedCallback();harness.document.body.removeChild(app);harness.clock.frames.clear();harness.clock.timers.clear();}
+function destination(app,id){app.querySelector('#workspace-search').dispatchEvent(new HarnessEvent('focusin'));const option=app.querySelector(`[data-workspace-option="${id}"]`);assert.ok(option,id);option.click();}
 test('workspace defaults and every family selector retain their owning workspace',()=>{
   const app=mount();try{
     for(const [workspace,scenarioId,families] of [
@@ -17,17 +18,17 @@ test('workspace defaults and every family selector retain their owning workspace
       ['network','lab-net-eap-tls13-wired',[['network-access','lab-net-eap-tls13-wired'],['network-lifecycle','lab-net-radius-accounting-lifecycle'],['network-transport','lab-net-radius-udp-radsec']]],
       ['foundations','lab-pake-spake2-success',[['pake-spake2','lab-pake-spake2-success'],['pake-spake2plus','lab-pake-spake2plus-success']]],
     ]){
-      app.querySelector(`[data-workspace="${workspace}"]`).click();
+      destination(app,'workspace-'+workspace);
       assert.equal(app.workspace,workspace);assert.equal(app.labScenarioId,scenarioId);
       for(const [family,id] of families){
-        const button=app.querySelector(`[data-family="${family}"]`);assert.ok(button,family);
-        button.click();assert.equal(app.workspace,workspace,family);assert.equal(app.labScenarioId,id,family);
+        destination(app,'family-'+workspace+'-'+family);
+        assert.equal(app.workspace,workspace,family);assert.equal(app.labScenarioId,id,family);
         assert.equal(app.labModel.family,family);assert.equal(app.querySelector('#quick-start').hidden,true);
         assert.equal(app.querySelector('#protocol-state-panel').hidden,false);
       }
     }
     const selected=app.labScenarioId;app.selectWorkspace('unknown');assert.equal(app.labScenarioId,selected);
-    app.querySelector('[data-workspace="web"]').click();assert.equal(app.labScenarioId,'basic-keycloak');assert.equal(app.mode,'password');
+    destination(app,'workspace-web');assert.equal(app.labScenarioId,'basic-keycloak');assert.equal(app.mode,'password');
   }finally{cleanup(app);}
 });
 test('progressive profile views preserve the canonical held and protocol snapshots at an unchanged cursor',()=>{
