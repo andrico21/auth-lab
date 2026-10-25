@@ -72,7 +72,7 @@ for(const scenario of ['lab-ssh-cert-success','lab-ad-first-sign-in','lab-ad-pki
         const cards=[...app.refs.actors.querySelectorAll('[data-actor]')];assert.ok(cards.length);
         for(const card of cards){
           app.hidePopups();document.activeElement=document.body;
-          card.dispatchEvent(new HarnessEvent('mouseover'));
+          card.dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse'}));
           const popup=app.refs['actor-popup'];assert.equal(popup.hidden,false,card.dataset.actor+' hover');
           assert.equal(popup.querySelector('.popup-title').textContent,app.actor(card.dataset.actor).name);
           app.hidePopups();focus(card);assert.equal(popup.hidden,false,card.dataset.actor+' focus');

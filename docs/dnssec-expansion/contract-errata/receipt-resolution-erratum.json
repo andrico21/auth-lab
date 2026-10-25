@@ -1,0 +1,3687 @@
+{
+ "schemaVersion": 1,
+ "kind": "dnssec-resolution-third-overlay-patch",
+ "status": "proposal-only-not-applied",
+ "description": "Ordered, fully expanded third-overlay corrections against immutable effective-completion v2 resolution inputs. No placeholders; exact before values and canonical hashes.",
+ "production": {
+  "existed": true,
+  "consulted": false,
+  "statement": "No src/, evaluator output, parent implementation, build, test, lint, formatter, or browser run consulted."
+ },
+ "target": {
+  "path": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+  "sha256": "72424f5380942d2bba570fe0fceca8c5e234e4bd64372d4cd2ac751a77e30656",
+  "bytes": 5604911,
+  "lessons": 13,
+  "cases": 93
+ },
+ "freeze": {
+  "path": "docs/dnssec-expansion/contract-freeze.json",
+  "sha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19",
+  "unchanged": true
+ },
+ "mergedPreservation": {
+  "path": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet.json",
+  "sha256": "d1f319e715da522e5a64e564514e1b6791486cb276394ebb380ca6e42c895bbc",
+  "lessons": 22,
+  "cases": 159,
+  "caseIdsUnchanged": true,
+  "defaultsUnchanged": true,
+  "securityStatusAndApplicationResultsUnchanged": true,
+  "note": "Resolution-only patches; publication worksheet untouched. validationOwner corrections are semantic owner fields, not status rewrites."
+ },
+ "canonicalization": {
+  "algorithm": "sha256",
+  "encoding": "utf-8",
+  "json": "json.dumps(value, sort_keys=True, separators=(\",\",\":\"), ensure_ascii=False)"
+ },
+ "patchCount": 159,
+ "patches": [
+  {
+   "order": 1,
+   "op": "add",
+   "path": "/typedRoots",
+   "finding": "TYPED-ROOTS-01",
+   "reason": "Define evidenceRef/validationOwner/observerWitness roots as exact observation associations; no inferred trust or ownership.",
+   "sources": [
+    "worker-plan received-vs-catalog",
+    "rfc4033"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "evidenceRefs": {
+     "meaning": "Exact input or observation association. A ref does not by itself assert authentication, checker invocation, trust, validity, or ownership.",
+     "doesNotImply": [
+      "authenticated",
+      "checkerInvoked",
+      "trusted",
+      "valid",
+      "validationOwner"
+     ],
+     "classes": {
+      "raw-input": {
+       "authenticated": false,
+       "checkerInvoked": false,
+       "owner": null,
+       "valid": null
+      },
+      "failed-attempt": {
+       "authenticated": false,
+       "checkerInvoked": true,
+       "valid": false,
+       "owner": "actual attempted checker",
+       "reason": "actual failure reason"
+      },
+      "authenticated-evidence": {
+       "authenticated": true,
+       "checkerInvoked": true,
+       "valid": true,
+       "owner": "actual authenticated validator"
+      }
+     }
+    },
+    "validationOwner": {
+     "meaning": "Strict owner of the authenticated disposition.",
+     "null": "No authenticated owner. null is not interchangeable with any string and is never inferred from evidenceRefs, catalog availability, producer labels, or observerWitness.owner.",
+     "rules": [
+      "Strict equality only.",
+      "Do not infer from evidenceRefs.",
+      "Do not infer from raw-record availability.",
+      "observerWitness.owner does not set validationOwner."
+     ]
+    },
+    "observerWitness": {
+     "meaning": "Records an actual observer or failed attempt without transferring authenticated ownership.",
+     "fields": [
+      "owner",
+      "valid",
+      "reason",
+      "authenticated",
+      "evidenceRefs"
+     ]
+    },
+    "authoritySideParameter": {
+     "meaning": "Authority-local parameter inspection. It is not resolver receipt and not validator evidence.",
+     "receivedByResolver": false,
+     "validatorEvidence": false
+    }
+   },
+   "valueSha256": "915a8e7d0a12b98bf6c8e9e219d959f4c6a8c32de17a1ae1866ab51a4a53f24b"
+  },
+  {
+   "order": 2,
+   "op": "add",
+   "path": "/chainTargetSemantics",
+   "finding": "DNS04-CHAIN-TARGET-01",
+   "reason": "Define chain target separately from leaf-signature key availability.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "chainEstablished": "Authenticated path from a configured trust anchor to the target zone DNSKEY RRset named by the checkpoint.",
+    "chainTarget": "The DNSKEY RRset at the target zone, not every key needed for a particular leaf RRset RRSIG.",
+    "leafSignatureKeyAvailable": "Separate boolean. False means the selected leaf RRSIG key is absent or ineligible; it is not a chain failure.",
+    "rule": "Never collapse a missing leaf ZSK into chainEstablished=false when the parent DS and child DNSKEY RRset are authenticated."
+   },
+   "valueSha256": "cfdb2450d5ad8535488d244c0eddf1c799b006bbab61d305cf7b8477193e9d28"
+  },
+  {
+   "order": 3,
+   "op": "replace",
+   "path": "/lessons/3/cases/6/checkpoints/3/expected/cacheEntries/0/receivedAt",
+   "finding": "DNS05-RESPONSE-FLAGS-CACHE-01",
+   "reason": "Reuse original receipt; no authority query.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": 1792713600,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "817abddc65ecef847cd8629c65f6b3d54dcd763e9618f059325f1e4f5aa036fb",
+   "value": 1792713540,
+   "valueSha256": "9194f6dee81c3c2630dfa55aa7fe49d58f58c718a1aa692b4b724b3e520ef8da"
+  },
+  {
+   "order": 4,
+   "op": "replace",
+   "path": "/lessons/3/cases/6/checkpoints/3/expected/cacheEntries/0/expiresAt",
+   "finding": "DNS05-RESPONSE-FLAGS-CACHE-01",
+   "reason": "Preserve literal original deadline; no renewal.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": 1792713900,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "29eb4654a7b18ccfb933658480f423dd537c327a310dc96355cdbdf736d11593",
+   "value": 1792713840,
+   "valueSha256": "fccd70c36f63c8f219a28cb700d8ebdadbe02ee21ed709848cd4a65ac167c0e9"
+  },
+  {
+   "order": 5,
+   "op": "add",
+   "path": "/lessons/3/cases/6/checkpoints/3/expected/cacheEntries/0/validatedAt",
+   "finding": "DNS05-RESPONSE-FLAGS-CACHE-01",
+   "reason": "Record original validation time.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": 1792713540,
+   "valueSha256": "9194f6dee81c3c2630dfa55aa7fe49d58f58c718a1aa692b4b724b3e520ef8da"
+  },
+  {
+   "order": 6,
+   "op": "add",
+   "path": "/lessons/3/cases/6/checkpoints/3/expected/cacheEntries/0/remainingTtl",
+   "finding": "DNS05-RESPONSE-FLAGS-CACHE-01",
+   "reason": "Remaining TTL at clock 1792713600.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": 240,
+   "valueSha256": "6af1f692e9496c6d0b668316eccb93276ae6b6774fa728aac31ff40a38318760"
+  },
+  {
+   "order": 7,
+   "op": "add",
+   "path": "/lessons/3/cases/6/checkpoints/3/expected/cacheEntries/0/reused",
+   "finding": "DNS05-RESPONSE-FLAGS-CACHE-01",
+   "reason": "Cache hit, not a new receipt.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 8,
+   "op": "replace",
+   "path": "/lessons/11/cases/4/checkpoints/3/expected/cacheEntries/0/receivedAt",
+   "finding": "DNS21-CO-DISABLED-CACHE-01",
+   "reason": "Reuse original receipt; no authority query.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": 1792713610,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "3ad45678edcc9b4007786ad4986283f377e3e9662d0b95290ea6aabda4214a53",
+   "value": 1792713600,
+   "valueSha256": "817abddc65ecef847cd8629c65f6b3d54dcd763e9618f059325f1e4f5aa036fb"
+  },
+  {
+   "order": 9,
+   "op": "replace",
+   "path": "/lessons/11/cases/4/checkpoints/3/expected/cacheEntries/0/expiresAt",
+   "finding": "DNS21-CO-DISABLED-CACHE-01",
+   "reason": "Preserve literal original deadline; no renewal.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": 1792713910,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "f90d66531e3215df8e0db2217f645955a3d139e7ee50857c669a4f785eccea9e",
+   "value": 1792713900,
+   "valueSha256": "29eb4654a7b18ccfb933658480f423dd537c327a310dc96355cdbdf736d11593"
+  },
+  {
+   "order": 10,
+   "op": "add",
+   "path": "/lessons/11/cases/4/checkpoints/3/expected/cacheEntries/0/validatedAt",
+   "finding": "DNS21-CO-DISABLED-CACHE-01",
+   "reason": "Record original validation time.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": 1792713600,
+   "valueSha256": "817abddc65ecef847cd8629c65f6b3d54dcd763e9618f059325f1e4f5aa036fb"
+  },
+  {
+   "order": 11,
+   "op": "add",
+   "path": "/lessons/11/cases/4/checkpoints/3/expected/cacheEntries/0/remainingTtl",
+   "finding": "DNS21-CO-DISABLED-CACHE-01",
+   "reason": "Remaining TTL at clock 1792713610.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": 290,
+   "valueSha256": "09895de0407bcb0386733daa14bdb5dfa544505530c634334a05a60f161b71fc"
+  },
+  {
+   "order": 12,
+   "op": "add",
+   "path": "/lessons/11/cases/4/checkpoints/3/expected/cacheEntries/0/reused",
+   "finding": "DNS21-CO-DISABLED-CACHE-01",
+   "reason": "Cache hit, not a new receipt.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 13,
+   "op": "replace",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/0/key/1",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Use client A trust store, not resolver-public-v1.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": "resolver-public-v1",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "50d3cd9a9ff0b6eb79d79edd8b1856417d8c8cf7f75bb2664ed477729fd9c0ac",
+   "value": "clientA-public-v1",
+   "valueSha256": "573a4205d477c73cefa72f451614ed3212b87f286cf6c5f6bf7f35ed72008438"
+  },
+  {
+   "order": 14,
+   "op": "remove",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/0/evidenceRefs/7",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Remove private B additional-1 from A.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": "lab-dnssec22:different-client-trust-stores:numericBindings-additional-1:private-child-dnskey",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "c58dbb41772407ceb1a539979202236618aa83cff00fa223a0fd15d3232161fb"
+  },
+  {
+   "order": 15,
+   "op": "remove",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/0/evidenceRefs/6",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Remove private B additional-0 from A.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": "lab-dnssec22:different-client-trust-stores:numericBindings-additional-0:private-www-a",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "bac78c461d8f8652130b92afdef12a5cd01f3bc9475a9cb8ac70c1e508d69330"
+  },
+  {
+   "order": 16,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/0/client",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Explicit client context.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "clientA",
+   "valueSha256": "1d299a0bc460ba9c4db3b212e83c6ea585ccaca6bd597c50e6bc3081ee70f0fb"
+  },
+  {
+   "order": 17,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/0/view",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Explicit view.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "public-v1",
+   "valueSha256": "1e8a67ec7533cfa13f28aeb043de9c966853b12c1150f3db6afdf2172a530948"
+  },
+  {
+   "order": 18,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/0/trustStore",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Explicit trust store.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "clientA-public-v1",
+   "valueSha256": "573a4205d477c73cefa72f451614ed3212b87f286cf6c5f6bf7f35ed72008438"
+  },
+  {
+   "order": 19,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/0/validatorRef",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Explicit validator context.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "/validators/dnsValidator/clients/clientA",
+   "valueSha256": "a8ca3c62778dad9f189587fbcd741ae249ad032482d38d62cb28e34bcd161ccf"
+  },
+  {
+   "order": 20,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/1/client",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Explicit client context.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "clientB",
+   "valueSha256": "8272639598dc0f3848c6c05ad024e4be56814e61dc6e17a225fd73b99b5cdd98"
+  },
+  {
+   "order": 21,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/1/view",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Explicit view.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "private-v1",
+   "valueSha256": "c10ee90918af9d1c263b6d4b885c54357cdad8840e254b2b835bd8688f51882c"
+  },
+  {
+   "order": 22,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/1/trustStore",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Explicit trust store.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "clientB-private-v1",
+   "valueSha256": "0949dac19422ec6259853c02b59ace9c068ec4bb0769e9ee8607956f8ec7b813"
+  },
+  {
+   "order": 23,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/5/expected/cacheEntries/1/validatorRef",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Explicit validator context.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "/validators/dnsValidator/clients/clientB",
+   "valueSha256": "4a74fc048d0a2c196c8bd8e7f51353c7501fbb70a716a5ca86b3a6eac6f4ad5f"
+  },
+  {
+   "order": 24,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/1/expected/validators/dnsValidator/clients/clientA/view",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Bind A validator to public view.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "public-v1",
+   "valueSha256": "1e8a67ec7533cfa13f28aeb043de9c966853b12c1150f3db6afdf2172a530948"
+  },
+  {
+   "order": 25,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/1/expected/validators/dnsValidator/clients/clientA/trustStore",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Bind A validator to A store.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "clientA-public-v1",
+   "valueSha256": "573a4205d477c73cefa72f451614ed3212b87f286cf6c5f6bf7f35ed72008438"
+  },
+  {
+   "order": 26,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/1/expected/validators/dnsValidator/clients/clientB/view",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Bind B validator to private view.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "private-v1",
+   "valueSha256": "c10ee90918af9d1c263b6d4b885c54357cdad8840e254b2b835bd8688f51882c"
+  },
+  {
+   "order": 27,
+   "op": "add",
+   "path": "/lessons/12/cases/3/checkpoints/1/expected/validators/dnsValidator/clients/clientB/trustStore",
+   "finding": "DNS22-CLIENT-CACHE-01",
+   "reason": "Bind B validator to B store.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "clientB-private-v1",
+   "valueSha256": "0949dac19422ec6259853c02b59ace9c068ec4bb0769e9ee8607956f8ec7b813"
+  },
+  {
+   "order": 28,
+   "op": "replace",
+   "path": "/lessons/4/cases/5/outcome/flags/hops/2/query/flags/DO",
+   "finding": "DNS06-STRIPPING-DO-01",
+   "reason": "Forwarder DOForwarded=0; authority must not see DO=1.",
+   "sources": [
+    "rfc3225",
+    "rfc5625"
+   ],
+   "expectedBefore": 1,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+   "value": 0,
+   "valueSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+  },
+  {
+   "order": 29,
+   "op": "replace",
+   "path": "/lessons/4/cases/5/outcome/flags/hops/2/response/flags/DO",
+   "finding": "DNS06-STRIPPING-DO-01",
+   "reason": "Authority response copies stripped DO=0.",
+   "sources": [
+    "rfc3225",
+    "rfc5625"
+   ],
+   "expectedBefore": 1,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+   "value": 0,
+   "valueSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+  },
+  {
+   "order": 30,
+   "op": "replace",
+   "path": "/lessons/4/cases/5/checkpoints/5/expected/response/hops/2/query/flags/DO",
+   "finding": "DNS06-STRIPPING-DO-01",
+   "reason": "Forwarder DOForwarded=0; authority must not see DO=1.",
+   "sources": [
+    "rfc3225",
+    "rfc5625"
+   ],
+   "expectedBefore": 1,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+   "value": 0,
+   "valueSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+  },
+  {
+   "order": 31,
+   "op": "replace",
+   "path": "/lessons/4/cases/5/checkpoints/5/expected/response/hops/2/response/flags/DO",
+   "finding": "DNS06-STRIPPING-DO-01",
+   "reason": "Authority response copies stripped DO=0.",
+   "sources": [
+    "rfc3225",
+    "rfc5625"
+   ],
+   "expectedBefore": 1,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+   "value": 0,
+   "valueSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9"
+  },
+  {
+   "order": 32,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/query/flags/DO",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "OPT removed; DO/CO null denotes absent OPT.",
+   "sources": [
+    "rfc6891",
+    "rfc3225"
+   ],
+   "expectedBefore": 1,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 33,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/query/flags/CO",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "OPT removed; CO absent.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 0,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 34,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/query/edns/present",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Attacker removed OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": true,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 35,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/query/edns/version",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "No EDNS OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 0,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 36,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/query/edns/udpPayloadSize",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "No EDNS OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 1232,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b6602f58690ca41488e97cd28153671356747c951c55541b6c8d8b8493eb7143",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 37,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/response/flags/DO",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Authority response has no OPT/DO.",
+   "sources": [
+    "rfc6891",
+    "rfc3225"
+   ],
+   "expectedBefore": 1,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 38,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/response/flags/CO",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Authority response has no OPT/CO.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 0,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 39,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/response/edns/present",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Authority returns no OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": true,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 40,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/response/edns/version",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "No EDNS OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 0,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 41,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/response/edns/udpPayloadSize",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "No EDNS OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 1232,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b6602f58690ca41488e97cd28153671356747c951c55541b6c8d8b8493eb7143",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 42,
+   "op": "add",
+   "path": "/lessons/9/cases/3/outcome/flags/hops/0/mutation",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Record post-mutation wire provenance.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "queryOptRemovedBy": "dnsAttacker",
+    "authoritySeesDO": 0,
+    "authorityReturnsAuxiliaryDnssec": false
+   },
+   "valueSha256": "a374979beeda153f266eb6ce78ca8c06198bf8a6a0d90579654a24cefe4d9092"
+  },
+  {
+   "order": 43,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/query/flags/DO",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "OPT removed; DO/CO null denotes absent OPT.",
+   "sources": [
+    "rfc6891",
+    "rfc3225"
+   ],
+   "expectedBefore": 1,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 44,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/query/flags/CO",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "OPT removed; CO absent.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 0,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 45,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/query/edns/present",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Attacker removed OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": true,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 46,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/query/edns/version",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "No EDNS OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 0,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 47,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/query/edns/udpPayloadSize",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "No EDNS OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 1232,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b6602f58690ca41488e97cd28153671356747c951c55541b6c8d8b8493eb7143",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 48,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/response/flags/DO",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Authority response has no OPT/DO.",
+   "sources": [
+    "rfc6891",
+    "rfc3225"
+   ],
+   "expectedBefore": 1,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 49,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/response/flags/CO",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Authority response has no OPT/CO.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 0,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 50,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/response/edns/present",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Authority returns no OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": true,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 51,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/response/edns/version",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "No EDNS OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 0,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 52,
+   "op": "replace",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/response/edns/udpPayloadSize",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "No EDNS OPT.",
+   "sources": [
+    "rfc6891"
+   ],
+   "expectedBefore": 1232,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b6602f58690ca41488e97cd28153671356747c951c55541b6c8d8b8493eb7143",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 53,
+   "op": "add",
+   "path": "/lessons/9/cases/3/checkpoints/5/expected/response/hops/0/mutation",
+   "finding": "DNS11-EDNS-STRIP-01",
+   "reason": "Record post-mutation wire provenance.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "queryOptRemovedBy": "dnsAttacker",
+    "authoritySeesDO": 0,
+    "authorityReturnsAuxiliaryDnssec": false
+   },
+   "valueSha256": "a374979beeda153f266eb6ce78ca8c06198bf8a6a0d90579654a24cefe4d9092"
+  },
+  {
+   "order": 54,
+   "op": "replace",
+   "path": "/lessons/3/cases/1/outcome/flags/hops/1/transport",
+   "finding": "DNS05-IPC-01",
+   "reason": "Use selected local channel; not UDP.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": "UDP",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "local IPC",
+   "valueSha256": "c88ccb443b52f630979c4c1ca710a0ee2562b0a05755e8ac793fb1e55bae6449"
+  },
+  {
+   "order": 55,
+   "op": "add",
+   "path": "/lessons/3/cases/1/outcome/flags/hops/1/channelAuthenticated",
+   "finding": "DNS05-IPC-01",
+   "reason": "Setup declares authenticated local IPC.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 56,
+   "op": "add",
+   "path": "/lessons/3/cases/1/outcome/flags/hops/1/hopRole",
+   "finding": "DNS05-IPC-01",
+   "reason": "Primary stub/resolver conversation.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "primary-conversation",
+   "valueSha256": "debf7f16c6a7cb533fe8888e76735dd6b4cdb50e920b2ee549e1edb71d053041"
+  },
+  {
+   "order": 57,
+   "op": "add",
+   "path": "/lessons/3/cases/1/outcome/flags/hops/1/dataDirection",
+   "finding": "DNS05-IPC-01",
+   "reason": "Response delivers data to stub.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-stub",
+   "valueSha256": "d28e8a6e128bfebca4de9ddb02c3efd39c5a879c0190e6cbe31f8627c67293f7"
+  },
+  {
+   "order": 58,
+   "op": "add",
+   "path": "/lessons/3/cases/1/outcome/flags/hops/1/receiverBeforeCheck",
+   "finding": "DNS05-IPC-01",
+   "reason": "Stub receives before its own check.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsStub",
+   "valueSha256": "69b1a77ed2e70351d6a814eabaa65243479b48e4b1f3ae10846696b0694ea7ad"
+  },
+  {
+   "order": 59,
+   "op": "replace",
+   "path": "/lessons/3/cases/1/checkpoints/5/expected/response/hops/1/transport",
+   "finding": "DNS05-IPC-01",
+   "reason": "Use selected local channel; not UDP.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": "UDP",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "local IPC",
+   "valueSha256": "c88ccb443b52f630979c4c1ca710a0ee2562b0a05755e8ac793fb1e55bae6449"
+  },
+  {
+   "order": 60,
+   "op": "add",
+   "path": "/lessons/3/cases/1/checkpoints/5/expected/response/hops/1/channelAuthenticated",
+   "finding": "DNS05-IPC-01",
+   "reason": "Setup declares authenticated local IPC.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 61,
+   "op": "add",
+   "path": "/lessons/3/cases/1/checkpoints/5/expected/response/hops/1/hopRole",
+   "finding": "DNS05-IPC-01",
+   "reason": "Primary stub/resolver conversation.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "primary-conversation",
+   "valueSha256": "debf7f16c6a7cb533fe8888e76735dd6b4cdb50e920b2ee549e1edb71d053041"
+  },
+  {
+   "order": 62,
+   "op": "add",
+   "path": "/lessons/3/cases/1/checkpoints/5/expected/response/hops/1/dataDirection",
+   "finding": "DNS05-IPC-01",
+   "reason": "Response delivers data to stub.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-stub",
+   "valueSha256": "d28e8a6e128bfebca4de9ddb02c3efd39c5a879c0190e6cbe31f8627c67293f7"
+  },
+  {
+   "order": 63,
+   "op": "add",
+   "path": "/lessons/3/cases/1/checkpoints/5/expected/response/hops/1/receiverBeforeCheck",
+   "finding": "DNS05-IPC-01",
+   "reason": "Stub receives before its own check.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsStub",
+   "valueSha256": "69b1a77ed2e70351d6a814eabaa65243479b48e4b1f3ae10846696b0694ea7ad"
+  },
+  {
+   "order": 64,
+   "op": "replace",
+   "path": "/lessons/3/cases/2/outcome/flags/hops/1/transport",
+   "finding": "DNS05-IPC-01",
+   "reason": "Use selected local channel; not UDP.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": "UDP",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "local IPC",
+   "valueSha256": "c88ccb443b52f630979c4c1ca710a0ee2562b0a05755e8ac793fb1e55bae6449"
+  },
+  {
+   "order": 65,
+   "op": "add",
+   "path": "/lessons/3/cases/2/outcome/flags/hops/1/channelAuthenticated",
+   "finding": "DNS05-IPC-01",
+   "reason": "Setup declares authenticated local IPC.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 66,
+   "op": "add",
+   "path": "/lessons/3/cases/2/outcome/flags/hops/1/hopRole",
+   "finding": "DNS05-IPC-01",
+   "reason": "Primary stub/resolver conversation.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "primary-conversation",
+   "valueSha256": "debf7f16c6a7cb533fe8888e76735dd6b4cdb50e920b2ee549e1edb71d053041"
+  },
+  {
+   "order": 67,
+   "op": "add",
+   "path": "/lessons/3/cases/2/outcome/flags/hops/1/dataDirection",
+   "finding": "DNS05-IPC-01",
+   "reason": "Response delivers data to stub.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-stub",
+   "valueSha256": "d28e8a6e128bfebca4de9ddb02c3efd39c5a879c0190e6cbe31f8627c67293f7"
+  },
+  {
+   "order": 68,
+   "op": "add",
+   "path": "/lessons/3/cases/2/outcome/flags/hops/1/receiverBeforeCheck",
+   "finding": "DNS05-IPC-01",
+   "reason": "Stub receives before its own check.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsStub",
+   "valueSha256": "69b1a77ed2e70351d6a814eabaa65243479b48e4b1f3ae10846696b0694ea7ad"
+  },
+  {
+   "order": 69,
+   "op": "replace",
+   "path": "/lessons/3/cases/2/checkpoints/5/expected/response/hops/1/transport",
+   "finding": "DNS05-IPC-01",
+   "reason": "Use selected local channel; not UDP.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": "UDP",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "local IPC",
+   "valueSha256": "c88ccb443b52f630979c4c1ca710a0ee2562b0a05755e8ac793fb1e55bae6449"
+  },
+  {
+   "order": 70,
+   "op": "add",
+   "path": "/lessons/3/cases/2/checkpoints/5/expected/response/hops/1/channelAuthenticated",
+   "finding": "DNS05-IPC-01",
+   "reason": "Setup declares authenticated local IPC.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 71,
+   "op": "add",
+   "path": "/lessons/3/cases/2/checkpoints/5/expected/response/hops/1/hopRole",
+   "finding": "DNS05-IPC-01",
+   "reason": "Primary stub/resolver conversation.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "primary-conversation",
+   "valueSha256": "debf7f16c6a7cb533fe8888e76735dd6b4cdb50e920b2ee549e1edb71d053041"
+  },
+  {
+   "order": 72,
+   "op": "add",
+   "path": "/lessons/3/cases/2/checkpoints/5/expected/response/hops/1/dataDirection",
+   "finding": "DNS05-IPC-01",
+   "reason": "Response delivers data to stub.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-stub",
+   "valueSha256": "d28e8a6e128bfebca4de9ddb02c3efd39c5a879c0190e6cbe31f8627c67293f7"
+  },
+  {
+   "order": 73,
+   "op": "add",
+   "path": "/lessons/3/cases/2/checkpoints/5/expected/response/hops/1/receiverBeforeCheck",
+   "finding": "DNS05-IPC-01",
+   "reason": "Stub receives before its own check.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsStub",
+   "valueSha256": "69b1a77ed2e70351d6a814eabaa65243479b48e4b1f3ae10846696b0694ea7ad"
+  },
+  {
+   "order": 74,
+   "op": "replace",
+   "path": "/lessons/3/cases/6/outcome/flags/hops/0/transport",
+   "finding": "DNS05-IPC-01",
+   "reason": "Use selected local channel; not UDP.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": "UDP",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "local IPC",
+   "valueSha256": "c88ccb443b52f630979c4c1ca710a0ee2562b0a05755e8ac793fb1e55bae6449"
+  },
+  {
+   "order": 75,
+   "op": "add",
+   "path": "/lessons/3/cases/6/outcome/flags/hops/0/channelTrusted",
+   "finding": "DNS05-IPC-01",
+   "reason": "Setup declares trusted local IPC.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 76,
+   "op": "add",
+   "path": "/lessons/3/cases/6/outcome/flags/hops/0/hopRole",
+   "finding": "DNS05-IPC-01",
+   "reason": "Primary stub/resolver conversation.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "primary-conversation",
+   "valueSha256": "debf7f16c6a7cb533fe8888e76735dd6b4cdb50e920b2ee549e1edb71d053041"
+  },
+  {
+   "order": 77,
+   "op": "add",
+   "path": "/lessons/3/cases/6/outcome/flags/hops/0/dataDirection",
+   "finding": "DNS05-IPC-01",
+   "reason": "Response delivers data to stub.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-stub",
+   "valueSha256": "d28e8a6e128bfebca4de9ddb02c3efd39c5a879c0190e6cbe31f8627c67293f7"
+  },
+  {
+   "order": 78,
+   "op": "add",
+   "path": "/lessons/3/cases/6/outcome/flags/hops/0/receiverBeforeCheck",
+   "finding": "DNS05-IPC-01",
+   "reason": "Stub receives before its own check.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsStub",
+   "valueSha256": "69b1a77ed2e70351d6a814eabaa65243479b48e4b1f3ae10846696b0694ea7ad"
+  },
+  {
+   "order": 79,
+   "op": "replace",
+   "path": "/lessons/3/cases/6/checkpoints/4/expected/response/hops/0/transport",
+   "finding": "DNS05-IPC-01",
+   "reason": "Use selected local channel; not UDP.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": "UDP",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "local IPC",
+   "valueSha256": "c88ccb443b52f630979c4c1ca710a0ee2562b0a05755e8ac793fb1e55bae6449"
+  },
+  {
+   "order": 80,
+   "op": "add",
+   "path": "/lessons/3/cases/6/checkpoints/4/expected/response/hops/0/channelTrusted",
+   "finding": "DNS05-IPC-01",
+   "reason": "Setup declares trusted local IPC.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 81,
+   "op": "add",
+   "path": "/lessons/3/cases/6/checkpoints/4/expected/response/hops/0/hopRole",
+   "finding": "DNS05-IPC-01",
+   "reason": "Primary stub/resolver conversation.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "primary-conversation",
+   "valueSha256": "debf7f16c6a7cb533fe8888e76735dd6b4cdb50e920b2ee549e1edb71d053041"
+  },
+  {
+   "order": 82,
+   "op": "add",
+   "path": "/lessons/3/cases/6/checkpoints/4/expected/response/hops/0/dataDirection",
+   "finding": "DNS05-IPC-01",
+   "reason": "Response delivers data to stub.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-stub",
+   "valueSha256": "d28e8a6e128bfebca4de9ddb02c3efd39c5a879c0190e6cbe31f8627c67293f7"
+  },
+  {
+   "order": 83,
+   "op": "add",
+   "path": "/lessons/3/cases/6/checkpoints/4/expected/response/hops/0/receiverBeforeCheck",
+   "finding": "DNS05-IPC-01",
+   "reason": "Stub receives before its own check.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsStub",
+   "valueSha256": "69b1a77ed2e70351d6a814eabaa65243479b48e4b1f3ae10846696b0694ea7ad"
+  },
+  {
+   "order": 84,
+   "op": "add",
+   "path": "/lessons/9/cases/2/outcome/flags/hops/1/delivery",
+   "finding": "DNS11-TCP-BLOCKED-01",
+   "reason": "Attempt-only descriptor has no delivered response packet.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "attempted": true,
+    "queryDelivered": false,
+    "responseReceived": false,
+    "responseAbsentReason": "tcp-blocked"
+   },
+   "valueSha256": "44b6b2bc865880022940713481450d0c3be190dfcdc03a83993e035e7c242f27"
+  },
+  {
+   "order": 85,
+   "op": "add",
+   "path": "/lessons/9/cases/2/checkpoints/4/expected/response/hops/1/delivery",
+   "finding": "DNS11-TCP-BLOCKED-01",
+   "reason": "Mirror delivery metadata in checkpoint.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "attempted": true,
+    "queryDelivered": false,
+    "responseReceived": false,
+    "responseAbsentReason": "tcp-blocked"
+   },
+   "valueSha256": "44b6b2bc865880022940713481450d0c3be190dfcdc03a83993e035e7c242f27"
+  },
+  {
+   "order": 86,
+   "op": "add",
+   "path": "/lessons/4/cases/6/outcome/flags/hops/1/delivery",
+   "finding": "DNS06-UNREACHABLE-01",
+   "reason": "Attempt-only descriptor has no delivered response packet.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "attempted": true,
+    "queryDelivered": false,
+    "responseReceived": false,
+    "responseAbsentReason": "network-unreachable",
+    "attempts": 3
+   },
+   "valueSha256": "6dedd1c4b88c65ed65191d5afbd71323f20c8cd4d65bd62104cae5e0898dd06c"
+  },
+  {
+   "order": 87,
+   "op": "add",
+   "path": "/lessons/4/cases/6/checkpoints/3/expected/response/hops/1/delivery",
+   "finding": "DNS06-UNREACHABLE-01",
+   "reason": "Mirror delivery metadata in checkpoint.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "attempted": true,
+    "queryDelivered": false,
+    "responseReceived": false,
+    "responseAbsentReason": "network-unreachable",
+    "attempts": 3
+   },
+   "valueSha256": "6dedd1c4b88c65ed65191d5afbd71323f20c8cd4d65bd62104cae5e0898dd06c"
+  },
+  {
+   "order": 88,
+   "op": "add",
+   "path": "/lessons/10/cases/3/outcome/flags/hops/0/delivery",
+   "finding": "DNS20-TIMEOUT-01",
+   "reason": "Attempt-only descriptor has no delivered response packet.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "attempted": true,
+    "queryDelivered": false,
+    "responseReceived": false,
+    "responseAbsentReason": "timeout",
+    "attempts": 3
+   },
+   "valueSha256": "36d06870ade1ff99582cdec9eabae3d2245f93bc2c3af51dcf327a45cef8d536"
+  },
+  {
+   "order": 89,
+   "op": "add",
+   "path": "/lessons/10/cases/3/checkpoints/3/expected/response/hops/0/delivery",
+   "finding": "DNS20-TIMEOUT-01",
+   "reason": "Mirror delivery metadata in checkpoint.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "attempted": true,
+    "queryDelivered": false,
+    "responseReceived": false,
+    "responseAbsentReason": "timeout",
+    "attempts": 3
+   },
+   "valueSha256": "36d06870ade1ff99582cdec9eabae3d2245f93bc2c3af51dcf327a45cef8d536"
+  },
+  {
+   "order": 90,
+   "op": "remove",
+   "path": "/lessons/6/cases/0/checkpoints/2/expected/evidenceRefs/10",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not validator receipt.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:nsec3-nxdomain:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b1acb99a9d78845cf92bb5282db57f8e96bb229123143db32737555737a8e4d7"
+  },
+  {
+   "order": 91,
+   "op": "remove",
+   "path": "/lessons/6/cases/0/checkpoints/4/expected/cacheEntries/0/evidenceRefs/10",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not cache validation evidence.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:nsec3-nxdomain:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b1acb99a9d78845cf92bb5282db57f8e96bb229123143db32737555737a8e4d7"
+  },
+  {
+   "order": 92,
+   "op": "add",
+   "path": "/lessons/6/cases/0/setup/authorityLocalInspection",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "Preserve authority-local parameter inspection without claiming resolver receipt.",
+   "sources": [
+    "rfc5155"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "authorityNsec3paramRef": "lab-dnssec08:nsec3-nxdomain:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+    "receivedByResolver": false,
+    "validatorEvidence": false,
+    "purpose": "authority-side-parameter-not-validator-proof-substitute"
+   },
+   "valueSha256": "1f31e56b746c65116835bb5c1ad22b9afd961e18f006e21cec7a7be932a167fe"
+  },
+  {
+   "order": 93,
+   "op": "remove",
+   "path": "/lessons/6/cases/1/checkpoints/2/expected/evidenceRefs/8",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not validator receipt.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:nsec3-nodata:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "9a3ce244c55e718114bfd3e656604b10eebbf858840d9b1fde7fd87887ce74db"
+  },
+  {
+   "order": 94,
+   "op": "remove",
+   "path": "/lessons/6/cases/1/checkpoints/4/expected/cacheEntries/0/evidenceRefs/8",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not cache validation evidence.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:nsec3-nodata:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "9a3ce244c55e718114bfd3e656604b10eebbf858840d9b1fde7fd87887ce74db"
+  },
+  {
+   "order": 95,
+   "op": "add",
+   "path": "/lessons/6/cases/1/setup/authorityLocalInspection",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "Preserve authority-local parameter inspection without claiming resolver receipt.",
+   "sources": [
+    "rfc5155"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "authorityNsec3paramRef": "lab-dnssec08:nsec3-nodata:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+    "receivedByResolver": false,
+    "validatorEvidence": false,
+    "purpose": "authority-side-parameter-not-validator-proof-substitute"
+   },
+   "valueSha256": "03437f9d16e8152f5cad348af28007f40dcbaf867dc2def19ef150924a27c140"
+  },
+  {
+   "order": 96,
+   "op": "remove",
+   "path": "/lessons/6/cases/2/checkpoints/2/expected/evidenceRefs/9",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not validator receipt.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:unsigned-optout-delegation:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "cda297f9290fd4b2234fbc427e8cc6f514c721934c2a27dde562f984df138234"
+  },
+  {
+   "order": 97,
+   "op": "remove",
+   "path": "/lessons/6/cases/2/checkpoints/4/expected/cacheEntries/0/evidenceRefs/9",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not cache validation evidence.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:unsigned-optout-delegation:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "cda297f9290fd4b2234fbc427e8cc6f514c721934c2a27dde562f984df138234"
+  },
+  {
+   "order": 98,
+   "op": "add",
+   "path": "/lessons/6/cases/2/setup/authorityLocalInspection",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "Preserve authority-local parameter inspection without claiming resolver receipt.",
+   "sources": [
+    "rfc5155"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "authorityNsec3paramRef": "lab-dnssec08:unsigned-optout-delegation:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+    "receivedByResolver": false,
+    "validatorEvidence": false,
+    "purpose": "authority-side-parameter-not-validator-proof-substitute"
+   },
+   "valueSha256": "1312426ba6c6f1263c9968e40cf3052d4b51d4119fc7c372d204220e42c4eae6"
+  },
+  {
+   "order": 99,
+   "op": "remove",
+   "path": "/lessons/6/cases/3/checkpoints/2/expected/evidenceRefs/9",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not validator receipt.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:missing-closest-encloser:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "a438ff4ebdb3972f5fd59a5b3fca292c291ab03c50a3abb98b9b35c8cd45ab2e"
+  },
+  {
+   "order": 100,
+   "op": "remove",
+   "path": "/lessons/6/cases/3/checkpoints/4/expected/cacheEntries/0/evidenceRefs/9",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not cache validation evidence.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:missing-closest-encloser:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "a438ff4ebdb3972f5fd59a5b3fca292c291ab03c50a3abb98b9b35c8cd45ab2e"
+  },
+  {
+   "order": 101,
+   "op": "add",
+   "path": "/lessons/6/cases/3/setup/authorityLocalInspection",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "Preserve authority-local parameter inspection without claiming resolver receipt.",
+   "sources": [
+    "rfc5155"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "authorityNsec3paramRef": "lab-dnssec08:missing-closest-encloser:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+    "receivedByResolver": false,
+    "validatorEvidence": false,
+    "purpose": "authority-side-parameter-not-validator-proof-substitute"
+   },
+   "valueSha256": "2896eb36bf3aeb09201748ba78cd523322d728a65ccd5cb008a96300f2dfd17c"
+  },
+  {
+   "order": 102,
+   "op": "remove",
+   "path": "/lessons/6/cases/4/checkpoints/2/expected/evidenceRefs/10",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not validator receipt.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:hash-parameter-mismatch:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "30b984f51a5b6539da7b8567eab8ff78e6738eca7cadb837dcd593cecf8a2329"
+  },
+  {
+   "order": 103,
+   "op": "remove",
+   "path": "/lessons/6/cases/4/checkpoints/4/expected/cacheEntries/0/evidenceRefs/10",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not cache validation evidence.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:hash-parameter-mismatch:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "30b984f51a5b6539da7b8567eab8ff78e6738eca7cadb837dcd593cecf8a2329"
+  },
+  {
+   "order": 104,
+   "op": "add",
+   "path": "/lessons/6/cases/4/setup/authorityLocalInspection",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "Preserve authority-local parameter inspection without claiming resolver receipt.",
+   "sources": [
+    "rfc5155"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "authorityNsec3paramRef": "lab-dnssec08:hash-parameter-mismatch:numericBindings-authorityNsec3param:denial-nsec3-zero-param",
+    "receivedByResolver": false,
+    "validatorEvidence": false,
+    "purpose": "authority-side-parameter-not-validator-proof-substitute"
+   },
+   "valueSha256": "df994c6d246204eff39d99054b00e8f437b57578e410a5a22f06fc74d917e21d"
+  },
+  {
+   "order": 105,
+   "op": "remove",
+   "path": "/lessons/6/cases/5/checkpoints/2/expected/evidenceRefs/8",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not validator receipt.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:excessive-iterations-policy:numericBindings-authorityNsec3param:denial-nsec3-iteration1-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "dccd12817bc71c757435ecf2df842457121abb815d6500e72d54383604a7727f"
+  },
+  {
+   "order": 106,
+   "op": "remove",
+   "path": "/lessons/6/cases/5/checkpoints/4/expected/cacheEntries/0/evidenceRefs/8",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "NSEC3PARAM not present in responseInputs.authority; not cache validation evidence.",
+   "sources": [
+    "rfc5155",
+    "rfc9276"
+   ],
+   "expectedBefore": "lab-dnssec08:excessive-iterations-policy:numericBindings-authorityNsec3param:denial-nsec3-iteration1-param",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "dccd12817bc71c757435ecf2df842457121abb815d6500e72d54383604a7727f"
+  },
+  {
+   "order": 107,
+   "op": "add",
+   "path": "/lessons/6/cases/5/setup/authorityLocalInspection",
+   "finding": "DNS08-NSEC3PARAM-01",
+   "reason": "Preserve authority-local parameter inspection without claiming resolver receipt.",
+   "sources": [
+    "rfc5155"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "authorityNsec3paramRef": "lab-dnssec08:excessive-iterations-policy:numericBindings-authorityNsec3param:denial-nsec3-iteration1-param",
+    "receivedByResolver": false,
+    "validatorEvidence": false,
+    "purpose": "authority-side-parameter-not-validator-proof-substitute"
+   },
+   "valueSha256": "1fb270f6e1377013555cc57ca278f3ac60b28502490d33454ae410c5b0b0f098"
+  },
+  {
+   "order": 108,
+   "op": "replace",
+   "path": "/lessons/1/cases/5/setup/initialCache/authenticatedRootDnskey",
+   "finding": "DNS03-ISLAND-RESIDUAL-01",
+   "reason": "No root chain evidence for island-local child anchor.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": true,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 109,
+   "op": "replace",
+   "path": "/lessons/1/cases/5/setup/initialCache/authenticatedParentDnskey",
+   "finding": "DNS03-ISLAND-RESIDUAL-01",
+   "reason": "No parent chain evidence for island-local child anchor.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": true,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 110,
+   "op": "replace",
+   "path": "/lessons/2/cases/4/checkpoints/2/expected/chainEstablished",
+   "finding": "DNS04-CHAIN-TARGET-01",
+   "reason": "Parent DS and child DNSKEY RRset are authenticated; only leaf ZSK is missing.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": false,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa",
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 111,
+   "op": "add",
+   "path": "/lessons/2/cases/4/checkpoints/2/expected/chainTarget",
+   "finding": "DNS04-CHAIN-TARGET-01",
+   "reason": "State the chain target explicitly.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "lab.example. DNSKEY RRset",
+   "valueSha256": "bb9e620beda674a732ecf5ea215f44a90e834af5da657e24288506a951e76a5e"
+  },
+  {
+   "order": 112,
+   "op": "add",
+   "path": "/lessons/2/cases/4/checkpoints/2/expected/chainEstablishedSemantics",
+   "finding": "DNS04-CHAIN-TARGET-01",
+   "reason": "Define chain target semantics.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "authenticated path to target zone DNSKEY RRset; not leaf signature key availability",
+   "valueSha256": "d47ec47d7d902f828689986bea28f9619d615b07812cce53deafd0be9a0c744c"
+  },
+  {
+   "order": 113,
+   "op": "add",
+   "path": "/lessons/2/cases/4/checkpoints/2/expected/leafSignatureKeyAvailable",
+   "finding": "DNS04-CHAIN-TARGET-01",
+   "reason": "Leaf ZSK child-zsk-g1 is absent; separate from chain establishment.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 114,
+   "op": "add",
+   "path": "/lessons/2/cases/4/checkpoints/2/expected/missingRrsigKey",
+   "finding": "DNS04-CHAIN-TARGET-01",
+   "reason": "Record the missing leaf key.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "child-zsk-g1",
+   "valueSha256": "267dc8790b10b647d15a7928a426a1c21481062c498bfef7342624c480fa691e"
+  },
+  {
+   "order": 115,
+   "op": "remove",
+   "path": "/lessons/5/cases/2/checkpoints/2/expected/evidenceRefs/6",
+   "finding": "DNS07-ENT-CATALOG-01",
+   "reason": "Descendant A is catalog-only; answer/additional are empty; NSEC bitmap is the received proof.",
+   "sources": [
+    "rfc4035",
+    "rfc5155"
+   ],
+   "expectedBefore": "lab-dnssec07:empty-nonterminal:numericBindings-additional-0:denial-x-branch-address",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "a26f2b6cb8039877e4e10499ec9eadc641349614010c9e242a52b634ae05b109"
+  },
+  {
+   "order": 116,
+   "op": "remove",
+   "path": "/lessons/5/cases/2/checkpoints/4/expected/cacheEntries/0/evidenceRefs/6",
+   "finding": "DNS07-ENT-CATALOG-01",
+   "reason": "Descendant A is catalog-only; do not require it in cache evidence.",
+   "sources": [
+    "rfc4035",
+    "rfc5155"
+   ],
+   "expectedBefore": "lab-dnssec07:empty-nonterminal:numericBindings-additional-0:denial-x-branch-address",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "a26f2b6cb8039877e4e10499ec9eadc641349614010c9e242a52b634ae05b109"
+  },
+  {
+   "order": 117,
+   "op": "add",
+   "path": "/lessons/5/cases/2/setup/descendantCatalogInspection",
+   "finding": "DNS07-ENT-CATALOG-01",
+   "reason": "Preserve catalog metadata without claiming receipt.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "additionalRef": "lab-dnssec07:empty-nonterminal:numericBindings-additional-0:denial-x-branch-address",
+    "receivedByResolver": false,
+    "purpose": "catalog descendant-A existence only; received NSEC bitmap proves the empty nonterminal"
+   },
+   "valueSha256": "37cadb65bd7724c006d286f3efb67d61649219250b2513009f9bdd48adb59e0b"
+  },
+  {
+   "order": 118,
+   "op": "remove",
+   "path": "/lessons/11/cases/2/checkpoints/2/expected/evidenceRefs/6",
+   "finding": "DNS21-ENT-CATALOG-01",
+   "reason": "Descendant A is catalog-only; answer/additional are empty; NSEC bitmap is the received proof.",
+   "sources": [
+    "rfc4035",
+    "rfc5155"
+   ],
+   "expectedBefore": "lab-dnssec21:empty-nonterminal:numericBindings-additional-0:compact-ent-descendant",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "829497acd27f7378bce0aa60abb97a7c223b07414834c3ba90ccdcd0abc33f83"
+  },
+  {
+   "order": 119,
+   "op": "remove",
+   "path": "/lessons/11/cases/2/checkpoints/4/expected/cacheEntries/0/evidenceRefs/6",
+   "finding": "DNS21-ENT-CATALOG-01",
+   "reason": "Descendant A is catalog-only; do not require it in cache evidence.",
+   "sources": [
+    "rfc4035",
+    "rfc5155"
+   ],
+   "expectedBefore": "lab-dnssec21:empty-nonterminal:numericBindings-additional-0:compact-ent-descendant",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "829497acd27f7378bce0aa60abb97a7c223b07414834c3ba90ccdcd0abc33f83"
+  },
+  {
+   "order": 120,
+   "op": "add",
+   "path": "/lessons/11/cases/2/setup/descendantCatalogInspection",
+   "finding": "DNS21-ENT-CATALOG-01",
+   "reason": "Preserve catalog metadata without claiming receipt.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "additionalRef": "lab-dnssec21:empty-nonterminal:numericBindings-additional-0:compact-ent-descendant",
+    "receivedByResolver": false,
+    "purpose": "catalog descendant-A existence only; received NSEC bitmap proves the empty nonterminal"
+   },
+   "valueSha256": "e271b775300c203bd3f3286437f67295cf8dd6412a909d5136babd9ace4448b5"
+  },
+  {
+   "order": 121,
+   "op": "replace",
+   "path": "/lessons/1/cases/4/outcome/validationOwner",
+   "finding": "DNS03-NO-ANCHOR-OWNER-01",
+   "reason": "No authenticated owner when no applicable trust anchor exists; raw evidenceRef does not create ownership.",
+   "sources": [
+    "rfc4033"
+   ],
+   "expectedBefore": "dnsValidator",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "e0963410219667050eb2403fa4918f698a4d6fee5463a6e89608c8aa7ffcbb8a",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 122,
+   "op": "replace",
+   "path": "/lessons/1/cases/4/checkpoints/3/expected/cacheEntries/0/validationOwner",
+   "finding": "DNS03-NO-ANCHOR-OWNER-01",
+   "reason": "Cache disposition has no authenticated owner; strict null comparison.",
+   "sources": [
+    "rfc4033"
+   ],
+   "expectedBefore": "dnsValidator",
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "e0963410219667050eb2403fa4918f698a4d6fee5463a6e89608c8aa7ffcbb8a",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 123,
+   "op": "add",
+   "path": "/lessons/1/cases/4/outcome/observerWitness",
+   "finding": "DNS03-NO-ANCHOR-OWNER-01",
+   "reason": "Record observer witness separately; it does not set validationOwner.",
+   "sources": [
+    "rfc4033"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "owner": "dnsValidator",
+    "valid": false,
+    "reason": "prerequisite-not-authenticated",
+    "authenticated": false,
+    "evidenceRefs": [
+     "lab-dnssec03:no-covering-anchor:numericBindings-primary:www-a"
+    ]
+   },
+   "valueSha256": "a47880181ba373d1aa987f15b03852b8d3eb75bba302be0f0d6a7d13ad587f7a"
+  },
+  {
+   "order": 124,
+   "op": "add",
+   "path": "/lessons/1/cases/4/checkpoints/3/expected/cacheEntries/0/observerWitness",
+   "finding": "DNS03-NO-ANCHOR-OWNER-01",
+   "reason": "Record cache observer witness separately; it does not set validationOwner.",
+   "sources": [
+    "rfc4033"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "owner": "dnsValidator",
+    "valid": false,
+    "reason": "prerequisite-not-authenticated",
+    "authenticated": false,
+    "evidenceRefs": [
+     "lab-dnssec03:no-covering-anchor:numericBindings-primary:www-a"
+    ]
+   },
+   "valueSha256": "a47880181ba373d1aa987f15b03852b8d3eb75bba302be0f0d6a7d13ad587f7a"
+  },
+  {
+   "order": 125,
+   "op": "add",
+   "path": "/lessons/1/cases/4/checkpoints/3/expected/cacheEntries/0/evidenceClass",
+   "finding": "DNS03-NO-ANCHOR-OWNER-01",
+   "reason": "Primary evidenceRef is a raw input association, not authenticated evidence.",
+   "sources": [
+    "rfc4033"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "raw-input-only",
+   "valueSha256": "7a1c3c5ddfd3f74473775fd496ccbdeb96eae720c9c9c0c42ec45813698f7295"
+  },
+  {
+   "order": 126,
+   "op": "replace",
+   "path": "/lessons/3/cases/3/setup/initialCache/authenticatedParentDs",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Fresh evidence delivery replaces ownerless cached chain trust.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": true,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 127,
+   "op": "replace",
+   "path": "/lessons/3/cases/3/setup/initialCache/authenticatedChildDnskey",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Fresh evidence delivery replaces ownerless cached chain trust.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": true,
+   "expectedBeforeAbsent": false,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBeforeSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b",
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 128,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/0/hopRole",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Classify the A conversation.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "primary-conversation",
+   "valueSha256": "debf7f16c6a7cb533fe8888e76735dd6b4cdb50e920b2ee549e1edb71d053041"
+  },
+  {
+   "order": 129,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/0/dataDirection",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "A response delivery to stub.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-stub",
+   "valueSha256": "d28e8a6e128bfebca4de9ddb02c3efd39c5a879c0190e6cbe31f8627c67293f7"
+  },
+  {
+   "order": 130,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/0/receiverBeforeCheck",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Stub receives before check.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsStub",
+   "valueSha256": "69b1a77ed2e70351d6a814eabaa65243479b48e4b1f3ae10846696b0694ea7ad"
+  },
+  {
+   "order": 131,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/1/hopRole",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Resolver-internal child DNSKEY fetch, not stub-visible.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-prerequisite",
+   "valueSha256": "75eda44dac5c2abc1913dab83863740c4b4ccfad3c99fbc5267400b0c795e183"
+  },
+  {
+   "order": 132,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/1/dataDirection",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Resolver prerequisite direction.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-child",
+   "valueSha256": "c7daa9a3bb7a096b3bd8eb1d7aaeede0af97846e893b5a7e9a03338dcd9cd261"
+  },
+  {
+   "order": 133,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/1/receiverBeforeCheck",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Resolver receives before stub evidence delivery.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsResolver",
+   "valueSha256": "b554a653e97cf4e784227da5b9c0b69d860dc92f716bf929860585fb40acf083"
+  },
+  {
+   "order": 134,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/0/hopRole",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Classify the A conversation.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "primary-conversation",
+   "valueSha256": "debf7f16c6a7cb533fe8888e76735dd6b4cdb50e920b2ee549e1edb71d053041"
+  },
+  {
+   "order": 135,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/0/dataDirection",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "A response delivery to stub.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-stub",
+   "valueSha256": "d28e8a6e128bfebca4de9ddb02c3efd39c5a879c0190e6cbe31f8627c67293f7"
+  },
+  {
+   "order": 136,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/0/receiverBeforeCheck",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Stub receives before check.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsStub",
+   "valueSha256": "69b1a77ed2e70351d6a814eabaa65243479b48e4b1f3ae10846696b0694ea7ad"
+  },
+  {
+   "order": 137,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/1/hopRole",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Resolver-internal child DNSKEY fetch, not stub-visible.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-prerequisite",
+   "valueSha256": "75eda44dac5c2abc1913dab83863740c4b4ccfad3c99fbc5267400b0c795e183"
+  },
+  {
+   "order": 138,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/1/dataDirection",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Resolver prerequisite direction.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "resolver-to-child",
+   "valueSha256": "c7daa9a3bb7a096b3bd8eb1d7aaeede0af97846e893b5a7e9a03338dcd9cd261"
+  },
+  {
+   "order": 139,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/1/receiverBeforeCheck",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Resolver receives before stub evidence delivery.",
+   "sources": [
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": "dnsResolver",
+   "valueSha256": "b554a653e97cf4e784227da5b9c0b69d860dc92f716bf929860585fb40acf083"
+  },
+  {
+   "order": 140,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/2",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Fresh resolver-to-stub prerequisite evidence hop.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-root-dnskey",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": ".",
+     "qtype": "DNSKEY",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-root-dnskey:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16642
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-root-dnskey:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-root-dnskey:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16642
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-0:root-dnskey-g1"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 1,
+    "validationTarget": "root DNSKEY RRset",
+    "requiredFor": "authenticate root-example DS",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "root-dnskey-g1",
+     "signatureId": "root-dnskey-path-long",
+     "owner": ".",
+     "type": "DNSKEY",
+     "class": "IN",
+     "records": [
+      "257 3 13 U1o17Xn135Yxv8Jix14uxRaqT7z8KBV1 EIktunhNqQjoI1jG8khWMI7aPrI3std4 XfW9lpFKoKMYIDF9jbGB6A==",
+      "256 3 13 mGgYeU+PYqFrzjrKwZJC2QJx/GD0hol+ LGJjg98Zvt9yW+qEn8l2N1zuiz4lbffU n9scWtz1dcWzYavY7t3sQQ=="
+     ],
+     "canonicalRdataHex": [
+      "0100030d986818794f8f62a16bce3acac19242d90271fc60f486897e2c626383df19bedf725bea849fc976375cee8b3e256df7d49fdb1c5adcf575c5b361abd8eeddec41",
+      "0101030d535a35ed79f5df9631bfc262c75e2ec516aa4fbcfc28157510892dba784da908e82358c6f24856308eda3eb237b2d7785df5bd96914aa0a31820317d8db181e8"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 0,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "root-ksk-g1",
+      "keyTag": 46482,
+      "signer": ".",
+      "typeCovered": 48
+     },
+     "signatureRdataSha256": "8bc180a1e15143b9240fe6a68f3307e4605bf69f9bc140529935573e9bd01fbf",
+     "signingInputSha256": "f8939dd6288062d82196ebd2783c1155917a4afc5718695bb6e21057a5ba7f71",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "aa83b95954bee89d345370d08e44fabc269590c0c61d61e46e317a15accb73ac"
+  },
+  {
+   "order": 141,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/2",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Mirror fresh prerequisite evidence in checkpoint.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-root-dnskey",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": ".",
+     "qtype": "DNSKEY",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-root-dnskey:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16642
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-root-dnskey:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-root-dnskey:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16642
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-0:root-dnskey-g1"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 1,
+    "validationTarget": "root DNSKEY RRset",
+    "requiredFor": "authenticate root-example DS",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "root-dnskey-g1",
+     "signatureId": "root-dnskey-path-long",
+     "owner": ".",
+     "type": "DNSKEY",
+     "class": "IN",
+     "records": [
+      "257 3 13 U1o17Xn135Yxv8Jix14uxRaqT7z8KBV1 EIktunhNqQjoI1jG8khWMI7aPrI3std4 XfW9lpFKoKMYIDF9jbGB6A==",
+      "256 3 13 mGgYeU+PYqFrzjrKwZJC2QJx/GD0hol+ LGJjg98Zvt9yW+qEn8l2N1zuiz4lbffU n9scWtz1dcWzYavY7t3sQQ=="
+     ],
+     "canonicalRdataHex": [
+      "0100030d986818794f8f62a16bce3acac19242d90271fc60f486897e2c626383df19bedf725bea849fc976375cee8b3e256df7d49fdb1c5adcf575c5b361abd8eeddec41",
+      "0101030d535a35ed79f5df9631bfc262c75e2ec516aa4fbcfc28157510892dba784da908e82358c6f24856308eda3eb237b2d7785df5bd96914aa0a31820317d8db181e8"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 0,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "root-ksk-g1",
+      "keyTag": 46482,
+      "signer": ".",
+      "typeCovered": 48
+     },
+     "signatureRdataSha256": "8bc180a1e15143b9240fe6a68f3307e4605bf69f9bc140529935573e9bd01fbf",
+     "signingInputSha256": "f8939dd6288062d82196ebd2783c1155917a4afc5718695bb6e21057a5ba7f71",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "aa83b95954bee89d345370d08e44fabc269590c0c61d61e46e317a15accb73ac"
+  },
+  {
+   "order": 142,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/3",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Fresh resolver-to-stub prerequisite evidence hop.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-example-ds",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": "example.",
+     "qtype": "DS",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-example-ds:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16643
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-example-ds:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-example-ds:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16643
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-1:root-example-ds"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 2,
+    "validationTarget": "example DS RRset",
+    "requiredFor": "authenticate example DNSKEY",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "root-example-ds",
+     "signatureId": "root-example-ds-path-long",
+     "owner": "example.",
+     "type": "DS",
+     "class": "IN",
+     "records": [
+      "59648 13 2 dfebd7569af28eabdef65618e0e155243f503d4d30edaf75394a1f2ec2820ac5"
+     ],
+     "canonicalRdataHex": [
+      "e9000d02dfebd7569af28eabdef65618e0e155243f503d4d30edaf75394a1f2ec2820ac5"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 1,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "root-zsk-g1",
+      "keyTag": 32374,
+      "signer": ".",
+      "typeCovered": 43
+     },
+     "signatureRdataSha256": "600cc647212aa9944685a5e4d43157335e7aa5b1301a6e8221958e4e146850e5",
+     "signingInputSha256": "f2b30d001eb607c186ee9fec5a44cc8fdefd714ffa8a8945571606605d6f09e4",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "db43796ebc9aaac5e68663c559667342d9e7de0f5dd5525bacf853948c54e45a"
+  },
+  {
+   "order": 143,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/3",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Mirror fresh prerequisite evidence in checkpoint.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-example-ds",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": "example.",
+     "qtype": "DS",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-example-ds:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16643
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-example-ds:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-example-ds:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16643
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-1:root-example-ds"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 2,
+    "validationTarget": "example DS RRset",
+    "requiredFor": "authenticate example DNSKEY",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "root-example-ds",
+     "signatureId": "root-example-ds-path-long",
+     "owner": "example.",
+     "type": "DS",
+     "class": "IN",
+     "records": [
+      "59648 13 2 dfebd7569af28eabdef65618e0e155243f503d4d30edaf75394a1f2ec2820ac5"
+     ],
+     "canonicalRdataHex": [
+      "e9000d02dfebd7569af28eabdef65618e0e155243f503d4d30edaf75394a1f2ec2820ac5"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 1,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "root-zsk-g1",
+      "keyTag": 32374,
+      "signer": ".",
+      "typeCovered": 43
+     },
+     "signatureRdataSha256": "600cc647212aa9944685a5e4d43157335e7aa5b1301a6e8221958e4e146850e5",
+     "signingInputSha256": "f2b30d001eb607c186ee9fec5a44cc8fdefd714ffa8a8945571606605d6f09e4",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "db43796ebc9aaac5e68663c559667342d9e7de0f5dd5525bacf853948c54e45a"
+  },
+  {
+   "order": 144,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/4",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Fresh resolver-to-stub prerequisite evidence hop.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-example-dnskey",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": "example.",
+     "qtype": "DNSKEY",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-example-dnskey:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16644
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-example-dnskey:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-example-dnskey:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16644
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-2:example-dnskey-g1"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 3,
+    "validationTarget": "example DNSKEY RRset",
+    "requiredFor": "authenticate example-child DS",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "example-dnskey-g1",
+     "signatureId": "example-dnskey-path-long",
+     "owner": "example.",
+     "type": "DNSKEY",
+     "class": "IN",
+     "records": [
+      "257 3 13 Z2q5+kG13cOUqpgqaVVtOjO8e8G7BVRV EUy5lIW6fNJPEVs57dAfR+Gf9sWWSuru yQpqnc98edIcrKZIdsVMtQ==",
+      "256 3 13 Bw5fIagST724/7wSiLC3cR1o0apVLgdi s46zQfxWT3BcDpDVCuhbpAwVuWfzxIgi r0Ci46fynLWxqcxru+D6JA=="
+     ],
+     "canonicalRdataHex": [
+      "0100030d070e5f21a8124fbdb8ffbc1288b0b7711d68d1aa552e0762b38eb341fc564f705c0e90d50ae85ba40c15b967f3c48822af40a2e3a7f29cb5b1a9cc6bbbe0fa24",
+      "0101030d676ab9fa41b5ddc394aa982a69556d3a33bc7bc1bb055455114cb99485ba7cd24f115b39edd01f47e19ff6c5964aeaeec90a6a9dcf7c79d21caca64876c54cb5"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 1,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "example-ksk-g1",
+      "keyTag": 59648,
+      "signer": "example.",
+      "typeCovered": 48
+     },
+     "signatureRdataSha256": "020108fdf67249cffbfb8b34ba1fc8c6449e221083a929a72e51a89d7bd77233",
+     "signingInputSha256": "d14021e5bdcc94158511cb9f8ec1f7842b8d2601a6e2135ce0004b571536256d",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "15af4063536c2716017b4b12905f94fcddb2524173e8a0270b52e6b22127eef3"
+  },
+  {
+   "order": 145,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/4",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Mirror fresh prerequisite evidence in checkpoint.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-example-dnskey",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": "example.",
+     "qtype": "DNSKEY",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-example-dnskey:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16644
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-example-dnskey:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-example-dnskey:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16644
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-2:example-dnskey-g1"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 3,
+    "validationTarget": "example DNSKEY RRset",
+    "requiredFor": "authenticate example-child DS",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "example-dnskey-g1",
+     "signatureId": "example-dnskey-path-long",
+     "owner": "example.",
+     "type": "DNSKEY",
+     "class": "IN",
+     "records": [
+      "257 3 13 Z2q5+kG13cOUqpgqaVVtOjO8e8G7BVRV EUy5lIW6fNJPEVs57dAfR+Gf9sWWSuru yQpqnc98edIcrKZIdsVMtQ==",
+      "256 3 13 Bw5fIagST724/7wSiLC3cR1o0apVLgdi s46zQfxWT3BcDpDVCuhbpAwVuWfzxIgi r0Ci46fynLWxqcxru+D6JA=="
+     ],
+     "canonicalRdataHex": [
+      "0100030d070e5f21a8124fbdb8ffbc1288b0b7711d68d1aa552e0762b38eb341fc564f705c0e90d50ae85ba40c15b967f3c48822af40a2e3a7f29cb5b1a9cc6bbbe0fa24",
+      "0101030d676ab9fa41b5ddc394aa982a69556d3a33bc7bc1bb055455114cb99485ba7cd24f115b39edd01f47e19ff6c5964aeaeec90a6a9dcf7c79d21caca64876c54cb5"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 1,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "example-ksk-g1",
+      "keyTag": 59648,
+      "signer": "example.",
+      "typeCovered": 48
+     },
+     "signatureRdataSha256": "020108fdf67249cffbfb8b34ba1fc8c6449e221083a929a72e51a89d7bd77233",
+     "signingInputSha256": "d14021e5bdcc94158511cb9f8ec1f7842b8d2601a6e2135ce0004b571536256d",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "15af4063536c2716017b4b12905f94fcddb2524173e8a0270b52e6b22127eef3"
+  },
+  {
+   "order": 146,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/5",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Fresh resolver-to-stub prerequisite evidence hop.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-lab-ds",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": "lab.example.",
+     "qtype": "DS",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-lab-ds:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16645
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-lab-ds:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-lab-ds:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16645
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-3:example-child-ds"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 4,
+    "validationTarget": "lab DS RRset",
+    "requiredFor": "authenticate lab DNSKEY",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "example-child-ds",
+     "signatureId": "example-child-ds-path-long",
+     "owner": "lab.example.",
+     "type": "DS",
+     "class": "IN",
+     "records": [
+      "22775 13 2 8fd7109988a9107c7d0a81d7a7951cfd3668c7776aa0be7a746139a51e18b7d8"
+     ],
+     "canonicalRdataHex": [
+      "58f70d028fd7109988a9107c7d0a81d7a7951cfd3668c7776aa0be7a746139a51e18b7d8"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 2,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "signer": "example.",
+      "typeCovered": 43
+     },
+     "signatureRdataSha256": "695bc946dadc84f525b2120cfa05554c78ac037f4abdee8c1404513099a0e32b",
+     "signingInputSha256": "1d890e6d33140fe09522a7ba750212d09630f165dd0fcc5a457faad0d4dfed8c",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "e851a8076334501f5ebb04af84c07181ce44f46e21c37f7dcb55e6b754dbbdbf"
+  },
+  {
+   "order": 147,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/5",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Mirror fresh prerequisite evidence in checkpoint.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-lab-ds",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": "lab.example.",
+     "qtype": "DS",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-lab-ds:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16645
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-lab-ds:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-lab-ds:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16645
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-3:example-child-ds"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 4,
+    "validationTarget": "lab DS RRset",
+    "requiredFor": "authenticate lab DNSKEY",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "example-child-ds",
+     "signatureId": "example-child-ds-path-long",
+     "owner": "lab.example.",
+     "type": "DS",
+     "class": "IN",
+     "records": [
+      "22775 13 2 8fd7109988a9107c7d0a81d7a7951cfd3668c7776aa0be7a746139a51e18b7d8"
+     ],
+     "canonicalRdataHex": [
+      "58f70d028fd7109988a9107c7d0a81d7a7951cfd3668c7776aa0be7a746139a51e18b7d8"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 2,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "signer": "example.",
+      "typeCovered": 43
+     },
+     "signatureRdataSha256": "695bc946dadc84f525b2120cfa05554c78ac037f4abdee8c1404513099a0e32b",
+     "signingInputSha256": "1d890e6d33140fe09522a7ba750212d09630f165dd0fcc5a457faad0d4dfed8c",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "e851a8076334501f5ebb04af84c07181ce44f46e21c37f7dcb55e6b754dbbdbf"
+  },
+  {
+   "order": 148,
+   "op": "add",
+   "path": "/lessons/3/cases/3/outcome/flags/hops/6",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Fresh resolver-to-stub prerequisite evidence hop.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-lab-dnskey",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": "lab.example.",
+     "qtype": "DNSKEY",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-lab-dnskey:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16646
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-lab-dnskey:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-lab-dnskey:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16646
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-4:child-dnskey-g1"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 5,
+    "validationTarget": "lab DNSKEY RRset",
+    "requiredFor": "verify www A RRSIG",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "child-dnskey-g1",
+     "signatureId": "child-dnskey-g1-path-long",
+     "owner": "lab.example.",
+     "type": "DNSKEY",
+     "class": "IN",
+     "records": [
+      "257 3 13 Pu0xeazW0puWQsZkqHFph4asNCh+1iew 7bKuiVYAaWdHLCv+EHfcc1uIpLSfRPF8 YM4gks+nS7FCOOZcNMVOSA==",
+      "256 3 13 3GyieUAv4h2uPwt6+0o9oC8fm38jTqQK tzowJvXxAAONJycEZeVC0Qc7794ESZNa ES7xWfRdIXe6M54th9HtBw=="
+     ],
+     "canonicalRdataHex": [
+      "0100030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+      "0101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 2,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "child-ksk-g1",
+      "keyTag": 22775,
+      "signer": "lab.example.",
+      "typeCovered": 48
+     },
+     "signatureRdataSha256": "20c6eb57b574329a862471dc8f75519ecc1a3fcac9f85c8524d55ef50e68d621",
+     "signingInputSha256": "4a460d8582e6de43691afc094ca4d21898322779710689ae55958bcf77d65cd9",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "77d76afae72bdf4850dc8da14f354619b2bc91c967ef95acd2c86e23f14131de"
+  },
+  {
+   "order": 149,
+   "op": "add",
+   "path": "/lessons/3/cases/3/checkpoints/6/expected/response/hops/6",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Mirror fresh prerequisite evidence in checkpoint.",
+   "sources": [
+    "rfc4033",
+    "rfc4035"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-lab-dnskey",
+    "from": "dnsStub",
+    "to": "dnsResolver",
+    "transport": "UDP",
+    "question": {
+     "qname": "lab.example.",
+     "qtype": "DNSKEY",
+     "qclass": "IN",
+     "qdcount": 1
+    },
+    "query": {
+     "id": "lab-dnssec05:validating-stub:evidence-lab-dnskey:q",
+     "flags": {
+      "QR": 0,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 0,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16646
+    },
+    "response": {
+     "id": "lab-dnssec05:validating-stub:evidence-lab-dnskey:r",
+     "inReplyTo": "lab-dnssec05:validating-stub:evidence-lab-dnskey:q",
+     "flags": {
+      "QR": 1,
+      "AA": 0,
+      "TC": 0,
+      "RD": 1,
+      "RA": 1,
+      "AD": 0,
+      "CD": 1,
+      "DO": 1,
+      "CO": 0,
+      "opcode": 0,
+      "Z": 0
+     },
+     "rcode": "NOERROR",
+     "edns": {
+      "present": true,
+      "version": 0,
+      "udpPayloadSize": 1232
+     },
+     "messageId": 16646
+    },
+    "evidenceRefs": [
+     "lab-dnssec05:validating-stub:numericBindings-chain-4:child-dnskey-g1"
+    ],
+    "hopRole": "additional-prerequisite-evidence",
+    "dataDirection": "resolver-to-stub",
+    "receiverBeforeCheck": "dnsStub",
+    "prerequisiteOrder": 5,
+    "validationTarget": "lab DNSKEY RRset",
+    "requiredFor": "verify www A RRSIG",
+    "numericEvidence": {
+     "numericFile": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+     "rrsetId": "child-dnskey-g1",
+     "signatureId": "child-dnskey-g1-path-long",
+     "owner": "lab.example.",
+     "type": "DNSKEY",
+     "class": "IN",
+     "records": [
+      "257 3 13 Pu0xeazW0puWQsZkqHFph4asNCh+1iew 7bKuiVYAaWdHLCv+EHfcc1uIpLSfRPF8 YM4gks+nS7FCOOZcNMVOSA==",
+      "256 3 13 3GyieUAv4h2uPwt6+0o9oC8fm38jTqQK tzowJvXxAAONJycEZeVC0Qc7794ESZNa ES7xWfRdIXe6M54th9HtBw=="
+     ],
+     "canonicalRdataHex": [
+      "0100030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+      "0101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48"
+     ],
+     "publishedRrsetTtl": 3600,
+     "receivedRrsetTtl": 300,
+     "receivedRrsigTtl": 300,
+     "signedMetadata": {
+      "algorithm": 13,
+      "labels": 2,
+      "originalTtl": 3600,
+      "inception": 1792713000,
+      "expiration": 1803081600,
+      "keyId": "child-ksk-g1",
+      "keyTag": 22775,
+      "signer": "lab.example.",
+      "typeCovered": 48
+     },
+     "signatureRdataSha256": "20c6eb57b574329a862471dc8f75519ecc1a3fcac9f85c8524d55ef50e68d621",
+     "signingInputSha256": "4a460d8582e6de43691afc094ca4d21898322779710689ae55958bcf77d65cd9",
+     "bindingRule": "Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record."
+    }
+   },
+   "valueSha256": "77d76afae72bdf4850dc8da14f354619b2bc91c967ef95acd2c86e23f14131de"
+  },
+  {
+   "order": 150,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/4",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-root-dnskey:q",
+    "actorId": "dnsStub",
+    "kind": "network-send",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-root-dnskey",
+    "action": "Send exact per-hop query flags; no authentication inferred from request."
+   },
+   "valueSha256": "63eed4b21840d4a0690d8c7995adfcfa48f31fbaec748bcf2c8909056e834acd"
+  },
+  {
+   "order": 151,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/5",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-root-dnskey:r:raw",
+    "actorId": "dnsStub",
+    "kind": "network-receive",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-root-dnskey",
+    "action": "Receive prerequisite DNSSEC RRset/RRSIG untrusted; response receipt is not local DNSSEC verification."
+   },
+   "valueSha256": "52e15d2bc02afbcbc01310cd3fa8abcd4b5d7a6848afbb44ef94cf06a80c1379"
+  },
+  {
+   "order": 152,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/6",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-example-ds:q",
+    "actorId": "dnsStub",
+    "kind": "network-send",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-example-ds",
+    "action": "Send exact per-hop query flags; no authentication inferred from request."
+   },
+   "valueSha256": "131bb5bb1e4286b604920ee0a12f96c7a36a80b0b7640b3bb09cd652abaed7ef"
+  },
+  {
+   "order": 153,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/7",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-example-ds:r:raw",
+    "actorId": "dnsStub",
+    "kind": "network-receive",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-example-ds",
+    "action": "Receive prerequisite DNSSEC RRset/RRSIG untrusted; response receipt is not local DNSSEC verification."
+   },
+   "valueSha256": "a7582cc942b6948352671bfce5e285e43b0e39831658a1fd00438e4112e3ee7a"
+  },
+  {
+   "order": 154,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/8",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-example-dnskey:q",
+    "actorId": "dnsStub",
+    "kind": "network-send",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-example-dnskey",
+    "action": "Send exact per-hop query flags; no authentication inferred from request."
+   },
+   "valueSha256": "04cd9f2f8fc2e8f35f2a05b9a7c8589d08a3512f91ad985069334b87811eaa2e"
+  },
+  {
+   "order": 155,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/9",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-example-dnskey:r:raw",
+    "actorId": "dnsStub",
+    "kind": "network-receive",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-example-dnskey",
+    "action": "Receive prerequisite DNSSEC RRset/RRSIG untrusted; response receipt is not local DNSSEC verification."
+   },
+   "valueSha256": "78e24d8854ef6564f5d5300db89af50c7c2bed82eccd54c8bb3ddf24716f47f5"
+  },
+  {
+   "order": 156,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/10",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-lab-ds:q",
+    "actorId": "dnsStub",
+    "kind": "network-send",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-lab-ds",
+    "action": "Send exact per-hop query flags; no authentication inferred from request."
+   },
+   "valueSha256": "3e2c5eed25e71bbd9d18312e75ecf30724ec92164dae7d4d3579bba8a090ccc9"
+  },
+  {
+   "order": 157,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/11",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-lab-ds:r:raw",
+    "actorId": "dnsStub",
+    "kind": "network-receive",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-lab-ds",
+    "action": "Receive prerequisite DNSSEC RRset/RRSIG untrusted; response receipt is not local DNSSEC verification."
+   },
+   "valueSha256": "4a25026fb7be34709d5bc243c2b8a053471e117ab9edfee5b63debd98352c35d"
+  },
+  {
+   "order": 158,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/12",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-lab-dnskey:q",
+    "actorId": "dnsStub",
+    "kind": "network-send",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-lab-dnskey",
+    "action": "Send exact per-hop query flags; no authentication inferred from request."
+   },
+   "valueSha256": "2f69ab72de1c0c59cc71838c475e71de44807a8f0d784b840e8252cd4641b9f2"
+  },
+  {
+   "order": 159,
+   "op": "add",
+   "path": "/lessons/3/cases/3/sequence/13",
+   "finding": "DNS05-STUB-FRESH-CHAIN-01",
+   "reason": "Receipt/event ordering: evidence before stub checks.",
+   "sources": [
+    "worker-plan"
+   ],
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "value": {
+    "id": "lab-dnssec05:validating-stub:evidence-lab-dnskey:r:raw",
+    "actorId": "dnsStub",
+    "kind": "network-receive",
+    "hopRef": "lab-dnssec05:validating-stub:evidence-lab-dnskey",
+    "action": "Receive prerequisite DNSSEC RRset/RRSIG untrusted; response receipt is not local DNSSEC verification."
+   },
+   "valueSha256": "da7874ba7a07088efd4308acb331d43abcfb91eb9e29e89c7b4a558e888a292b"
+  }
+ ]
+}

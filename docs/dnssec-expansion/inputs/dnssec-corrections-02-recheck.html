@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2026-10-25">
+  <title>DNSSEC corrections-02 recheck</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"CORRECTIONS-02 REVIEW";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+
+  pre{max-width:100%;max-height:480px;overflow:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}
+  pre code{padding:0;background:none;white-space:pre;font-size:12px}
+  details{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:8px}
+  summary{cursor:pointer;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+  summary:focus-visible,pre:focus-visible,.table-scroll:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}
+  @media print{pre{max-height:none;white-space:pre-wrap}pre code{white-space:pre-wrap}nav#TOC{display:none}}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">DNSSEC corrections-02 recheck</h1>
+<p class="subtitle">Three submitted fixes verified · one additional
+correction required</p>
+<p class="date">25 October 2026</p>
+<div class="plan-stats"><span>1 required correction</span><span>3 submitted fixes verified</span><span>9 original closures preserved</span><span>Release conditions remain open</span></div></header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Review contents</h2>
+<ul>
+<li><a href="#decision-and-handoff" id="toc-decision-and-handoff">Decision and handoff</a></li>
+<li><a href="#exact-candidate-and-delta" id="toc-exact-candidate-and-delta">Exact candidate and delta</a></li>
+<li><a href="#verified-submitted-corrections" id="toc-verified-submitted-corrections">Verified submitted
+corrections</a></li>
+<li><a href="#dns-r10-p2-secure-alias-cache-inherits-target-failure-metadata" id="toc-dns-r10-p2-secure-alias-cache-inherits-target-failure-metadata">DNS-R10
+— P2: secure alias cache inherits target-failure metadata</a>
+<ul>
+<li><a href="#reproduction-and-consequence" id="toc-reproduction-and-consequence">Reproduction and
+consequence</a></li>
+<li><a href="#cause-and-bounded-fix" id="toc-cause-and-bounded-fix">Cause and bounded fix</a></li>
+<li><a href="#required-regression-and-closure-evidence" id="toc-required-regression-and-closure-evidence">Required regression
+and closure evidence</a></li>
+</ul></li>
+<li><a href="#evidence-actually-checked-in-this-recheck" id="toc-evidence-actually-checked-in-this-recheck">Evidence actually
+checked in this recheck</a></li>
+<li><a href="#performance-and-retained-release-conditions" id="toc-performance-and-retained-release-conditions">Performance and
+retained release conditions</a></li>
+<li><a href="#worker-next-steps" id="toc-worker-next-steps">Worker next
+steps</a></li>
+<li><a href="#reproduction-appendix" id="toc-reproduction-appendix">Reproduction appendix</a></li>
+</ul>
+</nav>
+<main id="review-comments"><h2 id="decision-and-handoff">Decision and handoff</h2>
+<p><strong>Changes required: one narrow cache-state correction,
+DNS-R10.</strong> The worker’s three submitted fixes are verified. The
+original DNS-R01–R09 closures and C01–C03 dispositions remain valid
+within their reviewed scope, and the source-link focus follow-up DNS-C04
+is now closed. The current packet nevertheless contains the separately
+reproduced alias-cache inconsistency below.</p>
+<p>The worker was right to correct application behavior before the next
+review. This packet changes code, tests and evidence, not merely report
+wording. Its publisher-declaration and unsigned-target metadata defects
+were not caught in my preceding recheck. This review also found a
+neighboring secure-alias cache defect that exists in both corrections-01
+and corrections-02; it is not a regression introduced by these three
+fixes.</p>
+<p><strong>Send this file to the worker.</strong> Fix DNS-R10, preserve
+the completed corrections, and return a bounded correction packet with
+the affected checks. No further feature expansion is requested here.
+Human G01 and performance acceptance remain separate open release
+conditions.</p>
+<h2 id="exact-candidate-and-delta">Exact candidate and delta</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 1"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Item</th>
+<th scope="col">Reviewed identity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Upload</td>
+<td><code>auth-flow-studio-dnssec-source-and-review(2).zip</code>,
+<code>auth-flow-studio-dnssec(2).html</code>,
+<code>START-HERE(5).md</code></td>
+</tr>
+<tr class="even">
+<td>Working snapshot</td>
+<td><code>expansion/dnssec</code>, base
+<code>c99ebd6fec16e01dc9fef6c9590d534b8f1daf85</code>; no new committed
+checkpoint</td>
+</tr>
+<tr class="odd">
+<td>Application/test identity</td>
+<td><strong>231 files</strong>, SHA-256
+<code>f9876de1ce27f89d71d090a8d823f31a32d5a53738a7aef7ba99d49afb8628e0</code></td>
+</tr>
+<tr class="even">
+<td>Standalone</td>
+<td><strong>5,242,884 bytes</strong>, SHA-256
+<code>0b1c9bdb95078bf8cfe55853aa6df4935c2f8ea3b488ed67ab567453b612a056</code></td>
+</tr>
+<tr class="odd">
+<td>Expected worksheet</td>
+<td>Eighth layer,
+<code>effective-cache-namespace-location/worksheet.json</code>; SHA-256
+<code>d88705d909df1043d7a5c0295e35272afae6ab01af73aac7faa766c5061f164d</code></td>
+</tr>
+<tr class="even">
+<td>Scope</td>
+<td><strong>22 lessons / 159 named cases / 1,068
+checkpoints</strong></td>
+</tr>
+<tr class="odd">
+<td>Preceding reviewed candidate</td>
+<td>Source
+<code>481ace7a7a7985e503f29e8d0a51675bda3ddafdb7c1e80fed5a3b6a7a100554</code>;
+standalone
+<code>2855771e27155606b15e33bc3bfeea956192a031b5ddbe8774cad3ec16757c5a</code></td>
+</tr>
+</tbody>
+</table>
+</div><p>The source delta consists of four application modules
+(<code>app.js</code>, <code>dnssec-authoring.js</code>,
+<code>dnssec-signing-cases.js</code>,
+<code>dnssec-denial-cases.js</code>), three focused test files, and the
+native correction producer. The source build is byte-identical to the
+supplied standalone. All <strong>1,808 checksum entries</strong>
+pass.</p>
+<p>All <strong>435 independent authority inputs</strong> remain
+unchanged, including the original 354 inputs and all eight authority
+layers. Direct directory comparison also confirms all <strong>158
+numerical files</strong> and <strong>60 contract-errata files</strong>
+are unchanged. No fixture re-signing or expectation rewrite was used for
+these fixes.</p>
+<p>The retained canonical references differ from corrections-01 in six
+cases’ prefix records: <code>DNS09/cname-insecure-target</code> and five
+DNS14 cases. The other 153 complete case records match. Step structure,
+final outcomes, field/artifact inspection records and case identity
+remain unchanged across all 159. This is an audited comparison of
+retained records, not a fresh all-case execution by this reviewer.</p>
+<h2 id="verified-submitted-corrections">Verified submitted
+corrections</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 2"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Finding</th>
+<th scope="col">Disposition</th>
+<th scope="col">Independently checked behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>DNS-C04</strong>, worker
+<code>DNS-R09-focus-identity</code></td>
+<td><strong>Closed</strong></td>
+<td>Source links now use <code>fieldId + source index</code>, preserving
+the exact CDS/CDNSKEY link when another record links to the same RFC.
+Source and standalone each pass 386 independent assertions across all
+ten DNS16 cases and 32 selected links, including forward/backward
+redraw, reset and switching away. Results match between modes.</td>
+</tr>
+<tr class="even">
+<td>Worker <code>DNS-R06-publisher-declaration</code></td>
+<td><strong>Closed</strong></td>
+<td>All eight DNS14 cases now match their independently declared
+publisher signing permission <code>[13,15]</code>. The immutable
+override is limited to DNS14. Global modern signing <code>[13]</code>,
+operator validation, implementation/fixture capability and digest-policy
+distinctions remain separate. No SHA-1 signing was enabled.</td>
+</tr>
+<tr class="odd">
+<td>Worker <code>DNS-R02-target-cache-provenance</code></td>
+<td><strong>Closed</strong></td>
+<td>Target-cache RRset TTL, ordinary RRSIG TTL and signed Original TTL
+come from the actual target tuple. The unsigned CNAME target has no
+signature TTL or signed Original TTL. Signed/bogus-target and DNAME
+controls preserve their own tuple metadata; alias and target remain
+separate.</td>
+</tr>
+</tbody>
+</table>
+</div><p>The semantic before/after probe passed <strong>207
+assertions</strong> across eight DNS14 cases, seven DNS09 cases and
+three unrelated controls. It reproduces the old mismatches and verifies
+the corrections without deriving its expected values from the production
+setters.</p>
+<p>The focus fix also has fresh worker Native04 evidence. All six
+source-link contexts target the non-first <strong>CDNSKEY - public-key
+intent for DS source 6</strong>, retain that identity through popup
+return and playback redraw, and deliberately avoid fetching remote RFC
+contents. The independently inspected retained 200% screenshot shows
+focus on that exact link. This establishes the stated interaction scope,
+not human screen-reader comprehension or external-site availability.</p>
+<p>The earlier DNS-R06 operator/capability distinction is still
+consistent with <a href="https://www.rfc-editor.org/rfc/rfc9905.html#section-2">RFC 9905
+§2</a>. Allowing modern publisher algorithms in the DNS14 teaching
+profile does not grant deprecated generation permissions or alter the
+operator’s accepted set. These are finite lesson declarations, not an
+installed cryptographic engine’s capabilities.</p>
+<h2 id="dns-r10-p2-secure-alias-cache-inherits-target-failure-metadata">DNS-R10
+— P2: secure alias cache inherits target-failure metadata</h2>
+<p><strong>Required correction.</strong> Select <strong>DNS09 /
+<code>cname-bogus-target</code></strong> and reach
+<code>accepted-use-and-cache-boundary</code> (source index 29 in this
+candidate). The CNAME RRset has been authenticated, while the target
+fails validation. Overall resolution correctly returns SERVFAIL/refuses
+the target address. The model deliberately retains the secure CNAME
+cache independently.</p>
+<p>At protocol time <strong>T = 1792713600</strong>, the separate alias
+cache contains contradictory data:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 3"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Field</th>
+<th scope="col">Secure alias cache, actual</th>
+<th scope="col">Correct meaning at this boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Artifact / state ID</td>
+<td><code>lab-dnssec09:alias-cache</code></td>
+<td>Same independent alias cache</td>
+</tr>
+<tr class="even">
+<td>Security / kind</td>
+<td><code>secure</code> / <code>answer</code></td>
+<td>Retain these values</td>
+</tr>
+<tr class="odd">
+<td><code>receivedAt</code></td>
+<td>T</td>
+<td>Original CNAME receipt</td>
+</tr>
+<tr class="even">
+<td><code>expiresAt</code></td>
+<td>T + 300</td>
+<td>Original alias lifetime</td>
+</tr>
+<tr class="odd">
+<td><code>remainingTtl</code></td>
+<td><strong>5</strong></td>
+<td><strong>300</strong> at T, consistent with its own expiry</td>
+</tr>
+<tr class="even">
+<td><code>validatedAt</code></td>
+<td><strong>null</strong></td>
+<td>Actual successful alias validation time, <strong>T</strong> in this
+case</td>
+</tr>
+<tr class="odd">
+<td><code>signatureDeadline</code></td>
+<td>T + 3600</td>
+<td>Alias signature’s own bound</td>
+</tr>
+<tr class="even">
+<td>Separate target failure cache</td>
+<td>Expires T + 5, remaining 5, validation time null</td>
+<td>Correct for the failed target; preserve it</td>
+</tr>
+</tbody>
+</table>
+</div><p>The alias’s <code>authenticatedProofDeadline</code> also inherits
+null from the failed aggregate entry. Audit that related field against
+its documented per-entry meaning when constructing the alias cache; do
+not carry target-failure metadata into an independently authenticated
+alias record by accident.</p>
+<h3 id="reproduction-and-consequence">Reproduction and consequence</h3>
+<p>The reviewer probe reconstructs the canonical state at source index
+29, compiles the real held-object model, and inspects <strong>Recursive
+resolver → Result cache → <code>lab-dnssec09:alias-cache</code> →
+<code>dnssec_cache_record</code></strong>. Its readable exact-inspector
+value equals the contradictory state object. This is not just an unused
+temporary variable.</p>
+<p>The real eligibility consumer still allows that alias cache at
+<strong>T + 6</strong> and rejects it at <strong>T + 300</strong>. Thus
+the consumer’s lifetime agrees with <code>expiresAt</code> and disagrees
+with the displayed/stored five-second countdown. The five-second value
+belongs to the independent target failure. The successful alias
+validation is also already recorded by
+<code>validators.dnsValidator.alias.securityStatus: secure</code>.</p>
+<p>The same probe reproduces the issue in both corrections-01 and
+corrections-02. The lead reviewer independently reran it, including the
+exact held-object inspection. No fresh native browser or live resolver
+defect is claimed.</p>
+<h3 id="cause-and-bounded-fix">Cause and bounded fix</h3>
+<p>In <code>src/dnssec-denial-cases.js</code>, around lines 310–321, the
+aggregate result entry is built from the failed end-to-end lookup.
+<code>aliasEntry</code> then spreads that entry and replaces the alias’s
+kind, security status, expiry, signature bound and evidence references,
+but retains the aggregate failure’s <code>remainingTtl</code> and
+<code>validatedAt</code>.</p>
+<p>Construct the alias cache from its own authenticated alias tuple and
+validation event. At creation, derive its remaining TTL from its own
+effective expiry and the represented clock, and give it the actual alias
+validation timestamp. Keep its received tuple, signer/zone, evidence
+references, cache key, owner, original receipt and signed Original TTL
+intact. Review other fields inherited by the same spread for the same
+ownership/lifetime error, particularly
+<code>authenticatedProofDeadline</code>.</p>
+<p>Preserve the failed target’s five-second failure cache and the
+overall SERVFAIL/application refusal. The independently retained secure
+CNAME continues to have its original 300-second lifetime. Do not make
+the alias share the target failure deadline to conceal the
+inconsistency, invent another network exchange or signature check, or
+change signed bytes.</p>
+<p>This finding concerns internal protocol-state and teaching
+consistency. <a href="https://www.rfc-editor.org/rfc/rfc4035.html#section-5.3.3">RFC
+4035 §5.3.3</a> supplies the authenticated RRset lifetime context; it
+does not prescribe JavaScript property names. The current worksheet
+already says the authenticated CNAME can remain separately cached with
+its original expiry, and that target failure must not rewrite alias
+origin or confer target trust.</p>
+<h3 id="required-regression-and-closure-evidence">Required regression
+and closure evidence</h3>
+<ol type="1">
+<li><strong>Use the real named case and exact consumer.</strong> At the
+accepted/cache boundary, assert the alias is secure, expires T+300,
+reports 300 remaining seconds and records validation at T. Assert the
+target is a separate failure cache expiring T+5. Verify the exact
+held-object field equals these canonical values.</li>
+<li><strong>Exercise the lifetime boundary.</strong> Pass the actual
+alias cache to <code>dnssecDenialCacheEligible</code>: it remains
+eligible at T+6 and is rejected at its original expiry. Check
+remaining-lifetime metadata at the clock it represents; do not
+regenerate a new receipt or reset a deadline during inspection.</li>
+<li><strong>Keep the negative result.</strong> The bad target remains
+bogus and the application receives an error. A valid alias is not
+permission to use an unvalidated target address.</li>
+<li><strong>Check neighboring controls.</strong> Retain the
+secure-target, insecure-target and DNAME alias cases, with alias/target
+TTLs and signature presence kept separate. The unsigned target keeps the
+newly corrected null signature metadata.</li>
+<li><strong>Check replay and emission.</strong> Before the cache
+boundary, no new alias cache exists. Full, field and exact-object views
+agree at equal source prefixes and on rewind. Check the source and
+compiled standalone representation. A narrow native exact-inspector
+check is sufficient if a rendered surface changes; an unrelated full
+native/performance sweep is not required for this metadata repair.</li>
+<li><strong>Keep expectations independent.</strong> Add literal expected
+alias/target states or an independently authored checkpoint. The current
+accepted-use checkpoint does not constrain <code>namespaceCaches</code>,
+which is why the all-case gate passes despite the inconsistency. No
+existing frozen input needs to be weakened or rewritten. If extending
+worksheet coverage, add a sealed layer under the existing process rather
+than editing the original eight layers.</li>
+</ol>
+<p>The embedded <code>alias-cache-followup-probe.mjs</code> reproduces
+the current defect and therefore asserts the observed five-second/null
+values. It is evidence, <strong>not</strong> a future acceptance test.
+The worker’s new regression must assert the corrected independent alias
+values above and demonstrate failure on this packet before the fix.</p>
+<h2 id="evidence-actually-checked-in-this-recheck">Evidence actually
+checked in this recheck</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 4"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Check</th>
+<th scope="col">Result / attribution</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Integrity and build</td>
+<td><strong>1,808/1,808</strong> checksums; exact 231-file identity;
+extracted source rebuild byte-identical to uploaded HTML.</td>
+</tr>
+<tr class="even">
+<td>Focused source suites, executed here</td>
+<td><strong>58 passed</strong>, zero failures/skips/cancellations; Node
+24.22.1, unchanged 900000ms test timeout.</td>
+</tr>
+<tr class="odd">
+<td>Actual compiled-IIFE teaching tests, executed here</td>
+<td><strong>9 passed</strong>, zero failures/skips/cancellations, using
+<code>DNSSEC_DOM_BUNDLE=dist/auth-flow-studio.html</code>.</td>
+</tr>
+<tr class="even">
+<td>Numeric gate, executed here</td>
+<td><strong>502/502</strong> pass; 212 signature tuples remain in the
+unchanged numerical catalog.</td>
+</tr>
+<tr class="odd">
+<td>Semantic before/after probe</td>
+<td><strong>207</strong> passing assertions for the two submitted
+semantic fixes. Separate DNS-R10 reproduction is not counted as a
+product pass.</td>
+</tr>
+<tr class="even">
+<td>Independent focus probes</td>
+<td><strong>386</strong> passing assertions in each of source and
+standalone, with equal results.</td>
+</tr>
+<tr class="odd">
+<td>Retained native evidence audit</td>
+<td><strong>74</strong> checks pass; six exact non-first source-link
+contexts and eight image bindings. Two current screenshots were visually
+inspected. No new native execution here.</td>
+</tr>
+<tr class="even">
+<td>Provenance/performance audit</td>
+<td><strong>2,097</strong> checks pass; current gate identities,
+complete canonical references, frozen inputs, source deltas, timing
+arithmetic and prior flag continuity audited.</td>
+</tr>
+<tr class="odd">
+<td>Current worker complete source/emitted gates</td>
+<td>Each records <strong>159/159</strong>, 1,068 checkpoints and 27,031
+prefixes. Reviewed records, not new all-case runs by this reviewer.</td>
+</tr>
+<tr class="even">
+<td>Current worker full regression</td>
+<td><strong>1,994 passed across 121 files</strong> under pinned Bun. Its
+current source/build binding was checked; the entire suite was not
+independently rerun for this bounded delta.</td>
+</tr>
+<tr class="odd">
+<td>Current worker native/compiled preservation</td>
+<td>Native04 records <strong>60/60 cells</strong>, 978 chapter
+measurements. Compiled/held records retain 317 choices, 921 Core
+configurations, 86 interactions and 64,784 comparisons; their identities
+were audited.</td>
+</tr>
+</tbody>
+</table>
+</div><p>The prior independent 2,237-test full regression belongs to
+corrections-01. It is not restamped as a full-suite run of
+corrections-02. Likewise, the prior actual cryptographic verification of
+all 212 signatures remains tied to the unchanged fixture bytes; this
+review reran the numerical gate and checked byte preservation, without
+claiming a newly reproduced pinned Python/OpenSSL environment.</p>
+<p>Fresh worker
+Source05/Emitted05/Numeric05/full-regression03/compiled03/held02/Native04
+bind to this exact candidate. The omitted duplicate emitted canonical
+reference can be reconstructed to its recorded digest by changing only
+the source reference’s mode header. This proves the disclosed equality,
+not independent protocol correctness. No old native run is relabelled as
+the new Native04 run.</p>
+<p>Reviewer-only probe corrections are distinguished from product
+issues: the initial focus probe compared arrays from different VM realms
+before normalizing their prototypes; a semantic probe initially confused
+observed DS digest types with the separate operator-acceptance field.
+Those probe assumptions were repaired without changing the application
+or expected protocol behavior. DNS-R10 is separately reproduced in real
+state and the exact held-object consumer.</p>
+<h2 id="performance-and-retained-release-conditions">Performance and
+retained release conditions</h2>
+<p>The new retained collection has <strong>five material flags and zero
+variability flags</strong> under the unchanged predicates. All nine
+originally flagged keys and the five additional keys from corrections-01
+remain explicitly accounted for and unaccepted. A flag not reproduced in
+this collection is not an owner waiver of the earlier observation.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 5"><table>
+<colgroup>
+<col style="width: 15%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+<col style="width: 21%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Current material condition</th>
+<th style="text-align: right;" scope="col">Baseline median ms</th>
+<th style="text-align: right;" scope="col">Candidate median ms</th>
+<th style="text-align: right;" scope="col">Delta ms</th>
+<th style="text-align: right;" scope="col">Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>source-http/closed/replay-start</code></td>
+<td style="text-align: right;">125.63</td>
+<td style="text-align: right;">194.44</td>
+<td style="text-align: right;">+68.81</td>
+<td style="text-align: right;">+54.77%</td>
+</tr>
+<tr class="even">
+<td><code>standalone-http/default/startup</code></td>
+<td style="text-align: right;">3002.02</td>
+<td style="text-align: right;">3832.38</td>
+<td style="text-align: right;">+830.35</td>
+<td style="text-align: right;">+27.66%</td>
+</tr>
+<tr class="odd">
+<td><code>standalone-http/closed/replay-start</code></td>
+<td style="text-align: right;">126.88</td>
+<td style="text-align: right;">194.43</td>
+<td style="text-align: right;">+67.55</td>
+<td style="text-align: right;">+53.24%</td>
+</tr>
+<tr class="even">
+<td><code>standalone-file/default/startup</code></td>
+<td style="text-align: right;">2957.44</td>
+<td style="text-align: right;">3853.15</td>
+<td style="text-align: right;">+895.71</td>
+<td style="text-align: right;">+30.29%</td>
+</tr>
+<tr class="odd">
+<td><code>standalone-file/closed/replay-start</code></td>
+<td style="text-align: right;">138.82</td>
+<td style="text-align: right;">194.11</td>
+<td style="text-align: right;">+55.29</td>
+<td style="text-align: right;">+39.83%</td>
+</tr>
+</tbody>
+</table>
+</div><p>Source-HTTP startup is still <strong>661.54ms / 22.65%</strong> above
+its baseline median, but does not meet the unchanged relative flag
+threshold. “Unflagged” does not mean “no cost.” The audit recomputed the
+retained samples and flags; it did not collect new timings. Do not
+compare absolute medians between the two collections as though their
+baseline timings were identical or attribute every change to this code
+delta.</p>
+<p>Owner performance acceptance remains unrecorded. Human <strong>G01
+remains unperformed</strong>. Preserve the six inherited measured
+conditions, seven historical flags, six frozen-P0 variation cells, six
+sibling-origin omissions, N01, live/cross-engine limits, 21 prior scoped
+P6 closures and four optional deferrals. No screen-reader, live
+DNS/service, general platform-conformance or release waiver is supplied
+by passing functional checks.</p>
+<h2 id="worker-next-steps">Worker next steps</h2>
+<ol type="1">
+<li>Fix <strong>DNS-R10 only</strong>, with the independent alias/target
+assertions and exact-inspection checks above. Preserve the three
+verified corrections and the original nine scoped closures.</li>
+<li>Record <strong>DNS-C04 = DNS-R09-focus-identity</strong> as one
+closed issue. Record the publisher-declaration and target-provenance
+follow-ups as verified separately from the original R06/R02 findings; do
+not imply the preceding review had already checked them.</li>
+<li>Update the response ledger,
+open-gates/current-progress/implementation/navigation records and next
+entrypoint to reflect this performed recheck: <strong>one new required
+correction remains</strong>. Keep earlier reports and failed attempts
+intact; do not treat the packet’s stale “recheck not yet submitted” text
+as current after this review.</li>
+<li>Rebind the changed source/build and affected evidence. Use a focused
+correction check, fresh output leaves and preserved thresholds. The
+worker’s normal required release checks still apply, but this review
+does not request another unrelated feature/native/performance
+sweep.</li>
+<li>Keep the queued <strong>Windows protection / PAM /
+hidden-search-tags</strong> plan separate. Resume that assignment after
+the DNSSEC correction checkpoint is settled. Its existing document
+version 3 remains the next implementation plan; this report does not
+replace it.</li>
+</ol>
+<p>No product source was edited during this review. Nothing was
+committed, pushed or deployed. Fixing DNS-R10 completes the newly
+identified functional work; release acceptance still requires the
+expressly retained human/performance decisions.</p>
+<h2 id="reproduction-appendix">Reproduction appendix</h2>
+<p>Save the inert code blocks below under
+<code>independent-validation/</code> beside the extracted
+<code>source/</code>. Place the companion HTML at the packet root as
+<code>auth-flow-studio-dnssec.html</code>. The before/after scripts
+expect the preceding extraction at sibling
+<code>dnssec-corrections-01/source</code>; preserve that layout or
+explicitly adjust the predecessor path. They do not modify candidate
+source files.</p>
+<pre class="sh" tabindex="0" role="region" aria-label="Reproduction source 1"><code>cd source
+node build.mjs --source-version
+node --test --test-timeout=900000 tests/dnssec-network-corrections.test.mjs tests/dnssec-denial-corrections.test.mjs tests/dnssec-denial-authority.test.mjs tests/dnssec-publication-corrections.test.mjs tests/dnssec-teaching-corrections.test.mjs
+DNSSEC_DOM_BUNDLE=dist/auth-flow-studio.html node --test --test-timeout=900000 tests/dnssec-teaching-corrections.test.mjs
+node tools/verification/check-dnssec-numeric.mjs --out ../independent-validation/numeric-new</code></pre>
+<p>From the packet root, run the semantic and alias probes directly; run
+<code>focus-recheck.mjs source</code> and
+<code>focus-recheck.mjs emitted</code> separately. Run the two Python
+audits with Python 3. Pinned Bun remains the worker’s exact runtime for
+its complete gates. The appendix contains review reproductions, not
+native-browser or live-DNS tests.</p>
+<details>
+<summary>
+alias-cache-followup-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 2"><code>import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+// Reproduces the current defect. Future acceptance tests must assert the
+// corrected independent alias lifetime, not these bug-observation values.
+const here=new URL('.',import.meta.url),results=[];
+for(const [candidate,root] of [['corrections-01',new URL('../../dnssec-corrections-01/source/',here)],['corrections-02',new URL('../source/',here)]]){
+  const {buildDNSSECScenarioFixture}=await import(new URL('src/dnssec-lab.js',root));
+  const {reconstructProtocolState}=await import(new URL('src/protocol-state.js',root));
+  const {buildDNSSECHeldObjects}=await import(new URL('src/held-object-dnssec.js',root));
+  const {compileHeldObjects,projectHeldObjects,inspectHeldObject}=await import(new URL('src/held-object-state.js',root));
+  const {dnssecDenialCacheEligible}=await import(new URL('src/dnssec-denial.js',root));
+  const model=buildDNSSECScenarioFixture('lab-dnssec09',{variant:'cname-bogus-target'}),steps=model.steps(),i=steps.findIndex(s=&gt;s.dnssecBoundary==='accepted-use-and-cache-boundary');
+  const state=reconstructProtocolState(model,i).dnssec,alias=state.namespaceCaches.find(c=&gt;c.id.endsWith(':alias-cache')),target=state.namespaceCaches.find(c=&gt;c.id.endsWith(':target-cache'));
+  const now=state.clock.now,aliasId='lab-dnssec09:alias-cache';
+  assert.equal(state.validators.dnsValidator.alias.securityStatus,'secure');
+  assert.equal(state.validators.dnsValidator.target.securityStatus,'bogus');
+  assert.equal(alias.securityStatus,'secure');assert.equal(alias.kind,'answer');assert.equal(alias.expiresAt-now,300);
+  assert.equal(alias.remainingTtl,5);assert.equal(alias.validatedAt,null);
+  assert.equal(target.kind,'failure');assert.equal(target.expiresAt-now,5);assert.equal(target.remainingTtl,5);
+  const compiled=compileHeldObjects(buildDNSSECHeldObjects({model,steps,actors:model.actors(),contextId:model.id+':cname-bogus-target',choiceId:model.id}),{model,steps});
+  const snap=projectHeldObjects(compiled,{eventIndex:i,milestone:'complete'}),holding=snap.holdings.find(h=&gt;h.artifactId===aliasId&amp;&amp;h.actorId==='dnsResolver');assert.ok(holding);
+  const inspected=inspectHeldObject(snap,holding.holdingId),field=inspected.fields.find(f=&gt;f.attributeId==='dnssec_cache_record');
+  assert.ok(field.readable);assert.deepEqual(field.value,alias);
+  const context={view:alias.key[0],trustStore:alias.key[1],qname:alias.key[2],qtype:alias.key[3],qclass:alias.key[4]};
+  const reusableAfterSixSeconds=dnssecDenialCacheEligible(alias,context,now+6);assert.equal(reusableAfterSixSeconds,true);
+  assert.equal(dnssecDenialCacheEligible(alias,context,alias.expiresAt),false);
+  const prior=reconstructProtocolState(model,i-1).dnssec;assert.deepEqual(prior.namespaceCaches??[],[]);
+  const worksheet=JSON.parse(fs.readFileSync(new URL('docs/dnssec-expansion/contract-errata/effective-cache-namespace-location/worksheet.json',root)));
+  const expectedCase=worksheet.lessons.find(l=&gt;l.planId==='DNS09').cases.find(c=&gt;c.id==='cname-bogus-target');
+  const expectedBoundary=expectedCase.checkpoints.find(p=&gt;p.name==='accepted-use-and-cache-boundary').expected;
+  results.push({candidate,eventIndex:i,now,alias,correctRemainingAtThisClock:alias.expiresAt-now,heldArtifactId:aliasId,holder:holding.actorId,store:holding.store,inspectedField:field.attributeId,exactInspectorValueEqualsState:true,reusableAfterSixSeconds,targetFailure:{kind:target.kind,remainingTtl:target.remainingTtl,expiresAt:target.expiresAt},beforeAcceptanceHasAliasCache:false,worksheetConstrainsNamespaceCaches:Object.hasOwn(expectedBoundary,'namespaceCaches'),worksheetPreservedState:expectedCase.outcome.preservedState});
+}
+const report={kind:'Existing alias-cache metadata mismatch reproduced in both candidates',scope:'Actual source state and permission-scoped exact held-object inspector consumer; no new native browser run',results};
+fs.writeFileSync(new URL('alias-cache-followup-probe.json',here),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report,null,2));</code></pre>
+</details>
+<details>
+<summary>
+semantics-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 3"><code>import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+
+const here=new URL('.',import.meta.url),oldRoot=new URL('../../dnssec-corrections-01/source/',here),newRoot=new URL('../source/',here);
+const load=async root=&gt;({...(await import(new URL('src/dnssec-lab.js',root))),...(await import(new URL('src/protocol-state.js',root))),...(await import(new URL('src/dnssec-fixtures.js',root))),...(await import(new URL('src/dnssec-authoring.js',root)))});
+const old=await load(oldRoot),current=await load(newRoot);
+const manifest=JSON.parse(fs.readFileSync(new URL('docs/dnssec-expansion/scenario-manifest.json',newRoot)));
+const worksheet=JSON.parse(fs.readFileSync(new URL('docs/dnssec-expansion/contract-errata/effective-cache-namespace-location/worksheet.json',newRoot)));
+let checks=0;
+const same=(a,b,label)=&gt;{checks++;assert.deepEqual(a,b,label);};
+const ok=(x,label)=&gt;{checks++;assert.ok(x,label);};
+const record=a=&gt;a.representations[0].fields.find(f=&gt;f.attributeId.endsWith('_record'))?.value;
+const sha=x=&gt;crypto.createHash('sha256').update(JSON.stringify(x)).digest('hex');
+const model=(api,id,variant)=&gt;api.buildDNSSECScenarioFixture(id,{variant});
+const final=(api,m)=&gt;api.reconstructProtocolState(m,m.steps().length-1).dnssec;
+const differences=(a,b,path='')=&gt;{
+  if(JSON.stringify(a)===JSON.stringify(b))return [];
+  if(a===null||b===null||typeof a!=='object'||typeof b!=='object')return [path];
+  return [...new Set([...Object.keys(a),...Object.keys(b)])].flatMap(k=&gt;differences(a[k],b[k],path?path+'.'+k:k));
+};
+const outcomes=s=&gt;Object.fromEntries(['securityStatus','acceptedForUse','signatureChecked','chainEstablished','returnedToStub','applicationResult','reasonCode','failureStage','firstDetector'].map(k=&gt;[k,s[k]]));
+const signedObjects=m=&gt;m.dnssecInventory.artifacts.filter(a=&gt;['dns-rrset','dns-rrsig','dns-dnskey','dns-ds'].includes(a.type)).map(a=&gt;({id:a.artifactId,value:record(a)}));
+const wirePackets=m=&gt;m.dnssecInventory.artifacts.filter(a=&gt;a.type==='dns-header').map(a=&gt;({id:a.artifactId,value:record(a)}));
+const report={scope:'Focused source before/after semantic recheck; no live DNS or new native/cryptographic verification',publisherCases:[],aliasCases:[],unrelatedControls:[]};
+const controls={
+  'modern-baseline':'inspect-four-policy-columns',
+  'dual-algorithm-rollover':'select-usable-alg15-path',
+  'algorithm-unsupported':'classify-authenticated-unsupported-algorithm',
+  'unsupported-digest-only':'classify-authenticated-unsupported-digest',
+  'modern-and-obsolete-paths':'retain-valid-current-path',
+  'sha1-signing-disabled':'operator-rejects-archived-sha1-path',
+  'sha1-digest-compatibility':'inspect-distinct-digest-policy',
+  'nsec3-sha1-not-signature-policy':'inspect-three-independent-algorithms'
+};
+const declaration=worksheet.lessons.find(x=&gt;x.planId==='DNS14');
+for(const variant of manifest.rows.find(x=&gt;x.planId==='DNS14').caseIds){
+  const before=model(old,'lab-dnssec14',variant),after=model(current,'lab-dnssec14',variant),bs=final(old,before),as=final(current,after);
+  const expected=declaration.cases.find(x=&gt;x.id===variant).setup.capabilities;
+  same(expected.signingAlgorithms,[13,15],variant+' frozen publisher permissions');
+  same(after.profile.algorithms.signingAlgorithms,[13,15],variant+' visible publisher permissions');
+  const at=after.steps().findIndex(x=&gt;x.dnssecBoundary===controls[variant]);ok(at&gt;=0,variant+' policy prefix exists');
+  const observed=current.reconstructProtocolState(after,at).dnssec.algorithmPolicy;
+  same(observed.signingAlgorithms,[13,15],variant+' policy prefix permits13/15');
+  if(observed.publisherSigningAlgorithms!==undefined)same(observed.publisherSigningAlgorithms,[13,15],variant+' publisher column permits13/15');
+  const bp=structuredClone(before.profile.algorithms),ap=structuredClone(after.profile.algorithms);delete bp.signingAlgorithms;delete ap.signingAlgorithms;
+  same(ap,bp,variant+' no unrelated publisher/operator/digest/capability profile changes');
+  same(observed.validationAlgorithms,[13,15],variant+' operator signature acceptance unchanged');
+  same(observed.implementationCapabilities.validationAlgorithms,[5,7,13,15],variant+' declared implementation unchanged');
+  same(observed.fixtureCoverage.validationAlgorithms,[13,15],variant+' fixture coverage unchanged');
+  same(observed.acceptedDigestTypes??after.profile.algorithms.dsDigestTypes,variant==='sha1-digest-compatibility'?[1,2,4]:[2,4],variant+' accepted digest compatibility separately scoped');
+  same(outcomes(as),outcomes(bs),variant+' final outcome unchanged');
+  same(wirePackets(after),wirePackets(before),variant+' complete wire packet records unchanged');
+  same(signedObjects(after),signedObjects(before),variant+' signed/public occurrences unchanged');
+  const delta=differences(bs,as);
+  ok(delta.every(p=&gt;p.startsWith('algorithmPolicy.signingAlgorithms.')||p.startsWith('algorithmPolicy.publisherSigningAlgorithms.')),variant+' final state differs only in publisher permission fields: '+delta.join(','));
+  report.publisherCases.push({variant,beforePermissions:before.profile.algorithms.signingAlgorithms,afterPermissions:after.profile.algorithms.signingAlgorithms,observedAt:at,beforeDeclarationMismatch:sha(before.profile.algorithms.signingAlgorithms)!==sha(expected.signingAlgorithms),finalStateChangedPaths:delta,securityStatus:as.securityStatus});
+}
+same(report.publisherCases.filter(x=&gt;x.beforeDeclarationMismatch).length,5,'five prior non-dual publisher profiles reproduced');
+for(const variant of manifest.rows.find(x=&gt;x.planId==='DNS09').caseIds){
+  const before=model(old,'lab-dnssec09',variant),after=model(current,'lab-dnssec09',variant),bs=final(old,before),as=final(current,after);
+  same(outcomes(as),outcomes(bs),variant+' result/acceptance unchanged');
+  same(wirePackets(after),wirePackets(before),variant+' actual DNS packet bytes/metadata unchanged');
+  same(signedObjects(after),signedObjects(before),variant+' signed/public occurrence bytes unchanged');
+  const delta=differences(bs,as),target=as.namespaceCaches?.find(x=&gt;x.id.endsWith(':target-cache')),priorTarget=bs.namespaceCaches?.find(x=&gt;x.id.endsWith(':target-cache'));
+  const row={variant,securityStatus:as.securityStatus,finalStateChangedPaths:delta};
+  if(target){
+    const rrsets=wirePackets(after).flatMap(p=&gt;p.value.objects||[]).map(x=&gt;x.value).filter(x=&gt;x.owner===target.qname&amp;&amp;x.type==='A'&amp;&amp;Array.isArray(x.records));
+    const distinct=[...new Map(rrsets.map(x=&gt;[sha(x),x])).values()];same(distinct.length,1,variant+' unique received target occurrence');
+    const received=distinct[0];
+    same(target.receivedRrsetTtl,received.ttl,variant+' cache ordinary TTL equals actual target occurrence');
+    same(target.receivedRrsigTtl,received.receivedRrsigTtl,variant+' cache signature TTL equals actual target occurrence');
+    const targetSignatures=wirePackets(after).flatMap(p=&gt;p.value.objects||[]).map(x=&gt;x.value).filter(x=&gt;x.rrsetId===received.id&amp;&amp;typeof x.signatureHex==='string');
+    const uniqueSigs=[...new Map(targetSignatures.map(x=&gt;[sha(x),x])).values()];
+    same(target.originalTtl,uniqueSigs[0]?.originalTtl??null,variant+' OriginalTTL belongs to actual target signature');
+    const alias=as.namespaceCaches.find(x=&gt;x.id.endsWith(':alias-cache')),oldAlias=bs.namespaceCaches.find(x=&gt;x.id.endsWith(':alias-cache'));
+    same(alias,oldAlias,variant+' complete independently signed alias cache unchanged');
+    same(target.expiresAt,priorTarget.expiresAt,variant+' target expiry unchanged');
+    same(target.signatureDeadline,priorTarget.signatureDeadline,variant+' target signature deadline unchanged');
+    same(target.evidenceRefs,priorTarget.evidenceRefs,variant+' target evidence provenance unchanged');
+    const accepted=after.steps().findIndex(x=&gt;x.dnssecBoundary==='accepted-use-and-cache-boundary');ok(accepted&gt;=0,variant+' acceptance boundary exists');
+    const early=current.reconstructProtocolState(after,accepted-1).dnssec;
+    same(early.namespaceCaches??[],[],variant+' no target cache before acceptance');
+    const at=current.reconstructProtocolState(after,accepted).dnssec.namespaceCaches.find(x=&gt;x.id===target.id);same(at,target,variant+' actual inserted cache is final cache');
+    if(variant==='cname-insecure-target'){
+      same(uniqueSigs.length,0,'unsigned target really carries no RRSIG');same(target.receivedRrsigTtl,null,'unsigned target has no received signature TTL');same(target.originalTtl,null,'unsigned target has no signed OriginalTTL');same(priorTarget.receivedRrsigTtl,300,'before defect reproduced');ok(priorTarget.originalTtl!==null,'before borrowed OriginalTTL reproduced');
+      ok(delta.every(p=&gt;/^namespaceCaches\.0\.(receivedRrsigTtl|originalTtl)$/.test(p)),'unsigned target only those two stored values changed: '+delta.join(','));
+    }else{same(delta,[],variant+' signed/bogus/DNAME complete final state unchanged');same(uniqueSigs.length,1,variant+' actual target signature retained');}
+    Object.assign(row,{targetStatus:target.securityStatus,beforeTtls:{rrset:priorTarget.receivedRrsetTtl,rrsig:priorTarget.receivedRrsigTtl,original:priorTarget.originalTtl},afterTtls:{rrset:target.receivedRrsetTtl,rrsig:target.receivedRrsigTtl,original:target.originalTtl},targetSignatureCount:uniqueSigs.length,expiresAt:target.expiresAt});
+  }else same(delta,[],variant+' no alias-target branch unchanged');
+  report.aliasCases.push(row);
+}
+for(const [id,variant] of [['lab-dnssec12','zsk-prepublish'],['lab-dnssec13','ksk-prepublish'],['lab-dnssec16','cds-matching-intent']]){
+  const mrow=manifest.rows.find(x=&gt;x.runtimeId===id);const chosen=mrow.caseIds.includes(variant)?variant:mrow.caseIds[0];
+  const b=model(old,id,chosen),a=model(current,id,chosen);
+  same(a.profile.algorithms,b.profile.algorithms,id+' unrelated selected policy unchanged');same(final(current,a),final(old,b),id+' unrelated complete state unchanged');same(wirePackets(a),wirePackets(b),id+' unrelated packets unchanged');
+  report.unrelatedControls.push({id,variant:chosen});
+}
+for(const id of ['modern','legacy-ds-sha1','dual-modern'])same(current.dnssecProfile(id),old.dnssecProfile(id),id+' shared profile unchanged after all builds');
+const permissions=[13,15],author=current.dnssecAuthor(14,'modern-baseline',{publisherSigningAlgorithms:permissions});permissions.push(17);
+same(author.policy.signingAlgorithms,[13,15],'author copies caller override');ok(Object.isFrozen(author.policy)&amp;&amp;Object.isFrozen(author.policy.signingAlgorithms),'override policy remains immutable');same(current.dnssecProfile('modern').signingAlgorithms,[13],'shared modern signing default remains13');
+report.checks=checks;report.passed=true;fs.writeFileSync(new URL('semantics-probe.json',here),JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({passed:true,checks,publisherCases:report.publisherCases.length,aliasCases:report.aliasCases.length,unrelatedControls:report.unrelatedControls.length}));</code></pre>
+</details>
+<details>
+<summary>
+focus-recheck.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 4"><code>import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {installHarness} from '../source/tests/dom-harness.mjs';
+const mode=process.argv[2]||'source';
+const sandbox=mode==='emitted'?{structuredClone}:globalThis;
+const h=installHarness(sandbox);let AuthFlowStudio;
+if(mode==='emitted'){
+  const html=fs.readFileSync(new URL('../auth-flow-studio-dnssec.html',import.meta.url),'utf8');
+  const scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];assert.equal(scripts.length,1);
+  new vm.Script(scripts[0][1]).runInContext(vm.createContext(sandbox));AuthFlowStudio=h.registry.get('auth-flow-studio');
+}else ({AuthFlowStudio}=await import('../source/src/app.js'));
+const app=new AuthFlowStudio();h.document.body.appendChild(app);h.document.activeElement=h.document.body;app.connectedCallback();
+app.addEventListener('focusin',e=&gt;h.document.activeElement=e.target);
+app.refs['attribute-index'].hidden=true;
+const manifest=JSON.parse(fs.readFileSync(new URL('../source/docs/dnssec-expansion/scenario-manifest.json',import.meta.url)));
+const lesson=manifest.rows.find(r=&gt;r.planId==='DNS16');
+const report={mode,checks:0,cases:[],limits:'Headless DOM focus behavior. No newly executed native browser or screen-reader acceptance.'};
+const same=(a,b,message)=&gt;{report.checks++;assert.deepEqual(a,b,message);};
+const okay=(v,message)=&gt;{report.checks++;assert.ok(v,message);};
+const norm=n=&gt;n?.textContent.replace(/\s+/g,' ').trim()||'';
+function links(){return Array.from(app.querySelectorAll('.dnssec-context-panel a'));}
+function expected(){return Array.from(app.labModel.dnssecContext.records.flatMap(record=&gt;{
+  const d=app.definition(record.fieldId);
+  return (d.sources||[d.source]).map((href,index)=&gt;({key:record.fieldId+':'+index,href,label:record.label+' source '+(index+1)}));
+}));}
+function focusedIdentity(){const a=h.document.activeElement;return {key:a?.getAttribute('data-dnssec-source-key'),href:a?.getAttribute('href'),label:norm(a)};}
+for(const variant of lesson.caseIds){
+  app.selectLabScenario('lab-dnssec16',{variant:variant===lesson.defaultCaseId?'default':variant});
+  const all=expected();same(links().map(a=&gt;({key:a.getAttribute('data-dnssec-source-key'),href:a.getAttribute('href'),label:norm(a)})),all,'All rendered identities, URLs and accessible text match their actual record sources');
+  same(new Set(all.map(x=&gt;x.key)).size,all.length,'Unique source keys despite repeated URLs');
+  okay(all.some((x,i)=&gt;all.findIndex(y=&gt;y.href===x.href)&lt;i),'Real duplicate URL control exists');
+  const selected=variant===lesson.defaultCaseId?all:all.filter(x=&gt;x.key.endsWith(':5'));
+  for(const item of selected){
+    const target=()=&gt;links().find(a=&gt;a.getAttribute('data-dnssec-source-key')===item.key);
+    target().focus();same(focusedIdentity(),item,'Exact initiating field/source focused');
+    const original=target();
+    for(const index of [app.steps.length-1,Math.floor(app.steps.length/2),0,app.steps.length-1]){
+      app.selectStep(index,false);same(focusedIdentity(),item,'Forward/backward source redraw preserves exact record/source, href and label');
+      same(h.document.activeElement,target(),'Focus is the current rendered element, not a removed node');
+    }
+    okay(target()!==original,'Control exercised real DOM replacement');
+    app.reset();same(focusedIdentity(),item,'Reset preserves exact contextual source focus');
+  }
+  report.cases.push({variant,links:all.length,focusedLinks:selected.map(x=&gt;x.key)});
+}
+// User navigation owns focus: changing destination does not create an old-source target.
+const last=links().at(-1);last.focus();app.selectLabScenario('lab-dnssec01');
+same(links().length,0,'Switching away removes every contextual source link');
+okay(!app.contains(last),'Old focused link is no longer an application control');
+const play=app.querySelector('#play');play.focus();app.selectLabScenario('lab-dnssec16');
+same(h.document.activeElement,play,'Returning does not steal focus from persistent navigation/play control');
+same(links().map(a=&gt;a.getAttribute('data-dnssec-source-key')),expected().map(x=&gt;x.key),'Recreated context has current identities without stale targets');
+app.disconnectedCallback();h.document.body.removeChild(app);h.clock.frames.clear();h.clock.timers.clear();
+report.passed=true;fs.writeFileSync(new URL('focus-recheck-'+mode+'.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({mode,passed:true,checks:report.checks,cases:report.cases.length,focusedLinks:report.cases.reduce((n,c)=&gt;n+c.focusedLinks.length,0)}));</code></pre>
+</details>
+<details>
+<summary>
+focus-native-audit.py
+</summary>
+<pre class="python" tabindex="0" role="region" aria-label="Reproduction source 5"><code>from pathlib import Path
+import json, hashlib
+
+root=Path(__file__).resolve().parents[1]/'source'
+base=root/'docs/verification/dnssec-review-corrections'
+native=json.loads((base/'native-04/native-status.json').read_text())
+candidate=json.loads((base/'candidate-inputs-05.json').read_text())
+visual=json.loads((base/'native-visual-inspection-02.json').read_text())
+checks=[]
+def check(name,actual,expected=True):
+    okay=actual==expected
+    checks.append({'name':name,'passed':okay,**({} if okay else {'actual':actual,'expected':expected})})
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+files=candidate['sourceIdentity']['files']
+check('native/current-complete-source-map',native['before']['sourceFiles'],files)
+check('native/before-after-source-map',native['before']['sourceFiles'],native['after']['sourceFiles'])
+check('native/standalone-before-after',native['before']['standalone'],native['after']['standalone'])
+check('native/actual-standalone',sha(root.parent/'auth-flow-studio-dnssec.html'),native['before']['standalone']['sha256'])
+check('native/actual-app',sha(root/'src/app.js'),files['src/app.js'])
+check('native/producer-snapshot',sha(base/'native-04/runner-input.mjs'),sha(root/'tools/verification/run-dnssec-correction-native.mjs'))
+check('native/cells',native['cells'],{'required':60,'attempted':60,'passed':60,'failed':0,'unperformed':0})
+rows=[r for r in native['matrix'] if r['key'].endswith('source-link')]
+check('native/source-context-count',len(rows),6)
+for row in rows:
+    o=row['observed'];k=row['key']
+    check(k+'/status',row['status'],'passed')
+    check(k+'/key',o['sourceKey'],'dnssec_cdnskey_record:5')
+    check(k+'/label',o['sourceLabel'],'CDNSKEY - public-key intent for DS source 6')
+    check(k+'/href',o['href'],'https://www.rfc-editor.org/rfc/rfc7477.html')
+    check(k+'/popup',o['openedPopup'])
+    check(k+'/focus-retained',o['focusRetained'])
+    check(k+'/remote-fetch-disabled',o['remoteContentFetched'],False)
+images={r['file']:r for r in native['screenshots']}
+for row in visual['screenshots']:
+    p=root/row['path'];name=p.name
+    check('image/'+name+'/hash',sha(p),row['sha256'])
+    check('image/'+name+'/bytes',p.stat().st_size,row['bytes'])
+    check('image/'+name+'/raw-binding',row['sha256'],images[name]['sha256'])
+report={'passed':all(r['passed'] for r in checks),'checks':len(checks),'nativeSourceContexts':len(rows),'retainedImagesHashed':len(visual['screenshots']),'newNativeRun':False,'observations':checks}
+Path(__file__).with_suffix('.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({k:v for k,v in report.items() if k!='observations'}))
+assert report['passed']</code></pre>
+</details>
+<details>
+<summary>
+provenance-audit.py
+</summary>
+<pre class="python" tabindex="0" role="region" aria-label="Reproduction source 6"><code>from pathlib import Path
+import json, hashlib, statistics, math
+
+ROOT = Path(__file__).resolve().parent.parent / 'source'
+OUT = Path(__file__).resolve().parent
+PREV = ROOT.parent.parent / 'dnssec-corrections-01/source'
+BASE = ROOT / 'docs/verification/dnssec-review-corrections'
+PRIOR = PREV / 'docs/verification/dnssec-review-corrections'
+checks = []
+def load(p): return json.loads(p.read_text())
+def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
+def check(name, actual, expected=True):
+    ok = actual == expected
+    checks.append({'name':name,'passed':ok,**({} if ok else {'actual':actual,'expected':expected})})
+def ref(name, row):
+    p = ROOT / row['path']
+    check(name+'/exists',p.is_file())
+    if p.is_file():
+        check(name+'/sha256',sha(p),row['sha256'])
+        if 'bytes' in row: check(name+'/bytes',p.stat().st_size,row['bytes'])
+def close(a,b): return math.isclose(a,b,rel_tol=1e-12,abs_tol=1e-9)
+
+summary=load(BASE/'final-gates-summary-02.json')
+candidate=load(BASE/'candidate-inputs-05.json')
+files=candidate['sourceIdentity']['files']
+old_files=load(PRIOR/'candidate-inputs-04.json')['sourceIdentity']['files']
+check('current-file-count',len(files),231)
+check('same-source-file-set',set(files),set(old_files))
+for n,h in files.items():check('current-source/'+n,sha(ROOT/n),h)
+h=hashlib.sha256()
+for n in sorted(files):h.update(n.encode()+b'\0'+(ROOT/n).read_bytes()+b'\0')
+check('canonical-current-source-identity',h.hexdigest(),candidate['sourceIdentity']['sha256'])
+changed_files=sorted(n for n in files if files[n]!=old_files[n])
+check('exact-source-delta',changed_files,['src/app.js','src/dnssec-authoring.js','src/dnssec-denial-cases.js','src/dnssec-signing-cases.js','tests/dnssec-denial-corrections.test.mjs','tests/dnssec-publication-corrections.test.mjs','tests/dnssec-teaching-corrections.test.mjs'])
+check('attached-standalone-hash',sha(ROOT.parent/'auth-flow-studio-dnssec.html'),summary['standalone']['sha256'])
+for name,row in summary['records'].items():ref('summary/'+name,row)
+
+source=load(BASE/'source-contract-05/status.json')
+emitted=load(BASE/'emitted-contract-05/status.json')
+old_source=load(PRIOR/'source-contract-04/status.json')
+sr_text=(BASE/'source-contract-05/canonical-prefix-reference.json').read_text()
+sr=json.loads(sr_text)
+eq=load(BASE/'source-emitted-equivalence-03.json')
+er_text=sr_text.replace('"mode": "source"','"mode": "emitted"',1)
+check('source-reference-sha256',hashlib.sha256(sr_text.encode()).hexdigest(),eq['source']['sha256'])
+check('reconstructed-emitted-reference-sha256',hashlib.sha256(er_text.encode()).hexdigest(),eq['emitted']['sha256'])
+check('reconstructed-emitted-reference-size',len(er_text.encode()),eq['emitted']['bytes'])
+er=json.loads(er_text)
+check('complete-source-emitted-case-equality',sr['cases'],er['cases'])
+check('canonical-header-only-mode-difference',[k for k in sr if sr[k]!=er[k]],['mode'])
+prior_ref=load(PRIOR/'source-contract-04/canonical-prefix-reference.json')
+changed_cases=[]
+for a,b in zip(sr['cases'],prior_ref['cases']):
+    key=a['id']+'/'+a['caseId']
+    check('case-order-preserved/'+key,(a['id'],a['caseId']),(b['id'],b['caseId']))
+    differences=[k for k in a if a[k]!=b[k]]
+    if differences:
+        changed_cases.append({'key':key,'fields':differences,'prefixesChanged':sum(x!=y for x,y in zip(a['prefixes'],b['prefixes']))})
+        check('changed-case-only-prefix-hashes/'+key,differences,['prefixes'])
+    check('prefix-count-preserved/'+key,len(a['prefixes']),len(b['prefixes']))
+expected=['lab-dnssec09/cname-insecure-target','lab-dnssec14/modern-baseline','lab-dnssec14/algorithm-unsupported','lab-dnssec14/unsupported-digest-only','lab-dnssec14/sha1-digest-compatibility','lab-dnssec14/nsec3-sha1-not-signature-policy']
+check('exact-changed-canonical-cases',[c['key'] for c in changed_cases],expected)
+for a,b in zip(source['cases'],emitted['cases']):
+    differences=[k for k in set(a)|set(b) if a.get(k)!=b.get(k)]
+    check('status-case-only-execution-counters/'+a['id']+'/'+a['caseId'],set(differences)&lt;= {'assertions','appPositions','appResets','appSeekPositions'})
+check('case-count',len(sr['cases']),159)
+check('canonical-prefix-count',sum(len(c['prefixes']) for c in sr['cases']),27031)
+check('independent-checkpoints',sum(len(c['checkpoints']) for c in source['cases']),1068)
+check('independent-map-unchanged',source['inputIdentity']['independentFiles'],old_source['inputIdentity']['independentFiles'])
+check('independent-files-count',len(source['inputIdentity']['independentFiles']),435)
+for n,h in source['inputIdentity']['independentFiles'].items():check('actual-independent-input/'+n,sha(ROOT/n),h)
+check('frozen-original-count',source['frozenInputsChecked'],354)
+check('worksheet-current-hash',sha(ROOT/summary['worksheet']['path']),summary['worksheet']['sha256'])
+check('worksheet-byte-preserved',(ROOT/summary['worksheet']['path']).read_bytes(),(PREV/summary['worksheet']['path']).read_bytes())
+check('contract-verifier-unchanged',sha(ROOT/'tools/verification/check-dnssec-contract.mjs'),sha(PREV/'tools/verification/check-dnssec-contract.mjs'))
+check('verification-file-count',len(source['inputIdentity']['review']['verificationFiles']),138)
+for n,h in source['inputIdentity']['review']['verificationFiles'].items():check('actual-verification-input/'+n,sha(ROOT/n),h)
+verification_delta=sorted(n for n,h in source['inputIdentity']['review']['verificationFiles'].items() if old_source['inputIdentity']['review']['verificationFiles'].get(n)!=h)
+check('exact-verification-delta',verification_delta,['tools/verification/run-dnssec-correction-native.mjs'])
+
+numeric=load(BASE/'numeric-05/numeric-status.json')
+regressions=load(BASE/'regressions-03/held-objects-regression-status.json')
+compiled=load(BASE/'compiled-smoke-03/compiled-bundle-status.json')
+held=load(BASE/'held-02/held-objects-source-status.json')
+for name,r,ident in [('source',source,source['inputIdentity']['review']),('emitted',emitted,emitted['inputIdentity']['review']),('numeric',numeric,numeric['inputIdentity']),('regressions',regressions,regressions['inputIdentity']),('compiled',compiled,compiled['inputIdentity']),('held',held,held['inputIdentity'])]:
+    check(name+'/passed',r['passed'])
+    check(name+'/source-map',ident['sourceFiles'],files)
+    check(name+'/html-hash',ident['standaloneSha256'],summary['standalone']['sha256'])
+for name,r in [('source',source),('emitted',emitted)]:
+    check(name+'/all159cases-pass',len(r['cases'])==159 and all(c['passed'] for c in r['cases']))
+    check(name+'/no-failures',r['failures'],[])
+    check(name+'/worksheet',r['worksheetSha256'],summary['worksheet']['sha256'])
+check('regression-passed',regressions['totalPassed'],1994)
+check('regression-failed',regressions['totalFailed'],0)
+check('regression-files',regressions['totalFiles'],121)
+native=load(BASE/'native-04/native-status.json')
+check('native-source-map',native['before']['sourceFiles'],files)
+check('native-html',native['before']['standalone']['sha256'],summary['standalone']['sha256'])
+check('native-before-after',native['before'],native['after'])
+check('native-current-runner',native['before']['runner']['sha256'],sha(ROOT/'tools/verification/run-dnssec-correction-native.mjs'))
+check('native-matrix-count',len(native['matrix']),60)
+check('native-matrix-passes',all(r['status']=='passed' for r in native['matrix']))
+focus=[r for r in native['matrix'] if 'sourceKey' in r.get('observed',{})]
+check('native-exact-nonfirst-focus-contexts',len(focus),6)
+for row in focus:
+    o=row['observed'];key=row['key']
+    check(key+'/exact-key',o['sourceKey'],'dnssec_cdnskey_record:5')
+    check(key+'/exact-label',o['sourceLabel'],'CDNSKEY - public-key intent for DS source 6')
+    check(key+'/retained-focus',o['focusRetained'])
+    check(key+'/opened-popup',o['openedPopup'])
+    check(key+'/remote-fetch-not-claimed',o['remoteContentFetched'],False)
+
+# Recompute every comparison from underlying uninstrumented action samples.
+current=load(BASE/'performance-comparison-02/next-performance-status.json')
+old=load(PRIOR/'performance-comparison-01/next-performance-status.json')
+original=load(ROOT/'docs/verification/dnssec-expansion/performance-comparison-01/next-performance-status.json')
+disp=load(BASE/'performance-dispositions-04.json')
+continuity=load(BASE/'performance-prior-correction-continuity-01.json')
+prior_disp=load(PRIOR/'performance-dispositions-02.json')
+for label,baseline in [('prior-correction',old),('original',original)]:
+    for k in ['methods','environment']:check('performance/'+label+'/'+k,current[k],baseline[k])
+    check('performance/'+label+'/runner',current['runner']['sha256'],baseline['runner']['sha256'])
+    check('performance/'+label+'/baseline-source',current['identities']['baseline']['canonicalSourceFiles'],baseline['identities']['baseline']['canonicalSourceFiles'])
+    check('performance/'+label+'/baseline-html',current['identities']['baseline']['standalone']['sha256'],baseline['identities']['baseline']['standalone']['sha256'])
+    for k in ['modes','sampleCount','indexControls','fixture','viewport']:check('performance/'+label+'/scope/'+k,current['scope'][k],baseline['scope'][k])
+check('performance/current-map',current['identities']['candidate']['canonicalSourceFiles'],files)
+check('performance/guards',len(current['sourceChecks']),146)
+check('performance/unchanged-guards',all(x['unchanged'] for x in current['sourceChecks']))
+check('performance/errors',current['errors'],[])
+check('performance/groups',len(current['samples']),36)
+check('performance/cells',len(current['comparisons']),27)
+all_rows=[]
+for cell in current['comparisons']:
+    key='/'.join(cell[k] for k in ['loadingMode','indexControl','action']); threshold=100 if cell['action']=='startup' else 50;stats={}
+    for variant in ['baseline','candidate']:
+        values=[a['latencyMs'] for s in current['samples'] if s['variant']==variant and s['loadingMode']==cell['loadingMode'] and (cell['action']=='startup' or s['indexControl']==cell['indexControl']) for a in s['actions'] if a['name']==cell['action']]
+        check('values/'+key+'/'+variant,values,cell[variant]['values'])
+        m=statistics.median(values);rg=max(values)-min(values)
+        actual={'min':min(values),'median':m,'max':max(values),'rangeMs':rg,'rangeOverMedian':rg/m,'mad':statistics.median(abs(x-m) for x in values)}
+        for n,v in actual.items():check('stat/'+key+'/'+variant+'/'+n,close(v,cell[variant][n]))
+        stats[variant]=actual
+    delta=stats['candidate']['median']-stats['baseline']['median'];ratio=stats['candidate']['median']/stats['baseline']['median']
+    material=ratio&gt;1.25 and delta&gt;threshold;variable=any(v['rangeOverMedian']&gt;.25 and v['rangeMs']&gt;threshold for v in stats.values())
+    check('delta/'+key,close(delta,cell['deltaMs']));check('ratio/'+key,close(ratio,cell['ratio']))
+    check('material/'+key,material,cell['materialRegression']);check('variable/'+key,variable,cell['variationUnresolved'])
+    all_rows.append({'key':key,'baselineMs':stats['baseline']['median'],'candidateMs':stats['candidate']['median'],'deltaMs':delta,'increasePercent':(ratio-1)*100,'material':material,'variable':variable})
+flag_rows=[r for r in all_rows if r['material'] or r['variable']]
+check('material-count',sum(r['material'] for r in flag_rows),5)
+check('variable-count',sum(r['variable'] for r in flag_rows),0)
+check('distinct-flagged-cells',len(flag_rows),5)
+check('original-disposition-count',len(disp['dispositions']),9)
+check('new-additional-flags',disp['additionalCurrentFlags'],[])
+check('prior-additional-count',len(continuity['rows']),5)
+check('prior-additional-key-set',sorted(r['key'] for r in continuity['rows']),sorted(r['key'] for r in prior_disp['additionalCurrentFlags']))
+current_cells={'/'.join(c[k] for k in ['loadingMode','indexControl','action']):c for c in current['comparisons']}
+old_cells={'/'.join(c[k] for k in ['loadingMode','indexControl','action']):c for c in old['comparisons']}
+for row in disp['dispositions']+continuity['rows']:
+    check('unaccepted/'+row['key'],row['accepted'],False);check('not-waived/'+row['key'],row['waived'],False)
+    for k,v in row['current'].items():check('current-disposition/'+row['key']+'/'+k,v,current_cells[row['key']][k])
+for row in continuity['rows']:check('prior-disposition/'+row['key'],row['priorCorrection'],old_cells[row['key']])
+for label,r in [('dispositions',disp),('continuity',continuity)]:
+    check(label+'/performance-not-accepted',r['performanceAccepted'],False);check(label+'/owner-not-recorded',r['ownerAcceptanceRecorded'],False)
+tracked_keys=set(r['key'] for r in disp['dispositions']+continuity['rows'])
+check('tracked-key-count',len(tracked_keys),14)
+check('original-four-flags-not-reproduced',sum(not r['current']['materialRegression'] and not r['current']['variationUnresolved'] for r in disp['dispositions']),4)
+check('all-prior-additional-flags-not-reproduced',all(not r['current']['materialRegression'] and not r['current']['variationUnresolved'] for r in continuity['rows']))
+gates=load(ROOT/'docs/dnssec-expansion/open-gates.json');prev_gates=load(PREV/'docs/dnssec-expansion/open-gates.json')
+for k in ['priorScopedClosures','manualG01','priorMeasuredPerformance','historicalPerformance','frozenP0Variation','siblingOrigins','optionalDeferrals','priorSourceCaptureDispositions','livePlatformInteroperability']:
+    check('inherited-gate/'+k,gates[k],prev_gates[k])
+report={'kind':'independent-corrections02-provenance-audit','passed':all(c['passed'] for c in checks),'checks':len(checks),'failed':[c for c in checks if not c['passed']],'changedSourceFiles':changed_files,'changedCanonicalCases':changed_cases,'performanceFlags':flag_rows,'performanceTracked':[r for r in all_rows if r['key'] in tracked_keys],'details':checks,'scope':'Retained record/hash/statistics recomputation only; no new application gate, native execution, timing collection, live DNS, release waiver, or author-isolation claim.'}
+(OUT/'provenance-audit.json').write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({k:v for k,v in report.items() if k!='details'},indent=2))</code></pre>
+</details>
+<p class="source-note">Independent focused recheck · 25 October 2026 · corrections-02 · DNS-R10 remains required; no source fix, commit, push, deployment or waiver performed.</p></main></body>
+</html>

@@ -1,0 +1,745 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNSSEC-preserved-method-performance-correction-dispositions",
+  "recordedAt": "2026-10-24T21:49:37.976Z",
+  "analysis": {
+    "argv": [
+      "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+      "/home/andrico/.cache/auth-lab-held-qa/dnssec-expansion/disposition-correction-performance.mjs",
+      "/home/andrico/auth-lab-held-objects",
+      "docs/verification/dnssec-review-corrections/performance-comparison-02/next-performance-status.json",
+      "docs/verification/dnssec-review-corrections/performance-dispositions-03.json"
+    ],
+    "runner": {
+      "path": "docs/verification/dnssec-review-corrections/performance-dispositions-03.json.runner-input.mjs",
+      "sha256": "3f2a26e1d3744b18cb18eefe61ab3e5789a6e3d0cc929ae9bfb789a2095996a2",
+      "bytes": 7749
+    },
+    "runtime": {
+      "bun": "1.4.2"
+    },
+    "executedRunner": {
+      "path": "../.cache/auth-lab-held-qa/dnssec-expansion/disposition-correction-performance.mjs",
+      "sha256": "3f2a26e1d3744b18cb18eefe61ab3e5789a6e3d0cc929ae9bfb789a2095996a2",
+      "bytes": 7749
+    }
+  },
+  "reviewed": {
+    "path": "docs/verification/dnssec-expansion/performance-comparison-01/next-performance-status.json",
+    "sha256": "3ea061a7b99b975f92a0161ad4c7903e3753670494f370142081bbe003512fd2",
+    "bytes": 586728
+  },
+  "reviewedImpact": {
+    "path": "docs/verification/dnssec-expansion/performance-impact-summary.json",
+    "sha256": "f87ab8232b61a6e43ed79260265e980af4ade374f168c36e4825c9c47e453ef4",
+    "bytes": 56209
+  },
+  "current": {
+    "path": "docs/verification/dnssec-review-corrections/performance-comparison-02/next-performance-status.json",
+    "sha256": "fbc250eced44e6100cf8562790e99a22225ed0f980697bbd0668a5fe6ed5fc64",
+    "bytes": 587721
+  },
+  "methodPreserved": true,
+  "originalBaselinePreserved": true,
+  "allCurrentInputGuardsUnchanged": true,
+  "originalKeysDispositioned": 9,
+  "dispositions": [
+    {
+      "key": "source-http/closed/selection",
+      "reviewed": {
+        "baseline": {
+          "values": [
+            389.96572499999456,
+            372.2216599999956,
+            372.4536389999994
+          ],
+          "min": 372.2216599999956,
+          "median": 372.4536389999994,
+          "max": 389.96572499999456,
+          "rangeMs": 17.744064999998955,
+          "rangeOverMedian": 0.04764100317999305,
+          "mad": 0.23197900000377558
+        },
+        "candidate": {
+          "values": [
+            472.35337699999945,
+            499.8859819999998,
+            438.1613010000001
+          ],
+          "min": 438.1613010000001,
+          "median": 472.35337699999945,
+          "max": 499.8859819999998,
+          "rangeMs": 61.72468099999969,
+          "rangeOverMedian": 0.13067479562022855,
+          "mad": 27.53260500000033
+        },
+        "deltaMs": 99.89973800000007,
+        "ratio": 1.2682205985910644,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "current": {
+        "baseline": {
+          "values": [
+            407.50735200000054,
+            390.01549800000066,
+            386.4227479999972
+          ],
+          "min": 386.4227479999972,
+          "median": 390.01549800000066,
+          "max": 407.50735200000054,
+          "rangeMs": 21.08460400000331,
+          "rangeOverMedian": 0.054060938880955124,
+          "mad": 3.5927500000034343
+        },
+        "candidate": {
+          "values": [
+            255.96714600000269,
+            257.5019029999967,
+            255.42289600000367
+          ],
+          "min": 255.42289600000367,
+          "median": 255.96714600000269,
+          "max": 257.5019029999967,
+          "rangeMs": 2.0790069999929983,
+          "rangeOverMedian": 0.008122163459184628,
+          "mad": 0.5442499999990105
+        },
+        "deltaMs": -134.04835199999798,
+        "ratio": 0.656299935034895,
+        "materialRegression": false,
+        "variationUnresolved": false
+      },
+      "observation": "not-reproduced-after-targeted-change",
+      "owner": "andrico21",
+      "ownerDisposition": "awaiting-explicit-owner-review",
+      "accepted": false,
+      "waived": false,
+      "proposal": "source-http/closed/selection: baseline median 390.02ms, candidate 255.97ms, delta -134.05ms (-34.37%). The original current-DNSSEC selection cost is not reproduced after the profile-supported closed-index deferral. Proposed owner decision: review the complete retained distribution and close only this original DNSSEC key if satisfied. No owner acceptance or waiver is asserted; inherited conditions remain unchanged."
+    },
+    {
+      "key": "source-http/closed/replay-start",
+      "reviewed": {
+        "baseline": {
+          "values": [
+            109.81875199999922,
+            126.0919120000035,
+            141.22422899999947
+          ],
+          "min": 109.81875199999922,
+          "median": 126.0919120000035,
+          "max": 141.22422899999947,
+          "rangeMs": 31.405477000000246,
+          "rangeOverMedian": 0.24906813214157125,
+          "mad": 15.132316999995965
+        },
+        "candidate": {
+          "values": [
+            189.55751099999907,
+            212.93961400000262,
+            209.75887299999886
+          ],
+          "min": 189.55751099999907,
+          "median": 209.75887299999886,
+          "max": 212.93961400000262,
+          "rangeMs": 23.382103000003553,
+          "rangeOverMedian": 0.11147134166764751,
+          "mad": 3.1807410000037635
+        },
+        "deltaMs": 83.66696099999535,
+        "ratio": 1.6635394742843856,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "current": {
+        "baseline": {
+          "values": [
+            125.63378099999682,
+            143.2504970000009,
+            120.62854199999856
+          ],
+          "min": 120.62854199999856,
+          "median": 125.63378099999682,
+          "max": 143.2504970000009,
+          "rangeMs": 22.621955000002345,
+          "rangeOverMedian": 0.18006267756920344,
+          "mad": 5.005238999998255
+        },
+        "candidate": {
+          "values": [
+            195.9486509999988,
+            194.44091499999922,
+            190.71387600000162
+          ],
+          "min": 190.71387600000162,
+          "median": 194.44091499999922,
+          "max": 195.9486509999988,
+          "rangeMs": 5.234774999997171,
+          "rangeOverMedian": 0.0269221886761703,
+          "mad": 1.5077359999995679
+        },
+        "deltaMs": 68.8071340000024,
+        "ratio": 1.5476801975736458,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "observation": "material-cost-remains",
+      "owner": "andrico21",
+      "ownerDisposition": "awaiting-explicit-owner-review",
+      "accepted": false,
+      "waived": false,
+      "proposal": "source-http/closed/replay-start: baseline median 125.63ms, candidate 194.44ms, delta +68.81ms (+54.77%). Material replay-start cost remains despite the bounded closed-index change; the profile did not isolate its remaining root cause. Proposed owner decision: retain complete histories and all current controls, and explicitly accept this exact replay-start cost, or require a separately profiled replay-start change before release. Passing functional checks do not accept this cost or waive inherited conditions."
+    },
+    {
+      "key": "source-http/open/playing-filter",
+      "reviewed": {
+        "baseline": {
+          "values": [
+            188.16694600000028,
+            136.6763890000002,
+            117.421029000001
+          ],
+          "min": 117.421029000001,
+          "median": 136.6763890000002,
+          "max": 188.16694600000028,
+          "rangeMs": 70.74591699999928,
+          "rangeOverMedian": 0.5176162285060018,
+          "mad": 19.2553599999992
+        },
+        "candidate": {
+          "values": [
+            137.45820899999853,
+            153.51075599999967,
+            106.55900700000348
+          ],
+          "min": 106.55900700000348,
+          "median": 137.45820899999853,
+          "max": 153.51075599999967,
+          "rangeMs": 46.9517489999962,
+          "rangeOverMedian": 0.34157108070567616,
+          "mad": 16.05254700000114
+        },
+        "deltaMs": 0.7818199999983335,
+        "ratio": 1.005720227214946,
+        "materialRegression": false,
+        "variationUnresolved": true
+      },
+      "current": {
+        "baseline": {
+          "values": [
+            132.15170299999954,
+            132.41072300000087,
+            122.89977599999838
+          ],
+          "min": 122.89977599999838,
+          "median": 132.15170299999954,
+          "max": 132.41072300000087,
+          "rangeMs": 9.510947000002488,
+          "rangeOverMedian": 0.07196991627116997,
+          "mad": 0.2590200000013283
+        },
+        "candidate": {
+          "values": [
+            122.09665500000119,
+            123.53238000000056,
+            130.43643900000097
+          ],
+          "min": 122.09665500000119,
+          "median": 123.53238000000056,
+          "max": 130.43643900000097,
+          "rangeMs": 8.339783999999781,
+          "rangeOverMedian": 0.06751091495201293,
+          "mad": 1.4357249999993655
+        },
+        "deltaMs": -8.619322999998985,
+        "ratio": 0.9347770569403936,
+        "materialRegression": false,
+        "variationUnresolved": false
+      },
+      "observation": "not-reproduced-after-targeted-change",
+      "owner": "andrico21",
+      "ownerDisposition": "awaiting-explicit-owner-review",
+      "accepted": false,
+      "waived": false,
+      "proposal": "source-http/open/playing-filter: baseline median 132.15ms, candidate 123.53ms, delta -8.62ms (-6.52%). The original current-DNSSEC selection cost is not reproduced after the profile-supported closed-index deferral. Proposed owner decision: review the complete retained distribution and close only this original DNSSEC key if satisfied. No owner acceptance or waiver is asserted; inherited conditions remain unchanged."
+    },
+    {
+      "key": "standalone-http/default/startup",
+      "reviewed": {
+        "baseline": {
+          "values": [
+            3093.756211999993,
+            3075.839227999997,
+            3056.78616399999,
+            3151.3208520000044,
+            3084.3331219999964,
+            3227.3386639999953
+          ],
+          "min": 3056.78616399999,
+          "median": 3089.0446669999947,
+          "max": 3227.3386639999953,
+          "rangeMs": 170.55250000000524,
+          "rangeOverMedian": 0.055212053688314486,
+          "mad": 22.731971000001067
+        },
+        "candidate": {
+          "values": [
+            4111.514479999998,
+            4024.9980499999947,
+            3944.956997999994,
+            4066.333965999991,
+            4179.798439999999,
+            4124.839380999998
+          ],
+          "min": 3944.956997999994,
+          "median": 4088.9242229999945,
+          "max": 4179.798439999999,
+          "rangeMs": 234.84144200000446,
+          "rangeOverMedian": 0.05743355200349106,
+          "mad": 49.92066550000163
+        },
+        "deltaMs": 999.8795559999999,
+        "ratio": 1.3236856904924779,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "current": {
+        "baseline": {
+          "values": [
+            3010.4357639999944,
+            2959.927017000009,
+            3002.3031559999945,
+            2952.1269309999916,
+            3037.8805009999924,
+            3001.7434880000073
+          ],
+          "min": 2952.1269309999916,
+          "median": 3002.023322000001,
+          "max": 3037.8805009999924,
+          "rangeMs": 85.75357000000076,
+          "rangeOverMedian": 0.028565257761845174,
+          "mad": 22.134810499992454
+        },
+        "candidate": {
+          "values": [
+            3891.7228099999993,
+            3774.3927070000063,
+            3813.911063000007,
+            3887.407217,
+            3815.4192140000087,
+            3849.3362250000064
+          ],
+          "min": 3774.3927070000063,
+          "median": 3832.3777195000075,
+          "max": 3891.7228099999993,
+          "rangeMs": 117.33010299999296,
+          "rangeOverMedian": 0.030615485108106848,
+          "mad": 36.748076999996556
+        },
+        "deltaMs": 830.3543975000066,
+        "ratio": 1.2765982500585005,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "observation": "material-cost-remains",
+      "owner": "andrico21",
+      "ownerDisposition": "awaiting-explicit-owner-review",
+      "accepted": false,
+      "waived": false,
+      "proposal": "standalone-http/default/startup: baseline median 3002.02ms, candidate 3832.38ms, delta +830.35ms (+27.66%). Proposed owner decision: retain the complete offline curriculum, all fields and normally open startup index, and explicitly accept this exact startup increase for the expanded teaching artifact, or require a separately profiled startup change before release. The recorded CPU profile did not isolate the entire increase; neither expanded content nor index construction is asserted as the complete root cause. This is not acceptance or a waiver."
+    },
+    {
+      "key": "standalone-http/closed/selection",
+      "reviewed": {
+        "baseline": {
+          "values": [
+            403.64572000000044,
+            420.67860400000063,
+            445.2703079999919
+          ],
+          "min": 403.64572000000044,
+          "median": 420.67860400000063,
+          "max": 445.2703079999919,
+          "rangeMs": 41.62458799999149,
+          "rangeOverMedian": 0.09894629202485285,
+          "mad": 17.032884000000195
+        },
+        "candidate": {
+          "values": [
+            537.7279290000006,
+            539.541068999999,
+            519.9764609999984
+          ],
+          "min": 519.9764609999984,
+          "median": 537.7279290000006,
+          "max": 539.541068999999,
+          "rangeMs": 19.56460800000059,
+          "rangeOverMedian": 0.03638384198563837,
+          "mad": 1.8131399999983842
+        },
+        "deltaMs": 117.04932499999995,
+        "ratio": 1.2782393111678192,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "current": {
+        "baseline": {
+          "values": [
+            389.6741780000011,
+            372.740466999996,
+            387.4434760000004
+          ],
+          "min": 372.740466999996,
+          "median": 387.4434760000004,
+          "max": 389.6741780000011,
+          "rangeMs": 16.933711000005133,
+          "rangeOverMedian": 0.04370627471865113,
+          "mad": 2.230702000000747
+        },
+        "candidate": {
+          "values": [
+            239.93393600000127,
+            237.79799300000013,
+            237.626734999998
+          ],
+          "min": 237.626734999998,
+          "median": 237.79799300000013,
+          "max": 239.93393600000127,
+          "rangeMs": 2.3072010000032606,
+          "rangeOverMedian": 0.009702356907626462,
+          "mad": 0.1712580000021262
+        },
+        "deltaMs": -149.64548300000024,
+        "ratio": 0.6137617684392237,
+        "materialRegression": false,
+        "variationUnresolved": false
+      },
+      "observation": "not-reproduced-after-targeted-change",
+      "owner": "andrico21",
+      "ownerDisposition": "awaiting-explicit-owner-review",
+      "accepted": false,
+      "waived": false,
+      "proposal": "standalone-http/closed/selection: baseline median 387.44ms, candidate 237.80ms, delta -149.65ms (-38.62%). The original current-DNSSEC selection cost is not reproduced after the profile-supported closed-index deferral. Proposed owner decision: review the complete retained distribution and close only this original DNSSEC key if satisfied. No owner acceptance or waiver is asserted; inherited conditions remain unchanged."
+    },
+    {
+      "key": "standalone-http/closed/replay-start",
+      "reviewed": {
+        "baseline": {
+          "values": [
+            141.09479400000419,
+            125.66735099999642,
+            144.1093120000005
+          ],
+          "min": 125.66735099999642,
+          "median": 141.09479400000419,
+          "max": 144.1093120000005,
+          "rangeMs": 18.441961000004085,
+          "rangeOverMedian": 0.1307061761612802,
+          "mad": 3.0145179999963148
+        },
+        "candidate": {
+          "values": [
+            220.91455400000268,
+            214.9871909999929,
+            190.93959000000905
+          ],
+          "min": 190.93959000000905,
+          "median": 214.9871909999929,
+          "max": 220.91455400000268,
+          "rangeMs": 29.974963999993633,
+          "rangeOverMedian": 0.13942674380072542,
+          "mad": 5.927363000009791
+        },
+        "deltaMs": 73.8923969999887,
+        "ratio": 1.5237074657764234,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "current": {
+        "baseline": {
+          "values": [
+            110.44765199998801,
+            126.87650399999984,
+            136.39796200000274
+          ],
+          "min": 110.44765199998801,
+          "median": 126.87650399999984,
+          "max": 136.39796200000274,
+          "rangeMs": 25.950310000014724,
+          "rangeOverMedian": 0.20453203849323243,
+          "mad": 9.521458000002895
+        },
+        "candidate": {
+          "values": [
+            208.2118829999963,
+            194.4262250000029,
+            194.2892739999952
+          ],
+          "min": 194.2892739999952,
+          "median": 194.4262250000029,
+          "max": 208.2118829999963,
+          "rangeMs": 13.922609000001103,
+          "rangeOverMedian": 0.07160869887794662,
+          "mad": 0.13695100000768434
+        },
+        "deltaMs": 67.54972100000305,
+        "ratio": 1.5324052828568095,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "observation": "material-cost-remains",
+      "owner": "andrico21",
+      "ownerDisposition": "awaiting-explicit-owner-review",
+      "accepted": false,
+      "waived": false,
+      "proposal": "standalone-http/closed/replay-start: baseline median 126.88ms, candidate 194.43ms, delta +67.55ms (+53.24%). Material replay-start cost remains despite the bounded closed-index change; the profile did not isolate its remaining root cause. Proposed owner decision: retain complete histories and all current controls, and explicitly accept this exact replay-start cost, or require a separately profiled replay-start change before release. Passing functional checks do not accept this cost or waive inherited conditions."
+    },
+    {
+      "key": "standalone-file/default/startup",
+      "reviewed": {
+        "baseline": {
+          "values": [
+            3064.0035879999923,
+            3100.9865649999992,
+            3068.5669000000053,
+            3094.5395990000106,
+            2982.1829720000096,
+            3076.1017449999927
+          ],
+          "min": 2982.1829720000096,
+          "median": 3072.334322499999,
+          "max": 3100.9865649999992,
+          "rangeMs": 118.80359299998963,
+          "rangeOverMedian": 0.0386688363079307,
+          "mad": 15.268005500009167
+        },
+        "candidate": {
+          "values": [
+            4015.347133000003,
+            4042.982714999991,
+            4022.5480880000105,
+            3908.075452000019,
+            3936.407703999983,
+            3890.9263260000153
+          ],
+          "min": 3890.9263260000153,
+          "median": 3975.877418499993,
+          "max": 4042.982714999991,
+          "rangeMs": 152.05638899997575,
+          "rangeOverMedian": 0.03824473770052577,
+          "mad": 56.88798300000781
+        },
+        "deltaMs": 903.543095999994,
+        "ratio": 1.2940900960494328,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "current": {
+        "baseline": {
+          "values": [
+            3011.9142640000064,
+            2966.034742000018,
+            2971.403515999991,
+            2948.8552489999856,
+            2921.2200279999815,
+            2896.4803749999846
+          ],
+          "min": 2896.4803749999846,
+          "median": 2957.444995500002,
+          "max": 3011.9142640000064,
+          "rangeMs": 115.43388900002174,
+          "rangeOverMedian": 0.03903162668305378,
+          "mad": 25.091744000004837
+        },
+        "candidate": {
+          "values": [
+            3907.382811999996,
+            3846.153478999986,
+            3833.693933999981,
+            3860.149590999994,
+            3782.0961670000106,
+            3885.885822000011
+          ],
+          "min": 3782.0961670000106,
+          "median": 3853.15153499999,
+          "max": 3907.382811999996,
+          "rangeMs": 125.28664499998558,
+          "rangeOverMedian": 0.03251536926641685,
+          "mad": 26.09594400001515
+        },
+        "deltaMs": 895.7065394999881,
+        "ratio": 1.302864986791937,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "observation": "material-cost-remains",
+      "owner": "andrico21",
+      "ownerDisposition": "awaiting-explicit-owner-review",
+      "accepted": false,
+      "waived": false,
+      "proposal": "standalone-file/default/startup: baseline median 2957.44ms, candidate 3853.15ms, delta +895.71ms (+30.29%). Proposed owner decision: retain the complete offline curriculum, all fields and normally open startup index, and explicitly accept this exact startup increase for the expanded teaching artifact, or require a separately profiled startup change before release. The recorded CPU profile did not isolate the entire increase; neither expanded content nor index construction is asserted as the complete root cause. This is not acceptance or a waiver."
+    },
+    {
+      "key": "standalone-file/closed/selection",
+      "reviewed": {
+        "baseline": {
+          "values": [
+            373.61974899997585,
+            338.0267570000142,
+            367.8966359999904
+          ],
+          "min": 338.0267570000142,
+          "median": 367.8966359999904,
+          "max": 373.61974899997585,
+          "rangeMs": 35.59299199996167,
+          "rangeOverMedian": 0.09674726136925753,
+          "mad": 5.72311299998546
+        },
+        "candidate": {
+          "values": [
+            471.92923099998734,
+            486.92110199999297,
+            487.89462400000775
+          ],
+          "min": 471.92923099998734,
+          "median": 486.92110199999297,
+          "max": 487.89462400000775,
+          "rangeMs": 15.965393000020413,
+          "rangeOverMedian": 0.03278845984378932,
+          "mad": 0.973522000014782
+        },
+        "deltaMs": 119.02446600000258,
+        "ratio": 1.3235269212953762,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "current": {
+        "baseline": {
+          "values": [
+            386.7812269999995,
+            352.76191400000243,
+            338.10788200001116
+          ],
+          "min": 338.10788200001116,
+          "median": 352.76191400000243,
+          "max": 386.7812269999995,
+          "rangeMs": 48.67334499998833,
+          "rangeOverMedian": 0.1379778912300266,
+          "mad": 14.654031999991275
+        },
+        "candidate": {
+          "values": [
+            221.30257699999493,
+            237.3366410000017,
+            220.06962699998985
+          ],
+          "min": 220.06962699998985,
+          "median": 221.30257699999493,
+          "max": 237.3366410000017,
+          "rangeMs": 17.26701400001184,
+          "rangeOverMedian": 0.07802445969715137,
+          "mad": 1.2329500000050757
+        },
+        "deltaMs": -131.4593370000075,
+        "ratio": 0.627342601956722,
+        "materialRegression": false,
+        "variationUnresolved": false
+      },
+      "observation": "not-reproduced-after-targeted-change",
+      "owner": "andrico21",
+      "ownerDisposition": "awaiting-explicit-owner-review",
+      "accepted": false,
+      "waived": false,
+      "proposal": "standalone-file/closed/selection: baseline median 352.76ms, candidate 221.30ms, delta -131.46ms (-37.27%). The original current-DNSSEC selection cost is not reproduced after the profile-supported closed-index deferral. Proposed owner decision: review the complete retained distribution and close only this original DNSSEC key if satisfied. No owner acceptance or waiver is asserted; inherited conditions remain unchanged."
+    },
+    {
+      "key": "standalone-file/closed/replay-start",
+      "reviewed": {
+        "baseline": {
+          "values": [
+            141.85083999999915,
+            134.07260500002303,
+            108.78836400000728
+          ],
+          "min": 108.78836400000728,
+          "median": 134.07260500002303,
+          "max": 141.85083999999915,
+          "rangeMs": 33.062475999991875,
+          "rangeOverMedian": 0.24660127995563444,
+          "mad": 7.778234999976121
+        },
+        "candidate": {
+          "values": [
+            210.27540399998543,
+            199.955140999984,
+            205.1613709999947
+          ],
+          "min": 199.955140999984,
+          "median": 205.1613709999947,
+          "max": 210.27540399998543,
+          "rangeMs": 10.320263000001432,
+          "rangeOverMedian": 0.050303148929540444,
+          "mad": 5.114032999990741
+        },
+        "deltaMs": 71.08876599997166,
+        "ratio": 1.5302258876819723,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "current": {
+        "baseline": {
+          "values": [
+            125.94461200002115,
+            159.01064799999585,
+            138.8166130000027
+          ],
+          "min": 125.94461200002115,
+          "median": 138.8166130000027,
+          "max": 159.01064799999585,
+          "rangeMs": 33.0660359999747,
+          "rangeOverMedian": 0.2381994149358338,
+          "mad": 12.872000999981537
+        },
+        "candidate": {
+          "values": [
+            197.34619200002635,
+            194.10960000002524,
+            176.46570699999575
+          ],
+          "min": 176.46570699999575,
+          "median": 194.10960000002524,
+          "max": 197.34619200002635,
+          "rangeMs": 20.880485000030603,
+          "rangeOverMedian": 0.10757059413871281,
+          "mad": 3.23659200000111
+        },
+        "deltaMs": 55.29298700002255,
+        "ratio": 1.39831678503798,
+        "materialRegression": true,
+        "variationUnresolved": false
+      },
+      "observation": "material-cost-remains",
+      "owner": "andrico21",
+      "ownerDisposition": "awaiting-explicit-owner-review",
+      "accepted": false,
+      "waived": false,
+      "proposal": "standalone-file/closed/replay-start: baseline median 138.82ms, candidate 194.11ms, delta +55.29ms (+39.83%). Material replay-start cost remains despite the bounded closed-index change; the profile did not isolate its remaining root cause. Proposed owner decision: retain complete histories and all current controls, and explicitly accept this exact replay-start cost, or require a separately profiled replay-start change before release. Passing functional checks do not accept this cost or waive inherited conditions."
+    }
+  ],
+  "additionalCurrentFlags": [],
+  "performanceAccepted": false,
+  "ownerAcceptanceRecorded": false,
+  "scope": "Exact new uncensored latency evidence and supported per-key proposals, not profiling durations, a human waiver or independent Astra acceptance.",
+  "preservedOpenConditions": [
+    "Actual-human G01",
+    "Six inherited measured performance conditions",
+    "Seven historical flags",
+    "Six frozen-P0 variation cells",
+    "Six sibling-origin omissions",
+    "Twenty-one scoped P6 closures remain closed in scope",
+    "Four optional deferrals",
+    "N01",
+    "Live/native/cross-engine conformance limits"
+  ],
+  "profileScope": "Separately captured pre-change CPU diagnostics found collapsed-index render work but do not establish a blanket startup/replay root cause."
+}

@@ -1,0 +1,1684 @@
+{
+ "schemaVersion": 1,
+ "kind": "dnssec-publication-effective-completion-dns16-additive-erratum",
+ "attribution": {
+  "author": "DnssecPublicationContractAudit",
+  "review": "independent input-only correction; no Source/evaluator read/import/execution",
+  "productionConsulted": false,
+  "productionImported": false,
+  "sourceEvaluatorTestsBuildsRun": false,
+  "originalFilesModified": false,
+  "v1EffectiveModified": false,
+  "v2EffectiveModified": false,
+  "separatelyAttributableThirdOverlay": true
+ },
+ "target": {
+  "effectivePath": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json",
+  "effectiveSha256": "34ca3c3b55829e3402299a125f408ef0a74609f1c223e23cc834d1c0393dd332",
+  "effectiveBytes": 1113966,
+  "mergedPath": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet.json",
+  "mergedSha256": "d1f319e715da522e5a64e564514e1b6791486cb276394ebb380ca6e42c895bbc",
+  "mergedBytes": 6629866,
+  "previousEffectivePath": "docs/dnssec-expansion/contract-errata/effective/worksheet-publication.json",
+  "previousEffectiveSha256": "b37c001fc0a866c39bb19da9e5c0e3696d49202d06d0be08fcd7b212ee831cac",
+  "previousDns17ErratumSha256": "0109712f2dba9d2ffe714f7da6c29f9549ca04a7796a69ee511b867995f0e5b0",
+  "originalFreezeSha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19",
+  "baseClock": 1792713600
+ },
+ "findings": [
+  {
+   "id": "DNS16-DSYNC-PORT-01",
+   "issue": "invalid-dsync-target entries used port5359 while sealed signed parent-dsync records use port53",
+   "evidence": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json parent-dsync-scheme0/scheme99/missing-target records use 53; parent-dsync-port0 uses 0",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json"
+   ],
+   "correction": "Replace the whole entries array with exact sealed records and IDs; no 5359 tuple is needed."
+  },
+  {
+   "id": "DNS16-RAW-RECEIPT-01",
+   "issue": "raw receive-signed-child-intent contradicted the same fixed per-address retrieval in five cases",
+   "subcases": [
+    "one-authority-stale",
+    "cds-cdnskey-keyset-disagreement",
+    "nodata-versus-removal",
+    "unreachable-authority-retry",
+    "malformed-delete-signal"
+   ],
+   "correction": "Make raw stage exactly the fixed per-address input; add receiptId retrieval-1 and sameReceiptAs where a later checkpoint examines the same receipt; no invented responses or receipts."
+  },
+  {
+   "id": "DNS16-CDS-ALIAS-01",
+   "issue": "expected CDS DS(K1,digest2) was a symbolic alias while the fixed wire record is literal",
+   "evidence": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json child-cds-malformed-delete-plus-newk records 0 0 0 00 and 46400 13 2 d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d",
+    "parent-signing-verification.signalDigestReferenceTuples.child-ksk-g2-sha256"
+   ],
+   "correction": "Replace both expected occurrences with the exact literal and add the exact logical alias->key/digest binding plus sealed malformed record IDs."
+  }
+ ],
+ "numericSources": {
+  "parentSigningFixture": {
+   "path": "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+   "sha256": "17298b31bd88cb5e3215d003e7a255aa179609caee1d8a62cb9d3b56621576db",
+   "bytes": 49823
+  },
+  "parentSigningVerification": {
+   "path": "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+   "sha256": "cc054c117407b6102cae8aea0ad8c982de4592bf09204fcc1da688768e33b47b",
+   "bytes": 35238
+  },
+  "completionCatalog": {
+   "path": "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json",
+   "sha256": "5cbea7727bdcea3eb75a2e3be542eb38ab6788c1b54f644927ef56613029a0ee",
+   "bytes": 109414
+  },
+  "recordProfileFixture": {
+   "path": "numeric/record-profile-fixtures.json",
+   "sha256": "bf398d383837758821a3a4d859417f4df70fb612b7883b064339900df29199ed",
+   "bytes": 48889
+  }
+ },
+ "canonicalization": {
+  "algorithm": "SHA-256 over UTF-8 JSON",
+  "method": "json.dumps(obj, sort_keys=True, separators=(',', ':'), ensure_ascii=False)"
+ },
+ "patchCount": 71,
+ "patches": [
+  {
+   "order": 1,
+   "issue": "DNS16-DSYNC-PORT-01",
+   "path": "/lessons/5/cases/8/checkpoints/0/expected/publication/notifications/entries",
+   "op": "replace",
+   "expectedBefore": [
+    {
+     "scheme": 0,
+     "port": 5359,
+     "ignored": true
+    },
+    {
+     "scheme": 99,
+     "port": 5359,
+     "ignored": true
+    },
+    {
+     "scheme": 1,
+     "port": 0,
+     "ignored": true
+    },
+    {
+     "scheme": 1,
+     "port": 5359,
+     "target": "missing.example.",
+     "resolves": false,
+     "ignored": true
+    }
+   ],
+   "value": [
+    {
+     "scheme": 0,
+     "port": 53,
+     "record": "CDS 0 53 notify.example.",
+     "rrsetId": "parent-dsync-scheme0",
+     "signatureId": "parent-dsync-scheme0-signature",
+     "ignored": true
+    },
+    {
+     "scheme": 99,
+     "port": 53,
+     "record": "CDS 99 53 notify.example.",
+     "rrsetId": "parent-dsync-scheme99",
+     "signatureId": "parent-dsync-scheme99-signature",
+     "ignored": true
+    },
+    {
+     "scheme": 1,
+     "port": 0,
+     "record": "CDS 1 0 notify.example.",
+     "rrsetId": "parent-dsync-port0",
+     "signatureId": "parent-dsync-port0-signature",
+     "ignored": true
+    },
+    {
+     "scheme": 1,
+     "port": 53,
+     "target": "missing.example.",
+     "record": "CDS 1 53 missing.example.",
+     "rrsetId": "parent-dsync-missing-target",
+     "signatureId": "parent-dsync-missing-target-signature",
+     "resolves": false,
+     "ignored": true
+    }
+   ],
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json rrsets.parent-dsync-scheme0/scheme99/port0/missing-target",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json"
+   ],
+   "rationale": "All scheme0/scheme99/missing-target sealed signed DSYNC records use port53; the effective entries used 5359. Replace the whole entries array once with exact sealed records/IDs.",
+   "expectedBeforeCanonicalSha256": "6f8337f368ab817c3af69325c72b3b0e8dfb05f88ac9e71fc4d8b14d12a50c38",
+   "valueCanonicalSha256": "b97d3be13b9c97f7bb0fdedfd0788a934028b15a4c31d672ebe1c3793f142183"
+  },
+  {
+   "order": 2,
+   "issue": "DNS16-DSYNC-PORT-01",
+   "path": "/lessons/5/cases/8/checkpoints/0/expected/publication/notifications/sourceDataset",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+    "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json"
+   ],
+   "rationale": "Exact sealed parent-signing source for the corrected DSYNC entries."
+  },
+  {
+   "order": 3,
+   "issue": "DNS16-DSYNC-PORT-01",
+   "path": "/lessons/5/cases/8/checkpoints/0/expected/publication/notifications/sourceSha256",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "17298b31bd88cb5e3215d003e7a255aa179609caee1d8a62cb9d3b56621576db",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+    "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json"
+   ],
+   "rationale": "Exact sealed parent-signing source for the corrected DSYNC entries."
+  },
+  {
+   "order": 4,
+   "issue": "DNS16-DSYNC-PORT-01",
+   "path": "/lessons/5/cases/8/checkpoints/0/expected/publication/notifications/sourceBytes",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": 49823,
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+    "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json"
+   ],
+   "rationale": "Exact sealed parent-signing source for the corrected DSYNC entries."
+  },
+  {
+   "order": 5,
+   "issue": "DNS16-DSYNC-PORT-01",
+   "path": "/lessons/5/cases/8/checkpoints/0/expected/publication/notifications/verificationPath",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+    "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json"
+   ],
+   "rationale": "Exact sealed parent-signing source for the corrected DSYNC entries."
+  },
+  {
+   "order": 6,
+   "issue": "DNS16-DSYNC-PORT-01",
+   "path": "/lessons/5/cases/8/checkpoints/0/expected/publication/notifications/verificationSha256",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "cc054c117407b6102cae8aea0ad8c982de4592bf09204fcc1da688768e33b47b",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+    "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json"
+   ],
+   "rationale": "Exact sealed parent-signing source for the corrected DSYNC entries."
+  },
+  {
+   "order": 7,
+   "issue": "DNS16-DSYNC-PORT-01",
+   "path": "/lessons/5/cases/8/checkpoints/0/expected/publication/notifications/verificationBytes",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": 35238,
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+    "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json"
+   ],
+   "rationale": "Exact sealed parent-signing source for the corrected DSYNC entries."
+  },
+  {
+   "order": 8,
+   "issue": "DNS16-DSYNC-PORT-01",
+   "path": "/lessons/5/cases/8/checkpoints/0/expected/publication/notifications/catalogPath",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+    "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json"
+   ],
+   "rationale": "Exact sealed parent-signing source for the corrected DSYNC entries."
+  },
+  {
+   "order": 9,
+   "issue": "DNS16-DSYNC-PORT-01",
+   "path": "/lessons/5/cases/8/checkpoints/0/expected/publication/notifications/catalogSha256",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "5cbea7727bdcea3eb75a2e3be542eb38ab6788c1b54f644927ef56613029a0ee",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+    "numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json"
+   ],
+   "rationale": "Exact sealed parent-signing source for the corrected DSYNC entries."
+  },
+  {
+   "order": 10,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/checkpoints/0/expected/publication/authorities",
+   "op": "replace",
+   "expectedBefore": {
+    "192.0.2.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8:1::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    }
+   },
+   "value": {
+    "192.0.2.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8:1::53": {
+     "response": "NOERROR",
+     "generation": "intent0",
+     "keys": [
+      "child-ksk-g1"
+     ]
+    }
+   },
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json caseConditions 3 intent1 + 1 intent0",
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json checkpoint stale-response-detects-keyset-conflict"
+   ],
+   "rationale": "Raw stage must be the same fixed retrieval: three intent1 addresses and one stale intent0 address, not four intent1.",
+   "expectedBeforeCanonicalSha256": "eaa083ee76e870f776e3daed40ef981b6b54236a4fac92a0f0db23cadcceeccb",
+   "valueCanonicalSha256": "8b315c28498beb654c8b4258fd93c187ecac6fff138683b0d015e2e88666a8ad"
+  },
+  {
+   "order": 11,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/checkpoints/0/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Identify the single fixed retrieval."
+  },
+  {
+   "order": 12,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/checkpoints/1/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Later detection uses the same receipt, not a new one."
+  },
+  {
+   "order": 13,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/checkpoints/1/expected/publication/sameReceiptAs",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "receive-signed-child-intent",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Explicit same-receipt linkage."
+  },
+  {
+   "order": 14,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/setup/numericBindings/exactIntentDataset",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/record-profile-fixtures.json",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records; stale intent0 remains the independently authored symbolic stale response already described by the case."
+  },
+  {
+   "order": 15,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/setup/numericBindings/exactIntentCdsRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-intent",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records; stale intent0 remains the independently authored symbolic stale response already described by the case."
+  },
+  {
+   "order": 16,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/setup/numericBindings/exactIntentCdsSignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-intent-signature",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records; stale intent0 remains the independently authored symbolic stale response already described by the case."
+  },
+  {
+   "order": 17,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/setup/numericBindings/exactIntentCdnskeyRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-intent",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records; stale intent0 remains the independently authored symbolic stale response already described by the case."
+  },
+  {
+   "order": 18,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/setup/numericBindings/exactIntentCdnskeySignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-intent-signature",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records; stale intent0 remains the independently authored symbolic stale response already described by the case."
+  },
+  {
+   "order": 19,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/setup/numericBindings/staleAuthorityKeyset",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": [
+    "child-ksk-g1"
+   ],
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records; stale intent0 remains the independently authored symbolic stale response already described by the case."
+  },
+  {
+   "order": 20,
+   "issue": "DNS16-RAW-RECEIPT-01:one-authority-stale",
+   "path": "/lessons/5/cases/2/setup/numericBindings/staleAuthoritySignatureDisposition",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "independently-authored-symbolic-stale-response; no reused exact-intent signature",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records; stale intent0 remains the independently authored symbolic stale response already described by the case."
+  },
+  {
+   "order": 21,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/checkpoints/0/expected/publication/childIntent",
+   "op": "replace",
+   "expectedBefore": {
+    "CDS": [
+     "child-ksk-g1",
+     "child-ksk-g2"
+    ],
+    "CDNSKEY": [
+     "child-ksk-g1",
+     "child-ksk-g2"
+    ]
+   },
+   "value": {
+    "CDS": [
+     "child-ksk-g2"
+    ],
+    "CDNSKEY": [
+     "child-ksk-g1",
+     "child-ksk-g2"
+    ]
+   },
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json caseConditions CDS K1 vs CDNSKEY K0+K1",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json child-cds-newk-only",
+    "numeric/record-profile-fixtures.json child-cdnskey-intent"
+   ],
+   "rationale": "Raw childIntent must already be CDS K1 / CDNSKEY K0+K1; the later cross-type checkpoint is the same fixed input, not a new receipt.",
+   "expectedBeforeCanonicalSha256": "e9d216e90343ceffd078482348852dc8276e4be031b49ddd07b8da6bb5b2f4cc",
+   "valueCanonicalSha256": "f3f6ce2b9b799073524cf9da2978f0928859d2b1d97c753e2cae9e5d686185e6"
+  },
+  {
+   "order": 22,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/checkpoints/0/expected/publication/authorities",
+   "op": "replace",
+   "expectedBefore": {
+    "192.0.2.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8:1::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    }
+   },
+   "value": {
+    "192.0.2.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "CDS": [
+      "child-ksk-g2"
+     ],
+     "CDNSKEY": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ],
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "CDS": [
+      "child-ksk-g2"
+     ],
+     "CDNSKEY": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ],
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "CDS": [
+      "child-ksk-g2"
+     ],
+     "CDNSKEY": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ],
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8:1::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "CDS": [
+      "child-ksk-g2"
+     ],
+     "CDNSKEY": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ],
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    }
+   },
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json caseConditions",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json child-cds-newk-only",
+    "numeric/record-profile-fixtures.json child-cdnskey-intent"
+   ],
+   "rationale": "Per-address raw stage must show the same-address CDS/CDNSKEY cross-type disagreement.",
+   "expectedBeforeCanonicalSha256": "eaa083ee76e870f776e3daed40ef981b6b54236a4fac92a0f0db23cadcceeccb",
+   "valueCanonicalSha256": "d38fd19c61bae3df1ea4805d2359cb17fdca3ff54bb65938c90255f501717bff"
+  },
+  {
+   "order": 23,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/checkpoints/0/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Identify the single fixed retrieval."
+  },
+  {
+   "order": 24,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/checkpoints/1/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Later comparison uses the same receipt."
+  },
+  {
+   "order": 25,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/checkpoints/1/expected/publication/sameReceiptAs",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "receive-signed-child-intent",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Explicit same-receipt linkage."
+  },
+  {
+   "order": 26,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/setup/numericBindings/crossTypeCdsDataset",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact CDS K1 and CDNSKEY K0+K1 sealed/frozen records for the raw stage."
+  },
+  {
+   "order": 27,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/setup/numericBindings/crossTypeCdsRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-newk-only",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact CDS K1 and CDNSKEY K0+K1 sealed/frozen records for the raw stage."
+  },
+  {
+   "order": 28,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/setup/numericBindings/crossTypeCdsSignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-newk-only-signature",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact CDS K1 and CDNSKEY K0+K1 sealed/frozen records for the raw stage."
+  },
+  {
+   "order": 29,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/setup/numericBindings/crossTypeCdnskeyDataset",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/record-profile-fixtures.json",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact CDS K1 and CDNSKEY K0+K1 sealed/frozen records for the raw stage."
+  },
+  {
+   "order": 30,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/setup/numericBindings/crossTypeCdnskeyRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-intent",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact CDS K1 and CDNSKEY K0+K1 sealed/frozen records for the raw stage."
+  },
+  {
+   "order": 31,
+   "issue": "DNS16-RAW-RECEIPT-01:cross-type",
+   "path": "/lessons/5/cases/3/setup/numericBindings/crossTypeCdnskeySignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-intent-signature",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact CDS K1 and CDNSKEY K0+K1 sealed/frozen records for the raw stage."
+  },
+  {
+   "order": 32,
+   "issue": "DNS16-RAW-RECEIPT-01:nodata",
+   "path": "/lessons/5/cases/4/checkpoints/0/expected/publication/authorities",
+   "op": "replace",
+   "expectedBefore": {
+    "192.0.2.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": []
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": []
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": []
+    },
+    "2001:db8:1::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": []
+    }
+   },
+   "value": {
+    "192.0.2.53": {
+     "response": "NOERROR-NODATA",
+     "keys": [],
+     "CDS": [],
+     "CDNSKEY": [],
+     "meaning": "no-change"
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent-delete",
+     "keys": [],
+     "CDS": [
+      "0 0 0 00"
+     ],
+     "CDNSKEY": [
+      "0 3 0 AA=="
+     ],
+     "meaning": "delete"
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent-delete",
+     "keys": [],
+     "CDS": [
+      "0 0 0 00"
+     ],
+     "CDNSKEY": [
+      "0 3 0 AA=="
+     ],
+     "meaning": "delete"
+    },
+    "2001:db8:1::53": {
+     "response": "NOERROR",
+     "generation": "intent-delete",
+     "keys": [],
+     "CDS": [
+      "0 0 0 00"
+     ],
+     "CDNSKEY": [
+      "0 3 0 AA=="
+     ],
+     "meaning": "delete"
+    }
+   },
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json caseConditions one NODATA others delete",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json child-cds-delete-by-newk/child-cdnskey-delete-by-newk"
+   ],
+   "rationale": "Raw stage must show the fixed mixed NODATA/delete responses, not four empty intent1 NOERROR responses.",
+   "expectedBeforeCanonicalSha256": "5f0233aa1192d4a74f760162606fb76ed38f49ca6316bec02542617e2d884529",
+   "valueCanonicalSha256": "d7c69bdac1615768fd4399f6713e79d24164ad1eba3dd580aabe5d9d68f2d00c"
+  },
+  {
+   "order": 33,
+   "issue": "DNS16-RAW-RECEIPT-01:nodata",
+   "path": "/lessons/5/cases/4/checkpoints/0/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Identify the single fixed retrieval."
+  },
+  {
+   "order": 34,
+   "issue": "DNS16-RAW-RECEIPT-01:nodata",
+   "path": "/lessons/5/cases/4/checkpoints/1/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Later NODATA/delete comparison uses the same receipt."
+  },
+  {
+   "order": 35,
+   "issue": "DNS16-RAW-RECEIPT-01:nodata",
+   "path": "/lessons/5/cases/4/checkpoints/1/expected/publication/sameReceiptAs",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "receive-signed-child-intent",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Explicit same-receipt linkage."
+  },
+  {
+   "order": 36,
+   "issue": "DNS16-RAW-RECEIPT-01:nodata",
+   "path": "/lessons/5/cases/4/setup/numericBindings/deleteDataset",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/record-profile-fixtures.json",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact K0-signed singleton delete dataset; matches selected automationNumericBindings.delete."
+  },
+  {
+   "order": 37,
+   "issue": "DNS16-RAW-RECEIPT-01:nodata",
+   "path": "/lessons/5/cases/4/setup/numericBindings/deleteCdsRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-delete-singleton",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact K0-signed CDS singleton delete record."
+  },
+  {
+   "order": 38,
+   "issue": "DNS16-RAW-RECEIPT-01:nodata",
+   "path": "/lessons/5/cases/4/setup/numericBindings/deleteCdsSignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-delete-singleton-signature",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact K0 signature over the CDS singleton."
+  },
+  {
+   "order": 39,
+   "issue": "DNS16-RAW-RECEIPT-01:nodata",
+   "path": "/lessons/5/cases/4/setup/numericBindings/deleteCdnskeyRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-delete-singleton",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact K0-signed CDNSKEY singleton delete record."
+  },
+  {
+   "order": 40,
+   "issue": "DNS16-RAW-RECEIPT-01:nodata",
+   "path": "/lessons/5/cases/4/setup/numericBindings/deleteCdnskeySignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-delete-singleton-signature",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact K0 signature over the CDNSKEY singleton."
+  },
+  {
+   "order": 41,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/checkpoints/0/expected/publication/authorities",
+   "op": "replace",
+   "expectedBefore": {
+    "192.0.2.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8:1::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    }
+   },
+   "value": {
+    "192.0.2.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    }
+   },
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json caseConditions 3 intent1 + 1 timeout",
+    "numeric/record-profile-fixtures.json child-cds-intent/child-cdnskey-intent"
+   ],
+   "rationale": "Raw stage must not report a response from the address that times out; it contains only the three received intent1 responses.",
+   "expectedBeforeCanonicalSha256": "eaa083ee76e870f776e3daed40ef981b6b54236a4fac92a0f0db23cadcceeccb",
+   "valueCanonicalSha256": "fae1857160ebff63fb8e4b4850f0426545ba8cfc9a564b321d680cacbd4fcccc"
+  },
+  {
+   "order": 42,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/checkpoints/0/expected/publication/notReceived",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": [
+    "2001:db8:1::53"
+   ],
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "The fourth address has no raw response; the timeout checkpoint records the transport failure."
+  },
+  {
+   "order": 43,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/checkpoints/0/expected/publication/retrievalComplete",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": false,
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "First retrieval is incomplete; do not invent a response."
+  },
+  {
+   "order": 44,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/checkpoints/0/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "First fixed retrieval."
+  },
+  {
+   "order": 45,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/checkpoints/1/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Timeout belongs to the first fixed retrieval."
+  },
+  {
+   "order": 46,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/checkpoints/1/expected/publication/sameReceiptAs",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "receive-signed-child-intent",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Explicit same-receipt linkage."
+  },
+  {
+   "order": 47,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/checkpoints/2/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-2",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Full retry is a genuinely separate second retrieval."
+  },
+  {
+   "order": 48,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/setup/numericBindings/exactIntentDataset",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/record-profile-fixtures.json",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records for the three received responses."
+  },
+  {
+   "order": 49,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/setup/numericBindings/exactIntentCdsRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-intent",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records for the three received responses."
+  },
+  {
+   "order": 50,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/setup/numericBindings/exactIntentCdsSignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-intent-signature",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records for the three received responses."
+  },
+  {
+   "order": 51,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/setup/numericBindings/exactIntentCdnskeyRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-intent",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records for the three received responses."
+  },
+  {
+   "order": 52,
+   "issue": "DNS16-RAW-RECEIPT-01:unreachable",
+   "path": "/lessons/5/cases/5/setup/numericBindings/exactIntentCdnskeySignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-intent-signature",
+   "sources": [
+    "numeric/record-profile-fixtures.json"
+   ],
+   "rationale": "Exact intent1 records for the three received responses."
+  },
+  {
+   "order": 53,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/lessons/5/cases/9/checkpoints/0/expected/publication/childIntent",
+   "op": "replace",
+   "expectedBefore": {
+    "CDS": [
+     "0 0 0 00",
+     "DS(K1,digest2)"
+    ],
+    "CDNSKEY": [
+     "1 3 0 AA=="
+    ]
+   },
+   "value": {
+    "CDS": [
+     "0 0 0 00",
+     "46400 13 2 d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d"
+    ],
+    "CDNSKEY": [
+     "1 3 0 AA=="
+    ]
+   },
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json child-cds-malformed-delete-plus-newk/child-cdnskey-malformed-delete"
+   ],
+   "rationale": "Replace the symbolic DS(K1,digest2) with the exact sealed wire literal and exact malformed CDNSKEY record.",
+   "expectedBeforeCanonicalSha256": "cb7c9219cfc62d7be0d6be2d76d7daf5db0ae0415369536ec6cd1aaedb48ef30",
+   "valueCanonicalSha256": "b8d8b8c1b102b5f0ac0407a16d5cd35ef357ed0fd48e03a005de33392aee1645"
+  },
+  {
+   "order": 54,
+   "issue": "DNS16-RAW-RECEIPT-01:malformed",
+   "path": "/lessons/5/cases/9/checkpoints/0/expected/publication/authorities",
+   "op": "replace",
+   "expectedBefore": {
+    "192.0.2.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    },
+    "2001:db8:1::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "keys": [
+      "child-ksk-g1",
+      "child-ksk-g2"
+     ]
+    }
+   },
+   "value": {
+    "192.0.2.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "CDS": [
+      "0 0 0 00",
+      "46400 13 2 d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d"
+     ],
+     "CDNSKEY": [
+      "1 3 0 AA=="
+     ],
+     "validKeyReferences": [
+      "child-ksk-g2"
+     ],
+     "malformedCdnskeyHasNoKeyReference": true
+    },
+    "2001:db8::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "CDS": [
+      "0 0 0 00",
+      "46400 13 2 d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d"
+     ],
+     "CDNSKEY": [
+      "1 3 0 AA=="
+     ],
+     "validKeyReferences": [
+      "child-ksk-g2"
+     ],
+     "malformedCdnskeyHasNoKeyReference": true
+    },
+    "198.51.100.53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "CDS": [
+      "0 0 0 00",
+      "46400 13 2 d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d"
+     ],
+     "CDNSKEY": [
+      "1 3 0 AA=="
+     ],
+     "validKeyReferences": [
+      "child-ksk-g2"
+     ],
+     "malformedCdnskeyHasNoKeyReference": true
+    },
+    "2001:db8:1::53": {
+     "response": "NOERROR",
+     "generation": "intent1",
+     "CDS": [
+      "0 0 0 00",
+      "46400 13 2 d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d"
+     ],
+     "CDNSKEY": [
+      "1 3 0 AA=="
+     ],
+     "validKeyReferences": [
+      "child-ksk-g2"
+     ],
+     "malformedCdnskeyHasNoKeyReference": true
+    }
+   },
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json caseConditions",
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json child-cds-malformed-delete-plus-newk/child-cdnskey-malformed-delete"
+   ],
+   "rationale": "Per-address raw stage must show the exact malformed CDS/CDNSKEY records. The malformed CDNSKEY names no key; only the ordinary CDS references K1. Replace the erroneous K0+K1 keys summary.",
+   "expectedBeforeCanonicalSha256": "eaa083ee76e870f776e3daed40ef981b6b54236a4fac92a0f0db23cadcceeccb",
+   "valueCanonicalSha256": "50262ccaf4f38e269669a76e6b4c7464ae52770dacecff60d82cf5852591eed1"
+  },
+  {
+   "order": 55,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/lessons/5/cases/9/checkpoints/1/expected/publication/childIntent",
+   "op": "replace",
+   "expectedBefore": {
+    "CDS": [
+     "0 0 0 00",
+     "DS(K1,digest2)"
+    ],
+    "CDNSKEY": [
+     "1 3 0 AA=="
+    ]
+   },
+   "value": {
+    "CDS": [
+     "0 0 0 00",
+     "46400 13 2 d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d"
+    ],
+    "CDNSKEY": [
+     "1 3 0 AA=="
+    ]
+   },
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json child-cds-malformed-delete-plus-newk/child-cdnskey-malformed-delete"
+   ],
+   "rationale": "Later rejection uses the same exact fixed malformed records, not the symbolic alias and not a new receipt.",
+   "expectedBeforeCanonicalSha256": "cb7c9219cfc62d7be0d6be2d76d7daf5db0ae0415369536ec6cd1aaedb48ef30",
+   "valueCanonicalSha256": "b8d8b8c1b102b5f0ac0407a16d5cd35ef357ed0fd48e03a005de33392aee1645"
+  },
+  {
+   "order": 56,
+   "issue": "DNS16-RAW-RECEIPT-01:malformed",
+   "path": "/lessons/5/cases/9/checkpoints/0/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Identify the single fixed retrieval."
+  },
+  {
+   "order": 57,
+   "issue": "DNS16-RAW-RECEIPT-01:malformed",
+   "path": "/lessons/5/cases/9/checkpoints/1/expected/publication/receiptId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "retrieval-1",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Later rejection uses the same receipt."
+  },
+  {
+   "order": 58,
+   "issue": "DNS16-RAW-RECEIPT-01:malformed",
+   "path": "/lessons/5/cases/9/checkpoints/1/expected/publication/sameReceiptAs",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "receive-signed-child-intent",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json"
+   ],
+   "rationale": "Explicit same-receipt linkage."
+  },
+  {
+   "order": 59,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/lessons/5/cases/9/setup/numericBindings/logicalDsAliases",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": {
+    "DS(K1,digest2)": {
+     "keyId": "child-ksk-g2",
+     "keyTag": 46400,
+     "algorithm": 13,
+     "digestType": 2,
+     "digestHex": "d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d",
+     "dsRdataHex": "b5400d02d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d",
+     "text": "46400 13 2 d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d"
+    }
+   },
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json signalDigestReferenceTuples.child-ksk-g2-sha256"
+   ],
+   "rationale": "Exact logical alias -> key/digest binding map for DS(K1,digest2)."
+  },
+  {
+   "order": 60,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/lessons/5/cases/9/setup/numericBindings/malformedSourceDataset",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Exact sealed malformed record/signature/source."
+  },
+  {
+   "order": 61,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/lessons/5/cases/9/setup/numericBindings/malformedSourceSha256",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "17298b31bd88cb5e3215d003e7a255aa179609caee1d8a62cb9d3b56621576db",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Exact sealed malformed record/signature/source."
+  },
+  {
+   "order": 62,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/lessons/5/cases/9/setup/numericBindings/malformedCdsRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-malformed-delete-plus-newk",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Exact sealed malformed record/signature/source."
+  },
+  {
+   "order": 63,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/lessons/5/cases/9/setup/numericBindings/malformedCdsSignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-malformed-delete-plus-newk-signature",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Exact sealed malformed record/signature/source."
+  },
+  {
+   "order": 64,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/lessons/5/cases/9/setup/numericBindings/malformedCdnskeyRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-malformed-delete",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Exact sealed malformed record/signature/source."
+  },
+  {
+   "order": 65,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/lessons/5/cases/9/setup/numericBindings/malformedCdnskeySignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-malformed-delete-signature",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Exact sealed malformed record/signature/source."
+  },
+  {
+   "order": 66,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/selectedSignatureBindingsByCase/DNS16:malformed-delete-signal/malformedCdsRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-malformed-delete-plus-newk",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Bind exact malformed records and source; the records are signed but still fail singleton/flags delete requirements."
+  },
+  {
+   "order": 67,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/selectedSignatureBindingsByCase/DNS16:malformed-delete-signal/malformedCdsSignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cds-malformed-delete-plus-newk-signature",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Bind exact malformed records and source; the records are signed but still fail singleton/flags delete requirements."
+  },
+  {
+   "order": 68,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/selectedSignatureBindingsByCase/DNS16:malformed-delete-signal/malformedCdnskeyRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-malformed-delete",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Bind exact malformed records and source; the records are signed but still fail singleton/flags delete requirements."
+  },
+  {
+   "order": 69,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/selectedSignatureBindingsByCase/DNS16:malformed-delete-signal/malformedCdnskeySignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "child-cdnskey-malformed-delete-signature",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Bind exact malformed records and source; the records are signed but still fail singleton/flags delete requirements."
+  },
+  {
+   "order": 70,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/selectedSignatureBindingsByCase/DNS16:malformed-delete-signal/malformedSourceDataset",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Bind exact malformed records and source; the records are signed but still fail singleton/flags delete requirements."
+  },
+  {
+   "order": 71,
+   "issue": "DNS16-CDS-ALIAS-01:malformed",
+   "path": "/selectedSignatureBindingsByCase/DNS16:malformed-delete-signal/malformedSourceSha256",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "17298b31bd88cb5e3215d003e7a255aa179609caee1d8a62cb9d3b56621576db",
+   "sources": [
+    "numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+   ],
+   "rationale": "Bind exact malformed records and source; the records are signed but still fail singleton/flags delete requirements."
+  }
+ ],
+ "preservation": {
+  "publicationLessons": 9,
+  "publicationCases": 66,
+  "mergedLessons": 22,
+  "mergedCases": 159,
+  "managementCases": 18,
+  "managementCaseIds": [
+   "DNS16:consistent-update",
+   "DNS16:consistent-ds-removal",
+   "DNS16:one-authority-stale",
+   "DNS16:cds-cdnskey-keyset-disagreement",
+   "DNS16:nodata-versus-removal",
+   "DNS16:unreachable-authority-retry",
+   "DNS16:digest-policy-comparison",
+   "DNS16:dsync-notify-trigger",
+   "DNS16:invalid-dsync-target",
+   "DNS16:malformed-delete-signal",
+   "DNS17:authenticated-rfc9615-bootstrap",
+   "DNS17:unauthenticated-child-only-claim",
+   "DNS17:signaling-zone-not-secure",
+   "DNS17:only-in-domain-nameservers",
+   "DNS17:parent-policy-declines",
+   "DNS17:update-would-break-validation",
+   "DNS17:concurrent-manual-update",
+   "DNS17:report-and-retry"
+  ],
+  "expectedOutcomesUnchanged": true,
+  "locksUnchanged": true,
+  "signalingFlowUnchanged": true,
+  "dns17ThreeHundredSecondCorrectionPreserved": true,
+  "sequenceHopsReplacements": [],
+  "sequenceHopsNote": "No sequence or hops array is changed; no index shift.",
+  "dns17SignalingFlowUnchanged": true,
+  "noOutcomeLockSignalingPatches": true
+ },
+ "checkpointCanonicalHashes": [
+  {
+   "case": "DNS16:invalid-dsync-target",
+   "checkpointIndex": 0,
+   "checkpoint": "ignore-unusable-dsync-entries",
+   "beforeCanonicalSha256": "336da12a4e14a714722ffcf6f799de90cb7c798c94829b050c622aabc8469168",
+   "afterCanonicalSha256": "e7fac07bd12abda37d443fd87d324a071d7a5e615f9db614c5c1995bbb96fe0c"
+  },
+  {
+   "case": "DNS16:one-authority-stale",
+   "checkpointIndex": 0,
+   "checkpoint": "receive-signed-child-intent",
+   "beforeCanonicalSha256": "ca5c7d78dc12e7ee2e98344c0669147e7b7039aa4db629591d9714c736fdf884",
+   "afterCanonicalSha256": "c768911b2ffa8a2b305ab2e1076f245f4ad6488c9bb3e9c02b8812e2691eab53"
+  },
+  {
+   "case": "DNS16:one-authority-stale",
+   "checkpointIndex": 1,
+   "checkpoint": "stale-response-detects-keyset-conflict",
+   "beforeCanonicalSha256": "836f147b01c72f3d44fdaafb45d308194dc3202440084ec1f01beacc2ce249ab",
+   "afterCanonicalSha256": "5810cebfd6e35f8fd81b46603fd14a62eb4fc3994f797c53a8a6b8bcbae5772d"
+  },
+  {
+   "case": "DNS16:cds-cdnskey-keyset-disagreement",
+   "checkpointIndex": 0,
+   "checkpoint": "receive-signed-child-intent",
+   "beforeCanonicalSha256": "ca5c7d78dc12e7ee2e98344c0669147e7b7039aa4db629591d9714c736fdf884",
+   "afterCanonicalSha256": "c193e229031dbed3920e001e58d375dd753bedcf1a7d84b6d8bce5245e9e5b26"
+  },
+  {
+   "case": "DNS16:cds-cdnskey-keyset-disagreement",
+   "checkpointIndex": 1,
+   "checkpoint": "cross-type-keyset-comparison-fails",
+   "beforeCanonicalSha256": "fb90c04fff5b2e17b6076af4a4b63735284fc42ccaef727d078276b0eb6b26b0",
+   "afterCanonicalSha256": "c81e49524f9d3e17fff37b4ff87ce1a68541b8ffcf9559d4656e1ebd36d78241"
+  },
+  {
+   "case": "DNS16:nodata-versus-removal",
+   "checkpointIndex": 0,
+   "checkpoint": "receive-signed-child-intent",
+   "beforeCanonicalSha256": "d89f9a127a15c67e74c90f47ffba371d0eb2ffc05ce48f5fe93ae0ebe8c6ee9f",
+   "afterCanonicalSha256": "200e177d496285c0e858320b8fd34499700621275a78891e8ece6bdcfe701e4a"
+  },
+  {
+   "case": "DNS16:nodata-versus-removal",
+   "checkpointIndex": 1,
+   "checkpoint": "nodata-is-received-no-change",
+   "beforeCanonicalSha256": "abd4528744f90d893de4d0e00b40bdb0c172f4ee6acad7c5c4815cb9a0276097",
+   "afterCanonicalSha256": "9af10f8c3060d50c54c3475bd89dea9ad1689ad6411472af07546ca001e43469"
+  },
+  {
+   "case": "DNS16:unreachable-authority-retry",
+   "checkpointIndex": 0,
+   "checkpoint": "receive-signed-child-intent",
+   "beforeCanonicalSha256": "ca5c7d78dc12e7ee2e98344c0669147e7b7039aa4db629591d9714c736fdf884",
+   "afterCanonicalSha256": "6eb4c1ebbfc7eaad8dbc8075d5fee01a69ebf4bbfe49fe2f668ede65ec478e08"
+  },
+  {
+   "case": "DNS16:unreachable-authority-retry",
+   "checkpointIndex": 1,
+   "checkpoint": "one-address-times-out",
+   "beforeCanonicalSha256": "a2ce670e772b20f911a77ee2769606483a9898b5385410df7a771d5cb8bca5ff",
+   "afterCanonicalSha256": "43cb567527c33fc25000770f5ba1ebd0e20139f10c5ee27004d23a29578f7783"
+  },
+  {
+   "case": "DNS16:unreachable-authority-retry",
+   "checkpointIndex": 2,
+   "checkpoint": "full-retry-all-addresses-agree",
+   "beforeCanonicalSha256": "d73af2836027e6091860424b870fce15d840f059cba7785cc42fd4a183981279",
+   "afterCanonicalSha256": "29e10e316c80ae66bc8355d10d551dd38e1364948510dfc312667fa9b092ffe2"
+  },
+  {
+   "case": "DNS16:malformed-delete-signal",
+   "checkpointIndex": 0,
+   "checkpoint": "receive-signed-child-intent",
+   "beforeCanonicalSha256": "a736b7aa9f7c2b6403054f5529c7d82c28fabd96f5d31145d013c82f41baf65d",
+   "afterCanonicalSha256": "5e11cd8569dcc43ab00642bee4867f73567c608727421db654c74a54ed68b515"
+  },
+  {
+   "case": "DNS16:malformed-delete-signal",
+   "checkpointIndex": 1,
+   "checkpoint": "reject-malformed-signed-delete",
+   "beforeCanonicalSha256": "6ae35781dfd65b48e9fdbc45543485afc16c3e4aba9a34b54ac288cfaa4c55c0",
+   "afterCanonicalSha256": "5623e603b5175f1ec3d8031529d9990d1862e8c9284f65e471d04989e84b5ff3"
+  }
+ ],
+ "finalization": {
+  "fullyExpanded": true,
+  "noPlaceholders": true,
+  "noSourceRead": true,
+  "patchCount": 71,
+  "sequenceHopsReplacements": []
+ },
+ "numericCoordination": {
+  "newTupleNeeded": false,
+  "reason": "Sealed completion parent-signing records use port53 for scheme0/scheme99/missing-target and port0 for port0; the 5359 expectation was the contradiction. No 5359 tuple is required.",
+  "usedSealedCompletionPackage": true,
+  "completionCatalogSha256": "5cbea7727bdcea3eb75a2e3be542eb38ab6788c1b54f644927ef56613029a0ee",
+  "dns17ThreeHundredSecondCorrection": "preserved; no patch touches DNS17 cache entry"
+ }
+}

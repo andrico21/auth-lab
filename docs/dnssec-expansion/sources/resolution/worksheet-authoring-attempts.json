@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-worksheet-authoring-attempts",
+  "notStandardsSources": true,
+  "productionUsed": false,
+  "attempts": [
+    {
+      "stage": "DNS07-09 literal authoring cell",
+      "result": "SyntaxError: positional argument follows keyword argument",
+      "effect": "cell did not execute; corrected input syntax before continuing"
+    },
+    {
+      "stage": "in-memory vocabulary conversion",
+      "result": "TypeError: comparison encountered None scalar after conversion helper omitted scalar return",
+      "effect": "corrupted payload was never written or frozen",
+      "repair": "restored exact hand-authored cells from this worker stored transcript and added scalar-preserving return; no sources re-fetched and no app evaluator invoked"
+    },
+    {
+      "stage": "recovery transcript extraction",
+      "result": "AttributeError: string message content has no .get",
+      "effect": "no authoring replay had executed",
+      "repair": "restricted extraction to actual content arrays/dictionary tool calls"
+    }
+  ],
+  "finalPayload": "worksheet-resolution.json written only after corrected literal reconstruction",
+  "verification": "No app build/lint/tests/formatters run by worker."
+}

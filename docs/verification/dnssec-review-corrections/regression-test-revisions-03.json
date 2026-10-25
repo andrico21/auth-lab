@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNSSEC-regression-test-revision-and-VM-sandbox-attribution",
+  "recordedAt": "2026-10-24T20:09:51.711Z",
+  "priorAttribution": {
+    "path": "docs/verification/dnssec-review-corrections/regression-test-revisions-02.json",
+    "sha256": "8bf9c9c4c7631728785beccc320eb9900871194669e69e25c05e2e7fa51e1cd0",
+    "bytes": 6318
+  },
+  "consumerRegressionScope": "Retains the five DNSSEC behavior suites and shared index reopen regression; no consumer expectation/trace row/test case removed to pass the suite.",
+  "extraTestRepair": {
+    "path": "tests/dom-runtime.test.mjs",
+    "beforeSource": "ad051875da7ed91e3e9637586a9d79f7d61bb70f502be60eb4d3784c8eb1fe1a",
+    "afterSource": "481ace7a7a7985e503f29e8d0a51675bda3ddafdb7c1e80fed5a3b6a7a100554",
+    "cause": "Existing vm.createContext sandbox omitted browser-native structuredClone, exposed by actual emitted module boot. Real Chromium already passed all 60 native cells on identical HTML.",
+    "change": "Expose actual Bun host structuredClone to VM, no app fallback. Delete incidental styles.length>1000 assertion instead of re-pinning; retain offline asset restrictions and actual app boot/playback.",
+    "failedFullRun": {
+      "path": "docs/verification/dnssec-review-corrections/regressions-01/held-objects-regression-status.json",
+      "sha256": "c43d03ac0a1c1ab5404aa4e950563abcc0c4683a8c498d05def0928fc604ac7f",
+      "bytes": 130339
+    },
+    "targetedAfter": {
+      "path": "docs/verification/dnssec-review-corrections/dom-runtime-vm-after-01.json",
+      "sha256": "b9e624b8e9677414fa7e69d577b0aa3af6823b4f29adf52e4c28da7bf1eb97dd",
+      "bytes": 753
+    },
+    "freshCompleteAfter": {
+      "path": "docs/verification/dnssec-review-corrections/regressions-02/held-objects-regression-status.json",
+      "sha256": "703724bb68853dbfd689303480484dd5a990d2f6ead2b5812f3ebc734902200f",
+      "bytes": 130341
+    },
+    "counts": {
+      "passed": 1988,
+      "failed": 0,
+      "files": 121
+    },
+    "identityUnchanged": true,
+    "perTestTimeoutMilliseconds": 900000,
+    "timeoutIncreased": false
+  },
+  "unchangedProduct": {
+    "files": 109,
+    "standalone": {
+      "path": "dist/auth-flow-studio.html",
+      "sha256": "2855771e27155606b15e33bc3bfeea956192a031b5ddbe8774cad3ec16757c5a",
+      "bytes": 5242317
+    }
+  },
+  "beforeEvidenceBoundary": "Corrected focused-before02 remains retrospective 12 pass/24 fail on exact reviewed production, not chronological before-first-edit proof or nine independent closure counts. Earlier locator/harness faults and partial/failed runs stay attributed in prior record.",
+  "independentReview": "changes-required; not independently reclosed",
+  "publicationAuthorized": false
+}

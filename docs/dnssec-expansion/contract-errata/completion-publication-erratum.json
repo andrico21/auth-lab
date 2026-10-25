@@ -1,0 +1,291 @@
+{
+ "schemaVersion": 1,
+ "kind": "dnssec-publication-effective-dns17-nods-cache-additive-erratum",
+ "attribution": {
+  "author": "DnssecPublicationContractAudit",
+  "review": "independent publication-oracle input-consistency review",
+  "productionConsulted": false,
+  "productionImported": false,
+  "sourceEvaluatorTestsBuildsRun": false,
+  "originalFilesModified": false,
+  "effectiveFilesModified": false,
+  "separatelyAttributableAdditiveErratum": true
+ },
+ "target": {
+  "effectivePath": "docs/dnssec-expansion/contract-errata/effective/worksheet-publication.json",
+  "effectiveSha256": "b37c001fc0a866c39bb19da9e5c0e3696d49202d06d0be08fcd7b212ee831cac",
+  "effectiveBytes": 1112461,
+  "originalWorksheetPath": "docs/dnssec-expansion/worksheet-publication.json",
+  "originalWorksheetSha256": "64e26b7b8be4a2d205bfcf5db09bed309bf88860be885cfe3a5b07d474fffcf3",
+  "originalFreezePath": "docs/dnssec-expansion/contract-freeze.json",
+  "originalFreezeSha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19",
+  "baseClock": 1792713600
+ },
+ "finding": {
+  "id": "DNS17-NODS-CACHE-TTL-01",
+  "case": "DNS17:authenticated-rfc9615-bootstrap",
+  "checkpoint": "remote-no-ds-cache-persists",
+  "severity": "high",
+  "confidence": 0.99,
+  "summary": "The effective checkpoint declares a delegation no-DS cache entry expiring at 1792717200 (base+3600), while the explicitly selected no-DS proof denial-parent-unsigned-lab has RRset TTL 300 and RRSIG OriginalTTL 300, and its applicable parent SOA example-soa-negative-cache has SOA MINIMUM 300 (RFC2308 section 5 negative TTL min(SOA.MINIMUM, SOA TTL) = 300). A 3600-second cache lifetime cannot be derived from the selected signed proof/SOA and must not be manufactured by inflating TTL under the existing signature.",
+  "currentFields": {
+   "checkpointClock": 1792714201,
+   "checkpointClockMeaning": "parent publication 1792714200 (base+600) plus 1 second",
+   "cacheEntry": {
+    "generation": "no-ds-before-bootstrap",
+    "status": "insecure",
+    "expiresAt": 1792717200
+   },
+   "currentExpiryMinusCheckpoint": 2999,
+   "currentExpiryMinusBase": 3600,
+   "selectedProof": {
+    "rrsetId": "denial-parent-unsigned-lab",
+    "rrsetTtl": 300,
+    "signatureId": "denial-parent-unsigned-lab-signature",
+    "signatureOriginalTtl": 300,
+    "inception": 1792713000,
+    "expiration": 1792717200,
+    "source": "numeric/resolution-profile-fixtures.json"
+   },
+   "applicableSoa": {
+    "rrsetId": "example-soa-negative-cache",
+    "soaMinimum": 300,
+    "soaRrsetTtl": 3600,
+    "signatureId": "example-soa-negative-cache-signature",
+    "signatureOriginalTtl": 3600,
+    "inception": 1792713000,
+    "expiration": 1792717200,
+    "source": "numeric/parent-negative-fixtures.json",
+    "negativeTtl": 300
+   }
+  },
+  "whyContradictory": [
+   "The selected no-DS proof can support at most a 300-second negative-cache entry; the SOA MINIMUM also bounds it at 300 seconds.",
+   "The effective expiresAt is base+3600, i.e. 3600 seconds after base and still 2999 seconds after the checkpoint. That requires either a longer-lived signed proof/SOA or a later receipt; the current cache entry declares neither.",
+   "The checkpoint clock is parent publication+1, not base. A 3600-second expiry at parent publication+1 cannot be obtained from a 300-second proof without either a pre-publication receipt with 300-second TTL and an expiry before +900, or a different 3600-second signed proof/SOA."
+  ]
+ },
+ "decision": {
+  "selectedOption": "A",
+  "option": "Genuine correctly declared later pre-publication remote receipt with 300-second TTL",
+  "whyMinimal": "It preserves the cache-coexistence lesson and all secure signaling outcomes using the existing exact signed proof and SOA objects. It does not rewrite the signed proof, does not inflate TTL under the old signature, and needs no new numeric tuple.",
+  "receiptAt": 1792714100,
+  "receiptMeaning": "base+500, 100 seconds before the parent publication at base+600",
+  "expiresAt": 1792714400,
+  "expiryMeaning": "receipt+300 = base+800, 199 seconds after the checkpoint and 200 seconds after parent publication",
+  "checkpointClockUnchanged": 1792714201,
+  "cacheLifetime": 300,
+  "negativeTtl": 300,
+  "rejectedOption": "A separately declared 3600-second proof plus 3600-second SOA/cache inputs. That would require new independently signed objects and would not be minimal; it is a different authored profile, not this correction.",
+  "numericCoordination": {
+   "newTupleNeeded": false,
+   "existingObjectsUsed": [
+    "numeric/resolution-profile-fixtures.json rrsets.denial-parent-unsigned-lab",
+    "numeric/resolution-profile-fixtures.json signatures.denial-parent-unsigned-lab-signature",
+    "numeric/parent-negative-fixtures.json rrsets.example-soa-negative-cache",
+    "numeric/parent-negative-fixtures.json signatures.example-soa-negative-cache-signature"
+   ],
+   "numericFixturesRequest": "none"
+  }
+ },
+ "canonicalization": {
+  "algorithm": "SHA-256 over UTF-8 JSON",
+  "jsonCanonicalization": "json.dumps(obj, sort_keys=True, separators=(',',':'), ensure_ascii=False)",
+  "note": "Canonical hashes below cover the exact JSON objects, not file formatting."
+ },
+ "patches": [
+  {
+   "order": 1,
+   "path": "/lessons/6/cases/0/checkpoints/4/expected/cacheEntries/delegation",
+   "op": "replace",
+   "expectedBefore": {
+    "generation": "no-ds-before-bootstrap",
+    "status": "insecure",
+    "expiresAt": 1792717200
+   },
+   "expectedBeforeCanonicalSha256": "6e9a2f7447ab25c185446fc32ad6c2ab2a1dedd08a6c98634cb1306afba2fd1e",
+   "value": {
+    "generation": "no-ds-before-bootstrap",
+    "status": "insecure",
+    "receivedAt": 1792714100,
+    "expiresAt": 1792714400,
+    "originalTtl": 300,
+    "negativeTtl": 300,
+    "sourceRrsetId": "denial-parent-unsigned-lab",
+    "sourceSignatureId": "denial-parent-unsigned-lab-signature",
+    "sourceDataset": "numeric/resolution-profile-fixtures.json",
+    "applicableSoaRrsetId": "example-soa-negative-cache",
+    "applicableSoaSignatureId": "example-soa-negative-cache-signature",
+    "applicableSoaDataset": "numeric/parent-negative-fixtures.json",
+    "applicableSoaMinimum": 300,
+    "applicableSoaRrsetTtl": 3600,
+    "provenance": "later pre-publication remote receipt at base+500; TTL 300 from NSEC/SOA minimum; cache persists at base+601 and expires at base+800"
+   },
+   "valueCanonicalSha256": "f5a4ce6809a1f80bb542c54df9a26a8cc98c2a7fa12dc7f3ebc9c7a16083a1e7",
+   "sources": [
+    "docs/dnssec-expansion/contract-errata/effective/worksheet-publication.json checkpoint remote-no-ds-cache-persists",
+    "numeric/resolution-profile-fixtures.json denial-parent-unsigned-lab TTL300 / signature OriginalTTL300",
+    "numeric/parent-negative-fixtures.json example-soa-negative-cache SOA MINIMUM300 / TTL3600",
+    "RFC2308 section 5 negative TTL min(SOA.MINIMUM, SOA TTL)"
+   ],
+   "rationale": "Replace the unsupported 3600-second cache lifetime with a literal 300-second pre-publication receipt. The checkpoint clock and the cache-coexistence observation remain unchanged."
+  },
+  {
+   "order": 2,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsSoaRrsetId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "example-soa-negative-cache",
+   "sources": [
+    "numeric/parent-negative-fixtures.json"
+   ],
+   "rationale": "Declare the applicable parent SOA bound for the no-DS negative cache."
+  },
+  {
+   "order": 3,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsSoaSignatureId",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "example-soa-negative-cache-signature",
+   "sources": [
+    "numeric/parent-negative-fixtures.json"
+   ],
+   "rationale": "Declare the independent signature over the applicable SOA."
+  },
+  {
+   "order": 4,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsSoaSource",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": "numeric/parent-negative-fixtures.json",
+   "sources": [
+    "numeric/parent-negative-fixtures.json"
+   ],
+   "rationale": "Exact dataset for the applicable parent SOA."
+  },
+  {
+   "order": 5,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsOriginalTtl",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": 300,
+   "sources": [
+    "numeric/resolution-profile-fixtures.json denial-parent-unsigned-lab ttl=300",
+    "denial-parent-unsigned-lab-signature originalTtl=300"
+   ],
+   "rationale": "Explicit proof TTL binding; no TTL inflation under the existing signature."
+  },
+  {
+   "order": 6,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsSoaMinimum",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": 300,
+   "sources": [
+    "numeric/parent-negative-fixtures.json example-soa-negative-cache SOA MINIMUM=300"
+   ],
+   "rationale": "Explicit SOA MINIMUM bound."
+  },
+  {
+   "order": 7,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsNegativeTtl",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": 300,
+   "sources": [
+    "RFC2308 section 5",
+    "SOA MINIMUM=300 and NSEC TTL=300"
+   ],
+   "rationale": "Explicit negative-cache TTL = min(300,300)=300."
+  },
+  {
+   "order": 8,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsSoaRrsetTtl",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": 3600,
+   "sources": [
+    "numeric/parent-negative-fixtures.json example-soa-negative-cache ttl=3600"
+   ],
+   "rationale": "Record the SOA RRset TTL separately from SOA MINIMUM; the SOA TTL alone does not extend the 300-second negative TTL."
+  },
+  {
+   "order": 9,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsCacheReceivedAt",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": 1792714100,
+   "sources": [
+    "explicit authored later pre-publication remote receipt"
+   ],
+   "rationale": "Declare the receipt at base+500, 100 seconds before parent publication at base+600."
+  },
+  {
+   "order": 10,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsCacheExpiresAt",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": 1792714400,
+   "sources": [
+    "receipt+300",
+    "RFC2308 section 5"
+   ],
+   "rationale": "Declare expiry at base+800, 199 seconds after the unchanged checkpoint at base+601."
+  },
+  {
+   "order": 11,
+   "path": "/lessons/6/cases/0/setup/bootstrap/selectedParentNoDsCacheTtl",
+   "op": "add",
+   "expectedBefore": null,
+   "expectedBeforeState": "absent",
+   "value": 300,
+   "sources": [
+    "numeric proof TTL300",
+    "SOA MINIMUM300",
+    "RFC2308 section 5"
+   ],
+   "rationale": "Explicit 300-second cache lifetime consistent with the selected signed proof and SOA bound."
+  }
+ ],
+ "nonChanges": [
+  "Checkpoint clock remains 1792714201 (parent publication 1792714200 + 1).",
+  "Parent publication remains at 1792714200 with parentDsKeys [child-ksk-g1], dsTtl 600, remoteCachesInvalidated false.",
+  "The secure signaling validation checkpoint and authenticated-bootstrap outcome are unchanged.",
+  "No sequence or hops arrays are changed; no index shift is possible.",
+  "All 9 lessons and 66 case IDs/defaults remain unchanged.",
+  "No TTL is inflated under denial-parent-unsigned-lab-signature; the 300-second proof remains selected."
+ ],
+ "evidenceHashes": {
+  "denialParentProofDataset": {
+   "path": "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json",
+   "sha256": "4001c10f0f19a52d69d7d07198874ea4d96a448e75ac4f35d0bb7f97f282973d"
+  },
+  "parentNegativeSoaDataset": {
+   "path": "docs/dnssec-expansion/numeric/parent-negative-fixtures.json",
+   "sha256": "0d0c433ab595dec3991ad83d26ed1ff71fa3656205e7fcc7388f8db6d43646f3"
+  },
+  "rfc2308Capture": {
+   "path": "docs/dnssec-expansion/sources/resolution/s09-rfc2308-text.txt",
+   "sha256": "7fdfca474a92f7dfee13e70998c40c263104087da46cac91944f643562ce3fba",
+   "section": "5 Caching Negative Answers"
+  },
+  "effectiveCheckpointExpectedCanonicalSha256": {
+   "before": "1e27c7a7d28df43075e5ea35289c7ae1fef0098eb44dbfb497b9f0514478d12a",
+   "after": "7a0037686ba3b271b67140cdcf2974eb8597922d77c02df725cdcfa12a99c265"
+  },
+  "effectiveCacheEntryCanonicalSha256": {
+   "before": "6e9a2f7447ab25c185446fc32ad6c2ab2a1dedd08a6c98634cb1306afba2fd1e",
+   "after": "f5a4ce6809a1f80bb542c54df9a26a8cc98c2a7fa12dc7f3ebc9c7a16083a1e7"
+  }
+ },
+ "patchCount": 11
+}

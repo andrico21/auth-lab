@@ -1,0 +1,330 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNS-R10-bounded-before-after-alias-semantic-preservation",
+  "passed": true,
+  "argv": [
+    "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+    "/home/andrico/auth-lab-held-objects/docs/verification/dnssec-r10-correction/semantic-delta-runner-01.mjs",
+    "/home/andrico/auth-lab-held-objects",
+    "/home/andrico/.cache/dnssec-r10-before-SavJZR/source",
+    "/home/andrico/auth-lab-held-objects/docs/verification/dnssec-r10-correction/semantic-delta-01.json"
+  ],
+  "rows": [
+    {
+      "variant": "cname-bogus-target",
+      "sourceEvents": 35,
+      "wirePacketArtifacts": 6,
+      "signedPublicArtifacts": 27,
+      "sourceStructureUnchanged": true,
+      "allWireAndSignedValuesUnchanged": true,
+      "outcomeUnchanged": true,
+      "aggregateCacheUnchanged": true,
+      "entireTargetCacheUnchanged": true,
+      "namespaceChangedPaths": [
+        "lab-dnssec09:alias-cache.authenticatedProofDeadline",
+        "lab-dnssec09:alias-cache.remainingTtl",
+        "lab-dnssec09:alias-cache.validatedAt"
+      ],
+      "alias": {
+        "id": "lab-dnssec09:alias-cache",
+        "kind": "answer",
+        "key": [
+          "public-v1",
+          "resolver-public-v1",
+          "alias.lab.example.",
+          "CNAME",
+          "IN"
+        ],
+        "receivedAt": 1792713600,
+        "validatedAt": 1792713600,
+        "expiresAt": 1792713900,
+        "remainingTtl": 300,
+        "sourceGeneration": 1,
+        "receivedRrsetTtl": 300,
+        "receivedRrsigTtl": 300,
+        "originalTtl": 3600,
+        "signatureDeadline": 1792717200,
+        "authenticatedProofDeadline": 1792717200,
+        "validationOwner": "dnsValidator",
+        "securityStatus": "secure",
+        "evidenceRefs": [
+          "lab-dnssec09:cname-bogus-target:numericBindings-primary:cross-zone-cname"
+        ],
+        "qname": "alias.lab.example.",
+        "hasSignedNXNAME": false,
+        "upstreamCO": 0,
+        "proofZone": "lab.example.",
+        "checkingContext": "CD0",
+        "zone": "lab.example."
+      },
+      "target": {
+        "id": "lab-dnssec09:target-cache",
+        "kind": "failure",
+        "key": [
+          "public-v1",
+          "resolver-public-v1",
+          "www.other.example.",
+          "A",
+          "IN",
+          "CD0"
+        ],
+        "receivedAt": 1792713600,
+        "validatedAt": null,
+        "expiresAt": 1792713605,
+        "remainingTtl": 5,
+        "sourceGeneration": 1,
+        "receivedRrsetTtl": 300,
+        "receivedRrsigTtl": 300,
+        "originalTtl": 3600,
+        "signatureDeadline": null,
+        "authenticatedProofDeadline": null,
+        "validationOwner": "dnsValidator",
+        "securityStatus": "bogus",
+        "evidenceRefs": [
+          "lab-dnssec09:cname-bogus-target:numericBindings-additional-1:example-other-ds",
+          "lab-dnssec09:cname-bogus-target:numericBindings-additional-2:other-dnskey-g1",
+          "lab-dnssec09:cname-bogus-target:numericBindings-additional-0:other-www-a"
+        ],
+        "qname": "www.other.example.",
+        "hasSignedNXNAME": false,
+        "upstreamCO": 0,
+        "proofZone": "other.example.",
+        "checkingContext": "CD0",
+        "zone": "other.example."
+      }
+    },
+    {
+      "variant": "cname-secure-target",
+      "sourceEvents": 37,
+      "wirePacketArtifacts": 6,
+      "signedPublicArtifacts": 29,
+      "sourceStructureUnchanged": true,
+      "allWireAndSignedValuesUnchanged": true,
+      "outcomeUnchanged": true,
+      "aggregateCacheUnchanged": true,
+      "entireTargetCacheUnchanged": true,
+      "namespaceChangedPaths": [],
+      "alias": {
+        "id": "lab-dnssec09:alias-cache",
+        "kind": "answer",
+        "key": [
+          "public-v1",
+          "resolver-public-v1",
+          "alias.lab.example.",
+          "CNAME",
+          "IN"
+        ],
+        "receivedAt": 1792713600,
+        "validatedAt": 1792713600,
+        "expiresAt": 1792713900,
+        "remainingTtl": 300,
+        "sourceGeneration": 1,
+        "receivedRrsetTtl": 300,
+        "receivedRrsigTtl": 300,
+        "originalTtl": 3600,
+        "signatureDeadline": 1792717200,
+        "authenticatedProofDeadline": 1792717200,
+        "validationOwner": "dnsValidator",
+        "securityStatus": "secure",
+        "evidenceRefs": [
+          "lab-dnssec09:cname-secure-target:numericBindings-primary:cross-zone-cname"
+        ],
+        "qname": "alias.lab.example.",
+        "hasSignedNXNAME": false,
+        "upstreamCO": 0,
+        "proofZone": "lab.example.",
+        "checkingContext": "CD0",
+        "zone": "lab.example."
+      },
+      "target": {
+        "id": "lab-dnssec09:target-cache",
+        "kind": "answer",
+        "key": [
+          "public-v1",
+          "resolver-public-v1",
+          "www.other.example.",
+          "A",
+          "IN"
+        ],
+        "receivedAt": 1792713600,
+        "validatedAt": 1792713600,
+        "expiresAt": 1792713900,
+        "remainingTtl": 300,
+        "sourceGeneration": 1,
+        "receivedRrsetTtl": 300,
+        "receivedRrsigTtl": 300,
+        "originalTtl": 3600,
+        "signatureDeadline": 1792717200,
+        "authenticatedProofDeadline": 1792717200,
+        "validationOwner": "dnsValidator",
+        "securityStatus": "secure",
+        "evidenceRefs": [
+          "lab-dnssec09:cname-secure-target:numericBindings-additional-1:example-other-ds",
+          "lab-dnssec09:cname-secure-target:numericBindings-additional-2:other-dnskey-g1",
+          "lab-dnssec09:cname-secure-target:numericBindings-additional-0:other-www-a"
+        ],
+        "qname": "www.other.example.",
+        "hasSignedNXNAME": false,
+        "upstreamCO": 0,
+        "proofZone": "other.example.",
+        "checkingContext": "CD0",
+        "zone": "other.example."
+      }
+    },
+    {
+      "variant": "cname-insecure-target",
+      "sourceEvents": 36,
+      "wirePacketArtifacts": 6,
+      "signedPublicArtifacts": 27,
+      "sourceStructureUnchanged": true,
+      "allWireAndSignedValuesUnchanged": true,
+      "outcomeUnchanged": true,
+      "aggregateCacheUnchanged": true,
+      "entireTargetCacheUnchanged": true,
+      "namespaceChangedPaths": [],
+      "alias": {
+        "id": "lab-dnssec09:alias-cache",
+        "kind": "answer",
+        "key": [
+          "public-v1",
+          "resolver-public-v1",
+          "alias.lab.example.",
+          "CNAME",
+          "IN"
+        ],
+        "receivedAt": 1792713600,
+        "validatedAt": 1792713600,
+        "expiresAt": 1792713900,
+        "remainingTtl": 300,
+        "sourceGeneration": 1,
+        "receivedRrsetTtl": 300,
+        "receivedRrsigTtl": 300,
+        "originalTtl": 3600,
+        "signatureDeadline": 1792717200,
+        "authenticatedProofDeadline": 1792717200,
+        "validationOwner": "dnsValidator",
+        "securityStatus": "secure",
+        "evidenceRefs": [
+          "lab-dnssec09:cname-insecure-target:numericBindings-primary:cross-zone-cname"
+        ],
+        "qname": "alias.lab.example.",
+        "hasSignedNXNAME": false,
+        "upstreamCO": 0,
+        "proofZone": "lab.example.",
+        "checkingContext": "CD0",
+        "zone": "lab.example."
+      },
+      "target": {
+        "id": "lab-dnssec09:target-cache",
+        "kind": "answer",
+        "key": [
+          "public-v1",
+          "resolver-public-v1",
+          "www.other.example.",
+          "A",
+          "IN"
+        ],
+        "receivedAt": 1792713600,
+        "validatedAt": 1792713600,
+        "expiresAt": 1792713900,
+        "remainingTtl": 300,
+        "sourceGeneration": 1,
+        "receivedRrsetTtl": 300,
+        "receivedRrsigTtl": null,
+        "originalTtl": null,
+        "signatureDeadline": null,
+        "authenticatedProofDeadline": 1792717200,
+        "validationOwner": "dnsValidator",
+        "securityStatus": "insecure",
+        "evidenceRefs": [
+          "lab-dnssec09:cname-insecure-target:numericBindings-additional-1:other-parent-no-ds-nsec"
+        ],
+        "qname": "www.other.example.",
+        "hasSignedNXNAME": false,
+        "upstreamCO": 0,
+        "proofZone": "other.example.",
+        "checkingContext": "CD0",
+        "zone": "other.example."
+      }
+    },
+    {
+      "variant": "dname-synthesized-cname",
+      "sourceEvents": 40,
+      "wirePacketArtifacts": 6,
+      "signedPublicArtifacts": 31,
+      "sourceStructureUnchanged": true,
+      "allWireAndSignedValuesUnchanged": true,
+      "outcomeUnchanged": true,
+      "aggregateCacheUnchanged": true,
+      "entireTargetCacheUnchanged": true,
+      "namespaceChangedPaths": [],
+      "alias": {
+        "id": "lab-dnssec09:alias-cache",
+        "kind": "answer",
+        "key": [
+          "public-v1",
+          "resolver-public-v1",
+          "branch.lab.example.",
+          "DNAME",
+          "IN"
+        ],
+        "receivedAt": 1792713600,
+        "validatedAt": 1792713600,
+        "expiresAt": 1792713900,
+        "remainingTtl": 300,
+        "sourceGeneration": 1,
+        "receivedRrsetTtl": 300,
+        "receivedRrsigTtl": 300,
+        "originalTtl": 3600,
+        "signatureDeadline": 1792717200,
+        "authenticatedProofDeadline": 1792717200,
+        "validationOwner": "dnsValidator",
+        "securityStatus": "secure",
+        "evidenceRefs": [
+          "lab-dnssec09:dname-synthesized-cname:numericBindings-primary:child-dname"
+        ],
+        "qname": "host.branch.lab.example.",
+        "hasSignedNXNAME": false,
+        "upstreamCO": 0,
+        "proofZone": "lab.example.",
+        "checkingContext": "CD0",
+        "zone": "lab.example."
+      },
+      "target": {
+        "id": "lab-dnssec09:target-cache",
+        "kind": "answer",
+        "key": [
+          "public-v1",
+          "resolver-public-v1",
+          "host.other.example.",
+          "A",
+          "IN"
+        ],
+        "receivedAt": 1792713600,
+        "validatedAt": 1792713600,
+        "expiresAt": 1792713900,
+        "remainingTtl": 300,
+        "sourceGeneration": 1,
+        "receivedRrsetTtl": 300,
+        "receivedRrsigTtl": 300,
+        "originalTtl": 3600,
+        "signatureDeadline": 1792717200,
+        "authenticatedProofDeadline": 1792717200,
+        "validationOwner": "dnsValidator",
+        "securityStatus": "secure",
+        "evidenceRefs": [
+          "lab-dnssec09:dname-synthesized-cname:numericBindings-additional-2:example-other-ds",
+          "lab-dnssec09:dname-synthesized-cname:numericBindings-additional-3:other-dnskey-g1",
+          "lab-dnssec09:dname-synthesized-cname:numericBindings-additional-1:other-host-a"
+        ],
+        "qname": "host.other.example.",
+        "hasSignedNXNAME": false,
+        "upstreamCO": 0,
+        "proofZone": "other.example.",
+        "checkingContext": "CD0",
+        "zone": "other.example."
+      }
+    }
+  ],
+  "scope": "Exact verified corrections02 canonical source versus R10 source. No expected worksheet/data regenerated, no added network/check event. Four neighbors, every target field, aggregate result and all carried/signed public records compared; only the three literal bogus-target alias fields differ. Not live DNS, native browser or timing evidence."
+}

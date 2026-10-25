@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNSSEC-profile-grounded-optimization-boundary",
+  "recordedAt": "2026-10-24T16:57:27.977Z",
+  "raw": {
+    "path": "docs/verification/dnssec-review-corrections/performance-profile-before-01/profile-status.json",
+    "sha256": "b24566030a38b5d3b04effd584d54bdf4daedf989f59aa4b3d2616dde1bb85f8",
+    "bytes": 212515
+  },
+  "contexts": 2,
+  "phases": 16,
+  "inputsUnchanged": true,
+  "findings": [
+    "Global field index rendering and context-dependent definition projection are measurable shared startup/selection/search work, including closed-index selection.",
+    "Startup samples also contain substantial native/program/GC activity; these samples do not establish DNSSEC construction as the sole cause of startup latency.",
+    "Legacy and DNSSEC replay-start profiles do not establish an expensive single JavaScript root cause."
+  ],
+  "decision": "Inspect narrowly duplicated index-context definition lookups while keeping normal default-open index and all fields/cases. Do not add another cache around existing definition memoization without a concrete avoided operation.",
+  "measurementLimits": "Profiled wall times and CPU self samples are diagnostics, not latency comparison values; fresh uninstrumented preserved-method comparisons and owner dispositions remain required.",
+  "acceptanceOrWaiver": false
+}

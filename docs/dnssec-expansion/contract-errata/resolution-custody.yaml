@@ -1,0 +1,258 @@
+kind: dnssec-resolution-errata-custody
+schemaVersion: 1
+applies_to: local://dnssec-resolution-errata-proposal.yaml
+finding_id: DNS-OWN-01
+case_scope: all 13 resolution lessons / all 93 named cases
+status: proposal-only-not-applied
+priority: 1
+confidence: 0.95
+determination: exhaustive-runtime-ownership-not-historical-provenance
+production_consulted: false
+worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+rationale: >-
+  The resolution ownership object is the declared signer-only custody boundary,
+  not a historical note. Its custodyInvariants require that private key material
+  never becomes resolver, stub, authority-only server or network custody, so a
+  bound RRSIG signer must have a dnsSigner capability owner. The numeric key
+  objects for the bound signers declare privateCustodian dnsSigner and
+  privateIsNetworkRecord false. The upper-path DS RRSIGs in numericBindings.chain
+  are made by root-zsk-g1 and example-zsk-g1, but the literal signerOnly list
+  omits them and setup.keys omits their public metadata. The same omission
+  applies to g2/CSK/other-zone signers and to child-csk private-view signers.
+  The keyBindings public keys are not used to infer private capability.
+policy:
+  before: >-
+    A bound RRSIG signer can have no explicit dnsSigner private capability and
+    no setup.keys public entry; the reader must infer custody from a received
+    DNSKEY or a verification label.
+  after: >-
+    Every bound RRSIG signer has either an explicit <keyId>-private capability
+    owned by dnsSigner or an explicit same-material alias to an existing
+    capability; setup.keys exposes the public metadata for the signer key.
+    Numeric privateCustodian bytes are unchanged and never copied into the
+    worksheet; received DNSKEY does not create private capability.
+numeric_evidence:
+  dnssec-numeric-fixtures.json:
+    sha256: 10e8b7d6587ab77023d03ba91df7a83372a35f575e306e68afe4288f02f81c61
+    keys:
+      root-zsk-g1: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, distinct_material: true}
+      example-zsk-g1: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, distinct_material: true}
+      child-zsk-g2: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, distinct_material: true}
+      child-ksk-g2: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, distinct_material: true}
+      child-csk-g1: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, distinct_material: true}
+      child-csk-g2: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, distinct_material: true}
+      root-ksk-g1: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, already_listed: true}
+      example-ksk-g1: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, already_listed: true}
+      child-ksk-g1: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, already_listed: true}
+      child-zsk-g1: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, already_listed: true}
+  record-profile-fixtures.json:
+    sha256: bf398d383837758821a3a4d859417f4df70fb612b7883b064339900df29199ed
+    keys:
+      other-ksk-g1: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, distinct_material: true}
+      other-zsk-g1: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, distinct_material: true}
+  resolution-profile-fixtures.json:
+    sha256: 4001c10f0f19a52d69d7d07198874ea4d96a448e75ac4f35d0bb7f97f282973d
+    keys:
+      child-zsk-protocol2: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, samePrivateMaterialAs: child-zsk-g1}
+      child-zsk-zoneflag-clear: {privateCustodian: dnsSigner, privateIsNetworkRecord: false, samePrivateMaterialAs: child-zsk-g1}
+verification_labels:
+  child-zsk-protocol2: >-
+    Verification-generator public-key label for the Protocol=2 candidate; it
+    shares child-zsk-g1 private material. Do not add a separate
+    child-zsk-protocol2-private capability; add only the public key catalog
+    entry and the same-material alias.
+  child-zsk-zoneflag-clear: >-
+    Verification-generator public-key label for the Zone-flag-clear candidate;
+    it shares child-zsk-g1 private material. Do not add a separate
+    child-zsk-zoneflag-clear-private capability; add only the public key catalog
+    entry and the same-material alias.
+  fixtureOnlyPrivateHex: >-
+    Numeric generation material. Never copied into worksheet ownership,
+    setup.keys or any network holder.
+canonical_key_metadata:
+  root-zsk-g1: {owner: ".", flags: 256, protocol: 3, algorithm: 13, generation: 1}
+  example-zsk-g1: {owner: "example.", flags: 256, protocol: 3, algorithm: 13, generation: 1}
+  child-zsk-g2: {owner: "lab.example.", flags: 256, protocol: 3, algorithm: 13, generation: 2}
+  child-ksk-g2: {owner: "lab.example.", flags: 257, protocol: 3, algorithm: 13, generation: 2}
+  child-csk-g1: {owner: "lab.example.", flags: 257, protocol: 3, algorithm: 13, generation: "private-g1"}
+  child-csk-g2: {owner: "lab.example.", flags: 257, protocol: 3, algorithm: 13, generation: "private-g2"}
+  other-ksk-g1: {owner: "other.example.", flags: 257, protocol: 3, algorithm: 13, generation: 1}
+  other-zsk-g1: {owner: "other.example.", flags: 256, protocol: 3, algorithm: 13, generation: 1}
+  child-zsk-protocol2: {owner: "lab.example.", flags: 256, protocol: 2, algorithm: 13, generation: 1, samePrivateMaterialAs: child-zsk-g1}
+  child-zsk-zoneflag-clear: {owner: "lab.example.", flags: 1, protocol: 3, algorithm: 13, generation: 1, samePrivateMaterialAs: child-zsk-g1}
+groups:
+  default:
+    scope: all 93 cases except the explicit_groups below
+    before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+    add_signer_only_private_keys: [root-zsk-g1-private, example-zsk-g1-private]
+    after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private]
+    add_setup_keys: [root-zsk-g1, example-zsk-g1]
+    patch:
+      pointer: /lessons/{lessonIndex}/cases/{caseIndex}/ownership/signerOnlyPrivateKeys/dnsSigner
+      op: replace
+      expect: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      value: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private]
+      setup_keys_pointer: /lessons/{lessonIndex}/cases/{caseIndex}/setup/keys/{keyId}
+      setup_keys_op: add
+      expect_absent_per_key: true
+  explicit_groups:
+    - id: supported-g2
+      cases: [DNS03/supported-ds-mismatch]
+      lessonIndex: 1
+      caseIndex: 2
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [root-zsk-g1-private, example-zsk-g1-private, child-ksk-g2-private, child-zsk-g2-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private, child-ksk-g2-private, child-zsk-g2-private]
+      add_setup_keys: [root-zsk-g1, example-zsk-g1, child-ksk-g2, child-zsk-g2]
+    - id: missing-ds-root-only
+      cases: [DNS03/missing-ds-proof]
+      lessonIndex: 1
+      caseIndex: 3
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [root-zsk-g1-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private]
+      add_setup_keys: [root-zsk-g1]
+    - id: noop
+      cases: [DNS03/no-covering-anchor, DNS03/signed-island-with-local-anchor]
+      lessonIndexes: [1]
+      caseIndexes: [4, 5]
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: []
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_setup_keys: []
+      note: no bound signer outside the existing list; no custody change
+    - id: signature-not-yet-valid
+      cases: [DNS04/signature-not-yet-valid]
+      lessonIndex: 2
+      caseIndex: 2
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [root-zsk-g1-private, example-zsk-g1-private, child-zsk-g2-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private, child-zsk-g2-private]
+      add_setup_keys: [root-zsk-g1, example-zsk-g1]
+      setup_keys_replace:
+        - pointer: /lessons/2/cases/2/setup/keys/child-zsk-g2
+          expect: {owner: lab.example., flags: 256, protocol: 3, algorithm: 13}
+          value: {owner: lab.example., flags: 256, protocol: 3, algorithm: 13, generation: 2}
+    - id: wrong-signer-other-zsk
+      cases: [DNS04/wrong-signer-or-key]
+      lessonIndex: 2
+      caseIndex: 6
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [root-zsk-g1-private, example-zsk-g1-private, other-zsk-g1-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private, other-zsk-g1-private]
+      add_setup_keys: [root-zsk-g1, example-zsk-g1, other-zsk-g1]
+    - id: protocol2-variant
+      cases: [DNS04/dnskey-protocol-not-three]
+      lessonIndex: 2
+      caseIndex: 9
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [root-zsk-g1-private, example-zsk-g1-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private]
+      add_setup_keys: [root-zsk-g1, example-zsk-g1, child-zsk-protocol2]
+      same_material_alias:
+        pointer: /lessons/2/cases/9/ownership/signerOnlyPrivateKeys/dnsSignerSameMaterialAliases
+        value: {child-zsk-protocol2: child-zsk-g1}
+    - id: zoneflag-variant
+      cases: [DNS04/zone-key-flag-clear]
+      lessonIndex: 2
+      caseIndex: 10
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [root-zsk-g1-private, example-zsk-g1-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private]
+      add_setup_keys: [root-zsk-g1, example-zsk-g1, child-zsk-zoneflag-clear]
+      same_material_alias:
+        pointer: /lessons/2/cases/10/ownership/signerOnlyPrivateKeys/dnsSignerSameMaterialAliases
+        value: {child-zsk-zoneflag-clear: child-zsk-g1}
+    - id: alias-other-zone
+      cases: [DNS09/cname-secure-target, DNS09/cname-bogus-target, DNS09/dname-synthesized-cname]
+      lessonIndex: 7
+      caseIndexes: [3, 5, 6]
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [root-zsk-g1-private, example-zsk-g1-private, other-ksk-g1-private, other-zsk-g1-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private, other-ksk-g1-private, other-zsk-g1-private]
+      add_setup_keys: [root-zsk-g1, example-zsk-g1, other-ksk-g1, other-zsk-g1]
+    - id: cname-insecure-unsigned-target
+      cases: [DNS09/cname-insecure-target]
+      lessonIndex: 7
+      caseIndex: 4
+      note: after the DNS09-INSECURE-01 correction the signed other-www-a/DS/DNSKEY are not selected evidence; only the parent NSEC by example-zsk-g1 and the alias by child-zsk-g1 are used, so this follows the default group and does not add other-zone private capability.
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [root-zsk-g1-private, example-zsk-g1-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private]
+      add_setup_keys: [root-zsk-g1, example-zsk-g1]
+    - id: private-local-dedupe
+      cases: [DNS22/private-signed-zone-local-anchor]
+      lessonIndex: 12
+      caseIndex: 0
+      before_signer_only_private_keys: [child-csk-g1-private, child-csk-g1-private]
+      add_signer_only_private_keys: []
+      after_signer_only_private_keys: [child-csk-g1-private]
+      add_setup_keys: [child-csk-g1]
+      note: dedupe the duplicate child-csk-g1-private capability; it is one opaque custodian, not two.
+    - id: private-noanchor-conditional
+      cases: [DNS22/private-signed-zone-no-covering-anchor, DNS22/conditional-forward-with-local-validation]
+      lessonIndex: 12
+      caseIndexes: [1, 2]
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [child-csk-g1-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, child-csk-g1-private]
+      add_setup_keys: [child-csk-g1]
+    - id: private-two-client-mixed
+      cases: [DNS22/different-client-trust-stores, DNS22/private-view-versus-public-chain]
+      lessonIndex: 12
+      caseIndexes: [3, 5]
+      before_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private]
+      add_signer_only_private_keys: [root-zsk-g1-private, example-zsk-g1-private, child-csk-g1-private]
+      after_signer_only_private_keys: [root-ksk-g1-private, example-ksk-g1-private, child-ksk-g1-private, child-zsk-g1-private, root-zsk-g1-private, example-zsk-g1-private, child-csk-g1-private]
+      add_setup_keys: [root-zsk-g1, example-zsk-g1, child-csk-g1]
+    - id: stale-private-g2
+      cases: [DNS22/stale-private-anchor]
+      lessonIndex: 12
+      caseIndex: 4
+      before_signer_only_private_keys: [child-csk-g2-private]
+      add_signer_only_private_keys: []
+      after_signer_only_private_keys: [child-csk-g2-private]
+      add_setup_keys: [child-csk-g2]
+      note: the signer capability is already present; only the missing public key catalog entry is added.
+patches:
+  ownership:
+    op: replace
+    pointer_template: /lessons/{lessonIndex}/cases/{caseIndex}/ownership/signerOnlyPrivateKeys/dnsSigner
+    expect: group_before_signer_only_private_keys
+    value: group_after_signer_only_private_keys
+  key_catalog:
+    op: add
+    pointer_template: /lessons/{lessonIndex}/cases/{caseIndex}/setup/keys/{keyId}
+    expect_absent: true
+    value: canonical_key_metadata[keyId]
+  same_material_alias:
+    op: add
+    pointer_template: /lessons/{lessonIndex}/cases/{caseIndex}/ownership/signerOnlyPrivateKeys/dnsSignerSameMaterialAliases
+    expect_absent: true
+    value: same_material_alias.value
+  setup_keys_replace:
+    op: replace
+    pointer: /lessons/2/cases/2/setup/keys/child-zsk-g2
+    expect: {owner: lab.example., flags: 256, protocol: 3, algorithm: 13}
+    value: {owner: lab.example., flags: 256, protocol: 3, algorithm: 13, generation: 2}
+coverage:
+  root_zsk_signature_example: >-
+    DNS03/signed-child numericBindings.chain-1 root-example-ds is signed by
+    root-zsk-g1; chain-3 example-child-ds is signed by example-zsk-g1. The
+    current ownership lists neither private capability. After this proposal
+    both are explicit dnsSigner capabilities and both public keys are in
+    setup.keys.
+  no_received_dnskey_inference: >-
+    The proposal does not use resolver, parent, child or stub receipt of a
+    DNSKEY to create private capability. The capability comes from the bound
+    signer identity and the numeric privateCustodian declaration only.
+  numeric_private_bytes_unchanged: >-
+    No fixtureOnlyPrivateHex, private scalar, PEM private key or numeric file
+    is copied or modified. New material is limited to worksheet labels and
+    public metadata.
+limits:
+  - This is an independent oracle errata proposal, not an application, source or numeric fixture change.
+  - The default group applies only to the listed 93-case scope minus explicit groups; it must not widen to non-resolution shards.
+  - Variant labels sharing child-zsk-g1 private material are documented as aliases, not as new custodians.
+  - The publication audit's independent mismatch confirmation is noted as corroboration only; the exact numeric privateCustodian fields above are the evidence used here.

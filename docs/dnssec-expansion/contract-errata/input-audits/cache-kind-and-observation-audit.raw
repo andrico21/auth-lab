@@ -1,0 +1,11 @@
+Read-only input audit complete; full report delivered to `agent://Main`. Summary:
+
+- **Scanned 159/159 cases** in `effective-client-context/worksheet.json` (SHA `c7fc1efd…`). No production/source/gate outputs, no executions, no edits.
+- **DNS22 applied changes confirmed**: ownership has base + `clientA-public-v1` + `clientB-private-v1` anchors; both `identical-owner` and both accepted-use entries are `kind:"answer"`. No remaining DNS22 patch.
+- **Coverage**: 93 cases with array `cacheEntries` (107 checkpoint arrays, 106 kind-bearing entries, 3 empty arrays); 13 cases with keyed object `cacheEntries` (14 checkpoints, 15 subentries, no `kind`); 53 cases with none. No outcome has `cacheEntries`; `outcome.cacheKind` is a response/result class, not an entry-kind oracle (7 expected mismatches).
+- **Only genuine new contradiction**: DNS20/`retry-after-expiry` — checkpoint `/lessons/19/cases/5/checkpoints/2/expected/cacheEntries/0/kind` is `"positive"` while accepted-use is `"answer"` for the same generation-2 occurrence (`receivedAt:1792713606`, `expiresAt:1792713906`). Generation 2 is the repaired publication generation, not a different occurrence; the split is the same inconsistency.
+  - Patch: `replace` that pointer, `"positive"` → `"answer"`.
+  - Preserve `generation:2`, publication `repairedAt:1792713603`, all receipts/deadlines/TTLs, accepted entry id/key/evidence/owner/status, and outcomes.
+- **No patch for DNS21/`co-enabled`**: `compact-negative` is the CO/compact-denial cached-context record, while `authenticated-negative` is the authenticated answer cache entry; different objects, no id/key/generation link.
+- **No patch for DNS10 `eligibleForReuse`**: derived clock-jump observation metadata; the stored entry body, kind `positive`, receipt, provenance and deadlines remain fixed.
+- No other same-id/key or same-receipt/deadline kind divergences.

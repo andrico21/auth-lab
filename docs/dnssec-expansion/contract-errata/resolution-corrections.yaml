@@ -1,0 +1,52 @@
+kind: dnssec-resolution-errata-corrections
+schemaVersion: 1
+applies_to:
+  - local://dnssec-resolution-errata-proposal.yaml
+  - local://dnssec-resolution-errata-insertion-semantics.yaml
+status: authoritative-corrections-to-the-two-proposal-artifacts
+purpose: >-
+  Correct two checkpoint pointer/index errors in DNS10-OOP-01 and make the
+  comma-containing parent-holder strings explicit. This addendum is part of the
+  same proposal and supersedes only the named fields in the main artifact.
+corrections:
+  - finding: DNS10-OOP-01
+    issue: local-verification checkpoint index and primary evidence-index were wrong
+    original_pointer: /lessons/8/cases/9/checkpoints/3/expected/evidenceRefs/6
+    corrected_pointer: /lessons/8/cases/9/checkpoints/2/expected/evidenceRefs/5
+    expect: lab-dnssec10:out-of-proof-range:numericBindings-primary:www-a
+    value: lab-dnssec10:out-of-proof-range:numericBindings-primary:zz-a
+    reason: checkpoint 2 is local-verification-bound-to-evidence and the primary evidence ref is index 5
+  - finding: DNS10-OOP-01
+    issue: accepted-use cache evidence index was wrong
+    original_pointer: /lessons/8/cases/9/checkpoints/4/expected/cacheEntries/0/evidenceRefs/6
+    corrected_pointer: /lessons/8/cases/9/checkpoints/4/expected/cacheEntries/0/evidenceRefs/5
+    expect: lab-dnssec10:out-of-proof-range:numericBindings-primary:www-a
+    value: lab-dnssec10:out-of-proof-range:numericBindings-primary:zz-a
+    reason: checkpoint 4 is accepted-use-and-cache-boundary and the primary evidence ref is index 5
+  - finding: DNS09-XZONE-01
+    issue: ownership holder values contain commas and must be single string elements, not flow-sequence-separated
+    cases: [DNS09/cname-secure-target, DNS09/cname-insecure-target, DNS09/cname-bogus-target, DNS09/dname-synthesized-cname]
+    expected_before:
+      - "example DNSKEY, signed lab DS and NS/glue"
+    expected_after:
+      - "example DNSKEY, signed lab DS and NS/glue"
+      - "also serves other.example.; other.example keys/answer under separate signing authority"
+    reason: the original array has one string element; the corrected array has two string elements and preserves the first string exactly
+  - finding: DNS09-INSECURE-01
+    issue: NSEC records entry is a single presentation string, not three flow-sequence tokens
+    pointer: /lessons/7/cases/4/setup/numericBindings/additional/1/value/records
+    expected_before: null
+    value:
+      - "zzz.example. NS RRSIG NSEC"
+    reason: one NSEC RDATA presentation string with spaces; the type bitmap is NS, RRSIG, NSEC
+  - finding: DNS03-SC-01
+    issue: insertion indices are sequential and the original index need not be absent
+    pointer: /lessons/1/cases/0/outcome/flags/hops
+    original_order: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    insertion_rule: insert parent-ds at sequential position 0, then child-key at sequential position 1
+    final_order: [lab-dnssec03:signed-child:parent-ds, lab-dnssec03:signed-child:child-key, lab-dnssec03:leaf, lab-dnssec03:stub]
+    reason: see the insertion-semantics artifact for all eight insertion paths
+status_notes:
+  unchanged_frozen_bytes: true
+  production_consulted: false
+  no_build_test_lint_formatter: true

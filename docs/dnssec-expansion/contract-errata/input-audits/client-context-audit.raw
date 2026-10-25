@@ -1,0 +1,187 @@
+## Summary
+
+Read-only audit of `DNS22/different-client-trust-stores` in the current independent worksheet:
+
+- Acceptance input: `docs/dnssec-expansion/contract-errata/effective-receipts/worksheet.json`, SHA256 `d189ae3805268d378f4c2acd32f8a562ada4557b9ae67a1493734d47ecfbaedd`.
+- Merged location: `/lessons/21` (`DNS22`), `/lessons/21/cases/3` (`different-client-trust-stores`).
+- Shard location used by prior DNS22 patches: `/lessons/12/cases/3` in `effective-completion/worksheet-resolution.json` (case index and checkpoint indices are unchanged).
+- No production code, production topology or evaluator output was read or used.
+
+**Verdict:** the chosen profile is one `dnsValidator` actor with two per-client checking/trust-store contexts, not two independent validator actors. The standards permit that choice; the worksheet literally requires it. Three network conversations are necessary and declared; the public chain records are prerequisite-only evidence, not client answer conversations. Two residual input defects are genuine and justify additive input-only errata: the cache-entry `kind` at the pre-acceptance namespace checkpoint, and the stale/incomplete anchor ownership declaration. Everything else must be implemented as written; no erratum is justified for the single-resolver/single-stub choice, the pre-authenticated chain, or the use of `dnsUpstream` for the private answer.
+
+---
+
+## 1. Selected client/validator/topology scope
+
+| Fact | Evidence | Constraint |
+|---|---|---|
+| Two explicit views | `worksheet.json:152250-152251`, `:152415`, `:152429` | `public-v1` and `private-v1` |
+| Two named client trust stores | `setup.clients.clientA.trustStore = clientA-public-v1`; `clientB.trustStore = clientB-private-v1` (`:152413-152445`) | Must not substitute `resolver-public-v1` for `clientA-public-v1`; prior erratum `DNS22-CLIENT-CACHE-01` explicitly says “Use client A trust store, not resolver-public-v1” |
+| Client anchors | `clientA.anchors = ["root-ksk-g1"]`; `clientB.anchors = ["child-csk-g1"]` (`:152417-152419`, `:152430-152432`) | Separate trust namespaces; public root does not establish the private hierarchy |
+| Routes | base `setup.route.mode = iterative`, root/parent/child (`:152258-152262`); clientA `public iterative tree`; clientB `conditional private upstream` with `routeDetail.mode = conditional-forward`, suffix `lab.example.`, destination `198.51.100.53` (`:152420`, `:152433-152442`) | Conditional forwarding is destination selection only, not an authenticated delegation or anchor bootstrap |
+| Single checking actor | `trust-stores-do-not-merge` has `validators.dnsValidator.clients.clientA/clientB` (`:153077-153111`); accepted cache has `validatorRef = /validators/dnsValidator/clients/clientA|clientB` (`:153214-153247`) | One literal actor `dnsValidator` with per-client contexts; do not invent `dnsValidatorA`/`dnsValidatorB` |
+| Per-client validation status | Both clients `signatureChecked: true`, `securityStatus: "secure"`; `validationOwner: "dnsValidator"` (`:153079-153111`, `:153156-153188`) | Validation owner is strictly `dnsValidator`; `clientA`/`clientB` are not owners |
+| Separate answer caches | `identical-owner...` keys `[public-v1, clientA-public-v1, www.lab.example., A, IN]` and `[private-v1, clientB-private-v1, www.lab.example., A, IN]` (`:153120-153148`) | Identical owner name, distinct cache namespaces; do not merge |
+| Pre-authenticated public chain | `setup.initialCache.authenticatedParentDs = true`, `authenticatedChildDnskey = true`, `answer = false` (`:152406-152410`) | Chain evidence is prerequisite-only for this case; no root/parent conversations are declared |
+
+The plan’s DNS22 acceptance requires “two explicit DNS views with named trust stores, routes and fixture identities” and says not to merge caches or keys: `docs/dnssec-expansion/inputs/worker-plan.html:1110-1126`. It does **not** require two independent validator processes or two stub clients. The worksheet chooses one resolver/validator actor with two client contexts; that is consistent with RFC 4033 §6 local-policy anchor configuration and RFC 9499 §6 “View” being a local server configuration, not a standardized product design.
+
+---
+
+## 2. Literal actors vs contextual roles
+
+- **Literal selected actors:** `dnsApp`, `dnsStub`, `dnsResolver`, `dnsValidator`, `dnsSigner`, and `dnsOperator` where present. They occur as `actorId` values, validator-map keys, or ownership-map keys.
+- **Context identifiers, not actors:** `clientA`, `clientB`. They occur only under `setup.clients`, `validators.dnsValidator.clients`, cache `client`, and `validatorRef` suffixes. They are not security owners and do not replace `validationOwner: "dnsValidator"`.
+- **Topology endpoints, not actors:** `dnsRoot`, `dnsParent`, `dnsChild`, `dnsUpstream`. They appear only as hop `from`/`to` endpoints. `dnsChild` is the public authority endpoint; `dnsUpstream` is the conditional-forward transmitter. Neither is a validator actor.
+- **Logical key IDs, not actors and not raw keys:** `root-ksk-g1`, `child-ksk-g1`, `child-zsk-g1`, `child-csk-g1`, etc. They resolve through `keyBindings` and `referenceSemantics.anchorRef`; the immutable artifact is the exact DNSKEY RDATA/public-key bytes.
+- **Store/view IDs, not aliases:** `resolver-public-v1`, `clientA-public-v1`, and `clientB-private-v1` are distinct namespaces. The receipt erratum’s “not resolver-public-v1” for clientA establishes that `resolver-public-v1` and `clientA-public-v1` are not aliases.
+
+The private client’s CSK `child-csk-g1` is both its configured anchor and the signer of the private answer/DNSKEY. That is one logical key identity in two roles, not an alias for the public `child-ksk-g1`. The public parent DS points to `child-ksk-g1` (keyTag `22775`); the private answer/DNSKEY are signed by `child-csk-g1` (keyTag `64296`). They must not be merged.
+
+---
+
+## 3. Necessary conversations vs prerequisite-only evidence
+
+| Conversation | Evidence location | Required flags / content | Role |
+|---|---|---|---|
+| `dnsStub → dnsResolver` | sequence `lab-dnssec22:stub:q/r`; outcome/checkpoint 6 `lab-dnssec22:stub` | query `RD=1, CD=0, DO=1, AD=1`; response `QR=1, RA=1, AD=1, CD=0, DO=1, NOERROR` | Client-facing answer. `AD=1` is a resolver assertion/hint, not a local stub check |
+| `dnsResolver → dnsChild` (`lab-dnssec22:leaf`) | sequence `leaf:q/r:raw`; outcome hop `lab-dnssec22:leaf` | query `RD=0, CD=1, DO=1, AD=0`; response `AA=1, RA=0, CD=0, AD=0, DO=1, NOERROR` | Necessary public answer conversation for clientA. Carries public A `192.0.2.80/81`; answer evidence is bound via `numericBindings-primary:www-a` |
+| `dnsResolver → dnsUpstream` (`clientB-private`) | sequence `clientB-private:q/r:raw`; outcome hop; evidenceRefs | query `RD=1, CD=1, DO=1, AD=1`; response `AA=0, RA=1, CD=1, AD=0, DO=1, NOERROR`; evidenceRefs `additional-0:private-www-a`, `additional-1:private-child-dnskey` | Necessary private answer conversation for clientB. Carries private A `198.51.100.80` and private DNSKEY; must not be attributed to `dnsChild` |
+| Root/parent chain retrieval | `numericBindings.chain` `0..4`; `local-verification` evidenceRefs | No hops declared; `initialCache.authenticatedParentDs/ChildDnskey = true` | Prerequisite-only evidence: root DNSKEY, root→example DS, example DNSKEY, example→lab DS, lab DNSKEY. Do not add root/parent hops or describe them as client answer conversations |
+| Private DNSKEY | `additional-1:private-child-dnskey` in the private hop | Signed by `child-csk-g1`, typeCovered 48, keyTag 64296 | Prerequisite key evidence, not the client answer. The private answer is `additional-0:private-www-a` (`198.51.100.80`) |
+| Second stub / clientA-specific stub | Not declared | — | Not necessary or permitted by the exact sequence. `applicationResult` is an application observation independent of the single stub receipt (`profile.observerSemantics`) |
+
+The chain evidence `chain-0..4` must not be copied into clientB, and the private `additional-0/1` evidence must not be copied into clientA. The accepted-use cache already separates them (`:153197-153247`); the prior `DNS22-CLIENT-CACHE-01` correction removed the cross-contamination. Preserve that separation.
+
+`dnsUpstream` is the transmitter/current holder of the private response under the hop and `custodyInvariants`. `ownership.initialPublicHolders` does not list it; that is an omission in a non-exhaustive holder map, not a contradictory assertion. Implementation must not attribute the private `198.51.100.80` answer to `dnsChild`.
+
+---
+
+## 4. Cache semantics: genuine kind inconsistency, not a new generation
+
+**Cache-key structure is consistent.** `setup.cacheNamespaceFields` is `["view","trustStore","qname","qtype","qclass"]` (`:152445-152451`). Positive/answer entries use exactly five key elements. The profile’s `failureCache.cacheKey` additionally includes `checkingContext`; that six-element form applies only to failure entries and is not used by this case. Do not add `checkingContext` to these answer keys.
+
+**The kind inconsistency is real.** The pre-acceptance checkpoint `identical-owner-distinct-cache-namespaces` (`:153117-153148`) contains:
+
+- `kind: "positive"`, key `[public-v1, clientA-public-v1, www.lab.example., A, IN]`, answer `["192.0.2.80","192.0.2.81"]`, `securityStatus:"secure"`, `expiresAt:1792713900`.
+- `kind: "positive"`, key `[private-v1, clientB-private-v1, www.lab.example., A, IN]`, answer `["198.51.100.80"]`, `securityStatus:"secure"`, `expiresAt:1792713900`.
+
+The accepted-use checkpoint (`:153190-153247`) contains the same keys/answers/`expiresAt`, but `kind: "answer"`, with `id`, `receivedAt:1792713600`, `signatureDeadline:1792717200`, `validationOwner:"dnsValidator"`, and per-client `evidenceRefs`. `outcome.cacheKind` is also `"answer"` (`:153668`).
+
+This is **not** a new immutable generation:
+
+- There is no `generation`/`sourceGeneration` field on either entry.
+- The key, answer values, `expiresAt:1792713900`, and receipt time are the same underlying acceptance.
+- `setup.initialCache.answer = false` (`:152409`), so these cannot be pre-existing positive cache entries.
+- Elsewhere in the worksheet, `kind:"positive"` denotes a pre-existing/reused positive cache entry (e.g. DNS01 warm-answer `:2746`, DNS10 `:84004`, `:84594`), while a newly accepted answer is `kind:"answer"` (DNS01 cold-secure `:984`).
+- The pre-acceptance checkpoint is a partial projection (no `id`/`receivedAt`); that is fine. The entry class must still be stable: these are newly accepted answer-cache entries, so `"positive"` is the wrong kind.
+
+The sequence places the namespace checkpoint after the trust-store/validator checkpoint, which already records per-client `signatureChecked:true`/`secure` (`:153079-153111`), and before the explicit accepted-use checkpoint. The `kind` field classifies the entry; it does not assert `acceptedForUse`. `acceptedForUse` remains `false` at checkpoints 3 and 4 and `true` at 5/outcome. Therefore the minimal correction is to change the two `kind` values to `"answer"`; do not move the checkpoint or add a generation marker.
+
+---
+
+## 5. Ownership/custody: stale and incomplete anchor declaration
+
+Current ownership (`:152922-152938`):
+
+```json
+"ownership": {
+  "anchors": {
+    "dnsValidator": [
+      "root-ksk-g1, trusted out-of-band in resolver-public-v1"
+    ]
+  },
+  ...
+}
+```
+
+This does not match the selected two-client profile:
+
+- `setup.clients.clientB.anchors = ["child-csk-g1"]` and `trustStore = "clientB-private-v1"` (`:152429-152432`).
+- `trust-stores-do-not-merge` declares `clientB-private-v1.anchors = ["child-csk-g1"]` (`:153087-153091`).
+- The secure clientB outcome depends on that anchor; it is provisioned out-of-band, not via the conditional forward.
+- No other field states who provisioned/accepted `child-csk-g1` for clientB. `typedRoots.evidenceRefs` explicitly forbids inferring ownership/authentication from evidence availability.
+- Sibling DNS22 private-anchor cases list `child-csk-g1` in `ownership.anchors` (case 0 `:149543-149545`; case 2 `:151559-151561`; case 4 `:154262-154264`). This case is the outlier.
+- The receipt erratum `DNS22-CLIENT-CACHE-01` says clientA must use `clientA-public-v1`, not `resolver-public-v1`; the single ownership string therefore does not declare the clientA trust-store scope either.
+- RFC 5011 §8.1 distinguishes zone-owner key creation/distribution from resolver-owner acceptance and permits manual/out-of-band updates. `ownership` is the resolver-side acceptance/custody declaration; `signerOnlyPrivateKeys` remains the signer-side custody declaration.
+
+This is a genuine custody/incompleteness contradiction, not a valid alternative topology. An additive input-only erratum is justified to declare the two client-scoped anchors while preserving the existing base anchor entry.
+
+---
+
+## 6. Standards and plan anchors
+
+| Source | Sections/lines | Constraint relevant here |
+|---|---|---|
+| `docs/dnssec-expansion/inputs/worker-plan.html` | `:1110-1126` (`DNS22 — Private DNS, local anchors and conditional forwarding`) | Two views, named trust stores/routes/fixture identities; forwarding is not delegation/anchor bootstrap; public root does not trust unrelated private hierarchy; do not merge caches/keys; no RFC-mandated split-DNS product design |
+| Source map `docs/dnssec-expansion/source-groups.json` | `S01` RFC4033; `S04` RFC9499; `S14` RFC5011/RFC9718; `S23` RFC5625/RFC3225 | Plan’s DNS22 source groups |
+| `sources/resolution/s01-rfc4033-text.txt` | `:288-301` (Trust Anchor); `:383-434` (§3.1 auth chain/local policy); `:492-569` (§5 states/scope); `:606-655` (§7 stub AD/CD) | Anchor configured in the validating resolver; local policy may configure non-root anchors; states depend on the configured anchor; stub AD is a hint, not local validation |
+| `sources/resolution/s04-rfc9499-text.txt` | `:932-941` (Forwarder); `:975-983` (View); `:1525-1556` (Validation); `:1652-1684` (§11 states) | Views/forwarders are local deployment concepts; DNSSEC states are per validating resolver/anchor |
+| `sources/resolution/s06-rfc4035-text.txt` | `:882-892` (§3.1.6 authoritative CD clear); `:917-1020` (§3.2 recursive DO/CD/AD); `:1420-1434` (§5.1 islands); `:1435-1465` (§5.2 referrals) | Authoritative response clears CD; recursive server copies CD; AD only when all answer/authority RRsets are authentic; island security needs a separately obtained anchor; DS authenticates child DNSKEY |
+| `sources/resolution/s03-rfc6840-text.txt` | `:511-531` (§5.7-5.8 AD in query/reply); `:533-555` (§5.9 CD on upstream queries) | `AD=1` in the stub query signals understanding/interest; resolver may set AD when DO/AD requested and data authentic; CD=1 upstream is the selected validation model |
+| `sources/resolution/s23-rfc5625-text.txt` | `:125-178` (§3 transparency); `:179-220` (§4 conformance) | A forwarder is transparent about flags/data and is not itself an authenticated delegation or anchor bootstrap |
+| `sources/resolution/s22-rfc1035-text.txt` | `:1401-1571` (§4.1.1-4.1.3); `:2544-2548` (ID/question correlation) | Exact header flags, QDCOUNT, question identity, and message-ID/question correlation |
+| `numeric/sources/rfc5011.txt` | `:104-140`, `:597-632` (§8.1) | Zone owner creates/distributes keys; resolver owner decides acceptance; manual/out-of-band trust-anchor updates are outside RFC5011; do not conflate key identity with acceptance |
+
+The plan’s S14 reference is context for managed/root anchors; this case intentionally uses static out-of-band/operator provisioning, not RFC5011 automated update. No RFC5011 state-machine behavior is selected here.
+
+---
+
+## 7. Errata justified: minimal ordered patch operations
+
+Author as a new additive input-only proposal against the previous effective layer, following the existing `expectedBefore`/`value` + hash format. Do **not** edit `contract-freeze.json`, the D0 freeze, or earlier effective layers. The current acceptance-input pointers below are in `effective-receipts/worksheet.json`; for an erratum authored against `effective-completion/worksheet-resolution.json` (as prior DNS22 patches were), use `/lessons/12/cases/3/...` instead of `/lessons/21/cases/3/...`; case index `3` and checkpoint indices are unchanged.
+
+| # | op | JSON pointer (current worksheet) | old | new | finding |
+|---|---|---|---|---|---|
+| 1 | `replace` | `/lessons/21/cases/3/checkpoints/2/expected/cacheEntries/0/kind` | `"positive"` | `"answer"` | cache-kind inconsistency, clientA entry |
+| 2 | `replace` | `/lessons/21/cases/3/checkpoints/2/expected/cacheEntries/1/kind` | `"positive"` | `"answer"` | cache-kind inconsistency, clientB entry |
+| 3 | `add` | `/lessons/21/cases/3/ownership/anchors/dnsValidator/1` | absent | `"root-ksk-g1, trusted out-of-band in clientA-public-v1 (scope .)"` | declare clientA trust-store anchor scope |
+| 4 | `add` | `/lessons/21/cases/3/ownership/anchors/dnsValidator/2` | absent | `"child-csk-g1, trusted operator provisioned in clientB-private-v1 (scope lab.example.)"` | declare missing clientB anchor/provisioning |
+
+The ownership addition leaves the existing element `0` unchanged:
+
+```json
+"dnsValidator": [
+  "root-ksk-g1, trusted out-of-band in resolver-public-v1",
+  "root-ksk-g1, trusted out-of-band in clientA-public-v1 (scope .)",
+  "child-csk-g1, trusted operator provisioned in clientB-private-v1 (scope lab.example.)"
+]
+```
+
+Element `0` remains the base resolver-public context; it is not a substitute for the clientA/clientB stores. The same public root key may be trusted in separate scopes; that is not a cache/key merge and creates no private-key capability.
+
+### Immutable facts preserved
+
+- All named cases, lesson/case IDs, defaults and totals.
+- Both client answers: `["192.0.2.80","192.0.2.81"]` and `["198.51.100.80"]`.
+- Cache keys, `expiresAt:1792713900`, `receivedAt:1792713600`, `signatureDeadline:1792717200`, TTLs `300`/`3600`, `securityStatus:"secure"`.
+- `acceptedForUse` false at checkpoints 3/4, true at 5/outcome; `cached:true`; `cacheKind:"answer"`.
+- Accepted-use entries’ `id`, `kind:"answer"`, `validationOwner:"dnsValidator"`, `validatorRef`, `client`, `view`, `trustStore`, and per-client `evidenceRefs`.
+- All DNSKEY/DNSKEY-RDATA/public-key bytes, keyTags (`root-ksk-g1` 46482, `child-ksk-g1` 22775, `child-zsk-g1` 55402, `child-csk-g1` 64296), signatures, signature deadlines, and RRSIG metadata.
+- `ownership.signerOnlyPrivateKeys`: `child-csk-g1-private` remains signer-only at `dnsSigner`; no private material enters resolver/stub/network custody.
+- `setup.clients` anchors/stores/routes, `setup.initialCache`, route detail, hop flags/message IDs, and stub/application results.
+- Separation of `securityStatus`, `validationOwner`, `acceptedForUse`, `applicationResult`, and `evidenceRefs`; evidence refs still do not imply authentication or ownership.
+
+---
+
+## 8. What implementation must conform to without erratum
+
+1. **One checking actor with per-client contexts.** Use `validators.dnsValidator.clients.clientA|clientB` and `validatorRef` `/validators/dnsValidator/clients/...`. Do not add `dnsValidatorA`/`dnsValidatorB`, do not attribute either client’s validation to `dnsResolver`, `dnsStub` or the client IDs, and keep `validationOwner` strictly `"dnsValidator"`.
+2. **Two trust stores, two cache namespaces.** `clientA-public-v1` and `clientB-private-v1` are distinct; do not substitute `resolver-public-v1` for clientA (prior `DNS22-CLIENT-CACHE-01`). Do not merge keys, evidence or cache entries.
+3. **Exact declared conversations.** Only the stub hop, the public leaf hop (`dnsResolver → dnsChild`) and the private conditional hop (`dnsResolver → dnsUpstream`) are required. Do not add root/parent hops or a second stub hop. Preserve exact per-hop flags, message IDs, question correlation and transport.
+4. **Prerequisite vs answer evidence.** `chain-0..4` are prerequisite chain evidence; `private-child-dnskey` is prerequisite key evidence; `primary:www-a` is the public answer; `additional-0:private-www-a` is the private answer. Do not copy private evidence into clientA or public chain evidence into clientB.
+5. **Distinct key identities and roles.** `child-ksk-g1` (public KSK, keyTag 22775) ≠ `child-csk-g1` (private CSK, keyTag 64296). The private CSK may be both anchor and signer; the role is distinguished by `anchors` vs `keyIdentity`/signature, not by inventing a different key. Private keys remain signer-only.
+6. **Forwarding is not trust.** The clientB conditional forward to `198.51.100.53` selects a destination. It does not bootstrap `child-csk-g1`, does not authenticate the delegation, and does not turn the public chain into a private chain. The private anchor is operator-provisioned/out-of-band.
+7. **State separation.** Do not promote `acceptedForUse`, `applicationResult`, `securityStatus` or `validationOwner` into one another. `AD=1` at the stub is a resolver assertion; `dnsValidator` owns the local authenticated disposition; the application result is separate.
+8. **Cache-key structure.** Answer entries use the five-element key `[view, trustStore, qname, qtype, qclass]`. The six-element failure key including `checkingContext` is not applicable to this case’s answer entries.
+9. **No production topology selection.** The worksheet’s `setup.route`, `setup.clients`, hops and checkpoints are the only topology inputs; a production implementation must conform to them, not replace them with its own deployment topology.
+
+---
+
+## 9. Bottom line
+
+- **Implementation must conform** to the one-actor/two-client-context structure, distinct stores/keys/caches, three declared conversations, prerequisite-only chain evidence, and the strict `dnsValidator` validation ownership.
+- **Two additive input-only corrections are justified** by genuine internal contradictions:
+  1. cache-entry `kind` at `/lessons/21/cases/3/checkpoints/2/expected/cacheEntries/{0,1}/kind` should be `"answer"`, matching `outcome.cacheKind` and the accepted-use entries; this is not a new generation.
+  2. `ownership.anchors.dnsValidator` must declare the clientA and clientB scoped anchors, including the missing `child-csk-g1` operator-provisioned clientB anchor.
+- No frozen input should be rewritten, and no production-derived expectation should be used to choose a topology or resolve either contradiction.

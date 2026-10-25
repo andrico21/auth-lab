@@ -20,7 +20,7 @@ import { ScenarioPicker, filterScenarioOptions } from './scenario-picker.js';
 import { captureFocusTarget, resolveFocusTarget, isVisibleFocusTarget } from './focus-target.js';
 import { LEARNING_PRESETS, PROVIDER_PROFILES, getLearningPreset, getProviderProfile, getPresetConfiguration, applyProviderProfile } from './learning-presets.js';
 import { RuntimeEnvironment, RUNTIME_ENVIRONMENT_FIELDS, RUNTIME_PROVIDER_FIELDS } from './runtime-environment.js';
-import { STUDIO_WORKSPACES, STUDIO_FAMILIES, workspaceOf, studioRoute, parseStudioRoute, visibleActorId, scenarioPositions, studioWorkspaceOptions } from './workspaces.js';
+import { STUDIO_WORKSPACES, STUDIO_FAMILIES, workspaceOf, studioRoute, parseStudioRoute, visibleActorId, scenarioActorIds, scenarioPositions, studioWorkspaceOptions } from './workspaces.js';
 import { scenarioContextRows, projectScenarioContext, scenarioBindingValue } from './scenario-context.js';
 import { buildProtocolInstances } from './protocol-state.js';
 import { HeldObjectView } from './held-object-view.js';
@@ -182,7 +182,7 @@ export class AuthFlowStudio extends HTMLElement {
     const layoutSteps=this.graphSteps;
     const positions={...(this.scenarioOwnedActors?scenarioPositions(this.labModel,layoutSteps,this.scenarioOwnedActors,this.showInternals):getPositions(this.architecture)),...(this.customLayouts[this.layoutKey]||{})};
     if(!this.labModel&&!this.learningPreset)return positions;
-    const ids=new Set(layoutSteps.flatMap(s=>[this.nodeId(s.from),this.nodeId(s.to),...(s.attributeOperations||[]).map(op=>this.nodeId(op.actorId))]));
+    const ids=new Set(scenarioActorIds(layoutSteps).map(id=>this.nodeId(id)));
     return Object.fromEntries(Object.entries(positions).filter(([id])=>ids.has(id)));
   }
   actor(id) {
@@ -308,7 +308,7 @@ export class AuthFlowStudio extends HTMLElement {
       </div><p class="protocol-note">SAML responses use HTTP-POST. Encryption protects the message; signatures and recipient checks still establish trust. JWE applies to OIDC ID tokens, while SAML uses XML Encryption.</p></details></details>
       <details class="environment-panel" id="environment-panel"><summary><strong>Use your environment</strong><span>Optional · addresses for this open page</span></summary><p class="environment-note">Show your application and identity-provider addresses in the animation. Values stay in this open page and return to examples on reload, navigation away or Reset environment. The animation makes no requests to these addresses.</p><div id="environment-fields"></div><p class="environment-errors" id="environment-errors" role="alert" hidden></p><div class="environment-actions"><button class="button primary" id="environment-apply">Apply to animation</button><button class="button quiet" id="environment-reset">Reset environment</button><span id="environment-status" role="status"></span></div></details>
       <details class="coverage-panel"><summary><strong>SPA, API & coverage</strong><span>Core controls + ${LAB_SCENARIOS.length} extended scenarios</span></summary><div class="coverage-content"><div><h3>SPA and API are different roles</h3><p>A <strong>Single Page Application (SPA)</strong> runs in the browser. A pure browser OAuth client cannot keep a client secret. The SPA walkthrough shows its HTTPS callback, Code + PKCE, token handling, CORS and a separate resource API.</p><p>An <strong>API</strong> checks the access token’s trust, intended audience, lifetime and permissions. API introspection, 401/403, JWKS rotation, certificate binding and DPoP are distinct scenarios. An ID token is the client’s login result, not an API credential.</p><p>A <strong>Backend for Frontend (BFF)</strong> retains credentials and tokens on the server and gives the browser an opaque session cookie. The BFF → API scenario shows this boundary.</p><h3>How to use the lab</h3><p>Choose a scenario above or browse the searchable library. Play the entire process, click a connection, or select one attribute. Enable Show step attributes to keep the message’s complete names beside its active link. Enable Move participants to drag cards or use arrow keys; Reset layout restores their positions.</p></div><div><h3>Animated coverage</h3><ul><li>Core configurable OIDC/SAML sign-in: one realm, two realms, independent upstream IdP, native loopback and confidential web callback; passwords, passkeys, FIDO2, TOTP and configured MFA.</li>${LAB_CATEGORIES.map(category=>'<li>'+escapeHtml(category)+' · '+LAB_SCENARIOS.filter(model=>model.category===category).length+' scenarios</li>').join('')}</ul><h3>Support is visible</h3><p>Each scenario links to primary documentation and identifies supported/configured Keycloak behavior, Preview/deprecated behavior or a standards-only profile. CIBA Push and alternate signed-hint profiles are not presented as built-in Keycloak features. Legacy grants are educational comparisons.</p><h3>Practical limits</h3><p>This is an offline protocol simulator. Values and cryptographic operations are schematic; it does not configure or contact a live server. Provider-specific policies and every combination of extensions are not expanded into separate presets. Detailed factor ceremonies remain available in the core journeys. Version-specific support is stated in the scenario’s note.</p></div></div></details>
-      <footer class="sources-footer"><p class="documentation-baseline">Expansion journeys declare their own pinned source revision, implementation assumptions and completion boundary before Play. The Web documentation baseline is <a href="https://www.keycloak.org/2026/10/keycloak-2680-released" target="_blank" rel="noopener noreferrer">Keycloak 26.8.0</a> · checked 8 October 2026; Windows, Network, MIT Kerberos and PAKE use their separate profiles. Reference and Experimental do not certify product support. This offline symbolic model is not a live compatibility test.</p><details><summary>Protocol notes & primary sources</summary><div class="source-notes">${(LEARNING_NOTES||[]).filter(note=>['One authenticator per attempt','Sessions can shorten real sign-in','Passkey plus TOTP is an explicit flow','TOTP codes can be phished'].includes(note.title)).map(note=>`<p>${escapeHtml(note.text)}</p>`).join('')}<p>Illustrative messages and values. Login assumes a fresh session. Registration starts with a verified relying-party account. FIDO2 combines WebAuthn and CTAP: external FIDO2 keys use CTAP2 locally; Windows Hello uses the platform authenticator path. In single-realm sign-in, Realm A verifies the selected method and returns the selected protocol’s identity result. In brokered sign-in the upstream provider verifies WebAuthn. For OIDC, application client_id is a configured public identifier; the app validates the ID token’s aud against it. For SAML, Keycloak’s registered client identifier is the SP entity ID, used as AuthnRequest Issuer and assertion Audience; the XML does not gain an OAuth client_id parameter. In direct FIDO2 sign-in the web application itself is the relying party, using its own RP ID and public-key credential records.</p><p>Passkey + TOTP and passwordless TOTP require explicit configured flows. TOTP alone is one factor. External providers must support and configure the chosen method; login-form field names and credential policies are provider-specific.</p><p>SAML Web SSO uses Redirect/POST requests and POST responses. Assertion encryption uses XML Encryption. JWE protects OIDC ID tokens; recipients decrypt locally before verifying the inner signature and applicable claims. Device and CIBA tokens have no invented Authorization Code, PKCE or nonce stages.</p><p>Service accounts act as the application’s own identity and receive an access token without a human login or MFA. Device user_code is not TOTP: it links a separate browser to a private device_code. CIBA uses an administrator-controlled authentication-channel service; its illustrated password/passkey/TOTP policy is a service implementation, not a built-in CIBA browser redirect flow. Standard Token Exchange V2 here is same-realm and access-token-to-access-token; strict downscoping is explicitly configured, not assumed from the grant.</p></div><p>Animated coverage and remaining variants are listed in SPA, API & coverage above. These examples illustrate messages, not live authentication or exhaustive Keycloak configuration.</p><div class="source-links">${[...SOURCES,...FIDO_SOURCES,...SAML_SOURCES,...JWE_SOURCES,...SERVICE_SOURCES,...DEVICE_SOURCES,...CIBA_SOURCES,...EXCHANGE_SOURCES,...LAB_SOURCES].map(source=>`<a href="${escapeHtml(source.url||source.source)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.label||source.name||source.title)}</a>`).join('')}</div></details><span>Built to explore · RFC / Microsoft / IEEE / OASIS / W3C / FIDO names, plain-language explanations</span></footer>
+      <footer class="sources-footer"><p class="documentation-baseline">Expansion journeys declare their own pinned source revision, implementation assumptions and completion boundary before Play. The Web documentation baseline is <a href="https://www.keycloak.org/2026/10/keycloak-2680-released" target="_blank" rel="noopener noreferrer">Keycloak 26.8.0</a> · checked 8 October 2026; Windows, Network, MIT Kerberos and PAKE use their separate profiles. Reference and Experimental do not certify product support. This offline symbolic model is not a live compatibility test.</p><details><summary>Protocol notes & primary sources</summary><div class="source-notes">${(LEARNING_NOTES||[]).filter(note=>['One authenticator per attempt','Sessions can shorten real sign-in','Passkey plus TOTP is an explicit flow','TOTP codes can be phished'].includes(note.title)).map(note=>`<p>${escapeHtml(note.text)}</p>`).join('')}<p>Illustrative messages and values. Login assumes a fresh session. Registration starts with a verified relying-party account. FIDO2 combines WebAuthn and CTAP: external FIDO2 keys use CTAP2 locally; Windows Hello uses the platform authenticator path. In single-realm sign-in, Realm A verifies the selected method and returns the selected protocol’s identity result. In brokered sign-in the upstream provider verifies WebAuthn. For OIDC, application client_id is a configured public identifier; the app validates the ID token’s aud against it. For SAML, Keycloak’s registered client identifier is the SP entity ID, used as AuthnRequest Issuer and assertion Audience; the XML does not gain an OAuth client_id parameter. In direct FIDO2 sign-in the web application itself is the relying party, using its own RP ID and public-key credential records.</p><p>Passkey + TOTP and passwordless TOTP require explicit configured flows. TOTP alone is one factor. External providers must support and configure the chosen method; login-form field names and credential policies are provider-specific.</p><p>SAML Web SSO uses Redirect/POST requests and POST responses. Assertion encryption uses XML Encryption. JWE protects OIDC ID tokens; recipients decrypt locally before verifying the inner signature and applicable claims. Device and CIBA tokens have no invented Authorization Code, PKCE or nonce stages.</p><p>Service accounts act as the application’s own identity and receive an access token without a human login or MFA. Device user_code is not TOTP: it links a separate browser to a private device_code. CIBA uses an administrator-controlled authentication-channel service; its illustrated password/passkey/TOTP policy is a service implementation, not a built-in CIBA browser redirect flow. Standard Token Exchange V2 here is same-realm and access-token-to-access-token; strict downscoping is explicitly configured, not assumed from the grant.</p></div><p>Animated coverage and remaining variants are listed in SPA, API & coverage above. These examples illustrate messages, not live authentication or exhaustive Keycloak configuration.</p><div class="source-links">${[...SOURCES,...FIDO_SOURCES,...SAML_SOURCES,...JWE_SOURCES,...SERVICE_SOURCES,...DEVICE_SOURCES,...CIBA_SOURCES,...EXCHANGE_SOURCES,...LAB_SOURCES].map(source=>`<a href="${escapeHtml(source.url||source.source)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.label||source.name||source.title)}</a>`).join('')}</div></details><p class="studio-credit"><span>Version <span id="studio-version">${escapeHtml(this.getAttribute('data-build-version')||'1.0')}</span></span><a href="https://github.com/andrico21" target="_blank" rel="noopener noreferrer">Kirill Andrienko</a><a href="https://github.com/andrico21/auth-lab" target="_blank" rel="noopener noreferrer">andrico21/auth-lab</a></p><span>Built to explore · RFC / Microsoft / IEEE / OASIS / W3C / FIDO names, plain-language explanations</span></footer>
       <div id="actor-popup" class="floating-panel" role="dialog" aria-modal="false" aria-label="Participant attributes" hidden></div>
       <div id="attribute-popup" class="attribute-tooltip" role="dialog" aria-modal="false" aria-label="Attribute explanation" hidden></div>
       <div id="toast" class="toast" role="status" hidden></div>
@@ -373,33 +373,34 @@ export class AuthFlowStudio extends HTMLElement {
     this.querySelector('#next').addEventListener('click',()=>this.selectStep(Math.min(this.visibleSteps.length-1,this.visibleIndex+1),true));
     this.querySelector('#follow').addEventListener('click',()=>{this.inspection={type:'step'};this.renderInspector();});
     this.querySelector('#glossary-open').addEventListener('click',()=>{this.inspection={type:'glossary'};this.renderInspector();});
-    this.querySelector('#index-open').addEventListener('click',()=>{this.refs['attribute-index'].hidden=false;this.refs['attribute-search'].focus();});
+    this.querySelector('#index-open').addEventListener('click',()=>{this.refs['attribute-index'].hidden=false;this.renderAttributeIndex();this.refs['attribute-search'].focus();});
     this.querySelector('#attribute-index-toggle').addEventListener('click',()=>{this.hidePopups();this.refs['attribute-index'].hidden=true;this.restoreTargetFocus({elementId:'index-open'});});
     this.refs['attribute-search'].addEventListener('input',()=>{this.attributeQuery=this.refs['attribute-search'].value;this.renderAttributeIndex();});
     this.refs['attribute-index'].addEventListener('click',e=>{const field=e.target.closest('[data-index-attribute]');const topic=e.target.closest('[data-trace-topic]');if(field)this.selectAttribute(field.dataset.indexAttribute);if(topic)this.selectAttribute(topic.dataset.traceTopic);});
-    this.refs['attribute-index-list'].addEventListener('mouseover',e=>{const field=e.target.closest('[data-index-attribute]');if(field&&!field.contains(e.relatedTarget))this.showAttributePopup(field.dataset.indexAttribute,field);});
-    this.refs['attribute-index-list'].addEventListener('mouseout',()=>this.deferCloseAttribute());
-    this.refs['attribute-index-list'].addEventListener('focusin',e=>{const field=e.target.closest('[data-index-attribute]');if(field)this.showAttributePopup(field.dataset.indexAttribute,field);});
+    this.refs['attribute-index-list'].addEventListener('pointerover',e=>{const field=e.target.closest('[data-index-attribute]');if(e.pointerType!=='touch'&&field&&!field.contains(e.relatedTarget))this.showAttributePopup(field.dataset.indexAttribute,field);});
+    this.refs['attribute-index-list'].addEventListener('pointerout',()=>this.deferCloseAttribute());
+    this.refs['attribute-index-list'].addEventListener('focusin',e=>{const field=e.target.closest('[data-index-attribute]');if(field?.matches(':focus-visible'))this.showAttributePopup(field.dataset.indexAttribute,field);});
     this.refs['attribute-index-list'].addEventListener('focusout',e=>this.deferCloseAttribute(e.relatedTarget));
     this.refs['attribute-focus'].addEventListener('click',e=>{if(e.target.closest('[data-clear-trace]'))this.clearAttribute();if(e.target.closest('[data-trace-play]')){this.ensureRunningSpeed();if(this.player.status==='playing')this.player.pause();else if(this.player.status==='paused')this.player.resume();else this.playAttribute();}});
     this.querySelector('#theme-toggle').addEventListener('click',()=>{this.theme=this.theme==='dark'?'light':'dark';this.refs.studio.dataset.theme=this.theme;});
     this.refs.timeline.addEventListener('click',e=>{const button=e.target.closest('[data-step]');if(button)this.selectStep(Number(button.dataset.step),true);});
+    this.querySelector('#protocol-state-panel').addEventListener('toggle',event=>{if(event.target.id==='protocol-state-panel')this.renderProtocolState();else if(event.target.matches('[data-instance-history]'))this.renderProtocolInstanceHistory(event.target);},true);
     this.refs.actors.addEventListener('click',e=>{const node=e.target.closest('[data-actor]');if(node&&!this.moveParticipants)this.inspectActor(node.dataset.actor);});
     this.refs.actors.addEventListener('pointerdown',event=>this.startActorDrag(event));
     this.refs.actors.addEventListener('pointermove',event=>this.updateActorDrag(event));
     this.refs.actors.addEventListener('pointerup',event=>this.endActorDrag(event));
     this.refs.actors.addEventListener('pointercancel',event=>this.endActorDrag(event));
     this.refs.actors.addEventListener('keydown',event=>{const card=event.target.closest('[data-actor]'),delta={ArrowLeft:[-12,0],ArrowRight:[12,0],ArrowUp:[0,-12],ArrowDown:[0,12]}[event.key];if(this.moveParticipants&&card&&delta){event.preventDefault();const p=this.positions[card.dataset.actor];this.moveActor(card.dataset.actor,p.x+delta[0],p.y+delta[1]);}});
-    this.refs.actors.addEventListener('mouseover',e=>{const node=e.target.closest('[data-actor]');if(node&&!node.contains(e.relatedTarget))this.showActorPopup(node.dataset.actor,node);});
-    this.refs.actors.addEventListener('mouseout',e=>{const node=e.target.closest('[data-actor]');if(node&&!node.contains(e.relatedTarget))this.deferCloseActor();});
-    this.refs.actors.addEventListener('focusin',e=>{const node=e.target.closest('[data-actor]');if(node)this.showActorPopup(node.dataset.actor,node);});
+    this.refs.actors.addEventListener('pointerover',e=>{const node=e.target.closest('[data-actor]');if(e.pointerType!=='touch'&&node&&!node.contains(e.relatedTarget))this.showActorPopup(node.dataset.actor,node);});
+    this.refs.actors.addEventListener('pointerout',e=>{const node=e.target.closest('[data-actor]');if(node&&!node.contains(e.relatedTarget))this.deferCloseActor();});
+    this.refs.actors.addEventListener('focusin',e=>{const node=e.target.closest('[data-actor]');if(node?.matches(':focus-visible'))this.showActorPopup(node.dataset.actor,node);});
     this.refs.actors.addEventListener('focusout',e=>this.deferCloseActor(e.relatedTarget));
     this.refs.connections.addEventListener('click',e=>{const edge=e.target.closest('[data-pair]');if(edge)this.replayConnection(edge.dataset.pair);});
     this.refs.connections.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const edge=e.target.closest('[data-pair]');if(edge){e.preventDefault();this.replayConnection(edge.dataset.pair);}}});
     [this.refs.inspector,this.refs['actor-popup']].forEach(container=>{
-      container.addEventListener('mouseover',e=>{const field=e.target.closest('[data-attribute]');if(field&&!field.contains(e.relatedTarget))this.showAttributePopup(field.dataset.attribute,field);});
-      container.addEventListener('mouseout',e=>{const field=e.target.closest('[data-attribute]');if(field&&!field.contains(e.relatedTarget))this.deferCloseAttribute();});
-      container.addEventListener('focusin',e=>{const field=e.target.closest('[data-attribute]');if(field)this.showAttributePopup(field.dataset.attribute,field);});
+      container.addEventListener('pointerover',e=>{const field=e.target.closest('[data-attribute]');if(e.pointerType!=='touch'&&field&&!field.contains(e.relatedTarget))this.showAttributePopup(field.dataset.attribute,field);});
+      container.addEventListener('pointerout',e=>{const field=e.target.closest('[data-attribute]');if(field&&!field.contains(e.relatedTarget))this.deferCloseAttribute();});
+      container.addEventListener('focusin',e=>{const field=e.target.closest('[data-attribute]');if(field?.matches(':focus-visible'))this.showAttributePopup(field.dataset.attribute,field);});
       container.addEventListener('focusout',e=>this.deferCloseAttribute(e.relatedTarget));
       container.addEventListener('click',e=>{const field=e.target.closest('[data-attribute]');if(field)this.selectAttribute(field.dataset.attribute);});
     });
@@ -756,39 +757,123 @@ export class AuthFlowStudio extends HTMLElement {
     const snapshot=this.scenarioSnapshot();
     if(this.protocolMemo?.source!==snapshot){const variant=this.lessonVariant&&this.lessonVariant!=='default'?':variant-'+this.lessonVariant:'',model={...this.labModel,instanceScope:this.labScenarioId+'@context-'+this.runtimeEnvironment.revision+variant,steps:()=>snapshot.steps,initialState:snapshot.initialState||this.labModel?.initialState||{},protocolValues:snapshot.protocolValues||this.labModel?.protocolValues||{}};this.protocolMemo={source:snapshot,model,instances:new Map()};}
     const held=this.heldView.snapshot(),sourceIndex=held.cursor.milestone==='complete'?held.cursor.eventIndex:Math.max(-1,held.cursor.eventIndex-1);
-    if(!this.protocolMemo.instances.has(sourceIndex))this.protocolMemo.instances.set(sourceIndex,buildProtocolInstances(this.protocolMemo.model,sourceIndex));
-    return {model:this.protocolMemo.model,sourceIndex,selectedSourceIndex:held.cursor.eventIndex,cursor:held.cursor,state:held.state,instances:this.protocolMemo.instances.get(sourceIndex)};
+    const memo=this.protocolMemo;
+    return {model:memo.model,sourceIndex,selectedSourceIndex:held.cursor.eventIndex,cursor:held.cursor,state:held.state,get instances(){
+      if(!memo.instances.has(sourceIndex)){memo.instances.clear();memo.instances.set(sourceIndex,buildProtocolInstances(memo.model,sourceIndex));}
+      return memo.instances.get(sourceIndex);
+    }};
   }
   renderProtocolState(){
-    const cursor=this.heldView.snapshot().cursor,key=JSON.stringify([this.heldView.contextId,cursor,this.attributeSelection]);
+    const panel=this.querySelector('#protocol-state-panel'),open=panel.hasAttribute('open');
+    const cursor=this.heldView.snapshot().cursor,key=JSON.stringify([this.heldView.contextId,cursor,this.attributeSelection,open]);
     if(this.protocolRenderKey===key)return;this.protocolRenderKey=key;
-    const panel=this.querySelector('#protocol-state-panel'),snapshot=this.protocolSnapshot();panel.hidden=!snapshot;this.renderLifetimes(snapshot);
+    const snapshot=this.protocolSnapshot();panel.hidden=!snapshot;this.renderLifetimes(snapshot);
     if(!snapshot)return;
     this.renderLessonDecisions(snapshot);
     this.querySelector('#protocol-state-summary').textContent=(snapshot.cursor.eventIndex<0?'Before step 1':'Source event '+(snapshot.cursor.eventIndex+1)+' / '+snapshot.cursor.milestone)+' / '+snapshot.model.steps().length+' · protocol clock '+snapshot.state.protocolClock+' · fixture '+this.labScenarioId+'@context-'+this.runtimeEnvironment.revision;
+    const list=this.querySelector('#protocol-instance-list');
+    if(!open){this.querySelector('#protocol-state-value').textContent='';list.innerHTML='';return;}
+    const expanded=new Set([...list.querySelectorAll('[data-instance-history][open]')].map(details=>details.dataset.instanceHistory));
+    const focused=list.contains(document.activeElement)?document.activeElement.closest('[data-instance-history]')?.dataset.instanceHistory:null;
     this.querySelector('#protocol-state-value').textContent=JSON.stringify(snapshot.state,null,2);
     const records=snapshot.instances.filter(record=>!this.attributeSelection||record.definitionIds?.includes(this.attributeSelection)||record.definitionId===this.attributeSelection);
-    this.querySelector('#protocol-instance-list').innerHTML=records.length?'<div class="instance-table-scroll"><table class="instance-table"><thead><tr><th>Object instance</th><th>Creator / holders / inspectors</th><th>Exact field occurrence</th></tr></thead><tbody>'+records.map(record=>`<tr><td><code>${escapeHtml(record.qualifiedInstanceId||record.instanceId)}</code></td><td>${escapeHtml(record.creator||'Configured before the journey')}<br>Observed holders: ${escapeHtml((record.holders||[]).join(', '))}<br>Inspectors across fields: ${escapeHtml((record.inspectors||[]).join(', '))}</td><td>${record.occurrences.map(occurrence=>`<div class="instance-occurrence"><code>${escapeHtml(occurrence.fieldPath)}</code> · ${escapeHtml(occurrence.representation)} · ${escapeHtml(occurrence.eventId)}<br>Actor: ${escapeHtml(occurrence.actorId)} · ${escapeHtml(occurrence.kind)}<br>Permitted inspectors of this occurrence: ${escapeHtml((occurrence.inspectors||[]).join(', ')||'not declared')}<br><code>${escapeHtml(occurrence.value===undefined?'Exact bytes are intentionally not exposed':typeof occurrence.value==='string'?occurrence.value:JSON.stringify(occurrence.value))}</code></div>`).join('')}</td></tr>`).join('')+'</tbody></table></div>':'<p class="environment-note">No instantiated object is visible in this prefix.</p>';
+    list.innerHTML=records.length?'<div class="instance-table-scroll"><table class="instance-table"><thead><tr><th>Object instance</th><th>Creator / holders / inspectors</th><th>Exact field occurrence</th></tr></thead><tbody>'+records.map(record=>{const id=record.qualifiedInstanceId||record.instanceId;return `<tr><td><code>${escapeHtml(id)}</code></td><td>${escapeHtml(record.creator||'Configured before the journey')}<br>Observed holders: ${escapeHtml((record.holders||[]).join(', '))}<br>Inspectors across fields: ${escapeHtml((record.inspectors||[]).join(', '))}</td><td><details data-instance-history="${escapeHtml(id)}"${expanded.has(id)?' open':''}><summary>${record.occurrences.length} exact field occurrences</summary><div class="instance-history-value"></div></details></td></tr>`;}).join('')+'</tbody></table></div>':'<p class="environment-note">No instantiated object is visible in this prefix.</p>';
+    const disclosures=[...list.querySelectorAll('[data-instance-history]')];
+    for(const details of disclosures)if(details.hasAttribute('open'))this.renderProtocolInstanceHistory(details);
+    if(focused)(disclosures.find(details=>details.dataset.instanceHistory===focused)?.querySelector('summary')||panel.querySelector('summary')).focus({preventScroll:true});
+  }
+  renderProtocolInstanceHistory(details){
+    if(!this.contains(details))return;
+    const target=details.querySelector('.instance-history-value');
+    if(!details.hasAttribute('open')){target.innerHTML='';delete details.dataset.protocolHistoryKey;return;}
+    if(details.dataset.protocolHistoryKey===this.protocolRenderKey)return;
+    const record=this.protocolSnapshot().instances.find(record=>(record.qualifiedInstanceId||record.instanceId)===details.dataset.instanceHistory);
+    if(!record)throw new TypeError('Protocol instance is not present at the current source cursor.');
+    target.innerHTML=record.occurrences.map(occurrence=>`<div class="instance-occurrence"><code>${escapeHtml(occurrence.fieldPath)}</code> · ${escapeHtml(occurrence.representation)} · ${escapeHtml(occurrence.eventId)}<br>Actor: ${escapeHtml(occurrence.actorId)} · ${escapeHtml(occurrence.kind)}<br>Permitted inspectors of this occurrence: ${escapeHtml((occurrence.inspectors||[]).join(', ')||'not declared')}<br><code>${escapeHtml(occurrence.value===undefined?'Exact bytes are intentionally not exposed':typeof occurrence.value==='string'?occurrence.value:JSON.stringify(occurrence.value))}</code></div>`).join('');
+    details.dataset.protocolHistoryKey=this.protocolRenderKey;
   }
   renderLessonDecisions(snapshot){
-    const panel=this.querySelector('#lesson-decisions'),bindings=this.labModel?.decisionBindings||[];
+    const panel=this.querySelector('#lesson-decisions'),bindings=this.labModel?.decisionBindings||[],dnssec=snapshot.state.dnssec;
+    const isDnssec=this.labModel?.workspace==='dnssec',compareHops=isDnssec&&['lab-dnssec05','lab-dnssec06'].includes(this.labModel.id);
+    panel.setAttribute('aria-label',this.labModel?.decisionPanelLabel||'Current identity, trust and access decisions');
     panel.hidden=!bindings.length;
-    const rows=bindings.map(binding=>{
+    const raw=[],rows=bindings.map(binding=>{
       const value=binding.path.split('.').reduce((current,key)=>current&&Object.hasOwn(current,key)?current[key]:undefined,snapshot.state);
-      const display=binding.values&&Object.hasOwn(binding.values,String(value))?binding.values[String(value)]:value===undefined?'Not declared':value===null?'Not reached':value===true?'Yes':value===false?'No':formatProtocolValue(value,true);
-      return `<div><dt>${escapeHtml(binding.label)}</dt><dd>${escapeHtml(display)}</dd></div>`;
+      const display=binding.values&&Object.hasOwn(binding.values,String(value))?binding.values[String(value)]:value===undefined?'Not declared':value===null?'Not reached':value===true?'Yes':value===false?'No':isDnssec?this.dnssecDecisionDisplay(binding.path,value,snapshot.state.dnssec):formatProtocolValue(value,true);
+      if(isDnssec)raw.push(`<div><dt>${escapeHtml(binding.label)}</dt><dd><code>${escapeHtml(binding.path)}</code>: ${escapeHtml(formatProtocolValue(value,true))}</dd></div>`);
+      return `<div><dt>${escapeHtml(isDnssec&&binding.path==='dnssec.received'?'Fresh authority data received':binding.label)}</dt><dd>${escapeHtml(display)}</dd></div>`;
     }).join('');
-    const markup=bindings.length?'<dl>'+rows+'</dl>':'';if(panel.innerHTML!==markup)panel.innerHTML=markup;
+    const cacheReused=compareHops&&Object.values(dnssec.validators||{}).some(validator=>validator.reusedAuthenticatedCache===true);
+    const receiptRows=compareHops?`<div><dt>Authenticated cache reused</dt><dd>${cacheReused?'Yes':'No'}</dd></div><div><dt>Response delivered to stub</dt><dd>${dnssec.returnedToStub?'Yes':'No'}</dd></div>`:'';
+    const previousDetails=panel.querySelector('.dnssec-decision-details'),detailsOpen=previousDetails?.hasAttribute('open'),detailsFocused=previousDetails?.contains(document.activeElement);
+    const comparisonFocused=document.activeElement===panel.querySelector('.dnssec-hop-comparison [tabindex="0"]');
+    const sourceFocused=panel.querySelector('.dnssec-context-panel')?.contains(document.activeElement)?document.activeElement.getAttribute('data-dnssec-source-key'):null;
+    const details=isDnssec?`<details class="dnssec-decision-details"${detailsOpen?' open':''}><summary>Raw DNSSEC decision identifiers</summary><dl>${raw.join('')}</dl></details>`:'';
+    const receiptContext=cacheReused?'<p class="dnssec-receipt-context">The resolver reused an earlier authenticated cache occurrence: no fresh authority receipt or fetch and no fresh signature check. Cache reuse, response delivery to the stub and application use are separate boundaries.</p>':'';
+    const context=this.labModel?.dnssecContext;
+    const contextMarkup=isDnssec&&context?`<section class="dnssec-context-panel" aria-label="${escapeHtml(context.title)}"><h3>${escapeHtml(context.title)}</h3><p>${escapeHtml(context.explanation)}</p><dl>${context.records.map(record=>{const definition=this.definition(record.fieldId);return `<div><dt>${escapeHtml(record.label)}</dt><dd>${escapeHtml(definition.origin)} ${(definition.sources||[definition.source]).map((url,index)=>`<a data-dnssec-source-key="${escapeHtml(record.fieldId+':'+index)}" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(record.label)} source ${index+1}</a>`).join(' ')}</dd></div>`;}).join('')}</dl><p>${escapeHtml(context.parentDecision)}</p></section>`:'';
+    const markup=bindings.length?'<dl>'+rows+receiptRows+'</dl>'+receiptContext+details+(compareHops?this.dnssecHopComparison(dnssec):'')+contextMarkup:'';
+    if(panel.innerHTML!==markup){
+      panel.innerHTML=markup;
+      if(detailsFocused)panel.querySelector('.dnssec-decision-details summary')?.focus({preventScroll:true});
+      else if(comparisonFocused)panel.querySelector('.dnssec-hop-comparison [tabindex="0"]')?.focus({preventScroll:true});
+      else if(sourceFocused)Array.from(panel.querySelectorAll('.dnssec-context-panel a')).find(link=>link.getAttribute('data-dnssec-source-key')===sourceFocused)?.focus({preventScroll:true});
+    }
     const chapters=this.labModel?.chapters||[],controls=this.querySelector('#lesson-chapters');controls.hidden=!chapters.length;
     if(!chapters.length){if(controls.children.length)controls.innerHTML='';this.chapterControlsModel=null;return;}
     if(this.chapterControlsModel!==this.labModel){
       this.chapterControlsModel=this.labModel;
-      controls.innerHTML='<p>Linked chapters share one canonical history. Jumping seeks that history, not a new grant.</p><div class="chapter-buttons">'+chapters.map(chapter=>`<button type="button" class="button quiet" data-lesson-chapter="${escapeHtml(chapter.id)}" ${chapter.stepIds.length?'':'disabled'}>${escapeHtml(chapter.label)}${chapter.stepIds.length?'':' - not reached in this case'}</button>`).join('')+'</div><div id="chapter-token-comparison"></div>';
+      controls.innerHTML='<p>'+escapeHtml(this.labModel?.chapterCaption||'Linked chapters share one canonical history. Jumping seeks that history, not a new grant.')+'</p><div class="chapter-buttons">'+chapters.map(chapter=>`<button type="button" class="button quiet" data-lesson-chapter="${escapeHtml(chapter.id)}" ${chapter.stepIds.length?'':'disabled'}>${escapeHtml(chapter.label)}${chapter.stepIds.length?'':' - not reached in this case'}</button>`).join('')+'</div><div id="chapter-token-comparison"></div>';
     }
     controls.querySelectorAll('[data-lesson-chapter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.lessonChapter===this.graphChapter?.id)));
     const comparison=controls.querySelector('#chapter-token-comparison'),tokens=this.labModel?.chapterComparison||[];
     const holdings=tokens.length?this.heldView.snapshot().holdings:null;
     if(comparison)comparison.innerHTML=tokens.length?'<div class="instance-table-scroll"><table class="instance-table"><thead><tr><th>Separate credential</th><th>Issuer</th><th>Resource</th><th>Current prefix</th></tr></thead><tbody>'+tokens.map(token=>`<tr><td>${escapeHtml(token.label)}<br><code>${escapeHtml(token.artifactId)}</code></td><td>${escapeHtml(token.issuer)}</td><td>${escapeHtml(token.resource)}</td><td>${holdings.some(holding=>holding.artifactId===token.artifactId)?'A representation is held; this alone is not validation or permission.':'Not held in this source prefix.'}</td></tr>`).join('')+'</tbody></table></div>':'';
+  }
+  dnssecDecisionDisplay(path,value,state){
+    if(path==='dnssec.validationOwner'||path==='dnssec.firstDetector')return this.actor(value).name;
+    if(path==='dnssec.anchorRef')return 'Explicitly provisioned trust anchor';
+    if(path==='dnssec.reasonCode'){
+      if(value==='authenticated-parent-proves-unsigned-delegation')return 'Authenticated evidence of an unsigned delegation gives an insecure result. This is not a finding that the answer was forged.'+(state?.applicationResult?.policy==='secure-only'&&state.applicationResult.status==='refused'?' The selected secure-only application refuses it.':' Application policy is evaluated separately.');
+      const explanations={
+        'awaiting-data':'Waiting for data; no validation decision yet.',
+        'complete-anchor-ds-dnskey-answer-path':'The answer is authenticated through the configured anchor, parent DS and child DNSKEY.',
+        'validated-exact-answer-cache-reuse':'Reusing the exact previously authenticated answer; no fresh signature check.',
+        'cached-parent-chain-fresh-child-and-answer':'Using the authenticated parent cache, then checking the fresh child keys and answer.',
+        'authenticated-cache-can-retain-ad-for-cd-one':'The earlier authenticated cache result can retain AD, even for this CD=1 query.',
+        'fresh-cd-one-query-bypasses-cd-zero-upstream-error-context':'A fresh CD=1 query bypassed the separate cached CD=0 upstream SERVFAIL context.',
+        'trusted-resolver-ad-assertion-not-stub-independent-check':'The stub relies on its configured resolver and trusted channel, not an independent stub signature check.',
+        'ad-without-trusted-resolver-and-channel-is-insufficient':'An AD assertion without a trusted resolver and channel is insufficient for application use.',
+        'upstream-validation-failure-no-raw-data-for-local-check':'The upstream returned SERVFAIL without raw records for an independent local check.',
+        'answer-rdata-does-not-match-signature':'The received answer data do not match the signed record occurrence.',
+      };
+      if(Object.hasOwn(explanations,value))return explanations[value];
+    }
+    if(path==='dnssec.securityStatus')return ({secure:'Secure - authenticated',insecure:'Insecure - no secure signed path',bogus:'Bogus - validation failed',indeterminate:'Indeterminate - trust could not be established','not-checked':'Not checked'})[value]||value;
+    const readable=String(value).replaceAll('-',' ').replaceAll('_',' ');
+    return readable.charAt(0).toUpperCase()+readable.slice(1);
+  }
+  dnssecHopComparison(state){
+    const hops=state.response.traceHops||[],priorContexts=state.upstreamErrorEntries||[];
+    const packet=message=>message?`AD=${message.flags.AD} / CD=${message.flags.CD} / ${message.edns?.present?'DO='+message.edns.DO:'OPT absent (no DO bit)'}`:'Pending - response not received';
+    const cell=(name,value)=>`<td data-dnssec-hop-cell="${name}">${escapeHtml(value)}</td>`;
+    const priorRows=priorContexts.map(entry=>`<tr data-dnssec-cache-context="${escapeHtml(entry.id)}"><th scope="row" data-dnssec-hop-cell="identity">Retained cached upstream error context<br><code>${escapeHtml(entry.id)}</code><br>No current query is represented by this retained context.</th>${cell('query','CD='+entry.queryCD+'; AD not recorded; DO not recorded')}${cell('response','AD / CD / DO not recorded for this prior response')}${cell('delivery',entry.rcode+' retained from '+entry.receivedAt+'; expires at '+entry.expiresAt)}${cell('owner',this.actor(entry.validationOwner).name+' - retained remote error, not a local validation failure')}</tr>`).join('');
+    const rows=hops.map(hop=>{
+      const attempts=hop.attempts||[{query:hop.query,response:hop.response}];
+      const packets=side=>attempts.map((attempt,index)=>(attempts.length>1?'Attempt '+(index+1)+': ':'')+packet(attempt[side])).join('; ');
+      const events=attempts.map(attempt=>'Query event: <code>'+escapeHtml(attempt.query.id)+'</code>'+(attempt.response?'<br>Response event: <code>'+escapeHtml(attempt.response.id)+'</code>':'')).join('<br>');
+      const validator=hop.checkingOwner?state.validators?.[hop.checkingOwner]:null;
+      const checked=validator?.verificationKind==='local-check'&&(validator.signatureChecked===true||validator.chainEstablished===true||validator.decisionArtifact||Number.isFinite(validator.checkedAt));
+      const check=hop.checkingOwner?this.actor(hop.checkingOwner).name+' - '+(validator?.reusedAuthenticatedCache?'earlier authenticated cache reused; no fresh check':checked?'local validation '+(validator.securityStatus||'performed'):'not yet independently checked'):'No independent DNSSEC checker declared for this hop';
+      const reliesOnStubChannel=hop.relianceOwner==='dnsStub'&&state.stub?.assertionAccepted===true;
+      const reliesOnRemote=state.verificationKind==='remote-assertion'&&state.validationOwner===hop.checkingOwner;
+      const relianceText=hop.relianceOwner?'; '+this.actor(hop.relianceOwner).name+' - '+(reliesOnStubChannel?'relies on the configured resolver and trusted channel':reliesOnRemote?'relies on the remote assertion':'no explicit reliance-acceptance observation in this prefix'):'';
+      const identity=`${this.actor(hop.from).name} → ${this.actor(hop.to).name}`;
+      const attempt=hop.priorContextId?'Fresh query, separate from retained context '+hop.priorContextId:hop.retryOf?'Retry of '+hop.retryOf:'Current attempt';
+      const delivery=hop.response?'Received '+hop.response.rcode:hop.delivery?.queryDelivered===false?'Pending - query not delivered; '+(hop.delivery.responseAbsentReason||'no receipt'):'Pending - response not received';
+      return `<tr data-dnssec-hop-id="${escapeHtml(hop.id)}"><th scope="row" data-dnssec-hop-cell="identity">${escapeHtml(identity)}<br>${escapeHtml(hop.question.qname+' '+hop.question.qtype+' / '+hop.transport+' / '+attempt)}<br><code>${escapeHtml(hop.id)}</code><br>${events}</th>${cell('query',packets('query'))}${cell('response',packets('response'))}${cell('delivery',attempts.length+' attempt'+(attempts.length===1?'':'s')+'; '+delivery)}${cell('owner',check+relianceText)}</tr>`;
+    }).join('');
+    return '<section class="dnssec-hop-comparison" aria-label="DNS query and response comparison"><div class="instance-table-scroll" role="region" aria-label="Per-hop DNS flag comparison" tabindex="0"><table class="instance-table"><caption>DNS query and response at the current cursor</caption><thead><tr><th scope="col">Hop / attempt</th><th scope="col">Query AD / CD / DO</th><th scope="col">Response AD / CD / DO</th><th scope="col">RCODE / delivery</th><th scope="col">Validation / reliance</th></tr></thead><tbody>'+priorRows+rows+'</tbody></table></div>'+(!hops.length?'<p>No query has completed in this source prefix.</p>':'')+'<p>The authoritative response uses CD=0 under its authoritative rule; recursive responses echo the query CD bit. DO is an OPT request/response bit, not proof of security. A received response, a local validation decision and accepted reliance are separate observations.</p></section>';
   }
   refreshChapterProjection(){
     const chapter=this.graphChapter,key=chapter?.id||null;
@@ -797,9 +882,24 @@ export class AuthFlowStudio extends HTMLElement {
     if(!this.heldGeometry)this.ensureLayoutRoutes(this.traceQueue);
     this.renderActors();this.renderConnections();
   }
+  renderProtocolTimeline(snapshot){
+    const panel=this.querySelector('#lifetime-strip'),timeline=this.labModel.protocolTimeline,state=snapshot.state,now=state.protocolClock;
+    const read=path=>path?.split('.').reduce((current,key)=>current&&Object.hasOwn(current,key)?current[key]:undefined,state);
+    panel.hidden=false;panel.setAttribute('aria-label',timeline.label);
+    const cards=timeline.entries.map(entry=>{
+      const start=read(entry.startPath),deadline=read(entry.deadlinePath),status=read(entry.statusPath),detail=read(entry.detailPath);
+      const exists=Number.isFinite(start)&&Number.isFinite(deadline),elapsed=entry.mode==='elapsed',remaining=exists?deadline-now:null;
+      const value=exists?Math.max(0,Math.min(100,(elapsed?now-start:remaining)/Math.max(1,deadline-start)*100)):0;
+      const text=!exists?'Not established':remaining>0?remaining+' s '+(elapsed?'until the next eligibility boundary':'remaining'):(entry.onElapsed||(elapsed?'Window elapsed; observe the declared state before accepting.':'Expired'));
+      return `<div class="lifetime-card" data-lifetime="${escapeHtml(entry.id)}" data-active="${exists&&remaining>0}"><strong>${escapeHtml(entry.label)}</strong><span>${escapeHtml(text)}</span><progress max="100" value="${value}" aria-label="${escapeHtml(entry.label)} ${elapsed?'elapsed window':'remaining lifetime'}"></progress>${status===undefined?'':`<p>Current state: ${escapeHtml(formatProtocolValue(status,true))}</p>`}<p>${escapeHtml(detail===undefined?(entry.detail||''):formatProtocolValue(detail,true))}</p></div>`;
+    }).join('');
+    panel.innerHTML='<p class="lifetime-heading">'+escapeHtml(timeline.label)+' · protocol time '+now+' s</p><div class="lifetime-grid">'+cards+'</div><p class="lifetime-note">'+escapeHtml(timeline.explanation)+'</p>';
+  }
   renderLifetimes(snapshot){
+    if(snapshot&&this.labModel?.protocolTimeline){this.renderProtocolTimeline(snapshot);return;}
     const panel=this.querySelector('#lifetime-strip'),state=snapshot?.state;panel.hidden=!state?.lifetimes;
     if(panel.hidden){panel.innerHTML='';return;}
+    panel.setAttribute('aria-label','Four independent credential and session lifetimes');
     const now=state.protocolClock,start=snapshot.model.initialState.protocolClock;
     const entries=[
       {key:'idpSession',label:'IdP browser session',exists:!!state.sessions.idp,active:!!state.sessions.idp?.authenticated,expires:state.sessions.idp?.expiresAt,detail:state.sessions.idp?.endedBy||'The IdP owns its SSO session.'},
@@ -878,7 +978,7 @@ export class AuthFlowStudio extends HTMLElement {
     if(this.attributeSelection){this.selectAttribute(this.attributeSelection,false);return;}
     this.player.stop(false);this.index=0;this.visited.clear();this.packetIdentity='';this.inspection={type:'step'};
     this.attributeSelection=null;this.objectTraceSelection=null;this.traceQueue=[];this.traceIndex=0;
-    this.hidePopups();this.refs.packet.hidden=true;this.hideStepAttributes();this.renderConnections();this.renderTimeline();this.renderAttributeIndex();this.renderFocus();this.updateStep();this.renderInspector();this.updateControls();
+    this.hidePopups();this.refs.packet.hidden=true;this.hideStepAttributes();this.refreshChapterProjection();this.renderConnections();this.renderTimeline();this.renderAttributeIndex();this.renderFocus();this.updateStep();this.renderInspector();this.updateControls();
   }
   replayConnection(pair) {
     this.hidePopups();const exchanges=this.visibleSteps.filter(step=>pairKey(this.nodeId(step.from),this.nodeId(step.to))===pair);
@@ -955,6 +1055,7 @@ export class AuthFlowStudio extends HTMLElement {
     const local=operations.filter(a=>!['inspect','send','receive'].includes(a.kind)),isLocal=step.from===step.to;
     let relevant=isLocal?local.filter(a=>a.actorId===from):operations.filter(a=>a.kind==='send'&&a.actorId===from);
     if(!isLocal&&!relevant.length)relevant=local.filter(a=>a.actorId===from||a.actorId===to);
+    if(this.learningDetail==='journey'&&!this.hasTrace&&source.overviewFields)relevant=relevant.filter(operation=>source.overviewFields.includes(operation.attributeId));
     const items=new Map();
     for(const operation of relevant){
       const definition=ATTRIBUTES[operation.attributeId];if(!definition)continue;
@@ -1107,7 +1208,8 @@ export class AuthFlowStudio extends HTMLElement {
     const fields=s.fields||[],authored=s.sourceStepId?this.steps.find(step=>step.id===s.sourceStepId)||s:s;
     const protocolLabel=s.sourceStepId&&s.from===s.to?(TRACE_ACTION_LABELS[s.traceKind]||'Local object processing'):s.protocolLabel||authored.protocolLabel||s.channel;
     const summary=profile&&this.learningDetail==='journey'?s.beginnerSummary||s.summary:s.summary;
-    const payload=(s.payload||[]).map((p,i)=>{
+    const inspectedPayload=s.sourceStepId?s.payload:s.detailedPayload||s.payload;
+    const payload=(inspectedPayload||[]).map((p,i)=>{
       const id=this.payloadAttributeId(p,s),value=formatProtocolValue(p.value);
       const display=profile&&value.length>120?`<details class="long-protocol-value"><summary>Show full value: ${escapeHtml(p.name)}</summary><code class="field-value">${escapeHtml(value)}</code></details>`:`<code class="field-value">${escapeHtml(value)}</code>`;
       return `<div class="payload-row"><button class="field-name" ${id&&ATTRIBUTES[id]?`data-attribute="${id}"`:''}><span class="payload-number">${i+1}</span><code>${escapeHtml(p.name)}</code>${id&&ATTRIBUTES[id]?uiIcon('info'):''}</button>${display}${p.description?`<span class="field-description">${escapeHtml(p.description)}</span>`:''}</div>`;
@@ -1190,6 +1292,11 @@ export class AuthFlowStudio extends HTMLElement {
     return null;
   }
   traceInspection() {return this.objectTraceSelection?{type:'step'}:{type:ATTRIBUTE_TOPICS[this.attributeSelection]?'topic':'attribute',id:this.attributeSelection};}
+  buildAttributeTrace(id,usages=this.attributeUsage(this.steps,id)) {
+    const examples={...this.runtimeEnvironment.projectExamples({...(this.isDirectFido?getFidoExampleOverrides():getExampleOverrides(this.architecture,this.upstream)),...(this.isUsingSaml?getSamlExampleOverrides(this.protocolConfig()):{}),...(this.isAdvancedFlow?this.advancedFlow.examples(this.protocolConfig()):{}),...this.scenarioSnapshot().exampleOverrides},this.environmentOptions)};
+    getAttributeIds(id).forEach(field=>examples[field]=this.definition(field).example);
+    return buildAttributeTrace(usages,examples,this.scenarioSnapshot().protocolValues||this.labModel?.protocolValues||{});
+  }
   selectAttribute(id,animate=true) {
     const returnTarget=captureFocusTarget(this,document.activeElement);
     id=this.labAttributeAlias(id);
@@ -1197,9 +1304,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.objectTraceSelection=null;
     this.player.stop(false);this.hidePopups();this.attributeSelection=id;this.traceIndex=0;this.visited.clear();this.packetIdentity='';
     this.attributeUsages=this.attributeUsage(this.steps,id);
-    const examples={...this.runtimeEnvironment.projectExamples({...(this.isDirectFido?getFidoExampleOverrides():getExampleOverrides(this.architecture,this.upstream)),...(this.isUsingSaml?getSamlExampleOverrides(this.protocolConfig()):{}),...(this.isAdvancedFlow?this.advancedFlow.examples(this.protocolConfig()):{}),...this.scenarioSnapshot().exampleOverrides},this.environmentOptions)};
-    getAttributeIds(id).forEach(field=>examples[field]=this.definition(field).example);
-    this.traceQueue=buildAttributeTrace(this.attributeUsages,examples,this.scenarioSnapshot().protocolValues||this.labModel?.protocolValues||{});
+    this.traceQueue=this.buildAttributeTrace(id,this.attributeUsages);
     if(this.scenarioOwnedActors&&!this.showInternals&&this.attributeUsages.some(usage=>usage.actions.some(action=>this.scenarioOwnedActors[action.actorId]?.parentId))){this.showInternals=true;this.renderActors();this.renderWorkspace();}
     this.heldView?.configureGeometry();this.renderActors();
     if(!this.heldGeometry&&this.ensureLayoutRoutes(this.traceQueue))this.renderActors();
@@ -1217,7 +1322,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.inspection=this.traceInspection();this.visited.clear();this.player.play(this.traceQueue,this.objectTraceSelection?'object':'attribute');
   }
   selectionName(id=this.attributeSelection) {return ATTRIBUTE_TOPICS[id]?.name||this.definition(id).name||id;}
-  indexContext(id) {
+  indexContext(id,definition) {
     if(LAB_ATTRIBUTES[id])return labAttributeScenarios(id).map(model=>model.title).join(' · ');
     if(this.isAdvancedFlow&&getAttributeUsage(this.steps,id,this.authenticator).length)return this.advancedFlow.title;
     if(SERVICE_ATTRIBUTES[id])return 'Service accounts · client_credentials';
@@ -1226,16 +1331,17 @@ export class AuthFlowStudio extends HTMLElement {
     if(EXCHANGE_ATTRIBUTES[id])return 'Token exchange · Standard V2';
     if(SAML_ATTRIBUTES[id])return /Broker$|B$/.test(id)?'SAML · upstream IdP ↔ Realm A':/App$/.test(id)?'SAML · Realm A ↔ application':/A$/.test(id)?'SAML · Realm A provider / broker':'SAML XML · binding / assertion / SP policy';
     if(JWE_ATTRIBUTES[id])return /Broker$/.test(id)?'JWE · upstream IdP → Realm A':'JWE · Realm A → application';
-    if(this.isDirectFido&&(/WebAuthn|FIDO|CTAP/.test(this.definition(id).standard)||['privateKey','credentialPublicKey'].includes(id)))return 'Web application RP ↔ authenticator';
+    if(this.isDirectFido&&(/WebAuthn|FIDO|CTAP/.test(definition.standard)||['privateKey','credentialPublicKey'].includes(id)))return 'Web application RP ↔ authenticator';
     if(this.isSingleRealm&&(/Broker|B$/.test(id)||['clientSecret','authorizationHeader'].includes(id)))return 'Brokered setup · unused here';
     if(this.isSingleRealm&&id.startsWith('otp'))return 'TOTP · Keycloak Realm A';
-    if(this.isSingleRealm&&(/WebAuthn|FIDO|CTAP/.test(this.definition(id).standard)||['privateKey','credentialPublicKey'].includes(id)))return 'Realm A ↔ authenticator';
+    if(this.isSingleRealm&&(/WebAuthn|FIDO|CTAP/.test(definition.standard)||['privateKey','credentialPublicKey'].includes(id)))return 'Realm A ↔ authenticator';
     if(/Broker|B$/.test(id)||['clientSecret','authorizationHeader'].includes(id))return 'Realm A ↔ upstream provider';
     if(/App|A$/.test(id)||['codeVerifier','codeChallenge','codeChallengeMethod'].includes(id))return 'Application ↔ Realm A';
     if(id.startsWith('otp'))return 'TOTP · upstream provider';
-    const a=this.definition(id);return a.standard?.split(' / ')[0]||'Protocol attribute';
+    return definition.standard?.split(' / ')[0]||'Protocol attribute';
   }
   renderAttributeIndex() {
+    if(this.refs['attribute-index'].hidden)return;
     const focused=document.activeElement;
     const focusKey=this.refs['attribute-index-list'].contains(focused)?['data-index-attribute',focused.dataset.indexAttribute]:this.refs['attribute-topics'].contains(focused)?['data-trace-topic',focused.dataset.traceTopic]:null;
     const steps=this.steps,query=this.attributeQuery.trim().toLowerCase(),journeyIds=this.labModel?.profile&&!query?new Set(this.labModel.ids):null;
@@ -1254,7 +1360,7 @@ export class AuthFlowStudio extends HTMLElement {
       if(query&&!search.includes(query))return null;
       const count=hasUsage(id)?getAttributeUsage(steps,id,this.authenticator).length:0,pressed=String(id===this.attributeSelection);
       const className='attribute-index-item '+(id===this.attributeSelection?'is-selected':'')+' '+(count?'':'is-unavailable');
-      const context=this.indexContext(id),label=a.name+'. '+count+' source steps in this journey. '+context;
+      const context=this.indexContext(id,a),label=a.name+'. '+count+' source steps in this journey. '+context;
       const contents=`<code>${escapeHtml(a.name)}</code><span class="attribute-index-count" title="Journey steps with an operation">${count}</span><span class="attribute-index-context">${escapeHtml(context)}</span>`;
       return {id,search,pressed,className,contents,label,markup:`<button class="${className}" data-index-attribute="${id}" aria-label="${escapeHtml(label)}" aria-haspopup="dialog" aria-controls="attribute-popup" aria-keyshortcuts="F2" aria-pressed="${pressed}">${contents}</button>`};
     }).filter(Boolean);

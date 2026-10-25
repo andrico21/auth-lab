@@ -1,0 +1,172 @@
+kind: dnssec-resolution-errata-insertion-semantics
+schemaVersion: 1
+applies_to: local://dnssec-resolution-errata-proposal.yaml
+status: supplement-proposal-only
+purpose: >-
+  Record the exact original/final array order for every array insertion in the
+  errata proposal and supersede the main artifact's sentence that interpreted
+  expect_absent as an absent original index.
+semantics:
+  - The main proposal's op=add indices are sequential insertion positions after all preceding operations in the same finding.
+  - expect_absent true means the exact inserted value is not already present; it is not an assertion that the original index was absent.
+  - Every element not named as inserted keeps its original identity, bytes and relative order.
+  - value_ref same-as:<pointer> copies the exact value added at that pointer; no unbound data.
+  - op=add to /- appends; op=replace/remove with expect or expect_selector is evaluated against the original object.
+insertions:
+  - finding: DNS03-SC-01
+    path: /lessons/1/cases/0/outcome/flags/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:signed-child:parent-ds, template: dns03_parent_ds_hop}
+      - {index: 1, id: lab-dnssec03:signed-child:child-key, template: dns03_child_key_hop}
+    final_ids: [lab-dnssec03:signed-child:parent-ds, lab-dnssec03:signed-child:child-key, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-SC-01
+    path: /lessons/1/cases/0/checkpoints/5/expected/response/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:signed-child:parent-ds, value_ref: same-as:/lessons/1/cases/0/outcome/flags/hops/0}
+      - {index: 1, id: lab-dnssec03:signed-child:child-key, value_ref: same-as:/lessons/1/cases/0/outcome/flags/hops/1}
+    final_ids: [lab-dnssec03:signed-child:parent-ds, lab-dnssec03:signed-child:child-key, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-SC-01
+    path: /lessons/1/cases/0/sequence
+    original_ids: [lab-dnssec03:signed-child:app-request, lab-dnssec03:stub:q, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:signed-child:raw-response-received-before-trust, lab-dnssec03:signed-child:parent-to-child-authentication, lab-dnssec03:signed-child:local-verification-bound-to-evidence, lab-dnssec03:signed-child:classification-with-independent-failure-context, lab-dnssec03:signed-child:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:signed-child:application-result]
+    inserted:
+      - {index: 2, id: lab-dnssec03:signed-child:parent-ds:q}
+      - {index: 3, id: lab-dnssec03:signed-child:parent-ds:r:raw}
+      - {index: 4, id: lab-dnssec03:signed-child:child-key:q}
+      - {index: 5, id: lab-dnssec03:signed-child:child-key:r:raw}
+    final_ids: [lab-dnssec03:signed-child:app-request, lab-dnssec03:stub:q, lab-dnssec03:signed-child:parent-ds:q, lab-dnssec03:signed-child:parent-ds:r:raw, lab-dnssec03:signed-child:child-key:q, lab-dnssec03:signed-child:child-key:r:raw, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:signed-child:raw-response-received-before-trust, lab-dnssec03:signed-child:parent-to-child-authentication, lab-dnssec03:signed-child:local-verification-bound-to-evidence, lab-dnssec03:signed-child:classification-with-independent-failure-context, lab-dnssec03:signed-child:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:signed-child:application-result]
+  - finding: DNS03-DSM-01a
+    path: /lessons/1/cases/2/outcome/flags/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:supported-ds-mismatch:parent-ds}
+      - {index: 1, id: lab-dnssec03:supported-ds-mismatch:child-key}
+    final_ids: [lab-dnssec03:supported-ds-mismatch:parent-ds, lab-dnssec03:supported-ds-mismatch:child-key, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-DSM-01a
+    path: /lessons/1/cases/2/checkpoints/5/expected/response/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:supported-ds-mismatch:parent-ds, value_ref: same-as:/lessons/1/cases/2/outcome/flags/hops/0}
+      - {index: 1, id: lab-dnssec03:supported-ds-mismatch:child-key, value_ref: same-as:/lessons/1/cases/2/outcome/flags/hops/1}
+    final_ids: [lab-dnssec03:supported-ds-mismatch:parent-ds, lab-dnssec03:supported-ds-mismatch:child-key, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-DSM-01a
+    path: /lessons/1/cases/2/sequence
+    original_ids: [lab-dnssec03:supported-ds-mismatch:app-request, lab-dnssec03:stub:q, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:supported-ds-mismatch:raw-response-received-before-trust, lab-dnssec03:supported-ds-mismatch:supported-path-fails-before-child-key-acceptance, lab-dnssec03:supported-ds-mismatch:local-verification-bound-to-evidence, lab-dnssec03:supported-ds-mismatch:classification-with-independent-failure-context, lab-dnssec03:supported-ds-mismatch:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:supported-ds-mismatch:application-result]
+    inserted:
+      - {index: 2, id: lab-dnssec03:supported-ds-mismatch:parent-ds:q}
+      - {index: 3, id: lab-dnssec03:supported-ds-mismatch:parent-ds:r:raw}
+      - {index: 4, id: lab-dnssec03:supported-ds-mismatch:child-key:q}
+      - {index: 5, id: lab-dnssec03:supported-ds-mismatch:child-key:r:raw}
+    final_ids: [lab-dnssec03:supported-ds-mismatch:app-request, lab-dnssec03:stub:q, lab-dnssec03:supported-ds-mismatch:parent-ds:q, lab-dnssec03:supported-ds-mismatch:parent-ds:r:raw, lab-dnssec03:supported-ds-mismatch:child-key:q, lab-dnssec03:supported-ds-mismatch:child-key:r:raw, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:supported-ds-mismatch:raw-response-received-before-trust, lab-dnssec03:supported-ds-mismatch:supported-path-fails-before-child-key-acceptance, lab-dnssec03:supported-ds-mismatch:local-verification-bound-to-evidence, lab-dnssec03:supported-ds-mismatch:classification-with-independent-failure-context, lab-dnssec03:supported-ds-mismatch:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:supported-ds-mismatch:application-result]
+  - finding: DNS03-DSM-01b
+    path: /lessons/1/cases/6/outcome/flags/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:unsupported-only-ds:parent-ds}
+    final_ids: [lab-dnssec03:unsupported-only-ds:parent-ds, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-DSM-01b
+    path: /lessons/1/cases/6/checkpoints/5/expected/response/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:unsupported-only-ds:parent-ds, value_ref: same-as:/lessons/1/cases/6/outcome/flags/hops/0}
+    final_ids: [lab-dnssec03:unsupported-only-ds:parent-ds, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-DSM-01b
+    path: /lessons/1/cases/6/sequence
+    original_ids: [lab-dnssec03:unsupported-only-ds:app-request, lab-dnssec03:stub:q, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:unsupported-only-ds:raw-response-received-before-trust, lab-dnssec03:unsupported-only-ds:disregard-unsupported-only-authenticated-paths, lab-dnssec03:unsupported-only-ds:local-verification-bound-to-evidence, lab-dnssec03:unsupported-only-ds:classification-with-independent-failure-context, lab-dnssec03:unsupported-only-ds:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:unsupported-only-ds:application-result]
+    inserted:
+      - {index: 2, id: lab-dnssec03:unsupported-only-ds:parent-ds:q}
+      - {index: 3, id: lab-dnssec03:unsupported-only-ds:parent-ds:r:raw}
+    final_ids: [lab-dnssec03:unsupported-only-ds:app-request, lab-dnssec03:stub:q, lab-dnssec03:unsupported-only-ds:parent-ds:q, lab-dnssec03:unsupported-only-ds:parent-ds:r:raw, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:unsupported-only-ds:raw-response-received-before-trust, lab-dnssec03:unsupported-only-ds:disregard-unsupported-only-authenticated-paths, lab-dnssec03:unsupported-only-ds:local-verification-bound-to-evidence, lab-dnssec03:unsupported-only-ds:classification-with-independent-failure-context, lab-dnssec03:unsupported-only-ds:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:unsupported-only-ds:application-result]
+  - finding: DNS03-NDS-01
+    path: /lessons/1/cases/1/outcome/flags/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:proved-no-ds:parent-ds}
+    final_ids: [lab-dnssec03:proved-no-ds:parent-ds, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-NDS-01
+    path: /lessons/1/cases/1/checkpoints/5/expected/response/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:proved-no-ds:parent-ds, value_ref: same-as:/lessons/1/cases/1/outcome/flags/hops/0}
+    final_ids: [lab-dnssec03:proved-no-ds:parent-ds, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-NDS-01
+    path: /lessons/1/cases/1/sequence
+    original_ids: [lab-dnssec03:proved-no-ds:app-request, lab-dnssec03:stub:q, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:proved-no-ds:raw-response-received-before-trust, lab-dnssec03:proved-no-ds:signed-parent-no-ds-is-positive-evidence, lab-dnssec03:proved-no-ds:local-verification-bound-to-evidence, lab-dnssec03:proved-no-ds:classification-with-independent-failure-context, lab-dnssec03:proved-no-ds:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:proved-no-ds:application-result]
+    inserted:
+      - {index: 2, id: lab-dnssec03:proved-no-ds:parent-ds:q}
+      - {index: 3, id: lab-dnssec03:proved-no-ds:parent-ds:r:raw}
+    final_ids: [lab-dnssec03:proved-no-ds:app-request, lab-dnssec03:stub:q, lab-dnssec03:proved-no-ds:parent-ds:q, lab-dnssec03:proved-no-ds:parent-ds:r:raw, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:proved-no-ds:raw-response-received-before-trust, lab-dnssec03:proved-no-ds:signed-parent-no-ds-is-positive-evidence, lab-dnssec03:proved-no-ds:local-verification-bound-to-evidence, lab-dnssec03:proved-no-ds:classification-with-independent-failure-context, lab-dnssec03:proved-no-ds:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:proved-no-ds:application-result]
+  - finding: DNS03-ISL-01
+    path: /lessons/1/cases/5/outcome/flags/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:signed-island-with-local-anchor:child-key}
+    final_ids: [lab-dnssec03:signed-island-with-local-anchor:child-key, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-ISL-01
+    path: /lessons/1/cases/5/checkpoints/5/expected/response/hops
+    original_ids: [lab-dnssec03:leaf, lab-dnssec03:stub]
+    inserted:
+      - {index: 0, id: lab-dnssec03:signed-island-with-local-anchor:child-key, value_ref: same-as:/lessons/1/cases/5/outcome/flags/hops/0}
+    final_ids: [lab-dnssec03:signed-island-with-local-anchor:child-key, lab-dnssec03:leaf, lab-dnssec03:stub]
+  - finding: DNS03-ISL-01
+    path: /lessons/1/cases/5/sequence
+    original_ids: [lab-dnssec03:signed-island-with-local-anchor:app-request, lab-dnssec03:stub:q, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:signed-island-with-local-anchor:raw-response-received-before-trust, lab-dnssec03:signed-island-with-local-anchor:island-anchor-restores-independent-path, lab-dnssec03:signed-island-with-local-anchor:local-verification-bound-to-evidence, lab-dnssec03:signed-island-with-local-anchor:classification-with-independent-failure-context, lab-dnssec03:signed-island-with-local-anchor:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:signed-island-with-local-anchor:application-result]
+    inserted:
+      - {index: 2, id: lab-dnssec03:signed-island-with-local-anchor:child-key:q}
+      - {index: 3, id: lab-dnssec03:signed-island-with-local-anchor:child-key:r:raw}
+    final_ids: [lab-dnssec03:signed-island-with-local-anchor:app-request, lab-dnssec03:stub:q, lab-dnssec03:signed-island-with-local-anchor:child-key:q, lab-dnssec03:signed-island-with-local-anchor:child-key:r:raw, lab-dnssec03:leaf:q, lab-dnssec03:leaf:r:raw, lab-dnssec03:signed-island-with-local-anchor:raw-response-received-before-trust, lab-dnssec03:signed-island-with-local-anchor:island-anchor-restores-independent-path, lab-dnssec03:signed-island-with-local-anchor:local-verification-bound-to-evidence, lab-dnssec03:signed-island-with-local-anchor:classification-with-independent-failure-context, lab-dnssec03:signed-island-with-local-anchor:accepted-use-and-cache-boundary, lab-dnssec03:stub:r, lab-dnssec03:signed-island-with-local-anchor:application-result]
+  - finding: DNS22-DCTS-01
+    path: /lessons/12/cases/3/outcome/flags/hops
+    original_ids: [lab-dnssec22:leaf, lab-dnssec22:stub]
+    inserted:
+      - {index: 1, id: lab-dnssec22:different-client-trust-stores:clientB-private}
+    final_ids: [lab-dnssec22:leaf, lab-dnssec22:different-client-trust-stores:clientB-private, lab-dnssec22:stub]
+  - finding: DNS22-DCTS-01
+    path: /lessons/12/cases/3/checkpoints/6/expected/response/hops
+    original_ids: [lab-dnssec22:leaf, lab-dnssec22:stub]
+    inserted:
+      - {index: 1, id: lab-dnssec22:different-client-trust-stores:clientB-private, value_ref: same-as:/lessons/12/cases/3/outcome/flags/hops/1}
+    final_ids: [lab-dnssec22:leaf, lab-dnssec22:different-client-trust-stores:clientB-private, lab-dnssec22:stub]
+  - finding: DNS22-DCTS-01
+    path: /lessons/12/cases/3/sequence
+    original_ids: [lab-dnssec22:different-client-trust-stores:app-request, lab-dnssec22:stub:q, lab-dnssec22:leaf:q, lab-dnssec22:leaf:r:raw, lab-dnssec22:different-client-trust-stores:raw-response-received-before-trust, lab-dnssec22:different-client-trust-stores:trust-stores-do-not-merge, lab-dnssec22:different-client-trust-stores:identical-owner-distinct-cache-namespaces, lab-dnssec22:different-client-trust-stores:local-verification-bound-to-evidence, lab-dnssec22:different-client-trust-stores:classification-with-independent-failure-context, lab-dnssec22:different-client-trust-stores:accepted-use-and-cache-boundary, lab-dnssec22:stub:r, lab-dnssec22:different-client-trust-stores:application-result]
+    inserted:
+      - {index: 4, id: lab-dnssec22:different-client-trust-stores:clientB-private:q}
+      - {index: 5, id: lab-dnssec22:different-client-trust-stores:clientB-private:r:raw}
+    final_ids: [lab-dnssec22:different-client-trust-stores:app-request, lab-dnssec22:stub:q, lab-dnssec22:leaf:q, lab-dnssec22:leaf:r:raw, lab-dnssec22:different-client-trust-stores:clientB-private:q, lab-dnssec22:different-client-trust-stores:clientB-private:r:raw, lab-dnssec22:different-client-trust-stores:raw-response-received-before-trust, lab-dnssec22:different-client-trust-stores:trust-stores-do-not-merge, lab-dnssec22:different-client-trust-stores:identical-owner-distinct-cache-namespaces, lab-dnssec22:different-client-trust-stores:local-verification-bound-to-evidence, lab-dnssec22:different-client-trust-stores:classification-with-independent-failure-context, lab-dnssec22:different-client-trust-stores:accepted-use-and-cache-boundary, lab-dnssec22:stub:r, lab-dnssec22:different-client-trust-stores:application-result]
+  - finding: DNS09-XZONE-01
+    path: /lessons/7/cases/6/outcome/flags/hops
+    original_ids: [lab-dnssec09:leaf, lab-dnssec09:stub]
+    inserted:
+      - {index: 1, id: lab-dnssec09:dname-synthesized-cname:target, template: dns09_target_hop}
+    final_ids: [lab-dnssec09:leaf, lab-dnssec09:dname-synthesized-cname:target, lab-dnssec09:stub]
+  - finding: DNS09-XZONE-01
+    path: /lessons/7/cases/6/checkpoints/5/expected/response/hops
+    original_ids: [lab-dnssec09:leaf, lab-dnssec09:stub]
+    inserted:
+      - {index: 1, id: lab-dnssec09:dname-synthesized-cname:target, value_ref: same-as:/lessons/7/cases/6/outcome/flags/hops/1}
+    final_ids: [lab-dnssec09:leaf, lab-dnssec09:dname-synthesized-cname:target, lab-dnssec09:stub]
+  - finding: DNS09-XZONE-01
+    path: /lessons/7/cases/6/sequence
+    original_ids: [lab-dnssec09:dname-synthesized-cname:app-request, lab-dnssec09:stub:q, lab-dnssec09:leaf:q, lab-dnssec09:leaf:r:raw, lab-dnssec09:dname-synthesized-cname:raw-response-received-before-trust, lab-dnssec09:dname-synthesized-cname:unsigned-synthesized-cname-covered-by-validated-dname, lab-dnssec09:dname-synthesized-cname:local-verification-bound-to-evidence, lab-dnssec09:dname-synthesized-cname:classification-with-independent-failure-context, lab-dnssec09:dname-synthesized-cname:accepted-use-and-cache-boundary, lab-dnssec09:stub:r, lab-dnssec09:dname-synthesized-cname:application-result]
+    inserted:
+      - {index: 4, id: lab-dnssec09:dname-synthesized-cname:target:q}
+      - {index: 5, id: lab-dnssec09:dname-synthesized-cname:target:r:raw}
+    final_ids: [lab-dnssec09:dname-synthesized-cname:app-request, lab-dnssec09:stub:q, lab-dnssec09:leaf:q, lab-dnssec09:leaf:r:raw, lab-dnssec09:dname-synthesized-cname:target:q, lab-dnssec09:dname-synthesized-cname:target:r:raw, lab-dnssec09:dname-synthesized-cname:raw-response-received-before-trust, lab-dnssec09:dname-synthesized-cname:unsigned-synthesized-cname-covered-by-validated-dname, lab-dnssec09:dname-synthesized-cname:local-verification-bound-to-evidence, lab-dnssec09:dname-synthesized-cname:classification-with-independent-failure-context, lab-dnssec09:dname-synthesized-cname:accepted-use-and-cache-boundary, lab-dnssec09:stub:r, lab-dnssec09:dname-synthesized-cname:application-result]
+appends:
+  - finding: DNS22-DCTS-01
+    path: /lessons/12/cases/3/checkpoints/5/expected/cacheEntries
+    original_length: 1
+    appended:
+      - id: lab-dnssec22:different-client-trust-stores:clientB-private-cache
+    final_length: 2
+  - finding: DNS09-XZONE-01
+    path_glob: /lessons/7/cases/{3,4,5,6}/sourceSections
+    original_length: 3
+    appended: S22 RFC1034 section entry
+    final_length: 4
+notes:
+  - The main proposal's op=add index and this supplement's index are the same sequential insertion position.
+  - No original element is replaced, duplicated or reordered by an insertion.
+  - The stub-checkpoint hop arrays must remain byte-identical to the corresponding outcome hop arrays after insertion, except for their enclosing pointer.

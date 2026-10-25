@@ -23,7 +23,7 @@ function universalChoose(app,id){
 }
 function universalToggle(app,id,value){const control=app.querySelector('#'+id);control.checked=value;control.dispatchEvent(new HarnessEvent('change'));}
 function universalFinish(app){clock.until(()=>app.player.status!=='playing');}
-function universalHover(node){assert.ok(node,'hover target exists');node.dispatchEvent(new HarnessEvent('mouseover',{relatedTarget:null}));}
+function universalHover(node){assert.ok(node,'hover target exists');node.dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse',relatedTarget:null}));}
 function universalTrace(app,id){app.selectAttribute(id,false);assert.equal(app.attributeSelection,id);assert.ok(app.traceQueue.length,id+' has real operations');return app.traceQueue;}
 
 test('the visible chooser exposes every registered journey without duplicate choices',()=>{

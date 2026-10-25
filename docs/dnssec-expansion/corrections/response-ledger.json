@@ -1,0 +1,1323 @@
+{
+  "schemaVersion": 2,
+  "kind": "DNSSEC-required-correction-response-ledger",
+  "recordedOn": "2026-10-25T08:16:10.227Z",
+  "status": "required-dnssec-corrections-independently-closed",
+  "independentReview": {
+    "status": "closed-for-reviewed-candidate",
+    "review": {
+      "path": "docs/dnssec-expansion/inputs/dnssec-r10-closure-review.html",
+      "sha256": "b60da5cb2ffa32fd766168ebd214eaca92626a2e6da2e700a64c424771b96407",
+      "bytes": 62688
+    },
+    "reviewer": "Astra",
+    "performed": true,
+    "reviewDate": "2026-10-25",
+    "requiredCorrections": [],
+    "disposition": {
+      "path": "docs/dnssec-expansion/corrections/independent-r10-closure-disposition.json",
+      "sha256": "3d57d8d231243a9fbde1a80b41d3b2181844527d321aee049d2e8d34d7e50366",
+      "bytes": 10422
+    },
+    "originalReview": {
+      "path": "docs/dnssec-expansion/inputs/dnssec-review-and-worker-comments.html",
+      "sha256": "ece30d331ef1072e00f6ef8ca871da68794b9598f315d84d0423578058f45e26",
+      "bytes": 68765
+    },
+    "closedCorrections": [
+      "DNS-R10"
+    ],
+    "previousReview": {
+      "path": "docs/dnssec-expansion/inputs/dnssec-corrections-02-recheck.html",
+      "sha256": "f560e0e23af6c55dad5db499a49e767f302d28b99343043dce61e561a743e308",
+      "bytes": 72732
+    },
+    "previousDisposition": {
+      "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+      "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+      "bytes": 4879
+    }
+  },
+  "base": "c99ebd6fec16e01dc9fef6c9590d534b8f1daf85",
+  "reviewedSourceIdentity": "dd9a3527335c0949086340c8e04c2d0ca51e206d7954debd01043492eb245068",
+  "reviewedStandalone": {
+    "path": "dist/auth-flow-studio.html",
+    "sha256": "9d18f50483f7106b55e744461d073742521df26f760149e8c9d9e6a4957b6625",
+    "bytes": 5202353
+  },
+  "identityScope": "The exact corrections-03 application/test source and standalone remain unchanged and are independently closed within DNS-R10 scope. Only current closure documentation changes; old reports, source identities, native and performance records retain their actual execution scope.",
+  "correctionRecheck": "corrections02-performed-R10-resolved-by-focused-independent-closure",
+  "responses": [
+    {
+      "id": "DNS-R01",
+      "priority": "P1",
+      "scope": "Validating-stub local proof/cache custody",
+      "status": "prior-scoped-closure-preserved-by-performed-Astra-recheck",
+      "independentClosure": true,
+      "sourceChanges": [
+        "src/dnssec-network-cases.js"
+      ],
+      "implementation": "Completion uses explicit result owner for evidence creation, derivation, acquisition and authenticated cache. Validating-stub proof/cache stay at dnsStub in stub-public-v1; resolver-fetch-only-v1 gains no anchor or unsent verdict.",
+      "consumerInvariants": [
+        "No stub acceptance before its check",
+        "No resolver acquisition of unsent stub proof",
+        "Equal-prefix holdings, namespaces and rewind remain aligned; other validator ownership modes remain distinct"
+      ],
+      "counterfactualTestAttribution": {
+        "path": "tests/dnssec-network-corrections.test.mjs",
+        "scope": "Stub boundary and cross-actor create/derivation assertions; corrected retrospective baseline is shared below"
+      },
+      "evidenceStatus": "Original scoped closure preserved by the performed corrections02 recheck. Existing afterEvidence retains original executed identities; current R10 preservation evidence is separate.",
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        },
+        "native": {
+          "path": "docs/verification/dnssec-review-corrections/native-04/native-status.json",
+          "sha256": "0bc20d1fb8176c47b949f1ba52c16e079227a9da2f69ff025853e34238d175b8",
+          "bytes": 2469488
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-R02",
+      "priority": "P2",
+      "scope": "Outgoing occurrence TTL consistency",
+      "status": "prior-scoped-closure-preserved-by-performed-Astra-recheck",
+      "independentClosure": true,
+      "sourceChanges": [
+        "src/dnssec-network-cases.js",
+        "src/dnssec-denial-cases.js"
+      ],
+      "implementation": "Response metadata derives from carried ordinary RRset/RRSIG occurrences; ordinary signature TTL ages separately from immutable signed Original TTL and RDATA. No carried signature means null receivedRrsigTtl. Followup actual namespace target entries now derive receivedRrsetTtl, receivedRrsigTtl and OriginalTTL from their own target tuple; unsigned target signature metadata is null, not inherited from the alias.",
+      "consumerInvariants": [
+        "Warm outgoing occurrence reports 240 seconds consistently",
+        "Original TTL remains 3600 and signature RDATA unchanged",
+        "DO=0/no-RRSIG, diagnostic and NTA controls retain distinct semantics and original receipt/deadline",
+        "Actual unsigned/signed/bogus/DNAME target cache metadata matches its own upstream occurrence, independently of signed alias metadata."
+      ],
+      "counterfactualTestAttribution": {
+        "path": "tests/dnssec-network-corrections.test.mjs",
+        "scope": "Exact packet and held-record TTL comparisons, including NTA299; numeric Type Covered locator repair is test metadata, not a product defect"
+      },
+      "evidenceStatus": "Original scoped closure preserved by the performed corrections02 recheck. Existing afterEvidence retains original executed identities; current R10 preservation evidence is separate.",
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        },
+        "native": {
+          "path": "docs/verification/dnssec-review-corrections/native-04/native-status.json",
+          "sha256": "0bc20d1fb8176c47b949f1ba52c16e079227a9da2f69ff025853e34238d175b8",
+          "bytes": 2469488
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "followup": {
+        "before": {
+          "path": "docs/verification/dnssec-review-corrections/followup-semantics-before-01.json",
+          "sha256": "fb46e89363415a6652922aed151e9d69cb58e7711b328374a880c28d36315008",
+          "bytes": 5645
+        },
+        "test": "tests/dnssec-denial-corrections.test.mjs",
+        "scope": "Unsigned target failed before; signed, bogus and DNAME controls already passed. Four actual namespace-cache provenance tests pass after.",
+        "independentRecheck": {
+          "status": "verified-and-closed-in-this-recheck",
+          "precedingRecheckCoveredThis": false,
+          "review": {
+            "path": "docs/dnssec-expansion/inputs/dnssec-corrections-02-recheck.html",
+            "sha256": "f560e0e23af6c55dad5db499a49e767f302d28b99343043dce61e561a743e308",
+            "bytes": 72732
+          }
+        }
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-R03",
+      "priority": "P2",
+      "scope": "Actual NXDOMAIN insertion/reuse key",
+      "status": "prior-scoped-closure-preserved-by-performed-Astra-recheck",
+      "independentClosure": true,
+      "sourceChanges": [
+        "src/dnssec-denial-cases.js",
+        "src/dnssec-denial.js"
+      ],
+      "implementation": "New cache key shape derives from validated negative outcome rather than forced null negative kind.",
+      "consumerInvariants": [
+        "Actual new NXDOMAIN entries reuse across QTYPE without extending TTL",
+        "NODATA/compact-denial and failure checking-context keys remain scoped",
+        "Expiry and incompatible view/trust contexts reject reuse"
+      ],
+      "counterfactualTestAttribution": {
+        "path": "tests/dnssec-denial-corrections.test.mjs",
+        "scope": "Feeds actual DNS07/nxdomain, wildcard-excluded and DNS08/nsec3-nxdomain entries back into eligibility; type-specific and failure controls retained"
+      },
+      "evidenceStatus": "Original scoped closure preserved by the performed corrections02 recheck. Existing afterEvidence retains original executed identities; current R10 preservation evidence is separate.",
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-R04",
+      "priority": "P2",
+      "scope": "Ancestor delegation, DNAME and NSEC3 authority",
+      "status": "prior-scoped-closure-preserved-by-performed-Astra-recheck",
+      "independentClosure": true,
+      "sourceChanges": [
+        "src/dnssec-denial.js",
+        "src/dnssec-review-fixtures.js"
+      ],
+      "implementation": "Denial evaluator enforces authenticated NS/SOA authority boundaries and DNAME subtree restrictions before accepting exact-owner/hash absence; NSEC3 closest-encloser guards are explicit. requiredZone remains an additional guard.",
+      "consumerInvariants": [
+        "Parent delegation allows DS absence at cut but not child A/AAAA/CNAME or below-cut denial",
+        "Child authoritative NODATA and wrong-zone rejection remain distinct",
+        "Signed additional fixtures do not replace any original numerical tuple"
+      ],
+      "counterfactualTestAttribution": {
+        "path": "tests/dnssec-denial-corrections.test.mjs",
+        "scope": "Unchanged signed parent NSEC reproducer plus child-side/wrong-zone controls; additional signed ancestor NSEC3/DNAME catalog extends helper coverage, not an assertion that Astra executed hashed counterexamples"
+      },
+      "evidenceStatus": "Original scoped closure preserved by the performed corrections02 recheck. Existing afterEvidence retains original executed identities; current R10 preservation evidence is separate.",
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-R05",
+      "priority": "P2",
+      "scope": "DS withdrawal/convergence cache-drain chronology",
+      "status": "prior-scoped-closure-preserved-by-performed-Astra-recheck",
+      "independentClosure": true,
+      "sourceChanges": [
+        "src/dnssec-signing-cases.js",
+        "src/dnssec-publication.js"
+      ],
+      "implementation": "Separates overlap, old-DS withdrawal, parent convergence, last old-containing DS receipt/expiry and later child DNSKEY/signature dependencies.",
+      "consumerInvariants": [
+        "Cache drain starts from withdrawal/convergence, not overlap addition",
+        "Late algorithm13-only, fresh13-only and dual-capable cohorts retain exact receipts/deadlines and distinct supported paths"
+      ],
+      "counterfactualTestAttribution": {
+        "path": "tests/dnssec-publication-corrections.test.mjs",
+        "scope": "Chronology and three actual-evaluator capability/cache cohorts, not only the selected dual-capable profile"
+      },
+      "evidenceStatus": "Original scoped closure preserved by the performed corrections02 recheck. Existing afterEvidence retains original executed identities; current R10 preservation evidence is separate.",
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-R06",
+      "priority": "P2",
+      "scope": "Independent capability versus operator policy",
+      "status": "prior-scoped-closure-preserved-by-performed-Astra-recheck",
+      "independentClosure": true,
+      "sourceChanges": [
+        "src/dnssec-publication.js",
+        "src/dnssec-fixtures.js",
+        "src/dnssec-signing-cases.js",
+        "src/dnssec-authoring.js"
+      ],
+      "implementation": "Separates registry obligations, declared capability, arithmetic fixture coverage, publisher and operator policy. Declared algorithms5/7/13/15 and digests1/2/4 are not confused with arithmetic algorithms13/15 or operator algorithms13/15 and digests2/4. Per-path causes retain coexisting constraints; multiple-path-constraints is an explicit display convention, not an RFC term or execution-order claim. All8 DNS14 sessions use a lesson-local publisherSigningAlgorithms13/15 override matching their immutable declarations; global modern signing13 and operator/validation/digest settings are unchanged.",
+      "consumerInvariants": [
+        "SHA1 operator exclusion reports operator-policy without enabling SHA1 signing",
+        "Actual undeclared capability reports capability limits",
+        "DS digest policy and NSEC3 hashing stay separate; modern usable paths remain usable",
+        "All eight initial policy-observation prefixes match declared publisher generation; mixed rejected-path constraints and legacy digest acceptance remain exact."
+      ],
+      "counterfactualTestAttribution": {
+        "path": "tests/dnssec-publication-corrections.test.mjs",
+        "scope": "Independent capability/operator mutations, obsolete and modern controls, mixed13/2,5/2,12/3 per-path constraints; corrected mixed-path expectations are disclosed in regression-test-revisions-01.json"
+      },
+      "evidenceStatus": "Original scoped closure preserved by the performed corrections02 recheck. Existing afterEvidence retains original executed identities; current R10 preservation evidence is separate.",
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "followup": {
+        "before": {
+          "path": "docs/verification/dnssec-review-corrections/followup-semantics-before-01.json",
+          "sha256": "fb46e89363415a6652922aed151e9d69cb58e7711b328374a880c28d36315008",
+          "bytes": 5645
+        },
+        "test": "tests/dnssec-publication-corrections.test.mjs",
+        "scope": "Exact delivered modern-baseline publisher13 failed declared13/15 before. All8 sessions pass after; no capability or operator-policy broadening.",
+        "independentRecheck": {
+          "status": "verified-and-closed-in-this-recheck",
+          "precedingRecheckCoveredThis": false,
+          "review": {
+            "path": "docs/dnssec-expansion/inputs/dnssec-corrections-02-recheck.html",
+            "sha256": "f560e0e23af6c55dad5db499a49e767f302d28b99343043dce61e561a743e308",
+            "bytes": 72732
+          }
+        }
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-R07",
+      "priority": "P2",
+      "scope": "Rendered canonical query/response comparison",
+      "status": "prior-scoped-closure-preserved-by-performed-Astra-recheck",
+      "independentClosure": true,
+      "sourceChanges": [
+        "src/app.js",
+        "src/dnssec-network-cases.js"
+      ],
+      "implementation": "DNS05/06 comparison renders current canonical hop/attempt identity, query/response AD/CD/DO, RCODE, delivery and validation/reliance owner; no separate maintained outcome table.",
+      "consumerInvariants": [
+        "OPT absent differs from DO=0 and pending differs from received",
+        "Retained CD0 SERVFAIL context differs from fresh CD1 retry",
+        "Authoritative CD0 remains intentional",
+        "Rewind, reset and filtered replay use equal canonical prefixes"
+      ],
+      "counterfactualTestAttribution": {
+        "path": "tests/dnssec-teaching-corrections.test.mjs",
+        "scope": "Rendered cells compared with actual hop IDs; unsupported selector and invented field-name repairs documented, incidental caption pins removed"
+      },
+      "evidenceStatus": "Original scoped closure preserved by the performed corrections02 recheck. Existing afterEvidence retains original executed identities; current R10 preservation evidence is separate.",
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        },
+        "native": {
+          "path": "docs/verification/dnssec-review-corrections/native-04/native-status.json",
+          "sha256": "0bc20d1fb8176c47b949f1ba52c16e079227a9da2f69ff025853e34238d175b8",
+          "bytes": 2469488
+        },
+        "actualCompiled": {
+          "path": "docs/verification/dnssec-review-corrections/followup-compiled-02.json",
+          "sha256": "e6b309ce52d257e7768cf5433ee3a137d058d0e766cf2557290722d0de6b8469",
+          "bytes": 1738
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-R08",
+      "priority": "P2",
+      "scope": "Readable bounded chapter controls",
+      "status": "prior-scoped-closure-preserved-by-performed-Astra-recheck",
+      "independentClosure": true,
+      "sourceChanges": [
+        "src/styles.css"
+      ],
+      "implementation": "Chapter-scoped wrapping, min-width0, max-width100%, normal whitespace, anywhere overflow wrapping and minimum44px height preserve full labels separately from diagram scrolling.",
+      "consumerInvariants": [
+        "Actual text/control bounds fit narrow and200% viewports",
+        "Keyboard/touch reachability and stable focus remain",
+        "Longest DNSSEC and representative legacy labels remain readable"
+      ],
+      "counterfactualTestAttribution": {
+        "scope": "Astra's retained dark-touch screenshot is the before evidence, not a newly executed browser counterexample; corrected native bounds, reachability and bounded DNS06 screenshot must be integrated separately."
+      },
+      "evidenceStatus": "Original scoped closure preserved by the performed corrections02 recheck. Existing afterEvidence retains original executed identities; current R10 preservation evidence is separate.",
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        },
+        "native": {
+          "path": "docs/verification/dnssec-review-corrections/native-04/native-status.json",
+          "sha256": "0bc20d1fb8176c47b949f1ba52c16e079227a9da2f69ff025853e34238d175b8",
+          "bytes": 2469488
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-R09",
+      "priority": "P2",
+      "scope": "Contextual CSYNC versus DS explanation",
+      "status": "prior-scoped-closure-preserved-by-performed-Astra-recheck",
+      "independentClosure": true,
+      "sourceChanges": [
+        "src/app.js",
+        "src/dnssec-parent-cases.js"
+      ],
+      "implementation": "Ordinary DNS16 exposes a directly reachable context panel reusing existing field metadata/source: CSYNC requests NS/glue synchronization, CDS/CDNSKEY concern DS intent and parent authentication/policy remains separate. Stable fieldId/source-index identity, not href, restores precise focused source link after redraw when three RFC7477 links share the same URL.",
+      "consumerInvariants": [
+        "No global catalog search needed",
+        "No CSYNC authority to replace DS invented",
+        "No new lesson/case IDs or decorative transfer packets",
+        "CSYNC, CDS and CDNSKEY RFC7477 links retain their own semantic focus identity across cursor end/back transitions; native exact non-first CDNSKEY retains focus after popup and playback redraw."
+      ],
+      "counterfactualTestAttribution": {
+        "path": "tests/dnssec-teaching-corrections.test.mjs",
+        "scope": "Ordinary DNS16 context, RFC7477 link and non-leakage into other lessons"
+      },
+      "evidenceStatus": "Original scoped closure preserved by the performed corrections02 recheck. Existing afterEvidence retains original executed identities; current R10 preservation evidence is separate.",
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        },
+        "native": {
+          "path": "docs/verification/dnssec-review-corrections/native-04/native-status.json",
+          "sha256": "0bc20d1fb8176c47b949f1ba52c16e079227a9da2f69ff025853e34238d175b8",
+          "bytes": 2469488
+        },
+        "actualCompiled": {
+          "path": "docs/verification/dnssec-review-corrections/followup-compiled-02.json",
+          "sha256": "e6b309ce52d257e7768cf5433ee3a137d058d0e766cf2557290722d0de6b8469",
+          "bytes": 1738
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "followup": {
+        "before": {
+          "path": "docs/verification/dnssec-review-corrections/followup-focus-before-01.json",
+          "sha256": "b98ebc56179481d297f6ef27fc30d65b284764223e70d4f50673db723a0a014a",
+          "bytes": 6629
+        },
+        "test": "tests/dnssec-teaching-corrections.test.mjs",
+        "actualCompiled": {
+          "path": "docs/verification/dnssec-review-corrections/followup-compiled-02.json",
+          "sha256": "e6b309ce52d257e7768cf5433ee3a137d058d0e766cf2557290722d0de6b8469",
+          "bytes": 1738
+        },
+        "native": {
+          "path": "docs/verification/dnssec-review-corrections/native-04/native-status.json",
+          "sha256": "0bc20d1fb8176c47b949f1ba52c16e079227a9da2f69ff025853e34238d175b8",
+          "bytes": 2469488
+        },
+        "scope": "Before0pass1fail8filtered on exact corrections01 application; after9 actual compiled UI tests and all6 native exact non-first contexts pass. Earlier first-link-only native proof did not cover this defect.",
+        "independentRecheck": {
+          "id": "DNS-C04",
+          "workerAlias": "DNS-R09-focus-identity",
+          "status": "closed-count-as-one",
+          "review": {
+            "path": "docs/dnssec-expansion/inputs/dnssec-corrections-02-recheck.html",
+            "sha256": "f560e0e23af6c55dad5db499a49e767f302d28b99343043dce61e561a743e308",
+            "bytes": 72732
+          }
+        }
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-R10",
+      "priority": "P2",
+      "scope": "Independent authenticated alias cache lifetime and validation provenance after target failure",
+      "status": "independently-closed-for-corrections-03",
+      "independentClosure": true,
+      "review": {
+        "path": "docs/dnssec-expansion/inputs/dnssec-corrections-02-recheck.html",
+        "sha256": "f560e0e23af6c55dad5db499a49e767f302d28b99343043dce61e561a743e308",
+        "bytes": 72732
+      },
+      "preexistingInCorrections01And02": true,
+      "sourceChanges": [
+        "src/dnssec-denial-cases.js"
+      ],
+      "testChanges": [
+        "tests/dnssec-denial-corrections.test.mjs",
+        "tests/dnssec-teaching-corrections.test.mjs"
+      ],
+      "implementation": "Alias cache uses its own answer receipt, existing successful primary validation evidence checkedAt, own remainingSeconds and signatureDeadline for authenticatedProofDeadline. The independent target/aggregate failure caches remain unchanged.",
+      "consumerInvariants": [
+        "At represented T: secure alias expires T+300, remainingTtl300,validatedAtT; original receipt/signature metadata retained.",
+        "authenticatedProofDeadline is own signature bound T+3600, not the target failure or effective TTL bound.",
+        "Actual alias eligible at T+6/T+299, rejected at T+300; inspection never renews receipt or lifetime.",
+        "Separate target remains bogus with five-second failure and null validation; overall SERVFAIL/application refusal persists.",
+        "Secure/insecure target and DNAME neighbors, unsigned null signature metadata, all wire/signed records and source event structure remain exact.",
+        "Exact readable inspector and full/field/exact rewind share corrected source/compiled values; narrow actual sourceHTTP/offline-file native surfaces checked."
+      ],
+      "beforeEvidence": {
+        "path": "docs/verification/dnssec-r10-correction/focused-before-01.json",
+        "sha256": "07f3e270743442150a6bf0e5b64e25868e1e9aff328c7c5fd853b356c4179670",
+        "bytes": 3916
+      },
+      "afterEvidence": {
+        "source": {
+          "path": "docs/verification/dnssec-r10-correction/source-contract-01/status.json",
+          "sha256": "93cc3eec03917164e771af2d1a79eb89192b87555904b6049be11d8d2e80a750",
+          "bytes": 2207097
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-r10-correction/emitted-contract-01/status.json",
+          "sha256": "de5e73ffc34ae44bcdd6e7d5da3774a6c09fbb37946c5b1b14531cf606f62c21",
+          "bytes": 2213019
+        },
+        "equivalence": {
+          "path": "docs/verification/dnssec-r10-correction/source-emitted-equivalence-01.json",
+          "sha256": "3b5cbfb422d7c4476437b07a7d4c51e1138a5f84246360d2b56110e1195af223",
+          "bytes": 1791
+        },
+        "reviewedCaseDelta": {
+          "path": "docs/verification/dnssec-r10-correction/reviewed-source-case-delta-01.json",
+          "sha256": "cb7a3243cf743d3b5c148fe62d88834f448f1adbd141c5eebd7729fc40598621",
+          "bytes": 1491
+        },
+        "semanticDelta": {
+          "path": "docs/verification/dnssec-r10-correction/semantic-delta-01.json",
+          "sha256": "1aecaeef393b2f26eaaf2231b59ca9b9e8e4ae4835dfdd96062b3dd32127418f",
+          "bytes": 11127
+        },
+        "numeric": {
+          "path": "docs/verification/dnssec-r10-correction/numeric-01/numeric-status.json",
+          "sha256": "1e7e594878ec8e878a7a17d94d159105eca19fd75ac61e07b11f95a4b7c1fb25",
+          "bytes": 177244
+        },
+        "focusedSource": {
+          "path": "docs/verification/dnssec-r10-correction/focused-after-02.json",
+          "sha256": "e8232ad6707da4647f8b7ce40a7b43bf38630975f06fc6716f894f67a37870ad",
+          "bytes": 7549
+        },
+        "actualCompiled": {
+          "path": "docs/verification/dnssec-r10-correction/compiled-teaching-01.json",
+          "sha256": "6c05e879f5e443b4d7c84ec2607739c2d2edbe63655b825f286db1dc295321c2",
+          "bytes": 1859
+        },
+        "native": {
+          "path": "docs/verification/dnssec-r10-correction/native-inspector-01.json",
+          "sha256": "757a2d35c5ffe2d69199bb6193a874776d1a267fb3e9b4a6169a704688afa475",
+          "bytes": 11615
+        },
+        "visual": {
+          "path": "docs/verification/dnssec-r10-correction/native-visual-inspection-01.json",
+          "sha256": "79a65343865babf9e166cd6878da27af1f1d0bd2562700bed4e70e5c2ae78fb0",
+          "bytes": 1707
+        },
+        "compiledCatalog": {
+          "path": "docs/verification/dnssec-r10-correction/compiled-smoke-01/compiled-bundle-status.json",
+          "sha256": "062d3aef02b55d3144066b9b1a65e579aed578baf8f3f4eef174189f5bbb99f3",
+          "bytes": 93505
+        },
+        "held": {
+          "path": "docs/verification/dnssec-r10-correction/held-01/held-objects-source-status.json",
+          "sha256": "b98b18cfe3c91d1eb0f0d519f08fd8a88ec83732d89af77ef1d3f080e97ac174",
+          "bytes": 1191135
+        },
+        "before": {
+          "path": "docs/verification/dnssec-r10-correction/focused-before-01.json",
+          "sha256": "07f3e270743442150a6bf0e5b64e25868e1e9aff328c7c5fd853b356c4179670",
+          "bytes": 3916
+        },
+        "regressionAttribution": {
+          "path": "docs/verification/dnssec-r10-correction/final-regression-attribution-01.json",
+          "sha256": "8bacf7637a792b23cbe99f4e83c8fea030be432f24569dc01f5ad9abbbd65eda",
+          "bytes": 2262
+        },
+        "candidate": {
+          "path": "docs/verification/dnssec-r10-correction/candidate-inputs-01.json",
+          "sha256": "648382e688e352f4214010975087b0156250952fa259ea6fad91b8d45dbaf9e1",
+          "bytes": 104792
+        },
+        "outcomes": {
+          "path": "docs/verification/dnssec-r10-correction/per-case-outcomes-02.json",
+          "sha256": "fd2c67225b9d65c42a983614e386b951b84fcb05a54b8696c92eff09128c4f7c",
+          "bytes": 112961
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-r10-correction/regressions-01/held-objects-regression-status.json",
+          "sha256": "f2c43f13467a121de3f86c5bb11c9ffb11e438aa2545b21b262bd7ee80e9022d",
+          "bytes": 130333
+        },
+        "nativeRuntime": {
+          "path": "docs/verification/dnssec-r10-correction/native-runtime-01.json",
+          "sha256": "8c2491cc6ab7b1aebec9a84a1218ce50eed22c0b3cb2512f0c80c38b034f0857",
+          "bytes": 2296
+        },
+        "finalTestBefore": {
+          "path": "docs/verification/dnssec-r10-correction/focused-before-02.json",
+          "sha256": "30a298d3c6cd6d69d4ba181471582d890087663cbf5201f6c4d42fa32a01fb01",
+          "bytes": 3984
+        },
+        "portableBefore": {
+          "path": "docs/verification/dnssec-r10-correction/portable-before-product-01.json",
+          "sha256": "0c680131d439e76cce8309e7656509615b9d4f40ca0bdf17aa3f886d63afd14c",
+          "bytes": 2461
+        },
+        "inheritedPreservation": {
+          "path": "docs/verification/dnssec-r10-correction/preserved-conditions-01.json",
+          "sha256": "7475107fef2ee8d596df8ffba7db8c7d5a8fa34e9a50aa981a43aa3e9ea96de7",
+          "bytes": 2360
+        },
+        "finalSummary": {
+          "path": "docs/verification/dnssec-r10-correction/final-gates-summary-01.json",
+          "sha256": "15d29bb6795d7df5afb1109fa5d0fddb4b510cb1be09e1022eb1030b6fa68a83",
+          "bytes": 9978
+        }
+      },
+      "expectationOrigin": "Literal reviewed alias/target states and existing per-entry signature-bound meaning; no generated expected values or modified authority.",
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-r10-correction/candidate-inputs-01.json",
+        "sha256": "648382e688e352f4214010975087b0156250952fa259ea6fad91b8d45dbaf9e1",
+        "bytes": 104792
+      },
+      "evidenceStatus": "The exact retained worker proof is independently rechecked by Astra: DNS-R10 is closed for corrections-03. Existing worker executions and reviewer executions remain separately attributed; no new worker functional run or release acceptance is implied.",
+      "originalRegressionRevisions": {
+        "path": "docs/verification/dnssec-r10-correction/regression-revisions-01.json",
+        "sha256": "ceccfc59dfd1d33e34a84f736b54697e76604d28ad321d55cfcdccb0f12e075c",
+        "bytes": 2621
+      },
+      "closureReview": {
+        "path": "docs/dnssec-expansion/inputs/dnssec-r10-closure-review.html",
+        "sha256": "b60da5cb2ffa32fd766168ebd214eaca92626a2e6da2e700a64c424771b96407",
+        "bytes": 62688
+      },
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-r10-closure-disposition.json",
+        "sha256": "3d57d8d231243a9fbde1a80b41d3b2181844527d321aee049d2e8d34d7e50366",
+        "bytes": 10422
+      }
+    }
+  ],
+  "clarity": [
+    {
+      "id": "C01",
+      "status": "prior-clarity-disposition-preserved-by-performed-recheck",
+      "disposition": "Readable actor/verdict text with expandable raw identifiers. Authenticated unsigned delegation explains insecure result and selected secure-only application refusal, not forgery; explanation depends on current application policy/result.",
+      "sourceChanges": [
+        "src/app.js"
+      ],
+      "tests": "tests/dnssec-teaching-corrections.test.mjs",
+      "independentClosure": false,
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        },
+        "native": {
+          "path": "docs/verification/dnssec-review-corrections/native-04/native-status.json",
+          "sha256": "0bc20d1fb8176c47b949f1ba52c16e079227a9da2f69ff025853e34238d175b8",
+          "bytes": 2469488
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "evidenceStatus": "Fresh current58-test focused source, complete159-case Source05/Emitted05 and full1994/0 regression checks passed. Native04 coverage is targeted and linked only where applicable; no native cryptography, live DNS, human or independent-closure claim.",
+      "independentlyAcceptedDisposition": true,
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "C02",
+      "status": "prior-clarity-disposition-preserved-by-performed-recheck",
+      "disposition": "Fresh resolver authority receipt is scoped separately from cache reuse, stub delivery and application use; no fresh fetch/check invented.",
+      "sourceChanges": [
+        "src/app.js"
+      ],
+      "tests": "tests/dnssec-teaching-corrections.test.mjs",
+      "independentClosure": false,
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        },
+        "native": {
+          "path": "docs/verification/dnssec-review-corrections/native-04/native-status.json",
+          "sha256": "0bc20d1fb8176c47b949f1ba52c16e079227a9da2f69ff025853e34238d175b8",
+          "bytes": 2469488
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "evidenceStatus": "Fresh current58-test focused source, complete159-case Source05/Emitted05 and full1994/0 regression checks passed. Native04 coverage is targeted and linked only where applicable; no native cryptography, live DNS, human or independent-closure claim.",
+      "independentlyAcceptedDisposition": true,
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "C03",
+      "status": "prior-clarity-disposition-preserved-by-performed-recheck",
+      "disposition": "DNS12 explicitly declares deliberate fresh-keyset revalidation of already-secure cache and contrasts ordinary valid secure reuse. Published key withdrawal does not instantly revoke accepted cache.",
+      "sourceChanges": [
+        "src/dnssec-signing-cases.js"
+      ],
+      "tests": "tests/dnssec-publication-corrections.test.mjs",
+      "independentClosure": false,
+      "afterEvidence": {
+        "focused": {
+          "path": "docs/verification/dnssec-review-corrections/followup-after-01.json",
+          "sha256": "ab248adaad6ef51f381f86d9c95caae1c42575eb3496680e047855aae74e9ef1",
+          "bytes": 7055
+        },
+        "source": {
+          "path": "docs/verification/dnssec-review-corrections/source-contract-05/status.json",
+          "sha256": "b2d0a9097b531e9ae8e5ad26393195bf0c5d21840283314c70e89e65e609d056",
+          "bytes": 2207105
+        },
+        "emitted": {
+          "path": "docs/verification/dnssec-review-corrections/emitted-contract-05/status.json",
+          "sha256": "653b6bf6ed0554fe3c68789c0ede35ada14309b97b2449d26a87dfb87ec1d9e2",
+          "bytes": 2213027
+        },
+        "fullRegressions": {
+          "path": "docs/verification/dnssec-review-corrections/regressions-03/held-objects-regression-status.json",
+          "sha256": "f3588dd59065d5c70cb8dd4c6f0335d67c1923c3242de3979a0c02706491ac0b",
+          "bytes": 130329
+        },
+        "native": {
+          "path": "docs/verification/dnssec-review-corrections/native-04/native-status.json",
+          "sha256": "0bc20d1fb8176c47b949f1ba52c16e079227a9da2f69ff025853e34238d175b8",
+          "bytes": 2469488
+        }
+      },
+      "currentInputScope": {
+        "path": "docs/verification/dnssec-review-corrections/candidate-inputs-05.json",
+        "sha256": "7bcad21e7da4783a84b7b5e0a268d7a44d96935960e33b014933ea19dedfa997",
+        "bytes": 45433
+      },
+      "evidenceStatus": "Fresh current58-test focused source, complete159-case Source05/Emitted05 and full1994/0 regression checks passed. Native04 coverage is targeted and linked only where applicable; no native cryptography, live DNS, human or independent-closure claim.",
+      "independentlyAcceptedDisposition": true,
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      }
+    },
+    {
+      "id": "DNS-C04",
+      "workerAlias": "DNS-R09-focus-identity",
+      "status": "closed",
+      "countAsOneIssue": true,
+      "scope": "Exact semantic identity across same-href CSYNC/CDS/CDNSKEY links; current independent source/compiled probes and audited Native04 contexts. Not a new native run by reviewer.",
+      "independentClosure": true,
+      "independentClosureEvidence": {
+        "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+        "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+        "bytes": 4879
+      },
+      "evidenceStatus": "One closed issue, not a second finding for the worker alias."
+    }
+  ],
+  "authority": {
+    "preservation": "All354 original frozen inputs and all prior sealed layers remain byte-preserved; eighth worksheet is current. Additive layers six/seven/eight do not rewrite predecessors.",
+    "sixth": {
+      "worksheet": "docs/dnssec-expansion/contract-errata/effective-review-corrections/worksheet.json",
+      "sha256": "c0312c6841e141b50bde40d91baf6d376f6d2b33523c0d98c262c2a0d1a4e8a2",
+      "patches": 30,
+      "audit": "docs/dnssec-expansion/contract-errata/review-corrections-audit.json",
+      "proof": "docs/verification/dnssec-review-corrections/independent-sixth-overlay-check-01.json"
+    },
+    "seventh": {
+      "worksheet": "docs/dnssec-expansion/contract-errata/effective-mixed-path-policy/worksheet.json",
+      "sha256": "97c42a3ae12a2939bcbd89a546ebbf7350ff8c3caf03e3e94b1317dbdf2a4f9f",
+      "patches": 3,
+      "audit": "docs/dnssec-expansion/contract-errata/mixed-path-policy-audit.json",
+      "proof": "docs/verification/dnssec-review-corrections/independent-seventh-overlay-check-01.json"
+    },
+    "independenceBoundary": "Authority authors report no production/test/evaluator access or execution and no expected states derived from app output. Production existed during additive authoring. This is authoring independence, not OS-enforced isolation, native cryptographic implementation or native conformance.",
+    "r04AdditionalNumeric": {
+      "directory": "docs/dnssec-expansion/numeric/review-corrections",
+      "catalogSha256": "7f2eba596704ba73bddc3d20a1616b8ecce9cd6b8b4a57229df0a511b1c43f28",
+      "original205Tuples": "unchanged, not replaced"
+    },
+    "eighth": {
+      "worksheet": "docs/dnssec-expansion/contract-errata/effective-cache-namespace-location/worksheet.json",
+      "sha256": "d88705d909df1043d7a5c0295e35272afae6ab01af73aac7faa766c5061f164d",
+      "patches": 1,
+      "audit": "docs/dnssec-expansion/contract-errata/cache-namespace-location-audit.json",
+      "proof": "docs/verification/dnssec-review-corrections/independent-eighth-overlay-check-01.json",
+      "boundary": "Parent supplied existing consumer API path mapping namespace.checkingOwner/trustStore. Values unchanged from independently authored layer six; no schema-discovery independence claim."
+    }
+  },
+  "beforeFixEvidence": {
+    "path": "docs/verification/dnssec-review-corrections/focused-before-02/status.json",
+    "tests": 36,
+    "passed": 12,
+    "failed": 24,
+    "wallSeconds": 16.8,
+    "reviewedProductionUnchanged": true,
+    "attribution": "Retrospective corrected-test replay on exact reviewed application copy, not fabricated original timing. Failures are not nine independent closure counts."
+  },
+  "testRevisionMetadata": "docs/verification/dnssec-review-corrections/regression-test-revisions-03.json",
+  "integrationEvidence": {
+    "focusedAfter07": {
+      "path": "docs/verification/dnssec-review-corrections/focused-after-07/status.json",
+      "sha256": "b00a1c3384a8421dfa6fedae7197aaa1c1691d30a8d7e5c191852c024491f709",
+      "bytes": 87707
+    },
+    "compiledTeaching03": {
+      "path": "docs/verification/dnssec-review-corrections/compiled-teaching-03.json",
+      "sha256": "91382130dbcdacbdb93385b015799d2803ba50f99ab8606f408922073d579d27",
+      "bytes": 1634
+    },
+    "sourceContract03": {
+      "path": "docs/verification/dnssec-review-corrections/source-contract-03/status.json",
+      "sha256": "61028a4255fab9f9c4036cb724ac5d76a1717f47e940902ee2fa80866235e64b",
+      "bytes": 2207105
+    },
+    "emittedContract03": {
+      "path": "docs/verification/dnssec-review-corrections/emitted-contract-03/status.json",
+      "sha256": "aa923b44dd543b958d77d0e8ad7422d0cd0de2b313a6f919cd71f2b80393b415",
+      "bytes": 2213027
+    },
+    "exactSourceEmittedCases": {
+      "path": "docs/verification/dnssec-review-corrections/source-emitted-equivalence-02.json",
+      "sha256": "1e020ba02fe54fd125ff9f93568e3d6366bc58c61c3a203b6370d0589bbcf907",
+      "bytes": 2283
+    },
+    "perCaseNavigation": {
+      "path": "docs/verification/dnssec-review-corrections/per-case-outcomes-02.json",
+      "sha256": "4a39ec52c071fa4ada14b68668d092d1b6f5cafe749ea3fe9f7a39cb5fa46e79",
+      "bytes": 112718
+    },
+    "compiledCatalog02": {
+      "path": "docs/verification/dnssec-review-corrections/compiled-smoke-02/compiled-bundle-status.json",
+      "sha256": "ed3a2bd467b3a977996e1fd1d8f3f8902961031dd1dcc7a9b3bcc33c8b19bbaa",
+      "bytes": 93505
+    },
+    "numeric03": {
+      "path": "docs/verification/dnssec-review-corrections/numeric-03/numeric-status.json",
+      "sha256": "3677997cc7d978538d11c59f786e0da5dc94e69973ea0e847a578fd821c25305",
+      "bytes": 177248
+    },
+    "held01": {
+      "path": "docs/verification/dnssec-review-corrections/held-01/held-objects-source-status.json",
+      "sha256": "ae55b42aa76859271f57bdbbac34a2b0c18812789b0d983c7ad25c558aa52798",
+      "bytes": 1191135
+    },
+    "inheritedPreservation": {
+      "path": "docs/verification/dnssec-review-corrections/preserved-conditions-01.json",
+      "sha256": "2db962203f84b17f45b392016754e883129f321470ca023eb36e99004393dfe4",
+      "bytes": 1724
+    },
+    "native03": {
+      "path": "docs/verification/dnssec-review-corrections/native-03/native-status.json",
+      "sha256": "8abac54a35eb476aec494fa716fbc07e55380377c8814e96ce58c065f40ac66f",
+      "bytes": 2468780
+    },
+    "nativeVisualInspection": {
+      "path": "docs/verification/dnssec-review-corrections/native-visual-inspection-01.json",
+      "sha256": "f77fedf0aeefcae2c3686ef097e1fbc427756a5c765d59fb243486074a1a1cfe",
+      "bytes": 4209
+    },
+    "fullSuite02": {
+      "path": "docs/verification/dnssec-review-corrections/regressions-02/held-objects-regression-status.json",
+      "sha256": "703724bb68853dbfd689303480484dd5a990d2f6ead2b5812f3ebc734902200f",
+      "bytes": 130341
+    },
+    "sourceContract04": {
+      "path": "docs/verification/dnssec-review-corrections/source-contract-04/status.json",
+      "sha256": "c838b9a71d8b11089708adc6f19fa671b61d28c9c840436018d69d5f7856a20d",
+      "bytes": 2207105
+    },
+    "emittedContract04": {
+      "path": "docs/verification/dnssec-review-corrections/emitted-contract-04/status.json",
+      "sha256": "8ddb6752b7fe7fc707e73d765d20de733024a23a7ffdda43accf2fe8037d357a",
+      "bytes": 2213027
+    },
+    "numeric04": {
+      "path": "docs/verification/dnssec-review-corrections/numeric-04/numeric-status.json",
+      "sha256": "d54dd4d106e81c97b86fa4a630d694e5241de4ad110f7772611b745934b0340a",
+      "bytes": 177248
+    },
+    "nativeCurrentScope": {
+      "path": "docs/verification/dnssec-review-corrections/source-native-continuity-01.json",
+      "sha256": "cae6163235801950d0fccbcb5f4c1e7fa22c765e0686666450ac26ac4d5a31fd",
+      "bytes": 2476
+    },
+    "finalGateSummary": {
+      "path": "docs/verification/dnssec-review-corrections/final-gates-summary-01.json",
+      "sha256": "5b0d67ff005367f8d0768f47db1a0614e507cf94763f4fc8d8e67c7b3d6ffe5e",
+      "bytes": 7271
+    }
+  },
+  "continuedIntegration": {
+    "status": "Current final231-file source/emitted/numeric/full-suite checks passed. Native60 current-product/canonical continuity proved. All9 original+5 additional performance keys dispositioned without acceptance. Packet inventory/rebuild/relocation remains separate.",
+    "resolvedProductMismatches": [
+      "R01 relay checkingOwner null for fetching resolver, stub-only authenticated namespace remains nested rather than duplicate aliases.",
+      "R02 unsigned denial NS/A bundle rrsigTtl null; signed warm240/NTA299 occurrences retain immutable signed data.",
+      "R03 newly inserted NXDOMAIN negativeKind declared; original DNS10 cache scope unchanged.",
+      "R05 old-data dependency-end observation belongs to publishing dnsChild.",
+      "R06 two existing DNS14 comparisons select dual-modern publisher profile; modern global signing default remains algorithm13.",
+      "R07 prefix-bounded shared aggregate1/2/3 matches trace, all real query IDs/flags retained and no invented local-attempt responses.",
+      "Compiler includes generated public review fixture before consumer; CI actual compiled boot/catalog smoke."
+    ],
+    "sharedUi": "Profile-justified closed-index early return with current-index rebuild/focus on reopen. No extra cache or default-startup control removal; no blanket startup/replay root-cause claim.",
+    "failedAttemptsPreserved": {
+      "source02": {
+        "path": "docs/verification/dnssec-review-corrections/source-contract-02/status.json",
+        "sha256": "7ecbd63bd96858cc357444a7b45d5bd8bfde07d9952ae18f1783475587e4bd44",
+        "bytes": 2222506
+      },
+      "emitted01": {
+        "path": "docs/verification/dnssec-review-corrections/emitted-contract-01/status.json",
+        "sha256": "003fcdf450fa8c96c26f125ac9c4883b5806dbed3a374a851449b88a53ecc8b2",
+        "bytes": 183137
+      },
+      "native01": {
+        "path": "docs/verification/dnssec-review-corrections/native-01/native-status.json",
+        "sha256": "73e5d4979a171824389fc421a37c6f3aa6cd19ea90c4948387bf91c09bb6c744",
+        "bytes": 1957639
+      },
+      "otherFocusedAndPartialHistory": "See regression-test-revisions-02.json and retained raw attempt directories. Old identity01/02/builds01-03 and cancelled Source01/Emitted02 are not final acceptance.",
+      "native02": {
+        "path": "docs/verification/dnssec-review-corrections/native-02/native-status.json",
+        "sha256": "e4cf85bd5a4ee3ef6220f0bf75526bb49a1931505335ac0a8a11550bc1432892",
+        "bytes": 2023995
+      },
+      "regressions01": {
+        "path": "docs/verification/dnssec-review-corrections/regressions-01/held-objects-regression-status.json",
+        "sha256": "c43d03ac0a1c1ab5404aa4e950563abcc0c4683a8c498d05def0928fc604ac7f",
+        "bytes": 130339
+      }
+    },
+    "native01Limit": "55 attempted:50 pass,5 source-link locator failures;5 file200percent cells unperformed after zoom-reset timeout. Flat zoom screenshots are unusable visual proof. Fresh60-cell matrix required.",
+    "native02Limit": "55/55 attempted internal cells passed but5file200percent cells unperformed after idempotent reset wait; wrong-target zoom screenshots not accepted. A bounded native probe and fresh60-cell run are separate.",
+    "nativeFinal": {
+      "cells": 60,
+      "passed": 60,
+      "failed": 0,
+      "unperformed": 0,
+      "measurements": 978,
+      "DNSSEC": 966,
+      "legacy": 12,
+      "limits": "Native03 images006/016/026/030 have help overlays and are not unobscured CSYNC proof; inspected010 supplies actual visible context. Prior partial/blank/wrong-target evidence remains limited."
+    },
+    "fullSuiteVmRepair": "Fresh complete run passed 1,988 tests / 0 failures in all 121 files, full input identity unchanged and original 900000ms timeout retained. Prior 1,987/1 missing-native-API failure, targeted 1/0 repair and original raw logs remain attributed; no application fallback or incidental-style threshold re-pin."
+  },
+  "performance": {
+    "record": {
+      "path": "docs/verification/dnssec-review-corrections/performance-dispositions-04.json",
+      "sha256": "b6ee489287660dbc3feca6217b5b325efb4f4f4dcd76f86ac0c8a5759da85d2e",
+      "bytes": 28423
+    },
+    "raw": {
+      "path": "docs/verification/dnssec-review-corrections/performance-comparison-02/next-performance-status.json",
+      "sha256": "fbc250eced44e6100cf8562790e99a22225ed0f980697bbd0668a5fe6ed5fc64",
+      "bytes": 587721
+    },
+    "priorAdditionalDispositions": {
+      "path": "docs/verification/dnssec-review-corrections/performance-prior-correction-continuity-01.json",
+      "sha256": "160390afb6228a0aa11e444be9747fb96ac3df86d250b9d5fc61a6cd65c8c43a",
+      "bytes": 16675
+    },
+    "collectionComplete": true,
+    "originalKeysDispositioned": 9,
+    "originalFlagsNotReproduced": 4,
+    "priorAdditionalKeysRedispositioned": 5,
+    "newAdditionalFlags": 0,
+    "materialFlags": 5,
+    "variationFlags": 0,
+    "distinctFlaggedCells": 5,
+    "methodAndBaselinePreserved": true,
+    "all146InputGuardsUnchanged": true,
+    "performanceAccepted": false,
+    "ownerAcceptanceRecorded": false,
+    "keys": [
+      "source-http/closed/selection",
+      "source-http/closed/replay-start",
+      "source-http/open/playing-filter",
+      "standalone-http/default/startup",
+      "standalone-http/closed/selection",
+      "standalone-http/closed/replay-start",
+      "standalone-file/default/startup",
+      "standalone-file/closed/selection",
+      "standalone-file/closed/replay-start"
+    ],
+    "priorAdditionalKeys": [
+      "source-http/default/startup",
+      "source-http/open/idle-filter",
+      "source-http/open/selection",
+      "source-http/open/replay-start",
+      "source-http/closed/playing-filter"
+    ],
+    "profile": {
+      "path": "docs/verification/dnssec-review-corrections/performance-profile-interpretation-01.json",
+      "sha256": "b7bcb5abf1426f54f4ea870df33693a9afaf8b0994f8950bf992378c7046ab7a",
+      "bytes": 1352
+    },
+    "boundary": "Retained exact reviewed corrections02 measurements/dispositions: five material,zero variability,all9 original plus5 earlier added keys accounted for. No new R10 timing collection, unchanged-latency claim, owner acceptance or waiver.",
+    "measuredCandidateSourceSha256": "f9876de1ce27f89d71d090a8d823f31a32d5a53738a7aef7ba99d49afb8628e0",
+    "measuredCandidateStandaloneSha256": "0b1c9bdb95078bf8cfe55853aa6df4935c2f8ea3b488ed67ab567453b612a056",
+    "currentR10SourceSha256": "1b5a3350e5e2b778efb52dccb46473e197df1ec202e3cd202618540c1988f234",
+    "remeasuredForR10": false
+  },
+  "remainingParentIntegrationFields": [],
+  "openConditions": "Preserve open-gates.json: actual-human G01; six inherited measured performance conditions; seven historical flags; six frozen-P0 variable cells; six sibling-origin omissions; four optional deferrals; N01; live/native conformance limits. Do not reopen21 scoped P6 source closures or imply broader acceptance.",
+  "publication": "User authorized commit and push of independently reviewed DNSSEC work plus the footer credit Kirill Andrienko without retesting. Publication authorization does not accept human G01,performance costs or overall release.",
+  "workerStatus": "DNS-R10-independently-closed-for-corrections-03-release-conditions-open",
+  "currentCandidate": {
+    "inputs": {
+      "path": "docs/verification/dnssec-r10-correction/candidate-inputs-01.json",
+      "sha256": "648382e688e352f4214010975087b0156250952fa259ea6fad91b8d45dbaf9e1",
+      "bytes": 104792
+    },
+    "sourceIdentity": {
+      "algorithm": "sha256-path-nul-bytes-nul-v1",
+      "sha256": "1b5a3350e5e2b778efb52dccb46473e197df1ec202e3cd202618540c1988f234",
+      "files": 231
+    },
+    "standalone": {
+      "path": "dist/auth-flow-studio.html",
+      "sha256": "5e13671a57cfb0d4c827b4eb6af52fc6d0d53f48c5816c8e7bcc423e54022f54",
+      "bytes": 5243123
+    },
+    "affectedEvidence": {
+      "path": "docs/verification/dnssec-r10-correction/targeted-gates-summary-01.json",
+      "sha256": "17bab7813359b08ab95a64005e8a5272272a82a5db3a5b9098cd4e973a15f5fc",
+      "bytes": 4780
+    },
+    "functionalEvidence": {
+      "path": "docs/verification/dnssec-r10-correction/final-gates-summary-01.json",
+      "sha256": "15d29bb6795d7df5afb1109fa5d0fddb4b510cb1be09e1022eb1030b6fa68a83",
+      "bytes": 9978
+    },
+    "normalRegression": {
+      "path": "docs/verification/dnssec-r10-correction/regressions-01/held-objects-regression-status.json",
+      "sha256": "f2c43f13467a121de3f86c5bb11c9ffb11e438aa2545b21b262bd7ee80e9022d",
+      "bytes": 130333
+    },
+    "requiredLatestReviewCorrections": [],
+    "independentClosure": true,
+    "closureEvidence": {
+      "path": "docs/dnssec-expansion/corrections/independent-r10-closure-disposition.json",
+      "sha256": "3d57d8d231243a9fbde1a80b41d3b2181844527d321aee049d2e8d34d7e50366",
+      "bytes": 10422
+    }
+  },
+  "externalAcceptance": {
+    "independentCorrectionRecheck": "corrections02-performed-R10-resolved-by-independent-closure",
+    "newR10ClosureReview": "performed-closed-for-corrections-03",
+    "reviewStatus": "closed-for-reviewed-candidate",
+    "humanG01": "open-unperformed",
+    "ownerPerformanceAcceptance": "not-recorded",
+    "publicationAuthorized": true,
+    "releaseAccepted": false,
+    "publicationAuthority": "user request after independent R10 closure,not the review report"
+  },
+  "separateDeliveryIntegrity": "Selected membership, in-ZIP/external checksums, actual extracted offline rebuild and independent relocation are recorded separately by the delivered packaging status and local relocation proof. Functional completion is not integrity or release acceptance.",
+  "followup": {
+    "supersedes": "corrections-01, retained unchanged",
+    "status": "all-three-corrections02-fixes-verified-by-performed-recheck",
+    "record": {
+      "path": "docs/verification/dnssec-review-corrections/followup-confirmed-findings-01.json",
+      "sha256": "2fec46a71be777b42021202261c7d554be2251680ed65541d1bba3600f05610e",
+      "bytes": 4117
+    },
+    "tests": {
+      "focusedSource": 58,
+      "actualCompiled": 9
+    },
+    "authorityChanges": 0,
+    "independentReview": {
+      "path": "docs/dnssec-expansion/corrections/independent-recheck-02-disposition.json",
+      "sha256": "23589941a1028dec6f06814939fa8bfadadd6e3d1288a670f0ce45c325b454bd",
+      "bytes": 4879
+    },
+    "counting": "One canonical DNS-C04 focus closure with worker alias; two separately verified original-R06/R02 semantic followups, not claims the preceding recheck covered them."
+  },
+  "continuedIntegrationScope": "Preserved earlier integration history only; current candidate05/final-summary02 and followup records supersede current-byte claims in those original reports.",
+  "currentFunctionalSummary": {
+    "path": "docs/verification/dnssec-r10-correction/final-gates-summary-01.json",
+    "sha256": "15d29bb6795d7df5afb1109fa5d0fddb4b510cb1be09e1022eb1030b6fa68a83",
+    "bytes": 9978
+  },
+  "workerFunctionalVerificationComplete": true,
+  "deliveryIntegrity": "Separate delivered packaging-status.json and independent local review-relocation-01.json establish packet integrity only when actually passed; functional summary never asserts release/human/performance acceptance.",
+  "independentClosureReview": {
+    "path": "docs/dnssec-expansion/corrections/independent-r10-closure-disposition.json",
+    "sha256": "3d57d8d231243a9fbde1a80b41d3b2181844527d321aee049d2e8d34d7e50366",
+    "bytes": 10422
+  },
+  "releaseAccepted": false,
+  "nextAssignment": {
+    "filename": "auth-flow-studio-windows-protection-worker-plan.html",
+    "documentVersion": 3,
+    "scope": "Windows protection / PAM / hidden-search-tags",
+    "requestedByClosureReview": true,
+    "status": "blocked-awaiting-authoritative-plan",
+    "blocker": "The named plan is not present in the supplied oauth-lab artifact tree or checkout documentation. Existing supplied reviews refer to version 3 but do not contain its requirements. Do not infer feature scope from the title.",
+    "searchedScopes": [
+      "/mnt/c/TempPersistent/oauth-lab/ (directory and recursive filename search)",
+      "/home/andrico/auth-lab-held-objects/docs/ (scoped filename search and supplied-input content search)",
+      "/mnt/c/TempPersistent/ and /mnt/c/Temp/ root entries",
+      "/home/andrico/ root exact-name patterns"
+    ],
+    "incompleteSearchNotUsedAsAbsenceProof": "A broad recursive multi-root glob timed out; only completed scoped searches and actual supplied-directory listings support this blocker."
+  },
+  "currentPublication": {
+    "path": "docs/verification/dnssec-publication/publication-input.json",
+    "sha256": "078e0fab0a2dd1949cf50607aeea8761cc5d36879748a89cc728ef4f0b1cb940",
+    "bytes": 614423
+  }
+}

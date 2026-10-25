@@ -1,0 +1,215 @@
+## Summary
+
+I audited only the five named rows plus the immutable artifacts that bind them. **No erratum is warranted for any of them.** Every apparent "mismatch" resolves under a typed role split that the frozen inputs themselves establish in cross-case precedent:
+
+1. **DNS09 wildcard** — the received body owner *is* query-expanded (`foo.lab.example.`) and the signed owner *is* reconstructed from the RRSIG Labels field (`*.lab.example.`). This is exactly RFC 4035 §5.3.2's name function, and the independent signing input proves the signed owner on the wire-used-for-signing is the `*` form, not `foo`. `rrsets.answer.owner`/`wildcard.owner`/`responseInputs.wildcardSignature.owner` are **signing-input-owner** fields; `responseInputs.answer.owner`/`wildcard.expandedOwner`/checkpoint `receivedOwner` are **wire-owner** fields. No bytes need changing.
+2. **DNS10 trace/hops** — `response.hops`/`outcome.flags.hops` are a *trace view*. Delivery is bound by `bindingRef`/`signatureRef` (chain hops) and `rrsetId`/`signatureId` + `numericBindings` occurrence (answer/proof hops). `signature-expires-first` contains the complete required conversation (5 prerequisite q/r, prefill, leaf refetch, stub); the leaf hop carries **no** prerequisite payload and must not be read as if it did. That satisfies the full-hop assertion without inventing a fat leaf response.
+3. **Aggressive proofs** — the cached proof `role` strings name names covered at the **original receipt** (`no.lab.example.`, `*.lab.example.`, "matches closest encloser"). Fresh-query coverage must be **recomputed from the interval bytes**, not read from `role`. The cache-entry proof ids (`nsec-*`, `n3-*`) are display aliases of receipt/numeric ids (`denial-*`) and are exactly bindable by tuple. NSEC3 next-closer and wildcard are both inside `B5P9… → MP2N…`, so one record legitimately serves both roles; the single-role prose is non-exhaustive, not false.
+
+Rejected erratum candidates (with reasons) are in §7. Patch list: **none**.
+
+---
+
+## Files
+
+| Anchor | Holds |
+|---|---|
+| `docs/dnssec-expansion/contract-errata/effective-receipts/worksheet.json:73132-74538` | `lessons[8]` DNS09; `cases[0]` `wildcard-positive` |
+| `…:76065-77324` | `cases[2]` `wildcard-missing-proof` |
+| `…:83782-97849` | `lessons[9]` DNS10 |
+| `…:86374-88527` | `cases[2]` `signature-expires-first` (trace, checkpoints, bounds) |
+| `…:92641-93913` | `cases[6]` `aggressive-nsec` |
+| `…:93914-95230` | `cases[7]` `aggressive-nsec3` |
+| `…:95231-96428` | `cases[8]` `wildcard-synthesis` — used only as precedent for the role convention |
+| `contract-errata/effective-receipts/contract-addendum.json` | Seals worksheet SHA `d189ae38…badd`, immutable origins |
+| `contract-errata/README.md:1-80` | Rule: “Evidence references identify exact inputs or observations; they do not independently establish authentication…” |
+| `contract-errata/receipt-wildcard-erratum.json` | Prior DNS09 wildcard-NODATA patch set (catalog-vs-receipt separation) |
+| `sources/resolution/s05-rfc4034-text.txt:407-431` | Labels semantics; wildcard label included “when the signature is generated or verified” |
+| `…s05-rfc4034-text.txt:505-533` | Signing input owner rule; “Each RR MUST have the same owner name as the RRSIG RR” (wire rule) |
+| `…s06-rfc4035-text.txt:1590-1665` | §5.3.2 reconstruction; `"*." | rightmost rrsig_labels labels`; `labels > fqdn_labels` ⇒ MUST NOT authenticate |
+| `…s06-rfc4035-text.txt:1743-1800` | §5.3.4 wildcard expansion; §5.4 denial rules |
+| `…s10-rfc8198-text.txt:291-352` | §5.1 NSEC (match/cover source of synthesis + cover qname); §5.2 Opt-Out; §5.3 wildcards |
+| `…s10-rfc9077-text.txt:132-256` | NSEC/NSEC3 TTL MUSTs; §3.4 replacement; §4.1 wildcard capped by proof TTL |
+| `numeric/dnssec-numeric-fixtures.json:1020-1035,1427-1446` | `wildcard-a` RRset and `wildcard-a-signature` incl. `signingInputHex` |
+| `numeric/resolution-profile-fixtures.json:60-160,390-570,976-1230` | `conventional-wildcard`, `nsec3-no-wildcard` chain, NSEC/NSEC3 bytes + signatures |
+
+---
+
+## Architecture
+
+```
+worker-plan.html DNS09/DNS10 acceptance
+        │
+contract-freeze.json (354 hashes) ──► freeze applies to original D0 only
+        │
+effective-receipts/worksheet.json  (22 lessons / 159 cases; SHA d189ae38…)
+   ├── setup.rrsets.{answer,signature,authorityProofs}   ← signed RRset identity
+   ├── setup.responseInputs.{answer*,wildcardSignature,proofs} ← receipt declaration
+   ├── setup.initialCache / nsec3 / selectedPolicy        ← pre-existing validated state
+   ├── setup.numericBindings + evidenceBindingIndex       ← byte-level identity (no auth claim)
+   ├── sequence[]                                         ← chronology (network-send/receive, checkpoints, clock)
+   ├── checkpoints[].expected                             ← grouped observations incl. response.hops
+   └── outcome                                            ← final resolver/app observation + duplicate hop view
+        │
+numeric/*.json (independent catalogs) ← actual RDATA/signing-input/hash bytes
+```
+
+Key separation enforced by all five rows: `received` ≠ `signatureChecked` ≠ `chainEstablished` ≠ `denialChecked` ≠ `acceptedForUse` ≠ `applicationResult`.
+
+---
+
+## Report
+
+### 1. DNS09 — received (expanded) owner ↔ signed (reconstructed) owner
+
+**Answer: yes, the received body owner may be query-expanded; the signed owner is reconstructed, never received.**
+
+The frozen row declares both forms for the same occurrence:
+
+| Role | Pointer | Value |
+|---|---|---|
+| wire/received owner | `/lessons/8/cases/0/setup/responseInputs/answer/owner` (`:73425`) | `foo.lab.example.` |
+| expansion source | `…/answer/expandedFrom` (`:73428`) | `*.lab.example.` |
+| wire label count | `/checkpoints/1/expected/validators/dnsValidator/ownerLabelCount` (`:74040`) | `3` |
+| RRSIG Labels | `/setup/rrsets/signature/labels` (`:73314`), `/setup/wildcard/rrsigLabels` (`:73398`), `/setup/responseInputs/wildcardSignature/signedMetadata/labels`, `/checkpoints/1/…/labels` | `2` |
+| reconstructed signed owner | `/setup/wildcard/owner` (`:73392`), `/setup/rrsets/answer/owner` (`:73299`), `/setup/responseInputs/wildcardSignature/owner` (`:73439`), `/checkpoints/1/…/signedOwnerReconstructed` (`:74041`) | `*.lab.example.` |
+| canonical signing-input owner (bytes) | `numeric/dnssec-numeric-fixtures.json:1445` `signingInputHex` | `…d86a036c6162076578616d706c6500` **`012a`**`036c6162076578616d706c6500` → owner wire = `*` (0x2a) |
+
+The signing input contains `01 2a 03 6c 61 62 …` = `*.lab.example.` and never the `foo` label (`03 66 6f 6f`). Its `signingInputSha256` (`1f8660ac…`) equals `/setup/responseInputs/wildcardSignature/signingInputSha256`. That is the decisive independent proof that `responseInputs.wildcardSignature.owner` is the **reconstruction target**, not a wire RRSIG owner (a wire RRSIG with owner `*.…` while the RRset owner is `foo.…` would violate RFC 4034 §3.1.7's same-owner rule; the wildcard label enters only in the signing/verification form per §3.1.3 final paragraph).
+
+**Strict association conditions (all must hold; each is checkable against pointers):**
+
+1. **Same receipt**: `responseInputs.answer` and `responseInputs.wildcardSignature` are one occurrence (same case, same hop/question); the RRSIG is attached to that answer RRset, not to a catalog object.
+2. **Wire owner = query name**: `responseInputs.answer.owner` == `/setup/query/qname` (`foo.lab.example.`) — or the current CNAME-chain name for alias rows (DNS09 §CNAME), never the target’s owner.
+3. **Expansion is exactly one label**: `ownerLabelCount == labels + 1`. (Here 3 = 2 + 1.) `labels == ownerLabelCount` ⇒ no expansion; `labels > ownerLabelCount` ⇒ RFC 4035 §5.3.2 third branch, MUST NOT authenticate.
+4. **Reconstruction function**: `signedOwner = "*." | rightmost(labels) labels of wireOwner`. `foo.lab.example.` + labels 2 ⇒ `*.lab.example.`. String equality with `/setup/wildcard/owner` and `numeric…rrsets.wildcard-a.owner` is required, not optional.
+5. **RRset identity**: `typeCovered == answer.type == 1`, `class` equal, RDATA byte-equal (`canonicalRdataHex ["c000025a"]` ↔ `192.0.2.90`), signer `lab.example.`, `keyRef/keyTag` = `child-zsk-g1`/`55402`.
+6. **TTL split**: verification uses `OriginalTTL` (3600); receipt TTL is 300; the signed bytes are immutable (`bindingRule`); only cache TTL may decrease.
+7. **No cross-claiming**: the signed owner MUST NOT be recorded as a received owner, and the expanded owner MUST NOT be substituted into `signed_data`. Only the checkpoint may report both.
+8. **Proof is separate**: wildcard legality additionally requires denial evidence covering the next closer (`/checkpoints/2/expected/publication/nextCloser = foo.lab.example.`, `nextCloserCovered: true`, proof `a→www` with `proofRole: covers foo.lab.example.`). Signature validity alone never yields acceptance.
+9. **Ordering**: `wildcardSignatureValid: true` appears **before** `denialChecked: true` (`/checkpoints/1` vs `/checkpoints/2`) — RFC 4035 §5.3.4.
+10. **Bound view**: answer cache key `["public-v1","resolver-public-v1","foo.lab.example.","A","IN"]`; every `evidenceRefs` entry resolves in `/setup/evidenceBindingIndex` with the same case prefix; `baselineCatalog` entries are deliberately unused (catalog, not receipt).
+
+`wildcard-missing-proof` uses the **same** dual-owner declaration (`:76221`, `:76280`, `:76287`, `:76295`, plus `responseInputs.wildcardSignature.owner = *.lab.example.`) and correctly omits `authorityProofs`/`wildcard.proof`/`responseInputs.proofs` (`[]`/`null`/`[]`). Its checkpoint 1 (`:76834-76846`) keeps `wildcardSignatureValid: true` + `signedOwnerReconstructed: *.lab.example.` with `denialChecked: false`; checkpoints 2–3 classify `bogus` / `valid-wildcard-signature-without-no-closer-proof` and cache a 5 s failure entry (`expiresAt = now+5`, `signatureDeadline: null`, key suffix `CD0`). That is RFC 4035 §5.5-consistent. Constraint: the missing `receivedOwner`/`labels`/`ownerLabelCount` at `:76837-76846` does **not** weaken the rule — the same values are…
+
+### 2. DNS10 — full `response.hops` vs evidence/trace/reference
+
+**Required vs summary.** Three distinct layers:
+
+- **Receipt layer (authoritative content)**: `setup.responseInputs`, `setup.rrsets`, `setup.initialCache`, `setup.numericBindings`, per-hop `bindingRef`/`signatureRef`, cache-entry `rrsetId`/`signatureId`.
+- **Trace layer (conversation)**: `sequence[]` `network-send`/`network-receive` events + `checkpoints[*].response.hops` + `outcome.flags.hops`.
+- **Summary placement (no new delivery)**: the *duplication* of the same hop set in the stub checkpoint and in `outcome.flags.hops`. Both are views of one trace; neither creates a second delivery.
+
+**`signature-expires-first` satisfies a full-hop assertion.** Its trace is complete and chronological:
+
+| Hop | from→to | question | msgId | payload binding |
+|---|---|---|---|---|
+| `…:long-prerequisite-0` | resolver→root | `. DNSKEY` | 16640 | `#root-dnskey-g1` / `root-dnskey-path-long` |
+| `…-1` | resolver→root | `example. DS` | 16641 | `#root-example-ds` |
+| `…-2` | resolver→parent | `example. DNSKEY` | 16642 | `#example-dnskey-g1` |
+| `…-3` | resolver→parent | `lab.example. DS` | 16643 | `#example-child-ds` |
+| `…-4` | resolver→child | `lab.example. DNSKEY` | 16644 | `#child-dnskey-g1` |
+| `…:signature-expiry-prefill` | resolver→child | `www.lab.example. A` | 16645 | cache entry `rrsetId www-a` / `signatureId www-a-signature` |
+| `…:leaf` | resolver→child | `www.lab.example. A` | 16646 | `numericBindings-primary:www-a` (refetch declaration) |
+| `…:stub` | stub→resolver | `www.lab.example. A` | 16647 | stub checkpoint |
+
+All queries CD=1/DO=1, AA=1 replies, `inReplyTo` matches `query.id`, and ids are unique in-case. Because `/setup/initialCache` declares *no* authenticated root key, parent DS, child DNSKEY or answer (`:86575-86581`), the five prerequisite conversations are **independently required** and are present — `chainEstablished: true` at `long-upper-path-authenticated-before-prefill` is therefore supported by the trace. The leaf hop has **no** chain binding, and `/setup/rrsets/authorityProofs: []` + `responseInputs.answer` = “baseline exact RRset and unchanged baseline RRSIG from authoritative refetch” show the leaf response carries only `www A` + `www-a-signature`. Prerequisite RRsets are bound to `numericBindings-chain-0..4` in `evidenceRefs`, never to the leaf. So …
+
+**`transport.authorityQueries` semantics** (derived from the three cases + `positive-cache-hit`):
+
+| Case | declared | trace evidence |
+|---|---|---|
+| `positive-cache-hit` | `0` (`:84613`) | only stub hop; validated `initialCache` entry |
+| `aggressive-nsec` | `0` (`/checkpoints/0/expected/transport/authorityQueries`) | only stub hop |
+| `aggressive-nsec3` | `0` | only stub hop |
+| `signature-expires-first` | `1` (`/checkpoints/3/expected/transport/authorityQueries`) | leaf refetch hop `…:leaf` |
+
+Rule: the count covers **authority queries issued for the current question because the validated cache could not answer**, excluding prerequisite-chain fetches and the earlier cache-fill receipt. Every counted query MUST have a matching trace hop (and vice versa). Note the placement nuance: in `signature-expires-first` the checkpoint precedes `leaf:q` in `sequence`, so the `1` is a **summary of the immediately following leaf hop**, not an instant-count at that boundary. That is summary placement, not a contradiction — moving sequence elements would change indices for no behavioural gain and would invalidate the sealed hash, so no patch.
+
+Additional typed constraints preserved by these rows:
+- `signatureChecked` is **per checking pass**, not provenance. `aggressive-nsec`/`-nsec3` legitimately carry `signatureChecked: false` with `chainEstablished: true`/`denialChecked: true` because the proofs were validated at receipt (`initialCache.validatedAt = 1792713600`).
+- `near-expiration-insertion…` (`:87190-87270`) pins `expiresAt = 1792717200 = now+120`, matching `timeDependencies.boundsSeconds.{signatureRemaining,effective} = 120`, `limitingTerm: signatureRemaining`, `rrsigCryptographicTimeEndpointsInclusive: true`, and `probe = 1792717201` (1 s past) ⇒ `eligibleForReuse: false`. Failure entry `expiresAt = probe+5`, `signatureDeadline: null`.
+- `keyEvidenceUsableUntil = 1792717379` = prerequisite receipt 1792717079 + 300 s received TTL; consistent with the long-path signature deadline `1803081600`.
+- Stub hop representation varies: `wildcard-positive`/aggressive rows declare `stub:q`/`stub:r` network events; `signature-expires-first` uses the `stub-receives-response-before-application-use` checkpoint event only. Both still yield one `stub` hop with unique messageId. Do not infer a missing hop.
+
+### 3. Aggressive NSEC — original interval vs fresh `ghost.lab.example.`
+
+Bytes (independent catalog `resolution-profile-fixtures.json:390-440`):
+
+- `denial-a-to-www`: owner `a.lab.example.`, RDATA hex `03777777 036c6162 076578616d706c65 00 | 00 06 40 000000 0003` ⇒ next `www.lab.example.`, bitmap {A(1), RRSIG(46), NSEC(47)}; RRSIG labels 3, OriginalTTL 300, sha `6d078302…`.
+- `denial-apex-to-a`: owner `lab.example.`, next `a.lab.example.`, bitmap {NS(2), SOA(6), RRSIG(46), NSEC(47), DNSKEY(48)}; labels 2, sha `34612cc7…`.
+
+Binding rules for the fresh query:
+1. Canonical order (RFC 4034 §6.1, right-to-left labels) gives `a.lab.example. < {ghost, no}.lab.example. < www.lab.example.` ⇒ the interval covers **both** the fresh `ghost.lab.example.` and the original `no.lab.example.`. The cached `role: "covers no.lab.example."` is a **true original-receipt annotation**, not a statement about the fresh qname.
+2. `lab.example. < *.lab.example. < a.lab.example.` because `*` (0x2a) < `a` (0x61); the apex→a interval therefore excludes the closest-encloser wildcard `*.lab.example.` — satisfying RFC 8198 §5.1’s “matching/covering the source of synthesis”.
+3. Neither proof’s owner is a parent-zone NSEC (apex has SOA; both are `lab.example.`-signed).
+4. `queryCovered` and `closestWildcardExcluded` (`/checkpoints/0/expected/publication`) MUST be recomputed from (1)+(2). They are not derivable from `role` text, and `role` MUST NOT be compared to the fresh qname.
+5. `OptOut: false`, `attachedSoaRequired: false`, `selectedPolicy.requireAttachedSoaForEveryProofReuse: false`, `SOAAttached: false`, `SOACached: false`, `soaPresent: false` — coherent with RFC 9077 §3.4 (“MAY… if present”; may use a previously cached SOA) and with the signer already returning `min(SOA TTL 300, MINIMUM 600) = 300`. No SOA object is fabricated.
+6. TTL: `initialCache.receivedAt 1792713600`, `ttl 300`, `validatedAt 1792713600`, `signatureDeadline 1792717200`; checkpoint `expiresAt 1792713900`, `remainingTtl 240` at now 1792713660 (`timeDependencies.ttlBoundSeconds.{receivedRrset,receivedRrsig,originalTtl,effective} = 300/300/300/300`).
+
+### 4. Aggressive NSEC3 — `other.lab.example.` next-closer/wildcard roles
+
+Parameters (from `/setup/nsec3`, `:94221-94247`): `hashAlgorithm 1`, `iterations 0`, `saltHex ""`, `initialHashCount 1`, input = “fully expanded canonical lower-case DNS wire name including root label”.
+
+Hash bindings actually present:
+
+| name | wire input hex | base32hex SHA-1 |
+|---|---|---|
+| `lab.example.` | `036c6162076578616d706c6500` | `04VB0R8R70OH5TL9A2UHNPG063F7BEP5` |
+| `a.lab.example.` | `0161036c6162…00` | `63QA5GUBMD1FR1RBM0IB74SP2B7KN3MP` |
+| `z.lab.example.` | `017a036c6162…00` | `B5P9CTBLEJN2D20QS6OI19819MH9L9FU` |
+| `www.lab.example.` | `03777777036c6162…00` | `MP2N9NEQCHDA8FJ7ERR34CK76UFSAK6R` |
+| `*.lab.example.` | `012a036c6162…00` | `I8NU1UPJAS0CJ2HR5VFHUEMNE79QCBQL` |
+| `other.lab.example.` | `056f74686572036c6162…00` | `K6RHCQQNQ2FD50JM9ONFV4B6SSC5M6NH` |
+
+Proof bytes decode exactly (verified from hex, not enums):
+- `denial-nsec3-no-wildcard-0`: `01 00 0000 00 14 30f4a2c3cbb342fd876bb024b3939912cf4b8ed9 | 00 07 22 0000000002 90`. Flags 0, iter 0, empty salt, next = `63QA…` (=H(a)), bitmap {NS,SOA,RRSIG,DNSKEY,NSEC3PARAM}; owner `04VB….lab.example.` = H(lab.example.).
+- `denial-nsec3-no-wildcard-2`: next `b64574ddda645aa43e6776f6323287379fc550db` = `MP2N…` (=H(www)), bitmap {A,RRSIG}; owner `B5P9….lab.example.` = H(z).
+
+Sorted order: `04VB < 63QA < AUUU(no) < B5P9(z) < I8NU(*) < K6RH(other) < MP2N(www) < PUS4`.
+- Closest encloser `lab.example.` → **match** `04VB` (`n3-apex`, role “matches closest encloser”).
+- Next closer `other.lab.example.` → `B5P9 < K6RH < MP2N` ⇒ **covered** by `denial-nsec3-no-wildcard-2` (`n3-z`).
+- Wildcard `*.lab.example.` → `B5P9 < I8NU < MP2N` ⇒ **covered by the same record**.
+- Neither `K6RH` nor `I8NU` equals an NSEC3 owner hash ⇒ both proven non-existent (no existence bypass).
+- `flags: 0` on both ⇒ Opt-Out not used (RFC 8198 §5.2 forbids it).
+
+Therefore the declared roles are **not exhaustive but not false**: `n3-z` “covers wildcard *.lab.example.” omits its simultaneous next-closer function, and `n3-apex` matches the closest encloser. Under RFC 5155 §8.4-8.7 / RFC 8198 §5.2 the next-closer and wildcard may be covered by one NSEC3, so requiring two records would be wrong. Rule: bind roles as **witness labels**; the proof must be recomputed as (match CE) ∧ (cover query-hash) ∧ (cover wildcard-hash) ∧ (no Opt-Out) ∧ (zone/params equal profile).
+
+### 5. Alias table (cache-entry display ids → receipt ids)
+
+| cache `proofs[i].id` | receipt / numeric `rrsetId` | typed join |
+|---|---|---|
+| `nsec-a-www` | `denial-a-to-www` | zone `lab.example.`, owner `a.lab.example.`, type NSEC, next `www.lab.example.`, type-set {A,RRSIG,NSEC}, sha `6d078302…` |
+| `nsec-apex-a` | `denial-apex-to-a` | owner `lab.example.`, next `a.lab.example.`, type-set {NS,SOA,RRSIG,NSEC,DNSKEY}, sha `34612cc7…` |
+| `n3-apex` | `denial-nsec3-no-wildcard-0` | ownerHash `04VB…`, nextHash `63QA…`, flags 0, type-set {NS,SOA,DNSKEY,RRSIG,NSEC3PARAM}, sha `71213b11…` |
+| `n3-z` | `denial-nsec3-no-wildcard-2` | ownerHash `B5P9…`, nextHash `MP2N…`, flags 0, type-set {A,RRSIG}, sha `2fead3ce…` |
+
+Aliasing is legitimate because the join key is byte-level (hashes/next/type-set/signature sha), and each alias appears only once per case. `evidenceRefs` in both aggressive rows use the `numericBindings-proofs-{i}:<rrsetId>` form, which equals the `occurrenceId` in `/setup/numericBindings/proofs/{i}` (e.g. `lab-dnssec10:aggressive-nsec3:numericBindings-proofs-1:denial-nsec3-no-wildcard-2`, `:94586`). No id needs renaming.
+
+### 6. View / trust / evidence association rules (all five rows)
+
+1. Every receipt in a case shares `/setup/view` (`public-v1`) and `/setup/trustStore` (`resolver-public-v1`); answer cache keys = `[view, trustStore, qname, qtype, qclass]` (+ `CD0` for the failure entries).
+2. Proof caches are keyed `[view, trustStore, proofZone, proofFormat]` — never by qname — and `proofZone` must equal each proof RRSIG’s signer and the NSEC3 owner suffix.
+3. `evidenceRefs` MUST be case-prefixed and resolve in that case’s `/setup/evidenceBindingIndex`; a ref may identify an input but never asserts authentication/possession.
+4. `numericFile` routing is fixed: `dnssec-numeric-fixtures.json` for RRsets/signatures, `long-profile-fixtures.json` for chain, `resolution-profile-fixtures.json` for NSEC/NSEC3 proofs.
+5. `baselineCatalog` and `parentDsCatalog` are never implicitly received/accepted; `catalogKeysAreNotAutomaticallyAccepted: true`.
+6. `checkedAt`/`receivedAt`/`validatedAt`/`expiresAt`/`signatureDeadline` are separate fields; a `null` `signatureDeadline` means “not authenticated”, not “never expires”.
+
+### 7. Contradiction determination — no additive erratum
+
+| Candidate | Pointer(s) | Verdict |
+|---|---|---|
+| `rrsets.answer.owner` = `*.lab.example.` while `rrsetCatalogScope` says “received positive/alias occurrence” | `/lessons/8/cases/0/setup/rrsets/answer/owner` (`:73299`) vs `…/setup/rrsetCatalogScope` (`:73422`) | **Not a contradiction.** The field is the signing-input owner (proven by `signingInputHex` `012a…`); the wire owner is carried explicitly by `responseInputs.answer.owner` + `expandedFrom` + checkpoint `receivedOwner`. The scope sentence describes occurrence *identity*; RFC 4034 §3.1.3 requires the wildcard label in the verified owner. Typed-role binding suffices. |
+| `responseInputs.wildcardSignature.owner` = `*.lab.example.` vs `responseInputs.answer.owner` = `foo.lab.example.` | `:73439` vs `:73425` | **Not a contradiction.** RFC 4034 §3.1.7 same-owner applies to the wire RRSIG (owner `foo`); §3.1.3/§5.3.2 apply the `*` form to verification. Two typed fields, two roles. |
+| Cache `role: "covers no.lab.example."` in the `ghost` case | `/lessons/9/cases/6/checkpoints/3/expected/cacheEntries/0/proofs/0/role` | **Not a contradiction.** True statement about the original-receipt interval (`a < no < www`); the same interval covers `ghost`. Precedent: `/lessons/9/cases/8/setup/initialCache/wildcard/proof/role = "covers next closer foo.lab.example."` coexists with `…/responseInputs/proofs/0/role = "covers bar.lab.example."` for query `bar.lab.example.` — proving the schema distinguishes original-capture roles from current-query roles. |
+| `n3-z` role names only the wildcard | `/lessons/9/cases/7/checkpoints/3/…/proofs/1/role` | **Not a contradiction.** Same interval covers next-closer (`K6RH`) and wildcard (`I8NU`); RFC 5155 §8.4-8.7 permits one NSEC3 for both. Under-specified prose, not a false assertion; recomputation is mandated. |
+| Cache proof ids differ from receipt ids | `:93570`, `:94890` vs `:92900`, `:94163` | **Not a contradiction.** Exact tuple alias (§5). |
+| `transport.authorityQueries: 1` appears before `leaf:q` in `sequence` | `/lessons/9/cases/2/checkpoints/3/expected/transport/authorityQueries` vs `/lessons/9/cases/2/sequence` | **Not a contradiction.** Summary placement of the declared leaf hop; count semantics defined in §2. Reordering would invalidate the sealed hash for zero behavioural change. |
+| `signatureChecked: false` with `securityStatus: secure` | `/lessons/9/cases/6/checkpoints/1/expected` | **Not a contradiction.** Per-pass flag; provenance is `initialCache.validatedAt`. |
+| Missing `receivedOwner`/`labels`/`ownerLabelCount` in `wildcard-missing-proof` checkpoint | `:76837-76846` | **Under-specification, not contradiction.** Inputs are fixed at `/setup/rrsets/signature/labels`, `/setup/wildcard/rrsigLabels`, `/setup/responseInputs/answer`. No input rewrite justified. |
+
+**Patches proposed: none.** Rewriting any of the above would either (a) falsify a byte-level truth (e.g. changing `*.lab.example.` to `foo.lab.example.` would contradict `signingInputHex` and `wildcard-a`), (b) loosen a proof check (`ghost`/`other` coverage would become unverified if `role` were treated as the authority), or (c) alter chronology for no security/acceptance change — all excluded by the contract (“Source-side alternative implementation choices do NOT justify errata”; preserve frozen outcomes, deadlines, and failed-proof boundaries).
+
+**Implementation constraints that must survive** (no loosening): `wildcard-missing-proof` → `bogus`/`SERVFAIL`, `acceptedForUse:false`, 5 s failure entry keyed with `CD0`, `denialChecked:false`; `signature-expires-first` → `bogus`, no reuse at `expiration+1`, refetch produces the same expired signature, no fabricated secure answer; both aggressive cases → `secure`, `NXDOMAIN`, `authenticated:true`, `authorityQueries:0`, no attached/cached SOA required, TTLs 300/300/300/300, expiry 1792713900, signature deadline 1792717200; `wildcard-positive` → `secure`, `NOERROR`, answer `192.0.2.90`, `acceptedForUse:true`, expiry 1792713900, signature deadline 1792717200.
+
+[Some lines truncated to 768 chars. Use agent://DnssecDenialInputAudit:raw:93-93 to read line 93 whole; cut lines run to line 116, each read the same way]

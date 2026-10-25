@@ -11,7 +11,7 @@ export function authoredMessageTiming(plan, step, kind) {
   if (step.heldCursorStart && step.heldCursorEnd) {
     const first = step.heldCursorStart, last = step.heldCursorEnd;
     if (first.eventIndex !== last.eventIndex || first.eventIndex < 0) return undefined;
-    const at = cursor => cursor.milestone === 'before' ? 0 : event.milestones.find(item => item.id === cursor.milestone).at;
+    const at = cursor => Number.isFinite(cursor.progress) ? cursor.progress : cursor.milestone === 'before' ? 0 : event.milestones.find(item => item.id === cursor.milestone).at;
     start = at(first); end = at(last);
   } else if (kind === 'connection') {
     const messages = (event?.messages || []).filter(message => message.from === step.from && message.to === step.to);

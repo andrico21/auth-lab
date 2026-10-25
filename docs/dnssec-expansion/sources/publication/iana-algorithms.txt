@@ -1,0 +1,436 @@
+
+
+	Domain Name System Security (DNSSEC) Algorithm Numbers
+
+                Domains
+                Protocols
+                Numbers
+                About
+
+Domain Name System Security (DNSSEC) Algorithm Numbers
+
+Created
+2003-11-03
+Last Updated
+2026-08-10
+Available Formats
+XMLHTMLTXT
+
+DNS Security Algorithm Numbers
+
+Registration Procedure(s)
+Standards Action or Specification Required
+Expert(s)
+Mark Andrews, Roy Arends, Warren Kumari, Wes Hardaker
+Reference
+RFC 4034: Resource Records for the DNS Security ExtensionsRFC 3755: Legacy Resolver Compatibility for Delegation Signer (DS)RFC 6014: Cryptographic Algorithm Identifier Allocation for DNSSECRFC 6944: Applicability Statement: DNS Security (DNSSEC) DNSKEY Algorithm Implementation StatusRFC 9904: DNSSEC Cryptographic Algorithm Recommendation Update Process
+Note
+
+Adding a new entry to the "DNS Security Algorithm Numbers”
+registry with a recommended value of "MAY" in the "Use for DNSSEC
+Signing", "Use for DNSSEC Validation", "Implement for DNSSEC
+Signing", or "Implement for DNSSEC Validation" columns will be
+subject to the Specification Required policy as defined in 
+RFC 8126 in order to promote continued evolution of DNSSEC
+algorithms and DNSSEC agility. New entries added through the
+Specification Required process will have the value of "MAY” for
+all columns.
+
+Adding a new entry to, or changing an existing value in, the “DNS
+Security Algorithm Numbers" registry that has any value other than
+"MAY" in the "Use for DNSSEC Signing", "Use for DNSSEC
+Validation", "Implement for DNSSEC Signing", or "Implement for
+DNSSEC Validation" columns requires Standards Action.
+
+If an item is not marked as "RECOMMENDED", it does not necessarily mean
+that it is flawed; rather, it indicates that the item either has not been
+through the IETF consensus process, has limited applicability, or is
+intended only for specific use cases.
+
+Note
+
+The KEY, SIG, DNSKEY, RRSIG, DS, and CERT RRs use an 8-bit number used
+to identify the security algorithm being used.
+
+All algorithm numbers in this registry may be used in CERT RRs. Zone
+signing (DNSSEC) and transaction security mechanisms (SIG(0) and TSIG)
+make use of particular subsets of these algorithms. Only algorithms
+usable for zone signing may appear in DNSKEY, RRSIG, and DS RRs.
+Only those usable for SIG(0) and TSIG may appear in SIG and KEY RRs.
+
+(*) There has been no determination of standardization of the use of this
+algorithm with Transaction Security.
+
+Available Formats
+CSV
+
+Number
+Description
+Mnemonic
+Zone
+Signing
+Trans.
+Sec.
+Use for
+DNSSEC Signing
+Use for
+DNSSEC Validation
+Implement for
+DNSSEC Signing
+Implement for
+DNSSEC Validation
+Reference
+
+0
+Delete DS
+DELETE
+N
+N
+
+RFC 4034; proposed standard; RFC 4398; proposed standard; RFC 8078; proposed standard
+
+1
+RSA/MD5 (DEPRECATED, see 5)
+RSAMD5
+N
+Y
+MUST NOT
+MUST NOT
+MUST NOT
+MUST NOT
+RFC 3110; proposed standard; RFC 4034; proposed standard
+
+2
+Diffie-Hellman
+DH
+N
+Y
+
+RFC 2539; proposed standard
+
+3
+DSA/SHA1
+DSA
+Y
+Y
+MUST NOT
+MUST NOT
+MUST NOT
+MUST NOT
+RFC 3755; proposed standard; RFC 2536; proposed standard; Federal Information Processing Standards Publication (FIPS PUB) 186,
+Digital Signature Standard, 18 May 1994.; Federal Information Processing Standards Publication (FIPS PUB) 180-1,
+Secure Hash Standard, 17 April 1995.
+(Supersedes FIPS PUB 180 dated 11 May 1993.)
+
+4
+Reserved
+
+RFC 6725; proposed standard
+
+5
+RSA/SHA-1
+RSASHA1
+Y
+Y
+MUST NOT
+RECOMMENDED
+NOT RECOMMENDED
+MUST
+RFC 3110; proposed standard; RFC 4034; proposed standard; RFC 9905
+
+6
+DSA-NSEC3-SHA1
+DSA-NSEC3-SHA1
+Y
+Y
+MUST NOT
+MUST NOT
+MUST NOT
+MUST NOT
+RFC 5155; proposed standard
+
+7
+RSASHA1-NSEC3-SHA1
+RSASHA1-NSEC3-SHA1
+Y
+Y
+MUST NOT
+RECOMMENDED
+NOT RECOMMENDED
+MUST
+RFC 5155; proposed standard; RFC 9905
+
+8
+RSA/SHA-256
+RSASHA256
+Y
+*
+RECOMMENDED
+RECOMMENDED
+MUST
+MUST
+RFC 5702; proposed standard
+
+9
+Reserved
+
+RFC 6725; proposed standard
+
+10
+RSA/SHA-512
+RSASHA512
+Y
+*
+NOT RECOMMENDED
+RECOMMENDED
+NOT RECOMMENDED
+MUST
+RFC 5702; proposed standard
+
+11
+Reserved
+
+RFC 6725; proposed standard
+
+12
+GOST R 34.10-2001 (DEPRECATED)
+ECC-GOST
+Y
+*
+MUST NOT
+MUST NOT
+MUST NOT
+MUST NOT
+RFC 5933; proposed standard; Change the status of GOST Signature Algorithms in DNSSEC in the IETF stream to Historic; RFC 9906
+
+13
+ECDSA Curve P-256 with SHA-256
+ECDSAP256SHA256
+Y
+*
+RECOMMENDED
+RECOMMENDED
+MUST
+MUST
+RFC 6605; proposed standard
+
+14
+ECDSA Curve P-384 with SHA-384
+ECDSAP384SHA384
+Y
+*
+MAY
+RECOMMENDED
+MAY
+RECOMMENDED
+RFC 6605; proposed standard
+
+15
+Ed25519
+ED25519
+Y
+*
+RECOMMENDED
+RECOMMENDED
+RECOMMENDED
+RECOMMENDED
+RFC 8080; proposed standard
+
+16
+Ed448
+ED448
+Y
+*
+MAY
+RECOMMENDED
+MAY
+RECOMMENDED
+RFC 8080; proposed standard
+
+17
+SM2 signing algorithm with SM3 hashing algorithm
+SM2SM3
+Y
+*
+MAY
+MAY
+MAY
+MAY
+RFC 9563; informational
+
+18
+ML-DSA-44
+MLDSA44
+Y
+*
+MAY
+MAY
+MAY
+MAY
+draft-westerbaan-dnssec-mldsa-03; informational
+
+19-22
+Unassigned
+
+23
+GOST R 34.10-2012
+ECC-GOST12
+Y
+*
+MAY
+MAY
+MAY
+MAY
+RFC 9558; informational
+
+24-122
+Unassigned
+
+123-251
+Reserved
+
+RFC 4034; proposed standard; RFC 6014; proposed standard
+
+252
+Reserved for Indirect Keys
+INDIRECT
+N
+N
+
+RFC 4034; proposed standard
+
+253
+private algorithm
+PRIVATEDNS
+Y
+Y
+MAY
+MAY
+MAY
+MAY
+RFC 4034; proposed standard
+
+254
+private algorithm OID
+PRIVATEOID
+Y
+Y
+MAY
+MAY
+MAY
+MAY
+RFC 4034; proposed standard
+
+255
+Reserved
+
+RFC 4034; proposed standard
+
+DNS KEY Record Diffie-Hellman Prime Lengths
+
+Registration Procedure(s)
+IETF Review
+Reference
+RFC 2539: Storage of Diffie-Hellman Keys in the Domain Name System (DNS)
+Available Formats
+CSV
+
+Value
+Description
+Reference
+
+0
+Unassigned
+
+1
+index into well-known table
+RFC 2539
+
+2
+index into well-known table
+RFC 2539
+
+3-15
+Unassigned
+
+DNS KEY Record Diffie-Hellman Well-Known Prime/Generator Pairs
+
+Reference
+RFC 2539: Storage of Diffie-Hellman Keys in the Domain Name System (DNS)
+Available Formats
+CSV
+
+Range
+Registration Procedures
+
+0x0000-0x07ff
+Standards Action
+
+0x0800-0xbfff
+RFC Required
+
+Value
+Description
+Reference
+
+0x0000
+Unassigned
+
+0x0001
+Well-Known Group 1: A 768 bit prime
+RFC 2539
+
+0x0002
+Well-Known Group 2: A 1024 bit prime
+RFC 2539
+
+0x0003-0xbfff
+Unassigned
+
+0xc000-0xffff
+Private Use
+RFC 2539
+
+    Table of Contents
+
+            DNS Security Algorithm Numbers
+
+            DNS KEY Record Diffie-Hellman Prime Lengths
+
+            DNS KEY Record Diffie-Hellman Well-Known Prime/Generator Pairs
+
+                Domain Names
+
+                        Root Zone Registry
+                        .INT Registry
+                        .ARPA Registry
+                        IDN Repository
+
+                Number Resources
+
+                        Number Registries
+                        RIR Allocation Data
+                        Abuse Information
+
+                Protocols
+
+                        Protocol Registries
+                        Time Zone Database
+
+                About Us
+
+                        News
+                        Performance
+                        The Organization
+                        Archive
+                        Contact Us
+
+The IANA functions coordinate the Internet’s globally unique identifiers, and
+                are provided by Public Technical Identifiers, an affiliate of
+                ICANN.
+
+                Privacy Policy
+                Terms of Service
+                
+                Licensing Terms
+

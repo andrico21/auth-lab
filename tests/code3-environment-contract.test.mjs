@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {installHarness} from './dom-harness.mjs';
+import {installHarness,HarnessEvent} from './dom-harness.mjs';
 import {LAB_MODELS} from '../src/lab-catalog.js';
 import {buildProtocolInstances,reconstructProtocolState,validateProtocolScenario} from '../src/protocol-state.js';
 import {projectScenarioContext,scenarioContextRows} from '../src/scenario-context.js';
@@ -70,6 +70,8 @@ function assertADIdentity(app,name,realm){
   const index=app.steps.findIndex(step=>step.id.endsWith('-service-tgs-reply'));assert.ok(index>=0);app.selectStep(index,false);const full=app.protocolSnapshot(),expected=reply(name,realm);
   assert.equal(field(app.currentStep,'adTGSReply'),expected);assert.ok(app.refs.inspector.textContent.includes(expected));assert.equal(full.state.proofs.tgsService.target,name);assert.equal(full.state.proofs.tgsService.realm,realm);assert.equal(full.state.credentials.service,undefined,'A sent reply is not a cached credential before validation');
   app.selectAttribute('adTGSReply',false);const sendIndex=app.traceQueue.findIndex(step=>step.traceKind==='send'&&step.sourceStepId.endsWith('-service-tgs-reply'));assert.ok(sendIndex>=0);app.selectStep(sendIndex,false);const send=app.currentStep;
+  const statePanel=app.querySelector('#protocol-state-panel');statePanel.setAttribute('open','');statePanel.dispatchEvent(new HarnessEvent('toggle'));
+  for(const details of app.querySelectorAll('#protocol-instance-list [data-instance-history]')){details.setAttribute('open','');details.dispatchEvent(new HarnessEvent('toggle'));}
   assert.equal(field(send,'adTGSReply'),expected);assert.equal(send.sourceIndex,index);assert.deepEqual(app.protocolSnapshot().state,full.state,'Focused Send retains the real complete source prefix');assert.ok(app.querySelector('#protocol-instance-list').textContent.includes(expected));
   app.player.seek([send],.3,'attribute-step');assert.equal(app.player.snapshot().packet.value,expected);assert.equal(app.refs.packet.hidden,false);assert.ok(expected.startsWith(app.refs['packet-value'].textContent.replace(/…$/,'')),'The compact animation packet derives from the exact protected reply');
   assert.equal(data(LAB_MODELS[model.id]),authored.get(model.id),'Source fixtures are immutable across context construction');

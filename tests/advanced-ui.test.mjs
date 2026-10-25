@@ -25,7 +25,7 @@ function clearAndSelectFlow(app,flow){app.clearAttribute();select(app,'oidc-flow
 function fieldPaths(app,id){app.selectAttribute(id,false);assert.equal(app.attributeSelection,id);assert.ok(app.traceQueue.length,id+' has actual replayable operations');assert.equal(app.refs.timeline.querySelectorAll('[data-step]').length,app.traceQueue.length);return app.traceQueue;}
 function assertSingleOidc(app){assert.equal(app.upstream,'single');assert.equal(app.refs.upstream.value,'single');assert.equal(app.applicationProtocol,'oidc');assert.equal(app.refs['app-protocol'].value,'oidc');}
 function assertNoAuthorizationCode(app){assert.ok(app.steps.every(step=>step.fields.every(id=>!forbiddenCodeFields.has(id))),'the grant does not invent authorization-code, nonce, redirect or PKCE objects');}
-function hover(node){assert.ok(node,'hover target exists');node.dispatchEvent(new HarnessEvent('mouseover',{relatedTarget:null}));}
+function hover(node){assert.ok(node,'hover target exists');node.dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse',relatedTarget:null}));}
 
 test('the grant selector activates distinct single-realm models and retains the optional overlay preference',()=>{
   const app=mount();try{

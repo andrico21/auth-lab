@@ -157,10 +157,13 @@ function protocolOccurrenceValue(operation, values) {
   return undefined;
 }
 
+function protocolValueShape(value) {
+  if (value === null || typeof value !== 'object') return [typeof value, String(value)];
+  if (Array.isArray(value)) return ['array', value.map(protocolValueShape)];
+  return ['object', Object.keys(value).sort().map(key => [key, protocolValueShape(value[key])])];
+}
 function protocolValueIdentity(value) {
-  if (value === null || typeof value !== 'object') return JSON.stringify([typeof value, String(value)]);
-  if (Array.isArray(value)) return JSON.stringify(['array', value.map(protocolValueIdentity)]);
-  return JSON.stringify(['object', Object.keys(value).sort().map(key => [key, protocolValueIdentity(value[key])])]);
+  return JSON.stringify(protocolValueShape(value));
 }
 
 function protocolStableOccurrenceValue(operation, values, history) {

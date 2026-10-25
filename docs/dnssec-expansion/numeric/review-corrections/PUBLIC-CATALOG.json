@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-independent-review-corrections-public-numeric-catalog",
+  "scope": "Additive signed public R04 inputs; no application expected-state projection, private keys, live DNS or server conformance claim. Original fixture IDs/tuples unchanged.",
+  "fixture": {
+    "path": "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json",
+    "bytes": 22591,
+    "sha256": "3cd9d0a42ed1117f9a8bac5869d4b75d98e1ae5d2367513b040d31714c6f3253"
+  },
+  "publicProjection": {
+    "path": "docs/dnssec-expansion/numeric/review-corrections/denial-authority-public.json",
+    "bytes": 18360,
+    "sha256": "925cb27def65fec9a81ee71273dd69aa024fde74f6e7e320426a29fa87d0af0f",
+    "canonicalSortedProjectionSha256": "bf24c6dbd62ab83693c5112f42e17ee8af25b96805b46c7de0b450a07c6d4e37",
+    "allowlistAuthority": "tools/verification/build-dnssec-public-completion.mjs fields keys/rrsets/signatures/nsec3",
+    "noPrivateGenerationOrOutcomeFields": true
+  },
+  "producer": {
+    "path": "tools/verification/dnssec-crypto/generate_review_corrections.py",
+    "bytes": 6115,
+    "sha256": "b0e5f59c0d93e44a35575d34e84551f5f45cf2f22333e7e61d731e09357664e3"
+  },
+  "verifier": {
+    "path": "tools/verification/dnssec-crypto/verify_review_corrections.py",
+    "bytes": 3743,
+    "sha256": "817d88a17d4a847511f6fe6370bdaedccce004accbc180c6d8df59dcbb58c3c1"
+  },
+  "referencePrimitives": {
+    "path": "tools/verification/dnssec-crypto/reference_bytes.py",
+    "bytes": 8518,
+    "sha256": "f125553239f8da4b143d82e059e3a5df1f356b0fe99d6d37752e774e1125c480"
+  },
+  "runtime": {
+    "path": "docs/dnssec-expansion/numeric/runtime-and-licenses.json",
+    "bytes": 3734,
+    "sha256": "9cec1d85dadc0a728405c70253abb879291a68b261c63f26d3291df183969668"
+  },
+  "generation": {
+    "command": "tools/verification/dnssec-crypto/.offline-venv/bin/python tools/verification/dnssec-crypto/generate_review_corrections.py",
+    "executed": true,
+    "exitCode": 0,
+    "stdout": {
+      "path": "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json",
+      "bytes": 22591,
+      "sha256": "3cd9d0a42ed1117f9a8bac5869d4b75d98e1ae5d2367513b040d31714c6f3253",
+      "rrsets": 7,
+      "signatures": 7,
+      "nsec3": 8
+    }
+  },
+  "verification": {
+    "command": "tools/verification/dnssec-crypto/.offline-venv/bin/python tools/verification/dnssec-crypto/verify_review_corrections.py",
+    "executedByAuthor": true,
+    "observedPredicates": 105,
+    "observedOpenSslSignatureChecks": 7,
+    "report": {
+      "path": "docs/dnssec-expansion/numeric/review-corrections/denial-authority-verification.json",
+      "bytes": 2745,
+      "sha256": "0740abee47d2d10fbd3e267a2f51a0e4e402b3fee777f145833b299c9ac70cb6"
+    },
+    "owner": "Independent fixture verification executed on explicit parent request; application registration and all application/contract/numeric gates remain parent-owned."
+  },
+  "sources": [
+    {
+      "bytes": 91858,
+      "path": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+      "sha256": "10e8b7d6587ab77023d03ba91df7a83372a35f575e306e68afe4288f02f81c61"
+    },
+    {
+      "bytes": 3734,
+      "path": "docs/dnssec-expansion/numeric/runtime-and-licenses.json",
+      "sha256": "9cec1d85dadc0a728405c70253abb879291a68b261c63f26d3291df183969668"
+    },
+    {
+      "bytes": 47283,
+      "path": "docs/dnssec-expansion/numeric/sources/rfc6840.txt",
+      "sha256": "32c2a8c755f37f3467b4ca098fc0283efe53d2648e93c3ae966cfa390a50bfaf"
+    },
+    {
+      "bytes": 112140,
+      "path": "docs/dnssec-expansion/numeric/sources/rfc5155.txt",
+      "sha256": "c3083458ed7ef69360397a7a6ec44374b245e4e5a03725c834c54908cb7f77ff"
+    },
+    {
+      "bytes": 6115,
+      "path": "tools/verification/dnssec-crypto/generate_review_corrections.py",
+      "sha256": "b0e5f59c0d93e44a35575d34e84551f5f45cf2f22333e7e61d731e09357664e3"
+    }
+  ],
+  "publicKeyIds": [
+    "child-zsk-g1",
+    "example-zsk-g1"
+  ],
+  "rrsets": [
+    {
+      "id": "review-correction-nsec-dname-apex",
+      "owner": "lab.example.",
+      "type": "NSEC",
+      "canonicalRdataSha256": "f4e08096e37a074bc7c134c89a15d7f768aa3a84d1129510f57658e44b801c68"
+    },
+    {
+      "id": "review-correction-nsec-dname-branch",
+      "owner": "branch.lab.example.",
+      "type": "NSEC",
+      "canonicalRdataSha256": "224fbfca8fdd88a5b71f7fc71a14a3e1ce5ec3101d28176db6c2c32c65d076ba"
+    },
+    {
+      "id": "review-correction-nsec-dname-z",
+      "owner": "z.lab.example.",
+      "type": "NSEC",
+      "canonicalRdataSha256": "41ae61bd274f9d826d8961ac00a0695ab33c8f15152394e73f7fba49a4a5ccba"
+    },
+    {
+      "id": "review-correction-nsec3-ancestor-delegation-0",
+      "owner": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5.example.",
+      "type": "NSEC3",
+      "canonicalRdataSha256": "064024b875848ce70c685765201d745e36abd1a4164a50018e41b8081690c3d0"
+    },
+    {
+      "id": "review-correction-nsec3-ancestor-delegation-1",
+      "owner": "3MSEV9USMD4BR9S97V51R2TDVMR9IQO1.example.",
+      "type": "NSEC3",
+      "canonicalRdataSha256": "66dbf9285f35345fbbde17e8e322ce224f404a8a3d014689233863f65d3b6fa4"
+    },
+    {
+      "id": "review-correction-nsec3-dname-0",
+      "owner": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5.lab.example.",
+      "type": "NSEC3",
+      "canonicalRdataSha256": "c41cddee4e31f2a6c7fcabf93dda788cd658ff156fec05d4ee5416e88a3f449a"
+    },
+    {
+      "id": "review-correction-nsec3-dname-1",
+      "owner": "8PCSGDNPIKH9UV757GFS5QB2LJQ6A07K.lab.example.",
+      "type": "NSEC3",
+      "canonicalRdataSha256": "3f7e08c22752b9d7f7f458d55f81fb4cd2b56293153070885046e2cd928c8028"
+    }
+  ],
+  "signatures": [
+    {
+      "id": "review-correction-nsec-dname-apex-signature",
+      "rrsetId": "review-correction-nsec-dname-apex",
+      "keyId": "child-zsk-g1",
+      "rrsigRdataSha256": "6dd5643a330e1c5152bc211cd63d9319205909b283ada23121a92496e2d00942",
+      "signingInputSha256": "ca751980f6a88478ce7b00c7468b5779d0607428d8d9efc98e0a6a867830ca83",
+      "inception": 1792713000,
+      "expiration": 1792717200
+    },
+    {
+      "id": "review-correction-nsec-dname-branch-signature",
+      "rrsetId": "review-correction-nsec-dname-branch",
+      "keyId": "child-zsk-g1",
+      "rrsigRdataSha256": "eea0f4806a6c5d86c9d11b9dfa1d554f26a05c3fe7666e5b6818807e1731168e",
+      "signingInputSha256": "5591dd9c7cd0debd338eb3653a02449d3afb7aabe25acaa42fa2f9db4e75d888",
+      "inception": 1792713000,
+      "expiration": 1792717200
+    },
+    {
+      "id": "review-correction-nsec-dname-z-signature",
+      "rrsetId": "review-correction-nsec-dname-z",
+      "keyId": "child-zsk-g1",
+      "rrsigRdataSha256": "d3deb582108ebdb392f037f665d70f6b3749a9cd694347bd5e1148613a179d73",
+      "signingInputSha256": "c09221eb1f1e71380e789bd2fbe6c5d7657fab40c8fde33f758a6ee032442c3b",
+      "inception": 1792713000,
+      "expiration": 1792717200
+    },
+    {
+      "id": "review-correction-nsec3-ancestor-delegation-0-signature",
+      "rrsetId": "review-correction-nsec3-ancestor-delegation-0",
+      "keyId": "example-zsk-g1",
+      "rrsigRdataSha256": "2f7119935531d3d6b7953ee25011a88448ffc185ae03f1fb0f0ecba5ad45cedd",
+      "signingInputSha256": "b260acb957b5b145a4a8cb7477ca1f0ab47f1a165deec1415496e50465c2ef84",
+      "inception": 1792713000,
+      "expiration": 1792717200
+    },
+    {
+      "id": "review-correction-nsec3-ancestor-delegation-1-signature",
+      "rrsetId": "review-correction-nsec3-ancestor-delegation-1",
+      "keyId": "example-zsk-g1",
+      "rrsigRdataSha256": "625f29d284e56bc6e46bb1846c61d5c9b3167667484986ebd76c8e45e8a3ddd1",
+      "signingInputSha256": "6caf37b597ce253162ba286f0f960af345232bb1ea31fc424ee4d692eb6d021c",
+      "inception": 1792713000,
+      "expiration": 1792717200
+    },
+    {
+      "id": "review-correction-nsec3-dname-0-signature",
+      "rrsetId": "review-correction-nsec3-dname-0",
+      "keyId": "child-zsk-g1",
+      "rrsigRdataSha256": "3a6420e003344c5992ada1df2dddd6704bc43b7fd69e4365f956e47c1f2241a8",
+      "signingInputSha256": "193cb7fb92a17668150143e3b80a59d72ebcee058c9822d22e53c47bce9a7949",
+      "inception": 1792713000,
+      "expiration": 1792717200
+    },
+    {
+      "id": "review-correction-nsec3-dname-1-signature",
+      "rrsetId": "review-correction-nsec3-dname-1",
+      "keyId": "child-zsk-g1",
+      "rrsigRdataSha256": "ce9af528d667f2cc549d8705b518216f8292d217dc9b4d1f0a2e641a855d9b48",
+      "signingInputSha256": "e9d8a234c8bd614b641d41dffed072a6d9bd76bdfc50cf501dd386e51cff0640",
+      "inception": 1792713000,
+      "expiration": 1792717200
+    }
+  ],
+  "hashes": [
+    {
+      "id": "review-correction-name-0",
+      "owner": "example.",
+      "hashBase32hex": "3MSEV9USMD4BR9S97V51R2TDVMR9IQO1",
+      "finalHashHex": "1db8efa7dcb348bda7893fca1d8badfdb6996b01"
+    },
+    {
+      "id": "review-correction-name-1",
+      "owner": "lab.example.",
+      "hashBase32hex": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+      "finalHashHex": "013eb06d1b383112f6a950bd1be60030de75bb25"
+    },
+    {
+      "id": "review-correction-name-2",
+      "owner": "no.lab.example.",
+      "hashBase32hex": "AUUUA6IHUSQNDQNDBCU2KFU2VLDNHHK4",
+      "finalHashHex": "57bde51a51f73576eaed5b3c2a3fc2fd5b78c684"
+    },
+    {
+      "id": "review-correction-name-3",
+      "owner": "*.lab.example.",
+      "hashBase32hex": "I8NU1UPJAS0CJ2HR5VFHUEMNE79QCBQL",
+      "finalHashHex": "922fe0fb335700c98a3b2fdf1f3ad771d3a62f55"
+    },
+    {
+      "id": "review-correction-name-4",
+      "owner": "cee.lab.example.",
+      "hashBase32hex": "D8FS985GPI17R3HALLHI9NB79HFN0JUU",
+      "finalHashHex": "6a1fc4a0b0cc827d8e2aad6324dd674c5f704fde"
+    },
+    {
+      "id": "review-correction-name-5",
+      "owner": "branch.lab.example.",
+      "hashBase32hex": "8PCSGDNPIKH9UV757GFS5QB2LJQ6A07K",
+      "finalHashHex": "4659c836f995229f7ce53c1fc2e962acf46500f4"
+    },
+    {
+      "id": "review-correction-name-6",
+      "owner": "no.branch.lab.example.",
+      "hashBase32hex": "4NNM47L397UN2LGS4I28OM0P2TG6T1BA",
+      "finalHashHex": "25ef621ea349fd71561c24848c581917606e856a"
+    },
+    {
+      "id": "review-correction-name-7",
+      "owner": "*.branch.lab.example.",
+      "hashBase32hex": "A3JR28RODTUDRS155LJEUMDMAQQT9HB5",
+      "finalHashHex": "50e7b123786f7cddf0252d66ef59b656b5d4c565"
+    }
+  ],
+  "profiles": {
+    "ancestor-delegation-nsec3": {
+      "chain": [
+        {
+          "flags": 0,
+          "nextHash": "3MSEV9USMD4BR9S97V51R2TDVMR9IQO1",
+          "originalOwner": "lab.example.",
+          "ownerHash": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+          "rrsetId": "review-correction-nsec3-ancestor-delegation-0"
+        },
+        {
+          "flags": 0,
+          "nextHash": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+          "originalOwner": "example.",
+          "ownerHash": "3MSEV9USMD4BR9S97V51R2TDVMR9IQO1",
+          "rrsetId": "review-correction-nsec3-ancestor-delegation-1"
+        }
+      ],
+      "hashAlgorithm": 1,
+      "iterations": 0,
+      "saltHex": "",
+      "signerKeyId": "example-zsk-g1",
+      "zone": "example."
+    },
+    "dname-nsec": {
+      "rrsetIds": [
+        "review-correction-nsec-dname-apex",
+        "review-correction-nsec-dname-branch",
+        "review-correction-nsec-dname-z"
+      ],
+      "signerKeyId": "child-zsk-g1",
+      "zone": "lab.example."
+    },
+    "dname-nsec3": {
+      "chain": [
+        {
+          "flags": 0,
+          "nextHash": "8PCSGDNPIKH9UV757GFS5QB2LJQ6A07K",
+          "originalOwner": "lab.example.",
+          "ownerHash": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+          "rrsetId": "review-correction-nsec3-dname-0"
+        },
+        {
+          "flags": 0,
+          "nextHash": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+          "originalOwner": "branch.lab.example.",
+          "ownerHash": "8PCSGDNPIKH9UV757GFS5QB2LJQ6A07K",
+          "rrsetId": "review-correction-nsec3-dname-1"
+        }
+      ],
+      "hashAlgorithm": 1,
+      "iterations": 0,
+      "saltHex": "",
+      "signerKeyId": "child-zsk-g1",
+      "zone": "lab.example."
+    }
+  },
+  "independence": {
+    "applicationSourceRead": false,
+    "testsRead": false,
+    "productionContractEvaluatorRead": false,
+    "productionDiagnosticsRead": false,
+    "productionEvaluatorExecuted": false,
+    "osSandboxEnforcementClaimed": false
+  },
+  "counts": {
+    "rrsets": 7,
+    "signatures": 7,
+    "nsec3Hashes": 8
+  }
+}

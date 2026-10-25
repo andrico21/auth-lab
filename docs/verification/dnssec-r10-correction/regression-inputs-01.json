@@ -1,0 +1,36 @@
+{
+  "kind": "DNS-R10-literal-consumer-regression-inputs",
+  "tests": [
+    {
+      "path": "tests/dnssec-denial-corrections.test.mjs",
+      "sha256": "564eaa2bff537df7b1258b466508b4533d33b5aff0c6468599c070b5b35d71d2",
+      "bytes": 14169
+    },
+    {
+      "path": "tests/dnssec-teaching-corrections.test.mjs",
+      "sha256": "6bc7f10d7bb7a242eca1b929a1b66901af84753556891f62f837bba77dd20491",
+      "bytes": 16388
+    }
+  ],
+  "expectedAlias": {
+    "receivedAt": 1792713600,
+    "validatedAt": 1792713600,
+    "expiresAt": 1792713900,
+    "remainingTtl": 300,
+    "signatureDeadline": 1792717200,
+    "authenticatedProofDeadline": 1792717200
+  },
+  "expectedIndependentTarget": {
+    "kind": "failure",
+    "securityStatus": "bogus",
+    "expiresAt": 1792713605,
+    "remainingTtl": 5,
+    "validatedAt": null
+  },
+  "expectationOrigin": "Literal requirements from exact independent recheck and existing signature-bound per-entry meaning, not values copied from current alias state. No worksheet or collector edits.",
+  "beforeApplication": {
+    "path": "src/dnssec-denial-cases.js",
+    "sha256": "a734757e3565d5fc2aa10a27e27e0c0dfd68cfa38c0cee22b64a1b36d2e5d4d0",
+    "bytes": 81822
+  }
+}

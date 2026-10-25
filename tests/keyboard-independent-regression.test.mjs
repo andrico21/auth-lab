@@ -65,9 +65,9 @@ test('re-hovering a participant or attribute preserves the focused dialog and ne
     const card=app.refs.actors.querySelector('[data-actor="app"]');focus(card);key(card,'F2');
     const field=app.refs['actor-popup'].querySelector('[data-attribute]');focus(field);key(field,'F2');
     const source=document.activeElement;
-    card.dispatchEvent(new HarnessEvent('mouseover'));field.dispatchEvent(new HarnessEvent('mouseover'));
+    card.dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse'}));field.dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse'}));
     assert.ok(app.contains(field));assert.ok(app.contains(source));assert.equal(document.activeElement,source);
-    app.refs.actors.querySelector('[data-actor="realmA"]').dispatchEvent(new HarnessEvent('mouseover'));
+    app.refs.actors.querySelector('[data-actor="realmA"]').dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse'}));
     assert.ok(app.contains(field));assert.ok(app.contains(source),'pointer hover cannot replace a dialog with keyboard focus');
     app.deferCloseActor();app.deferCloseAttribute();clock.advance(1000);
     assert.equal(app.refs['actor-popup'].hidden,false);assert.equal(app.refs['attribute-popup'].hidden,false);

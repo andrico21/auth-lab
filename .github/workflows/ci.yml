@@ -3,6 +3,8 @@ name: CI
 on:
   push:
   pull_request:
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       publish_pages:
@@ -27,16 +29,38 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.4.2
+      - name: Verify DNSSEC public fixture projections
+        run: |
+          bun tools/verification/build-dnssec-public-addendum.mjs --check
+          bun tools/verification/build-dnssec-public-completion.mjs --check
+          bun tools/verification/build-dnssec-public-review-corrections.mjs --check
+          bun tools/verification/build-dnssec-signature-fingerprints.mjs --check
       - name: Build standalone bundle
-        run: bun run build
+        run: bun run build --source-version
       - name: Verify the committed dist bundle is current
         run: git diff --exit-code -- dist/
+      - name: Smoke-test emitted standalone boot and catalog
+        run: AUTH_LAB_QA_EVIDENCE_DIR="$RUNNER_TEMP/auth-lab-compiled-smoke" bun tools/verification/compiled-bundle-smoke.mjs
+      - name: Verify DNSSEC sealed numeric references
+        run: bun tools/verification/check-dnssec-numeric.mjs --out "$RUNNER_TEMP/auth-lab-dnssec-numeric"
       - name: Install isolated cryptographic verification dependencies
         run: bun install --cwd tools/verification/expansion-crypto --frozen-lockfile --ignore-scripts
       - name: Verify pinned full cryptographic vectors
         run: bun run verify:crypto
       - name: Run the test suite
         run: bun run test
+      - name: Build standalone with the release tag
+        if: github.ref_type == 'tag'
+        env:
+          AUTH_FLOW_STUDIO_VERSION: ${{ github.ref_name }}
+        run: bun run build
+      - name: Upload the tested tagged standalone
+        if: github.ref_type == 'tag'
+        uses: actions/upload-artifact@v7
+        with:
+          name: auth-flow-studio-tagged
+          path: dist/auth-flow-studio.html
+          if-no-files-found: error
       - name: Stage the verified standalone bundle
         if: >-
           github.repository == 'andrico21/auth-lab' &&

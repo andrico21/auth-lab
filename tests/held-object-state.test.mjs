@@ -295,12 +295,57 @@ describe('exact traces and playback', () => {
     assert.deepEqual(heldCursorForPlayback(compiled, { status: 'idle' }, rows[0]), { eventIndex: -1, milestone: 'initial' });
   });
 
+  test('batched exact history orders unsorted deliveries and keeps the selected representation private', () => {
+    const { plan, model, steps } = fixture(), event = plan.events.response;
+    const token = plan.artifacts.find(item => item.artifactId === 'R1');
+    token.representations.push({ representationId: 'view', format: 'client-only claims', readableBy: ['client'], fields: [{ attributeId: 'claims', value: 'CLIENT-ONLY' }] });
+    plan.artifacts.push(definition('never-created'));
+    event.messages.unshift({ messageId: 'later-return', from: 'client', to: 'issuer', start: .85, end: 1, objects: [
+      { artifactId: 'R1', representationId: 'view' }, { artifactId: 'R1', representationId: 'plain' },
+    ] });
+    event.milestones[1].effects.unshift(acquire('R1', 'client', 'decoded', { representationId: 'view' }));
+    event.milestones.at(-1).effects.push(acquire('R1', 'issuer', 'opaque-return', { representationId: 'view' }), acquire('R1', 'issuer', 'public-return'));
+    const compiled = compileHeldObjects(plan, { model, steps }), trace = heldObjectTrace(compiled, 'R1');
+    assert.deepEqual(trace.filter(row => row.messageId).map(row => row.messageId), ['M1', 'later-return']);
+    const first = trace.find(row => row.messageId === 'M1'), returned = trace.find(row => row.messageId === 'later-return');
+    assert.deepEqual([first.from, first.to, first.representationId, first.payload[0].value], ['issuer', 'client', 'plain', 'R1']);
+    assert.deepEqual([returned.from, returned.to, returned.representationId, returned.holdingId], ['client', 'issuer', 'view', 'issuer:R1:opaque-return']);
+    assert.equal(returned.payload.find(field => field.attributeId === 'claims').redacted, true);
+    assert.equal(JSON.stringify(returned.payload).includes('CLIENT-ONLY'), false);
+    const after = projectHeldObjects(compiled, returned.heldCursorEnd), before = projectHeldObjects(compiled, first.heldCursorEnd);
+    assert.equal(after.holdings.some(holding => holding.holdingId === 'issuer:R1:opaque-return'), true);
+    assert.equal(before.holdings.some(holding => holding.holdingId === 'issuer:R1:opaque-return'), false);
+    assert.equal(before.holdings.some(holding => holding.holdingId === 'client:R1:response'), true);
+    assert.deepEqual(heldObjectTrace(compiled, 'never-created'), []);
+  });
+
   test('exact rows from different context revisions cannot cross scenario boundaries', () => {
     const { plan, model, steps } = fixture();
     const first = compileHeldObjects(plan, { model, steps }), second = compileHeldObjects({ ...plan, contextId: 'revision-2' }, { model, steps });
     assert.throws(() => heldCursorForPlayback(second, {}, heldObjectTrace(first, 'R1')[0], { selected: true }), /different context/);
   });
 });
+
+test('shared declaration values do not alias mutable protocol branches or admit cycles', () => {
+  const shared = { value: 'original' }, steps = [
+    { id: 'load', from: 'client', to: 'client', payload: [], protocolEffects: [{ op: 'put', path: 'pairs', value: { first: shared, second: shared } }] },
+    { id: 'change', from: 'client', to: 'client', payload: [], protocolEffects: [{ op: 'put', path: 'pairs.first.value', value: 'updated' }] },
+  ];
+  const model = { id: 'shared-declaration', steps, initialState: {} }, plan = {
+    scenarioId: model.id, contextId: model.id, actors: { client: {} }, artifacts: [], initial: [], bindings: [],
+    events: Object.fromEntries(steps.map(step => [step.id, { milestones: [{ id: 'complete', at: 1, effects: [] }] }])),
+    coverage: [{ actorId: 'client', status: 'complete', support: 'supported', stores: [], categories: [], gaps: [] }],
+  };
+  const compiled = compileHeldObjects(plan, { model, steps });
+  shared.value = 'external-mutation';
+  const before = projectHeldObjects(compiled, { eventIndex: 0, milestone: 'complete' }), after = projectHeldObjects(compiled, { eventIndex: 1, milestone: 'complete' });
+  assert.deepEqual(before.state.pairs, { first: { value: 'original' }, second: { value: 'original' } });
+  assert.deepEqual(after.state.pairs, { first: { value: 'updated' }, second: { value: 'original' } });
+  const cyclic = {}; cyclic.self = cyclic;
+  const badSteps = [{ ...steps[0], protocolEffects: [{ op: 'put', path: 'pairs', value: cyclic }] }];
+  assert.throws(() => compileHeldObjects({ ...plan, events: { load: plan.events.load } }, { model: { ...model, steps: badSteps }, steps: badSteps }), /acyclic plain data/);
+});
+
 
 describe('authored metadata rejection', () => {
   for (const [label, mutate, pattern] of [

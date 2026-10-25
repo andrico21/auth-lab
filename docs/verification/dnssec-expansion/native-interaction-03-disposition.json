@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNSSEC-full-native-matrix-failure-disposition",
+  "recordedAt": "2026-10-24T10:34:46.046Z",
+  "accepted": false,
+  "originalStatus": {
+    "path": "docs/verification/dnssec-expansion/native-interaction-03/native-status.json",
+    "sha256": "12be115263ef4dd51daa9f922abcc4cfe8b6dc7d809ea5a14b150c9b392009ad",
+    "bytes": 208943
+  },
+  "attemptedCells": 312,
+  "passedCells": 168,
+  "failedCells": 144,
+  "namedDesktopTasksPassed": 144,
+  "namedTouchTasksFailed": 144,
+  "supportCellsPassed": 24,
+  "identityUnchanged": true,
+  "wallSeconds": 5350.53,
+  "maxRssKiB": 511988,
+  "cause": "Native compatibility mouseover from a touch tap opened the help popup over the field before mousedown/click. Trusted click was retargeted to the popup; ordinary replay never started.",
+  "reproducedBefore": "docs/verification/dnssec-expansion/native-field-tap-before-01/status.json",
+  "correctedAfter": "docs/verification/dnssec-expansion/native-field-tap-after-01/status.json",
+  "candidate": "docs/verification/dnssec-expansion/candidate-13-input-identity.json",
+  "repair": "Shared hover handlers use PointerEvent modality and do not open on touch. Focus help opens for keyboard-visible focus; explicit F2/Escape remains available.",
+  "nextScope": "Fresh Source/emitted/numeric/native evidence must bind candidate13. Previous passing desktop cells are not relabelled as current-candidate execution.",
+  "runnerChange": "The interaction producer now stops after recording the first failed task. A passing run still requires the complete288-cell cross-product; no failed subset is accepted."
+}

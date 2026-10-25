@@ -1,0 +1,51 @@
+{
+  "kind": "DNS-R10-final-regression-before-after-attribution",
+  "recordedAt": "2026-10-25T08:28:05.530Z",
+  "chronologicalBefore": {
+    "path": "docs/verification/dnssec-r10-correction/focused-before-01.json",
+    "sha256": "07f3e270743442150a6bf0e5b64e25868e1e9aff328c7c5fd853b356c4179670",
+    "bytes": 3916
+  },
+  "retrospectiveFinalTestBefore": {
+    "path": "docs/verification/dnssec-r10-correction/focused-before-02.json",
+    "sha256": "30a298d3c6cd6d69d4ba181471582d890087663cbf5201f6c4d42fa32a01fb01",
+    "bytes": 3984
+  },
+  "finalTestInputs": [
+    {
+      "path": "tests/dnssec-denial-corrections.test.mjs",
+      "sha256": "564eaa2bff537df7b1258b466508b4533d33b5aff0c6468599c070b5b35d71d2",
+      "bytes": 14169
+    },
+    {
+      "path": "tests/dnssec-teaching-corrections.test.mjs",
+      "sha256": "517c49fab657671cb4f970ac54c63ad1b7d0c39758004cf85ee4d15815dcaa24",
+      "bytes": 16583
+    }
+  ],
+  "beforeProductFilesVerified": 109,
+  "beforeProductSourceReference": {
+    "path": "docs/verification/dnssec-r10-correction/pre-fix-inputs-01.json",
+    "sha256": "19e32e1c7928022f27686ffeb64cb0badd98493fbc157e6d00ac65b44a454d4e",
+    "bytes": 104120
+  },
+  "testOverlayOnly": true,
+  "beforePassed": 0,
+  "beforeFailed": 2,
+  "currentSourceAfter": {
+    "path": "docs/verification/dnssec-r10-correction/focused-after-02.json",
+    "sha256": "e8232ad6707da4647f8b7ce40a7b43bf38630975f06fc6716f894f67a37870ad",
+    "bytes": 7549
+  },
+  "currentCompiledAfter": {
+    "path": "docs/verification/dnssec-r10-correction/compiled-teaching-01.json",
+    "sha256": "6c05e879f5e443b4d7c84ec2607739c2d2edbe63655b825f286db1dc295321c2",
+    "bytes": 1859
+  },
+  "currentFullSuite": {
+    "path": "docs/verification/dnssec-r10-correction/regressions-01/held-objects-regression-status.json",
+    "sha256": "f2c43f13467a121de3f86c5bb11c9ffb11e438aa2545b21b262bd7ee80e9022d",
+    "bytes": 130333
+  },
+  "scope": "Initial before01 was actually chronological before the fix. Before02 is an explicitly retrospective replay of the FINAL identical test bytes after endpoint-presence strengthening against the exact reviewed109-file product, with only current two-test overlays. It is not another full original231-file source identity or relabelled chronology."
+}

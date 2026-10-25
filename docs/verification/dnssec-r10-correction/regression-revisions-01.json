@@ -1,0 +1,44 @@
+{
+  "kind": "DNS-R10-regression-scope-attribution",
+  "recordedAt": "2026-10-25T07:55:41.665Z",
+  "beforeInputs": {
+    "path": "docs/verification/dnssec-r10-correction/regression-inputs-01.json",
+    "sha256": "fbdb220d6be707ab740426f1452959ffb485e9e4053fe95b5369978a6691bc40",
+    "bytes": 1197
+  },
+  "before": {
+    "path": "docs/verification/dnssec-r10-correction/focused-before-01.json",
+    "sha256": "07f3e270743442150a6bf0e5b64e25868e1e9aff328c7c5fd853b356c4179670",
+    "bytes": 3916
+  },
+  "beforePassed": 0,
+  "beforeFailed": 2,
+  "beforeFiltered": 32,
+  "firstAfter": {
+    "path": "docs/verification/dnssec-r10-correction/focused-after-01.json",
+    "sha256": "f2a21a68a31c41f6a5be5594d55d35db82b5bf415e833c00d1b29ae87e160ede",
+    "bytes": 936
+  },
+  "firstAfterPassed": 2,
+  "finalTests": [
+    {
+      "path": "tests/dnssec-denial-corrections.test.mjs",
+      "sha256": "564eaa2bff537df7b1258b466508b4533d33b5aff0c6468599c070b5b35d71d2",
+      "bytes": 14169
+    },
+    {
+      "path": "tests/dnssec-teaching-corrections.test.mjs",
+      "sha256": "517c49fab657671cb4f970ac54c63ad1b7d0c39758004cf85ee4d15815dcaa24",
+      "bytes": 16583
+    }
+  ],
+  "revision": "After first after-pass, the UI regression was strengthened to require the alias cache at each full/field/exact replay endpoint. Same independent literal expected metadata and same failing assertions as before; original before/first-after runs retain actual test versions and are not restamped.",
+  "productAudit": {
+    "remainingTtl": "Alias own dnssecDenialCacheWindow.remainingSeconds at represented creation clock, not aggregate five-second failure.",
+    "validatedAt": "checkedAt of the already created successful primary alias numericBindings evidence; no additional signature check/event.",
+    "authenticatedProofDeadline": "Existing per-entry meaning is the authenticated signature bound (aggregate entry uses minimum window.signatureDeadline), not effective RRset TTL expiry. Alias now uses its own window.signatureDeadline,T+3600; effective expiresAt staysT+300.",
+    "receivedAt": "Own answerBundle.at, matching unchanged original receipt T. No TTL/deadline renewal on later eligibility inspection.",
+    "otherInheritedFields": "Own key/kind/security/signature/evidence already override aggregate; tuple TTLs/OriginalTTL originate from alias answerBundle; validation owner, generation, proof zone and checking context retained. Separate target/aggregate cache untouched."
+  },
+  "expectations": "Literal alias/target values, no generated expected worksheet.435 original independent inputs and all8 layers remain unchanged."
+}

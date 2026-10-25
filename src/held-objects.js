@@ -15,6 +15,7 @@ import {buildUnixWorkstationHeldObjects} from './held-object-unix-workstation.js
 import {buildJWTHeldObjects} from './held-object-jwt.js';
 import {buildKubernetesHeldObjects} from './held-object-kubernetes.js';
 import {buildMCPHeldObjects} from './held-object-mcp.js';
+import {buildDNSSECHeldObjects} from './held-object-dnssec.js';
 import {compileHeldObjects,assertHeldObjectCoverage} from './held-object-state.js';
 import {ADLAB_SCENARIOS} from './kerberos-ad-lab.js';
 import {CRYPTOLAB_SCENARIOS} from './kerberos-crypto-lab.js';
@@ -43,6 +44,7 @@ import {JWTLAB_SCENARIOS} from './jwt-validation-lab.js';
 import {KUBERNETESAUTHLAB_SCENARIOS} from './kubernetes-auth-lab.js';
 import {KUBERNETESRBACLAB_SCENARIOS} from './kubernetes-rbac-lab.js';
 import {MCPLAB_SCENARIOS} from './mcp-auth-lab.js';
+import {DNSSECLAB_SCENARIOS} from './dnssec-lab.js';
 
 const heldObjectSources=new Map([
   [ADLAB_SCENARIOS,'src/kerberos-ad-lab.js'],[CRYPTOLAB_SCENARIOS,'src/kerberos-crypto-lab.js'],
@@ -59,6 +61,7 @@ const heldObjectSources=new Map([
   [MACOSELEVLAB_SCENARIOS,'src/macos-elevation-lab.js'],[JWTLAB_SCENARIOS,'src/jwt-validation-lab.js'],
   [KUBERNETESAUTHLAB_SCENARIOS,'src/kubernetes-auth-lab.js'],[KUBERNETESRBACLAB_SCENARIOS,'src/kubernetes-rbac-lab.js'],
   [MCPLAB_SCENARIOS,'src/mcp-auth-lab.js'],
+  [DNSSECLAB_SCENARIOS,'src/dnssec-lab.js'],
 ].flatMap(([models,source])=>models.map(model=>[model.id,source])));
 const heldObjectBuilders=new Map([
   ['src/kerberos-ad-lab.js',buildADHeldObjects],['src/kerberos-crypto-lab.js',buildKerberosHeldObjects],
@@ -75,6 +78,7 @@ const heldObjectBuilders=new Map([
   ['src/macos-elevation-lab.js',buildUnixWorkstationHeldObjects],['src/jwt-validation-lab.js',buildJWTHeldObjects],
   ['src/kubernetes-auth-lab.js',buildKubernetesHeldObjects],['src/kubernetes-rbac-lab.js',buildKubernetesHeldObjects],
   ['src/mcp-auth-lab.js',buildMCPHeldObjects],
+  ['src/dnssec-lab.js',buildDNSSECHeldObjects],
 ]);
 
 /** Build once per immutable scenario/configuration/context revision, not frame. */

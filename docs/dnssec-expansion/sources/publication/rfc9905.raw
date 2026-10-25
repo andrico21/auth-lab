@@ -1,0 +1,1890 @@
+
+<!DOCTYPE html>
+
+
+
+
+
+
+
+<html data-bs-theme="auto" lang="en">
+    <head>
+        
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>
+            
+                RFC 9905 - Deprecating the Use of SHA-1 in DNSSEC Signature Algorithms
+            
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://static.ietf.org/fonts/inter/import.css" rel="stylesheet">
+        <link href="https://static.ietf.org/fonts/noto-sans-mono/import.css" rel="stylesheet">
+        
+            <link rel="stylesheet" href="https://static.ietf.org/dt/12.82.1/ietf/css/document_html_referenced.css">
+            
+                <link rel="stylesheet" href="https://static.ietf.org/dt/12.82.1/ietf/css/document_html_txt.css">
+            
+            <script type="module" crossorigin="" src="https://static.ietf.org/dt/12.82.1/assets/embedded-73a0c4fc.js"></script>
+<link href="https://static.ietf.org/dt/12.82.1/assets/create-pinia-singleton-03577dc2.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+<link href="https://static.ietf.org/dt/12.82.1/assets/Scrollbar-3f2fb773.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+            <script src="https://static.ietf.org/dt/12.82.1/ietf/js/document_html.js"></script>
+            <script src="https://static.ietf.org/dt/12.82.1/ietf/js/theme.js"></script>
+        
+        <link rel="alternate" type="application/atom+xml" title="Document changes" href="/feed/document-changes/rfc9905/">
+        <meta name="description"
+            
+                content="Deprecating the Use of SHA-1 in DNSSEC Signature Algorithms (RFC 9905, )"
+            >
+        
+
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-180.png">
+<link rel="icon"
+      sizes="32x32"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-32.png">
+<link rel="icon"
+      sizes="16x16"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-mask.svg"
+      color="#ffffff">
+<meta name="msapplication-TileColor"
+      content="#ffffff">
+<meta name="theme-color"
+      content="#ffffff">
+        
+
+
+
+
+<meta property="og:title" content="RFC 9905: Deprecating the Use of SHA-1 in DNSSEC Signature Algorithms">
+<meta property="og:url" content="https://datatracker.ietf.org/doc/html/rfc9905">
+
+
+<link rel="canonical" href="https://www.rfc-editor.org/info/rfc9905/">
+
+<meta property="og:site_name" content="IETF Datatracker">
+<meta property="og:description" content="This document deprecates the use of the RSASHA1 and RSASHA1-NSEC3-SHA1 algorithms for the creation of DNS Public Key (DNSKEY) and Resource Record Signature (RRSIG) records. It updates RFCs 4034 and 5155 as it deprecates the use of these algorithms.">
+<meta property="og:type" content="article">
+
+<meta property="og:image" content="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-card.png">
+<meta property="og:image:alt" content="Logo of the IETF">
+<meta property="article:section" content="IETF - Internet Engineering Task Force">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<meta property="article:author" content="Wes Hardaker">
+<meta property="article:author" content="Warren Kumari">
+
+
+
+        
+        <style>
+            
+            .diff-form .select2-selection__rendered {
+                direction: rtl;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <noscript><iframe class="status" title="Site status" src="/status/latest"></iframe></noscript>
+<div class="vue-embed" data-component="Status"></div>
+        <div class="btn-toolbar sidebar-toolbar position-fixed top-0 end-0 m-2 m-lg-3 d-print-none">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary btn-sm me-1 dropdown-toggle d-flex align-items-center"
+                    id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+                    aria-label="Toggle theme">
+                        <i class="theme-icon-active bi bi-circle-half"></i>
+                </button>
+
+                <ul class="dropdown-menu" aria-labelledby="bd-theme">
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center"
+                            data-bs-theme-value="light" aria-pressed="false">
+                            <i class="me-2 opacity-50 theme-icon bi bi-sun-fill"></i>
+                            Light<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center"
+                            data-bs-theme-value="dark" aria-pressed="false">
+                            <i class="me-2 opacity-50 theme-icon bi bi-moon-stars-fill"></i>
+                            Dark<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center active"
+                            data-bs-theme-value="auto" aria-pressed="true">
+                            <i class="me-2 opacity-50 theme-icon bi bi-circle-half"></i>
+                            Auto<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm sidebar-toggle"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#sidebar"
+                    aria-expanded="true"
+                    aria-controls="sidebar"
+                    aria-label="Toggle metadata sidebar"
+                    title="Toggle metadata sidebar">
+            <i class="bi bi-arrow-bar-left sidebar-shown"></i>
+            <i class="bi bi-arrow-bar-right sidebar-collapsed"></i>
+            </button>
+        </div>
+        <nav class="navbar bg-light-subtle px-1 fixed-top d-print-none d-md-none">
+            <a class="nav-link ps-1"
+               href="/doc/rfc9905/">
+                
+                    RFC 9905
+                
+                <br class="d-sm-none">
+
+                <span class="ms-sm-3 badge rounded-pill badge-ps">
+                    
+                        Proposed Standard
+                    
+                </span>
+            </a>
+            <button class="navbar-toggler p-1"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#docinfo-collapse"
+                    aria-controls="docinfo-collapse"
+                    aria-expanded="false"
+                    aria-label="Show document information">
+                <span class="navbar-toggler-icon small"></span>
+            </button>
+            <div class="navbar-nav navbar-nav-scroll overscroll-none collapse pt-1" id="docinfo-collapse">
+                <div class="bg-light-subtle p-0">
+                    <table class="table table-sm table-borderless small">
+                        <tbody class="meta align-top">
+                            <tr>
+                                <th scope="row"></th>
+                                <th scope="row">Title</th>
+                                <td class="edit"></td>
+                                <td>Deprecating the Use of SHA-1 in DNSSEC Signature Algorithms</td>
+                            </tr>
+                        </tbody>
+                        
+
+
+
+
+
+
+
+<tbody class="meta align-top ">
+    <tr>
+        <th scope="row">Document</th>
+        <th scope="row">Document type</th>
+        <td class="edit"></td>
+        <td>
+            
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Proposed Standard
+    
+</span>
+
+            
+                
+                    <br>November 2025
+                
+                <br>
+                
+                
+                    <a class="btn btn-sm btn-warning"
+                       title="Click to report an error in the document."
+                       href="https://www.rfc-editor.org/errata.php#reportnew"
+                       target="_blank">
+                        Report errata
+                    </a>
+                
+                
+                
+                
+                
+                <div>Updates <a href="/doc/html/rfc4034" title="Resource Records for the DNS Security Extensions">RFC 4034</a>, <a href="/doc/html/rfc5155" title="DNS Security (DNSSEC) Hashed Authenticated Denial of Existence">RFC 5155</a></div>
+                
+                
+                
+                    <div>
+                        Was
+                        <a href="/doc/draft-ietf-dnsop-must-not-sha1/10/">draft-ietf-dnsop-must-not-sha1</a>
+                        (<a href="/wg/dnsop/about/">dnsop WG</a>)
+                    </div>
+                
+            
+            
+            
+                
+
+
+
+
+    
+
+
+            
+        </td>
+    </tr>
+    
+        <tr>
+            <td></td>
+            <th scope="row">Select version</th>
+            <td class="edit"></td>
+            <td>
+                
+
+
+
+    <ul class="revision-list pagination pagination-sm text-center flex-wrap my-0">
+        
+            
+            
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-00"
+                        rel="nofollow">
+                            00
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-01"
+                        rel="nofollow">
+                            01
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-02"
+                        rel="nofollow">
+                            02
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-03"
+                        rel="nofollow">
+                            03
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-04"
+                        rel="nofollow">
+                            04
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-05"
+                        rel="nofollow">
+                            05
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-06"
+                        rel="nofollow">
+                            06
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-07"
+                        rel="nofollow">
+                            07
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-08"
+                        rel="nofollow">
+                            08
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-09"
+                        rel="nofollow">
+                            09
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-10"
+                        rel="nofollow">
+                            10
+                        </a>
+                    </li>
+                
+            
+            
+            <li class="page-item rfc active">
+                <a class="page-link"
+                href="/doc/html/rfc9905">
+                    RFC 9905
+                </a>
+            </li>
+        
+    </ul>
+
+            </td>
+        </tr>
+        
+            <tr>
+                <td></td>
+                <th scope="row">Compare versions</th>
+                <td class="edit"></td>
+                <td>
+                    
+
+
+
+<form class="form-horizontal diff-form"
+      action="https://author-tools.ietf.org/iddiff"
+      method="get"
+      target="_blank">
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="From revision"
+                    name="url1">
+                
+                    <option value="rfc9905">
+                        RFC 9905
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-10" selected>
+                        draft-ietf-dnsop-must-not-sha1-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-09">
+                        draft-ietf-dnsop-must-not-sha1-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-08">
+                        draft-ietf-dnsop-must-not-sha1-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-07">
+                        draft-ietf-dnsop-must-not-sha1-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-06">
+                        draft-ietf-dnsop-must-not-sha1-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-05">
+                        draft-ietf-dnsop-must-not-sha1-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-04">
+                        draft-ietf-dnsop-must-not-sha1-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-03">
+                        draft-ietf-dnsop-must-not-sha1-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-02">
+                        draft-ietf-dnsop-must-not-sha1-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-01">
+                        draft-ietf-dnsop-must-not-sha1-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-00">
+                        draft-ietf-dnsop-must-not-sha1-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="To revision"
+                    name="url2">
+                
+                    <option value="rfc9905" selected>
+                        RFC 9905
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-10">
+                        draft-ietf-dnsop-must-not-sha1-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-09">
+                        draft-ietf-dnsop-must-not-sha1-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-08">
+                        draft-ietf-dnsop-must-not-sha1-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-07">
+                        draft-ietf-dnsop-must-not-sha1-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-06">
+                        draft-ietf-dnsop-must-not-sha1-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-05">
+                        draft-ietf-dnsop-must-not-sha1-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-04">
+                        draft-ietf-dnsop-must-not-sha1-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-03">
+                        draft-ietf-dnsop-must-not-sha1-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-02">
+                        draft-ietf-dnsop-must-not-sha1-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-01">
+                        draft-ietf-dnsop-must-not-sha1-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-00">
+                        draft-ietf-dnsop-must-not-sha1-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--html"
+                    name="difftype">
+                Side-by-side
+            </button>
+            
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--hwdiff"
+                    name="difftype">
+                Inline
+            </button>
+
+
+</form>
+
+                </td>
+            </tr>
+        
+    
+    <tr>
+        <td></td>
+        <th scope="row">Authors</th>
+        <td class="edit">
+            
+        </td>
+        <td>
+            
+            
+                <span ><a 
+           title="Datatracker profile of Wes Hardaker"
+            href="/person/wjhns1@hardakers.net" >W. Hardaker</a> <a 
+               href="mailto:wjhns1%40hardakers.net"
+               aria-label="Compose email to wjhns1@hardakers.net"
+               title="Compose email to wjhns1@hardakers.net">
+                <i class="bi bi-envelope"></i></a></span>,
+            
+                <span ><a 
+           title="Datatracker profile of Warren Kumari"
+            href="/person/warren@kumari.net" >W. Kumari</a> <a 
+               href="mailto:warren%40kumari.net"
+               aria-label="Compose email to warren@kumari.net"
+               title="Compose email to warren@kumari.net">
+                <i class="bi bi-envelope"></i></a></span>
+            
+            
+                <br>
+                <a class="btn btn-primary btn-sm mt-1" href="mailto:rfc9905@ietf.org?subject=rfc9905" title="Send email to the document authors">Email authors</a>
+            
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            RFC stream
+        </th>
+        <td class="edit">
+            
+        </td>
+        <td >
+            
+                
+                
+                    
+                        
+
+
+
+<img alt="IETF Logo"
+     class="d-lm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-white.svg"
+        
+     
+     >
+
+<img alt="IETF Logo"
+     class="d-dm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor.svg"
+        
+     
+     >
+                    
+                
+                
+            
+        </td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            Other formats
+        </th>
+        <td class="edit">
+        </td>
+        <td>
+            
+                
+    <div class="buttonlist">
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9905.txt">
+            
+                <i class="bi bi-file-text"></i> txt
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9905.html">
+            
+                <i class="bi bi-file-code"></i> html
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9905.xml">
+            
+                <i class="bi bi-file-code"></i> xml
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+            download="rfc9905.pdf"
+          
+         
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9905.pdf">
+            
+                <i class="bi bi-file-pdf"></i> pdf
+            
+        </a>
+        
+    
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/rfc9905/bibtex/">
+            
+                <i class="bi bi-file-ruled"></i> bibtex
+            
+        </a>
+        
+    
+</div>
+
+            
+        </td>
+    </tr>
+    
+    
+        
+            <tr>
+                <td>
+                </td>
+                <th scope="row">
+                    Additional resources
+                </th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                        
+                            
+                                <a href="https://mailarchive.ietf.org/arch/browse/dnsop/?q=rfc9905 OR %22draft-ietf-dnsop-must-not-sha1%22">
+                                    Mailing list discussion
+                                </a>
+                            
+                        
+                    
+                </td>
+            </tr>
+        
+    
+</tbody>
+                        <tr>
+                            <th scope="row"></th>
+                            <th scope="row"></th>
+                            <td class="edit"></td>
+                            <td>
+                                <a class="btn btn-sm btn-warning mb-3"
+                                target="_blank"
+                                href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+                                    Report a bug
+                                    <i class="bi bi-bug"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </nav>
+        <div class="row g-0">
+            <div class="col-md-9 d-flex justify-content-center lh-sm"
+                 data-bs-spy="scroll"
+                 data-bs-target="#toc-nav"
+                 data-bs-smooth-scroll="true"
+                 tabindex="0"
+                 id="content">
+                
+                    <div class="rfchtml">
+                        <br class="noprint">
+                        <div class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">RFC 9905</td>
+<td class="center">Deprecating SHA-1 in DNSSEC Signature Al</td>
+<td class="right">November 2025</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Hardaker &amp; Kumari</td>
+<td class="center">Standards Track</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-stream">Stream:</dt>
+<dd class="stream">Internet Engineering Task Force (IETF)</dd>
+<dt class="label-rfc">RFC:</dt>
+<dd class="rfc"><a href="https://www.rfc-editor.org/rfc/rfc9905" class="eref">9905</a></dd>
+<dt class="label-updates">Updates:</dt>
+<dd class="updates">
+<a href="https://www.rfc-editor.org/rfc/rfc4034" class="eref">4034</a>, <a href="https://www.rfc-editor.org/rfc/rfc5155" class="eref">5155</a> </dd>
+<dt class="label-category">Category:</dt>
+<dd class="category">Standards Track</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2025-11" class="published">November 2025</time>
+    </dd>
+<dt class="label-issn">ISSN:</dt>
+<dd class="issn">2070-1721</dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">W. Hardaker</div>
+<div class="org">USC/ISI</div>
+</div>
+<div class="author">
+      <div class="author-name">W. Kumari</div>
+<div class="org">Google</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="rfcnum">RFC 9905</h1>
+<h1 id="title">Deprecating the Use of SHA-1 in DNSSEC Signature Algorithms</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document deprecates the use of the RSASHA1 and RSASHA1-NSEC3-SHA1
+algorithms for the creation of DNS Public Key (DNSKEY) and Resource
+Record Signature (RRSIG) records.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">It updates RFCs 4034 and 5155 as it deprecates the use of these algorithms.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+            This is an Internet Standards Track document.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+            This document is a product of the Internet Engineering Task Force
+            (IETF).  It represents the consensus of the IETF community.  It has
+            received public review and has been approved for publication by
+            the Internet Engineering Steering Group (IESG).  Further
+            information on Internet Standards is available in Section 2 of 
+            RFC 7841.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+            Information about the current status of this document, any
+            errata, and how to provide feedback on it may be obtained at
+            <span><a href="https://www.rfc-editor.org/info/rfc9905">https://www.rfc-editor.org/info/rfc9905</a></span>.<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2025 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-requirements-notation" class="internal xref">Requirements Notation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-deprecating-sha-1-from-dnss" class="internal xref">Deprecating SHA-1 from DNSSEC Signatures and Delegation RRs</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-operational-considerations" class="internal xref">Operational Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">The security of the protection provided by the SHA-1 algorithm <span>[<a href="#RFC3174" class="cite xref">RFC3174</a>]</span> has been slowly diminishing
+over time as various forms of attacks have weakened its cryptographic
+underpinning.  DNSSEC <span>[<a href="#RFC9364" class="cite xref">RFC9364</a>]</span> (originally defined in <span>[<a href="#RFC3110" class="cite xref">RFC3110</a>]</span>) made extensive use
+of SHA-1, for example, as a
+cryptographic hash algorithm in Resource Record Signature (RRSIG) and Delegation Signer (DS)
+records. Since then, multiple other algorithms with
+stronger cryptographic strength have become widely available for DS records 
+and for RRSIG and DNS Public Key (DNSKEY) records <span>[<a href="#RFC4034" class="cite xref">RFC4034</a>]</span>.
+Operators are encouraged to consider switching to one of the recommended algorithms 
+listed in the "DNS Security Algorithm
+   Numbers" <span>[<a href="#DNSKEY-IANA" class="cite xref">DNSKEY-IANA</a>]</span> and "DNS Security Algorithm
+   Numbers" <span>[<a href="#DS-IANA" class="cite xref">DS-IANA</a>]</span> registries, respectively.
+Further, support for validating SHA-1-based signatures has been
+removed from some systems. As a result, SHA-1 as part of a signature algorithm 
+is no longer fully interoperable
+in the context of DNSSEC. As adequate alternatives exist, the use of SHA-1 is
+no longer advisable.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">This document thus deprecates the use of RSASHA1 and
+RSASHA1-NSEC3-SHA1 for DNS Security Algorithms.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<div id="requirements-notation">
+<section id="section-1.1">
+        <h3 id="name-requirements-notation">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-requirements-notation" class="section-name selfRef">Requirements Notation</a>
+        </h3>
+<p id="section-1.1-1">
+    The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+    "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+    described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> 
+    when, and only when, they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="deprecating-sha-1-from-dnssec-signatures-and-delegation-rrs">
+<section id="section-2">
+      <h2 id="name-deprecating-sha-1-from-dnss">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-deprecating-sha-1-from-dnss" class="section-name selfRef">Deprecating SHA-1 from DNSSEC Signatures and Delegation RRs</a>
+      </h2>
+<p id="section-2-1">The RSASHA1 <span>[<a href="#RFC4034" class="cite xref">RFC4034</a>]</span> and RSASHA1-NSEC3-SHA1 <span>[<a href="#RFC5155" class="cite xref">RFC5155</a>]</span> algorithms <span class="bcp14">MUST NOT</span>
+be used when creating DS records.  Operators of validating resolvers <span class="bcp14">MUST</span> treat RSASHA1
+and RSASHA1-NSEC3-SHA1 DS records as insecure.  If no other DS records of
+accepted cryptographic algorithms are available, the DNS records below the
+delegation point <span class="bcp14">MUST</span> be treated as insecure.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">The RSASHA1 <span>[<a href="#RFC4034" class="cite xref">RFC4034</a>]</span> and RSASHA1-NSEC3-SHA1 <span>[<a href="#RFC5155" class="cite xref">RFC5155</a>]</span> algorithms <span class="bcp14">MUST NOT</span> be
+used when creating DNSKEY and RRSIG records.  Validating resolver implementations
+(<span>[<a href="#RFC9499" class="cite xref">RFC9499</a>], <a href="https://rfc-editor.org/rfc/rfc9499#section-10" class="relref">Section 10</a></span>) <span class="bcp14">MUST</span> continue to support validation using these
+algorithms as they are diminishing in use but still actively in use for some
+domains as of this publication. Operators of validating resolvers <span class="bcp14">MUST</span> treat DNSSEC signing algorithms RSASHA1 and RSASHA1-NSEC3-SHA1 as unsupported, rendering responses insecure if they cannot be validated by other supported signing algorithms.<a href="#section-2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-3">
+      <h2 id="name-security-considerations">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-3-1">This document deprecates the use of RSASHA1 and RSASHA1-NSEC3-SHA1 for
+DNSSEC delegation and DNSSEC signing since these algorithms are no
+longer considered to be secure.<a href="#section-3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="operational-considerations">
+<section id="section-4">
+      <h2 id="name-operational-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-operational-considerations" class="section-name selfRef">Operational Considerations</a>
+      </h2>
+<p id="section-4-1">Zone owners currently making use of SHA-1-based algorithms should
+immediately switch to algorithms with stronger cryptographic algorithms,
+such as the recommended algorithms in the IANA registries <span>[<a href="#DNSKEY-IANA" class="cite xref">DNSKEY-IANA</a>]</span> <span>[<a href="#DS-IANA" class="cite xref">DS-IANA</a>]</span>.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">Operators should take care when deploying software packages and
+operating systems that may have already removed support for the SHA-1
+algorithm.  In these situations, software may need to be manually built
+and deployed by an operator to continue supporting the required levels
+indicated by the "Use for DNSSEC Validation" and "Implement for DNSSEC
+Validation" columns, which this document is not changing.<a href="#section-4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-5">
+      <h2 id="name-iana-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-5-1">IANA has updated the SHA-1 (1) entry in the "Digest Algorithms" registry <span>[<a href="#DS-IANA" class="cite xref">DS-IANA</a>]</span> <span>[<a href="#RFC9904" class="cite xref">RFC9904</a>]</span> as follows and has added this document as a reference for the entry:<a href="#section-5-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-5-2">
+        <dt id="section-5-2.1">Value:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.2"> 1<a href="#section-5-2.2" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.3"> Description:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.4"> SHA-1<a href="#section-5-2.4" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.5"> Use for DNSSEC Delegation:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.6">
+          <span class="bcp14">MUST NOT</span><a href="#section-5-2.6" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.7"> Use for DNSSEC Validation:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.8">
+          <span class="bcp14">RECOMMENDED</span><a href="#section-5-2.8" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.9"> Implement for DNSSEC Delegation:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.10">
+          <span class="bcp14">MUST NOT</span><a href="#section-5-2.10" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-2.11"> Implement for DNSSEC Validation:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-2.12">
+          <span class="bcp14">MUST</span><a href="#section-5-2.12" class="pilcrow">¶</a>
+</dd>
+      <dd class="break"></dd>
+</dl>
+<p id="section-5-3">  IANA has updated the RSASHA1 (5) and RSASHA1-NSEC3-SHA1 (7)
+  algorithm entries in the "DNS Security Algorithm Numbers" registry
+  <span>[<a href="#DNSKEY-IANA" class="cite xref">DNSKEY-IANA</a>]</span> <span>[<a href="#RFC9904" class="cite xref">RFC9904</a>]</span> as follows and has added this document as a
+  reference for the entries:<a href="#section-5-3" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-5-4">
+        <dt id="section-5-4.1"> Number:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-4.2"> 5<a href="#section-5-4.2" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-4.3">Description:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-4.4"> RSA/SHA-1<a href="#section-5-4.4" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-4.5">Mnemonic:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-4.6"> RSASHA1<a href="#section-5-4.6" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-4.7">Zone Signing:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-4.8"> Y<a href="#section-5-4.8" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-4.9">Trans. Sec.:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-4.10"> Y<a href="#section-5-4.10" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-4.11">Use for DNSSEC Signing:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-4.12">
+          <span class="bcp14">MUST NOT</span><a href="#section-5-4.12" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-4.13">Use for DNSSEC Validation:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-4.14">
+          <span class="bcp14">RECOMMENDED</span><a href="#section-5-4.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-4.15">Implement for DNSSEC Signing:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-4.16">
+          <span class="bcp14">NOT RECOMMENDED</span><a href="#section-5-4.16" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-4.17">Implement for DNSSEC Validation:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-4.18">
+          <span class="bcp14">MUST</span><a href="#section-5-4.18" class="pilcrow">¶</a>
+</dd>
+      <dd class="break"></dd>
+</dl>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-5-5">
+        <dt id="section-5-5.1">Number:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-5.2"> 7<a href="#section-5-5.2" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-5.3"> Description:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-5.4"> RSASHA1-NSEC3-SHA1<a href="#section-5-5.4" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-5.5">Mnemonic:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-5.6"> RSASHA1-NSEC3-SHA1<a href="#section-5-5.6" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-5.7">Zone Signing: </dt>
+        <dd style="margin-left: 1.5em" id="section-5-5.8">Y<a href="#section-5-5.8" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-5.9">Trans. Sec.:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-5.10"> Y<a href="#section-5-5.10" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-5.11">Use for DNSSEC Signing:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-5.12">
+          <span class="bcp14">MUST NOT</span><a href="#section-5-5.12" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-5.13">Use for DNSSEC Validation:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-5.14">
+          <span class="bcp14">RECOMMENDED</span><a href="#section-5-5.14" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-5.15">Implement for DNSSEC Signing:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-5.16">
+          <span class="bcp14">NOT RECOMMENDED</span><a href="#section-5-5.16" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-5-5.17">Implement for DNSSEC Validation:</dt>
+        <dd style="margin-left: 1.5em" id="section-5-5.18">
+          <span class="bcp14">MUST</span><a href="#section-5-5.18" class="pilcrow">¶</a>
+</dd>
+      <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-normative-references">
+<section id="section-6">
+      <h2 id="name-normative-references">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+      </h2>
+<dl class="references">
+<dt id="DNSKEY-IANA">[DNSKEY-IANA]</dt>
+      <dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"DNS Security Algorithm Numbers"</span>, <span>&lt;<a href="https://www.iana.org/assignments/dns-sec-alg-numbers">https://www.iana.org/assignments/dns-sec-alg-numbers</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="DS-IANA">[DS-IANA]</dt>
+      <dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"Digest Algorithms"</span>, <span>&lt;<a href="http://www.iana.org/assignments/ds-rr-types">http://www.iana.org/assignments/ds-rr-types</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+      <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3110">[RFC3110]</dt>
+      <dd>
+<span class="refAuthor">Eastlake 3rd, D.</span>, <span class="refTitle">"RSA/SHA-1 SIGs and RSA KEYs in the Domain Name System (DNS)"</span>, <span class="seriesInfo">RFC 3110</span>, <span class="seriesInfo">DOI 10.17487/RFC3110</span>, <time datetime="2001-05" class="refDate">May 2001</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc3110">https://www.rfc-editor.org/info/rfc3110</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3174">[RFC3174]</dt>
+      <dd>
+<span class="refAuthor">Eastlake 3rd, D.</span> and <span class="refAuthor">P. Jones</span>, <span class="refTitle">"US Secure Hash Algorithm 1 (SHA1)"</span>, <span class="seriesInfo">RFC 3174</span>, <span class="seriesInfo">DOI 10.17487/RFC3174</span>, <time datetime="2001-09" class="refDate">September 2001</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc3174">https://www.rfc-editor.org/info/rfc3174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4034">[RFC4034]</dt>
+      <dd>
+<span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Austein, R.</span>, <span class="refAuthor">Larson, M.</span>, <span class="refAuthor">Massey, D.</span>, and <span class="refAuthor">S. Rose</span>, <span class="refTitle">"Resource Records for the DNS Security Extensions"</span>, <span class="seriesInfo">RFC 4034</span>, <span class="seriesInfo">DOI 10.17487/RFC4034</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4034">https://www.rfc-editor.org/info/rfc4034</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5155">[RFC5155]</dt>
+      <dd>
+<span class="refAuthor">Laurie, B.</span>, <span class="refAuthor">Sisson, G.</span>, <span class="refAuthor">Arends, R.</span>, and <span class="refAuthor">D. Blacka</span>, <span class="refTitle">"DNS Security (DNSSEC) Hashed Authenticated Denial of Existence"</span>, <span class="seriesInfo">RFC 5155</span>, <span class="seriesInfo">DOI 10.17487/RFC5155</span>, <time datetime="2008-03" class="refDate">March 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5155">https://www.rfc-editor.org/info/rfc5155</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+      <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9364">[RFC9364]</dt>
+      <dd>
+<span class="refAuthor">Hoffman, P.</span>, <span class="refTitle">"DNS Security Extensions (DNSSEC)"</span>, <span class="seriesInfo">BCP 237</span>, <span class="seriesInfo">RFC 9364</span>, <span class="seriesInfo">DOI 10.17487/RFC9364</span>, <time datetime="2023-02" class="refDate">February 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9364">https://www.rfc-editor.org/info/rfc9364</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9499">[RFC9499]</dt>
+      <dd>
+<span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">K. Fujiwara</span>, <span class="refTitle">"DNS Terminology"</span>, <span class="seriesInfo">BCP 219</span>, <span class="seriesInfo">RFC 9499</span>, <span class="seriesInfo">DOI 10.17487/RFC9499</span>, <time datetime="2024-03" class="refDate">March 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9499">https://www.rfc-editor.org/info/rfc9499</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9904">[RFC9904]</dt>
+    <dd>
+<span class="refAuthor">Hardaker, W.</span> and <span class="refAuthor">W. Kumari</span>, <span class="refTitle">"DNSSEC Cryptographic Algorithm Recommendation Update Process"</span>, <span class="seriesInfo">RFC 9904</span>, <span class="seriesInfo">DOI 10.17487/RFC9904</span>, <time datetime="2025-11" class="refDate">November 2025</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9904">https://www.rfc-editor.org/info/rfc9904</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-A-1">The authors appreciate the comments and suggestions from the
+      following IETF participants in helping produce this document: <span class="contact-name">Mark Andrews</span>, <span class="contact-name">Steve Crocker</span>, <span class="contact-name">Peter Dickson</span>, <span class="contact-name">Thomas Graf</span>, <span class="contact-name">Paul Hoffman</span>, <span class="contact-name">Russ Housley</span>, <span class="contact-name">Shumon Huque</span>, <span class="contact-name">Barry Leiba</span>, <span class="contact-name">S. Moonesamy</span>, <span class="contact-name">Yoav Nir</span>, <span class="contact-name">Florian Obser</span>, <span class="contact-name">Peter Thomassen</span>,
+      <span class="contact-name">Stefan Ubbink</span>, <span class="contact-name">Paul Wouters</span>,
+      <span class="contact-name">Tim Wicinski</span>, and the many members of the DNSOP
+      Working Group that discussed this specification.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Wes Hardaker</span></div>
+<div dir="auto" class="left"><span class="org">USC/ISI</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:ietf@hardakers.net" class="email">ietf@hardakers.net</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Warren Kumari</span></div>
+<div dir="auto" class="left"><span class="org">Google</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:warren@kumari.net" class="email">warren@kumari.net</a>
+</div>
+</address>
+</section>
+</div>
+</div>
+
+                    </div>
+                
+            </div>
+            <div class="d-print-none col-md-3 bg-light-subtle collapse show" id="sidebar">
+                <div class="position-fixed border-start sidebar overflow-scroll overscroll-none no-scrollbar">
+                    <div class="d-flex flex-column vh-100 pt-2 pt-lg-3 ps-3 pl-md-2 pl-lg-3">
+                        <div>
+                            <a class="btn btn-primary btn-sm" href="/doc/rfc9905/">Datatracker</a>
+                            <p class="fw-bold pt-2">
+                                
+                                    RFC 9905
+                                
+                                <br>
+                                
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Proposed Standard
+    
+</span>
+
+                            </p>
+                        </div>
+                        
+                        <ul class="nav nav-tabs nav-fill small me-2" role="tablist">
+                            <li class="nav-item" role="presentation" title="Document information">
+                                <button class="nav-link px-2"
+                                        id="docinfo-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#docinfo-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="docinfo-tab-pane"
+                                        aria-selected="true">
+                                    <i class="bi bi-info-circle"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Info</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation" title="Table of contents">
+                                <button class="nav-link px-2"
+                                        id="toc-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#toc-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="toc-tab-pane"
+                                        aria-selected="false">
+                                    <i class="bi bi-list-ol"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Contents</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation" title="Preferences">
+                                <button class="nav-link px-2"
+                                        id="pref-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#pref-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="pref-tab-pane"
+                                        aria-selected="false">
+                                    <i class="bi bi-gear"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Prefs</span>
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="overflow-auto tab-content pt-2 me-2">
+                            <div class="tab-pane"
+                                 id="docinfo-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="docinfo-tab"
+                                 tabindex="0">
+                                <table class="table table-sm table-borderless">
+                                    
+
+
+
+
+
+
+
+<tbody class="meta align-top ">
+    <tr>
+        <th scope="row">Document</th>
+        <th scope="row">Document type</th>
+        <td class="edit"></td>
+        <td>
+            
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Proposed Standard
+    
+</span>
+
+            
+                
+                    <br>November 2025
+                
+                <br>
+                
+                
+                    <a class="btn btn-sm btn-warning"
+                       title="Click to report an error in the document."
+                       href="https://www.rfc-editor.org/errata.php#reportnew"
+                       target="_blank">
+                        Report errata
+                    </a>
+                
+                
+                
+                
+                
+                <div>Updates <a href="/doc/html/rfc4034" title="Resource Records for the DNS Security Extensions">RFC 4034</a>, <a href="/doc/html/rfc5155" title="DNS Security (DNSSEC) Hashed Authenticated Denial of Existence">RFC 5155</a></div>
+                
+                
+                
+                    <div>
+                        Was
+                        <a href="/doc/draft-ietf-dnsop-must-not-sha1/10/">draft-ietf-dnsop-must-not-sha1</a>
+                        (<a href="/wg/dnsop/about/">dnsop WG</a>)
+                    </div>
+                
+            
+            
+            
+                
+
+
+
+
+    
+
+
+            
+        </td>
+    </tr>
+    
+        <tr>
+            <td></td>
+            <th scope="row">Select version</th>
+            <td class="edit"></td>
+            <td>
+                
+
+
+
+    <ul class="revision-list pagination pagination-sm text-center flex-wrap my-0">
+        
+            
+            
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-00"
+                        rel="nofollow">
+                            00
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-01"
+                        rel="nofollow">
+                            01
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-02"
+                        rel="nofollow">
+                            02
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-03"
+                        rel="nofollow">
+                            03
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-04"
+                        rel="nofollow">
+                            04
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-05"
+                        rel="nofollow">
+                            05
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-06"
+                        rel="nofollow">
+                            06
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-07"
+                        rel="nofollow">
+                            07
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-08"
+                        rel="nofollow">
+                            08
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-09"
+                        rel="nofollow">
+                            09
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-must-not-sha1-10"
+                        rel="nofollow">
+                            10
+                        </a>
+                    </li>
+                
+            
+            
+            <li class="page-item rfc active">
+                <a class="page-link"
+                href="/doc/html/rfc9905">
+                    RFC 9905
+                </a>
+            </li>
+        
+    </ul>
+
+            </td>
+        </tr>
+        
+            <tr>
+                <td></td>
+                <th scope="row">Compare versions</th>
+                <td class="edit"></td>
+                <td>
+                    
+
+
+
+<form class="form-horizontal diff-form"
+      action="https://author-tools.ietf.org/iddiff"
+      method="get"
+      target="_blank">
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="From revision"
+                    name="url1">
+                
+                    <option value="rfc9905">
+                        RFC 9905
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-10" selected>
+                        draft-ietf-dnsop-must-not-sha1-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-09">
+                        draft-ietf-dnsop-must-not-sha1-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-08">
+                        draft-ietf-dnsop-must-not-sha1-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-07">
+                        draft-ietf-dnsop-must-not-sha1-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-06">
+                        draft-ietf-dnsop-must-not-sha1-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-05">
+                        draft-ietf-dnsop-must-not-sha1-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-04">
+                        draft-ietf-dnsop-must-not-sha1-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-03">
+                        draft-ietf-dnsop-must-not-sha1-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-02">
+                        draft-ietf-dnsop-must-not-sha1-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-01">
+                        draft-ietf-dnsop-must-not-sha1-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-00">
+                        draft-ietf-dnsop-must-not-sha1-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="To revision"
+                    name="url2">
+                
+                    <option value="rfc9905" selected>
+                        RFC 9905
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-10">
+                        draft-ietf-dnsop-must-not-sha1-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-09">
+                        draft-ietf-dnsop-must-not-sha1-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-08">
+                        draft-ietf-dnsop-must-not-sha1-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-07">
+                        draft-ietf-dnsop-must-not-sha1-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-06">
+                        draft-ietf-dnsop-must-not-sha1-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-05">
+                        draft-ietf-dnsop-must-not-sha1-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-04">
+                        draft-ietf-dnsop-must-not-sha1-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-03">
+                        draft-ietf-dnsop-must-not-sha1-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-02">
+                        draft-ietf-dnsop-must-not-sha1-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-01">
+                        draft-ietf-dnsop-must-not-sha1-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-must-not-sha1-00">
+                        draft-ietf-dnsop-must-not-sha1-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--html"
+                    name="difftype">
+                Side-by-side
+            </button>
+            
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--hwdiff"
+                    name="difftype">
+                Inline
+            </button>
+
+
+</form>
+
+                </td>
+            </tr>
+        
+    
+    <tr>
+        <td></td>
+        <th scope="row">Authors</th>
+        <td class="edit">
+            
+        </td>
+        <td>
+            
+            
+                <span ><a 
+           title="Datatracker profile of Wes Hardaker"
+            href="/person/wjhns1@hardakers.net" >W. Hardaker</a> <a 
+               href="mailto:wjhns1%40hardakers.net"
+               aria-label="Compose email to wjhns1@hardakers.net"
+               title="Compose email to wjhns1@hardakers.net">
+                <i class="bi bi-envelope"></i></a></span>,
+            
+                <span ><a 
+           title="Datatracker profile of Warren Kumari"
+            href="/person/warren@kumari.net" >W. Kumari</a> <a 
+               href="mailto:warren%40kumari.net"
+               aria-label="Compose email to warren@kumari.net"
+               title="Compose email to warren@kumari.net">
+                <i class="bi bi-envelope"></i></a></span>
+            
+            
+                <br>
+                <a class="btn btn-primary btn-sm mt-1" href="mailto:rfc9905@ietf.org?subject=rfc9905" title="Send email to the document authors">Email authors</a>
+            
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            RFC stream
+        </th>
+        <td class="edit">
+            
+        </td>
+        <td >
+            
+                
+                
+                    
+                        
+
+
+
+<img alt="IETF Logo"
+     class="d-lm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-white.svg"
+        
+     
+     >
+
+<img alt="IETF Logo"
+     class="d-dm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor.svg"
+        
+     
+     >
+                    
+                
+                
+            
+        </td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            Other formats
+        </th>
+        <td class="edit">
+        </td>
+        <td>
+            
+                
+    <div class="buttonlist">
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9905.txt">
+            
+                <i class="bi bi-file-text"></i> txt
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9905.html">
+            
+                <i class="bi bi-file-code"></i> html
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9905.xml">
+            
+                <i class="bi bi-file-code"></i> xml
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+            download="rfc9905.pdf"
+          
+         
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9905.pdf">
+            
+                <i class="bi bi-file-pdf"></i> pdf
+            
+        </a>
+        
+    
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/rfc9905/bibtex/">
+            
+                <i class="bi bi-file-ruled"></i> bibtex
+            
+        </a>
+        
+    
+</div>
+
+            
+        </td>
+    </tr>
+    
+    
+        
+            <tr>
+                <td>
+                </td>
+                <th scope="row">
+                    Additional resources
+                </th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                        
+                            
+                                <a href="https://mailarchive.ietf.org/arch/browse/dnsop/?q=rfc9905 OR %22draft-ietf-dnsop-must-not-sha1%22">
+                                    Mailing list discussion
+                                </a>
+                            
+                        
+                    
+                </td>
+            </tr>
+        
+    
+</tbody>
+                                </table>
+                                <a class="btn btn-sm btn-warning mb-3"
+                                target="_blank"
+                                href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+                                    Report a datatracker bug
+                                    <i class="bi bi-bug"></i>
+                                </a>
+                            </div>
+                            <div class="tab-pane mb-5"
+                                 id="toc-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="toc-tab"
+                                 tabindex="0">
+                                <nav class="nav nav-pills flex-column small" id="toc-nav">
+                                </nav>
+                            </div>
+                            <div class="tab-pane mb-5 small"
+                                 id="pref-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="pref-tab"
+                                 tabindex="0">
+                                <label class="form-label fw-bold mb-2">Show sidebar by default</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="sidebar" id="on-radio">
+                                    <label class="btn btn-outline-primary" for="on-radio">Yes</label>
+                                    <input type="radio" class="btn-check" name="sidebar" id="off-radio">
+                                    <label class="btn btn-outline-primary" for="off-radio">No</label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">Tab to show by default</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="deftab" id="docinfo-radio">
+                                    <label class="btn btn-outline-primary" for="docinfo-radio">
+                                        <i class="bi bi-info-circle me-1"></i>Info
+                                    </label>
+                                    <input type="radio" class="btn-check" name="deftab" id="toc-radio">
+                                    <label class="btn btn-outline-primary" for="toc-radio">
+                                        <i class="bi bi-list-ol me-1"></i>Contents
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">HTMLization configuration</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="htmlconf" id="txt-radio">
+                                    <label class="btn btn-outline-primary" for="txt-radio" title="This is the traditional HTMLization method.">
+                                        <i class="bi bi-badge-sd me-1"></i>HTMLize the plaintext
+                                    </label>
+                                    <input type="radio" class="btn-check" name="htmlconf" id="html-radio">
+                                    <label class="btn btn-outline-primary" for="html-radio" title="This is the modern HTMLization method.">
+                                        <i class="bi bi-badge-hd me-1"></i>Plaintextify the HTML
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2" for="ptsize">Maximum font size</label>
+                                <input type="range" class="form-range" min="7" max="16" id="ptsize" oninput="ptdemo.value = ptsize.value">
+                                <label class="form-label fw-bold mt-4 mb-2">Page dependencies</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="pagedeps" id="inline-radio">
+                                    <label class="btn btn-outline-primary" for="inline-radio" title="Generate larger, standalone web pages that do not require network access to render.">
+                                        <i class="bi bi-box me-1"></i>Inline
+                                    </label>
+                                    <input type="radio" class="btn-check" name="pagedeps" id="reference-radio">
+                                    <label class="btn btn-outline-primary" for="reference-radio" title="Generate regular web pages that require network access to render.">
+                                        <i class="bi bi-link-45deg me-1"></i>Reference
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">Citation links</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="reflinks" id="refsection-radio">
+                                    <label class="btn btn-outline-primary" for="refsection-radio" title="Citation links go to the reference section.">
+                                        <i class="bi bi-arrow-clockwise"></i> Go to reference section
+                                    </label>
+                                    <input type="radio" class="btn-check" name="reflinks" id="citation-radio">
+                                    <label class="btn btn-outline-primary" for="citation-radio" title="Citation links go directly to the cited document.">
+                                        <i class="bi bi-link-45deg me-1"></i>Go to linked document
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+<script>
+  var _paq = window._paq || [];
+  
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.ietf.org/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', 7]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//analytics.ietf.org/matomo.php?idsite=7" style="border:0;" alt="" /></p></noscript>
+
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4ef4d3d4f20db6f',t:'MTc5Mjc0MzQwOA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

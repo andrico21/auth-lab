@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-independent-seventh-mixed-path-policy-audit",
+  "independence": {
+    "applicationSourceRead": false,
+    "testsRead": false,
+    "productionContractEvaluatorRead": false,
+    "productionDiagnosticsRead": false,
+    "productionEvaluatorExecuted": false,
+    "expectedStatesDerivedFromApplicationOutput": false,
+    "osSandboxEnforcementClaimed": false
+  },
+  "consultedFiles": [
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-review-corrections/worksheet-resolution.json",
+      "bytes": 5664817,
+      "sha256": "9d2380b4e6a43a9a9082f1c516ff50534f3439b79c61e7925aec045ad9c99b19"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-review-corrections/worksheet-publication.json",
+      "bytes": 1136165,
+      "sha256": "2db1cb1e0a22e38f037fb76e5d565e2ffb1928db56c0fd92feb28458b31f2938"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-review-corrections/worksheet.json",
+      "bytes": 6723137,
+      "sha256": "c0312c6841e141b50bde40d91baf6d376f6d2b33523c0d98c262c2a0d1a4e8a2"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-review-corrections/contract-addendum.json",
+      "bytes": 8810,
+      "sha256": "107da17168b011654451c7d7156d65d72f2e90691f34d46fff4395980503b488"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-freeze.json",
+      "bytes": 68646,
+      "sha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19"
+    },
+    {
+      "path": "docs/dnssec-expansion/inputs/dnssec-review-and-worker-comments.html",
+      "bytes": 68765,
+      "sha256": "ece30d331ef1072e00f6ef8ca871da68794b9598f315d84d0423578058f45e26"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+      "bytes": 49823,
+      "sha256": "17298b31bd88cb5e3215d003e7a255aa179609caee1d8a62cb9d3b56621576db"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/publication/algorithm-policy-snapshot.json",
+      "bytes": 31366,
+      "sha256": "2ae14b5af691ab074a2975a1cc076a3169d7d7d385ba082b35b4cacf2b65a1e9"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/update-rfc9905.txt",
+      "bytes": 9850,
+      "sha256": "cdd32cd9123cc316a71d15c09c9f09b162eb9bfa9d1d18b1f6be45a765f78fb3"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/update-rfc9906.txt",
+      "bytes": 8686,
+      "sha256": "c793eca1cc8c87f1537fed174956340cc87881eac9e2fa20468c0b682c79258f"
+    },
+    {
+      "path": "tools/verification/apply-dnssec-review-corrections-errata.mjs",
+      "bytes": 8700,
+      "sha256": "6fc995446d01d7b65f0b7b6c02a17ae1e4106f9059277e00895c7688fd1e9f72"
+    }
+  ],
+  "authority": {
+    "scope": "Explicit finite illustrated implementation/operator specification, not registry-inferred installed-engine ability or production observation. Captured selectedProfile is broader than this deliberately finite illustrated model; RFC9905/RFC9906 deprecation constraints apply independently.",
+    "specification": {
+      "implementationValidationAlgorithms": [
+        5,
+        7,
+        13,
+        15
+      ],
+      "implementationDsDigestTypes": [
+        1,
+        2,
+        4
+      ],
+      "operatorAcceptedSigningAlgorithms": [
+        13,
+        15
+      ],
+      "operatorAcceptedDsDigestTypes": [
+        2,
+        4
+      ],
+      "publisherSigningAlgorithms": [
+        13,
+        15
+      ],
+      "fixtureValidationAlgorithms": [
+        13,
+        15
+      ]
+    },
+    "rawFixtureRecords": [
+      {
+        "algorithm": 13,
+        "digestType": 2,
+        "classification": "accepted-modern-path",
+        "failedDimensions": []
+      },
+      {
+        "algorithm": 5,
+        "digestType": 2,
+        "classification": "excluded-path",
+        "failedDimensions": [
+          "operator-policy"
+        ]
+      },
+      {
+        "algorithm": 12,
+        "digestType": 3,
+        "classification": "excluded-path",
+        "failedDimensions": [
+          "implementation-capability",
+          "operator-policy",
+          "digest-capability",
+          "digest-policy"
+        ]
+      }
+    ],
+    "aggregation": "rejectedPaths excludes usable13/2, retains every failed dimension for each rejected DS. unsupportedReasons is deduplicated union in explicit dimension order. A union with multiple causes has unsupportedReason multiple-path-constraints; one cause retains its exact label; accepted alternatives do not lose security because rejected extras exist.",
+    "nonAssertions": "Parent signed DS envelope does not prove an opaque archival5/2 or12/3 payload matches a supplied legacy DNSKEY or RRSIG. Do not claim such mathematical paths were verified.",
+    "primaryExplanation": {
+      "precedence": [
+        "implementation-capability",
+        "digest-capability",
+        "operator-policy",
+        "digest-policy"
+      ],
+      "aggregateRule": "unsupportedReason is the sole common primaryReason if all rejected paths share it, otherwise multiple-path-constraints; unsupportedReasons still includes every failed dimension.",
+      "scope": "Explicit source/display specification agreed with integration owner; not an RFC requirement or observed production evaluation order."
+    },
+    "singularControls": {
+      "sha1-only": "primary operator-policy; implementation declaration includes5/7",
+      "unsupported17-only": "primary implementation-capability; operator exclusion can coexist in all-reasons metadata",
+      "digest250-only": "primary digest-capability; digest policy exclusion can coexist in all-reasons metadata"
+    }
+  },
+  "sourceAssessment": {
+    "rawDsEnvelope": "parent-ds-modern-obsolete in post-freeze-completion/parent-signing/parent-signing-fixtures.json contains13/2,5/2,12/3, authenticated under example-zsk-g1 signature; public records and signature are unchanged.",
+    "RFC9905": "Continued implementation support5/7 is distinct from operator treating them unsupported.",
+    "RFC9906": "Algorithm12 and DS digest3 have MUST NOT use/implement columns; unsupported alternatives do not invalidate other accepted algorithms.",
+    "capabilityDistinction": "Explicit illustrated declaration excludes algorithm12 and digest3, independently of their policy exclusion. Opaque payload presence is not claimed mathematical legacy-path verification.",
+    "sixthDisagreement": "Sixth mixed-case single operator-policy label describes5/2 but omits independent capability failures12/3. Correct additively, not by mutating sixth."
+  },
+  "patches": 3,
+  "preserved": [
+    "All354 original frozen inputs",
+    "All six prior worksheet/addendum layers",
+    "All22 lessons/159 named case IDs/defaults/outcomes",
+    "Every existing public numerical tuple and signed parent DS envelope",
+    "Sixth R01/R03/R05 corrections and explicit implementation/operator/fixture dimensions",
+    "SHA1-only,unsupported17-only,digest250-only primary explanations",
+    "No acceptance, native/live, G01 or performance waiver"
+  ],
+  "execution": "No application or independent numeric producer/verifier executed for this seventh input clarification. Parent applies transforms/gates."
+}

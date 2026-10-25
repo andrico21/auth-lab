@@ -1,0 +1,2198 @@
+
+<!DOCTYPE html>
+
+
+
+
+
+
+
+<html data-bs-theme="auto" lang="en">
+    <head>
+        
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>
+            
+                RFC 9276 - Guidance for NSEC3 Parameter Settings
+            
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://static.ietf.org/fonts/inter/import.css" rel="stylesheet">
+        <link href="https://static.ietf.org/fonts/noto-sans-mono/import.css" rel="stylesheet">
+        
+            <link rel="stylesheet" href="https://static.ietf.org/dt/12.82.1/ietf/css/document_html_referenced.css">
+            
+                <link rel="stylesheet" href="https://static.ietf.org/dt/12.82.1/ietf/css/document_html_txt.css">
+            
+            <script type="module" crossorigin="" src="https://static.ietf.org/dt/12.82.1/assets/embedded-73a0c4fc.js"></script>
+<link href="https://static.ietf.org/dt/12.82.1/assets/create-pinia-singleton-03577dc2.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+<link href="https://static.ietf.org/dt/12.82.1/assets/Scrollbar-3f2fb773.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+            <script src="https://static.ietf.org/dt/12.82.1/ietf/js/document_html.js"></script>
+            <script src="https://static.ietf.org/dt/12.82.1/ietf/js/theme.js"></script>
+        
+        <link rel="alternate" type="application/atom+xml" title="Document changes" href="/feed/document-changes/rfc9276/">
+        <meta name="description"
+            
+                content="Guidance for NSEC3 Parameter Settings (RFC 9276, )"
+            >
+        
+
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-180.png">
+<link rel="icon"
+      sizes="32x32"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-32.png">
+<link rel="icon"
+      sizes="16x16"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-mask.svg"
+      color="#ffffff">
+<meta name="msapplication-TileColor"
+      content="#ffffff">
+<meta name="theme-color"
+      content="#ffffff">
+        
+
+
+
+
+<meta property="og:title" content="RFC 9276: Guidance for NSEC3 Parameter Settings">
+<meta property="og:url" content="https://datatracker.ietf.org/doc/html/rfc9276">
+
+
+<link rel="canonical" href="https://www.rfc-editor.org/info/rfc9276/">
+
+<meta property="og:site_name" content="IETF Datatracker">
+<meta property="og:description" content="NSEC3 is a DNSSEC mechanism providing proof of nonexistence by asserting that there are no names that exist between two domain names within a zone. Unlike its counterpart NSEC, NSEC3 avoids directly disclosing the bounding domain name pairs. This document provides guidance on setting NSEC3 parameters based on recent operational deployment experience. This document updates RFC 5155 with guidance about selecting NSEC3 iteration and salt parameters.">
+<meta property="og:type" content="article">
+
+<meta property="og:image" content="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-card.png">
+<meta property="og:image:alt" content="Logo of the IETF">
+<meta property="article:section" content="IETF - Internet Engineering Task Force">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<meta property="article:author" content="Wes Hardaker">
+<meta property="article:author" content="Viktor Dukhovni">
+
+
+
+        
+        <style>
+            
+            .diff-form .select2-selection__rendered {
+                direction: rtl;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <noscript><iframe class="status" title="Site status" src="/status/latest"></iframe></noscript>
+<div class="vue-embed" data-component="Status"></div>
+        <div class="btn-toolbar sidebar-toolbar position-fixed top-0 end-0 m-2 m-lg-3 d-print-none">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary btn-sm me-1 dropdown-toggle d-flex align-items-center"
+                    id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+                    aria-label="Toggle theme">
+                        <i class="theme-icon-active bi bi-circle-half"></i>
+                </button>
+
+                <ul class="dropdown-menu" aria-labelledby="bd-theme">
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center"
+                            data-bs-theme-value="light" aria-pressed="false">
+                            <i class="me-2 opacity-50 theme-icon bi bi-sun-fill"></i>
+                            Light<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center"
+                            data-bs-theme-value="dark" aria-pressed="false">
+                            <i class="me-2 opacity-50 theme-icon bi bi-moon-stars-fill"></i>
+                            Dark<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center active"
+                            data-bs-theme-value="auto" aria-pressed="true">
+                            <i class="me-2 opacity-50 theme-icon bi bi-circle-half"></i>
+                            Auto<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm sidebar-toggle"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#sidebar"
+                    aria-expanded="true"
+                    aria-controls="sidebar"
+                    aria-label="Toggle metadata sidebar"
+                    title="Toggle metadata sidebar">
+            <i class="bi bi-arrow-bar-left sidebar-shown"></i>
+            <i class="bi bi-arrow-bar-right sidebar-collapsed"></i>
+            </button>
+        </div>
+        <nav class="navbar bg-light-subtle px-1 fixed-top d-print-none d-md-none">
+            <a class="nav-link ps-1"
+               href="/doc/rfc9276/">
+                
+                    RFC 9276
+                
+                <br class="d-sm-none">
+
+                <span class="ms-sm-3 badge rounded-pill badge-bcp">
+                    
+                        Best Current Practice
+                    
+                </span>
+            </a>
+            <button class="navbar-toggler p-1"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#docinfo-collapse"
+                    aria-controls="docinfo-collapse"
+                    aria-expanded="false"
+                    aria-label="Show document information">
+                <span class="navbar-toggler-icon small"></span>
+            </button>
+            <div class="navbar-nav navbar-nav-scroll overscroll-none collapse pt-1" id="docinfo-collapse">
+                <div class="bg-light-subtle p-0">
+                    <table class="table table-sm table-borderless small">
+                        <tbody class="meta align-top">
+                            <tr>
+                                <th scope="row"></th>
+                                <th scope="row">Title</th>
+                                <td class="edit"></td>
+                                <td>Guidance for NSEC3 Parameter Settings</td>
+                            </tr>
+                        </tbody>
+                        
+
+
+
+
+
+
+
+<tbody class="meta align-top ">
+    <tr>
+        <th scope="row">Document</th>
+        <th scope="row">Document type</th>
+        <td class="edit"></td>
+        <td>
+            
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Best Current Practice
+    
+</span>
+
+            
+                
+                    <br>August 2022
+                
+                <br>
+                
+                    <a class="btn btn-primary btn-sm my-1"
+                       href="https://www.rfc-editor.org/errata_search.php?rfc=9276" title="Click to view errata." rel="nofollow">
+                        View errata
+                    </a>
+                
+                
+                    <a class="btn btn-sm btn-warning"
+                       title="Click to report an error in the document."
+                       href="https://www.rfc-editor.org/errata.php#reportnew"
+                       target="_blank">
+                        Report errata
+                    </a>
+                
+                
+                
+                
+                
+                <div>Updates <a href="/doc/html/rfc5155" title="DNS Security (DNSSEC) Hashed Authenticated Denial of Existence">RFC 5155</a></div>
+                
+                
+                
+                    <div>
+                        Was
+                        <a href="/doc/draft-ietf-dnsop-nsec3-guidance/10/">draft-ietf-dnsop-nsec3-guidance</a>
+                        (<a href="/wg/dnsop/about/">dnsop WG</a>)
+                    </div>
+                
+            
+            
+            
+                
+
+
+
+
+    
+
+
+            
+        </td>
+    </tr>
+    
+        <tr>
+            <td></td>
+            <th scope="row">Select version</th>
+            <td class="edit"></td>
+            <td>
+                
+
+
+
+    <ul class="revision-list pagination pagination-sm text-center flex-wrap my-0">
+        
+            
+            
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-00"
+                        rel="nofollow">
+                            00
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-01"
+                        rel="nofollow">
+                            01
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-02"
+                        rel="nofollow">
+                            02
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-03"
+                        rel="nofollow">
+                            03
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-04"
+                        rel="nofollow">
+                            04
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-05"
+                        rel="nofollow">
+                            05
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-06"
+                        rel="nofollow">
+                            06
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-07"
+                        rel="nofollow">
+                            07
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-08"
+                        rel="nofollow">
+                            08
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-09"
+                        rel="nofollow">
+                            09
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-10"
+                        rel="nofollow">
+                            10
+                        </a>
+                    </li>
+                
+            
+            
+            <li class="page-item rfc active">
+                <a class="page-link"
+                href="/doc/html/rfc9276">
+                    RFC 9276
+                </a>
+            </li>
+        
+    </ul>
+
+            </td>
+        </tr>
+        
+            <tr>
+                <td></td>
+                <th scope="row">Compare versions</th>
+                <td class="edit"></td>
+                <td>
+                    
+
+
+
+<form class="form-horizontal diff-form"
+      action="https://author-tools.ietf.org/iddiff"
+      method="get"
+      target="_blank">
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="From revision"
+                    name="url1">
+                
+                    <option value="rfc9276">
+                        RFC 9276
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-10" selected>
+                        draft-ietf-dnsop-nsec3-guidance-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-09">
+                        draft-ietf-dnsop-nsec3-guidance-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-08">
+                        draft-ietf-dnsop-nsec3-guidance-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-07">
+                        draft-ietf-dnsop-nsec3-guidance-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-06">
+                        draft-ietf-dnsop-nsec3-guidance-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-05">
+                        draft-ietf-dnsop-nsec3-guidance-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-04">
+                        draft-ietf-dnsop-nsec3-guidance-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-03">
+                        draft-ietf-dnsop-nsec3-guidance-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-02">
+                        draft-ietf-dnsop-nsec3-guidance-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-01">
+                        draft-ietf-dnsop-nsec3-guidance-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-00">
+                        draft-ietf-dnsop-nsec3-guidance-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="To revision"
+                    name="url2">
+                
+                    <option value="rfc9276" selected>
+                        RFC 9276
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-10">
+                        draft-ietf-dnsop-nsec3-guidance-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-09">
+                        draft-ietf-dnsop-nsec3-guidance-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-08">
+                        draft-ietf-dnsop-nsec3-guidance-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-07">
+                        draft-ietf-dnsop-nsec3-guidance-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-06">
+                        draft-ietf-dnsop-nsec3-guidance-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-05">
+                        draft-ietf-dnsop-nsec3-guidance-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-04">
+                        draft-ietf-dnsop-nsec3-guidance-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-03">
+                        draft-ietf-dnsop-nsec3-guidance-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-02">
+                        draft-ietf-dnsop-nsec3-guidance-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-01">
+                        draft-ietf-dnsop-nsec3-guidance-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-00">
+                        draft-ietf-dnsop-nsec3-guidance-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--html"
+                    name="difftype">
+                Side-by-side
+            </button>
+            
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--hwdiff"
+                    name="difftype">
+                Inline
+            </button>
+
+
+</form>
+
+                </td>
+            </tr>
+        
+    
+    <tr>
+        <td></td>
+        <th scope="row">Authors</th>
+        <td class="edit">
+            
+        </td>
+        <td>
+            
+            
+                <span ><a 
+           title="Datatracker profile of Wes Hardaker"
+            href="/person/wjhns1@hardakers.net" >W. Hardaker</a> <a 
+               href="mailto:wjhns1%40hardakers.net"
+               aria-label="Compose email to wjhns1@hardakers.net"
+               title="Compose email to wjhns1@hardakers.net">
+                <i class="bi bi-envelope"></i></a></span>,
+            
+                <span ><a 
+           title="Datatracker profile of Viktor Dukhovni"
+            href="/person/ietf-dane@dukhovni.org" >V. Dukhovni</a> <a 
+               href="mailto:ietf-dane%40dukhovni.org"
+               aria-label="Compose email to ietf-dane@dukhovni.org"
+               title="Compose email to ietf-dane@dukhovni.org">
+                <i class="bi bi-envelope"></i></a></span>
+            
+            
+                <br>
+                <a class="btn btn-primary btn-sm mt-1" href="mailto:rfc9276@ietf.org?subject=rfc9276" title="Send email to the document authors">Email authors</a>
+            
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            RFC stream
+        </th>
+        <td class="edit">
+            
+        </td>
+        <td >
+            
+                
+                
+                    
+                        
+
+
+
+<img alt="IETF Logo"
+     class="d-lm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-white.svg"
+        
+     
+     >
+
+<img alt="IETF Logo"
+     class="d-dm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor.svg"
+        
+     
+     >
+                    
+                
+                
+            
+        </td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            Other formats
+        </th>
+        <td class="edit">
+        </td>
+        <td>
+            
+                
+    <div class="buttonlist">
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9276.txt">
+            
+                <i class="bi bi-file-text"></i> txt
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9276.html">
+            
+                <i class="bi bi-file-code"></i> html
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9276.xml">
+            
+                <i class="bi bi-file-code"></i> xml
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+            download="rfc9276.pdf"
+          
+         
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9276.pdf">
+            
+                <i class="bi bi-file-pdf"></i> pdf
+            
+        </a>
+        
+    
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/inline-errata/rfc9276.html">
+            
+                <i class="bi bi-file-diff"></i> w/errata
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/rfc9276/bibtex/">
+            
+                <i class="bi bi-file-ruled"></i> bibtex
+            
+        </a>
+        
+    
+</div>
+
+            
+        </td>
+    </tr>
+    
+    
+        
+            <tr>
+                <td>
+                </td>
+                <th scope="row">
+                    Additional resources
+                </th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                        
+                            
+                                <a href="https://mailarchive.ietf.org/arch/browse/dnsop/?q=rfc9276 OR %22draft-ietf-dnsop-nsec3-guidance%22">
+                                    Mailing list discussion
+                                </a>
+                            
+                        
+                    
+                </td>
+            </tr>
+        
+    
+</tbody>
+                        <tr>
+                            <th scope="row"></th>
+                            <th scope="row"></th>
+                            <td class="edit"></td>
+                            <td>
+                                <a class="btn btn-sm btn-warning mb-3"
+                                target="_blank"
+                                href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+                                    Report a bug
+                                    <i class="bi bi-bug"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </nav>
+        <div class="row g-0">
+            <div class="col-md-9 d-flex justify-content-center lh-sm"
+                 data-bs-spy="scroll"
+                 data-bs-target="#toc-nav"
+                 data-bs-smooth-scroll="true"
+                 tabindex="0"
+                 id="content">
+                
+                    <div class="rfchtml">
+                        <br class="noprint">
+                        <div>
+<table class="ears">
+<thead><tr>
+<td class="left">RFC 9276</td>
+<td class="center">NSEC3 Parameter Settings</td>
+<td class="right">August 2022</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Hardaker &amp; Dukhovni</td>
+<td class="center">Best Current Practice</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-stream">Stream:</dt>
+<dd class="stream">Internet Engineering Task Force (IETF)</dd>
+<dt class="label-rfc">RFC:</dt>
+<dd class="rfc"><a href="https://www.rfc-editor.org/rfc/rfc9276" class="eref">9276</a></dd>
+<dt class="label-bcp">BCP:</dt>
+<dd class="bcp">236</dd>
+<dt class="label-updates">Updates:</dt>
+<dd class="updates">
+<a href="https://www.rfc-editor.org/rfc/rfc5155" class="eref">5155</a> </dd>
+<dt class="label-category">Category:</dt>
+<dd class="category">Best Current Practice</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2022-08" class="published">August 2022</time>
+    </dd>
+<dt class="label-issn">ISSN:</dt>
+<dd class="issn">2070-1721</dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">W. Hardaker</div>
+<div class="org">USC/ISI</div>
+</div>
+<div class="author">
+      <div class="author-name">V. Dukhovni</div>
+<div class="org">Bloomberg, L.P.</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="rfcnum">RFC 9276</h1>
+<h1 id="title">Guidance for NSEC3 Parameter Settings</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">NSEC3 is a DNSSEC mechanism providing proof of nonexistence by
+asserting that there are no names that exist between two domain names
+within a zone.  Unlike its counterpart NSEC, NSEC3 avoids directly
+disclosing the bounding domain name pairs.  This document provides
+guidance on setting NSEC3 parameters based on recent operational
+deployment experience.  This document updates RFC 5155 with
+guidance about selecting NSEC3 iteration and salt parameters.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+            This memo documents an Internet Best Current Practice.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+            This document is a product of the Internet Engineering Task Force
+            (IETF).  It represents the consensus of the IETF community.  It has
+            received public review and has been approved for publication by
+            the Internet Engineering Steering Group (IESG).  Further information
+            on BCPs is available in Section 2 of RFC 7841.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+            Information about the current status of this document, any
+            errata, and how to provide feedback on it may be obtained at
+            <span><a href="https://www.rfc-editor.org/info/rfc9276">https://www.rfc-editor.org/info/rfc9276</a></span>.<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2022 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="xref">1.1</a>.  <a href="#name-requirements-notation" class="xref">Requirements Notation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="xref">2</a>.  <a href="#name-nsec3-parameter-value-discu" class="xref">NSEC3 Parameter Value Discussions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1" class="keepWithNext"><a href="#section-2.1" class="xref">2.1</a>.  <a href="#name-algorithms" class="xref">Algorithms</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="xref">2.2</a>.  <a href="#name-flags" class="xref">Flags</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="xref">2.3</a>.  <a href="#name-iterations" class="xref">Iterations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4">
+                <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="xref">2.4</a>.  <a href="#name-salt" class="xref">Salt</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="xref">3</a>.  <a href="#name-recommendations-for-deployi" class="xref">Recommendations for Deploying and Validating NSEC3 Records</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="xref">3.1</a>.  <a href="#name-best-practice-for-zone-publ" class="xref">Best Practice for Zone Publishers</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="xref">3.2</a>.  <a href="#name-recommendation-for-validati" class="xref">Recommendation for Validating Resolvers</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="xref">3.3</a>.  <a href="#name-recommendation-for-primary-" class="xref">Recommendation for Primary and Secondary Relationships</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-operational-considerations" class="xref">Operational Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-references" class="xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="xref">7.1</a>.  <a href="#name-normative-references" class="xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="xref">7.2</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#appendix-A" class="xref">Appendix A</a>.  <a href="#name-deployment-measurements-at-" class="xref">Deployment Measurements at Time of Publication</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-B" class="xref">Appendix B</a>.  <a href="#name-computational-burdens-of-pr" class="xref">Computational Burdens of Processing NSEC3 Iterations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-C" class="xref"></a><a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-D" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">As with NSEC <span>[<a href="#RFC4035" class="xref">RFC4035</a>]</span>, NSEC3
+<span>[<a href="#RFC5155" class="xref">RFC5155</a>]</span> provides proof of
+nonexistence that consists of signed DNS records establishing the
+nonexistence of a given name or associated Resource Record Type
+(RRTYPE) in a DNSSEC-signed zone <span>[<a href="#RFC4035" class="xref">RFC4035</a>]</span>.  However, in the case of NSEC3, the names of valid nodes in the zone are obfuscated through
+(possibly multiple iterations of) hashing (currently only
+SHA-1 is in use on the Internet).<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">
+  NSEC3 also provides "opt-out support", allowing for blocks of
+  unsigned delegations to be covered by a single NSEC3 record.  Use of
+  the opt-out feature allows large registries to only sign as many
+  NSEC3 records as there are signed DS or other Resource Record sets
+  (RRsets) in the zone; with opt-out, unsigned delegations don't
+  require additional NSEC3 records.  This sacrifices the tamper-
+  resistance of the proof of nonexistence offered by NSEC3 in order to
+  reduce memory and CPU overheads.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">NSEC3 records have a number of tunable parameters that are specified
+via an NSEC3PARAM record at the zone apex.  These parameters are the
+hash algorithm, the processing flags, the number of hash iterations, and
+the salt.  Each of these has security and operational considerations
+that impact both zone owners and validating resolvers.  This document
+provides some best-practice recommendations for setting the NSEC3
+parameters.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<div id="requirements-notation">
+<section id="section-1.1">
+        <h3 id="name-requirements-notation">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-requirements-notation" class="section-name selfRef">Requirements Notation</a>
+        </h3>
+<p id="section-1.1-1">
+   The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+   "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+   described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> 
+   when, and only when, they appear in all capitals, as shown here.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="nsec3-parameter-value-discussions">
+<section id="section-2">
+      <h2 id="name-nsec3-parameter-value-discu">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-nsec3-parameter-value-discu" class="section-name selfRef">NSEC3 Parameter Value Discussions</a>
+      </h2>
+<p id="section-2-1">The following sections describe the background of the parameters for
+the NSEC3 and NSEC3PARAM RRTYPEs.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<div id="algorithms">
+<section id="section-2.1">
+        <h3 id="name-algorithms">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-algorithms" class="section-name selfRef">Algorithms</a>
+        </h3>
+<p id="section-2.1-1">The algorithm field is not discussed by this document.  Readers are
+encouraged to read <span>[<a href="#RFC8624" class="xref">RFC8624</a>]</span> for guidance about DNSSEC algorithm
+usage.<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="flags">
+<section id="section-2.2">
+        <h3 id="name-flags">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-flags" class="section-name selfRef">Flags</a>
+        </h3>
+<p id="section-2.2-1">The NSEC3PARAM flags field currently contains only reserved and
+unassigned flags.  However, individual NSEC3 records contain the
+"Opt-Out" flag <span>[<a href="#RFC5155" class="xref">RFC5155</a>]</span> that specifies whether that NSEC3 record
+provides proof of nonexistence.  In general, NSEC3 with the Opt-Out
+flag enabled should only be used in large, highly dynamic zones with a
+small percentage of signed delegations.  Operationally, this allows
+for fewer signature creations when new delegations are inserted into a
+zone.  This is typically only necessary for extremely large
+registration points providing zone updates faster than real-time
+signing allows or when using memory-constrained hardware.
+
+  Operators considering the use of NSEC3 are advised to carefully
+  weigh the costs and benefits of choosing NSEC3 over NSEC.  Smaller
+  zones, or large but relatively static zones, are encouraged to not
+  use the opt-opt flag and to take advantage of DNSSEC's
+  authenticated denial of existence.<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iterations">
+<section id="section-2.3">
+        <h3 id="name-iterations">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-iterations" class="section-name selfRef">Iterations</a>
+        </h3>
+<p id="section-2.3-1">NSEC3 records are created by first hashing the input domain and then
+repeating that hashing using the same algorithm a number of times based on the
+iteration parameter in the NSEC3PARAM and NSEC3 records.
+
+
+The first hash with NSEC3 is typically sufficient to discourage zone
+enumeration performed by "zone walking" an unhashed NSEC chain.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">Note that <span>[<a href="#RFC5155" class="xref">RFC5155</a>]</span> describes the Iterations field as follows<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<blockquote id="section-2.3-3">The
+Iterations field defines the number of additional times the hash
+function has been performed.<a href="#section-2.3-3" class="pilcrow">¶</a>
+</blockquote>
+<p id="section-2.3-4">This means that an NSEC3 record with an
+Iterations field of 0 actually requires one hash iteration.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
+<p id="section-2.3-5">Only determined parties
+with significant resources are likely to try and uncover hashed
+values, regardless of the number of additional iterations performed.
+If an adversary really wants to expend significant CPU resources to
+mount an offline dictionary attack on a zone's NSEC3 chain, they'll
+likely be able to find most of the "guessable" names despite any
+level of additional hashing iterations.<a href="#section-2.3-5" class="pilcrow">¶</a></p>
+<p id="section-2.3-6">Most names published in the DNS are rarely secret or unpredictable.
+They are published to be memorable, used and consumed by humans.  They
+are often recorded in many other network logs such as email logs,
+certificate transparency logs, web page links, intrusion-detection
+systems, malware scanners, email archives, etc.  Many times a simple
+dictionary of commonly used domain names prefixes (www, mail,
+imap, login, database, etc.) can be used to quickly reveal a large
+number of labels within a zone.  Because of this, there are increasing
+performance costs yet diminishing returns associated with applying
+additional hash iterations beyond the first.<a href="#section-2.3-6" class="pilcrow">¶</a></p>
+<p id="section-2.3-7">Although <span><a href="https://www.rfc-editor.org/rfc/rfc5155#section-10.3" class="relref">Section 10.3</a> of [<a href="#RFC5155" class="xref">RFC5155</a>]</span> specifies the upper bounds for the
+number of hash iterations to use, there is no published guidance for
+zone owners about good values to select.  Recent academic studies
+have shown that NSEC3 hashing provides only moderate
+protection <span>[<a href="#GPUNSEC3" class="xref">GPUNSEC3</a>]</span> <span>[<a href="#ZONEENUM" class="xref">ZONEENUM</a>]</span>.<a href="#section-2.3-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="salt">
+<section id="section-2.4">
+        <h3 id="name-salt">
+<a href="#section-2.4" class="section-number selfRef">2.4. </a><a href="#name-salt" class="section-name selfRef">Salt</a>
+        </h3>
+<p id="section-2.4-1">NSEC3 records provide an additional salt value, which can be
+combined with a Fully Qualified Domain Name (FQDN) to influence the resulting hash, but properties
+of this extra salt are complicated.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.4-2">In cryptography, salts generally add a layer of protection against
+offline, stored dictionary attacks by combining the value to be hashed
+with a unique "salt" value. This prevents adversaries from building up
+and remembering a single dictionary of values that can translate a
+hash output back to the value that it was derived from.<a href="#section-2.4-2" class="pilcrow">¶</a></p>
+<p id="section-2.4-3">In the case of DNS, the situation is different because the hashed
+names placed in NSEC3 records are always implicitly "salted" by
+hashing the FQDN from each zone. Thus, no
+single pre-computed table works to speed up dictionary attacks
+against multiple target zones. An attacker is always required to
+compute a complete dictionary per zone, which is expensive in both
+storage and CPU time.<a href="#section-2.4-3" class="pilcrow">¶</a></p>
+<p id="section-2.4-4">To understand the role of the additional NSEC3 salt field, we have to
+consider how a typical zone walking attack works. Typically, the attack
+has two phases: online and offline. In the online phase, an attacker
+"walks the zone" by enumerating (almost) all hashes listed in NSEC3
+records and storing them for the offline phase. Then, in the offline
+cracking phase, the attacker attempts to crack the underlying hash. In
+this phase, the additional salt value raises the cost of the attack
+only if the salt value changes during the online phase of the
+attack. In other words, an additional, constant salt value does not
+change the cost of the attack.<a href="#section-2.4-4" class="pilcrow">¶</a></p>
+<p id="section-2.4-5">Changing a zone's salt value requires the construction of a complete
+new NSEC3 chain.  This is true both when re-signing the entire zone at
+once and when incrementally signing it in the background where the new
+salt is only activated once every name in the chain has been
+completed. As a result, re-salting is a very complex operation, with
+significant CPU time, memory, and bandwidth consumption. This makes
+very frequent re-salting impractical and renders the additional salt
+field functionally useless.<a href="#section-2.4-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="recommendations-for-deploying-and-validating-nsec3-records">
+<section id="section-3">
+      <h2 id="name-recommendations-for-deployi">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-recommendations-for-deployi" class="section-name selfRef">Recommendations for Deploying and Validating NSEC3 Records</a>
+      </h2>
+<p id="section-3-1">The following subsections describe recommendations for the different
+operating realms within the DNS.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<div id="best-practice-for-zone-publishers">
+<section id="section-3.1">
+        <h3 id="name-best-practice-for-zone-publ">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-best-practice-for-zone-publ" class="section-name selfRef">Best Practice for Zone Publishers</a>
+        </h3>
+<p id="section-3.1-1">First, if the operational or security features of NSEC3 are not
+needed, then NSEC <span class="bcp14">SHOULD</span> be used in preference to NSEC3. NSEC3
+requires greater computational power (see <a href="#computationalburdens" class="xref">Appendix B</a>)
+for both authoritative servers and validating clients.  Specifically,
+there is a nontrivial complexity in finding matching NSEC3 records to
+randomly generated prefixes within a DNS zone.  NSEC mitigates this
+concern.  If NSEC3 must be used, then an iterations count of 0 <span class="bcp14">MUST</span> be
+used to alleviate computational burdens.  Note that extra iteration
+counts other than 0 increase the impact of CPU-exhausting DoS attacks,
+and also increase the risk of interoperability problems.<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.1-2">Note that deploying NSEC with minimally covering NSEC records
+<span>[<a href="#RFC4470" class="xref">RFC4470</a>]</span> also incurs a cost, and zone owners should measure the
+computational difference in deploying either <span>[<a href="#RFC4470" class="xref">RFC4470</a>]</span> or NSEC3.<a href="#section-3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.1-3">In short, for all zones, the recommended NSEC3 parameters are as shown
+below:<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-4">
+<pre>
+; SHA-1, no extra iterations, empty salt:
+;
+bcp.example. IN NSEC3PARAM 1 0 0 -
+</pre><a href="#section-3.1-4" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-5">For small zones, the use of opt-out-based NSEC3 records is <span class="bcp14">NOT RECOMMENDED</span>.<a href="#section-3.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.1-6">For very large and sparsely signed zones, where the majority of the
+records are insecure delegations, opt-out <span class="bcp14">MAY</span> be used.<a href="#section-3.1-6" class="pilcrow">¶</a></p>
+<p id="section-3.1-7">Operators <span class="bcp14">SHOULD NOT</span> use a salt by indicating a zero-length salt value
+instead (represented as a "-" in the presentation format).<a href="#section-3.1-7" class="pilcrow">¶</a></p>
+<p id="section-3.1-8">If salts are used, note that since the NSEC3PARAM RR is not used by
+validating resolvers (see <span><a href="https://www.rfc-editor.org/rfc/rfc5155#section-4" class="relref">Section 4</a> of [<a href="#RFC5155" class="xref">RFC5155</a>]</span>), the iterations and
+salt parameters can be changed without the need to wait for RRsets to
+expire from caches.  A complete new NSEC3 chain needs to be
+constructed and the full zone needs to be re-signed.<a href="#section-3.1-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="recommendation-for-validating-resolvers">
+<section id="section-3.2">
+        <h3 id="name-recommendation-for-validati">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-recommendation-for-validati" class="section-name selfRef">Recommendation for Validating Resolvers</a>
+        </h3>
+<p id="section-3.2-1">Because there has been a large growth of open (public) DNSSEC
+validating resolvers that are subject to compute resource constraints
+when handling requests from anonymous clients, this document
+recommends that validating resolvers reduce their iteration count
+limits over time.  
+
+Specifically, validating
+resolver operators and validating resolver software implementers are
+encouraged to continue evaluating NSEC3 iteration count deployment
+trends and lower their acceptable iteration limits over time.
+Because
+treating a high iterations count as insecure leaves zones subject to
+attack, validating resolver operators and validating resolver software
+implementers are further encouraged to lower their default 
+limit for returning SERVFAIL when processing NSEC3 parameters
+containing large iteration count values.  
+See
+<a href="#deploymentmeasurements" class="xref">Appendix A</a> for measurements taken near the time of
+publication of this document and potential starting points.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">Validating resolvers <span class="bcp14">MAY</span> return an insecure response to their clients
+when processing NSEC3 records with iterations larger
+than 0.
+Note also that a validating resolver returning an insecure response
+<span class="bcp14">MUST</span> still validate the signature over the NSEC3 record to ensure
+the iteration count was not altered since record publication (see
+<span><a href="https://www.rfc-editor.org/rfc/rfc5155#section-10.3" class="relref">Section 10.3</a> of [<a href="#RFC5155" class="xref">RFC5155</a>]</span>).<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.2-3">Validating resolvers <span class="bcp14">MAY</span> also return a SERVFAIL response when
+processing NSEC3 records with iterations larger than 0.  Validating
+resolvers <span class="bcp14">MAY</span> choose to ignore authoritative server responses with
+iteration counts greater than 0, which will likely result in
+returning a SERVFAIL to the client when no acceptable responses are
+received from authoritative servers.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.2-4">Validating resolvers returning an insecure or SERVFAIL answer to their
+client after receiving and validating an unsupported NSEC3 parameter
+from the authoritative server(s) <span class="bcp14">SHOULD</span> return an Extended DNS
+Error (EDE) <span>[<a href="#RFC8914" class="xref">RFC8914</a>]</span> EDNS0 option of value 27.
+Validating resolvers that choose to ignore a response with an
+unsupported iteration count (and that do not validate the signature) <span class="bcp14">MUST NOT</span> return this EDE option.<a href="#section-3.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.2-5">Note that this specification updates <span>[<a href="#RFC5155" class="xref">RFC5155</a>]</span> by significantly
+decreasing the requirements originally specified in <span><a href="https://www.rfc-editor.org/rfc/rfc5155#section-10.3" class="relref">Section 10.3</a> of [<a href="#RFC5155" class="xref">RFC5155</a>]</span>. See the Security
+Considerations (<a href="#security-considerations" class="xref">Section 4</a>) for arguments on how to
+handle responses with non-zero iteration count.<a href="#section-3.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="recommendation-for-primary-secondary-relationships">
+<section id="section-3.3">
+        <h3 id="name-recommendation-for-primary-">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-recommendation-for-primary-" class="section-name selfRef">Recommendation for Primary and Secondary Relationships</a>
+        </h3>
+<p id="section-3.3-1">Primary and secondary authoritative servers for a zone that are not
+being run by the same operational staff and/or using the same software
+and configuration must take into account the potential differences in
+NSEC3 iteration support.<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.3-2">Operators of secondary services should advertise the parameter limits
+that their servers support. Correspondingly, operators of primary
+servers need to ensure that their secondaries support the NSEC3
+parameters they expect to use in their zones.  To ensure reliability,
+after primaries change their iteration counts, they should query their
+secondaries with known nonexistent labels to verify the secondary
+servers are responding as expected.<a href="#section-3.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-4">
+      <h2 id="name-security-considerations">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-4-1">This entire document discusses security considerations with various
+parameter selections of NSEC3 and NSEC3PARAM fields.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">The point where a validating resolver returns insecure versus the point
+where it returns SERVFAIL must be considered carefully.  Specifically,
+when a validating resolver treats a zone as insecure above a
+particular value (say 100) and returns SERVFAIL above a higher point
+(say 500), it leaves the zone subject to attacker-in-the-middle
+attacks as if it were unsigned between these values.
+
+
+
+  Thus, validating resolver operators and software implementers
+  <span class="bcp14">SHOULD</span> set the point above which a zone is treated as
+  insecure for certain values of NSEC3 iterations to the same as the
+  point where a validating resolver begins returning SERVFAIL.<a href="#section-4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="operational-considerations">
+<section id="section-5">
+      <h2 id="name-operational-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-operational-considerations" class="section-name selfRef">Operational Considerations</a>
+      </h2>
+<p id="section-5-1">This entire document discusses operational considerations with various
+parameter selections of NSEC3 and NSEC3PARAM fields.<a href="#section-5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-6">
+      <h2 id="name-iana-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-6-1">IANA has allocated the following code in the First Come First Served
+     range <span>[<a href="#RFC8126" class="xref">RFC8126</a>]</span> of the "Extended DNS Error Codes" registry within the "Domain Name System
+(DNS) Parameters" registry:<a href="#section-6-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-6-2">
+        <dt id="section-6-2.1">INFO-CODE:</dt>
+        <dd style="margin-left: 1.5em" id="section-6-2.2">27<a href="#section-6-2.2" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-6-2.3">Purpose:</dt>
+        <dd style="margin-left: 1.5em" id="section-6-2.4">Unsupported NSEC3 iterations value<a href="#section-6-2.4" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+<dt id="section-6-2.5">Reference:</dt>
+        <dd style="margin-left: 1.5em" id="section-6-2.6">RFC 9276<a href="#section-6-2.6" class="pilcrow">¶</a>
+</dd>
+      <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<section id="section-7">
+      <h2 id="name-references">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-7.1">
+        <h3 id="name-normative-references">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4035">[RFC4035]</dt>
+        <dd>
+<span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Austein, R.</span>, <span class="refAuthor">Larson, M.</span>, <span class="refAuthor">Massey, D.</span>, and <span class="refAuthor">S. Rose</span>, <span class="refTitle">"Protocol Modifications for the DNS Security Extensions"</span>, <span class="seriesInfo">RFC 4035</span>, <span class="seriesInfo">DOI 10.17487/RFC4035</span>, <time datetime="2005-03" class="refDate">March 2005</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4035">https://www.rfc-editor.org/info/rfc4035</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4470">[RFC4470]</dt>
+        <dd>
+<span class="refAuthor">Weiler, S.</span> and <span class="refAuthor">J. Ihren</span>, <span class="refTitle">"Minimally Covering NSEC Records and DNSSEC On-line Signing"</span>, <span class="seriesInfo">RFC 4470</span>, <span class="seriesInfo">DOI 10.17487/RFC4470</span>, <time datetime="2006-04" class="refDate">April 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc4470">https://www.rfc-editor.org/info/rfc4470</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5155">[RFC5155]</dt>
+        <dd>
+<span class="refAuthor">Laurie, B.</span>, <span class="refAuthor">Sisson, G.</span>, <span class="refAuthor">Arends, R.</span>, and <span class="refAuthor">D. Blacka</span>, <span class="refTitle">"DNS Security (DNSSEC) Hashed Authenticated Denial of Existence"</span>, <span class="seriesInfo">RFC 5155</span>, <span class="seriesInfo">DOI 10.17487/RFC5155</span>, <time datetime="2008-03" class="refDate">March 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc5155">https://www.rfc-editor.org/info/rfc5155</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8914">[RFC8914]</dt>
+      <dd>
+<span class="refAuthor">Kumari, W.</span>, <span class="refAuthor">Hunt, E.</span>, <span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Hardaker, W.</span>, and <span class="refAuthor">D. Lawrence</span>, <span class="refTitle">"Extended DNS Errors"</span>, <span class="seriesInfo">RFC 8914</span>, <span class="seriesInfo">DOI 10.17487/RFC8914</span>, <time datetime="2020-10" class="refDate">October 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8914">https://www.rfc-editor.org/info/rfc8914</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-7.2">
+        <h3 id="name-informative-references">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="GPUNSEC3">[GPUNSEC3]</dt>
+        <dd>
+<span class="refAuthor">Wander, M.</span>, <span class="refAuthor">Schwittmann, L.</span>, <span class="refAuthor">Boelmann, C.</span>, and <span class="refAuthor">T. Weis</span>, <span class="refTitle">"GPU-Based NSEC3 Hash Breaking"</span>, <span class="seriesInfo">DOI 10.1109/NCA.2014.27</span>, <time datetime="2014-08" class="refDate">August 2014</time>, <span>&lt;<a href="https://doi.org/10.1109/NCA.2014.27">https://doi.org/10.1109/NCA.2014.27</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8126">[RFC8126]</dt>
+        <dd>
+<span class="refAuthor">Cotton, M.</span>, <span class="refAuthor">Leiba, B.</span>, and <span class="refAuthor">T. Narten</span>, <span class="refTitle">"Guidelines for Writing an IANA Considerations Section in RFCs"</span>, <span class="seriesInfo">BCP 26</span>, <span class="seriesInfo">RFC 8126</span>, <span class="seriesInfo">DOI 10.17487/RFC8126</span>, <time datetime="2017-06" class="refDate">June 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8624">[RFC8624]</dt>
+        <dd>
+<span class="refAuthor">Wouters, P.</span> and <span class="refAuthor">O. Sury</span>, <span class="refTitle">"Algorithm Implementation Requirements and Usage Guidance for DNSSEC"</span>, <span class="seriesInfo">RFC 8624</span>, <span class="seriesInfo">DOI 10.17487/RFC8624</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8624">https://www.rfc-editor.org/info/rfc8624</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ZONEENUM">[ZONEENUM]</dt>
+      <dd>
+<span class="refAuthor">Wang, Z.</span>, <span class="refAuthor">Xiao, L.</span>, and <span class="refAuthor">R. Wang</span>, <span class="refTitle">"An efficient DNSSEC zone enumeration algorithm"</span>, <span class="seriesInfo">DOI 10.2495/MIIT130591</span>, <time datetime="2014-04" class="refDate">April 2014</time>, <span>&lt;<a href="https://doi.org/10.2495/MIIT130591">https://doi.org/10.2495/MIIT130591</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="deploymentmeasurements">
+<section id="appendix-A">
+      <h2 id="name-deployment-measurements-at-">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-deployment-measurements-at-" class="section-name selfRef">Deployment Measurements at Time of Publication</a>
+      </h2>
+<p id="appendix-A-1">At the time of publication, setting an upper limit of 100 iterations
+for treating a zone as insecure is interoperable without significant
+problems, but at the same time still enables CPU-exhausting DoS
+attacks.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-2">At the time of publication, returning SERVFAIL beyond 500 iterations
+appears to be interoperable without significant problems.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="computationalburdens">
+<section id="appendix-B">
+      <h2 id="name-computational-burdens-of-pr">
+<a href="#appendix-B" class="section-number selfRef">Appendix B. </a><a href="#name-computational-burdens-of-pr" class="section-name selfRef">Computational Burdens of Processing NSEC3 Iterations</a>
+      </h2>
+<p id="appendix-B-1">The queries per second (QPS) of authoritative servers will decrease due
+to computational overhead when processing DNS requests for zones
+containing higher NSEC3 iteration counts.  The table below
+shows the drop in QPS for various iteration counts.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+<span id="name-drop-in-qps-for-various-ite"></span><div id="iteration-counts-table">
+<table class="center" id="table-1">
+        <caption>
+<a href="#table-1" class="selfRef">Table 1</a>:
+<a href="#name-drop-in-qps-for-various-ite" class="selfRef">Drop in QPS for Various Iteration Counts</a>
+        </caption>
+<thead>
+          <tr>
+            <th class="text-left" rowspan="1" colspan="1">Iterations</th>
+            <th class="text-left" rowspan="1" colspan="1">QPS [% of 0 Iterations QPS]</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">0</td>
+            <td class="text-left" rowspan="1" colspan="1">100%</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">10</td>
+            <td class="text-left" rowspan="1" colspan="1">89%</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">20</td>
+            <td class="text-left" rowspan="1" colspan="1">82%</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">50</td>
+            <td class="text-left" rowspan="1" colspan="1">64%</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">100</td>
+            <td class="text-left" rowspan="1" colspan="1">47%</td>
+          </tr>
+          <tr>
+            <td class="text-left" rowspan="1" colspan="1">150</td>
+            <td class="text-left" rowspan="1" colspan="1">38%</td>
+          </tr>
+        </tbody>
+      </table>
+</div>
+</section>
+</div>
+<div id="qps">
+<section id="appendix-C">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-C-1">The authors would like to thank the participants in the dns-operations discussion, which took place on mattermost hosted by DNS-OARC.<a href="#appendix-C-1" class="pilcrow">¶</a></p>
+<p id="appendix-C-2">Additionally, the following people contributed text or review comments
+to this document:<a href="#appendix-C-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-C-3.1">
+          <p id="appendix-C-3.1.1"><span class="contact-name">Vladimir Cunat</span><a href="#appendix-C-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-3.2">
+          <p id="appendix-C-3.2.1"><span class="contact-name">Tony Finch</span><a href="#appendix-C-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-3.3">
+          <p id="appendix-C-3.3.1"><span class="contact-name">Paul Hoffman</span><a href="#appendix-C-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-3.4">
+          <p id="appendix-C-3.4.1"><span class="contact-name">Warren Kumari</span><a href="#appendix-C-3.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-3.5">
+          <p id="appendix-C-3.5.1"><span class="contact-name">Alexander Mayrhofer</span><a href="#appendix-C-3.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-3.6">
+          <p id="appendix-C-3.6.1"><span class="contact-name">Matthijs Mekking</span><a href="#appendix-C-3.6.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-3.7">
+          <p id="appendix-C-3.7.1"><span class="contact-name">Florian Obser</span><a href="#appendix-C-3.7.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-3.8">
+          <p id="appendix-C-3.8.1"><span class="contact-name">Petr Spacek</span><a href="#appendix-C-3.8.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-3.9">
+          <p id="appendix-C-3.9.1"><span class="contact-name">Paul Vixie</span><a href="#appendix-C-3.9.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="appendix-C-3.10">
+          <p id="appendix-C-3.10.1"><span class="contact-name">Tim Wicinski</span><a href="#appendix-C-3.10.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-D">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Wes Hardaker</span></div>
+<div dir="auto" class="left"><span class="org">USC/ISI</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:ietf@hardakers.net" class="email">ietf@hardakers.net</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Viktor Dukhovni</span></div>
+<div dir="auto" class="left"><span class="org">Bloomberg, L.P.</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:ietf-dane@dukhovni.org" class="email">ietf-dane@dukhovni.org</a>
+</div>
+</address>
+</section>
+</div>
+</div>
+
+                    </div>
+                
+            </div>
+            <div class="d-print-none col-md-3 bg-light-subtle collapse show" id="sidebar">
+                <div class="position-fixed border-start sidebar overflow-scroll overscroll-none no-scrollbar">
+                    <div class="d-flex flex-column vh-100 pt-2 pt-lg-3 ps-3 pl-md-2 pl-lg-3">
+                        <div>
+                            <a class="btn btn-primary btn-sm" href="/doc/rfc9276/">Datatracker</a>
+                            <p class="fw-bold pt-2">
+                                
+                                    RFC 9276
+                                
+                                <br>
+                                
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Best Current Practice
+    
+</span>
+
+                            </p>
+                        </div>
+                        
+                        <ul class="nav nav-tabs nav-fill small me-2" role="tablist">
+                            <li class="nav-item" role="presentation" title="Document information">
+                                <button class="nav-link px-2"
+                                        id="docinfo-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#docinfo-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="docinfo-tab-pane"
+                                        aria-selected="true">
+                                    <i class="bi bi-info-circle"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Info</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation" title="Table of contents">
+                                <button class="nav-link px-2"
+                                        id="toc-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#toc-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="toc-tab-pane"
+                                        aria-selected="false">
+                                    <i class="bi bi-list-ol"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Contents</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation" title="Preferences">
+                                <button class="nav-link px-2"
+                                        id="pref-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#pref-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="pref-tab-pane"
+                                        aria-selected="false">
+                                    <i class="bi bi-gear"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Prefs</span>
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="overflow-auto tab-content pt-2 me-2">
+                            <div class="tab-pane"
+                                 id="docinfo-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="docinfo-tab"
+                                 tabindex="0">
+                                <table class="table table-sm table-borderless">
+                                    
+
+
+
+
+
+
+
+<tbody class="meta align-top ">
+    <tr>
+        <th scope="row">Document</th>
+        <th scope="row">Document type</th>
+        <td class="edit"></td>
+        <td>
+            
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Best Current Practice
+    
+</span>
+
+            
+                
+                    <br>August 2022
+                
+                <br>
+                
+                    <a class="btn btn-primary btn-sm my-1"
+                       href="https://www.rfc-editor.org/errata_search.php?rfc=9276" title="Click to view errata." rel="nofollow">
+                        View errata
+                    </a>
+                
+                
+                    <a class="btn btn-sm btn-warning"
+                       title="Click to report an error in the document."
+                       href="https://www.rfc-editor.org/errata.php#reportnew"
+                       target="_blank">
+                        Report errata
+                    </a>
+                
+                
+                
+                
+                
+                <div>Updates <a href="/doc/html/rfc5155" title="DNS Security (DNSSEC) Hashed Authenticated Denial of Existence">RFC 5155</a></div>
+                
+                
+                
+                    <div>
+                        Was
+                        <a href="/doc/draft-ietf-dnsop-nsec3-guidance/10/">draft-ietf-dnsop-nsec3-guidance</a>
+                        (<a href="/wg/dnsop/about/">dnsop WG</a>)
+                    </div>
+                
+            
+            
+            
+                
+
+
+
+
+    
+
+
+            
+        </td>
+    </tr>
+    
+        <tr>
+            <td></td>
+            <th scope="row">Select version</th>
+            <td class="edit"></td>
+            <td>
+                
+
+
+
+    <ul class="revision-list pagination pagination-sm text-center flex-wrap my-0">
+        
+            
+            
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-00"
+                        rel="nofollow">
+                            00
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-01"
+                        rel="nofollow">
+                            01
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-02"
+                        rel="nofollow">
+                            02
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-03"
+                        rel="nofollow">
+                            03
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-04"
+                        rel="nofollow">
+                            04
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-05"
+                        rel="nofollow">
+                            05
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-06"
+                        rel="nofollow">
+                            06
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-07"
+                        rel="nofollow">
+                            07
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-08"
+                        rel="nofollow">
+                            08
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-09"
+                        rel="nofollow">
+                            09
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-nsec3-guidance-10"
+                        rel="nofollow">
+                            10
+                        </a>
+                    </li>
+                
+            
+            
+            <li class="page-item rfc active">
+                <a class="page-link"
+                href="/doc/html/rfc9276">
+                    RFC 9276
+                </a>
+            </li>
+        
+    </ul>
+
+            </td>
+        </tr>
+        
+            <tr>
+                <td></td>
+                <th scope="row">Compare versions</th>
+                <td class="edit"></td>
+                <td>
+                    
+
+
+
+<form class="form-horizontal diff-form"
+      action="https://author-tools.ietf.org/iddiff"
+      method="get"
+      target="_blank">
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="From revision"
+                    name="url1">
+                
+                    <option value="rfc9276">
+                        RFC 9276
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-10" selected>
+                        draft-ietf-dnsop-nsec3-guidance-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-09">
+                        draft-ietf-dnsop-nsec3-guidance-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-08">
+                        draft-ietf-dnsop-nsec3-guidance-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-07">
+                        draft-ietf-dnsop-nsec3-guidance-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-06">
+                        draft-ietf-dnsop-nsec3-guidance-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-05">
+                        draft-ietf-dnsop-nsec3-guidance-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-04">
+                        draft-ietf-dnsop-nsec3-guidance-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-03">
+                        draft-ietf-dnsop-nsec3-guidance-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-02">
+                        draft-ietf-dnsop-nsec3-guidance-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-01">
+                        draft-ietf-dnsop-nsec3-guidance-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-00">
+                        draft-ietf-dnsop-nsec3-guidance-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="To revision"
+                    name="url2">
+                
+                    <option value="rfc9276" selected>
+                        RFC 9276
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-10">
+                        draft-ietf-dnsop-nsec3-guidance-10
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-09">
+                        draft-ietf-dnsop-nsec3-guidance-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-08">
+                        draft-ietf-dnsop-nsec3-guidance-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-07">
+                        draft-ietf-dnsop-nsec3-guidance-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-06">
+                        draft-ietf-dnsop-nsec3-guidance-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-05">
+                        draft-ietf-dnsop-nsec3-guidance-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-04">
+                        draft-ietf-dnsop-nsec3-guidance-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-03">
+                        draft-ietf-dnsop-nsec3-guidance-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-02">
+                        draft-ietf-dnsop-nsec3-guidance-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-01">
+                        draft-ietf-dnsop-nsec3-guidance-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-nsec3-guidance-00">
+                        draft-ietf-dnsop-nsec3-guidance-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--html"
+                    name="difftype">
+                Side-by-side
+            </button>
+            
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--hwdiff"
+                    name="difftype">
+                Inline
+            </button>
+
+
+</form>
+
+                </td>
+            </tr>
+        
+    
+    <tr>
+        <td></td>
+        <th scope="row">Authors</th>
+        <td class="edit">
+            
+        </td>
+        <td>
+            
+            
+                <span ><a 
+           title="Datatracker profile of Wes Hardaker"
+            href="/person/wjhns1@hardakers.net" >W. Hardaker</a> <a 
+               href="mailto:wjhns1%40hardakers.net"
+               aria-label="Compose email to wjhns1@hardakers.net"
+               title="Compose email to wjhns1@hardakers.net">
+                <i class="bi bi-envelope"></i></a></span>,
+            
+                <span ><a 
+           title="Datatracker profile of Viktor Dukhovni"
+            href="/person/ietf-dane@dukhovni.org" >V. Dukhovni</a> <a 
+               href="mailto:ietf-dane%40dukhovni.org"
+               aria-label="Compose email to ietf-dane@dukhovni.org"
+               title="Compose email to ietf-dane@dukhovni.org">
+                <i class="bi bi-envelope"></i></a></span>
+            
+            
+                <br>
+                <a class="btn btn-primary btn-sm mt-1" href="mailto:rfc9276@ietf.org?subject=rfc9276" title="Send email to the document authors">Email authors</a>
+            
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            RFC stream
+        </th>
+        <td class="edit">
+            
+        </td>
+        <td >
+            
+                
+                
+                    
+                        
+
+
+
+<img alt="IETF Logo"
+     class="d-lm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-white.svg"
+        
+     
+     >
+
+<img alt="IETF Logo"
+     class="d-dm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor.svg"
+        
+     
+     >
+                    
+                
+                
+            
+        </td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            Other formats
+        </th>
+        <td class="edit">
+        </td>
+        <td>
+            
+                
+    <div class="buttonlist">
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9276.txt">
+            
+                <i class="bi bi-file-text"></i> txt
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9276.html">
+            
+                <i class="bi bi-file-code"></i> html
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9276.xml">
+            
+                <i class="bi bi-file-code"></i> xml
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+            download="rfc9276.pdf"
+          
+         
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9276.pdf">
+            
+                <i class="bi bi-file-pdf"></i> pdf
+            
+        </a>
+        
+    
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/inline-errata/rfc9276.html">
+            
+                <i class="bi bi-file-diff"></i> w/errata
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/rfc9276/bibtex/">
+            
+                <i class="bi bi-file-ruled"></i> bibtex
+            
+        </a>
+        
+    
+</div>
+
+            
+        </td>
+    </tr>
+    
+    
+        
+            <tr>
+                <td>
+                </td>
+                <th scope="row">
+                    Additional resources
+                </th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                        
+                            
+                                <a href="https://mailarchive.ietf.org/arch/browse/dnsop/?q=rfc9276 OR %22draft-ietf-dnsop-nsec3-guidance%22">
+                                    Mailing list discussion
+                                </a>
+                            
+                        
+                    
+                </td>
+            </tr>
+        
+    
+</tbody>
+                                </table>
+                                <a class="btn btn-sm btn-warning mb-3"
+                                target="_blank"
+                                href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+                                    Report a datatracker bug
+                                    <i class="bi bi-bug"></i>
+                                </a>
+                            </div>
+                            <div class="tab-pane mb-5"
+                                 id="toc-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="toc-tab"
+                                 tabindex="0">
+                                <nav class="nav nav-pills flex-column small" id="toc-nav">
+                                </nav>
+                            </div>
+                            <div class="tab-pane mb-5 small"
+                                 id="pref-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="pref-tab"
+                                 tabindex="0">
+                                <label class="form-label fw-bold mb-2">Show sidebar by default</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="sidebar" id="on-radio">
+                                    <label class="btn btn-outline-primary" for="on-radio">Yes</label>
+                                    <input type="radio" class="btn-check" name="sidebar" id="off-radio">
+                                    <label class="btn btn-outline-primary" for="off-radio">No</label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">Tab to show by default</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="deftab" id="docinfo-radio">
+                                    <label class="btn btn-outline-primary" for="docinfo-radio">
+                                        <i class="bi bi-info-circle me-1"></i>Info
+                                    </label>
+                                    <input type="radio" class="btn-check" name="deftab" id="toc-radio">
+                                    <label class="btn btn-outline-primary" for="toc-radio">
+                                        <i class="bi bi-list-ol me-1"></i>Contents
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">HTMLization configuration</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="htmlconf" id="txt-radio">
+                                    <label class="btn btn-outline-primary" for="txt-radio" title="This is the traditional HTMLization method.">
+                                        <i class="bi bi-badge-sd me-1"></i>HTMLize the plaintext
+                                    </label>
+                                    <input type="radio" class="btn-check" name="htmlconf" id="html-radio">
+                                    <label class="btn btn-outline-primary" for="html-radio" title="This is the modern HTMLization method.">
+                                        <i class="bi bi-badge-hd me-1"></i>Plaintextify the HTML
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2" for="ptsize">Maximum font size</label>
+                                <input type="range" class="form-range" min="7" max="16" id="ptsize" oninput="ptdemo.value = ptsize.value">
+                                <label class="form-label fw-bold mt-4 mb-2">Page dependencies</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="pagedeps" id="inline-radio">
+                                    <label class="btn btn-outline-primary" for="inline-radio" title="Generate larger, standalone web pages that do not require network access to render.">
+                                        <i class="bi bi-box me-1"></i>Inline
+                                    </label>
+                                    <input type="radio" class="btn-check" name="pagedeps" id="reference-radio">
+                                    <label class="btn btn-outline-primary" for="reference-radio" title="Generate regular web pages that require network access to render.">
+                                        <i class="bi bi-link-45deg me-1"></i>Reference
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">Citation links</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="reflinks" id="refsection-radio">
+                                    <label class="btn btn-outline-primary" for="refsection-radio" title="Citation links go to the reference section.">
+                                        <i class="bi bi-arrow-clockwise"></i> Go to reference section
+                                    </label>
+                                    <input type="radio" class="btn-check" name="reflinks" id="citation-radio">
+                                    <label class="btn btn-outline-primary" for="citation-radio" title="Citation links go directly to the cited document.">
+                                        <i class="bi bi-link-45deg me-1"></i>Go to linked document
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+<script>
+  var _paq = window._paq || [];
+  
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.ietf.org/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', 7]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//analytics.ietf.org/matomo.php?idsite=7" style="border:0;" alt="" /></p></noscript>
+
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4ef4d5e18562e9b',t:'MTc5Mjc0MzQxMw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

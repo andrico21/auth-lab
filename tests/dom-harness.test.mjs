@@ -35,6 +35,16 @@ test('harness queries reflect attribute changes, removals and replacement withou
   assert.equal(root.contains(button),false);
 });
 
+test('harness select values follow the selected case after markup replacement',()=>{
+  const root=new HarnessElement('section');
+  root.innerHTML='<select><option value="default">Cold lookup</option><option value="warm-answer-cache" selected>Warm lookup</option></select>';
+  assert.equal(root.querySelector('select').value,'warm-answer-cache');
+  root.innerHTML='<select><option value="default" selected>Cold lookup</option><option value="warm-answer-cache">Warm lookup</option></select>';
+  assert.equal(root.querySelector('select').value,'default');
+  root.innerHTML='<select><option value="default">Cold lookup</option><option value="warm-answer-cache">Warm lookup</option></select>';
+  assert.equal(root.querySelector('select').value,'default');
+});
+
 test('harness matches and closest use the current nearest matching ancestor',()=>{
   const root=new HarnessElement('section');root.classList.add('owner');
   root.innerHTML='<div class="owner"><button data-action="open"><span class="label">Open</span></button></div>';

@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2026-10-23">
+  <title>Auth Flow Studio — DNSSEC worker plan</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"WORKER HANDOFF";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Auth Flow Studio — DNSSEC worker plan</h1>
+<p class="subtitle">Separate DNSSEC group · research and implementation
+handoff · v1</p>
+<p class="date">23 October 2026</p>
+<div class="plan-stats"><span>22 required lessons</span><span>159 named cases</span><span>29 source groups</span><span>New scope; prior gates preserved</span></div></header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#assignment-and-relationship-to-the-accepted-work" id="toc-assignment-and-relationship-to-the-accepted-work">1. Assignment
+and relationship to the accepted work</a></li>
+<li><a href="#what-the-learner-must-understand" id="toc-what-the-learner-must-understand">2. What the learner must
+understand</a></li>
+<li><a href="#standards-baseline-and-modern-defaults" id="toc-standards-baseline-and-modern-defaults">3. Standards baseline
+and modern defaults</a></li>
+<li><a href="#actors-records-and-state-contract" id="toc-actors-records-and-state-contract">4. Actors, records and state
+contract</a></li>
+<li><a href="#required-lesson-specifications" id="toc-required-lesson-specifications">5. Required lesson
+specifications</a></li>
+<li><a href="#ui-and-learning-ergonomics" id="toc-ui-and-learning-ergonomics">6. UI and learning
+ergonomics</a></li>
+<li><a href="#source-integration-and-implementation-boundaries" id="toc-source-integration-and-implementation-boundaries">7. Source
+integration and implementation boundaries</a></li>
+<li><a href="#independent-acceptance-and-evidence" id="toc-independent-acceptance-and-evidence">8. Independent acceptance
+and evidence</a></li>
+<li><a href="#delivery-sequence-and-preserved-gates" id="toc-delivery-sequence-and-preserved-gates">9. Delivery sequence and
+preserved gates</a></li>
+<li><a href="#explicit-adjacent-extensions" id="toc-explicit-adjacent-extensions">10. Explicit adjacent
+extensions</a></li>
+<li><a href="#primary-source-map" id="toc-primary-source-map">11.
+Primary-source map</a></li>
+</ul>
+</nav>
+<main id="worker-plan"><h2 id="assignment-and-relationship-to-the-accepted-work">1. Assignment
+and relationship to the accepted work</h2>
+<p><strong>Add a separate top-level DNSSEC group: 22 required lessons
+and 159 named cases.</strong> Teach how DNS data is published, signed,
+resolved, forwarded, validated, cached and maintained. Deliver the
+lessons below with their cases, field inspection, exact-object history,
+sources and independent acceptance evidence. Use one introductory
+journey and focused follow-on lessons rather than one enormous
+animation.</p>
+<p>This file is the complete <strong>new DNSSEC assignment</strong> for
+the worker. It supplements the previous plan and the accepted P6C-MCP-01
+closure review; it does not replace that history or silently enlarge the
+original 81-core-lesson denominator. The 21 previously reviewed findings
+remain closed within their reviewed scope. Carry forward actual human
+G01 acceptance, the six performance conditions, historical limitations
+and the four earlier optional deferrals. Nothing in this plan accepts
+those gates.</p>
+<p><strong>Status:</strong> researched and planned; DNSSEC
+implementation and its acceptance tests have not been performed.
+Requirements below are worker acceptance requirements unless explicitly
+identified as an RFC obligation. UI organization, lesson IDs, synthetic
+values and implementation phases are product design decisions, not RFC
+requirements.</p>
+<p>The source inspection used the corrected P6 packet whose standalone
+SHA-256 is
+<code>23d6c61d861a37705122915a11923d43d610723664a28caa6df89cfcaae71de6</code>.
+Start from the worker’s equivalent current source, preserving any
+subsequent authorized changes. Record the actual base revision/hash
+before editing; do not overwrite a newer checkout with the review
+copy.</p>
+<h2 id="what-the-learner-must-understand">2. What the learner must
+understand</h2>
+<p>The learner should be able to answer: Who supplied these bytes? Who
+signed this RRset? Why does this validator trust that key? What did the
+parent assert? Which resolver validated? What does the stub know? Why
+was the answer accepted, considered insecure, rejected or not
+determined? Which cached evidence or timer affects the next request?</p>
+<p>The interface must distinguish DNS data authenticity from transport
+protection, DNS transaction authentication, application authentication
+and authorization. DNSSEC authenticates data and denial evidence; it
+does not encrypt ordinary DNS, authenticate a human user, authorize file
+access or independently authenticate a subsequent HTTPS server. A
+successful signed lookup can be a prerequisite to another lesson without
+silently granting its permissions. [<a href="#s01">S01</a>, <a href="#s02">S02</a>, <a href="#s23">S23</a>, <a href="#s24">S24</a>]</p>
+<h3 id="proposed-navigation">Proposed navigation</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Workspace / family</th>
+<th scope="col">Required lessons</th>
+<th scope="col">Entry point</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>DNSSEC / Resolution</strong></td>
+<td>DNS01, DNS03, DNS09, DNS10</td>
+<td>DNS01: Follow a signed lookup</td>
+</tr>
+<tr class="even">
+<td><strong>DNSSEC / Validation</strong></td>
+<td>DNS04, DNS07, DNS08, DNS20, DNS21</td>
+<td>DNS04: Understand a validation decision</td>
+</tr>
+<tr class="odd">
+<td><strong>DNSSEC / Forwarding and trust</strong></td>
+<td>DNS05, DNS06, DNS11, DNS22</td>
+<td>DNS06: Who validates when DNS is forwarded?</td>
+</tr>
+<tr class="even">
+<td><strong>DNSSEC / Signing and publication</strong></td>
+<td>DNS02, DNS19</td>
+<td>DNS02: From zone data to signatures</td>
+</tr>
+<tr class="odd">
+<td><strong>DNSSEC / Keys and delegation</strong></td>
+<td>DNS12–DNS18</td>
+<td>DNS12: Refresh signatures and replace a ZSK</td>
+</tr>
+</tbody>
+</table>
+</div><p>Use workspace ID <code>dnssec</code>, model IDs
+<code>lab-dnssec01</code> through <code>lab-dnssec22</code>, and stable
+human-readable titles. All 22 rows are required; development phases are
+sequencing, not optional scope. Adjacent optional extensions are
+separately listed in section 10.</p>
+<h2 id="standards-baseline-and-modern-defaults">3. Standards baseline
+and modern defaults</h2>
+<p>Research cutoff: <strong>23 October 2026</strong>. Use RFC
+4033/4034/4035 with their applicable updates, RFC 6840 clarifications,
+RFC 9499 terminology and RFC 9364’s DNSSEC standards overview. Old
+publication dates do not make the foundational DNS wire format obsolete.
+Conversely, a newer update must not be omitted because a familiar
+tutorial predates it. [<a href="#s01">S01</a>, <a href="#s02">S02</a>,
+<a href="#s03">S03</a>, <a href="#s04">S04</a>]</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Decision</th>
+<th scope="col">Worker requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Algorithm guidance</td>
+<td>RFC 9904 supersedes RFC 8624 as the policy reference and points to
+the IANA registries. Freeze a dated snapshot of the separate signing,
+validation and implementation columns. Do not collapse them into one
+“supported” Boolean. [<a href="#s16">S16</a>]</td>
+</tr>
+<tr class="even">
+<td>Default example</td>
+<td>Use ECDSAP256SHA256, algorithm 13, with SHA-256 DS digest type 2.
+This is a selected modern teaching profile, not the only conforming
+configuration. Include Ed25519 or another currently permitted algorithm
+as an explicit alternative. [<a href="#s16">S16</a>, <a href="#s17">S17</a>]</td>
+</tr>
+<tr class="odd">
+<td>SHA-1 nuance</td>
+<td>Keep three independent concepts: DNSKEY/RRSIG signing algorithm, DS
+digest type, and NSEC3 name-hash algorithm. RFC 9905 §2 requires
+operator treatment of signing algorithms 5/7 as unsupported even while
+implementation validation support is retained. Do not infer operator
+acceptance from the registry’s retained validation capability columns.
+Digest type 1 has its own delegation/validation policy; NSEC3 hashing is
+a third use. [<a href="#s18">S18</a>]</td>
+</tr>
+<tr class="even">
+<td>Other deprecated algorithms</td>
+<td>Reflect RFC 9906 and current registries; do not make ECC-GOST or
+RSA/MD5/DSA a normal signing option. Compatibility/error fixtures must
+say why they exist. [<a href="#s16">S16</a>, <a href="#s18">S18</a>]</td>
+</tr>
+<tr class="odd">
+<td>Denial default</td>
+<td>Teach conventional NSEC first. Add NSEC3 with current guidance: zero
+additional iterations and empty salt; explain when Opt-Out is
+applicable. Do not present hashed names as encryption. [<a href="#s07">S07</a>, <a href="#s08">S08</a>]</td>
+</tr>
+<tr class="even">
+<td>Newer denial format</td>
+<td>Include RFC 9824 compact denial as an explicit profile with
+capability-sensitive behavior, not a universal property of deployed
+resolvers. [<a href="#s11">S11</a>]</td>
+</tr>
+<tr class="odd">
+<td>Delegation automation</td>
+<td>Apply RFC 7344/8078/9615 together with RFC 9975 consistency and RFC
+10026 operational guidance. An old single-server CDS polling example is
+insufficient. [<a href="#s19">S19</a>, <a href="#s20">S20</a>, <a href="#s21">S21</a>]</td>
+</tr>
+<tr class="even">
+<td>Trust anchor</td>
+<td>Use a deterministic synthetic hierarchy and an explicitly
+provisioned anchor. Keep root hints separate. Never learn trust solely
+from the self-signature of a fetched key. Do not hardcode an old real
+root KSK as “current.” [<a href="#s01">S01</a>, <a href="#s14">S14</a>]</td>
+</tr>
+</tbody>
+</table>
+</div><p>Use synthetic <code>.</code> → <code>example.</code> →
+<code>lab.example.</code> and names such as
+<code>www.lab.example.</code> inside an explicitly simulated DNS
+universe. It must not query public DNS or imply that these fixtures are
+the real root zone. Fixture time is adjustable and independent of the
+browser’s wall clock. Document sample TTLs, policy choices and signature
+lifetimes as fixture values.</p>
+<p>At the source-lock phase, capture applicable RFC sections, update
+relationships and errata statuses. Reference the RFC plus individual
+verified errata, rather than treating an informative inline-errata
+rendering as a replacement standard. Reported/held errata are not
+automatically normative. Verified errata surfaced for RFC 4034: 193,
+1062, 3045, 4552; for RFC 4035: 3044, 5226. Check their applicability to
+the selected fields and algorithms before deriving assertions. [<a href="#s28">S28</a>]</p>
+<h2 id="actors-records-and-state-contract">4. Actors, records and state
+contract</h2>
+<h3 id="actors-and-ownership">Actors and ownership</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Entity</th>
+<th scope="col">What must be represented</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Application and stub</td>
+<td>Application request/result is separate from DNS messages. Support a
+conventional stub, a security-aware nonvalidating stub trusting a
+configured resolver, and a locally validating stub.</td>
+</tr>
+<tr class="even">
+<td>Recursive resolver and validator</td>
+<td>Resolution, validation, trust store and caches are distinct
+responsibilities. They may share a process; do not invent a network hop
+between local components.</td>
+</tr>
+<tr class="odd">
+<td>Forwarder / upstream recursive service</td>
+<td>Show the actual forwarding chain, validation owner, configured trust
+and per-hop flags. Forwarder does not automatically mean validator.</td>
+</tr>
+<tr class="even">
+<td>Root, parent and child authorities</td>
+<td>Label zone ownership and delegation cuts. A server can serve several
+zones without merging their signing authority. Distinguish authoritative
+answers from recursive service.</td>
+</tr>
+<tr class="odd">
+<td>Zone operator, signer and private-key store</td>
+<td>Signing private keys remain at the declared signer/HSM boundary.
+Offline signing and online signing are different deployment
+profiles.</td>
+</tr>
+<tr class="even">
+<td>Primary and secondary authorities</td>
+<td>Published zone versions, replication and serving are separate from
+signing. A secondary need not possess private signing keys.</td>
+</tr>
+<tr class="odd">
+<td>Child DNS operator and parental agent</td>
+<td>Child publishes requested DS intent; parent-side acceptance and
+publication are separate steps. Distinguish registrant, registrar,
+registry and DNS provider where relevant. Do not invent an EPP/registrar
+API wire protocol.</td>
+</tr>
+<tr class="even">
+<td>Additional signer/provider</td>
+<td>Use only for DNS18; label each provider’s public key set, private
+custody and publication generation.</td>
+</tr>
+<tr class="odd">
+<td>Adversarial or faulty intermediary</td>
+<td>Bounded tampering/stripping/staleness fixtures illustrate exactly
+what is detected and by whom. Do not make DNSSEC guarantee
+availability.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Terminology and role boundaries follow RFC 9499 §§6, 9–11. Use
+grouped actors and chapters to keep an ordinary lookup readable; not
+every role needs to be visible at once. [<a href="#s04">S04</a>]</p>
+<h3 id="required-inspectable-objects">Required inspectable objects</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Object</th>
+<th scope="col">Fields / relationships to expose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DNS question and message</td>
+<td>ID, opcode, QNAME/QTYPE/QCLASS; QR/AA/TC/RD/RA/AD/CD; RCODE;
+Answer/Authority/Additional; OPT with EDNS version, advertised size, DO
+and profile-specific CO/EDE.</td>
+</tr>
+<tr class="even">
+<td>RR and RRset</td>
+<td>Owner, type, class, TTL, RDATA; RRset membership; canonical signing
+input versus presentation/wire occurrence. Include A/AAAA, SOA, NS and
+glue, CNAME and DNAME.</td>
+</tr>
+<tr class="odd">
+<td>DNSKEY</td>
+<td>Flags, protocol, algorithm, public-key material; Zone/SEP/REVOKE
+distinctions; key generation and calculated key tag.</td>
+</tr>
+<tr class="even">
+<td>RRSIG</td>
+<td>Type Covered, Algorithm, Labels, Original TTL, Expiration,
+Inception, Key Tag, Signer’s Name, Signature; exact covered RRset and
+key.</td>
+</tr>
+<tr class="odd">
+<td>DS and CDS</td>
+<td>Key Tag, Algorithm, Digest Type, Digest; owner-name plus DNSKEY
+digest input; publishing zone and generation.</td>
+</tr>
+<tr class="even">
+<td>CDNSKEY</td>
+<td>DNSKEY-shaped requested key material; child intent, authenticated
+retrieval and parent decision remain separate.</td>
+</tr>
+<tr class="odd">
+<td>DSYNC</td>
+<td>RRtype, Scheme, Port and Target for delegation-maintenance
+notification discovery; not a DS record or authority to modify one.</td>
+</tr>
+<tr class="even">
+<td>NSEC</td>
+<td>Next Domain Name and Type Bit Maps; interval or exact-name evidence
+and applicable zone.</td>
+</tr>
+<tr class="odd">
+<td>NSEC3 / NSEC3PARAM</td>
+<td>Hash algorithm, flags, iterations, salt, next hash, type bitmap;
+matching/covering proof roles. NSEC3PARAM belongs to authority-side
+coordination, not a validator’s substitute for actual proof
+parameters.</td>
+</tr>
+<tr class="even">
+<td>Trust anchor</td>
+<td>DNSKEY/DS form, provisioning source, scope, generation and
+maintenance status. A key tag is a lookup aid, not a globally unique key
+identity.</td>
+</tr>
+<tr class="odd">
+<td>Cache entry</td>
+<td>RRset/proof, receipt time, validation provenance, cache expiry,
+signature deadline, query context and source generation.</td>
+</tr>
+<tr class="even">
+<td>Optional-in-context objects</td>
+<td>TSIG message authentication; ZONEMD zone digest; CSYNC NS/glue
+intent; EDE diagnostic. They have distinct authority and purposes.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Field layouts: [<a href="#s05">S05</a>–<a href="#s08">S08</a>, <a href="#s19">S19</a>, <a href="#s22">S22</a>, <a href="#s25">S25</a>, <a href="#s29">S29</a>]. Do not duplicate every field as a permanently
+visible row in Journey mode; Fields mode must expose the real
+structure.</p>
+<h3 id="state-dimensions-and-provenance">State dimensions and
+provenance</h3>
+<p>Keep separate <code>received</code>, <code>signatureChecked</code>,
+<code>chainEstablished</code>, <code>denialChecked</code>,
+<code>acceptedForUse</code>, <code>cached</code>,
+<code>returnedToStub</code> and <code>applicationResult</code>
+transitions. A public RRset is readable before it is trusted. DNSSEC has
+no “decrypt RRSIG” step.</p>
+<p>Use <code>securityStatus</code> together with <code>reason</code>,
+<code>anchorRef</code>, <code>validationOwner</code>,
+<code>evidenceRefs</code>, <code>algorithmPolicy</code>,
+<code>checkedAt</code> and <code>failureStage</code>. Secure, insecure,
+bogus and indeterminate are not a complete substitute for these facts.
+RFC 9499 §11 preserves differences in earlier definitions; state the
+selected interpretation. Distinguish “not yet checked” and “transport
+failure” from a completed DNSSEC verdict. [<a href="#s04">S04</a>]</p>
+<p>Every message occurrence has its own identity/correlation. A
+canonical RRset may be carried in several messages and caches. Keep
+issuer/signing origin, transmitter and current holder separate. Deriving
+a DS does not make the child the publisher of the parent’s DS RRset.
+Forwarding does not make the forwarder the signer. Publication
+retirement does not erase remote cache copies. Never mutate a previously
+signed representation simply to show a decreasing cache TTL.</p>
+<p>Private signing keys must not appear in resolver, stub, parent-agent
+or network holdings unless that actor independently is the explicitly
+configured signer. Public-key transfer and local trust acceptance
+require different events. Model use/verification observations for
+existing keys rather than reacquiring or recreating them at every
+check.</p>
+<h2 id="required-lesson-specifications">5. Required lesson
+specifications</h2>
+<p>Case names below are stable planning names. The first listed case in
+each lesson is its default; a runtime <code>default</code> alias maps to
+that case and does not add another case. The frozen requirement is 22
+lessons and 159 named cases. The worker must enumerate all of them in
+the new manifest before implementation. Several cases may share a model;
+hiding a required outcome behind an untested toggle does not satisfy
+coverage. Added cases are allowed but must be listed separately from
+this frozen denominator.</p>
+<h3 id="required-inventory-and-defaults">Required inventory and
+defaults</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<thead>
+<tr class="header">
+<th scope="col">Lesson</th>
+<th style="text-align: right;" scope="col">Named cases</th>
+<th scope="col">Default case</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DNS01</td>
+<td style="text-align: right;">4</td>
+<td><code>cold-secure</code></td>
+</tr>
+<tr class="even">
+<td>DNS02</td>
+<td style="text-align: right;">7</td>
+<td><code>split-ksk-zsk</code></td>
+</tr>
+<tr class="odd">
+<td>DNS03</td>
+<td style="text-align: right;">7</td>
+<td><code>signed-child</code></td>
+</tr>
+<tr class="even">
+<td>DNS04</td>
+<td style="text-align: right;">11</td>
+<td><code>valid</code></td>
+</tr>
+<tr class="odd">
+<td>DNS05</td>
+<td style="text-align: right;">7</td>
+<td><code>unaware-stub</code></td>
+</tr>
+<tr class="even">
+<td>DNS06</td>
+<td style="text-align: right;">8</td>
+<td><code>local-validates-upstream-fetches</code></td>
+</tr>
+<tr class="odd">
+<td>DNS07</td>
+<td style="text-align: right;">7</td>
+<td><code>nxdomain</code></td>
+</tr>
+<tr class="even">
+<td>DNS08</td>
+<td style="text-align: right;">6</td>
+<td><code>nsec3-nxdomain</code></td>
+</tr>
+<tr class="odd">
+<td>DNS09</td>
+<td style="text-align: right;">7</td>
+<td><code>wildcard-positive</code></td>
+</tr>
+<tr class="even">
+<td>DNS10</td>
+<td style="text-align: right;">10</td>
+<td><code>positive-cache-hit</code></td>
+</tr>
+<tr class="odd">
+<td>DNS11</td>
+<td style="text-align: right;">6</td>
+<td><code>udp-complete</code></td>
+</tr>
+<tr class="even">
+<td>DNS12</td>
+<td style="text-align: right;">6</td>
+<td><code>resign-before-expiry</code></td>
+</tr>
+<tr class="odd">
+<td>DNS13</td>
+<td style="text-align: right;">6</td>
+<td><code>ksk-double-ds</code></td>
+</tr>
+<tr class="even">
+<td>DNS14</td>
+<td style="text-align: right;">8</td>
+<td><code>modern-baseline</code></td>
+</tr>
+<tr class="odd">
+<td>DNS15</td>
+<td style="text-align: right;">7</td>
+<td><code>provisioned-anchor</code></td>
+</tr>
+<tr class="even">
+<td>DNS16</td>
+<td style="text-align: right;">10</td>
+<td><code>consistent-update</code></td>
+</tr>
+<tr class="odd">
+<td>DNS17</td>
+<td style="text-align: right;">8</td>
+<td><code>authenticated-rfc9615-bootstrap</code></td>
+</tr>
+<tr class="even">
+<td>DNS18</td>
+<td style="text-align: right;">7</td>
+<td><code>shared-ksk-model</code></td>
+</tr>
+<tr class="odd">
+<td>DNS19</td>
+<td style="text-align: right;">7</td>
+<td><code>offline-signer-secondary</code></td>
+</tr>
+<tr class="even">
+<td>DNS20</td>
+<td style="text-align: right;">7</td>
+<td><code>bogus-servfail-with-ede</code></td>
+</tr>
+<tr class="odd">
+<td>DNS21</td>
+<td style="text-align: right;">7</td>
+<td><code>compact-nonexistent-name</code></td>
+</tr>
+<tr class="even">
+<td>DNS22</td>
+<td style="text-align: right;">6</td>
+<td><code>private-signed-zone-local-anchor</code></td>
+</tr>
+<tr class="odd">
+<td><strong>Total</strong></td>
+<td style="text-align: right;"><strong>159</strong></td>
+<td><strong>22 defaults, already included</strong></td>
+</tr>
+</tbody>
+</table>
+</div><h3 id="dns01-follow-a-signed-lookup">DNS01 — Follow a signed
+lookup</h3>
+<p><strong>Question:</strong> How does a cold resolver obtain and trust
+an answer?</p>
+<p><strong>Trace:</strong> application/stub requests A; resolver selects
+its configured anchor; follows root/parent/child referrals and obtains
+the needed DNSKEY/DS/RRSIG evidence; authenticates the links and answer;
+caches accepted data; returns a response; stub/application consumes it
+at its own boundary. Fetch order is one valid deterministic teaching
+order, not a requirement that all implementations query identically.
+Ordinary recursive lookup happens at the resolver; the stub is not shown
+iterating through all authorities.</p>
+<p><strong>Cases:</strong> <code>cold-secure</code>,
+<code>warm-answer-cache</code>, <code>partial-chain-cache</code>,
+<code>tampered-answer</code>.</p>
+<p><strong>Acceptance:</strong> the exact answer is present before local
+checking but not marked trusted; referral addresses are not made secure
+merely by sharing a message with DS. The warm variant shows which
+requests disappear and which evidence supports reuse. The tampered RRset
+is withheld for the checking client. Link to DNS02 for how the signed
+records were produced. [<a href="#s01">S01</a>, <a href="#s02">S02</a>,
+<a href="#s03">S03</a>, <a href="#s04">S04</a>, <a href="#s05">S05</a>,
+<a href="#s06">S06</a>]</p>
+<h3 id="dns02-from-zone-data-to-signatures">DNS02 — From zone data to
+signatures</h3>
+<p><strong>Question:</strong> What exactly is signed, by which key, and
+what gets published?</p>
+<p><strong>Trace:</strong> prepare zone RRsets; create public/private
+key pairs; canonicalize signing inputs; sign and publish DNSKEY/RRSIG
+and denial records; derive candidate DS; hand candidate to the separate
+parent publication process. Teach split KSK/ZSK and combined signing key
+profiles. KSK/ZSK roles are operational conventions; SEP is not a
+universal validator key-usage restriction.</p>
+<p><strong>Cases:</strong> <code>split-ksk-zsk</code>,
+<code>combined-key</code>, <code>equivalent-presentation</code>,
+<code>changed-rdata</code>, <code>opaque-rdata-case-change</code>,
+<code>changed-owner</code>, <code>keytag-collision</code>.</p>
+<p><strong>Acceptance:</strong> show canonical bytes and signature input
+boundaries. RR ordering, case of domain-name fields subject to
+canonicalization, and permitted name compression must not cause invented
+signature failures. Opaque RDATA such as TXT string case remains signed
+data: changing it, or changing the owner to a different name, fails
+verification with the unchanged signature. Colliding tags still
+select/check actual candidate keys. The root does not sign every leaf
+RRset. DNSKEY is public; private keys are not DNS records. [<a href="#s01">S01</a>, <a href="#s03">S03</a>, <a href="#s05">S05</a>, <a href="#s13">S13</a>, <a href="#s17">S17</a>]</p>
+<h3 id="dns03-cross-a-delegation-boundary">DNS03 — Cross a delegation
+boundary</h3>
+<p><strong>Question:</strong> Why is one child secure, another insecure,
+and another broken?</p>
+<p><strong>Cases:</strong> <code>signed-child</code>,
+<code>proved-no-ds</code>, <code>supported-ds-mismatch</code>,
+<code>missing-ds-proof</code>, <code>no-covering-anchor</code>,
+<code>signed-island-with-local-anchor</code>,
+<code>unsupported-only-ds</code>.</p>
+<p><strong>Acceptance:</strong> animate parent-authenticated DS,
+matching child key and child DNSKEY RRset acceptance. Proved absence of
+DS can establish an insecure delegation; a missing packet field cannot.
+A supported DS path that fails differs from an authenticated
+unsupported-only path. A signed island becomes locally secure only with
+a suitable independent anchor/path. Expose how local strict application
+policy can refuse an insecure answer without relabeling it
+cryptographically bogus. [<a href="#s01">S01</a>, <a href="#s03">S03</a>, <a href="#s04">S04</a>, <a href="#s06">S06</a>]</p>
+<h3 id="dns04-explain-a-validation-decision">DNS04 — Explain a
+validation decision</h3>
+<p><strong>Question:</strong> Which check failed, and what does the
+client receive?</p>
+<p><strong>Cases:</strong> <code>valid</code>,
+<code>signature-expired</code>, <code>signature-not-yet-valid</code>,
+<code>wrong-clock</code>, <code>missing-dnskey</code>,
+<code>missing-rrsig</code>, <code>wrong-signer-or-key</code>,
+<code>wrong-covered-data</code>,
+<code>one-valid-plus-one-invalid-signature</code>,
+<code>dnskey-protocol-not-three</code>,
+<code>zone-key-flag-clear</code>.</p>
+<p><strong>Acceptance:</strong> bind each check to the exact
+key/RRset/signature, time and policy, including DNSKEY Protocol=3 and
+the Zone Key flag; SEP is not an ordinary validation gate. Support a
+valid usable signature/path despite an additional unusable signature; do
+not require every attached signature to pass. Wrong-clock is an explicit
+resolver input. Show the internal verdict separately from external
+SERVFAIL/EDE behavior; no positive application answer is accepted in a
+checking bogus case. Numeric validity-time handling must follow the
+RFC’s serial arithmetic. [<a href="#s03">S03</a>, <a href="#s05">S05</a>, <a href="#s06">S06</a>, <a href="#s12">S12</a>]</p>
+<h3 id="dns05-stub-validation-and-the-ad-flag">DNS05 — Stub validation
+and the AD flag</h3>
+<p><strong>Question:</strong> Does my workstation verify DNSSEC itself
+or trust a resolver?</p>
+<p><strong>Cases:</strong> <code>unaware-stub</code>,
+<code>trusted-resolver-ad</code>, <code>ad-interest-without-do</code>,
+<code>validating-stub</code>, <code>forged-ad-untrusted-hop</code>,
+<code>do-zero-explicit-dnskey-query</code>,
+<code>response-flags-and-cached-ad</code>.</p>
+<p><strong>Acceptance:</strong> distinguish DO requesting DNSSEC
+records, query AD signaling understanding/interest, response AD
+conveying the responder’s assertion, and CD requesting checking-disabled
+treatment. AA/RD/RA/NOERROR are not security verdicts. DO=0 does not
+mean “validation off”; explicit DNSSEC-type queries still return their
+requested type. A locally validating stub owns its anchor and checks
+evidence. A nonvalidating stub’s reliance requires declared
+resolver/channel trust; a forged AD bit on an untrusted hop is
+insufficient. [<a href="#s01">S01</a>, <a href="#s03">S03</a>, <a href="#s23">S23</a>]</p>
+<p>In the response-flags case, check recursive CD echoing, DO copying by
+the responder and receiver-side ignoring of response DO. Do not assert
+that CD=1 always forces AD=0: already authenticated cached data can meet
+the applicable AD conditions. [<a href="#s03">S03</a>, <a href="#s06">S06</a>]</p>
+<h3 id="dns06-who-validates-when-dns-is-forwarded">DNS06 — Who validates
+when DNS is forwarded?</h3>
+<p><strong>Question:</strong> Where does validation happen in client →
+local resolver → upstream resolver → authorities?</p>
+<p><strong>Cases:</strong>
+<code>local-validates-upstream-fetches</code>,
+<code>upstream-validates-local-relies</code>,
+<code>both-validate</code>, <code>upstream-servfail-cd-zero</code>,
+<code>local-checks-cd-one-data</code>,
+<code>dnssec-stripping-forwarder</code>,
+<code>forwarder-loop-or-unreachable</code>,
+<code>cached-upstream-servfail-cd-zero-then-cd-one</code>.</p>
+<p><strong>Acceptance:</strong> show queries, flags and results for each
+hop. A validating resolver can request unchecked upstream data and make
+its own decision even when its downstream client requests checking. Do
+not propagate upstream AD as local independent verification. A
+trusted-upstream profile must declare that trust. Stripped records or
+transport failure must not silently downgrade a known secure delegation
+to an unsigned success. Forwarding configuration selects a route; it
+does not install an anchor. [<a href="#s03">S03</a>, <a href="#s23">S23</a>]</p>
+<p>The cached-upstream-SERVFAIL case must issue a fresh CD=1 upstream
+query in the circumstances specified by RFC 6840 §5.9. Keep this cache
+context distinct from suppressing repeated locally established failures
+under RFC 9520. [<a href="#s03">S03</a>, <a href="#s12">S12</a>]</p>
+<h3 id="dns07-prove-that-a-name-or-type-does-not-exist-with-nsec">DNS07
+— Prove that a name or type does not exist with NSEC</h3>
+<p><strong>Cases:</strong> <code>nxdomain</code>,
+<code>existing-name-nodata</code>, <code>empty-nonterminal</code>,
+<code>wildcard-excluded</code>, <code>no-ds-at-delegation</code>,
+<code>incomplete-proof</code>, <code>proof-from-wrong-zone</code>.</p>
+<p><strong>Acceptance:</strong> display name intervals and type bitmaps,
+then explicitly derive the assertion they support. NXDOMAIN, NODATA and
+empty non-terminal are different. Where wildcard exclusion or additional
+evidence is required, a single convenient-looking record is not enough.
+A denial from one zone cannot be applied across an unrelated delegation.
+Keep authenticated negative answers separate from transient failure
+caching. [<a href="#s05">S05</a>, <a href="#s06">S06</a>, <a href="#s09">S09</a>]</p>
+<h3 id="dns08-nsec3-and-opt-out">DNS08 — NSEC3 and Opt-Out</h3>
+<p><strong>Cases:</strong> <code>nsec3-nxdomain</code>,
+<code>nsec3-nodata</code>, <code>unsigned-optout-delegation</code>,
+<code>missing-closest-encloser</code>,
+<code>hash-parameter-mismatch</code>,
+<code>excessive-iterations-policy</code>.</p>
+<p><strong>Acceptance:</strong> explain matching versus covering hashes,
+closest encloser and next closer; show the actual salt/iteration/hash
+inputs. The zero-iteration setting still performs the initial hash.
+Opt-Out does not prove all names in a covered interval absent or secure.
+Show the limits of enumeration resistance and the authority-side
+NSEC3PARAM role. Declare expensive-proof handling as a selected policy
+within current guidance; do not turn a resource limit into a successful
+proof. [<a href="#s07">S07</a>, <a href="#s08">S08</a>]</p>
+<h3 id="dns09-wildcards-and-aliases-across-zones">DNS09 — Wildcards and
+aliases across zones</h3>
+<p><strong>Cases:</strong> <code>wildcard-positive</code>,
+<code>wildcard-nodata</code>, <code>wildcard-missing-proof</code>,
+<code>cname-secure-target</code>, <code>cname-insecure-target</code>,
+<code>cname-bogus-target</code>,
+<code>dname-synthesized-cname</code>.</p>
+<p><strong>Acceptance:</strong> for conventional wildcard signing,
+relate RRSIG Labels to the reconstructed owner and the required
+closest-match evidence. Validate each relevant link/target under its own
+authority; a signed CNAME does not bless the destination address. A
+CNAME alias’s original name is not the target’s zone. For DNAME,
+authenticate the DNAME and check the synthesis; do not require an
+independently signed synthesized CNAME. Keep the RFC 9824 online-signing
+case distinct. [<a href="#s05">S05</a>, <a href="#s06">S06</a>, <a href="#s11">S11</a>, <a href="#s26">S26</a>]</p>
+<h3 id="dns10-reuse-validated-cache-data">DNS10 — Reuse validated cache
+data</h3>
+<p><strong>Cases:</strong> <code>positive-cache-hit</code>,
+<code>expired-ttl</code>, <code>signature-expires-first</code>,
+<code>short-rrsig-ttl</code>, <code>short-original-ttl</code>,
+<code>negative-cache-hit</code>, <code>aggressive-nsec</code>,
+<code>aggressive-nsec3</code>, <code>wildcard-synthesis</code>,
+<code>out-of-proof-range</code>.</p>
+<p><strong>Acceptance:</strong> distinguish exact cache hits from newly
+synthesized answers based on validated denial evidence. Show the
+relevant cache key, proof zone/range, evidence lifetime and signature
+limit. Apply RFC 9077’s updated NSEC/NSEC3 TTL rules, including valid
+aggressive use that does not depend on an attached SOA for every cached
+proof. A new publication does not immediately invalidate an old valid
+cache. Forbid synthesis outside proof coverage, across an incompatible
+zone cut, using Opt-Out evidence where disallowed, or after validity
+ends. [<a href="#s09">S09</a>, <a href="#s10">S10</a>]</p>
+<p>Compute the effective authenticated TTL bound from received RRset
+TTL, received RRSIG TTL, RRSIG Original TTL and remaining signature
+validity. Explicitly exercise each limiting term rather than testing
+signature expiration alone. [<a href="#s06">S06</a> §5.3.3]</p>
+<h3 id="dns11-large-answers-edns-and-encrypted-transport">DNS11 — Large
+answers, EDNS and encrypted transport</h3>
+<p><strong>Cases:</strong> <code>udp-complete</code>,
+<code>udp-truncated-tcp-retry</code>, <code>tcp-blocked</code>,
+<code>edns-stripped</code>, <code>dot-authenticated-resolver</code>,
+<code>encrypted-but-bogus-dns-data</code>.</p>
+<p><strong>Acceptance:</strong> show advertised UDP size, TC and a
+correlated TCP retry; do not treat a partial response as a complete
+proof. TCP is a normal DNS transport, not an obsolete workaround. The
+selected authenticated DoT profile protects the hop and authenticates
+its configured endpoint; encryption alone or opportunistic use must not
+imply that identity guarantee. It does not produce an RRSIG or fix a
+broken DNSSEC chain. Keep transport authentication and DNSSEC result
+independent. Detailed TLS handshakes can link to existing lessons rather
+than be duplicated. [<a href="#s22">S22</a>, <a href="#s23">S23</a>, <a href="#s24">S24</a>]</p>
+<h3 id="dns12-refresh-signatures-and-roll-a-zsk">DNS12 — Refresh
+signatures and roll a ZSK</h3>
+<p><strong>Cases:</strong> <code>resign-before-expiry</code>,
+<code>zsk-prepublish</code>, <code>zsk-double-sign</code>,
+<code>old-key-removed-too-early</code>, <code>secondary-lags</code>,
+<code>signature-refresh-outage</code>.</p>
+<p><strong>Acceptance:</strong> show publication, activation, overlap
+and retirement as separate clock events. The resolver continues with the
+key/signature generation it actually cached. Compare safe rollout with a
+client whose remaining cached objects no longer compose into a valid
+path. Refreshing RRSIGs is not necessarily changing the DNSKEY. No
+arbitrary “wait one TTL” shortcut may substitute for the selected
+publication, cache and signature timing dependencies. [<a href="#s13">S13</a>]</p>
+<h3 id="dns13-roll-a-ksk-or-combined-signing-key">DNS13 — Roll a KSK or
+combined signing key</h3>
+<p><strong>Cases:</strong> <code>ksk-double-ds</code>,
+<code>ksk-double-ksk-method</code>, <code>combined-key-rollover</code>,
+<code>parent-ds-delayed</code>, <code>old-ds-cache</code>,
+<code>premature-old-key-removal</code>.</p>
+<p><strong>Acceptance:</strong> child DNSKEY changes and parent DS
+changes have different publishers, schedules and caches. Demonstrate a
+continuous path for old and new resolver states. A CSK transition must
+account for both DNSKEY authentication and ordinary RRset signatures.
+Reducing a TTL now does not shorten a previously cached TTL. Parent
+acknowledgments and publication visibility are separate. [<a href="#s13">S13</a>, <a href="#s19">S19</a>]</p>
+<p>Bind the second case to RFC 7583’s Double-KSK timeline; do not
+confuse it with the Double-RRset method or ZSK double-signature
+rollover.</p>
+<h3 id="dns14-change-algorithms-and-digest-policy">DNS14 — Change
+algorithms and digest policy</h3>
+<p><strong>Cases:</strong> <code>modern-baseline</code>,
+<code>dual-algorithm-rollover</code>,
+<code>algorithm-unsupported</code>,
+<code>unsupported-digest-only</code>,
+<code>modern-and-obsolete-paths</code>,
+<code>sha1-signing-disabled</code>,
+<code>sha1-digest-compatibility</code>,
+<code>nsec3-sha1-not-signature-policy</code>.</p>
+<p><strong>Acceptance:</strong> keep publisher generation rules,
+implementation capability and operator acceptance policy separately
+inspectable. Use current RFC/IANA requirements for algorithm transitions
+and usable paths, not an indiscriminate all-signatures rule. Preserve
+the RFC 9905 distinction explained in section 3. A valid alternative
+current path prevents an obsolete extra path from automatically
+poisoning the answer. Document exactly which cases exercise
+compatibility versus current default operation. [<a href="#s03">S03</a>,
+<a href="#s13">S13</a>, <a href="#s16">S16</a>–<a href="#s18">S18</a>]</p>
+<h3 id="dns15-install-and-maintain-a-trust-anchor">DNS15 — Install and
+maintain a trust anchor</h3>
+<p><strong>Cases:</strong> <code>provisioned-anchor</code>,
+<code>untrusted-self-signed-key</code>, <code>rfc5011-add</code>,
+<code>add-hold-down-interrupted</code>, <code>revoke-and-remove</code>,
+<code>offline-misses-rollover</code>, <code>manual-recovery</code>.</p>
+<p><strong>Acceptance:</strong> teach initial out-of-band trust
+separately from authenticated RFC 5011 maintenance. Show the specified
+states, observation history, hold-down timers and revoke processing
+rather than reducing the protocol to “see a new key, trust it.”
+Represent the add hold-down as at least 30 days and no earlier than the
+first-observed RRset’s original TTL expiry, with the required repeated
+validated observation; removal bookkeeping is distinct from revocation.
+Use an accelerated display clock with true represented durations. Lost
+trust does not repair itself from an arbitrary fetched key. Manual
+recovery is explicit operator action. Trust-anchor replacement differs
+from parent/child DS rollover. [<a href="#s14">S14</a>]</p>
+<p>Revocation changes DNSKEY RDATA and therefore the derived key tag.
+Preserve public-key lineage across that change; withdrawal alone is not
+authenticated revocation. [<a href="#s14">S14</a>]</p>
+<h3 id="dns16-maintain-parent-ds-with-cdscdnskey">DNS16 — Maintain
+parent DS with CDS/CDNSKEY</h3>
+<p><strong>Cases:</strong> <code>consistent-update</code>,
+<code>consistent-ds-removal</code>, <code>one-authority-stale</code>,
+<code>cds-cdnskey-keyset-disagreement</code>,
+<code>nodata-versus-removal</code>,
+<code>unreachable-authority-retry</code>,
+<code>digest-policy-comparison</code>,
+<code>dsync-notify-trigger</code>, <code>invalid-dsync-target</code>,
+<code>malformed-delete-signal</code>.</p>
+<p><strong>Acceptance:</strong> child intent is observed, authenticated
+and checked before the parent’s DS changes. Apply RFC 9975’s
+all-addresses/received-response consistency rules; NODATA counts as a
+response, while unreachability has retry handling. Compare eligible
+referenced keys rather than requiring byte-identical RRsets of every
+digest type. Inconsistency leaves the existing delegation unchanged. A
+signed, agreed removal request is different from no publication. Explain
+CSYNC separately: it requests NS/glue synchronization and does not
+itself request a DS update. [<a href="#s19">S19</a>, <a href="#s21">S21</a>]</p>
+<p>For deletion, check the authenticated singleton signal
+(<code>CDS 0 0 0 0</code> or <code>CDNSKEY 0 3 0 0</code>) and retain
+child signing until the applicable old-DS cache dependencies have
+cleared. With RFC 9859, discover the DSYNC target, send the appropriate
+NOTIFY and then run normal retrieval/validation. A notification
+acknowledgment is not DS publication. Cover CDS notification semantics
+for both CDS/CDNSKEY changes and ignored unusable scheme/port entries.
+[<a href="#s19">S19</a>, <a href="#s29">S29</a>]</p>
+<h3 id="dns17-bootstrap-ds-and-operate-automation-safely">DNS17 —
+Bootstrap DS and operate automation safely</h3>
+<p><strong>Cases:</strong> <code>authenticated-rfc9615-bootstrap</code>,
+<code>unauthenticated-child-only-claim</code>,
+<code>signaling-zone-not-secure</code>,
+<code>only-in-domain-nameservers</code>,
+<code>parent-policy-declines</code>,
+<code>update-would-break-validation</code>,
+<code>concurrent-manual-update</code>,
+<code>report-and-retry</code>.</p>
+<p><strong>Acceptance:</strong> show RFC 9615 signaling through an
+already authenticated out-of-domain DNS operator namespace and the
+consistency/acceptance checks for the claimed child. Make absent parent
+DS and an eligible out-of-domain NS explicit prerequisites; an
+all-in-domain set cannot supply the missing independent trust. Do not
+bootstrap trust circularly from the child’s own untrusted signature.
+Distinguish manual/out-of-band enrollment and older RFC 8078 policy
+profiles from the selected authenticated bootstrap. Apply RFC 10026
+continuity checks and reporting; chosen temporary DS TTLs must not be
+presented as instant remote cache invalidation. Show locks and
+concurrent manual changes as explicit policy inputs. [<a href="#s19">S19</a>, <a href="#s20">S20</a>, <a href="#s21">S21</a>]</p>
+<p>Within the existing concurrency/retry cases, preserve a manual
+recovery channel. In-band DELETE must not suspend automation;
+out-of-band full DS removal should suspend it until a nonempty DS set is
+provisioned. Apply the different registrar/registry lock semantics from
+RFC 10026 §6 rather than equating every update lock with suspended
+automation. [<a href="#s20">S20</a>]</p>
+<h3 id="dns18-operate-multiple-signersproviders">DNS18 — Operate
+multiple signers/providers</h3>
+<p><strong>Cases:</strong> <code>shared-ksk-model</code>,
+<code>separate-ksk-model</code>,
+<code>cached-keys-provider-switch</code>,
+<code>missing-cross-provider-key</code>,
+<code>coordinated-rollover</code>, <code>provider-migration</code>,
+<code>conflicting-cds-intent</code>.</p>
+<p><strong>Acceptance:</strong> demonstrate RFC 8901’s two models with
+declared private-key custody, DNSKEY sets, DS state and per-provider
+signatures. A resolver using cached keys from one provider must still
+have a valid path when it gets an answer from the other. Public-key
+coordination is not implicit private-key copying. Use RFC 9975 checks to
+prevent one provider’s automation signal from silently removing
+another’s delegation support. [<a href="#s15">S15</a>, <a href="#s21">S21</a>]</p>
+<h3 id="dns19-publish-and-replicate-a-signed-zone">DNS19 — Publish and
+replicate a signed zone</h3>
+<p><strong>Cases:</strong> <code>offline-signer-secondary</code>,
+<code>notify-ixfr</code>, <code>axfr-fallback</code>,
+<code>tsig-authenticated-update</code>,
+<code>tsig-valid-policy-denied</code>, <code>tsig-failure</code>,
+<code>zonemd-mismatch</code>.</p>
+<p><strong>Acceptance:</strong> distinguish management update
+authentication/authorization, zone signing, transfer and query serving.
+NOTIFY triggers appropriate checking; it is not the zone transfer
+itself. Use current TSIG (RFC 8945) for the chosen transaction profile,
+with explicit shared-key holders and integrity checks; it provides no
+general confidentiality. A secondary can serve signed public records
+without a signing private key. For the ZONEMD case, authenticate the
+expected digest appropriately and demonstrate whole-zone integrity
+failure separately from individual RRset validation. Do not claim DNSSEC
+alone authorizes UPDATE or AXFR. [<a href="#s22">S22</a>, <a href="#s25">S25</a>]</p>
+<h3 id="dns20-diagnose-failure-and-recovery">DNS20 — Diagnose failure
+and recovery</h3>
+<p><strong>Cases:</strong> <code>bogus-servfail-with-ede</code>,
+<code>same-failure-without-ede</code>,
+<code>cd-one-diagnostic-data</code>, <code>transport-timeout</code>,
+<code>failure-cache-suppresses-retry</code>,
+<code>retry-after-expiry</code>,
+<code>temporary-negative-trust-anchor</code>.</p>
+<p><strong>Acceptance:</strong> log the first detector, internal reason,
+external RCODE/flags, optional EDE and application outcome. EDE is
+diagnostic metadata, not signed proof and not an RCODE override.
+Implement RFC 9520 failure caching as distinct from authenticated
+negative caching; the chosen bounded duration and retries must meet that
+standard. A negative trust anchor is an explicit temporary operator
+bypass with scope/expiry, not a repair that makes data secure.
+Rechecking after expiry must perform the relevant work again. [<a href="#s12">S12</a>]</p>
+<h3 id="dns21-compact-denial-of-existence">DNS21 — Compact denial of
+existence</h3>
+<p><strong>Cases:</strong> <code>compact-nonexistent-name</code>,
+<code>genuine-nodata</code>, <code>empty-nonterminal</code>,
+<code>co-enabled</code>, <code>co-disabled-downstream</code>,
+<code>explicit-nxname-query</code>,
+<code>no-wide-aggressive-synthesis</code>.</p>
+<p><strong>Acceptance:</strong> implement the selected RFC 9824 NSEC
+profile: signed NXNAME bitmap evidence, NODATA-shaped answers and
+optional CO-signaled response-code restoration. NXNAME is not a stored
+ordinary RR or an RCODE. Track CO per hop and cached response context.
+Reject explicit NXNAME queries appropriately without forwarding them.
+The minimally covering proof cannot be used as if it were a broad
+conventional denial range. Include an explanation of the specified NSEC3
+alternative without claiming it is the preferred profile. [<a href="#s11">S11</a>]</p>
+<h3 id="dns22-private-dns-local-anchors-and-conditional-forwarding">DNS22 —
+Private DNS, local anchors and conditional forwarding</h3>
+<p><strong>Cases:</strong>
+<code>private-signed-zone-local-anchor</code>,
+<code>private-signed-zone-no-covering-anchor</code>,
+<code>conditional-forward-with-local-validation</code>,
+<code>different-client-trust-stores</code>,
+<code>stale-private-anchor</code>,
+<code>private-view-versus-public-chain</code>.</p>
+<p><strong>Acceptance:</strong> use two explicit DNS views with named
+trust stores, routes and fixture identities. Conditional forwarding
+changes destination selection; it is not an authenticated delegation or
+anchor bootstrap. A public root anchor does not automatically establish
+trust in an unrelated private hierarchy. Identical owner names may
+resolve differently under declared views; do not merge their caches or
+keys. These are deployment profiles composed from DNSSEC mechanisms, not
+an assertion that RFCs mandate one split-DNS product design. [<a href="#s01">S01</a>, <a href="#s04">S04</a>, <a href="#s14">S14</a>, <a href="#s23">S23</a>]</p>
+<p>The no-covering-anchor case has no applicable anchor anywhere. The
+public-chain case instead has a configured public anchor and public-tree
+evidence conflicting with the private view. Give each its own
+evidence/reason and expected verdict; do not apply one generic “private
+zone is insecure” rule.</p>
+<h2 id="ui-and-learning-ergonomics">6. UI and learning ergonomics</h2>
+<p><strong>Default journey:</strong> DNS01 should start with a short
+question, show the application and resolver immediately, then introduce
+authority actors as the lookup reaches them. Keep the signer out of the
+default wire path; offer “How were these records signed?” as a related
+lesson. Keep full journey, backward navigation, chapter navigation and
+field following available.</p>
+<p><strong>Three existing views:</strong> Journey explains decisions;
+Fields shows actual message/RR structure; Crypto explains covered bytes,
+keys, digests and numerical evidence. Use progressive disclosure for
+NSEC3 calculations, canonicalization and rollover timing. Long
+signatures must not push the inspector heading offscreen.</p>
+<p><strong>Trust panel:</strong> at the selected event show “Data
+received,” “Checked by,” “Trust starts at,” “Current status,” “Reason,”
+and “What the application received.” Label remote assertions separately
+from local verification. Use text and icons as well as color. “Insecure”
+needs a short explanation such as “No authenticated chain for this
+data”; it must not imply proven forgery.</p>
+<p><strong>Time:</strong> lifecycle lessons need an explicit protocol
+clock plus cache/signature/hold-down markers. Play/pause animation time
+is not protocol time. A “jump ahead” event must explain the elapsed
+interval and resulting state changes. Never show a future cache entry as
+currently held when seeking backward.</p>
+<p><strong>Controls:</strong> use authored variants with valid
+combinations, clear defaults and short scenario labels. Avoid a giant
+unconstrained matrix of DO/CD/AD/anchor/transport toggles. Provide a
+focused flag comparison in DNS05/06 with query and response columns.
+Searches for DNS, DNSSEC, signing, forwarder, resolver, DS, NSEC, trust
+anchor and rollover should find the relevant lessons.</p>
+<p><strong>Accessibility:</strong> keyboard operation, focus restoration
+after changing variants, reduced motion, mobile touch, browser zoom and
+both themes need real UI checks. Human comprehension prompts should ask
+who validated, whether an insecure result is the same as bogus, and why
+a rollover broke one cache but not another. Carry G01 forward honestly;
+automated accessibility data cannot substitute for speech/comprehension
+acceptance.</p>
+<p><strong>Existing UI hazards found in source:</strong>
+<code>renderLessonDecisions()</code> includes the OAuth-specific phrase
+“not a new grant”; <code>chapterComparison</code> hardcodes
+credential/issuer/resource columns. Make explanatory captions
+model-authored or use a protocol-neutral bounded extension. Omit the
+OAuth comparison table for DNSSEC unless generalized meaningfully. Do
+not call DNS records OAuth credentials. The existing lifetime strip is
+SSH-specific; do not reuse it unchanged. Keep regressions for existing
+MCP, SSH and profile rendering when touching these shared areas.</p>
+<h2 id="source-integration-and-implementation-boundaries">7. Source
+integration and implementation boundaries</h2>
+<p>Paths in this section are relative to the worker’s repository root.
+These are inspected integration hooks; proposed new filenames may be
+adjusted without changing the behavioral contract.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Existing / proposed location</th>
+<th scope="col">Work</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>src/workspaces.js</code></td>
+<td>Add workspace/families/defaults and round-trippable routes; category
+text alone is insufficient. Preserve all earlier route IDs.</td>
+</tr>
+<tr class="even">
+<td><code>src/lab-catalog.js</code></td>
+<td>Register DNSSEC attributes, sources and scenarios; preserve
+collision checks and branch-only field declarations.</td>
+</tr>
+<tr class="odd">
+<td><code>src/lab-common.js</code></td>
+<td>Reuse authoring helpers and scenario model interfaces. Extend only
+where needed.</td>
+</tr>
+<tr class="even">
+<td>Proposed <code>src/dnssec-fixtures.js</code></td>
+<td>Immutable synthetic zones, keys, messages and generations, with
+fixture IDs.</td>
+</tr>
+<tr class="odd">
+<td>Proposed <code>src/dnssec-validation.js</code></td>
+<td>Explicit validation/proof/cache decisions; no narration-string
+inference.</td>
+</tr>
+<tr class="even">
+<td>Proposed <code>src/dnssec-resolution-lab.js</code></td>
+<td>Resolution, validation, forwarding, cache and transport lesson
+authors. Split further if size warrants.</td>
+</tr>
+<tr class="odd">
+<td>Proposed <code>src/dnssec-signing-lab.js</code></td>
+<td>Signing, publication, rollover, anchor and parent-agent
+authors.</td>
+</tr>
+<tr class="even">
+<td>Proposed <code>src/dnssec-case-data.js</code></td>
+<td>Bounded case descriptions and choices; lazy variant
+construction.</td>
+</tr>
+<tr class="odd">
+<td>Proposed <code>src/held-object-dnssec.js</code>; existing
+<code>src/held-objects.js</code></td>
+<td>Source-owned DNSSEC inventory, exact
+holders/derivations/generations, registered in both ownership and
+builder maps.</td>
+</tr>
+<tr class="even">
+<td><code>src/protocol-state.js</code></td>
+<td>Reuse existing every-prefix projection; do not create a separate
+replay semantics for DNSSEC.</td>
+</tr>
+<tr class="odd">
+<td><code>src/app.js</code></td>
+<td>Bounded shared presentation changes only; use existing decisions,
+chapters, related lessons and inspectors.</td>
+</tr>
+<tr class="even">
+<td><code>build.mjs</code></td>
+<td>Add modules in dependency order and validate the emitted artifact.
+The bundler flattens non-held module scope: use collision-safe
+<code>dnssec</code>-prefixed private bindings or scoped wrappers.</td>
+</tr>
+<tr class="odd">
+<td>New <code>docs/dnssec-expansion/</code></td>
+<td>Plan copy, source ledger, scenario manifest, independent worksheet,
+implementation ledger and open gates. Preserve frozen prior
+ledgers.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Expose static catalog metadata, immutable fixtures,
+<code>steps()</code>, actors, definitions, initial state, variant
+choices, decision bindings and explicit inventory using the current
+model contract. Event/artifact/field IDs must be stable, unique and
+namespaced. Do not instantiate every variant or run numerical crypto at
+startup; current registration already calls each default’s
+<code>steps()</code> and menu rendering has real cost.</p>
+<p>Keep cryptographically bound fixture inputs fixed unless all
+dependent signed/digest bytes are regenerated coherently. Existing
+<code>scenarioContext</code> text substitution must not rename
+owners/QNAMEs or change DNSKEY/DS inputs while leaving inconsistent
+signatures. Reject unknown case/profile IDs rather than silently using a
+successful default. Variant change, reset and navigation must isolate
+caches, anchors, views and key generations between contexts.</p>
+<p>Source, standalone over HTTP and standalone via <code>file:</code>
+must retain the existing offline/self-contained behavior and CSP. All
+facts and examples needed for a lesson must be in the artifact;
+references may open externally but are not runtime dependencies. No
+analytics or live DNS lookup is required.</p>
+<h2 id="independent-acceptance-and-evidence">8. Independent acceptance
+and evidence</h2>
+<h3 id="freeze-expectations-before-implementing-the-evaluator">Freeze
+expectations before implementing the evaluator</h3>
+<p>Create <code>scenario-manifest.json</code> listing the 22 lessons and
+every required case from section 5. Publish the exact discovered
+lesson/case count. Assign each case a source profile and explicit
+expected checkpoints. Create a separate
+<code>dnssec-worksheet.json</code> whose expectations are authored from
+standards/fixtures, not generated by the production validation
+function.</p>
+<p>Each case needs: setup, anchor/key/cache ownership, packet or
+local-event sequence, required decision states, exact expected
+RCODE/flags for the selected profile, EDE presence/absence expectations,
+first detector, action stopped, preserved state, time dependencies and
+source sections. Qualify implementation-selectable diagnostics as such;
+do not invent a universal EDE for a failure where the standard permits
+omission.</p>
+<h3 id="test-layers-and-required-assertions">Test layers and required
+assertions</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Layer</th>
+<th scope="col">Evidence required</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>State and protocol</td>
+<td>Every required case and meaningful boundary, with exact expected
+outputs. Include all flags/trust/path/time/denial distinctions described
+above.</td>
+</tr>
+<tr class="even">
+<td>Numerical</td>
+<td>Independent DNSKEY wire encoding, key tag, DS digest, canonical
+RRset/signature verification, mutated data, signature time, wildcard and
+NSEC3 vectors. Bind expected bytes to externally generated/reference
+fixtures. Do not let one shared buggy canonicalizer generate both the
+input and its expected answer.</td>
+</tr>
+<tr class="odd">
+<td>Custody</td>
+<td>Every prefix: sender owns exact wire representation before transfer;
+receiver obtains public bytes before verification; private keys stay
+confined; cache and published generations coexist correctly; bad input
+does not erase unrelated good holdings.</td>
+</tr>
+<tr class="even">
+<td>Replay</td>
+<td>Full, field-filtered, exact-object, backward seek and chapter
+navigation produce the same state at the same source prefix, including
+hidden prerequisite events.</td>
+</tr>
+<tr class="odd">
+<td>Integration</td>
+<td>Workspace/family routes, collisions, defaults, search, variant
+control, decision panel, ordinary field controls, exact history and
+built standalone execution.</td>
+</tr>
+<tr class="even">
+<td>Native UX</td>
+<td>Desktop and touch, both themes, keyboard, reduced motion, zoom,
+layout bounds, selected long field values and first viewport. Report the
+representative task matrix separately from exhaustive semantic case
+coverage.</td>
+</tr>
+<tr class="odd">
+<td>Performance</td>
+<td>Fresh comparison against the pre-DNSSEC candidate using preserved
+settings and the existing methodology. Measure startup, selection,
+search/filter, playback/seek, artifact size and memory-sensitive growth
+where applicable.</td>
+</tr>
+<tr class="even">
+<td>Human</td>
+<td>Actual screen-reader speech/comprehension observations on a named
+platform/browser/reader and delivered artifact; otherwise explicitly
+open.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Suggested test files: <code>tests/dnssec-validation.test.mjs</code>,
+<code>dnssec-canonical-cases.test.mjs</code>,
+<code>held-object-dnssec.test.mjs</code>,
+<code>dnssec-replay.test.mjs</code>, <code>dnssec-ui.test.mjs</code>.
+Extend catalog/workspace/bundle checks and existing full regression
+coverage. Add a DNSSEC-specific verification runner and packet producer
+without rewriting historical evidence.</p>
+<p>In each supported loading mode (source HTTP, standalone HTTP,
+standalone <code>file:</code>), execute native tasks for DNS01 cold/warm
+lookup, DNS06 local/upstream validation and cached failure, DNS08
+Opt-Out proof, DNS10 expiry, DNS13 rollover clock, DNS16 rejected parent
+change, DNS18 provider switch and DNS21 CO comparison. Exercise ordinary
+field replay, exact object history, backward seek, variant reset and
+workspace navigation on named representatives. Apply
+themes/viewport/input contexts according to the existing native matrix
+and publish its exact dimensions. One default smoke is not all-case
+coverage. Exhaustive semantic checks must also exercise the emitted
+standalone model, independently of this representative UI matrix.</p>
+<p>Use an independent DNS tool/library to generate or verify numerical
+fixtures; pin version, commands, input bytes and output. If a required
+tool is unavailable, mark that numerical gate unperformed rather than
+invent a pass. A full live deployment is not necessary for the teaching
+feature. If the worker claims BIND/Unbound/Knot/PowerDNS
+interoperability, provide versioned executed observations for that exact
+claim; a browser smoke test cannot establish it.</p>
+<p><strong>Review blockers:</strong> accepting forged AD as local
+validation; accepting raw receipt as trusted data; conflating DS
+Algorithm/Digest Type/NSEC3 hash; treating missing proof as proved
+insecure; requiring every signature to pass; trusting glue because DS
+was signed; trusting a private zone from routing alone; circular trust
+bootstrap; cache/signature/hold-down time confusion; untested built
+artifact; incorrect compact-denial cache synthesis; parent mutation on
+inconsistent child signals; or widening coverage claims beyond the
+evidence.</p>
+<h3 id="required-handoff-packet">Required handoff packet</h3>
+<p>Deliver one review ZIP plus the built standalone and
+<code>START-HERE.md</code>. Include source, the frozen new plan,
+source/errata snapshots and capture failures, lesson/case manifests,
+independent worksheet, numerical fixtures and commands, raw
+test/native/performance evidence, implementation dispositions and
+explicit open gates. Supply <code>CONTENTS.json</code> and
+<code>SHA256SUMS</code> tying reports to exact source and standalone
+hashes. Distinguish fresh observations from prior reports and
+simulations from live implementations. Keep failed attempts and
+corrected reruns attributable.</p>
+<p>No commit, push or deployment is implied by this planning assignment.
+Implementation completion and release acceptance are separate decisions;
+do not label the release ready merely because the DNSSEC case ledger is
+complete.</p>
+<h2 id="delivery-sequence-and-preserved-gates">9. Delivery sequence and
+preserved gates</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Phase</th>
+<th scope="col">Scope and exit condition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>D0 — Lock the contract</td>
+<td>Capture current RFC/IANA/errata sources, pin selected profiles,
+enumerate cases, freeze independent worksheet and pre-change
+artifact/performance inputs.</td>
+</tr>
+<tr class="even">
+<td>D1 — Complete one vertical slice</td>
+<td>DNS01 plus the minimum DNS02/03/04 foundations, one tamper branch,
+real group navigation, exact holdings and emitted-standalone replay.
+Review correctness before multiplying cases.</td>
+</tr>
+<tr class="odd">
+<td>D2 — Complete resolver behavior</td>
+<td>Finish DNS03–DNS11 and DNS20–DNS22: stubs, forwarding, negative
+proofs, aliases, caches, transport and private anchors.</td>
+</tr>
+<tr class="even">
+<td>D3 — Complete publication/lifecycle</td>
+<td>Finish DNS02 and DNS12–DNS19, including timer/cached-generation
+cases and modern DS automation.</td>
+</tr>
+<tr class="odd">
+<td>D4 — Verify and package</td>
+<td>All required cases, numeric fixtures, full regressions, actual
+standalone, native UX, new impact measurements and immutable review
+packet. List every unperformed gate.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Numerical and replay checks start with D1 and grow with each phase;
+do not defer basic cryptographic correctness until after all narration
+is written. Reviewers can inspect intermediate phases without mistaking
+them for full scope completion.</p>
+<p>Carry these existing performance conditions as their original
+identities, not as DNSSEC measurements:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Existing condition</th>
+<th scope="col">Preserved disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>source-http/default/startup</code></td>
+<td>Material increase, approximately +629 ms against its frozen
+baseline</td>
+</tr>
+<tr class="even">
+<td><code>standalone-http/default/startup</code></td>
+<td>Material increase, approximately +628 ms</td>
+</tr>
+<tr class="odd">
+<td><code>standalone-file/default/startup</code></td>
+<td>Material increase, approximately +687 ms</td>
+</tr>
+<tr class="even">
+<td><code>source-http/open/idle-filter</code></td>
+<td>Variable comparison</td>
+</tr>
+<tr class="odd">
+<td><code>standalone-http/open/idle-filter</code></td>
+<td>Variable comparison</td>
+</tr>
+<tr class="even">
+<td><code>standalone-http/open/selection</code></td>
+<td>Variable comparison</td>
+</tr>
+</tbody>
+</table>
+</div><p>These measurements belong to the previously measured artifact, not
+the future DNSSEC build. Preserve the original disposition ledger,
+historical flags and interoperability limits. Do not infer an owner
+waiver from a smaller flag count or renormalize the old baseline. New
+performance thresholds/method changes need an explicit documented basis;
+do not quietly loosen existing acceptance criteria.</p>
+<p>G01 remains actual human acceptance. Preserve earlier NFS14, WELEV07,
+K8S16 and MCP14 optional deferrals, the disclosed sibling-origin
+omissions and historical limitations. They neither block writing this
+new feature plan nor become silently solved by it.</p>
+<h2 id="explicit-adjacent-extensions">10. Explicit adjacent
+extensions</h2>
+<p>The core lessons already explain the boundaries below; full new
+protocol demos are optional separate scope. Do not omit core DNSSEC work
+to pursue them, and do not claim they are implemented from a cross-link
+alone.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Extension</th>
+<th scope="col">Why separate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DANE/TLSA and SSHFP application use</td>
+<td>Builds on validated DNS to influence a later application
+authentication decision; deserves its own acceptance/policy flow.</td>
+</tr>
+<tr class="even">
+<td>DNS64/NAT64 and synthesis</td>
+<td>Needs a dedicated DNSSEC/synthesis policy and client-capability
+matrix.</td>
+</tr>
+<tr class="odd">
+<td>Full DoH/DoQ/DoT handshakes, oblivious DNS and discovery</td>
+<td>Transport/privacy protocols add distinct identities and trust; DNS11
+covers the basic separation.</td>
+</tr>
+<tr class="even">
+<td>AD secure dynamic updates with GSS-TSIG</td>
+<td>Useful future bridge to the existing Kerberos group; model the
+actual GSS context and update authorization separately.</td>
+</tr>
+<tr class="odd">
+<td>Full SIG(0)/TKEY and trust-anchor telemetry</td>
+<td>Explain their existence and distinctions in the glossary; detailed
+message/authentication/telemetry flows are further scope.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Do not introduce DNSSEC Lookaside Validation as a current default;
+RFC 8749 moved it to Historic. Do not promote Internet-Draft mechanisms
+into current required behavior without explicitly labeling and pinning
+them. “All key entities” here means the core DNSSEC roles, records and
+mechanisms enumerated in this plan, not a promise to simulate every DNS
+extension ever standardized.</p>
+<h2 id="primary-source-map">11. Primary-source map</h2>
+<p>Links below are authoritative research starting points. The worker
+source ledger must add retrieved bytes/hash, retrieval time, relevant
+sections, status/update chain, applicable errata and any failed capture.
+Sources support the mechanism; lesson organization and implementation
+requirements remain this plan’s design.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Scrollable reference table"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">ID</th>
+<th scope="col">Primary sources and focus</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span id="s01">S01</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc4033.html">RFC 4033</a>
+§§2–8: roles, trust, scope, last hop and temporal considerations.</td>
+</tr>
+<tr class="even">
+<td><span id="s02">S02</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc9364">RFC
+9364</a>: DNSSEC BCP and document map, supplemented by newer
+updates.</td>
+</tr>
+<tr class="odd">
+<td><span id="s03">S03</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc6840">RFC 6840</a>
+§§5–6: validation, flags, usable algorithms/signatures and
+clarifications.</td>
+</tr>
+<tr class="even">
+<td><span id="s04">S04</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc9499.html">RFC 9499</a>
+§§3–11: current terminology, actors, registration, states.</td>
+</tr>
+<tr class="odd">
+<td><span id="s05">S05</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc4034">RFC 4034</a>
+§§2–6 and Appendix B: DNSKEY/RRSIG/NSEC/DS, canonical form and key
+tags.</td>
+</tr>
+<tr class="even">
+<td><span id="s06">S06</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc4035">RFC 4035</a>
+§§2–5: publication, response construction, resolution and
+validation.</td>
+</tr>
+<tr class="odd">
+<td><span id="s07">S07</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc5155.html">RFC 5155</a>
+§§3–9, 12: NSEC3/NSEC3PARAM, proof construction/validation and
+Opt-Out.</td>
+</tr>
+<tr class="even">
+<td><span id="s08">S08</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc9276">RFC 9276</a>
+§3: modern NSEC3 operational settings and handling.</td>
+</tr>
+<tr class="odd">
+<td><span id="s09">S09</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc2308.html">RFC 2308</a>,
+<a href="https://www.rfc-editor.org/rfc/rfc8020.html">RFC 8020</a> §2:
+negative caching and NXDOMAIN cuts, read with later updates.</td>
+</tr>
+<tr class="even">
+<td><span id="s10">S10</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc8198.html">RFC 8198</a>
+§§4–5; <a href="https://datatracker.ietf.org/doc/html/rfc9077">RFC
+9077</a> §3: aggressive validated proof reuse and TTL updates.</td>
+</tr>
+<tr class="odd">
+<td><span id="s11">S11</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc9824.html">RFC 9824</a>
+§§2–9: compact denial, NXNAME, CO, response restoration and limits.</td>
+</tr>
+<tr class="even">
+<td><span id="s12">S12</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc8914.html">RFC 8914</a>
+§§2–4; <a href="https://datatracker.ietf.org/doc/html/rfc9520">RFC
+9520</a> §3; <a href="https://www.rfc-editor.org/rfc/rfc7646.html">RFC
+7646</a>: EDE, resolution failure caching and negative trust
+anchors.</td>
+</tr>
+<tr class="odd">
+<td><span id="s13">S13</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc6781.html">RFC 6781</a>
+§§3–4; <a href="https://datatracker.ietf.org/doc/html/rfc7583">RFC
+7583</a>: signing operations, key/algorithm rollover and timing. The
+latter is Informational, not a universal fixed timer.</td>
+</tr>
+<tr class="even">
+<td><span id="s14">S14</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc5011">RFC 5011</a>
+§§2–4; <a href="https://www.rfc-editor.org/rfc/rfc9718.html">RFC
+9718</a> (obsoletes RFC 7958): managed trust anchors and current root
+trust-anchor publication context.</td>
+</tr>
+<tr class="odd">
+<td><span id="s15">S15</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc8901.html">RFC 8901</a>
+§§2–7: multi-signer models, rollover and coordination.</td>
+</tr>
+<tr class="even">
+<td><span id="s16">S16</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc9904">RFC
+9904</a>; <a href="https://www.iana.org/assignments/dns-sec-alg-numbers/dns-sec-alg-numbers.xhtml">IANA
+DNS Security Algorithm Numbers</a>; <a href="https://www.iana.org/assignments/ds-rr-types/ds-rr-types.xhtml">IANA
+DS Digest Algorithms</a>: current separated policy columns.</td>
+</tr>
+<tr class="odd">
+<td><span id="s17">S17</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc6605.html">RFC 6605</a>;
+<a href="https://www.rfc-editor.org/rfc/rfc8080.html">RFC 8080</a>; <a href="https://www.rfc-editor.org/rfc/rfc4509.html">RFC 4509</a>: ECDSA,
+Edwards curves and SHA-256 DS encoding/examples.</td>
+</tr>
+<tr class="even">
+<td><span id="s18">S18</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc9905">RFC 9905</a>
+§§2, 4–5; <a href="https://www.rfc-editor.org/rfc/rfc9906.html">RFC
+9906</a>: contemporary algorithm deprecations and their precise
+scope.</td>
+</tr>
+<tr class="odd">
+<td><span id="s19">S19</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc7344.html">RFC 7344</a>
+§§3–6; <a href="https://www.rfc-editor.org/rfc/rfc8078.html">RFC
+8078</a> §§3–6: CDS/CDNSKEY management, initial-enrollment policy and
+removal signaling.</td>
+</tr>
+<tr class="even">
+<td><span id="s20">S20</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc9615.html">RFC 9615</a>
+§§3–4; <a href="https://www.rfc-editor.org/rfc/rfc10026.html">RFC
+10026</a> §§3–7: authenticated bootstrap, operational checks, reporting
+and concurrent changes.</td>
+</tr>
+<tr class="odd">
+<td><span id="s21">S21</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc9975">RFC 9975</a>
+§3 and Appendix A; <a href="https://www.rfc-editor.org/rfc/rfc7477.html">RFC 7477</a>:
+child-signal consistency and separate CSYNC behavior.</td>
+</tr>
+<tr class="even">
+<td><span id="s22">S22</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc1034.html">RFC 1034</a>;
+<a href="https://www.rfc-editor.org/rfc/rfc1035.html">RFC 1035</a>; <a href="https://www.rfc-editor.org/rfc/rfc6891.html">RFC 6891</a>; <a href="https://www.rfc-editor.org/rfc/rfc7766.html">RFC 7766</a>: DNS
+messages, EDNS and TCP.</td>
+</tr>
+<tr class="odd">
+<td><span id="s23">S23</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc5625.html">RFC 5625</a>
+§§3–4; <a href="https://www.rfc-editor.org/rfc/rfc3225.html">RFC
+3225</a> §3: forwarding/proxy transparency and DO, read with RFC
+6840.</td>
+</tr>
+<tr class="even">
+<td><span id="s24">S24</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc7858.html">RFC 7858</a>;
+<a href="https://www.rfc-editor.org/rfc/rfc8310.html">RFC 8310</a>: DNS
+over TLS and resolver authentication profiles.</td>
+</tr>
+<tr class="odd">
+<td><span id="s25">S25</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc8945">RFC
+8945</a>; <a href="https://www.rfc-editor.org/rfc/rfc5936.html">RFC
+5936</a>; <a href="https://www.rfc-editor.org/rfc/rfc1995.html">RFC
+1995</a>; <a href="https://www.rfc-editor.org/rfc/rfc1996.html">RFC
+1996</a>; <a href="https://www.rfc-editor.org/rfc/rfc2136.html">RFC
+2136</a>; <a href="https://www.rfc-editor.org/rfc/rfc3007.html">RFC
+3007</a>; <a href="https://datatracker.ietf.org/doc/html/rfc8976">RFC
+8976</a>: TSIG, AXFR/IXFR, NOTIFY, UPDATE authentication/authorization
+and ZONEMD.</td>
+</tr>
+<tr class="even">
+<td><span id="s26">S26</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc6672.html">RFC 6672</a>
+§§3–5; <a href="https://www.rfc-editor.org/rfc/rfc4592.html">RFC
+4592</a>: DNAME and wildcard semantics.</td>
+</tr>
+<tr class="odd">
+<td><span id="s27">S27</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc8749.html">RFC 8749</a>:
+DLV Historic. <a href="https://www.rfc-editor.org/subjects/dnssec/">RFC
+Editor DNSSEC index</a>: update discovery, not a replacement for the
+documents.</td>
+</tr>
+<tr class="even">
+<td><span id="s28">S28</span></td>
+<td><a href="https://www.rfc-editor.org/errata/rfc4034">RFC 4034
+errata</a>; <a href="https://www.rfc-editor.org/errata/rfc4035">RFC 4035
+errata</a>: verify individual status and applicable corrections.</td>
+</tr>
+<tr class="odd">
+<td><span id="s29">S29</span></td>
+<td><a href="https://datatracker.ietf.org/doc/html/rfc9859">RFC 9859</a>
+§§2–4: DSYNC discovery and generalized NOTIFY; an additional trigger for
+existing checked workflows.</td>
+</tr>
+</tbody>
+</table>
+</div><p class="source-note">Research and plan only. No DNSSEC implementation, release approval, commit, push or deployment is claimed. Version 1 · 23 October 2026.</p></main></body>
+</html>

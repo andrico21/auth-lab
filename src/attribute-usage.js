@@ -515,7 +515,7 @@ function stepOperations(step, authenticator = 'hello') {
   // Protocol extensions may define an exact operation ledger. An empty ledger
   // is authoritative too: it must not fall through to legacy OAuth operations
   // just because an extension reused a familiar source-step ID.
-  if (Array.isArray(step.attributeOperations)) return step.attributeOperations.map(action => ({ ...action }));
+  if (Array.isArray(step.attributeOperations)) return step.attributeOperations;
   const canonical = canonicalStepId(step.id);
   const web = step.clientKind === 'confidential-web' || step.architecture === 'web';
   const external = step.upstreamKind === 'external-oidc' || step.upstream === 'external';
@@ -662,7 +662,7 @@ export function getAttributeUsage(steps, idOrTopic, authenticator = 'hello') {
   const selected = new Set(getAttributeIds(idOrTopic));
   if (!selected.size || !Array.isArray(steps)) return [];
   return steps.flatMap((step, index) => {
-    const explicit = getStepAttributeOperations(step, authenticator);
+    const explicit = stepOperations(step, authenticator);
     // Unknown future steps get context-only records for explicitly declared
     // glossary references, never inferred transports. Current flows are covered.
     const records = explicit.length ? explicit : inspect(
@@ -671,7 +671,7 @@ export function getAttributeUsage(steps, idOrTopic, authenticator = 'hello') {
     );
     const actions = records
       .filter(action => selected.has(action.attributeId) && action.kind !== 'inspect')
-      .map(action => ({ ...action }));
+      .map(action => ({ ...action, actorId: resolveUsageActor(action.actorId, step.authenticatorKind || step.selectedAuthenticator || authenticator) }));
     if (!actions.length) return [];
     const fieldIds = [...new Set(actions.map(action => action.attributeId))];
     const wireAttributeIds = fieldIds.filter(id => actions.some(action => action.attributeId === id && action.kind === 'send') && actions.some(action => action.attributeId === id && action.kind === 'receive'));

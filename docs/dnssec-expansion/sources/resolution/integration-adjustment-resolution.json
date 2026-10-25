@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-resolution-d0-numeric-binding-adjustment",
+  "researchCutoff": "2026-10-23",
+  "priorWorksheetSha256": "1230e6bcfb03cc116bb9ca2a8ea31df5ec3cf24ddd9d191f3808f2c39f44090c",
+  "newWorksheetSha256": "b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5",
+  "parentReportedMismatch": "Prior baseline assumed one A192.0.2.80 and signedOriginalTTL300; actual independent baseline www-a has two A192.0.2.80/81 and signedOriginalTTL3600. ReceivedTTL300 remains legitimate.",
+  "productionEvaluatorUsed": false,
+  "productionExpectationsGenerated": false,
+  "sourceLedgerUnchangedSha256": "45b0872ab30f46bd4ece5733fee10a193ad72cc66ebd5536b29c3690ca3bc3d0",
+  "numericFilesInspected": {
+    "dnssec-numeric-fixtures.json": "10e8b7d6587ab77023d03ba91df7a83372a35f575e306e68afe4288f02f81c61",
+    "lifecycle-fixtures.json": "cfb51583bfb32a133f725ce2cc160d69ca681e4ad1186ddfab26b68f7d6cc62c",
+    "profile-fixtures.json": "bd33cf280db5f65287d51e39637b3a1458ba96c29d8006b5adebcf0613c2b746",
+    "record-profile-fixtures.json": "bf398d383837758821a3a4d859417f4df70fb612b7883b064339900df29199ed",
+    "refresh-fixtures.json": "f4b56e67c5cf51d72f498ea1e287f470515a6c9d380008a1be5e1a580ed2e6d2",
+    "long-profile-fixtures.json": "566996bb9b6e08c9aab6b25d9d4cb4489e97b3a6d76aa806b1b47522410ef2dc",
+    "resolution-profile-fixtures.json": "4001c10f0f19a52d69d7d07198874ea4d96a448e75ac4f35d0bb7f97f282973d",
+    "parent-negative-fixtures.json": "0d0c433ab595dec3991ad83d26ed1ff71fa3656205e7fcc7388f8db6d43646f3",
+    "complete-path-fixtures.json": "a94a106399372c65a7e1e3f2e6a8b44738e13c8ee7c72c5ce96cdf7ba0e02f7f"
+  },
+  "adjustments": [
+    "Bind exact numericFile/RRsetId/signatureId/public-key identity, signed metadata, canonical RDATA and signature-RDATA/signing-input hashes for all actually selected received/check/cache evidence.",
+    "Baseline positive answers and application addresses now include both .80 and .81; fixed changed-a mutation uses actual independent vector [.82,.81] with unchanged baseline signature.",
+    "Keep receivedTTL300/cache300 where intended, use signedOriginalTTL3600; short-original-ttl uses exact independently signedOriginalTTL60 and probe base+61.",
+    "Wildcard uses actual A192.0.2.90 and Labels2/OriginalTTL3600; CNAME/DNAME sibling A192.0.2.80 and private same-owner A198.51.100.80 retain their distinct exact signatures.",
+    "Conventional and NSEC3 no-wildcard, wildcard, ENT, parent noDS, Opt-Out, saltAA and iteration1 are independently signed separate zone variants; no baseline signature is relabeled over authored proof RDATA.",
+    "Parent explicit DS NODATA uses real example SOA minimum300/OriginalTTL3600, receivedTTL300; child SOA also actual minimum300.",
+    "DNSKEY Protocol2/Zone-clear cases authenticate actual signed candidate-containing DNSKEY sets; actual leaf mathematical signatures are valid but candidates ineligible. Missing-key uses actual signed KSK-only set.",
+    "Supported DS mismatch uses actual g2-only DNSKEY/leaf; stale private anchor uses exact CSK-g2 DNSKEY/leaf rather than unrelated private-g1 signature.",
+    "Expired/not-yet/wrong-clock/cache-expiry leaf cases have actual long-valid upper path inputs; no timeless or expired prerequisite cache is assumed. Not-yet uses real future-inception successor signature; wrong-clock changes validator clock only.",
+    "Unsupported alg250 and digest250 are separate actual parent-signed singleton snapshots, not an illegally merged RRset signed by singleton signatures."
+  ],
+  "caseCount": 93,
+  "lessonCount": 13,
+  "changedOutcomeRecords": [
+    {
+      "planId": "DNS01",
+      "caseId": "cold-secure",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS01",
+      "caseId": "warm-answer-cache",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS01",
+      "caseId": "partial-chain-cache",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS03",
+      "caseId": "signed-child",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS03",
+      "caseId": "no-covering-anchor",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS03",
+      "caseId": "signed-island-with-local-anchor",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS03",
+      "caseId": "unsupported-only-ds",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "valid",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "signature-expired",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "signature-not-yet-valid",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "wrong-clock",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "one-valid-plus-one-invalid-signature",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS05",
+      "caseId": "unaware-stub",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS05",
+      "caseId": "trusted-resolver-ad",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS05",
+      "caseId": "ad-interest-without-do",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS05",
+      "caseId": "validating-stub",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS05",
+      "caseId": "response-flags-and-cached-ad",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS06",
+      "caseId": "local-validates-upstream-fetches",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS06",
+      "caseId": "upstream-validates-local-relies",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS06",
+      "caseId": "both-validate",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS06",
+      "caseId": "cached-upstream-servfail-cd-zero-then-cd-one",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS08",
+      "caseId": "unsigned-optout-delegation",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS09",
+      "caseId": "wildcard-positive",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS10",
+      "caseId": "positive-cache-hit",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS10",
+      "caseId": "expired-ttl",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS10",
+      "caseId": "signature-expires-first",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS10",
+      "caseId": "short-rrsig-ttl",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS10",
+      "caseId": "short-original-ttl",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS10",
+      "caseId": "wildcard-synthesis",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS10",
+      "caseId": "out-of-proof-range",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS11",
+      "caseId": "udp-complete",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS11",
+      "caseId": "udp-truncated-tcp-retry",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS11",
+      "caseId": "dot-authenticated-resolver",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS20",
+      "caseId": "retry-after-expiry",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    },
+    {
+      "planId": "DNS22",
+      "caseId": "different-client-trust-stores",
+      "reason": "exact independent numeric RDATA/application/hop binding alignment; standard-authored final security classification unchanged"
+    }
+  ],
+  "limits": [
+    "No production evaluator, app test suite, build, linter, formatter, browser or live DNS check used by this adjustment.",
+    "Numerical verification results belong to independent numeric worker reports and final fixture identities; this adjustment inspects/binds their actual bytes, not a second DNSSEC decision oracle.",
+    "Numeric public catalog presence does not grant trusted ownership or imply local verification. Explicit missing/stripped/mutated/misassociated occurrences remain failures or unchecked inputs as literally selected.",
+    "RFC9905 prose/registry discrepancy remains explicit; this adjustment does not resolve it by rewriting a standards source."
+  ]
+}

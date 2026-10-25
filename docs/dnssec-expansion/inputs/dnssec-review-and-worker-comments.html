@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2026-10-24">
+  <title>DNSSEC review — changes required</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"DNSSEC REVIEW";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+
+  pre{max-width:100%;max-height:480px;overflow:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}
+  pre code{padding:0;background:none;white-space:pre;font-size:12px}
+  details{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:8px}
+  summary{cursor:pointer;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+  summary:focus-visible,pre:focus-visible,.table-scroll:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}
+  @media print{pre{max-height:none;white-space:pre-wrap}pre code{white-space:pre-wrap}nav#TOC{display:none}}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">DNSSEC review — changes required</h1>
+<p class="subtitle">Independent review and detailed worker corrections ·
+candidate13</p>
+<p class="date">24 October 2026</p>
+<div class="plan-stats"><span>Changes required</span><span>9 corrections</span><span>22 lessons / 159 cases retained</span><span>RFC and usability review</span></div></header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Review contents</h2>
+<ul>
+<li><a href="#decision-and-exact-handoff" id="toc-decision-and-exact-handoff">1. Decision and exact
+handoff</a></li>
+<li><a href="#required-corrections" id="toc-required-corrections">2.
+Required corrections</a>
+<ul>
+<li><a href="#dns-r01-validating-stub-proof-is-silently-promoted-into-resolver-trust" id="toc-dns-r01-validating-stub-proof-is-silently-promoted-into-resolver-trust">DNS-R01
+— Validating-stub proof is silently promoted into resolver
+trust</a></li>
+<li><a href="#dns-r02-warm-response-has-two-contradictory-ttls" id="toc-dns-r02-warm-response-has-two-contradictory-ttls">DNS-R02 — Warm
+response has two contradictory TTLs</a></li>
+<li><a href="#dns-r03-fresh-nxdomain-cache-entries-cannot-be-reused-under-the-correct-key" id="toc-dns-r03-fresh-nxdomain-cache-entries-cannot-be-reused-under-the-correct-key">DNS-R03
+— Fresh NXDOMAIN cache entries cannot be reused under the correct
+key</a></li>
+<li><a href="#dns-r04-denial-evaluator-lacks-the-ancestor-delegation-restriction" id="toc-dns-r04-denial-evaluator-lacks-the-ancestor-delegation-restriction">DNS-R04
+— Denial evaluator lacks the ancestor-delegation restriction</a></li>
+<li><a href="#dns-r05-algorithm-retirement-starts-its-cache-drain-from-the-wrong-publication" id="toc-dns-r05-algorithm-retirement-starts-its-cache-drain-from-the-wrong-publication">DNS-R05
+— Algorithm retirement starts its cache drain from the wrong
+publication</a></li>
+<li><a href="#dns-r06-operator-policy-is-mislabeled-as-implementation-capability" id="toc-dns-r06-operator-policy-is-mislabeled-as-implementation-capability">DNS-R06
+— Operator policy is mislabeled as implementation capability</a></li>
+<li><a href="#dns-r07-dns0506-omit-the-required-queryresponse-comparison" id="toc-dns-r07-dns0506-omit-the-required-queryresponse-comparison">DNS-R07
+— DNS05/06 omit the required query/response comparison</a></li>
+<li><a href="#dns-r08-long-chapter-buttons-are-clipped-on-mobile" id="toc-dns-r08-long-chapter-buttons-are-clipped-on-mobile">DNS-R08 —
+Long chapter buttons are clipped on mobile</a></li>
+<li><a href="#dns-r09-bring-the-csync-distinction-into-dns16" id="toc-dns-r09-bring-the-csync-distinction-into-dns16">DNS-R09 — Bring
+the CSYNC distinction into DNS16</a></li>
+</ul></li>
+<li><a href="#nonblocking-clarity-improvements" id="toc-nonblocking-clarity-improvements">3. Nonblocking clarity
+improvements</a></li>
+<li><a href="#independent-checks-and-their-limits" id="toc-independent-checks-and-their-limits">4. Independent checks and
+their limits</a></li>
+<li><a href="#performance-and-inherited-release-conditions" id="toc-performance-and-inherited-release-conditions">5. Performance and
+inherited release conditions</a></li>
+<li><a href="#worker-execution-order-and-closure-packet" id="toc-worker-execution-order-and-closure-packet">6. Worker execution
+order and closure packet</a></li>
+<li><a href="#reproduction-scripts" id="toc-reproduction-scripts">7.
+Reproduction scripts</a></li>
+</ul>
+</nav>
+<main id="review-comments"><h2 id="decision-and-exact-handoff">1. Decision and exact handoff</h2>
+<p><strong>Do not mark this DNSSEC candidate accepted. Nine corrections
+are required:</strong> six concern model behavior or evidence, two
+concern usability, and one restores a required explanation. The
+numerical fixtures and packet integrity are sound within the checks
+below; that does not make every lesson’s interpretation correct.</p>
+<p>Send the worker
+<strong><code>auth-flow-studio-dnssec-review-and-worker-comments.html</code></strong>.
+This file contains the review, precise repair scope, acceptance criteria
+and expandable reproduction scripts. It supplements the original DNSSEC
+plan. The separate Windows protection / PAM / hidden-search-tags plan
+remains the subsequent assignment; it is not merged into this DNSSEC
+correction scope.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 1"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Candidate identity</th>
+<th scope="col">Reviewed value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Branch / state</td>
+<td><code>expansion/dnssec</code>, uncommitted working-tree
+snapshot</td>
+</tr>
+<tr class="even">
+<td>Published base</td>
+<td><code>c99ebd6fec16e01dc9fef6c9590d534b8f1daf85</code></td>
+</tr>
+<tr class="odd">
+<td>Canonical application/test identity</td>
+<td>225 files;
+<code>dd9a3527335c0949086340c8e04c2d0ca51e206d7954debd01043492eb245068</code></td>
+</tr>
+<tr class="even">
+<td>Delivered standalone</td>
+<td>5,202,353 bytes;
+<code>9d18f50483f7106b55e744461d073742521df26f760149e8c9d9e6a4957b6625</code></td>
+</tr>
+<tr class="odd">
+<td>Effective worksheet</td>
+<td><code>effective-cache-kind/worksheet.json</code>;
+<code>330fbc0db84e21e116d78da6ea316fb4694cd16d40c73f13a8c49f7a0100c055</code></td>
+</tr>
+<tr class="even">
+<td>Required inventory</td>
+<td>22 lessons, 159 named cases, 1,059 independent checkpoints</td>
+</tr>
+</tbody>
+</table>
+</div><p>No application source or frozen authority input was changed during
+review. A rebuild was produced in the review extraction and matched the
+supplied HTML exactly. This is a review of deterministic teaching
+models; no live DNS service or installed resolver interoperability is
+certified.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 2"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">ID</th>
+<th scope="col">Priority / scope</th>
+<th scope="col">Required correction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>DNS-R01</td>
+<td>P1 · named case</td>
+<td>Keep validating-stub proof and authenticated cache at the stub</td>
+</tr>
+<tr class="even">
+<td>DNS-R02</td>
+<td>P2 · named case / response helper</td>
+<td>Make outgoing TTL fields agree with the actual aged records</td>
+</tr>
+<tr class="odd">
+<td>DNS-R03</td>
+<td>P2 · three named cases</td>
+<td>Use the correct name/class key for freshly cached NXDOMAIN</td>
+</tr>
+<tr class="even">
+<td>DNS-R04</td>
+<td>P2 · evaluator helper</td>
+<td>Reject parent-delegation denial of non-DS child data</td>
+</tr>
+<tr class="odd">
+<td>DNS-R05</td>
+<td>P2 · rollover model / added counterexample</td>
+<td>Drain caches after withdrawing the old algorithm’s DS</td>
+</tr>
+<tr class="even">
+<td>DNS-R06</td>
+<td>P2 · policy evidence</td>
+<td>Separate implemented capability from operator acceptance</td>
+</tr>
+<tr class="odd">
+<td>DNS-R07</td>
+<td>P2 · required teaching UI</td>
+<td>Render the DNS05/06 query/response flag comparison</td>
+</tr>
+<tr class="even">
+<td>DNS-R08</td>
+<td>P2 · observed mobile layout</td>
+<td>Make long chapter controls readable within the panel</td>
+</tr>
+<tr class="odd">
+<td>DNS-R09</td>
+<td>P2 · required lesson explanation</td>
+<td>Surface the CSYNC versus DS distinction inside DNS16</td>
+</tr>
+</tbody>
+</table>
+</div><p>P1 here identifies a central trust/custody error to fix first. P2
+items are required correctness or plan-completion work. The helper-only
+and additional-profile findings are explicitly scoped; they are not
+claims of an observed public-input exploit or a failed existing
+selectable outcome.</p>
+<h2 id="required-corrections">2. Required corrections</h2>
+<h3 id="dns-r01-validating-stub-proof-is-silently-promoted-into-resolver-trust">DNS-R01
+— Validating-stub proof is silently promoted into resolver trust</h3>
+<p><strong>Reproduce:</strong> <code>lab-dnssec05</code>,
+<code>validating-stub</code>; advance through
+<code>stub-owns-independent-anchor-and-validation</code>,
+<code>record-selected-evidence</code> and
+<code>accepted-use-and-cache-boundary</code>. These are source indexes
+81, 87 and 90 in the reviewed bytes. Inspect actor, exact holdings and
+the selected cache.</p>
+<p>The stub owns <code>stub-public-v1</code> and checks with its
+configured anchor. The resolver’s <code>resolver-fetch-only-v1</code>
+contains no anchors. Nevertheless, the shared completion path creates a
+stub-authored witness at <code>dnsResolver</code>, then stores a
+<strong>secure</strong> cache there with
+<code>checkingOwner: dnsStub</code> and
+<code>trustStore: stub-public-v1</code>. No message transfers the stub
+decision back: there are zero messages after its check. The delivered
+resolver response correctly had AD=0.</p>
+<p><strong>Code:</strong> <code>src/dnssec-network-cases.js</code>,
+context selection at 74–76 and 103–104, shared completion at 433–458.
+The witness declares <code>creator: dnsStub</code>, while its
+acquisition is a resolver-local create operation. This is an actual
+state/holding error, not merely a caption.</p>
+<p><strong>Basis:</strong> the independent validating stub has its own
+trust relationship and performs its own checks; its upstream fetch
+service does not automatically inherit the result. See <a href="https://www.rfc-editor.org/rfc/rfc4033.html#section-7">RFC 4033
+§7</a>, <a href="https://www.rfc-editor.org/rfc/rfc4035.html#section-4.9">RFC 4035
+§§4.9–5</a>, and the plan’s DNS05/custody requirements. The RFC does not
+prescribe this application’s cache API; the violation is the model’s
+invented transfer of trust across its declared actors.</p>
+<p><strong>Change:</strong> make result/evidence/cache ownership
+explicit in the completion path. Keep accepted evidence and any
+authenticated reusable cache at <code>dnsStub</code> for this case. A
+separately modeled raw resolver cache can remain unvalidated in the
+resolver’s own namespace. Correct event actors, creator/acquire
+operations, derivation references, bindings, protocol state and exact
+histories together. Do not invent a reverse verdict packet or give the
+resolver an anchor to make the old trace pass: that changes the
+lesson.</p>
+<p><strong>Close with:</strong> before the stub check, no stub
+acceptance or authenticated cache; after it, stub-owned proof/cache in
+<code>stub-public-v1</code>; no resolver acquisition of unsent local
+evidence. Rewind removes the corresponding holdings, and
+full/field/exact-object views agree at equal prefixes. Preserve the
+distinct owners in trusted-resolver, local-validator, upstream-validator
+and both-validator cases. Add a cross-actor create/derivation assertion
+that would have caught this defect.</p>
+<p><strong>Expected-authority repair is required here:</strong> the
+effective worksheet’s <code>validating-stub</code> checkpoint
+<code>accepted-use-and-cache-boundary</code> explicitly names
+<code>dnsResolver</code> as its actor while binding the cache to the
+stub’s checking context. Correct that actor and audit the case’s
+inherited ownership/cache declarations through an independently
+justified additive erratum. The existing expectation helps explain why
+the current contract gate accepts the wrong location; do not preserve it
+merely to keep the old gate green. Preserve unchanged public numerical
+tuples.</p>
+<h3 id="dns-r02-warm-response-has-two-contradictory-ttls">DNS-R02 — Warm
+response has two contradictory TTLs</h3>
+<p><strong>Reproduce:</strong> <code>lab-dnssec05</code>,
+<code>response-flags-and-cached-ad</code>; inspect exact
+<code>lab-dnssec05:stub:r-message</code> and its returned A record.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 3"><table>
+<thead>
+<tr class="header">
+<th scope="col">Field in the same outgoing occurrence</th>
+<th style="text-align: right;" scope="col">Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A RRset TTL</td>
+<td style="text-align: right;">240 seconds</td>
+</tr>
+<tr class="even">
+<td>Remaining cache lifetime</td>
+<td style="text-align: right;">240 seconds</td>
+</tr>
+<tr class="odd">
+<td>Message <code>receivedRrsetTtl</code></td>
+<td style="text-align: right;">300 seconds</td>
+</tr>
+<tr class="even">
+<td>Message <code>receivedRrsigTtl</code></td>
+<td style="text-align: right;">300 seconds</td>
+</tr>
+<tr class="odd">
+<td>Signed RRSIG Original TTL</td>
+<td style="text-align: right;">3600 seconds</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Code:</strong> <code>src/dnssec-network-cases.js:167</code>
+gives every nonempty response fixed 300-second metadata; 447–448
+calculate the remaining lifetime and 463–467 return the aged answer. The
+signed Original TTL is correctly separate.</p>
+<p><strong>Basis:</strong> cache aging and signature validity are
+separate, and authenticated RRset/RRSIG TTLs have bounded lifetimes (<a href="https://www.rfc-editor.org/rfc/rfc4033.html#section-8.1">RFC 4033
+§8.1</a>, <a href="https://www.rfc-editor.org/rfc/rfc4035.html#section-5.3.3">RFC
+4035 §5.3.3</a>). Irrespective of downstream behavior, exact packet
+inspection must not give two different received TTLs for one
+occurrence.</p>
+<p><strong>Change:</strong> derive the outgoing occurrence’s TTL
+metadata from the actual records and deadlines. Model the accompanying
+RRSIG’s ordinary TTL independently from signed RDATA; preserve Original
+TTL and signature bytes. Do not claim a received signature TTL when no
+signature is carried. Review the NTA response’s 299-versus-300 metadata
+through the same helper, keeping its unverified-data semantics
+explicit.</p>
+<p><strong>Close with:</strong> the warm occurrence consistently reports
+240; signed Original TTL remains 3600; the earlier receipt/deadline
+stays unchanged. Add DO=0/no-RRSIG and diagnostic/NTA controls. Test the
+exact emitted packet and held representation, not just the high-level
+cache window.</p>
+<h3 id="dns-r03-fresh-nxdomain-cache-entries-cannot-be-reused-under-the-correct-key">DNS-R03
+— Fresh NXDOMAIN cache entries cannot be reused under the correct
+key</h3>
+<p><strong>Affected:</strong> <code>DNS07/nxdomain</code>,
+<code>DNS07/wildcard-excluded</code>,
+<code>DNS08/nsec3-nxdomain</code>.</p>
+<p><strong>Code:</strong> <code>src/dnssec-denial-cases.js:308</code>
+forces <code>negativeKind: null</code>;
+<code>src/dnssec-denial.js:81</code> therefore includes QTYPE. The
+independently seeded <code>DNS10/negative-cache-hit</code> at
+denial-cases 132–136 uses the correct key, masking the insertion/reuse
+mismatch.</p>
+<p>For DNS07/nxdomain the actual entry key is
+<code>["public-v1","resolver-public-v1","no.lab.example.","A","IN"]</code>.
+The appropriate NXDOMAIN key omits <code>"A"</code>. Calling the
+application’s own <code>dnssecDenialCacheEligible</code> with the
+freshly created entry and an NXDOMAIN context returns <strong>false
+immediately</strong>, for both A and AAAA. Time is still valid:
+receipt/current clock 1792713600, expiry 1792713900. The separate DNS10
+entry passes both queries.</p>
+<p><strong>Basis:</strong> <a href="https://www.rfc-editor.org/rfc/rfc2308.html#section-5">RFC 2308
+§5</a> distinguishes QNAME/QCLASS name-error reuse from
+QNAME/QTYPE/QCLASS type-absence reuse. This is a named-case state
+inconsistency; selecting one lesson then another does not transfer a
+live cache, and the review does not suggest otherwise.</p>
+<p><strong>Change:</strong> derive key shape from the validated negative
+result. Preserve the view/trust namespace, type-specific NODATA, failure
+checking context and compact-denial/CO distinctions. Do not normalize
+all negative-like outcomes to one key.</p>
+<p><strong>Close with:</strong> feed each actual newly inserted entry
+back into eligibility at the insertion clock and a later valid clock. It
+must answer the same name/class for another type without restarting TTL.
+NODATA must remain type-specific; expiry and incompatible
+view/trust-store queries must fail. Keep all 159 named cases; these can
+be bounded additional unit fixtures.</p>
+<h3 id="dns-r04-denial-evaluator-lacks-the-ancestor-delegation-restriction">DNS-R04
+— Denial evaluator lacks the ancestor-delegation restriction</h3>
+<p><strong>Scope:</strong> exported helper; no existing selectable UI
+bypass was found. <code>DNS07/proof-from-wrong-zone</code> remains
+correctly rejected by its caller-supplied <code>requiredZone</code>.</p>
+<p><strong>Reproduce:</strong> give <code>dnssecCheckDenial</code> the
+existing signed <code>denial-parent-unsigned-lab</code> NSEC and its
+signature, qname <code>lab.example.</code>, zone <code>example.</code>,
+key <code>example-zsk-g1</code>, fixture clock, and QTYPE A, AAAA or
+CNAME. The authenticated bitmap is <code>NS RRSIG NSEC</code>, with
+ancestor signer <code>example.</code>. All three return
+<code>valid: true</code>, <code>kind: nodata</code>,
+<code>reason: authenticated-type-absence</code>. The DS-absence control
+succeeds as expected.</p>
+<p><strong>Code:</strong> exact-owner branch
+<code>src/dnssec-denial.js:49</code>; audit the analogous matching-NSEC3
+branch at 69 too. Only the NSEC counterexample was executed in this
+review.</p>
+<p><strong>Basis:</strong> <a href="https://www.rfc-editor.org/rfc/rfc6840.html#section-4.1">RFC 6840
+§4.1</a> forbids ancestor-delegation NSEC/NSEC3 from denying non-DS
+records at the cut, or records below it. NS/SOA bits and signer
+authority are substantive checks; a fixture name is not a
+substitute.</p>
+<p><strong>Change:</strong> enforce this authority restriction inside
+denial evaluation before exact-owner/hash absence succeeds. Keep
+<code>requiredZone</code> as an additional caller-context guard. Audit
+the related DNAME and NSEC3 closest-encloser restrictions against the
+primary rules; do not claim an unexecuted hashed counterexample has
+already been reproduced.</p>
+<p><strong>Close with:</strong> unchanged parent proof must allow DS
+absence but reject A/AAAA/CNAME absence; valid child-side NODATA and
+existing wrong-zone tests remain correct. Use independently sourced
+signed fixtures if adding the analogous NSEC3 tests.</p>
+<h3 id="dns-r05-algorithm-retirement-starts-its-cache-drain-from-the-wrong-publication">DNS-R05
+— Algorithm retirement starts its cache drain from the wrong
+publication</h3>
+<p><strong>Affected lesson:</strong>
+<code>DNS14/dual-algorithm-rollover</code>. The existing selected
+dual-capable validator succeeds; the defect is the advertised safe
+retirement timeline.</p>
+<p><strong>Code:</strong>
+<code>src/dnssec-signing-cases.js:334–341</code>. The parent publishes
+the overlap DS set for algorithms 13 and 15 at <code>T+4500</code>. The
+lesson declares old DS dependencies ended at <code>T+91500</code>, but
+the old algorithm’s DS remains published until <code>T+95100</code>. At
+that same later time it removes the old DS, ordinary signatures and
+DNSKEY.</p>
+<p><strong>Executed counterexample:</strong> an additional reviewer
+profile supports algorithm 13 but not 15. It receives the
+still-authoritative overlap DS at <code>T+95099</code>; its 86400-second
+TTL reaches <code>T+181499</code>. At <code>T+95101</code>, the
+candidate’s algorithm-15-only child yields <strong>bogus</strong> with
+that cached supported DS, while a fresh algorithm-15-only DS yields
+<strong>insecure</strong> for this profile. The existing signature
+tuples and actual evaluator reproduce both results. This is an added
+capability/cache cohort, not an existing named failure.</p>
+<p><strong>Basis:</strong> <a href="https://www.rfc-editor.org/rfc/rfc6781.html#section-4.1.4">RFC
+6781 §4.1.4</a> describes old-DS withdrawal, cache draining and later
+child-key/signature withdrawal. It is operational guidance, not a new
+claim that a validator must validate every advertised algorithm. The
+plan requires cache-aware algorithm rollover; waiting since overlap
+addition cannot expire DS data that is still being published.</p>
+<p><strong>Change:</strong> separate old-DS removal, parent convergence,
+last possible old-DS cache expiry and child-key/signature retirement.
+Calculate bounds from the removal/convergence event and the relevant
+TTLs, then respect any subsequent child DNSKEY/data dependencies.
+Alternatively expose the current simultaneous removal as an explicitly
+failing profile, while retaining a correct successful rollover.</p>
+<p><strong>Close with:</strong> test a resolver that receives the
+old-containing DS just before withdrawal/convergence, a fresh resolver
+and a dual-capable resolver. Show each exact cache receipt/deadline and
+supported path. Neither a single selected cache captured early nor the
+all-algorithms-capable profile closes this correction. Revise
+independent expected timelines additively if needed.</p>
+<h3 id="dns-r06-operator-policy-is-mislabeled-as-implementation-capability">DNS-R06
+— Operator policy is mislabeled as implementation capability</h3>
+<p><strong>Reproduce:</strong> <code>DNS14/sha1-signing-disabled</code>.
+State reports
+<code>implementationValidationSupportRequired: true</code>,
+<code>implementationCapable: [13,15]</code>,
+<code>operatorTreatAs: unsupported</code>, but
+<code>unsupportedReason: implementation-capability</code>.
+<code>modern-and-obsolete-paths</code> uses the same misleading reason.
+The ultimate insecure/secure classifications in these cases are not
+themselves the reported defect.</p>
+<p><strong>Code:</strong> <code>src/dnssec-publication.js:95–100</code>
+derives <code>implementationCapable</code> from
+<code>policy.validationAlgorithms</code>, which is the operator
+acceptance list; the shared reason consequently collapses distinct
+controls. The lesson already has the registry columns and operator
+exclusion list to teach the distinction correctly.</p>
+<p><strong>Basis:</strong> <a href="https://www.rfc-editor.org/rfc/rfc9905.html#section-2">RFC 9905
+§2</a> distinguishes continued implementation validation support for
+algorithms 5/7 from the operator requirement to treat them as
+unsupported. The original plan explicitly calls out this distinction. A
+registry implementation requirement is also not proof of a particular
+installed engine’s capabilities.</p>
+<p><strong>Change:</strong> represent registry
+recommendations/requirements, declared implementation capability,
+publisher policy and operator acceptance independently. Choose the
+rejection reason from the actual cause. If the fixed mathematical
+catalog only contains 13/15, label that as fixture coverage, not as the
+DNSSEC implementation policy. Do not enable SHA-1 signing or operator
+acceptance to repair a label.</p>
+<p><strong>Close with:</strong> SHA-1 operator exclusion reports policy
+as the cause; the deliberately unsupported algorithm case reports actual
+capability limits; modern usable paths remain usable. Keep DS-digest
+policy and NSEC3 hashing separate.</p>
+<h3 id="dns-r07-dns0506-omit-the-required-queryresponse-comparison">DNS-R07
+— DNS05/06 omit the required query/response comparison</h3>
+<p><strong>Requirement:</strong> supplied plan §6 explicitly asks for
+focused query and response columns in DNS05/06.</p>
+<p><strong>Reproduce:</strong> finish
+<code>DNS05/response-flags-and-cached-ad</code> and
+<code>DNS06/both-validate</code>, inspect the learning/decision view.
+The data exist in <code>response.hops</code>/<code>traceHops</code>, but
+there is no rendered comparison. Independent DOM inspection found zero
+tables and source inspection found no equivalent column-based
+presentation.</p>
+<p><strong>Code:</strong> <code>src/dnssec-authoring.js:161</code>
+supplies scalar decisions;
+<code>src/dnssec-network-cases.js:470–474</code> stores the hop state;
+<code>src/app.js:795–814</code> renders decisions and an unrelated
+optional credential comparison.
+<code>run-dnssec-native.mjs:405–429</code> reads hop flags directly from
+app state, so its pass does not test this UI requirement.</p>
+<p><strong>Change:</strong> render canonical hop/attempt identity, query
+and response AD/CD/DO, RCODE, and validation/reliance owner in a compact
+comparison. Distinguish absent OPT from DO=0; pending responses from
+received responses; the cached CD=0 SERVFAIL attempt from a fresh CD=1
+retry. Use canonical data at the current cursor, not a separately
+maintained table.</p>
+<p>For <code>both-validate</code>, the query AD/CD/DO values are 1/0/1
+on stub→resolver, 1/1/1 on resolver→upstream, and 0/1/1 on
+upstream→authority. The authoritative response’s CD=0 is intentional
+under its separate authoritative rule; do not “fix” it to match
+recursive CD echoing.</p>
+<p><strong>Close with:</strong> assertions read rendered cells and
+compare them to actual hop IDs at the same cursor, including rewind,
+filtered replay and reset. Exercise the comparison in source/emitted
+output and bounded native narrow-width/200% zoom checks. State-only
+assertions are insufficient.</p>
+<h3 id="dns-r08-long-chapter-buttons-are-clipped-on-mobile">DNS-R08 —
+Long chapter buttons are clipped on mobile</h3>
+<p><strong>Observed evidence:</strong> the current candidate’s
+<code>native-first-viewport-03/dark-touch.png</code>, 390-pixel
+viewport. The DNS06 chapter label “3. Actual validator responsibility
+and reference-bound evidence” extends beyond the right edge and is
+clipped. Independent review opened this retained screenshot; no new
+browser run is claimed. Its SHA-256 is
+<code>7863e4ab27e51a01b91d8f8513a4840c8876dc9b8dfbbb87454b237b3a322279</code>.</p>
+<p><strong>Code:</strong> <code>.button</code> uses
+<code>white-space: nowrap</code> at <code>src/styles.css:152–156</code>;
+chapter-button flex wrapping near 904 wraps whole controls, not their
+text; <code>.map-panel</code> clips overflow near 171. Chapter controls
+are outside the diagram’s horizontal scrolling area, so panning the
+diagram cannot reveal the label.</p>
+<p><strong>Change:</strong> scope wrapping and width constraints to
+chapter controls, allow text to wrap with readable line-height and
+stable focus geometry, and ensure the panel cannot conceal part of a
+chapter control. Keep intentional diagram scrolling separate. Do not
+abbreviate away the learning distinction merely to fit.</p>
+<p><strong>Close with:</strong> actual rendered button bounds and text
+must fit at the narrow viewport and 200% zoom; controls remain
+keyboard/touch reachable. Check the longest chapter labels across DNSSEC
+and representative existing lessons if shared CSS changes. Include a
+bounded screenshot showing the corrected DNS06 case. A geometry check
+confined to diagram actors cannot close this finding.</p>
+<h3 id="dns-r09-bring-the-csync-distinction-into-dns16">DNS-R09 — Bring
+the CSYNC distinction into DNS16</h3>
+<p>The DNS16 specification requires a separate explanation that CSYNC
+requests NS/glue synchronization and does not itself request DS
+replacement. The generic CSYNC field metadata at
+<code>src/dnssec-fields.js:2832</code> says this correctly, but no DNS16
+case steps, introduction or chapter content references it. All ten cases
+were inspected. An unused field description is not a contextual lesson
+explanation.</p>
+<p><strong>Change:</strong> add a short, directly reachable
+explanation/comparison within DNS16. Reuse the existing field definition
+and source. Explain the different record purpose and parent decision
+without inventing a CSYNC authorization to change DS. A small lesson
+panel or explanatory step is sufficient; a 23rd lesson or an extra
+named-case family is not requested. <a href="https://www.rfc-editor.org/rfc/rfc7477.html">RFC 7477</a> supplies
+the CSYNC semantics.</p>
+<p><strong>Close with:</strong> a learner entering ordinary DNS16 can
+reach the distinction without searching the entire field catalog; source
+and emitted content checks verify it. If an actual transfer/processing
+step is added, give its records and decisions real ownership and state
+instead of a decorative packet.</p>
+<h2 id="nonblocking-clarity-improvements">3. Nonblocking clarity
+improvements</h2>
+<p><strong>C01 — Readable verdicts.</strong> The main panel prints
+identifiers such as <code>dnsValidator</code> and
+<code>complete-anchor-ds-dnskey-answer-path</code>. Use actor display
+names and concise explanations; retain identifiers in expandable
+details. DNS03 <code>proved-no-ds</code> should explain that
+authenticated unsigned-delegation evidence produces an insecure result
+and this selected secure-only application refuses it. This is different
+from saying the DNS answer was forged.</p>
+<p><strong>C02 — Scope the receipt label.</strong> DNS05’s warm-cache
+case ends with “Data received No” and “Application received answer.” The
+first means no fresh resolver authority receipt. Qualify it and display
+cache reuse/stub delivery separately. Do not invent a fresh fetch or
+fresh check to make the words agree.</p>
+<p><strong>C03 — Declare DNS12’s revalidation policy.</strong>
+<code>old-key-removed-too-early</code> caches an already-secure answer,
+then revalidates it against a fresh keyset and returns SERVFAIL while
+3400 seconds remain. Revalidation is not categorically forbidden by the
+cited rollover guidance; this is not counted as an RFC violation.
+Explain why this fixture rechecks already accepted cached data, or use
+stale, unvalidated upstream data to illustrate the missing-old-key
+problem. Contrast ordinary reuse of an unexpired accepted cache so
+learners do not infer that withdrawing a published key instantly revokes
+every cached answer.</p>
+<p>The planned hidden-tag/ranked-search work is already the right place
+to address noisy broad searches. It is not a new DNSSEC defect or a
+reason to duplicate that assignment here.</p>
+<h2 id="independent-checks-and-their-limits">4. Independent checks and
+their limits</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 4"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Check performed during this review</th>
+<th scope="col">Result / boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Packet SHA256SUMS</td>
+<td>All 1,279 listed payload checks passed</td>
+</tr>
+<tr class="even">
+<td>Source rebuild</td>
+<td>Node 24.22.1 build matched delivered standalone byte for byte;
+pinned Bun 1.4.2 was unavailable</td>
+</tr>
+<tr class="odd">
+<td>Additive authority</td>
+<td>All five transforms reproduced; all 354 original frozen inputs
+passed integrity checks</td>
+</tr>
+<tr class="even">
+<td>Manifest/checkpoints</td>
+<td>22 lessons, 159 cases, 1,059 checkpoints confirmed</td>
+</tr>
+<tr class="odd">
+<td>Captured sources</td>
+<td>All 149 indexed captures matched their recorded bytes/hashes;
+historical HTTP requests were not independently recreated</td>
+</tr>
+<tr class="even">
+<td>Provided numerical gate</td>
+<td>480/480 passed under available Node runtime</td>
+</tr>
+<tr class="odd">
+<td>Supplemental numerical review</td>
+<td>560/560 checks; actual verification of 205 signatures, 23 DS
+digests, 21 NSEC3 hashes, 33 key tuples/tags and 205 reconstructed
+signing inputs; Python 3.12.14 / cryptography 50.0.2</td>
+</tr>
+<tr class="even">
+<td>Source contract replay</td>
+<td>158 cases passed. DNS15 <code>add-hold-down-interrupted</code>
+stopped in verifier <code>JSON.stringify</code> with
+<code>RangeError: Invalid string length</code>; therefore the whole run
+failed and is not an all-case pass</td>
+</tr>
+<tr class="odd">
+<td>Full regression rerun</td>
+<td>Node 24.22.1 reports 2,184 passed, 0 failed, 0 skipped; all 116 test
+files completed in 572.02 seconds. This is the available runner’s count,
+separately recorded from the worker’s Bun count of 1,935</td>
+</tr>
+<tr class="even">
+<td>Targeted model/DOM probes</td>
+<td>Ownership/TTL, negative-cache/helper, algorithm-policy/rollover and
+six-case UI probes executed; root re-executed the four focused
+scripts</td>
+</tr>
+<tr class="odd">
+<td>UI appearance</td>
+<td>Current worker screenshots inspected, including the reproduced
+mobile clipping; no independent Chrome/Chromium execution was
+available</td>
+</tr>
+<tr class="even">
+<td>Emitted all-case contract / native matrix</td>
+<td>Worker proofs retained and inspected; the full emitted contract and
+native matrix were not independently rerun in this review</td>
+</tr>
+</tbody>
+</table>
+</div><p>The Node serialization exception is a <strong>review reproduction
+limit</strong>, not an established product defect: the documented
+full-contract runtime is Bun 1.4.2. Do not relabel it as a candidate
+pass, nor reject the pinned worker run solely on this
+alternative-runtime result. Keep any future bounded portability
+improvement separate from protocol correction.</p>
+<p>The supplemental numerical run confirms fixed public tuples using
+real cryptographic operations. It does not turn the browser’s explicitly
+reference-bound teaching checks into production cryptography. Likewise,
+source/emitted equality checks projection equivalence, not independent
+correctness of every protocol rule. Preserve these honest
+distinctions.</p>
+<h2 id="performance-and-inherited-release-conditions">5. Performance and
+inherited release conditions</h2>
+<p>The worker’s fresh comparison is complete and correctly disclosed as
+<strong>not accepted</strong>. This review checked the reported
+samples/medians; it did not recollect timings. Keep these nine new
+conditions open until an explicit supported disposition exists:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 5"><table>
+<colgroup>
+<col style="width: 27%">
+<col style="width: 36%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Comparison cell</th>
+<th style="text-align: right;" scope="col">Median increase</th>
+<th style="text-align: right;" scope="col">Relative increase</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>source-http / closed / selection</td>
+<td style="text-align: right;">99.90 ms</td>
+<td style="text-align: right;">26.82%</td>
+</tr>
+<tr class="even">
+<td>source-http / closed / replay-start</td>
+<td style="text-align: right;">83.67 ms</td>
+<td style="text-align: right;">66.35%</td>
+</tr>
+<tr class="odd">
+<td>standalone-http / default / startup</td>
+<td style="text-align: right;">999.88 ms</td>
+<td style="text-align: right;">32.37%</td>
+</tr>
+<tr class="even">
+<td>standalone-http / closed / selection</td>
+<td style="text-align: right;">117.05 ms</td>
+<td style="text-align: right;">27.82%</td>
+</tr>
+<tr class="odd">
+<td>standalone-http / closed / replay-start</td>
+<td style="text-align: right;">73.89 ms</td>
+<td style="text-align: right;">52.37%</td>
+</tr>
+<tr class="even">
+<td>standalone-file / default / startup</td>
+<td style="text-align: right;">903.54 ms</td>
+<td style="text-align: right;">29.41%</td>
+</tr>
+<tr class="odd">
+<td>standalone-file / closed / selection</td>
+<td style="text-align: right;">119.02 ms</td>
+<td style="text-align: right;">32.35%</td>
+</tr>
+<tr class="even">
+<td>standalone-file / closed / replay-start</td>
+<td style="text-align: right;">71.09 ms</td>
+<td style="text-align: right;">53.02%</td>
+</tr>
+<tr class="odd">
+<td>source-http / open / playing-filter</td>
+<td style="text-align: right;">0.78 ms</td>
+<td style="text-align: right;">0.57%; variability unresolved, not a
+material median increase</td>
+</tr>
+</tbody>
+</table>
+</div><p>Standalone size grew by 1,452,680 bytes, 38.74%. The standalone HTTP
+startup median is approximately 4.09 seconds versus 3.09 seconds in the
+frozen comparison. These are worker measurements of the identified
+artifacts, not new reviewer timing results.</p>
+<p><strong>Worker follow-up:</strong> address or propose a concrete
+disposition for each flagged key. Profile default DNSSEC construction,
+shared selection/replay work and global index construction before
+choosing an optimization; those are investigation targets, not
+established root causes. Preserve current fixtures, behavior and
+evidence. Avoid replacing the baseline, changing thresholds, hiding
+expensive controls, dropping cases or inferring a waiver from passing
+functional tests. Recollect affected comparisons under the preserved
+method after performance-relevant changes; keep diagnostic/heap
+measurements separate from latency evidence. If a cost remains, return
+its exact measurement and proposed rationale for owner decision instead
+of claiming acceptance.</p>
+<p>Also preserve actual-human G01, the six inherited measured
+performance conditions, seven historical flags, six frozen-P0 variation
+cells, six sibling-origin omissions, prior source/interoperability
+limits, all 21 scoped P6 closures and the four optional deferrals. New
+measurements do not silently close old conditions. A human must still
+perform the speech/comprehension work; screenshots, DOM and keyboard
+automation cannot substitute for it.</p>
+<h2 id="worker-execution-order-and-closure-packet">6. Worker execution
+order and closure packet</h2>
+<ol type="1">
+<li><strong>Freeze this reviewed identity.</strong> Keep an exact input
+copy. Record the actual working parent before changing anything;
+preserve unrelated newer authorized work.</li>
+<li><strong>Repair DNS-R01 through R06.</strong> Start with ownership,
+then TTL/cache and authority checks, then rollover/policy evidence. Add
+independent failing regressions before changing the respective behavior.
+Preserve case IDs and explicit profile boundaries.</li>
+<li><strong>Resolve expected-authority changes additively.</strong> Keep
+the 354 original inputs and five overlays unchanged. If any expected
+owner, cache key or timeline was wrong, retain the old record and add a
+separately justified source-based erratum with before-values, provenance
+and exact hashes. Do not generate expected answers from the fixed
+evaluator or weaken an assertion to fit it.</li>
+<li><strong>Complete DNS-R07 through R09.</strong> Render canonical flag
+data, fix chapter text layout and surface CSYNC context. Treat C01–C03
+as bounded clarity improvements or return an explicit deferral; they are
+not extra protocol models.</li>
+<li><strong>Run focused checks, then final gates once.</strong> Rebuild;
+execute affected unit/DOM/held-object/replay tests; run the required
+159-case source and emitted contracts using the pinned runtime and all
+independent checkpoints. Run the numerical gate; regenerate numerical
+authorities only if actual signed inputs change. Run the applicable full
+suite and scoped native UI checks. Broaden/repeat only for further
+edits, failures or affected shared behavior.</li>
+<li><strong>Keep performance and G01 separate.</strong> Supply current
+evidence and dispositions without implying owner or human acceptance. Do
+not block independent fixes while awaiting an acceptance decision.</li>
+<li><strong>Return one corrected review packet.</strong> Include
+source/tests, exact standalone, input/output hashes, one response row
+per DNS-R01–R09 with implementation and test evidence, any new immutable
+authority layer, explicit C01–C03 dispositions, current open gates and
+concise reproduction instructions. Update “Astra review unperformed” to
+this review’s actual status, <strong>changes required</strong>, then
+seek the independent correction recheck; do not mark it accepted merely
+because review occurred.</li>
+</ol>
+<p>The original 22-lesson/159-case inventory remains the denominator.
+Helper and cohort regression tests are additional tests, not extra named
+lessons. The separate Windows/PAM/search plan follows the corrected
+DNSSEC checkpoint. This review performs no commit, push, deployment or
+release waiver.</p>
+<h2 id="reproduction-scripts">7. Reproduction scripts</h2>
+<p>The expandable source blocks below make this file a self-contained
+worker handoff. Save a selected block under
+<code>independent-validation/</code> beside the extracted
+<code>source/</code> directory and run it from the delivery directory.
+For example,
+<code>node independent-validation/state-review-probe.mjs</code>. They
+use relative imports into <code>source/</code> and write their own local
+JSON reports.</p>
+<p><strong>These are observations of the reviewed defects, not
+ready-made acceptance tests:</strong> some assertions intentionally
+require the current wrong result. After a fix, create independent
+regression expectations for the corrected behavior rather than
+preserving the reproduction’s bug assertions. The supplemental Python
+checker needs the declared cryptography dependency; do not confuse its
+environment with the worker’s pinned producer setup.</p>
+<details>
+<summary>
+state-review-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 1"><code>import assert from 'node:assert/strict';
+import {writeFileSync} from 'node:fs';
+import {DNSSEC_NETWORK_CASE_BUILDERS} from '../source/src/dnssec-network-cases.js';
+import {reconstructProtocolState} from '../source/src/protocol-state.js';
+
+const model=DNSSEC_NETWORK_CASE_BUILDERS['lab-dnssec05']['validating-stub']();
+const steps=model.steps(),final=reconstructProtocolState(model,steps.length-1).dnssec;
+const interesting=['stub-owns-independent-anchor-and-validation','record-selected-evidence','accepted-use-and-cache-boundary'];
+const observations=steps.flatMap((step,index)=&gt;interesting.some(k=&gt;step.id.endsWith(':'+k))?[{
+  index,eventId:step.id,title:step.title,actor:step.from,
+  acquisitions:model.dnssecInventory.events[step.id].effects.filter(e=&gt;e.op==='acquire').map(({actorId,artifactId,store})=&gt;({actorId,artifactId,store})),
+}]:[]);
+const artifacts=model.dnssecInventory.artifacts.filter(a=&gt;a.artifactId.includes('checked-evidence')||a.artifactId.includes('numericBindings-primary')||a.artifactId.includes('selected-result-cache')).map(({artifactId,creator,derivedFrom})=&gt;({artifactId,creator,derivedFrom}));
+const localCheckIndex=steps.findIndex(s=&gt;s.id.endsWith(':stub-owns-independent-anchor-and-validation'));
+const afterCheckMessages=steps.slice(localCheckIndex).flatMap(s=&gt;model.dnssecInventory.events[s.id].messages);
+const {id,kind,key,namespace,validationOwner,securityStatus}=final.selectedCache;
+const output={case:'DNS05/validating-stub',trustStores:final.trustStores,observations,artifacts,messagesAfterStubCheck:afterCheckMessages.length,finalCache:{id,kind,key,namespace,validationOwner,securityStatus}};
+assert.deepEqual(final.trustStores['resolver-fetch-only-v1'].anchors,[]);
+assert.deepEqual(final.trustStores['stub-public-v1'].anchors,['root-ksk-g1']);
+assert.equal(afterCheckMessages.length,0);
+assert.equal(namespace.cacheOwner,'dnsResolver');
+assert.equal(namespace.checkingOwner,'dnsStub');
+assert.equal(namespace.trustStore,'stub-public-v1');
+assert.equal(securityStatus,'secure');
+
+const warm=DNSSEC_NETWORK_CASE_BUILDERS['lab-dnssec05']['response-flags-and-cached-ad']();
+const warmFinal=reconstructProtocolState(warm,warm.steps().length-1);
+const response=warm.dnssecInventory.artifacts.flatMap(a=&gt;a.representations[0].fields.filter(f=&gt;f.attributeId==='dnssec_header_record').map(f=&gt;f.value)).find(h=&gt;h.inReplyTo?.endsWith(':stub:q'));
+const answer=response.objects.find(o=&gt;o.value.type==='A').value;
+const signature=response.objects.find(o=&gt;o.value.typeCovered===1).value;
+output.warmReply={case:'DNS05/response-flags-and-cached-ad',packetReceivedRrsetTtl:response.receivedRrsetTtl,packetReceivedRrsigTtl:response.receivedRrsigTtl,actualAnswerTtl:answer.ttl,signedOriginalTtl:signature.originalTtl,cacheRemaining:warmFinal.dnssec.selectedCache.expiresAt-warmFinal.protocolClock};
+assert.equal(answer.ttl,240);
+assert.equal(response.receivedRrsetTtl,300);
+assert.equal(response.receivedRrsigTtl,300);
+
+const summary=[];
+for(const [id,cases] of Object.entries(DNSSEC_NETWORK_CASE_BUILDERS))for(const [variant,build] of Object.entries(cases)){
+  const m=build(),ss=m.steps(),before=JSON.stringify(reconstructProtocolState(m,Math.floor(ss.length/2)));
+  const f=reconstructProtocolState(m,ss.length-1);
+  assert.equal(JSON.stringify(reconstructProtocolState(m,Math.floor(ss.length/2))),before,'Backward reconstruction must preserve prefix state');
+  const definitions=new Map(m.dnssecInventory.artifacts.map(a=&gt;[a.artifactId,a]));
+  let messages=0,privateKeyTransfers=0;
+  for(const s of ss)for(const msg of m.dnssecInventory.events[s.id].messages){messages++;for(const object of msg.objects)if(definitions.get(object.artifactId).type==='private-key-handle')privateKeyTransfers++;}
+  assert.equal(privateKeyTransfers,0);
+  summary.push({id,variant,steps:ss.length,messages,status:f.dnssec.securityStatus,verificationKind:f.dnssec.verificationKind,applicationStatus:f.dnssec.applicationResult.status});
+}
+output.sampledNetworkCaseCount=summary.length;
+output.networkCases=summary;
+writeFileSync(new URL('state-review-probe.json',import.meta.url),JSON.stringify(output,null,2)+'\n');
+console.log(JSON.stringify({observations:output.observations,finalCache:output.finalCache,warmReply:output.warmReply,sampledNetworkCaseCount:summary.length},null,2));</code></pre>
+</details>
+<details>
+<summary>
+resolution-probes.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 2"><code>import fs from 'node:fs';
+import { DNSSEC_DENIAL_CASE_BUILDERS } from '../source/src/dnssec-denial-cases.js';
+import { DNSSEC_MATERIAL, DNSSEC_BASE_CLOCK } from '../source/src/dnssec-fixtures.js';
+import { dnssecCheckDenial, dnssecDenialCacheKey, dnssecDenialCacheEligible } from '../source/src/dnssec-denial.js';
+import { reconstructProtocolState } from '../source/src/protocol-state.js';
+
+// No app, authority fixture or frozen expected result is modified.
+const namedCaseProbes = [];
+for (const [modelId, caseId] of [
+  ['lab-dnssec07', 'nxdomain'],
+  ['lab-dnssec07', 'wildcard-excluded'],
+  ['lab-dnssec08', 'nsec3-nxdomain'],
+  ['lab-dnssec07', 'existing-name-nodata'],
+  ['lab-dnssec10', 'negative-cache-hit'],
+]) {
+  const model = DNSSEC_DENIAL_CASE_BUILDERS[modelId][caseId]();
+  const state = reconstructProtocolState(model, model.steps().length - 1).dnssec;
+  const entry = state.cacheEntries[0];
+  const negativeKind = state.response.rcode === 'NXDOMAIN' ? 'NXDOMAIN' : 'NODATA';
+  const context = { view: state.view, trustStore: state.trustStore, ...state.query, negativeKind };
+  namedCaseProbes.push({
+    modelId, caseId, rcode: state.response.rcode,
+    securityStatus: state.securityStatus, cacheKind: entry.kind,
+    actualKey: entry.key, expectedKey: dnssecDenialCacheKey(context),
+    correctContextLookupAtInsertion: dnssecDenialCacheEligible(entry, context, state.clock.now),
+    otherQtypeLookup: dnssecDenialCacheEligible(entry, { ...context, qtype: state.query.qtype === 'AAAA' ? 'A' : 'AAAA' }, state.clock.now),
+    now: state.clock.now, expiresAt: entry.expiresAt, signatureDeadline: entry.signatureDeadline,
+  });
+}
+
+const proof = {
+  rrset: DNSSEC_MATERIAL.rrsets['denial-parent-unsigned-lab'],
+  signatures: [DNSSEC_MATERIAL.signatures['denial-parent-unsigned-lab-signature']],
+};
+const helperInputs = {
+  qname: 'lab.example.', zone: 'example.', proofs: [proof],
+  keys: [DNSSEC_MATERIAL.keys['example-zsk-g1']], now: DNSSEC_BASE_CLOCK,
+};
+const ancestorDenialProbes = ['DS', 'A', 'AAAA', 'CNAME'].map(qtype =&gt; {
+  const result = dnssecCheckDenial({ ...helperInputs, qtype });
+  return { qtype, proofId: proof.rrset.id, signer: proof.signatures[0].signer,
+    bitmap: proof.rrset.records[0], valid: result.valid, reason: result.reason,
+    kind: result.kind, signatureValid: result.checks[0]?.signature.valid,
+  };
+});
+const guarded = dnssecCheckDenial({ ...helperInputs, qtype: 'A', requiredZone: 'lab.example.' });
+const result = { namedCaseProbes, ancestorDenialProbes,
+  callerGuardControl: { requiredZone: 'lab.example.', valid: guarded.valid, reason: guarded.reason },
+};
+fs.writeFileSync(new URL('./resolution-probes.json', import.meta.url), JSON.stringify(result, null, 2) + '\n');
+console.log(JSON.stringify(result, null, 2));</code></pre>
+</details>
+<details>
+<summary>
+publication-probes.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 3"><code>import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import { buildDNSSECScenarioFixture } from '../source/src/dnssec-lab.js';
+import { reconstructProtocolState } from '../source/src/protocol-state.js';
+import { DNSSEC_BASE_CLOCK as T, dnssecProfile } from '../source/src/dnssec-fixtures.js';
+import { dnssecPublicationBundle as bundle, dnssecPublicationValidate, dnssecPublicationDs } from '../source/src/dnssec-publication.js';
+
+// Review-only probes: no application source, authority or expected fixture is changed.
+const last = (id, variant) =&gt; {
+  const model = buildDNSSECScenarioFixture(id, { variant });
+  return reconstructProtocolState(model, model.steps().length - 1).dnssec;
+};
+const selected = (object, keys) =&gt; Object.fromEntries(keys.filter(key =&gt; key in object).map(key =&gt; [key, object[key]]));
+const policyCases = ['sha1-signing-disabled', 'modern-and-obsolete-paths', 'algorithm-unsupported'].map(variant =&gt; {
+  const state = last('lab-dnssec14', variant);
+  return { variant, securityStatus: state.securityStatus, ...selected(state.algorithmPolicy, [
+    'implementationCapable', 'operatorAccepted', 'operatorTreatAs', 'unsupportedReason',
+    'implementationValidationSupportRequired', 'registryUseForValidation', 'operatorUnsupported',
+    'advertisedSigningAlgorithms',
+  ]) };
+});
+assert.equal(policyCases[0].implementationValidationSupportRequired, true);
+assert.equal(policyCases[0].unsupportedReason, 'implementation-capability');
+
+// Additional reviewer profile, not a currently selectable lesson variant. Keep
+// the immutable lesson tuples and clock; model an algorithm-13-only validator.
+const policy = { ...dnssecProfile('modern'), validationAlgorithms: [13] };
+const child = bundle(['child-ed25519-g1-dnskey-signature'], ['child-ed25519-g1']);
+const answer = bundle(['www-a-long-ed25519']);
+const lateOverlapDs = [
+  'parent-ds-dual-algorithm-long-signature',
+  'parent-ds-for-child-ed25519-g1-signature',
+].map(signatureId =&gt; {
+  const delegation = bundle([signatureId]);
+  const result = dnssecPublicationValidate({ child, delegation, answer, now: T + 95101, policy });
+  return {
+    signatureId, dsTtl: delegation.rrset.ttl,
+    advertisedAlgorithms: dnssecPublicationDs(delegation.rrset).map(ds =&gt; ds.algorithm),
+    hypotheticalReceiptAt: T + (signatureId.includes('dual-algorithm') ? 95099 : 95101),
+    hypotheticalTtlDeadline: T + (signatureId.includes('dual-algorithm') ? 95099 : 95101) + delegation.rrset.ttl,
+    evaluationAt: T + 95101,
+    securityStatus: result.securityStatus,
+    unsuccessfulCandidateChecks: result.checks.filter(check =&gt; !check.valid).map(check =&gt; ({
+      stage: check.stage, zone: check.zone, reason: check.result?.reason ?? check.reason,
+    })),
+  };
+});
+assert.equal(lateOverlapDs[0].securityStatus, 'bogus');
+assert.equal(lateOverlapDs[1].securityStatus, 'insecure');
+
+const cached = last('lab-dnssec12', 'old-key-removed-too-early');
+const answerCache = cached.cacheEntries.answer;
+const cachedAnswerRevalidation = {
+  variant: 'old-key-removed-too-early', now: cached.clock,
+  securityStatus: cached.securityStatus, response: selected(cached.response, ['rcode']),
+  answerCache: selected(answerCache, ['receivedAt', 'expiresAt', 'securityStatus', 'valid', 'signatureKey']),
+  cacheSecondsRemaining: answerCache.expiresAt - cached.clock,
+};
+assert.equal(cachedAnswerRevalidation.answerCache.securityStatus, 'secure');
+assert.equal(cachedAnswerRevalidation.securityStatus, 'bogus');
+assert.ok(cachedAnswerRevalidation.cacheSecondsRemaining &gt; 0);
+
+const parentCaseChoices = buildDNSSECScenarioFixture('lab-dnssec16').variantChoices;
+const csyncLessonCoverage = parentCaseChoices.map(({ caseId }) =&gt; {
+  const model = buildDNSSECScenarioFixture('lab-dnssec16', { variant: caseId });
+  return { caseId, csyncInSteps: /csync/i.test(JSON.stringify(model.steps())),
+    csyncInLessonIntroduction: /csync/i.test(JSON.stringify(selected(model, [
+      'title', 'summary', 'learningObjective', 'supportNote', 'chapters', 'examples',
+    ]))) };
+});
+const result = { policyCases, lateOverlapDs, cachedAnswerRevalidation, csyncLessonCoverage };
+fs.writeFileSync(new URL('./publication-probes.json', import.meta.url), JSON.stringify(result, null, 2) + '\n');
+console.log(JSON.stringify(result, null, 2));</code></pre>
+</details>
+<details>
+<summary>
+ui-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 4"><code>import fs from 'node:fs';
+import {installHarness,HarnessEvent} from '../source/tests/dom-harness.mjs';
+const harness=installHarness();
+const {AuthFlowStudio}=await import('../source/src/app.js');
+const {filterScenarioOptions}=await import('../source/src/scenario-picker.js');
+const app=new AuthFlowStudio();harness.document.body.appendChild(app);harness.document.activeElement=harness.document.body;
+app.connectedCallback();app.addEventListener('focusin',event=&gt;{harness.document.activeElement=event.target;});
+const report={scope:'Offline DOM/source semantics only; no native browser/layout/accessibility acceptance',cases:[],search:{}};
+for(const [id,variant] of [['lab-dnssec01','default'],['lab-dnssec05','response-flags-and-cached-ad'],['lab-dnssec06','both-validate'],['lab-dnssec03','proved-no-ds'],['lab-dnssec02','default'],['lab-dnssec19','default']]){
+ app.selectLabScenario(id,{variant});
+ const initial={question:app.querySelector('#learning-question').textContent,start:app.querySelector('#learning-start').textContent,case:app.querySelector('#lesson-case')?.value,actors:app.refs.actors.textContent,chapterCount:app.querySelectorAll('[data-lesson-chapter]').length};
+ app.selectStep(app.steps.length-1,false);
+ report.cases.push({id,variant,initial,steps:app.steps.length,decisions:app.querySelector('#lesson-decisions').textContent,tables:app.querySelectorAll('table').map(table=&gt;({header:table.querySelector('thead')?.textContent,visible:!table.closest('[hidden]')})),related:app.querySelector('#related-journeys').textContent,stateHops:app.protocolSnapshot().state.dnssec.response.hops,profileSummary:app.labModel.profile.startingSummary});
+}
+for(const q of ['DNS','DNSSEC','signing','forwarder','resolver','DS','NSEC','trust anchor','rollover'])report.search[q]=filterScenarioOptions(app.scenarioPicker.options,q).map(v=&gt;({id:v.id,title:v.title}));
+app.disconnectedCallback();harness.document.body.removeChild(app);harness.clock.frames.clear();harness.clock.timers.clear();
+fs.writeFileSync(new URL('ui-probe.json',import.meta.url),JSON.stringify(report,null,2));
+console.log(JSON.stringify({cases:report.cases.map(c=&gt;({id:c.id,variant:c.variant,steps:c.steps,decisions:c.decisions,tables:c.tables})),search:Object.fromEntries(Object.entries(report.search).map(([q,rows])=&gt;[q,{total:rows.length,dnssec:rows.filter(r=&gt;r.id.startsWith('lab-dnssec')).length}]))},null,2));</code></pre>
+</details>
+<details>
+<summary>
+evidence-numeric-review.py
+</summary>
+<pre class="python" tabindex="0" role="region" aria-label="Reproduction source 5"><code>from pathlib import Path
+import sys, json, hashlib, struct, base64
+from collections import Counter
+import cryptography
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec, ed25519, utils
+
+root=Path(__file__).resolve().parents[1]/'source'
+catalogs=['docs/dnssec-expansion/numeric/FINAL-FIXTURE-IDENTITIES.json','docs/dnssec-expansion/numeric/post-freeze-contract-errata/POST-FREEZE-CATALOG.json','docs/dnssec-expansion/numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json']
+objects={k:{} for k in ['keys','rrsets','signatures','ds','nsec3']}
+checks=[]; conflicts=[]; origins={}
+def check(name,actual,expected):
+    checks.append({'name':name,'passed':actual==expected})
+    if actual!=expected: checks[-1].update(actual=str(actual),expected=str(expected))
+for catpath in catalogs:
+    catalog=json.loads((root/catpath).read_text())
+    for item in catalog.get('datasetsAndReports',catalog.get('activeDatasetsAndReports',[])):
+        raw=(root/item['fixture']['path']).read_bytes()
+        check('sealed:'+item['fixture']['path'],hashlib.sha256(raw).hexdigest(),item['fixture']['sha256'])
+        data=json.loads(raw)
+        for kind in objects:
+            values=data.get('dnssecKeys',data.get('keys',data.get('keyReferences',{}))) if kind=='keys' else data.get(kind,{})
+            for oid,value in values.items():
+                if kind=='keys' and 'dnskeyRdataHex' not in value:continue
+                if oid in objects[kind] and objects[kind][oid]!=value:
+                    conflicts.append({'kind':kind,'id':oid,'differingFields':[k for k in set(objects[kind][oid])|set(value) if objects[kind][oid].get(k)!=value.get(k)]})
+                objects[kind].setdefault(oid,value)
+                origins.setdefault((kind,oid),[]).append(item['fixture']['path'])
+
+def wire_name(name):
+    if name=='.':return b'\0'
+    assert name.endswith('.')
+    return b''.join(bytes([len(p)])+p.lower().encode('ascii') for p in name[:-1].split('.'))+b'\0'
+
+for oid,key in objects['keys'].items():
+    raw=struct.pack('!HBB',key['flags'],key['protocol'],key['algorithm'])+bytes.fromhex(key['publicKeyHex'])
+    check('dnskey:'+oid,raw.hex(),key['dnskeyRdataHex'])
+    total=sum(byte*(256 if i%2==0 else 1) for i,byte in enumerate(raw))
+    check('tag:'+oid,(total+(total&gt;&gt;16))&amp;65535,key['keyTag'])
+for oid,ds in objects['ds'].items():
+    key=objects['keys'][ds['keyId']]
+    raw=wire_name(key['owner'])+bytes.fromhex(key['dnskeyRdataHex'])
+    algorithm={1:'sha1',2:'sha256',4:'sha384'}[ds['digestType']]
+    check('digest-input:'+oid,raw.hex(),ds['digestInputHex'])
+    check('digest:'+oid,hashlib.new(algorithm,raw).hexdigest(),ds['digestHex'])
+for oid,sig in objects['signatures'].items():
+    key=objects['keys'][sig['keyId']]
+    k=bytes.fromhex(key['publicKeyHex']); raw=bytes.fromhex(sig['signatureHex']); data=bytes.fromhex(sig['signingInputHex'])
+    try:
+        if key['algorithm']==13:
+            pub=ec.EllipticCurvePublicKey.from_encoded_point(ec.SECP256R1(),b'\x04'+k)
+            pub.verify(utils.encode_dss_signature(int.from_bytes(raw[:32],'big'),int.from_bytes(raw[32:],'big')),data,ec.ECDSA(hashes.SHA256()))
+        elif key['algorithm']==15:ed25519.Ed25519PublicKey.from_public_bytes(k).verify(raw,data)
+        else:raise ValueError('Unexpected algorithm')
+        valid=True
+    except Exception as e:valid=type(e).__name__+':'+str(e)
+    check('native-signature:'+oid,valid,True)
+for oid,v in objects['nsec3'].items():
+    salt=bytes.fromhex(v['saltHex']);raw=hashlib.sha1(wire_name(v['owner'])+salt).digest()
+    for _ in range(v['iterations']):raw=hashlib.sha1(raw+salt).digest()
+    check('nsec3:'+oid,base64.b32hexencode(raw).decode().rstrip('='),v['hashBase32hex'])
+
+# Supplied independent byte canonicalizer has no production imports and no side effects.
+# Recheck its reconstruction separately from the signature verification above.
+sys.dont_write_bytecode=True
+sys.path.insert(0,str(root/'tools/verification/dnssec-crypto'))
+import reference_bytes
+for oid,sig in objects['signatures'].items():
+    rr=objects['rrsets'][sig['rrsetId']]
+    if rr['type']=='NSEC3PARAM':
+        values=[]
+        for text in rr['records']:
+            algorithm,flags,iterations,salt_text=text.split();salt=b'' if salt_text=='-' else bytes.fromhex(salt_text)
+            values.append(struct.pack('!BBHB',int(algorithm),int(flags),int(iterations),len(salt))+salt)
+        prefix=struct.pack('!HBBIIIH',sig['typeCovered'],sig['algorithm'],sig['labels'],sig['originalTtl'],sig['expiration'],sig['inception'],sig['keyTag'])+wire_name(sig['signer'])
+        actual=prefix+b''.join(wire_name(rr['owner'])+struct.pack('!HHIH',51,1,sig['originalTtl'],len(value))+value for value in sorted(set(values)))
+    else:actual=reference_bytes.canonical(rr,sig)
+    check('canonical-input:'+oid,actual.hex(),sig['signingInputHex'])
+report={'scope':'Independent reviewer supplemental arithmetic/native signature verification, using current runtime and supplied non-production canonicalizer; not pinned environment reproduction or live DNS interoperability','python':sys.version,'cryptography':cryptography.__version__,'counts':{k:len(v) for k,v in objects.items()},'checks':checks,'failures':[c for c in checks if not c['passed']],'cross-catalog-duplicate-differences':conflicts}
+out=Path(__file__).with_name('evidence-numeric-review.json');out.write_text(json.dumps(report,indent=2)+'\n')
+print(json.dumps({'counts':report['counts'],'checks':len(checks),'failures':report['failures'],'duplicate_differences':conflicts,'report':str(out)},indent=2))</code></pre>
+</details>
+<p class="source-note">Independent review · 24 October 2026 · Candidate13 · No source fixes, commit, push, deployment or release waiver performed.</p></main></body>
+</html>

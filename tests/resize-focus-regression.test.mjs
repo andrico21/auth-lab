@@ -71,8 +71,8 @@ test('nested participant and attribute dialogs reposition together and retain th
 test('resize closes hover-only participant and attribute help without moving outside focus',()=>{
   const app=mount();try{
     focus(app.refs.speed);
-    app.refs.actors.querySelector('[data-actor="app"]').dispatchEvent(new HarnessEvent('mouseover'));
-    app.refs['attribute-index-list'].querySelector('[data-index-attribute="codeVerifier"]').dispatchEvent(new HarnessEvent('mouseover'));
+    app.refs.actors.querySelector('[data-actor="app"]').dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse'}));
+    app.refs['attribute-index-list'].querySelector('[data-index-attribute="codeVerifier"]').dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse'}));
     assert.equal(app.refs['actor-popup'].hidden,false);assert.equal(app.refs['attribute-popup'].hidden,false);
     resized();assert.equal(app.refs['actor-popup'].hidden,true);assert.equal(app.refs['attribute-popup'].hidden,true);sameFocus(app.refs.speed);
   }finally{unmount(app);}
@@ -80,7 +80,7 @@ test('resize closes hover-only participant and attribute help without moving out
 
 test('an unrelated hover participant panel closes while keyboard-owned index help stays open',()=>{
   const app=mount();try{
-    focus(app.refs.speed);app.refs.actors.querySelector('[data-actor="app"]').dispatchEvent(new HarnessEvent('mouseover'));
+    focus(app.refs.speed);app.refs.actors.querySelector('[data-actor="app"]').dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse'}));
     const {source}=indexHelp(app);resized();
     assert.equal(app.refs['actor-popup'].hidden,true);assert.equal(app.refs['attribute-popup'].hidden,false);sameFocus(source);
   }finally{unmount(app);}

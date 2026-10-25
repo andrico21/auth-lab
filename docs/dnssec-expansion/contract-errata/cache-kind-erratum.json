@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-independent-cache-kind-input-erratum",
+  "target": {
+    "path": "docs/dnssec-expansion/contract-errata/effective-client-context/worksheet-resolution.json",
+    "sha256": "03c39153f73dffa9c28fca61adde906eeb440af9198f48798df65c2e6f3b5796",
+    "bytes": 5664204
+  },
+  "mergedTarget": {
+    "path": "docs/dnssec-expansion/contract-errata/effective-client-context/worksheet.json",
+    "sha256": "c7fc1efdd3b0e011499da4cf3bd19e2ae95b21885a1ac4975d6458646d0c77bc",
+    "bytes": 6702212
+  },
+  "previousAddendum": {
+    "path": "docs/dnssec-expansion/contract-errata/effective-client-context/contract-addendum.json",
+    "sha256": "3a0bad331b33f2fe45f01832a1029c8b5064a6aec638ddda5761b8d9c0e1a4bb",
+    "bytes": 2857
+  },
+  "audit": {
+    "path": "docs/dnssec-expansion/contract-errata/input-audits/cache-kind-and-observation-audit.raw",
+    "sha256": "05de219f4a6cbfcafefca670ada9f10386f5ba46c34a19a8daff72b4c7bfac93",
+    "bytes": 1883
+  },
+  "independence": {
+    "reportedBy": "DnssecClientInputAudit read-only scout, all159 independent cases inspected",
+    "productionSourceConsultedByAuditor": false,
+    "productionExecutionPerformedByAuditor": false,
+    "osSandboxEnforcementClaimed": false,
+    "productionExistedDuringCorrection": true
+  },
+  "patchCount": 1,
+  "patches": [
+    {
+      "order": 1,
+      "op": "replace",
+      "path": "/lessons/10/cases/5/checkpoints/2/expected/cacheEntries/0/kind",
+      "mergedPointer": "/lessons/19/cases/5/checkpoints/2/expected/cacheEntries/0/kind",
+      "expectedBefore": "positive",
+      "value": "answer",
+      "expectedBeforeCanonicalSha256": "ec67c5ca00e5983723e8bbc9bafbd0903fa1722f4fea5f999156a417f69fc2b6",
+      "valueCanonicalSha256": "b2437a6aa53010b70011f253d0ef2e75d5a15350811531d9b82c27e77a706081",
+      "finding": "The partial new-work observation and accepted full cache entry share one generation2 occurrence, receipt1792713606 and expiry1792713906, without a new receipt/generation between them. Keep the canonical accepted-entry kind answer."
+    }
+  ],
+  "preserved": [
+    "All159 setup/outcome/default/security/application dispositions",
+    "Generation2 and repairedAt1792713603, receipt1792713606, expiry1792713906 and signature deadline1792717200",
+    "Failure-cache expiry/new-work semantics, exact evidence, checker/namespace ownership, packet flags and application results",
+    "Every previous input layer and the original354 D0 inputs"
+  ],
+  "notPatched": [
+    "DNS21 compact-negative response-context versus authenticated-negative answer are distinct cache objects",
+    "DNS10 eligibleForReuse is a derived later-clock observation, not mutable stored receipt/provenance/deadline metadata",
+    "outcome.cacheKind is a result class, not a stored-entry-kind oracle"
+  ]
+}

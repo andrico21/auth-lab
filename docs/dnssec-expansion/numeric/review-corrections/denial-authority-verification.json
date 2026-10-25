@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-independent-review-correction-denial-verification-observation",
+  "evidenceForm": "Structured summary of observed successful independent verifier command output; not a verbatim raw stdout capture.",
+  "fixture": {
+    "path": "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json",
+    "bytes": 22591,
+    "sha256": "3cd9d0a42ed1117f9a8bac5869d4b75d98e1ae5d2367513b040d31714c6f3253"
+  },
+  "producer": {
+    "path": "tools/verification/dnssec-crypto/generate_review_corrections.py",
+    "bytes": 6115,
+    "sha256": "b0e5f59c0d93e44a35575d34e84551f5f45cf2f22333e7e61d731e09357664e3"
+  },
+  "verifier": {
+    "path": "tools/verification/dnssec-crypto/verify_review_corrections.py",
+    "bytes": 3743,
+    "sha256": "817d88a17d4a847511f6fe6370bdaedccce004accbc180c6d8df59dcbb58c3c1"
+  },
+  "command": "tools/verification/dnssec-crypto/.offline-venv/bin/python tools/verification/dnssec-crypto/verify_review_corrections.py",
+  "execution": {
+    "executed": true,
+    "exitCode": 0,
+    "observedPredicates": 105,
+    "allReportedPredicates": "pass",
+    "observedOpenSslSignatureChecks": 7,
+    "allOpenSslExitCodes": 0
+  },
+  "independentCanonicalReconstruction": true,
+  "producerOrDnsLibraryImported": false,
+  "productionEvaluatorExecuted": false,
+  "opensslObservations": [
+    {
+      "id": "review-correction-nsec-dname-apex-signature",
+      "exitCode": 0,
+      "stdout": "Signature Verified Successfully\n",
+      "stderr": ""
+    },
+    {
+      "id": "review-correction-nsec-dname-branch-signature",
+      "exitCode": 0,
+      "stdout": "Signature Verified Successfully\n",
+      "stderr": ""
+    },
+    {
+      "id": "review-correction-nsec-dname-z-signature",
+      "exitCode": 0,
+      "stdout": "Signature Verified Successfully\n",
+      "stderr": ""
+    },
+    {
+      "id": "review-correction-nsec3-ancestor-delegation-0-signature",
+      "exitCode": 0,
+      "stdout": "Signature Verified Successfully\n",
+      "stderr": ""
+    },
+    {
+      "id": "review-correction-nsec3-ancestor-delegation-1-signature",
+      "exitCode": 0,
+      "stdout": "Signature Verified Successfully\n",
+      "stderr": ""
+    },
+    {
+      "id": "review-correction-nsec3-dname-0-signature",
+      "exitCode": 0,
+      "stdout": "Signature Verified Successfully\n",
+      "stderr": ""
+    },
+    {
+      "id": "review-correction-nsec3-dname-1-signature",
+      "exitCode": 0,
+      "stdout": "Signature Verified Successfully\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Reference fixture bytes and genuine mathematical signatures only; no application or DNSSEC denial classification acceptance asserted. Parent owns application registration, tests and contract/numeric gates."
+}

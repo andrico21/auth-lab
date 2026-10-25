@@ -66,6 +66,36 @@ test('expanded Windows roles retain separated cards and usable local/IPC graph p
     assert.deepEqual(validateLayoutRoutes(positions,steps.map(step=>[step.from,step.to])),{ok:true},id+' retains routes for the actual IPC and local operations');
   }
 });
+test('DNSSEC network chapters keep every physical role inside the animation frame',()=>{
+  for(const id of ['lab-dnssec05','lab-dnssec06','lab-dnssec11','lab-dnssec20','lab-dnssec22']){
+    const model=LAB_MODELS[id],actors=model.actors(),steps=model.steps();
+    for(const chapter of model.chapters){
+      const ids=new Set(chapter.stepIds),chapterSteps=steps.filter(step=>ids.has(step.id));
+      for(const expanded of [false,true]){
+        const positions=scenarioPositions(model,chapterSteps,actors,expanded),entries=Object.entries(positions);
+        for(const [actor,{x,y}]of entries){
+          assert.ok(x-CARD_BOUNDS.width/2>=10&&x+CARD_BOUNDS.width/2<=GRAPH_WIDTH-10,id+'/'+chapter.id+' '+actor+' horizontal bounds');
+          assert.ok(y-CARD_BOUNDS.height/2>=10&&y+CARD_BOUNDS.height/2<=GRAPH_HEIGHT-10,id+'/'+chapter.id+' '+actor+' vertical bounds');
+        }
+        for(let i=0;i<entries.length;i++)for(let j=i+1;j<entries.length;j++){
+          const [a,p]=entries[i],[b,q]=entries[j];
+          assert.ok(Math.abs(p.x-q.x)>=CARD_BOUNDS.width+20||Math.abs(p.y-q.y)>=CARD_BOUNDS.height+20,id+'/'+chapter.id+' overlapping roles '+a+' / '+b);
+        }
+      }
+    }
+  }
+});
+test('replayed ledgers retain operation-only participants and separate same-edge roles in authored order',()=>{
+  const actors={client:{position:{x:145,y:120}},server:{position:{x:560,y:120}},host:{position:{x:975,y:120}},worker:{parentId:'host',position:{x:145,y:365}},auditor:{position:{x:560,y:365}},unused:{position:{x:975,y:365}}};
+  const shared=[{actorId:'worker'}],steps=[{from:'client',to:'server',attributeOperations:shared},{from:'server',to:'client',attributeOperations:shared},{from:'client',to:'server',attributeOperations:[{actorId:'auditor'}]}];
+  const collapsed=scenarioPositions({},steps,actors,false),expanded=scenarioPositions({},steps,actors,true);
+  assert.deepEqual(Object.keys(collapsed),['client','server','host','auditor']);
+  assert.deepEqual(Object.keys(expanded),['client','server','worker','auditor']);
+  assert.deepEqual(collapsed.host,actors.host.position);
+  assert.deepEqual(expanded.worker,actors.worker.position);
+  assert.equal(Object.hasOwn(collapsed,'unused'),false);
+  assert.equal(Object.hasOwn(expanded,'host'),false);
+});
 test('runtime binding rebuilds declared scalar occurrences without inventing credentials or patching ciphertext',()=>{
   const model={initialState:{policy:{realm:'CORP.EXAMPLE'},credentials:{}},protocolValues:{realm:'CORP.EXAMPLE',opaque:'ciphertext(CORP.EXAMPLE)'},runtimeBindings:[{field:'kerberosRealm',attributeId:'realm',actorId:'kdc',label:'Realm',example:'CORP.EXAMPLE',statePaths:['policy.realm','credentials.tgt.realm'],valueRefs:['realm','opaque']}],actors:()=>({kdc:{context:[]}}),definitions:()=>({})};
   const steps=[{payload:[{attributeId:'realm',value:'CORP.EXAMPLE'},{attributeId:'ticket',value:'ciphertext(CORP.EXAMPLE)'}],attributeOperations:[{attributeId:'realm',value:'CORP.EXAMPLE'}],protocolEffects:[{op:'put',path:'credentials.tgt',value:{realm:'CORP.EXAMPLE',instanceId:'tgt-1'}}]}];
@@ -73,6 +103,16 @@ test('runtime binding rebuilds declared scalar occurrences without inventing cre
   assert.equal(result.steps[0].payload[0].value,'ACME.EXAMPLE');assert.equal(result.steps[0].payload[1].value,'ciphertext(CORP.EXAMPLE)');assert.equal(result.steps[0].protocolEffects[0].value.realm,'ACME.EXAMPLE');
   assert.deepEqual(result.initialState.credentials,{});assert.equal(result.protocolValues.opaque,'ciphertext(CORP.EXAMPLE)');assert.equal(model.initialState.policy.realm,'CORP.EXAMPLE');
   assert.equal(scenarioContextRows(model,'kdc',{kerberosRealm:'ACME.EXAMPLE'})[0].value,'ACME.EXAMPLE');
+});
+test('runtime bindings do not alter undeclared sibling realms through shared fixture values',()=>{
+  const shared={realm:'A.EXAMPLE'},model={initialState:{policy:shared,issuedTicket:shared},runtimeBindings:[{field:'kerberosRealm',attributeId:'realm',example:'A.EXAMPLE',statePaths:['policy.realm']}]};
+  const steps=[{protocolEffects:[{op:'put',path:'policy',value:shared},{op:'put',path:'issuedTicket',value:shared}]}];
+  const result=projectScenarioContext(model,steps,{kerberosRealm:'B.EXAMPLE'});
+  assert.equal(result.initialState.policy.realm,'B.EXAMPLE');
+  assert.equal(result.initialState.issuedTicket.realm,'A.EXAMPLE');
+  assert.equal(result.steps[0].protocolEffects[0].value.realm,'B.EXAMPLE');
+  assert.equal(result.steps[0].protocolEffects[1].value.realm,'A.EXAMPLE');
+  assert.equal(model.initialState.policy.realm,'A.EXAMPLE');
 });
 test('typed page-only environment validates SSH/Kerberos inputs and clears them on reset',()=>{
   const env=new RuntimeEnvironment();env.updateDraft({sshHost:'server.corp.example',caURL:'https://ca.corp.example',kerberosRealm:'CORP.EXAMPLE',servicePrincipal:'host/server.corp.example@CORP.EXAMPLE',unixAccount:'alice'});assert.equal(env.apply().ok,true);

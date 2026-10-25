@@ -1,0 +1,41 @@
+Read-only INPUT audit complete. No production/source/gate output, no executions, no edits.
+
+FILE: docs/dnssec-expansion/contract-errata/effective-client-context/worksheet.json (SHA c7fc1efdd3b0e011499da4cf3bd19e2ae95b21885a1ac4975d6458646d0c77bc)
+SCOPE: all 159/159 cases scanned for cacheEntries.kind consistency across checkpoints/outcomes.
+
+APPLIED DNS22 CHECK: confirmed exactly the four proposed changes and no DNS22 setup/outcome/topology change in the queried fields: ownership.anchors.dnsValidator now has the base resolver-public-v1 entry plus clientA-public-v1 and clientB-private-v1 entries; both identical-owner checkpoint entries and both accepted-use entries are kind "answer". No remaining DNS22 patch.
+
+SCAN COVERAGE
+- 93 cases contain array cacheEntries: 107 checkpoint arrays (104 non-empty / 3 empty), 106 entries; all 106 entries have a kind. Kinds: answer 36, authenticated-negative 15, positive 15, failure 35, validated-proof 2, synthesized-positive 1, chain 1, compact-negative 1.
+- 13 cases contain object cacheEntries: 14 checkpoints, 15 subentries under answer/dnskeys/ds/delegation; none has a kind field, so no competing kind.
+- 53 cases have no cacheEntries.
+- No outcome has cacheEntries anywhere. outcome.cacheKind is a response/result classification, not a stored-entry kind: 68 null, 91 non-null. It is demonstrably not an entry-kind oracle (7 mismatches with accepted entries: DNS01 warm-answer-cache; DNS10 positive-cache-hit, expired-ttl, short-rrsig-ttl, short-original-ttl; DNS10 aggressive-nsec/aggressive-nsec3). These are not patches.
+
+CONSISTENCY METHOD / RESULT
+- Grouping by case + id + namespace key: zero kind divergences (DNS22's two checkpoint/use entries now both answer; DNS10 repeated old-positive entries all positive).
+- Grouping by case + receivedAt + expiresAt: exactly two candidates, DNS20/retry-after-expiry and DNS21/co-enabled. Each reviewed below.
+- Explicit new generations allowed where genuinely distinct: DNS10 old-positive vs fresh-* entries have different id/receipt/expiry and remain internally consistent; DNS20 retry's generation 2 is the repaired publication generation, not a different occurrence between the two observations.
+
+GENUINE CONTRADICTION / ONLY NEW PATCH
+DNS20/retry-after-expiry:
+- /lessons/19/cases/5/checkpoints/2/expected/cacheEntries/0/kind = "positive"
+- /lessons/19/cases/5/checkpoints/5/expected/cacheEntries/0/kind = "answer" (id lab-dnssec20:cache-retry-after-expiry; key [public-v1,resolver-public-v1,www.lab.example.,A,IN]).
+Both describe the same new-work occurrence: receivedAt 1792713606, expiresAt 1792713906; the checkpoint is the partial cache observation (generation 2, no id/key/status), the accepted entry is the canonical full entry (id/key/signatureDeadline 1792717200/validationOwner dnsValidator/securityStatus secure/evidenceRefs). setup.publication = {repairedAt:1792713603, generation:2}; the generation explains why new work is required, not a different generation between the two observations. The positive/answer split is therefore the same kind inconsistency, not a justified new-generation split.
+PATCH (one op):
+  replace /lessons/19/cases/5/checkpoints/2/expected/cacheEntries/0/kind
+  old "positive" -> new "answer"
+PRESERVE: generation:2; receivedAt 1792713606; expiresAt 1792713906; setup.publication generation 2/repairedAt 1792713603; accepted entry id/key/signatureDeadline/validationOwner/securityStatus/evidenceRefs; acceptedForUse true; cached true; outcome cacheKind answer; all TTLs, failure-cache expiry/new-work semantics, hops and application results. No receipt/provenance/deadline changes.
+
+REVIEWED, NO PATCH
+DNS21/co-enabled:
+- /lessons/20/cases/3/checkpoints/1/expected/cacheEntries/0 = {kind:"compact-negative", qname:"no.lab.example.", hasSignedNXNAME:true, upstreamCO:1, receivedAt:1792713600, expiresAt:1792713900}
+- /lessons/20/cases/3/checkpoints/4/expected/cacheEntries/0 = {kind:"authenticated-negative", id:"lab-dnssec21:cache-co-enabled", key:[public-v1,resolver-public-v1,no.lab.example.,A,IN], same receivedAt/expiresAt, signatureDeadline/validationOwner/securityStatus/evidenceRefs}
+This is not the same cache entry: the checkpoint is the CO/compact-denial cached response-context record (no id, key, validationOwner, securityStatus or evidence), while accepted-use is the authenticated negative answer cache entry. Shared receipt/expiry comes from the same response, not from a common entry identity or generation; DNS21's plan requirement is to track CO per hop and cached response context. No genuine same-occurrence kind contradiction; do not patch.
+
+DNS10 eligibleForReuse:
+- Appears only on the clock-jump checkpoints: /lessons/9/cases/1/checkpoints/2/... (expired-ttl), /lessons/9/cases/2/checkpoints/3/... (signature-expires-first), /lessons/9/cases/3/checkpoints/2/... (short-rrsig-ttl), /lessons/9/cases/4/checkpoints/2/... (short-original-ttl).
+- The same stored entry is observed earlier without eligibleForReuse (old-entry-authenticated-at-insertion / near-expiration-insertion) and later at clock now past expiresAt with the field false. All stored-body fields stay identical: kind positive, id, key/rrsetId, receivedAt, validatedAt, expiresAt, signatureDeadline, sourceGeneration, securityStatus, validationOwner and TTLs. eligibleForReuse is derived cache-observation metadata at the later clock, not immutable stored cache body, not a new kind or generation, and must not mutate receipt/provenance/deadlines. No patch.
+
+Other reviewed non-contradictions: DNS01 partial-chain chain vs answer are different objects/timing; DNS10 signature-expires-first positive near-expiration vs failure accepted entry have different receipts (1792717080 vs 1792717201) and are distinct occurrences; DNS10 positive-cache-hit/expired/short entries keep positive throughout; object cacheEntries (DNS12/13/16/17/18) have no kind; the 7 outcome.cacheKind differences are response/result classes.
+
+BOTTOM LINE: 159/159 scanned. One genuine independent contradiction and one minimal patch: DNS20/retry-after-expiry checkpoint kind positive -> answer. DNS22 changes are correctly applied; DNS21 compact-negative vs authenticated-negative is a distinct context/answer cache object, not a kind contradiction; DNS10 eligibleForReuse is derived observation metadata with the stored body and deadlines fixed.

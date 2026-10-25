@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNS-R10-reviewed-vs-current-complete-case-reference-delta",
+  "passed": true,
+  "before": {
+    "path": "docs/verification/dnssec-review-corrections/source-contract-05/canonical-prefix-reference.json",
+    "sha256": "11c61116c63aa65e7acbd6c5e576b37bae275eb985cf5bba59ed851ce9ac67a2",
+    "bytes": 11973318
+  },
+  "after": {
+    "path": "docs/verification/dnssec-r10-correction/source-contract-01/canonical-prefix-reference.json",
+    "sha256": "d9a80fa04bd6fce4eef94a410e64535c56d8568800b7740fe198347b971293ae",
+    "bytes": 11973318
+  },
+  "cases": 159,
+  "completeCaseRecordsUnchanged": 158,
+  "changedCases": [
+    {
+      "id": "lab-dnssec09",
+      "caseId": "cname-bogus-target",
+      "differentFields": [
+        "prefixes"
+      ],
+      "prefixRecordsChanged": 11,
+      "stepsUnchanged": true,
+      "finalOutcomeUnchanged": true,
+      "exactInspectionUnchanged": true
+    }
+  ],
+  "namespaceDelta": {
+    "path": "docs/verification/dnssec-r10-correction/semantic-delta-01.json",
+    "sha256": "1aecaeef393b2f26eaaf2231b59ca9b9e8e4ae4835dfdd96062b3dd32127418f",
+    "bytes": 11127
+  },
+  "scope": "158 entire canonical case records unchanged. Exactly DNS09/cname-bogus-target differs only in prefix records; events/steps/outcome/inspection unchanged. Four-case independent runtime delta additionally checks only three alias fields differ and all target/wire/signed values remain exact. Derived preservation, not a new expected-value oracle."
+}

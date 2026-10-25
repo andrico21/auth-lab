@@ -1,0 +1,47 @@
+kind: dnssec-resolution-errata-cleanup
+schemaVersion: 1
+applies_to:
+  - local://dnssec-resolution-errata-proposal.yaml
+  - local://dnssec-resolution-errata-corrections.yaml
+  - local://dnssec-resolution-errata-custody.yaml
+status: proposal-only-not-applied
+purpose: >-
+  Remove the unused signed other-dnskey-g1 binding left in
+  DNS09/cname-insecure-target after the unsigned-target correction, so the
+  custody conclusion (no other-zone private capability is needed for this case)
+  matches the literal selected evidence.
+corrections:
+  - finding: DNS09-INSECURE-01
+    issue: signed other-dnskey-g1 remains in numericBindings.additional even though it is not selected evidence after the unsigned-target correction
+    op: remove
+    path: /lessons/7/cases/4/setup/numericBindings/additional/2
+    expect_selector:
+      rrsetId: other-dnskey-g1
+      signatureId: other-dnskey-g1-signature
+      owner: other.example.
+      type: DNSKEY
+    effect: additional becomes [other-www-a-unsigned, denial-parent-unsigned-other]; no other-zone signature is selected
+  - finding: DNS09-INSECURE-01
+    issue: the removed DNSKEY binding would otherwise leave a dangling evidenceBindingIndex entry
+    op: remove
+    path: /lessons/7/cases/4/setup/evidenceBindingIndex/lab-dnssec09:cname-insecure-target:numericBindings-additional-2:other-dnskey-g1
+    expect_selector:
+      rrsetId: other-dnskey-g1
+      signatureId: other-dnskey-g1-signature
+    effect: no unused other-zone DNSKEY evidence occurrence remains
+  - finding: DNS09-INSECURE-01
+    issue: the target trust path and key reference must describe the unsigned target, not the removed DNSKEY
+    op: replace
+    path: /lessons/7/cases/4/setup/target/trustPath
+    expect: [root-ksk-g1, example-ksk-g1, other-ksk-g1, other-zsk-g1]
+    value: [root-ksk-g1, example-ksk-g1]
+  - finding: DNS09-INSECURE-01
+    issue: keyRef must be null for the unsigned target
+    op: replace
+    path: /lessons/7/cases/4/setup/target/keyRef
+    expect: other-zsk-g1
+    value: null
+notes:
+  - This cleanup is already implied by DNS09-INSECURE-01 in the main proposal; it is restated here so the custody group can truthfully exclude other-zone private capability for this case.
+  - No frozen numeric file or private byte is changed.
+  - No build, test, lint, formatter or production code was used.

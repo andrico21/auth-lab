@@ -1,7 +1,7 @@
 import { buildHeldObjects } from './held-objects.js';
 import { projectHeldObjects, inspectHeldObject, heldObjectTrace, heldCursorForPlayback } from './held-object-state.js';
 import { getPositions } from './layout.js';
-import { scenarioPositions } from './workspaces.js';
+import { scenarioActorIds, scenarioPositions } from './workspaces.js';
 
 const html = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const valueText = value => typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value ?? '');
@@ -230,10 +230,9 @@ export class HeldObjectView {
   }
   configureGeometry(){
     const app=this.app,actors=logicalActorsForView(app),layoutSteps=app.graphSteps;
-    const participants=new Set(layoutSteps.flatMap(step=>[step.from,step.to,...(step.attributeOperations||[]).map(op=>op.actorId)]).map(id=>app.nodeId(id)));
+    const active=new Set(scenarioActorIds(layoutSteps)),participants=new Set([...active].map(id=>app.nodeId(id)));
     const ids=[...new Set(Object.keys(actors).map(id=>app.nodeId(id)))].filter(id=>participants.has(id)),all=ids,aliases={};
     if(app.showInternals){
-      const active=new Set(layoutSteps.flatMap(step=>[step.from,step.to,...(step.attributeOperations||[]).map(op=>op.actorId)]));
       for(const parent of new Set(Object.values(actors).map(actor=>actor.parentId).filter(Boolean))){
         const children=Object.keys(actors).filter(id=>actors[id].parentId===parent);
         if(!active.has(parent)&&children.length)aliases[children[0]]=parent;
@@ -284,8 +283,9 @@ export class HeldObjectView {
     if(fromDock&&!collapse){const first=this.root.querySelector(`[data-held-owner="${actor}"] [data-holding-id]`);if(first)first.focus();else this.recoverFocus(key,actor,region);this.root.scrollIntoView?.({block:'nearest'});}else this.recoverFocus(key,actor,region);
   }
   select(holding){this.selection={...holding};this.actorId=holding.actorId;this.expanded.add(holding.actorId);this.helpOpen=false;this.lastKey='';this.render();}
+  buildTrace(artifactId){return heldObjectTrace(this.compiled(),artifactId);}
   trace(artifactId){
-    const app=this.app,compiled=this.compiled(),queue=heldObjectTrace(compiled,artifactId);
+    const app=this.app,queue=this.buildTrace(artifactId);
     if(!queue.length)return;
     app.player.stop(false);app.attributeSelection=null;app.objectTraceSelection=artifactId;app.traceQueue=queue;app.traceIndex=0;app.index=queue[0].sourceIndex;this.initial=false;
     app.inspection={type:'step'};this.configureGeometry();app.renderActors();app.renderConnections();app.renderTimeline();app.renderFocus();app.ensureRunningSpeed();app.player.play(queue,'object');
@@ -388,6 +388,6 @@ export class HeldObjectView {
 }
 function logicalActorsForView(app){
   if(app.scenarioOwnedActors)return app.scenarioOwnedActors;
-  const ids=new Set(app.scenarioSnapshot().steps.flatMap(step=>[step.from,step.to,...(step.attributeOperations||[]).map(op=>op.actorId)]).filter(Boolean).map(id=>app.actor(id).id));
+  const ids=new Set(scenarioActorIds(app.scenarioSnapshot().steps).filter(Boolean).map(id=>app.actor(id).id));
   return Object.fromEntries([...ids].map(id=>[id,app.actor(id)]));
 }

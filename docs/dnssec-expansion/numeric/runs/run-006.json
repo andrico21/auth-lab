@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "argv": [
+    "tools/verification/dnssec-crypto/.venv/bin/python",
+    "tools/verification/dnssec-crypto/verify_lifecycle.py"
+  ],
+  "cwd": "/home/andrico/auth-lab-held-objects",
+  "capturedAt": "2026-10-23T08:27:51.345632+00:00",
+  "exitCode": 1,
+  "stdout": "{\n  \"result\": \"pass\",\n  \"checks\": 253,\n  \"reportSha256\": \"5aa1ec83a87eff7d120f7b23ae036cc933524452543c20f0788711faab97a04c\",\n  \"path\": \"docs/dnssec-expansion/numeric/independent-verification.json\"\n}\n",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/andrico/auth-lab-held-objects/tools/verification/dnssec-crypto/verify_lifecycle.py\", line 111, in <module>\n    v.check('zonemd-independent-simple-sha384',hashlib.sha384(data).hexdigest(),z['digestHex'])\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/andrico/auth-lab-held-objects/tools/verification/dnssec-crypto/verify.py\", line 26, in check\n    raise AssertionError({'id':identity,'expected':expected,'actual':actual})\nAssertionError: {'id': 'zonemd-independent-simple-sha384', 'expected': 'b00db02d9b32d2226f42a056d6198caeb52f88635ab488868718d2d50548a05fdf3a156f0a14f02b9ba906fd2a5f8e03', 'actual': '5ab8dd537fc7ab7572801ce7f21de40a756030f71bcaa84aa9dbbb53fb0864deeaf542365e01045df30a21ca52dbd8e6'}\n"
+}

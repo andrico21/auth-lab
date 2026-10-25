@@ -1,0 +1,1617 @@
+{
+ "kind": "dnssec-resolution-semantics-errata",
+ "schemaVersion": 1,
+ "status": "proposal-only-not-applied",
+ "description": "Narrow independent post-freeze interpretation/correction for DNS04 crypto semantics, DNS03 anchor reference type, and DNS06 DoT transport label. Effective files are read-only; no original/effective file was changed.",
+ "production": {
+  "existed": true,
+  "consulted": false,
+  "statement": "No Source/evaluator access or execution; no build, test, lint, formatter, browser run or repo edit."
+ },
+ "targets": {
+  "effective/worksheet-resolution.json": {
+   "path": "docs/dnssec-expansion/contract-errata/effective/worksheet-resolution.json",
+   "sha256": "cf2baaaa75c7d894ac61b492582e1b10ea06a2e7860d2fa1754404b2fafe3cb1",
+   "bytes": 5596221
+  },
+  "effective/worksheet.json": {
+   "path": "docs/dnssec-expansion/contract-errata/effective/worksheet.json",
+   "sha256": "cee8806fbec443618158d75f971a20662f389d30564e2065d3712e75cb6fd8a1",
+   "bytes": 6618951
+  },
+  "effective/contract-addendum.json": {
+   "path": "docs/dnssec-expansion/contract-errata/effective/contract-addendum.json",
+   "sha256": "a7b0013612ed44da1fda94360d99ab1a9c365f6fb17f95d6bf92a7c85367cb56",
+   "bytes": 3663
+  },
+  "original-freeze": {
+   "path": "docs/dnssec-expansion/contract-freeze.json",
+   "sha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19"
+  }
+ },
+ "canonicalization": {
+  "algorithm": "sha256",
+  "encoding": "utf-8",
+  "json": "json.dumps(value, sort_keys=True, separators=(\",\", \":\"), ensure_ascii=False)"
+ },
+ "decisions": {
+  "DNS04-CRYPTO-SEMANTICS-01": {
+   "decision": "three distinct levels",
+   "runtimeCryptoImplemented": false,
+   "mathematicalReferenceResultIsNotRuntimeExecution": true,
+   "noOutcomeChange": true,
+   "knownMathematicalSignatureValidForProtocol2AndZoneClear": true,
+   "knownMathematicalReferenceOnly": true,
+   "eligibleKeySelectedForProtocol2OrZoneClear": false,
+   "deprecatedField": "cryptographicOperationPerformed replaced by explicit fields; absent does not mean false without semantics"
+  },
+  "DNS03-ANCHOR-REF-01": {
+   "decision": "logical-key-reference alpha conversion is valid when exactly bound",
+   "anchorRefType": "keyId-string",
+   "correctedTypeRequired": false,
+   "bindingAdded": true
+  },
+  "DNS06-TRANSPORT-01": {
+   "decision": "established authenticated encrypted DoT",
+   "handshakeEventsAdded": false,
+   "encryptedUdp": false,
+   "perHopFlagsUnchanged": true,
+   "statusTrustUnchanged": true,
+   "resolverToUpstreamTransport": "DoT",
+   "stubAndAuthorityTransportsRemain": "UDP"
+  }
+ },
+ "sources": {
+  "rfc4034": {
+   "title": "Resource Records for the DNS Security Extensions",
+   "url": "https://www.rfc-editor.org/rfc/rfc4034.html",
+   "capture": "docs/dnssec-expansion/sources/resolution/s05-rfc4034-text.txt",
+   "sha256": "6c32963b76808ec4e5f1282b5e13c5216df4670d21e1590bf29af4066f49b355",
+   "sections": [
+    "2.1.1",
+    "2.1.2"
+   ],
+   "quotes": {
+    "2.1.1": "If bit 7 has value 0, then the DNSKEY record holds some other type of DNS public key and MUST NOT be used to verify RRSIGs that cover RRsets. A DNSKEY RR with the SEP set and the Zone Key flag not set MUST NOT be used to verify RRSIGs that cover RRsets.",
+    "2.1.2": "The Protocol Field MUST have value 3, and the DNSKEY RR MUST be treated as invalid during signature verification if it is found to be some value other than 3."
+   }
+  },
+  "rfc4035": {
+   "title": "DNS Security Extensions",
+   "url": "https://www.rfc-editor.org/rfc/rfc4035.html",
+   "capture": "docs/dnssec-expansion/sources/resolution/s06-rfc4035-text.txt",
+   "sha256": "8978b120636c69b2080b12768266ec48cd4c0879583310863a62f7c409908084",
+   "sections": [
+    "5.3.1",
+    "5.3.3"
+   ],
+   "quotes": {
+    "5.3.1": "The RRSIG RR's Signer's Name, Algorithm, and Key Tag fields MUST match the owner name, algorithm, and key tag for some DNSKEY RR in the zone's apex DNSKEY RRset. The matching DNSKEY RR MUST be present in the zone's apex DNSKEY RRset, and MUST have the Zone Flag bit set.",
+    "5.3.3": "the public key used to verify the signature is contained in the Public Key field of the matching DNSKEY RR(s) (found in Section 5.3.1)."
+   }
+  },
+  "rfc7858": {
+   "title": "Specification for DNS over Transport Layer Security (TLS)",
+   "url": "https://www.rfc-editor.org/rfc/rfc7858.html",
+   "capture": "docs/dnssec-expansion/sources/resolution/s24-rfc7858-text.txt",
+   "sha256": "872e634c8d5ca4219a90147d356570e7d10046ad12d560e7d8b24f3aa340fdf0",
+   "sections": [
+    "3",
+    "3.1",
+    "4"
+   ],
+   "quotes": {
+    "3.1": "By default, a DNS client desiring privacy from DNS over TLS from a particular server MUST establish a TCP connection to port 853 on the server and MUST initiate a TLS connection."
+   }
+  },
+  "rfc8310": {
+   "title": "Usage Profiles for DNS over TLS and DNS over DTLS",
+   "url": "https://www.rfc-editor.org/rfc/rfc8310.html",
+   "capture": "docs/dnssec-expansion/sources/resolution/s24-rfc8310-text.txt",
+   "sha256": "33d9deb3783b1fa1fefb3b44bbe99ebcbf16495436524674b6d4023148bfdcb2",
+   "sections": [
+    "3",
+    "6.6"
+   ],
+   "quotes": {
+    "3": "A Strict Privacy profile requires both an encrypted connection and authentication of the DNS server using an authentication domain name.",
+    "6.6": "Authentication in Strict Privacy requires the DNS client to authenticate the server certificate using the authentication domain name."
+   }
+  },
+  "fixture-binding": {
+   "source": "docs/dnssec-expansion/contract-errata/effective/worksheet-resolution.json",
+   "sha256": "cf2baaaa75c7d894ac61b492582e1b10ea06a2e7860d2fa1754404b2fafe3cb1",
+   "field": "fixtureBinding",
+   "quote": "Stable lesson-prefixed object identities are symbolic references to fixed independently verified numeric material where bound by parent. This worksheet never claims its symbolic signatures were numerically verified by an application."
+  },
+  "effective-key-bindings": {
+   "source": "docs/dnssec-expansion/contract-errata/effective/worksheet-resolution.json",
+   "sha256": "cf2baaaa75c7d894ac61b492582e1b10ea06a2e7860d2fa1754404b2fafe3cb1",
+   "fields": [
+    "setup.anchorInputs",
+    "setup.keyBindings.child-ksk-g1",
+    "ownership.anchors",
+    "trustStores"
+   ]
+  }
+ },
+ "patches": [
+  {
+   "file": "worksheet-resolution.json",
+   "op": "add",
+   "path": "/cryptographicSemantics",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035",
+    "fixture-binding"
+   ],
+   "reason": "Define the three-level crypto semantics explicitly",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": {
+    "mode": "symbolic-reference-bound",
+    "runtimeCryptoImplemented": false,
+    "definitions": {
+     "candidateTupleMatchAttempted": "The validator compared the received RRSIG tuple (owner, type, signer, algorithm, key tag, labels, time) and candidate DNSKEY metadata (Protocol, Zone flag, SEP) against the exact reference-bound inputs. This is a symbolic/reference comparison and does not imply cryptographic execution.",
+     "eligibleKeySelected": "At least one candidate passed Protocol=3 and Zone-flag eligibility and was selected for verification. Protocol!=3, Zone-flag clear (even with SEP), or no matching key means false.",
+     "conceptualVerificationInvoked": "The conceptual validator invoked verification with an eligible selected key. Distinct from runtime execution; false when no eligible key is selected.",
+     "runtimeCryptographicOperationPerformed": "Actual execution by the worksheet application/browser/native runtime under test. False throughout this symbolic contract; independent numeric-generator verification is a reference result, not this runtime execution.",
+     "knownMathematicalSignatureValid": "Independent numeric reference result for the exact bytes, if known. It does not make an ineligible key usable and does not imply runtime execution.",
+     "signatureChecked": "Contract validation decision-path completion, not a synonym for runtime crypto execution."
+    },
+    "rules": [
+     "RFC4034 section2.1.2: Protocol!=3 DNSKEY RR MUST be treated as invalid during signature verification; no eligible key is selected.",
+     "RFC4034 section2.1.1: Zone flag clear MUST NOT be used to verify RRSIGs; SEP does not repair it.",
+     "A known mathematical match under the same public-key bytes is reference-only and must not be reported as runtime cryptographic execution.",
+     "No runtime crypto is implemented in this independent worksheet; mathematical reference results come from the independently verified numeric fixtures."
+    ],
+    "deprecatedFields": [
+     "cryptographicOperationPerformed"
+    ],
+    "definedByThisErratum": [
+     "signatureChecked decision-path meaning",
+     "math-reference separation",
+     "runtime crypto false in symbolic contract"
+    ]
+   },
+   "valueSha256": "9097a9fc6765ba5e6080e575137d29390760eee6aecf1dc53e518098156ecabc"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "add",
+   "path": "/referenceSemantics",
+   "finding": "DNS03-ANCHOR-REF-01",
+   "sources": [
+    "fixture-binding",
+    "effective-key-bindings"
+   ],
+   "reason": "Define logical anchor reference alpha conversion",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": {
+    "anchorRef": "Logical key identity, not raw public-key bytes. Resolve through keyBindings/numeric key material and declared scope.",
+    "alphaConversion": "Valid only when keyId, owner, scope, flags, protocol, algorithm and exact publicKeyHex/dnskeyRdataHex match the bound artifact; otherwise no conversion.",
+    "immutableArtifact": "The immutable public-key artifact is the exact DNSKEY RDATA/public-key bytes in keyBindings/numeric material, not the keyId string.",
+    "noPrivateInference": "Anchor public material does not create private capability.",
+    "anchorRefType": "keyId-string",
+    "hashCanonicalization": "sha256 over hex-decoded RFC4034 DNSKEY RDATA/public-key bytes"
+   },
+   "valueSha256": "a3c313e78c00a56851098dae53a3125fc58f8a510b750b26f0bd6a196f03bd21"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "add",
+   "path": "/cryptographicSemantics",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035",
+    "fixture-binding"
+   ],
+   "reason": "Define the three-level crypto semantics explicitly",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": {
+    "mode": "symbolic-reference-bound",
+    "runtimeCryptoImplemented": false,
+    "definitions": {
+     "candidateTupleMatchAttempted": "The validator compared the received RRSIG tuple (owner, type, signer, algorithm, key tag, labels, time) and candidate DNSKEY metadata (Protocol, Zone flag, SEP) against the exact reference-bound inputs. This is a symbolic/reference comparison and does not imply cryptographic execution.",
+     "eligibleKeySelected": "At least one candidate passed Protocol=3 and Zone-flag eligibility and was selected for verification. Protocol!=3, Zone-flag clear (even with SEP), or no matching key means false.",
+     "conceptualVerificationInvoked": "The conceptual validator invoked verification with an eligible selected key. Distinct from runtime execution; false when no eligible key is selected.",
+     "runtimeCryptographicOperationPerformed": "Actual execution by the worksheet application/browser/native runtime under test. False throughout this symbolic contract; independent numeric-generator verification is a reference result, not this runtime execution.",
+     "knownMathematicalSignatureValid": "Independent numeric reference result for the exact bytes, if known. It does not make an ineligible key usable and does not imply runtime execution.",
+     "signatureChecked": "Contract validation decision-path completion, not a synonym for runtime crypto execution."
+    },
+    "rules": [
+     "RFC4034 section2.1.2: Protocol!=3 DNSKEY RR MUST be treated as invalid during signature verification; no eligible key is selected.",
+     "RFC4034 section2.1.1: Zone flag clear MUST NOT be used to verify RRSIGs; SEP does not repair it.",
+     "A known mathematical match under the same public-key bytes is reference-only and must not be reported as runtime cryptographic execution.",
+     "No runtime crypto is implemented in this independent worksheet; mathematical reference results come from the independently verified numeric fixtures."
+    ],
+    "deprecatedFields": [
+     "cryptographicOperationPerformed"
+    ],
+    "definedByThisErratum": [
+     "signatureChecked decision-path meaning",
+     "math-reference separation",
+     "runtime crypto false in symbolic contract"
+    ]
+   },
+   "valueSha256": "9097a9fc6765ba5e6080e575137d29390760eee6aecf1dc53e518098156ecabc"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "add",
+   "path": "/referenceSemantics",
+   "finding": "DNS03-ANCHOR-REF-01",
+   "sources": [
+    "fixture-binding",
+    "effective-key-bindings"
+   ],
+   "reason": "Define logical anchor reference alpha conversion",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": {
+    "anchorRef": "Logical key identity, not raw public-key bytes. Resolve through keyBindings/numeric key material and declared scope.",
+    "alphaConversion": "Valid only when keyId, owner, scope, flags, protocol, algorithm and exact publicKeyHex/dnskeyRdataHex match the bound artifact; otherwise no conversion.",
+    "immutableArtifact": "The immutable public-key artifact is the exact DNSKEY RDATA/public-key bytes in keyBindings/numeric material, not the keyId string.",
+    "noPrivateInference": "Anchor public material does not create private capability.",
+    "anchorRefType": "keyId-string",
+    "hashCanonicalization": "sha256 over hex-decoded RFC4034 DNSKEY RDATA/public-key bytes"
+   },
+   "valueSha256": "a3c313e78c00a56851098dae53a3125fc58f8a510b750b26f0bd6a196f03bd21"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/2/cases/9/checkpoints/1/expected/validators/dnsValidator",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Replace the single crypto-operation boolean with explicit candidate/eligibility/invocation/runtime/reference fields",
+   "expectedBefore": {
+    "candidateProtocol": 2,
+    "candidateUsable": false,
+    "cryptographicOperationPerformed": false
+   },
+   "expectedBeforeSha256": "e9545159ded4decaff6946e290e3f02f55646fecc412c952116dda9274b3db97",
+   "value": {
+    "candidateProtocol": 2,
+    "candidateUsable": false,
+    "candidateTupleMatchAttempted": true,
+    "candidateTupleMatchResult": "candidate-ineligible",
+    "eligibleKeySelected": false,
+    "conceptualVerificationInvoked": false,
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalSignatureValid": true,
+    "knownMathematicalReferenceOnly": true,
+    "eligibilityFailure": "protocol-not-3",
+    "signatureCheckedMeaning": "decision-path-only"
+   },
+   "valueSha256": "d32e4233616e7761cd38b3d3081fda1e52dc62c65530cabf07cd1dcc78c009db"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/2/cases/9/checkpoints/2/expected",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Separate signatureChecked decision path from runtime crypto execution",
+   "expectedBefore": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-4:child-zsk-protocol2-dnskey",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false
+   },
+   "expectedBeforeSha256": "e391e802a7ab46858ffa6db36350224b3140e1d1051e814636ccf0ef50965949",
+   "value": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-4:child-zsk-protocol2-dnskey",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false,
+    "signatureCheckKind": "candidate-eligibility-only",
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalReferenceOnly": true,
+    "mathematicalReferenceResultRef": "/checkpoints/1/expected/validators/dnsValidator"
+   },
+   "valueSha256": "a1dec759beb27dc0c09b79de98fa3a7ec8714f21e20663b03d40f098e138b901"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/3/cases/9/checkpoints/1/expected/validators/dnsValidator",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Replace the single crypto-operation boolean with explicit candidate/eligibility/invocation/runtime/reference fields",
+   "expectedBefore": {
+    "candidateProtocol": 2,
+    "candidateUsable": false,
+    "cryptographicOperationPerformed": false
+   },
+   "expectedBeforeSha256": "e9545159ded4decaff6946e290e3f02f55646fecc412c952116dda9274b3db97",
+   "value": {
+    "candidateProtocol": 2,
+    "candidateUsable": false,
+    "candidateTupleMatchAttempted": true,
+    "candidateTupleMatchResult": "candidate-ineligible",
+    "eligibleKeySelected": false,
+    "conceptualVerificationInvoked": false,
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalSignatureValid": true,
+    "knownMathematicalReferenceOnly": true,
+    "eligibilityFailure": "protocol-not-3",
+    "signatureCheckedMeaning": "decision-path-only"
+   },
+   "valueSha256": "d32e4233616e7761cd38b3d3081fda1e52dc62c65530cabf07cd1dcc78c009db"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/3/cases/9/checkpoints/2/expected",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Separate signatureChecked decision path from runtime crypto execution",
+   "expectedBefore": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-4:child-zsk-protocol2-dnskey",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false
+   },
+   "expectedBeforeSha256": "e391e802a7ab46858ffa6db36350224b3140e1d1051e814636ccf0ef50965949",
+   "value": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-chain-4:child-zsk-protocol2-dnskey",
+     "lab-dnssec04:dnskey-protocol-not-three:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false,
+    "signatureCheckKind": "candidate-eligibility-only",
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalReferenceOnly": true,
+    "mathematicalReferenceResultRef": "/checkpoints/1/expected/validators/dnsValidator"
+   },
+   "valueSha256": "a1dec759beb27dc0c09b79de98fa3a7ec8714f21e20663b03d40f098e138b901"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/2/cases/10/checkpoints/1/expected/validators/dnsValidator",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Replace the single crypto-operation boolean with explicit candidate/eligibility/invocation/runtime/reference fields",
+   "expectedBefore": {
+    "candidateProtocol": 3,
+    "candidateFlags": 1,
+    "Zone": false,
+    "SEP": true,
+    "candidateUsable": false
+   },
+   "expectedBeforeSha256": "40a407afd0067b252499bb7852b00a28bfd6b26622a4b8a1887cd3dd5dca723a",
+   "value": {
+    "candidateProtocol": 3,
+    "candidateFlags": 1,
+    "Zone": false,
+    "SEP": true,
+    "candidateUsable": false,
+    "candidateTupleMatchAttempted": true,
+    "candidateTupleMatchResult": "candidate-ineligible",
+    "eligibleKeySelected": false,
+    "conceptualVerificationInvoked": false,
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalSignatureValid": true,
+    "knownMathematicalReferenceOnly": true,
+    "eligibilityFailure": "zone-flag-clear",
+    "signatureCheckedMeaning": "decision-path-only"
+   },
+   "valueSha256": "cd757b474566c57c28e1012fe915025e05ee307dbc2ee982f44023def5cfd8b5"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/2/cases/10/checkpoints/2/expected",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Separate signatureChecked decision path from runtime crypto execution",
+   "expectedBefore": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-4:child-zsk-zoneflag-clear-dnskey",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false
+   },
+   "expectedBeforeSha256": "eb1c7594d85e115766d69013e0f960f705451d51f95746ab5bbaac6b577a361a",
+   "value": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-4:child-zsk-zoneflag-clear-dnskey",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false,
+    "signatureCheckKind": "candidate-eligibility-only",
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalReferenceOnly": true,
+    "mathematicalReferenceResultRef": "/checkpoints/1/expected/validators/dnsValidator"
+   },
+   "valueSha256": "3116c9c8c59ebd6a7e35745132e5b06bdf53566fceea02a8190b5d654fa5adb8"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/3/cases/10/checkpoints/1/expected/validators/dnsValidator",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Replace the single crypto-operation boolean with explicit candidate/eligibility/invocation/runtime/reference fields",
+   "expectedBefore": {
+    "candidateProtocol": 3,
+    "candidateFlags": 1,
+    "Zone": false,
+    "SEP": true,
+    "candidateUsable": false
+   },
+   "expectedBeforeSha256": "40a407afd0067b252499bb7852b00a28bfd6b26622a4b8a1887cd3dd5dca723a",
+   "value": {
+    "candidateProtocol": 3,
+    "candidateFlags": 1,
+    "Zone": false,
+    "SEP": true,
+    "candidateUsable": false,
+    "candidateTupleMatchAttempted": true,
+    "candidateTupleMatchResult": "candidate-ineligible",
+    "eligibleKeySelected": false,
+    "conceptualVerificationInvoked": false,
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalSignatureValid": true,
+    "knownMathematicalReferenceOnly": true,
+    "eligibilityFailure": "zone-flag-clear",
+    "signatureCheckedMeaning": "decision-path-only"
+   },
+   "valueSha256": "cd757b474566c57c28e1012fe915025e05ee307dbc2ee982f44023def5cfd8b5"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/3/cases/10/checkpoints/2/expected",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Separate signatureChecked decision path from runtime crypto execution",
+   "expectedBefore": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-4:child-zsk-zoneflag-clear-dnskey",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false
+   },
+   "expectedBeforeSha256": "eb1c7594d85e115766d69013e0f960f705451d51f95746ab5bbaac6b577a361a",
+   "value": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-chain-4:child-zsk-zoneflag-clear-dnskey",
+     "lab-dnssec04:zone-key-flag-clear:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false,
+    "signatureCheckKind": "candidate-eligibility-only",
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalReferenceOnly": true,
+    "mathematicalReferenceResultRef": "/checkpoints/1/expected/validators/dnsValidator"
+   },
+   "valueSha256": "3116c9c8c59ebd6a7e35745132e5b06bdf53566fceea02a8190b5d654fa5adb8"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/2/cases/6/checkpoints/1/expected/validators/dnsValidator",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Replace the single crypto-operation boolean with explicit candidate/eligibility/invocation/runtime/reference fields",
+   "expectedBefore": {
+    "signerZoneMatches": false,
+    "matchingAuthenticatedCandidate": false,
+    "cryptographicOperationPerformed": false
+   },
+   "expectedBeforeSha256": "a3e23b2e47a81578342f6f66b0dba985d985be87f0e79f37519a735753741657",
+   "value": {
+    "signerZoneMatches": false,
+    "matchingAuthenticatedCandidate": false,
+    "candidateTupleMatchAttempted": true,
+    "candidateTupleMatchResult": "signer-or-key-mismatch",
+    "eligibleKeySelected": false,
+    "conceptualVerificationInvoked": false,
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalSignatureValidForReceivedRrset": false,
+    "knownMathematicalReferenceResult": "valid-only-for-original-other-owner-rrset",
+    "knownMathematicalReferenceOnly": true,
+    "eligibilityFailure": "signer-or-key-mismatch",
+    "signatureCheckedMeaning": "decision-path-only"
+   },
+   "valueSha256": "e989fc523f67d914b7211d7cb7ae119dc2ed6ea87198709054224b33545e27c8"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/2/cases/6/checkpoints/2/expected",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Separate signatureChecked decision path from runtime crypto execution",
+   "expectedBefore": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-4:child-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-primary:www-a",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-additional-0:other-www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false
+   },
+   "expectedBeforeSha256": "932c4c865668fc4a7a14d3a37e9f42caedb819d2724162e1f46dfa659f3add86",
+   "value": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-4:child-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-primary:www-a",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-additional-0:other-www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false,
+    "signatureCheckKind": "candidate-eligibility-only",
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalReferenceOnly": true,
+    "mathematicalReferenceResultRef": "/checkpoints/1/expected/validators/dnsValidator"
+   },
+   "valueSha256": "ffbc5056a138a4027bbd13f2cbd12c634612cb9d3b1c58b6a99d27874b9184f9"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/3/cases/6/checkpoints/1/expected/validators/dnsValidator",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Replace the single crypto-operation boolean with explicit candidate/eligibility/invocation/runtime/reference fields",
+   "expectedBefore": {
+    "signerZoneMatches": false,
+    "matchingAuthenticatedCandidate": false,
+    "cryptographicOperationPerformed": false
+   },
+   "expectedBeforeSha256": "a3e23b2e47a81578342f6f66b0dba985d985be87f0e79f37519a735753741657",
+   "value": {
+    "signerZoneMatches": false,
+    "matchingAuthenticatedCandidate": false,
+    "candidateTupleMatchAttempted": true,
+    "candidateTupleMatchResult": "signer-or-key-mismatch",
+    "eligibleKeySelected": false,
+    "conceptualVerificationInvoked": false,
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalSignatureValidForReceivedRrset": false,
+    "knownMathematicalReferenceResult": "valid-only-for-original-other-owner-rrset",
+    "knownMathematicalReferenceOnly": true,
+    "eligibilityFailure": "signer-or-key-mismatch",
+    "signatureCheckedMeaning": "decision-path-only"
+   },
+   "valueSha256": "e989fc523f67d914b7211d7cb7ae119dc2ed6ea87198709054224b33545e27c8"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/3/cases/6/checkpoints/2/expected",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Separate signatureChecked decision path from runtime crypto execution",
+   "expectedBefore": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-4:child-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-primary:www-a",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-additional-0:other-www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false
+   },
+   "expectedBeforeSha256": "932c4c865668fc4a7a14d3a37e9f42caedb819d2724162e1f46dfa659f3add86",
+   "value": {
+    "signatureChecked": true,
+    "chainEstablished": true,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-chain-4:child-dnskey-g1",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-primary:www-a",
+     "lab-dnssec04:wrong-signer-or-key:numericBindings-additional-0:other-www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false,
+    "signatureCheckKind": "candidate-eligibility-only",
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalReferenceOnly": true,
+    "mathematicalReferenceResultRef": "/checkpoints/1/expected/validators/dnsValidator"
+   },
+   "valueSha256": "ffbc5056a138a4027bbd13f2cbd12c634612cb9d3b1c58b6a99d27874b9184f9"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/2/cases/4/checkpoints/1/expected/validators/dnsValidator",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Replace the single crypto-operation boolean with explicit candidate/eligibility/invocation/runtime/reference fields",
+   "expectedBefore": {
+    "matchingKeyPresent": false,
+    "cryptographicOperationPerformed": false
+   },
+   "expectedBeforeSha256": "404e72bbe804246455ceea262054e20b5cb0148b60724be0a9d1a758f1ca8fa4",
+   "value": {
+    "matchingKeyPresent": false,
+    "candidateTupleMatchAttempted": true,
+    "candidateTupleMatchResult": "no-matching-key",
+    "eligibleKeySelected": false,
+    "conceptualVerificationInvoked": false,
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalSignatureValid": null,
+    "knownMathematicalReferenceOnly": true,
+    "eligibilityFailure": "no-matching-dnskey",
+    "signatureCheckedMeaning": "decision-path-only"
+   },
+   "valueSha256": "52074cd73592bbe349870c345212f0b84c8cc36b04a0bd03bc19f9502e3bace3"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/2/cases/4/checkpoints/2/expected",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Separate signatureChecked decision path from runtime crypto execution",
+   "expectedBefore": {
+    "signatureChecked": true,
+    "chainEstablished": false,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-4:child-dnskey-zsk-missing",
+     "lab-dnssec04:missing-dnskey:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false
+   },
+   "expectedBeforeSha256": "1ef87f0aae5de0ee0f8e5e31a8931fc88b52caf25bc853ae5ce51b75041d4227",
+   "value": {
+    "signatureChecked": true,
+    "chainEstablished": false,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-4:child-dnskey-zsk-missing",
+     "lab-dnssec04:missing-dnskey:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false,
+    "signatureCheckKind": "candidate-eligibility-only",
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalReferenceOnly": true,
+    "mathematicalReferenceResultRef": "/checkpoints/1/expected/validators/dnsValidator"
+   },
+   "valueSha256": "89bd8469e72a667aabf2b483f4b8be25749ed3d253f3ed2e434d8ff2f1edda6f"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/3/cases/4/checkpoints/1/expected/validators/dnsValidator",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Replace the single crypto-operation boolean with explicit candidate/eligibility/invocation/runtime/reference fields",
+   "expectedBefore": {
+    "matchingKeyPresent": false,
+    "cryptographicOperationPerformed": false
+   },
+   "expectedBeforeSha256": "404e72bbe804246455ceea262054e20b5cb0148b60724be0a9d1a758f1ca8fa4",
+   "value": {
+    "matchingKeyPresent": false,
+    "candidateTupleMatchAttempted": true,
+    "candidateTupleMatchResult": "no-matching-key",
+    "eligibleKeySelected": false,
+    "conceptualVerificationInvoked": false,
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalSignatureValid": null,
+    "knownMathematicalReferenceOnly": true,
+    "eligibilityFailure": "no-matching-dnskey",
+    "signatureCheckedMeaning": "decision-path-only"
+   },
+   "valueSha256": "52074cd73592bbe349870c345212f0b84c8cc36b04a0bd03bc19f9502e3bace3"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/3/cases/4/checkpoints/2/expected",
+   "finding": "DNS04-CRYPTO-SEMANTICS-01",
+   "sources": [
+    "rfc4034",
+    "rfc4035"
+   ],
+   "reason": "Separate signatureChecked decision path from runtime crypto execution",
+   "expectedBefore": {
+    "signatureChecked": true,
+    "chainEstablished": false,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-4:child-dnskey-zsk-missing",
+     "lab-dnssec04:missing-dnskey:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false
+   },
+   "expectedBeforeSha256": "1ef87f0aae5de0ee0f8e5e31a8931fc88b52caf25bc853ae5ce51b75041d4227",
+   "value": {
+    "signatureChecked": true,
+    "chainEstablished": false,
+    "denialChecked": false,
+    "validationOwner": "dnsValidator",
+    "verificationKind": "local-check",
+    "evidenceRefs": [
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-0:root-dnskey-g1",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-1:root-example-ds",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-2:example-dnskey-g1",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-3:example-child-ds",
+     "lab-dnssec04:missing-dnskey:numericBindings-chain-4:child-dnskey-zsk-missing",
+     "lab-dnssec04:missing-dnskey:numericBindings-primary:www-a"
+    ],
+    "checkedAt": 1792713600,
+    "acceptedForUse": false,
+    "signatureCheckKind": "candidate-eligibility-only",
+    "runtimeCryptographicOperationPerformed": false,
+    "knownMathematicalReferenceOnly": true,
+    "mathematicalReferenceResultRef": "/checkpoints/1/expected/validators/dnsValidator"
+   },
+   "valueSha256": "89bd8469e72a667aabf2b483f4b8be25749ed3d253f3ed2e434d8ff2f1edda6f"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/1/cases/5/checkpoints/1/expected",
+   "finding": "DNS03-ANCHOR-REF-01",
+   "sources": [
+    "fixture-binding",
+    "effective-key-bindings",
+    "rfc4035"
+   ],
+   "reason": "Bind the logical anchorRef to exact public-key bytes and scope; no type change",
+   "expectedBefore": {
+    "anchorRef": "child-ksk-g1",
+    "trustStores": {
+     "island-lab-v1": {
+      "anchors": [
+       "child-ksk-g1"
+      ],
+      "scope": "lab.example."
+     }
+    },
+    "chainEstablished": true
+   },
+   "expectedBeforeSha256": "9abbefa702d202c314d2f0c274c9b6fad85c49279a13ee2d8f14e67fa8f0bd70",
+   "value": {
+    "anchorRef": "child-ksk-g1",
+    "trustStores": {
+     "island-lab-v1": {
+      "anchors": [
+       "child-ksk-g1"
+      ],
+      "scope": "lab.example."
+     }
+    },
+    "chainEstablished": true,
+    "anchorBinding": {
+     "type": "logical-key-reference",
+     "anchorRefType": "keyId-string",
+     "keyId": "child-ksk-g1",
+     "owner": "lab.example.",
+     "keyTag": 22775,
+     "flags": 257,
+     "protocol": 3,
+     "algorithm": 13,
+     "publicKeyHex": "3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+     "dnskeyRdataHex": "0101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+     "publicKeySha256": "2dabef9d28c2acc43a08a06db923ea3f38c67d5b7164932c76e7eef0a85e580a",
+     "dnskeyRdataSha256": "873e814ce9f3f14ed31938d32982aeee55213959ccee1d3ecc411ac507eacc26",
+     "scope": "lab.example.",
+     "provisioning": "explicit trusted local configuration",
+     "anchorSource": "out-of-band",
+     "keyBindingPath": "/setup/keyBindings/child-ksk-g1",
+     "anchorInputPath": "/setup/anchorInputs/0",
+     "alphaConversionRule": "valid only if keyId, owner, scope, flags, protocol, algorithm, publicKeyHex and dnskeyRdataHex all match the bound artifact",
+     "hashCanonicalization": "sha256 over hex-decoded RFC4034 DNSKEY RDATA/public-key bytes"
+    }
+   },
+   "valueSha256": "1f6603829abd4dd9183ab1566804261d281b2d4429918e71a95fa8211e6b0ca4"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/2/cases/5/checkpoints/1/expected",
+   "finding": "DNS03-ANCHOR-REF-01",
+   "sources": [
+    "fixture-binding",
+    "effective-key-bindings",
+    "rfc4035"
+   ],
+   "reason": "Bind the logical anchorRef to exact public-key bytes and scope; no type change",
+   "expectedBefore": {
+    "anchorRef": "child-ksk-g1",
+    "trustStores": {
+     "island-lab-v1": {
+      "anchors": [
+       "child-ksk-g1"
+      ],
+      "scope": "lab.example."
+     }
+    },
+    "chainEstablished": true
+   },
+   "expectedBeforeSha256": "9abbefa702d202c314d2f0c274c9b6fad85c49279a13ee2d8f14e67fa8f0bd70",
+   "value": {
+    "anchorRef": "child-ksk-g1",
+    "trustStores": {
+     "island-lab-v1": {
+      "anchors": [
+       "child-ksk-g1"
+      ],
+      "scope": "lab.example."
+     }
+    },
+    "chainEstablished": true,
+    "anchorBinding": {
+     "type": "logical-key-reference",
+     "anchorRefType": "keyId-string",
+     "keyId": "child-ksk-g1",
+     "owner": "lab.example.",
+     "keyTag": 22775,
+     "flags": 257,
+     "protocol": 3,
+     "algorithm": 13,
+     "publicKeyHex": "3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+     "dnskeyRdataHex": "0101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+     "publicKeySha256": "2dabef9d28c2acc43a08a06db923ea3f38c67d5b7164932c76e7eef0a85e580a",
+     "dnskeyRdataSha256": "873e814ce9f3f14ed31938d32982aeee55213959ccee1d3ecc411ac507eacc26",
+     "scope": "lab.example.",
+     "provisioning": "explicit trusted local configuration",
+     "anchorSource": "out-of-band",
+     "keyBindingPath": "/setup/keyBindings/child-ksk-g1",
+     "anchorInputPath": "/setup/anchorInputs/0",
+     "alphaConversionRule": "valid only if keyId, owner, scope, flags, protocol, algorithm, publicKeyHex and dnskeyRdataHex all match the bound artifact",
+     "hashCanonicalization": "sha256 over hex-decoded RFC4034 DNSKEY RDATA/public-key bytes"
+    }
+   },
+   "valueSha256": "1f6603829abd4dd9183ab1566804261d281b2d4429918e71a95fa8211e6b0ca4"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/4/cases/1/setup/upstream",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Model established authenticated encrypted DoT channel without handshake events",
+   "expectedBefore": {
+    "validates": true,
+    "trustedForAD": true,
+    "channel": "authenticated configured DoT endpoint resolver.example."
+   },
+   "expectedBeforeSha256": "54d1036d08ea257e4ef2fb91b1326e165834e15113f2ae88bf664e1fc42da8c0",
+   "value": {
+    "validates": true,
+    "trustedForAD": true,
+    "channel": "authenticated configured DoT endpoint resolver.example.",
+    "transport": "DoT",
+    "encrypted": true,
+    "authenticatedEndpoint": "resolver.example.",
+    "established": true
+   },
+   "valueSha256": "50f15fc15bf46f8bb2b0f895502ceb7603b05ee2a0f0995bcaddfa4bd9d5138f"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/4/cases/1/setup/route",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Route transport must match the configured DoT channel",
+   "expectedBefore": {
+    "mode": "forward-all",
+    "destination": "dnsUpstream",
+    "installsAnchor": false
+   },
+   "expectedBeforeSha256": "9c8c8796c246007f6d4fd3f0d46fb3780a754122a952855d94ac972ad98ceb5d",
+   "value": {
+    "mode": "forward-all",
+    "destination": "dnsUpstream",
+    "installsAnchor": false,
+    "transport": "DoT",
+    "authenticatedEndpoint": "resolver.example.",
+    "established": true
+   },
+   "valueSha256": "87ae71373ce43e81077d3abef37db977608eff37335bc92249f873adb5001ed7"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/4/cases/1/outcome/flags/hops/1/transport",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Resolver-to-upstream hop is DoT; per-hop flags unchanged",
+   "expectedBefore": "UDP",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "DoT",
+   "valueSha256": "923c77f7e7fd8d7e348c4786039b66d227083a7c2bc3157c4fe50c116a002c5c"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/4/cases/1/checkpoints/5/expected/response/hops/1/transport",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Stub transcript hop transport matches DoT",
+   "expectedBefore": "UDP",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "DoT",
+   "valueSha256": "923c77f7e7fd8d7e348c4786039b66d227083a7c2bc3157c4fe50c116a002c5c"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/4/cases/1/checkpoints/1/expected/transport",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Checkpoint transport records DoT protocol and established channel",
+   "expectedBefore": {
+    "encrypted": true,
+    "authenticatedEndpoint": "resolver.example."
+   },
+   "expectedBeforeSha256": "76b1a8483f79ff074367fe738c45d1d162bb8805c76c35e9f94790b9d96bdb0a",
+   "value": {
+    "encrypted": true,
+    "authenticatedEndpoint": "resolver.example.",
+    "protocol": "DoT",
+    "transport": "DoT",
+    "established": true
+   },
+   "valueSha256": "2492ee8e2148bc0ea82eede73fd718eb97df76cc8454ed2905459e01c8988832"
+  },
+  {
+   "file": "worksheet-resolution.json",
+   "op": "replace",
+   "path": "/lessons/4/cases/1/sourceSections",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Add DoT primary source coverage",
+   "expectedBefore": [
+    {
+     "group": "S01",
+     "url": "https://www.rfc-editor.org/rfc/rfc4033.html",
+     "sections": [
+      "3.1",
+      "5",
+      "7"
+     ]
+    },
+    {
+     "group": "S03",
+     "url": "https://www.rfc-editor.org/rfc/rfc6840.html",
+     "sections": [
+      "5.4",
+      "5.6-5.9",
+      "5.11-5.12"
+     ]
+    },
+    {
+     "group": "S05",
+     "url": "https://www.rfc-editor.org/rfc/rfc4034.html",
+     "sections": [
+      "2.1",
+      "3.1"
+     ]
+    },
+    {
+     "group": "S06",
+     "url": "https://www.rfc-editor.org/rfc/rfc4035.html",
+     "sections": [
+      "3.2",
+      "4.3-4.4",
+      "5.2-5.5"
+     ]
+    },
+    {
+     "group": "S23",
+     "url": "https://www.rfc-editor.org/rfc/rfc5625.html",
+     "sections": [
+      "3",
+      "4.1",
+      "4.4"
+     ]
+    },
+    {
+     "group": "S12",
+     "url": "https://www.rfc-editor.org/rfc/rfc9520.html",
+     "sections": [
+      "3.1-3.4"
+     ]
+    },
+    {
+     "group": "S22",
+     "url": "https://www.rfc-editor.org/rfc/rfc1035.html",
+     "sections": [
+      "4.1.1-4.1.3"
+     ]
+    }
+   ],
+   "expectedBeforeSha256": "4fa8ee3477b5c808206a2e240f6381c6d3b9e19ead04afae4a1ebed06ce656b4",
+   "value": [
+    {
+     "group": "S01",
+     "url": "https://www.rfc-editor.org/rfc/rfc4033.html",
+     "sections": [
+      "3.1",
+      "5",
+      "7"
+     ]
+    },
+    {
+     "group": "S03",
+     "url": "https://www.rfc-editor.org/rfc/rfc6840.html",
+     "sections": [
+      "5.4",
+      "5.6-5.9",
+      "5.11-5.12"
+     ]
+    },
+    {
+     "group": "S05",
+     "url": "https://www.rfc-editor.org/rfc/rfc4034.html",
+     "sections": [
+      "2.1",
+      "3.1"
+     ]
+    },
+    {
+     "group": "S06",
+     "url": "https://www.rfc-editor.org/rfc/rfc4035.html",
+     "sections": [
+      "3.2",
+      "4.3-4.4",
+      "5.2-5.5"
+     ]
+    },
+    {
+     "group": "S23",
+     "url": "https://www.rfc-editor.org/rfc/rfc5625.html",
+     "sections": [
+      "3",
+      "4.1",
+      "4.4"
+     ]
+    },
+    {
+     "group": "S12",
+     "url": "https://www.rfc-editor.org/rfc/rfc9520.html",
+     "sections": [
+      "3.1-3.4"
+     ]
+    },
+    {
+     "group": "S22",
+     "url": "https://www.rfc-editor.org/rfc/rfc1035.html",
+     "sections": [
+      "4.1.1-4.1.3"
+     ]
+    },
+    {
+     "group": "S24",
+     "url": "https://www.rfc-editor.org/rfc/rfc7858.html",
+     "sections": [
+      "3",
+      "3.1",
+      "4"
+     ]
+    },
+    {
+     "group": "S24",
+     "url": "https://www.rfc-editor.org/rfc/rfc8310.html",
+     "sections": [
+      "3",
+      "6.6"
+     ]
+    }
+   ],
+   "valueSha256": "adc48f7bc13409e362d0785bfbcf60eca0699ba3edfbb772acb7718199c95f24"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/5/cases/1/setup/upstream",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Model established authenticated encrypted DoT channel without handshake events",
+   "expectedBefore": {
+    "validates": true,
+    "trustedForAD": true,
+    "channel": "authenticated configured DoT endpoint resolver.example."
+   },
+   "expectedBeforeSha256": "54d1036d08ea257e4ef2fb91b1326e165834e15113f2ae88bf664e1fc42da8c0",
+   "value": {
+    "validates": true,
+    "trustedForAD": true,
+    "channel": "authenticated configured DoT endpoint resolver.example.",
+    "transport": "DoT",
+    "encrypted": true,
+    "authenticatedEndpoint": "resolver.example.",
+    "established": true
+   },
+   "valueSha256": "50f15fc15bf46f8bb2b0f895502ceb7603b05ee2a0f0995bcaddfa4bd9d5138f"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/5/cases/1/setup/route",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Route transport must match the configured DoT channel",
+   "expectedBefore": {
+    "mode": "forward-all",
+    "destination": "dnsUpstream",
+    "installsAnchor": false
+   },
+   "expectedBeforeSha256": "9c8c8796c246007f6d4fd3f0d46fb3780a754122a952855d94ac972ad98ceb5d",
+   "value": {
+    "mode": "forward-all",
+    "destination": "dnsUpstream",
+    "installsAnchor": false,
+    "transport": "DoT",
+    "authenticatedEndpoint": "resolver.example.",
+    "established": true
+   },
+   "valueSha256": "87ae71373ce43e81077d3abef37db977608eff37335bc92249f873adb5001ed7"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/5/cases/1/outcome/flags/hops/1/transport",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Resolver-to-upstream hop is DoT; per-hop flags unchanged",
+   "expectedBefore": "UDP",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "DoT",
+   "valueSha256": "923c77f7e7fd8d7e348c4786039b66d227083a7c2bc3157c4fe50c116a002c5c"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/5/cases/1/checkpoints/5/expected/response/hops/1/transport",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Stub transcript hop transport matches DoT",
+   "expectedBefore": "UDP",
+   "expectedBeforeSha256": "0dabe66272a35a935e3b10a70f4466b561d24c2c00da97940b6da3262d34658d",
+   "value": "DoT",
+   "valueSha256": "923c77f7e7fd8d7e348c4786039b66d227083a7c2bc3157c4fe50c116a002c5c"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/5/cases/1/checkpoints/1/expected/transport",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Checkpoint transport records DoT protocol and established channel",
+   "expectedBefore": {
+    "encrypted": true,
+    "authenticatedEndpoint": "resolver.example."
+   },
+   "expectedBeforeSha256": "76b1a8483f79ff074367fe738c45d1d162bb8805c76c35e9f94790b9d96bdb0a",
+   "value": {
+    "encrypted": true,
+    "authenticatedEndpoint": "resolver.example.",
+    "protocol": "DoT",
+    "transport": "DoT",
+    "established": true
+   },
+   "valueSha256": "2492ee8e2148bc0ea82eede73fd718eb97df76cc8454ed2905459e01c8988832"
+  },
+  {
+   "file": "worksheet.json",
+   "op": "replace",
+   "path": "/lessons/5/cases/1/sourceSections",
+   "finding": "DNS06-TRANSPORT-01",
+   "sources": [
+    "rfc7858",
+    "rfc8310"
+   ],
+   "reason": "Add DoT primary source coverage",
+   "expectedBefore": [
+    {
+     "group": "S01",
+     "url": "https://www.rfc-editor.org/rfc/rfc4033.html",
+     "sections": [
+      "3.1",
+      "5",
+      "7"
+     ]
+    },
+    {
+     "group": "S03",
+     "url": "https://www.rfc-editor.org/rfc/rfc6840.html",
+     "sections": [
+      "5.4",
+      "5.6-5.9",
+      "5.11-5.12"
+     ]
+    },
+    {
+     "group": "S05",
+     "url": "https://www.rfc-editor.org/rfc/rfc4034.html",
+     "sections": [
+      "2.1",
+      "3.1"
+     ]
+    },
+    {
+     "group": "S06",
+     "url": "https://www.rfc-editor.org/rfc/rfc4035.html",
+     "sections": [
+      "3.2",
+      "4.3-4.4",
+      "5.2-5.5"
+     ]
+    },
+    {
+     "group": "S23",
+     "url": "https://www.rfc-editor.org/rfc/rfc5625.html",
+     "sections": [
+      "3",
+      "4.1",
+      "4.4"
+     ]
+    },
+    {
+     "group": "S12",
+     "url": "https://www.rfc-editor.org/rfc/rfc9520.html",
+     "sections": [
+      "3.1-3.4"
+     ]
+    },
+    {
+     "group": "S22",
+     "url": "https://www.rfc-editor.org/rfc/rfc1035.html",
+     "sections": [
+      "4.1.1-4.1.3"
+     ]
+    }
+   ],
+   "expectedBeforeSha256": "4fa8ee3477b5c808206a2e240f6381c6d3b9e19ead04afae4a1ebed06ce656b4",
+   "value": [
+    {
+     "group": "S01",
+     "url": "https://www.rfc-editor.org/rfc/rfc4033.html",
+     "sections": [
+      "3.1",
+      "5",
+      "7"
+     ]
+    },
+    {
+     "group": "S03",
+     "url": "https://www.rfc-editor.org/rfc/rfc6840.html",
+     "sections": [
+      "5.4",
+      "5.6-5.9",
+      "5.11-5.12"
+     ]
+    },
+    {
+     "group": "S05",
+     "url": "https://www.rfc-editor.org/rfc/rfc4034.html",
+     "sections": [
+      "2.1",
+      "3.1"
+     ]
+    },
+    {
+     "group": "S06",
+     "url": "https://www.rfc-editor.org/rfc/rfc4035.html",
+     "sections": [
+      "3.2",
+      "4.3-4.4",
+      "5.2-5.5"
+     ]
+    },
+    {
+     "group": "S23",
+     "url": "https://www.rfc-editor.org/rfc/rfc5625.html",
+     "sections": [
+      "3",
+      "4.1",
+      "4.4"
+     ]
+    },
+    {
+     "group": "S12",
+     "url": "https://www.rfc-editor.org/rfc/rfc9520.html",
+     "sections": [
+      "3.1-3.4"
+     ]
+    },
+    {
+     "group": "S22",
+     "url": "https://www.rfc-editor.org/rfc/rfc1035.html",
+     "sections": [
+      "4.1.1-4.1.3"
+     ]
+    },
+    {
+     "group": "S24",
+     "url": "https://www.rfc-editor.org/rfc/rfc7858.html",
+     "sections": [
+      "3",
+      "3.1",
+      "4"
+     ]
+    },
+    {
+     "group": "S24",
+     "url": "https://www.rfc-editor.org/rfc/rfc8310.html",
+     "sections": [
+      "3",
+      "6.6"
+     ]
+    }
+   ],
+   "valueSha256": "adc48f7bc13409e362d0785bfbcf60eca0699ba3edfbb772acb7718199c95f24"
+  }
+ ],
+ "findings": [
+  {
+   "id": "DNS04-CRYPTO-SEMANTICS-01",
+   "cases": [
+    "DNS04/dnskey-protocol-not-three",
+    "DNS04/zone-key-flag-clear",
+    "DNS04/wrong-signer-or-key",
+    "DNS04/missing-dnskey"
+   ],
+   "question": "Does cryptographicOperationPerformed:false mean the signature was not mathematically checked, that no eligible key was selected, or that no runtime crypto executed?",
+   "resolution": "Three distinct levels are required. Candidate tuple screening compares RRSIG and DNSKEY metadata against reference-bound inputs. Eligible-key selection is false for Protocol!=3, Zone-flag clear (even with SEP), signer/key mismatch or no matching key. Conceptual verification invocation is false without an eligible key. Runtime cryptographic operation is false throughout the worksheet/browser symbolic contract because no browser numeric crypto is implemented; independent numeric-generator verification is a reference result, not runtime execution. A known mathematical signature result is an independent reference result, not runtime execution, and does not make an ineligible key usable.",
+   "effective_fields": "dnskey-protocol-not-three.keyMutation.leafMathematicalSignatureValid=true; candidateEligibleForDnssec=false. zone-key-flag-clear same. existing checkpoint cryptographicOperationPerformed=false is replaced by explicit fields. local-verification signatureChecked=true is defined as decision-path completion, not runtime crypto.",
+   "primary_sources": [
+    "rfc4034 2.1.1",
+    "rfc4034 2.1.2",
+    "rfc4035 5.3.1",
+    "rfc4035 5.3.3",
+    "effective fixtureBinding"
+   ],
+   "patch_count": 16
+  },
+  {
+   "id": "DNS03-ANCHOR-REF-01",
+   "cases": [
+    "DNS03/signed-island-with-local-anchor"
+   ],
+   "question": "Is anchorRef a raw numeric key ID or an immutable public-key artifact, and is logical-reference alpha conversion valid?",
+   "resolution": "anchorRef is a logical key identity string, not raw public-key bytes. Alpha conversion to the immutable public-key/DNSKEY artifact is valid only when keyId, owner, scope, flags, protocol, algorithm and exact publicKeyHex/dnskeyRdataHex match the bound keyBindings/numeric artifact. For child-ksk-g1 the binding is added explicitly; no corrected expected reference type is required. If a consumer requires an artifact-only reference, use anchorBinding rather than interpreting the keyId as bytes.",
+   "effective_fields": "anchorInputs[0].keyRef=child-ksk-g1, owner=lab.example., provisioning=explicit trusted local configuration; ownership.anchors.dnsValidator=child-ksk-g1 provisioned out-of-band; keyBindings.child-ksk-g1 exact bytes; trustStores.island-lab-v1.scope=lab.example.",
+   "primary_sources": [
+    "effective fixtureBinding",
+    "effective keyBindings/anchorInputs",
+    "RFC4035 5.1/5.2"
+   ],
+   "patch_count": 2
+  },
+  {
+   "id": "DNS06-TRANSPORT-01",
+   "cases": [
+    "DNS06/upstream-validates-local-relies"
+   ],
+   "question": "The setup selects an established authenticated DoT channel and the checkpoint says encrypted=true/authenticatedEndpoint=resolver.example., but the upstream hop is labeled UDP. Which field is wrong?",
+   "resolution": "Only the transport label/input is wrong. The resolver-to-upstream hop is an established authenticated encrypted DoT channel; the stub and upstream-to-authority hops remain UDP. Per-hop query/response flags, independent trust stores and validation/security status are unchanged. No TLS handshake event or encrypted-UDP claim is added.",
+   "effective_fields": "setup.upstream.channel=authenticated configured DoT endpoint resolver.example.; checkpoint upstream-check-distinct-from-local-reliance.transport.encrypted=true; authenticatedEndpoint=resolver.example.; outcome.flags.hops[1] from dnsResolver to dnsUpstream transport=UDP.",
+   "primary_sources": [
+    "RFC7858 3.1",
+    "RFC8310 3/6.6"
+   ],
+   "patch_count": 12
+  }
+ ]
+}

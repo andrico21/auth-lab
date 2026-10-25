@@ -34,6 +34,7 @@ import {JWTLAB_ATTRIBUTES,JWTLAB_SOURCES,JWTLAB_SCENARIOS} from './jwt-validatio
 import {KUBERNETESAUTHLAB_ATTRIBUTES,KUBERNETESAUTHLAB_SOURCES,KUBERNETESAUTHLAB_SCENARIOS} from './kubernetes-auth-lab.js';
 import {KUBERNETESRBACLAB_ATTRIBUTES,KUBERNETESRBACLAB_SOURCES,KUBERNETESRBACLAB_SCENARIOS} from './kubernetes-rbac-lab.js';
 import {MCPLAB_ATTRIBUTES,MCPLAB_SOURCES,MCPLAB_SCENARIOS} from './mcp-auth-lab.js';
+import {DNSSECLAB_ATTRIBUTES,DNSSECLAB_SOURCES,DNSSECLAB_SCENARIOS} from './dnssec-lab.js';
 
 /** Reject ambiguity before any dictionary can silently overwrite an owner. */
 export function buildLabCatalogRegistry(modules,reservedAttributeGroups){
@@ -87,6 +88,7 @@ const labCatalogModules=[
   {source:'src/kubernetes-auth-lab.js',attributes:KUBERNETESAUTHLAB_ATTRIBUTES,sources:KUBERNETESAUTHLAB_SOURCES,scenarios:KUBERNETESAUTHLAB_SCENARIOS},
   {source:'src/kubernetes-rbac-lab.js',attributes:KUBERNETESRBACLAB_ATTRIBUTES,sources:KUBERNETESRBACLAB_SOURCES,scenarios:KUBERNETESRBACLAB_SCENARIOS},
   {source:'src/mcp-auth-lab.js',attributes:MCPLAB_ATTRIBUTES,sources:MCPLAB_SOURCES,scenarios:MCPLAB_SCENARIOS},
+  {source:'src/dnssec-lab.js',attributes:DNSSECLAB_ATTRIBUTES,sources:DNSSECLAB_SOURCES,scenarios:DNSSECLAB_SCENARIOS},
 ];
 const labCatalogRegistry=buildLabCatalogRegistry(labCatalogModules,[ATTRIBUTES,VARIANT_ATTRIBUTES,FIDO_ATTRIBUTES,SAML_ATTRIBUTES,JWE_ATTRIBUTES,SERVICE_ATTRIBUTES,DEVICE_ATTRIBUTES,CIBA_ATTRIBUTES,EXCHANGE_ATTRIBUTES]);
 export const LAB_ATTRIBUTES=labCatalogRegistry.attributes;

@@ -1,0 +1,640 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-frozen-required-scenario-manifest",
+  "authority": {
+    "path": "/mnt/c/TempPersistent/oauth-lab/auth-flow-studio-dnssec-worker-plan.html",
+    "sha256": "e50d93f4072270ea3522aaeb0ae81c8012adbb515d19c7bcae52136ea6cc9994",
+    "bytes": 83336
+  },
+  "baselineCommit": "c99ebd6fec16e01dc9fef6c9590d534b8f1daf85",
+  "baselineStandaloneSha256": "23d6c61d861a37705122915a11923d43d610723664a28caa6df89cfcaae71de6",
+  "totals": {
+    "requiredLessons": 22,
+    "namedCases": 159,
+    "defaultsAlreadyIncluded": 22,
+    "sourceGroups": 29
+  },
+  "defaultAlias": "Runtime default resolves to the first listed named case; it is not a160th case.",
+  "rows": [
+    {
+      "planId": "DNS01",
+      "runtimeId": "lab-dnssec01",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "resolution",
+      "title": "Follow a signed lookup",
+      "learningQuestion": "How does a cold resolver obtain and trust an answer?",
+      "defaultCaseId": "cold-secure",
+      "caseIds": [
+        "cold-secure",
+        "warm-answer-cache",
+        "partial-chain-cache",
+        "tampered-answer"
+      ],
+      "caseCount": 4,
+      "sourceGroups": [
+        "S01",
+        "S02",
+        "S03",
+        "S04",
+        "S05",
+        "S06"
+      ],
+      "acceptance": [
+        "the exact answer is present before local checking but not marked trusted; referral addresses are not made secure merely by sharing a message with DS. The warm variant shows which requests disappear and which evidence supports reuse. The tampered RRset is withheld for the checking client. Link to DNS02 for how the signed records were produced. [S01, S02, S03, S04, S05, S06]"
+      ]
+    },
+    {
+      "planId": "DNS02",
+      "runtimeId": "lab-dnssec02",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "signing-publication",
+      "title": "From zone data to signatures",
+      "learningQuestion": "What exactly is signed, by which key, and what gets published?",
+      "defaultCaseId": "split-ksk-zsk",
+      "caseIds": [
+        "split-ksk-zsk",
+        "combined-key",
+        "equivalent-presentation",
+        "changed-rdata",
+        "opaque-rdata-case-change",
+        "changed-owner",
+        "keytag-collision"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S01",
+        "S03",
+        "S05",
+        "S13",
+        "S17"
+      ],
+      "acceptance": [
+        "show canonical bytes and signature input boundaries. RR ordering, case of domain-name fields subject to canonicalization, and permitted name compression must not cause invented signature failures. Opaque RDATA such as TXT string case remains signed data: changing it, or changing the owner to a different name, fails verification with the unchanged signature. Colliding tags still select/check actual candidate keys. The root does not sign every leaf RRset. DNSKEY is public; private keys are not DNS records. [S01, S03, S05, S13, S17]"
+      ]
+    },
+    {
+      "planId": "DNS03",
+      "runtimeId": "lab-dnssec03",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "resolution",
+      "title": "Cross a delegation boundary",
+      "learningQuestion": "Why is one child secure, another insecure, and another broken?",
+      "defaultCaseId": "signed-child",
+      "caseIds": [
+        "signed-child",
+        "proved-no-ds",
+        "supported-ds-mismatch",
+        "missing-ds-proof",
+        "no-covering-anchor",
+        "signed-island-with-local-anchor",
+        "unsupported-only-ds"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S01",
+        "S03",
+        "S04",
+        "S06"
+      ],
+      "acceptance": [
+        "animate parent-authenticated DS, matching child key and child DNSKEY RRset acceptance. Proved absence of DS can establish an insecure delegation; a missing packet field cannot. A supported DS path that fails differs from an authenticated unsupported-only path. A signed island becomes locally secure only with a suitable independent anchor/path. Expose how local strict application policy can refuse an insecure answer without relabeling it cryptographically bogus. [S01, S03, S04, S06]"
+      ]
+    },
+    {
+      "planId": "DNS04",
+      "runtimeId": "lab-dnssec04",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "validation",
+      "title": "Explain a validation decision",
+      "learningQuestion": "Which check failed, and what does the client receive?",
+      "defaultCaseId": "valid",
+      "caseIds": [
+        "valid",
+        "signature-expired",
+        "signature-not-yet-valid",
+        "wrong-clock",
+        "missing-dnskey",
+        "missing-rrsig",
+        "wrong-signer-or-key",
+        "wrong-covered-data",
+        "one-valid-plus-one-invalid-signature",
+        "dnskey-protocol-not-three",
+        "zone-key-flag-clear"
+      ],
+      "caseCount": 11,
+      "sourceGroups": [
+        "S03",
+        "S05",
+        "S06",
+        "S12"
+      ],
+      "acceptance": [
+        "bind each check to the exact key/RRset/signature, time and policy, including DNSKEY Protocol=3 and the Zone Key flag; SEP is not an ordinary validation gate. Support a valid usable signature/path despite an additional unusable signature; do not require every attached signature to pass. Wrong-clock is an explicit resolver input. Show the internal verdict separately from external SERVFAIL/EDE behavior; no positive application answer is accepted in a checking bogus case. Numeric validity-time handling must follow the RFC’s serial arithmetic. [S03, S05, S06, S12]"
+      ]
+    },
+    {
+      "planId": "DNS05",
+      "runtimeId": "lab-dnssec05",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "forwarding-trust",
+      "title": "Stub validation and the AD flag",
+      "learningQuestion": "Does my workstation verify DNSSEC itself or trust a resolver?",
+      "defaultCaseId": "unaware-stub",
+      "caseIds": [
+        "unaware-stub",
+        "trusted-resolver-ad",
+        "ad-interest-without-do",
+        "validating-stub",
+        "forged-ad-untrusted-hop",
+        "do-zero-explicit-dnskey-query",
+        "response-flags-and-cached-ad"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S01",
+        "S03",
+        "S06",
+        "S23"
+      ],
+      "acceptance": [
+        "distinguish DO requesting DNSSEC records, query AD signaling understanding/interest, response AD conveying the responder’s assertion, and CD requesting checking-disabled treatment. AA/RD/RA/NOERROR are not security verdicts. DO=0 does not mean “validation off”; explicit DNSSEC-type queries still return their requested type. A locally validating stub owns its anchor and checks evidence. A nonvalidating stub’s reliance requires declared resolver/channel trust; a forged AD bit on an untrusted hop is insufficient. [S01, S03, S23]"
+      ]
+    },
+    {
+      "planId": "DNS06",
+      "runtimeId": "lab-dnssec06",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "forwarding-trust",
+      "title": "Who validates when DNS is forwarded?",
+      "learningQuestion": "Where does validation happen in client → local resolver → upstream resolver → authorities?",
+      "defaultCaseId": "local-validates-upstream-fetches",
+      "caseIds": [
+        "local-validates-upstream-fetches",
+        "upstream-validates-local-relies",
+        "both-validate",
+        "upstream-servfail-cd-zero",
+        "local-checks-cd-one-data",
+        "dnssec-stripping-forwarder",
+        "forwarder-loop-or-unreachable",
+        "cached-upstream-servfail-cd-zero-then-cd-one"
+      ],
+      "caseCount": 8,
+      "sourceGroups": [
+        "S03",
+        "S12",
+        "S23"
+      ],
+      "acceptance": [
+        "show queries, flags and results for each hop. A validating resolver can request unchecked upstream data and make its own decision even when its downstream client requests checking. Do not propagate upstream AD as local independent verification. A trusted-upstream profile must declare that trust. Stripped records or transport failure must not silently downgrade a known secure delegation to an unsigned success. Forwarding configuration selects a route; it does not install an anchor. [S03, S23]"
+      ]
+    },
+    {
+      "planId": "DNS07",
+      "runtimeId": "lab-dnssec07",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "validation",
+      "title": "Prove that a name or type does not exist with NSEC",
+      "learningQuestion": "Prove that a name or type does not exist with NSEC",
+      "defaultCaseId": "nxdomain",
+      "caseIds": [
+        "nxdomain",
+        "existing-name-nodata",
+        "empty-nonterminal",
+        "wildcard-excluded",
+        "no-ds-at-delegation",
+        "incomplete-proof",
+        "proof-from-wrong-zone"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S05",
+        "S06",
+        "S09"
+      ],
+      "acceptance": [
+        "display name intervals and type bitmaps, then explicitly derive the assertion they support. NXDOMAIN, NODATA and empty non-terminal are different. Where wildcard exclusion or additional evidence is required, a single convenient-looking record is not enough. A denial from one zone cannot be applied across an unrelated delegation. Keep authenticated negative answers separate from transient failure caching. [S05, S06, S09]"
+      ]
+    },
+    {
+      "planId": "DNS08",
+      "runtimeId": "lab-dnssec08",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "validation",
+      "title": "NSEC3 and Opt-Out",
+      "learningQuestion": "NSEC3 and Opt-Out",
+      "defaultCaseId": "nsec3-nxdomain",
+      "caseIds": [
+        "nsec3-nxdomain",
+        "nsec3-nodata",
+        "unsigned-optout-delegation",
+        "missing-closest-encloser",
+        "hash-parameter-mismatch",
+        "excessive-iterations-policy"
+      ],
+      "caseCount": 6,
+      "sourceGroups": [
+        "S07",
+        "S08"
+      ],
+      "acceptance": [
+        "explain matching versus covering hashes, closest encloser and next closer; show the actual salt/iteration/hash inputs. The zero-iteration setting still performs the initial hash. Opt-Out does not prove all names in a covered interval absent or secure. Show the limits of enumeration resistance and the authority-side NSEC3PARAM role. Declare expensive-proof handling as a selected policy within current guidance; do not turn a resource limit into a successful proof. [S07, S08]"
+      ]
+    },
+    {
+      "planId": "DNS09",
+      "runtimeId": "lab-dnssec09",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "resolution",
+      "title": "Wildcards and aliases across zones",
+      "learningQuestion": "Wildcards and aliases across zones",
+      "defaultCaseId": "wildcard-positive",
+      "caseIds": [
+        "wildcard-positive",
+        "wildcard-nodata",
+        "wildcard-missing-proof",
+        "cname-secure-target",
+        "cname-insecure-target",
+        "cname-bogus-target",
+        "dname-synthesized-cname"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S05",
+        "S06",
+        "S11",
+        "S26"
+      ],
+      "acceptance": [
+        "for conventional wildcard signing, relate RRSIG Labels to the reconstructed owner and the required closest-match evidence. Validate each relevant link/target under its own authority; a signed CNAME does not bless the destination address. A CNAME alias’s original name is not the target’s zone. For DNAME, authenticate the DNAME and check the synthesis; do not require an independently signed synthesized CNAME. Keep the RFC 9824 online-signing case distinct. [S05, S06, S11, S26]"
+      ]
+    },
+    {
+      "planId": "DNS10",
+      "runtimeId": "lab-dnssec10",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "resolution",
+      "title": "Reuse validated cache data",
+      "learningQuestion": "Reuse validated cache data",
+      "defaultCaseId": "positive-cache-hit",
+      "caseIds": [
+        "positive-cache-hit",
+        "expired-ttl",
+        "signature-expires-first",
+        "short-rrsig-ttl",
+        "short-original-ttl",
+        "negative-cache-hit",
+        "aggressive-nsec",
+        "aggressive-nsec3",
+        "wildcard-synthesis",
+        "out-of-proof-range"
+      ],
+      "caseCount": 10,
+      "sourceGroups": [
+        "S06",
+        "S09",
+        "S10"
+      ],
+      "acceptance": [
+        "distinguish exact cache hits from newly synthesized answers based on validated denial evidence. Show the relevant cache key, proof zone/range, evidence lifetime and signature limit. Apply RFC 9077’s updated NSEC/NSEC3 TTL rules, including valid aggressive use that does not depend on an attached SOA for every cached proof. A new publication does not immediately invalidate an old valid cache. Forbid synthesis outside proof coverage, across an incompatible zone cut, using Opt-Out evidence where disallowed, or after validity ends. [S09, S10]"
+      ]
+    },
+    {
+      "planId": "DNS11",
+      "runtimeId": "lab-dnssec11",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "forwarding-trust",
+      "title": "Large answers, EDNS and encrypted transport",
+      "learningQuestion": "Large answers, EDNS and encrypted transport",
+      "defaultCaseId": "udp-complete",
+      "caseIds": [
+        "udp-complete",
+        "udp-truncated-tcp-retry",
+        "tcp-blocked",
+        "edns-stripped",
+        "dot-authenticated-resolver",
+        "encrypted-but-bogus-dns-data"
+      ],
+      "caseCount": 6,
+      "sourceGroups": [
+        "S22",
+        "S23",
+        "S24"
+      ],
+      "acceptance": [
+        "show advertised UDP size, TC and a correlated TCP retry; do not treat a partial response as a complete proof. TCP is a normal DNS transport, not an obsolete workaround. The selected authenticated DoT profile protects the hop and authenticates its configured endpoint; encryption alone or opportunistic use must not imply that identity guarantee. It does not produce an RRSIG or fix a broken DNSSEC chain. Keep transport authentication and DNSSEC result independent. Detailed TLS handshakes can link to existing lessons rather than be duplicated. [S22, S23, S24]"
+      ]
+    },
+    {
+      "planId": "DNS12",
+      "runtimeId": "lab-dnssec12",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "keys-delegation",
+      "title": "Refresh signatures and roll a ZSK",
+      "learningQuestion": "Refresh signatures and roll a ZSK",
+      "defaultCaseId": "resign-before-expiry",
+      "caseIds": [
+        "resign-before-expiry",
+        "zsk-prepublish",
+        "zsk-double-sign",
+        "old-key-removed-too-early",
+        "secondary-lags",
+        "signature-refresh-outage"
+      ],
+      "caseCount": 6,
+      "sourceGroups": [
+        "S13"
+      ],
+      "acceptance": [
+        "show publication, activation, overlap and retirement as separate clock events. The resolver continues with the key/signature generation it actually cached. Compare safe rollout with a client whose remaining cached objects no longer compose into a valid path. Refreshing RRSIGs is not necessarily changing the DNSKEY. No arbitrary “wait one TTL” shortcut may substitute for the selected publication, cache and signature timing dependencies. [S13]"
+      ]
+    },
+    {
+      "planId": "DNS13",
+      "runtimeId": "lab-dnssec13",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "keys-delegation",
+      "title": "Roll a KSK or combined signing key",
+      "learningQuestion": "Roll a KSK or combined signing key",
+      "defaultCaseId": "ksk-double-ds",
+      "caseIds": [
+        "ksk-double-ds",
+        "ksk-double-ksk-method",
+        "combined-key-rollover",
+        "parent-ds-delayed",
+        "old-ds-cache",
+        "premature-old-key-removal"
+      ],
+      "caseCount": 6,
+      "sourceGroups": [
+        "S13",
+        "S19"
+      ],
+      "acceptance": [
+        "child DNSKEY changes and parent DS changes have different publishers, schedules and caches. Demonstrate a continuous path for old and new resolver states. A CSK transition must account for both DNSKEY authentication and ordinary RRset signatures. Reducing a TTL now does not shorten a previously cached TTL. Parent acknowledgments and publication visibility are separate. [S13, S19]"
+      ]
+    },
+    {
+      "planId": "DNS14",
+      "runtimeId": "lab-dnssec14",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "keys-delegation",
+      "title": "Change algorithms and digest policy",
+      "learningQuestion": "Change algorithms and digest policy",
+      "defaultCaseId": "modern-baseline",
+      "caseIds": [
+        "modern-baseline",
+        "dual-algorithm-rollover",
+        "algorithm-unsupported",
+        "unsupported-digest-only",
+        "modern-and-obsolete-paths",
+        "sha1-signing-disabled",
+        "sha1-digest-compatibility",
+        "nsec3-sha1-not-signature-policy"
+      ],
+      "caseCount": 8,
+      "sourceGroups": [
+        "S03",
+        "S13",
+        "S16",
+        "S18"
+      ],
+      "acceptance": [
+        "keep publisher generation rules, implementation capability and operator acceptance policy separately inspectable. Use current RFC/IANA requirements for algorithm transitions and usable paths, not an indiscriminate all-signatures rule. Preserve the RFC 9905 distinction explained in section 3. A valid alternative current path prevents an obsolete extra path from automatically poisoning the answer. Document exactly which cases exercise compatibility versus current default operation. [S03, S13, S16-S18]"
+      ]
+    },
+    {
+      "planId": "DNS15",
+      "runtimeId": "lab-dnssec15",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "keys-delegation",
+      "title": "Install and maintain a trust anchor",
+      "learningQuestion": "Install and maintain a trust anchor",
+      "defaultCaseId": "provisioned-anchor",
+      "caseIds": [
+        "provisioned-anchor",
+        "untrusted-self-signed-key",
+        "rfc5011-add",
+        "add-hold-down-interrupted",
+        "revoke-and-remove",
+        "offline-misses-rollover",
+        "manual-recovery"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S14"
+      ],
+      "acceptance": [
+        "teach initial out-of-band trust separately from authenticated RFC 5011 maintenance. Show the specified states, observation history, hold-down timers and revoke processing rather than reducing the protocol to “see a new key, trust it.” Represent the add hold-down as at least 30 days and no earlier than the first-observed RRset’s original TTL expiry, with the required repeated validated observation; removal bookkeeping is distinct from revocation. Use an accelerated display clock with true represented durations. Lost trust does not repair itself from an arbitrary fetched key. Manual recovery is explicit operator action. Trust-anchor replacement differs from parent/child DS rollover. [S14]"
+      ]
+    },
+    {
+      "planId": "DNS16",
+      "runtimeId": "lab-dnssec16",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "keys-delegation",
+      "title": "Maintain parent DS with CDS/CDNSKEY",
+      "learningQuestion": "Maintain parent DS with CDS/CDNSKEY",
+      "defaultCaseId": "consistent-update",
+      "caseIds": [
+        "consistent-update",
+        "consistent-ds-removal",
+        "one-authority-stale",
+        "cds-cdnskey-keyset-disagreement",
+        "nodata-versus-removal",
+        "unreachable-authority-retry",
+        "digest-policy-comparison",
+        "dsync-notify-trigger",
+        "invalid-dsync-target",
+        "malformed-delete-signal"
+      ],
+      "caseCount": 10,
+      "sourceGroups": [
+        "S19",
+        "S21",
+        "S29"
+      ],
+      "acceptance": [
+        "child intent is observed, authenticated and checked before the parent’s DS changes. Apply RFC 9975’s all-addresses/received-response consistency rules; NODATA counts as a response, while unreachability has retry handling. Compare eligible referenced keys rather than requiring byte-identical RRsets of every digest type. Inconsistency leaves the existing delegation unchanged. A signed, agreed removal request is different from no publication. Explain CSYNC separately: it requests NS/glue synchronization and does not itself request a DS update. [S19, S21]"
+      ]
+    },
+    {
+      "planId": "DNS17",
+      "runtimeId": "lab-dnssec17",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "keys-delegation",
+      "title": "Bootstrap DS and operate automation safely",
+      "learningQuestion": "Bootstrap DS and operate automation safely",
+      "defaultCaseId": "authenticated-rfc9615-bootstrap",
+      "caseIds": [
+        "authenticated-rfc9615-bootstrap",
+        "unauthenticated-child-only-claim",
+        "signaling-zone-not-secure",
+        "only-in-domain-nameservers",
+        "parent-policy-declines",
+        "update-would-break-validation",
+        "concurrent-manual-update",
+        "report-and-retry"
+      ],
+      "caseCount": 8,
+      "sourceGroups": [
+        "S19",
+        "S20",
+        "S21"
+      ],
+      "acceptance": [
+        "show RFC 9615 signaling through an already authenticated out-of-domain DNS operator namespace and the consistency/acceptance checks for the claimed child. Make absent parent DS and an eligible out-of-domain NS explicit prerequisites; an all-in-domain set cannot supply the missing independent trust. Do not bootstrap trust circularly from the child’s own untrusted signature. Distinguish manual/out-of-band enrollment and older RFC 8078 policy profiles from the selected authenticated bootstrap. Apply RFC 10026 continuity checks and reporting; chosen temporary DS TTLs must not be presented as instant remote cache invalidation. Show locks and concurrent manual changes as explicit policy inputs. [S19, S20, S21]"
+      ]
+    },
+    {
+      "planId": "DNS18",
+      "runtimeId": "lab-dnssec18",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "keys-delegation",
+      "title": "Operate multiple signers/providers",
+      "learningQuestion": "Operate multiple signers/providers",
+      "defaultCaseId": "shared-ksk-model",
+      "caseIds": [
+        "shared-ksk-model",
+        "separate-ksk-model",
+        "cached-keys-provider-switch",
+        "missing-cross-provider-key",
+        "coordinated-rollover",
+        "provider-migration",
+        "conflicting-cds-intent"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S15",
+        "S21"
+      ],
+      "acceptance": [
+        "demonstrate RFC 8901’s two models with declared private-key custody, DNSKEY sets, DS state and per-provider signatures. A resolver using cached keys from one provider must still have a valid path when it gets an answer from the other. Public-key coordination is not implicit private-key copying. Use RFC 9975 checks to prevent one provider’s automation signal from silently removing another’s delegation support. [S15, S21]"
+      ]
+    },
+    {
+      "planId": "DNS19",
+      "runtimeId": "lab-dnssec19",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "signing-publication",
+      "title": "Publish and replicate a signed zone",
+      "learningQuestion": "Publish and replicate a signed zone",
+      "defaultCaseId": "offline-signer-secondary",
+      "caseIds": [
+        "offline-signer-secondary",
+        "notify-ixfr",
+        "axfr-fallback",
+        "tsig-authenticated-update",
+        "tsig-valid-policy-denied",
+        "tsig-failure",
+        "zonemd-mismatch"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S22",
+        "S25"
+      ],
+      "acceptance": [
+        "distinguish management update authentication/authorization, zone signing, transfer and query serving. NOTIFY triggers appropriate checking; it is not the zone transfer itself. Use current TSIG (RFC 8945) for the chosen transaction profile, with explicit shared-key holders and integrity checks; it provides no general confidentiality. A secondary can serve signed public records without a signing private key. For the ZONEMD case, authenticate the expected digest appropriately and demonstrate whole-zone integrity failure separately from individual RRset validation. Do not claim DNSSEC alone authorizes UPDATE or AXFR. [S22, S25]"
+      ]
+    },
+    {
+      "planId": "DNS20",
+      "runtimeId": "lab-dnssec20",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "validation",
+      "title": "Diagnose failure and recovery",
+      "learningQuestion": "Diagnose failure and recovery",
+      "defaultCaseId": "bogus-servfail-with-ede",
+      "caseIds": [
+        "bogus-servfail-with-ede",
+        "same-failure-without-ede",
+        "cd-one-diagnostic-data",
+        "transport-timeout",
+        "failure-cache-suppresses-retry",
+        "retry-after-expiry",
+        "temporary-negative-trust-anchor"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S12"
+      ],
+      "acceptance": [
+        "log the first detector, internal reason, external RCODE/flags, optional EDE and application outcome. EDE is diagnostic metadata, not signed proof and not an RCODE override. Implement RFC 9520 failure caching as distinct from authenticated negative caching; the chosen bounded duration and retries must meet that standard. A negative trust anchor is an explicit temporary operator bypass with scope/expiry, not a repair that makes data secure. Rechecking after expiry must perform the relevant work again. [S12]"
+      ]
+    },
+    {
+      "planId": "DNS21",
+      "runtimeId": "lab-dnssec21",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "validation",
+      "title": "Compact denial of existence",
+      "learningQuestion": "Compact denial of existence",
+      "defaultCaseId": "compact-nonexistent-name",
+      "caseIds": [
+        "compact-nonexistent-name",
+        "genuine-nodata",
+        "empty-nonterminal",
+        "co-enabled",
+        "co-disabled-downstream",
+        "explicit-nxname-query",
+        "no-wide-aggressive-synthesis"
+      ],
+      "caseCount": 7,
+      "sourceGroups": [
+        "S11"
+      ],
+      "acceptance": [
+        "implement the selected RFC 9824 NSEC profile: signed NXNAME bitmap evidence, NODATA-shaped answers and optional CO-signaled response-code restoration. NXNAME is not a stored ordinary RR or an RCODE. Track CO per hop and cached response context. Reject explicit NXNAME queries appropriately without forwarding them. The minimally covering proof cannot be used as if it were a broad conventional denial range. Include an explanation of the specified NSEC3 alternative without claiming it is the preferred profile. [S11]"
+      ]
+    },
+    {
+      "planId": "DNS22",
+      "runtimeId": "lab-dnssec22",
+      "required": true,
+      "workspace": "dnssec",
+      "family": "forwarding-trust",
+      "title": "Private DNS, local anchors and conditional forwarding",
+      "learningQuestion": "Private DNS, local anchors and conditional forwarding",
+      "defaultCaseId": "private-signed-zone-local-anchor",
+      "caseIds": [
+        "private-signed-zone-local-anchor",
+        "private-signed-zone-no-covering-anchor",
+        "conditional-forward-with-local-validation",
+        "different-client-trust-stores",
+        "stale-private-anchor",
+        "private-view-versus-public-chain"
+      ],
+      "caseCount": 6,
+      "sourceGroups": [
+        "S01",
+        "S04",
+        "S14",
+        "S23"
+      ],
+      "acceptance": [
+        "use two explicit DNS views with named trust stores, routes and fixture identities. Conditional forwarding changes destination selection; it is not an authenticated delegation or anchor bootstrap. A public root anchor does not automatically establish trust in an unrelated private hierarchy. Identical owner names may resolve differently under declared views; do not merge their caches or keys. These are deployment profiles composed from DNSSEC mechanisms, not an assertion that RFCs mandate one split-DNS product design. [S01, S04, S14, S23]"
+      ]
+    }
+  ]
+}

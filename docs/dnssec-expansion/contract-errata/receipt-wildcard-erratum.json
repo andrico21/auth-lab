@@ -1,0 +1,318 @@
+{
+ "schemaVersion": 1,
+ "kind": "dnssec-dns09-wildcard-supplement-patch",
+ "status": "proposal-only-not-applied",
+ "description": "Small disjoint supplement for DNS09/wildcard-nodata: no received A answer; wildcard A is catalog-only; remove it from validator/cache evidence. The 159-patch prior artifact is unchanged byte-for-byte.",
+ "supplementOf": {
+  "path": "local://dnssec-d0-third-overlay.json",
+  "sha256": "300253a62a155a99c0cddfdc1762d946bb89d86917e06775a566d6e32f247d19"
+ },
+ "target": {
+  "path": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+  "sha256": "72424f5380942d2bba570fe0fceca8c5e234e4bd64372d4cd2ac751a77e30656",
+  "bytes": 5604911,
+  "lessons": 13,
+  "cases": 93
+ },
+ "freeze": {
+  "path": "docs/dnssec-expansion/contract-freeze.json",
+  "sha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19",
+  "unchanged": true
+ },
+ "disjointFromPriorArtifact": true,
+ "adjudication": {
+  "case": "DNS09/wildcard-nodata",
+  "rawInputs": {
+   "query": "foo.lab.example. AAAA IN",
+   "responseInputs.answer": "[]",
+   "responseInputs.proofs": "two NSEC proofs: next-closer cover and wildcard-owner match; wildcard bitmap has A/RRSIG/NSEC, no AAAA/CNAME",
+   "responseInputs.wildcardSignature": "wildcard-a catalog A signature, not an answer receipt",
+   "SOA": "received negative-cache SOA"
+  },
+  "rfcConclusion": "RFC 4035 sections 5.3.4/5.4 and RFC 4592 sections 2.2/3.3 require proof of no exact match plus authenticated wildcard existence/type absence. RFC 4034 section 3.1.1 uses the NSEC type bitmap. The wildcard A RRset/RRSIG is not needed and is not received; requiring numericBindings-primary:wildcard-a in validator evidence is incorrect.",
+  "statusConsequence": "securityStatus=secure, rcode=NOERROR, nodata-wildcard and acceptedForUse=true remain unchanged."
+ },
+ "preservation": {
+  "resolutionLessons": 13,
+  "resolutionCases": 93,
+  "mergedLessons": 22,
+  "mergedCases": 159,
+  "caseIdsUnchanged": true,
+  "defaultsUnchanged": true,
+  "securityStatusAndApplicationResultsUnchanged": true,
+  "priorArtifactBytesUnchanged": true
+ },
+ "canonicalization": {
+  "algorithm": "sha256",
+  "encoding": "utf-8",
+  "json": "json.dumps(value, sort_keys=True, separators=(\",\",\":\"), ensure_ascii=False)"
+ },
+ "patchCount": 14,
+ "patches": [
+  {
+   "order": 1,
+   "op": "replace",
+   "path": "/lessons/7/cases/1/setup/responseInputs/wildcardSignature/purpose",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "A answers are not received for the AAAA query; wildcard A signature is catalog material only.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": "answer",
+   "expectedBeforeAbsent": false,
+   "expectedBeforeSha256": "b2437a6aa53010b70011f253d0ef2e75d5a15350811531d9b82c27e77a706081",
+   "value": "catalog-only-not-received",
+   "valueSha256": "fee3d5871922dc72641fd9abf1344a6d1bea44d6a22115ae133ed514548c2a61"
+  },
+  {
+   "order": 2,
+   "op": "add",
+   "path": "/lessons/7/cases/1/setup/responseInputs/wildcardSignature/receivedByResolver",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Not delivered by responseInputs.answer (empty).",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 3,
+   "op": "add",
+   "path": "/lessons/7/cases/1/setup/responseInputs/wildcardSignature/validatorEvidence",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Not validator evidence for AAAA NODATA.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 4,
+   "op": "add",
+   "path": "/lessons/7/cases/1/setup/responseInputs/wildcardSignature/role",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Mark catalog wildcard A explicitly.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": "catalog-only-wildcard-A",
+   "valueSha256": "8a23f0a5713b04f9e7d6e7ffeb4693d39363adc0901f62b3903e96f3bcc04c10"
+  },
+  {
+   "order": 5,
+   "op": "replace",
+   "path": "/lessons/7/cases/1/setup/numericBindings/primary/purpose",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Primary wildcard A binding is catalog-only, not a received answer.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": "answer",
+   "expectedBeforeAbsent": false,
+   "expectedBeforeSha256": "b2437a6aa53010b70011f253d0ef2e75d5a15350811531d9b82c27e77a706081",
+   "value": "catalog-only-not-received",
+   "valueSha256": "fee3d5871922dc72641fd9abf1344a6d1bea44d6a22115ae133ed514548c2a61"
+  },
+  {
+   "order": 6,
+   "op": "add",
+   "path": "/lessons/7/cases/1/setup/numericBindings/primary/receivedByResolver",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Primary binding is not declared received.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 7,
+   "op": "add",
+   "path": "/lessons/7/cases/1/setup/numericBindings/primary/validatorEvidence",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Primary binding is not validator evidence.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 8,
+   "op": "replace",
+   "path": "/lessons/7/cases/1/setup/rrsets/answer",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "No A answer is received; rrsetCatalogScope reserves answer/signature for selected received occurrence.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": {
+    "owner": "*.lab.example.",
+    "type": "A",
+    "class": "IN",
+    "ttl": 300,
+    "publishedTtl": 3600,
+    "rdata": [
+     "192.0.2.90"
+    ],
+    "numericRrsetId": "wildcard-a",
+    "numericFile": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+    "receivedMutation": null
+   },
+   "expectedBeforeAbsent": false,
+   "expectedBeforeSha256": "34e783a6ef314e234e77a455acdd8f0a44838a52f1bb320fbb10748432b2e64c",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 9,
+   "op": "replace",
+   "path": "/lessons/7/cases/1/setup/rrsets/signature",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "No A answer signature is received.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": {
+    "typeCovered": "A",
+    "algorithm": 13,
+    "labels": 2,
+    "originalTtl": 3600,
+    "inception": 1792713000,
+    "expiration": 1792717200,
+    "signerName": "lab.example.",
+    "keyRef": "child-zsk-g1",
+    "keyTag": 55402,
+    "numericSignatureId": "wildcard-a-signature",
+    "signatureRdataSha256": "44172187bfb6ce080939e2a8d7aeb20c5d694e5d3dedbd907503f59bb42081be",
+    "receivedTtl": 300
+   },
+   "expectedBeforeAbsent": false,
+   "expectedBeforeSha256": "da98e2118c2958ac48b68aeac33488de44d55c4a18ae9ac2aa724e6d8ba9de60",
+   "value": null,
+   "valueSha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b"
+  },
+  {
+   "order": 10,
+   "op": "add",
+   "path": "/lessons/7/cases/1/setup/wildcard/wildcardRdataCatalogOnly",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Wildcard A rdata is catalog context; NSEC at wildcard owner proves AAAA/CNAME absence.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": true,
+   "valueSha256": "b5bea41b6c623f7c09f1bf24dcae58ebab3c0cdd90ad966bc43a45b44867e12b"
+  },
+  {
+   "order": 11,
+   "op": "add",
+   "path": "/lessons/7/cases/1/setup/wildcard/wildcardRrsetReceived",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Wildcard A RRset is not received as an answer.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 12,
+   "op": "add",
+   "path": "/lessons/7/cases/1/checkpoints/1/expected/publication/wildcardAReceived",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Expected publication is AAAA/CNAME absence; no A answer receipt.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": null,
+   "expectedBeforeAbsent": true,
+   "value": false,
+   "valueSha256": "fcbcf165908dd18a9e49f7ff27810176db8e9f63b4352213741664245224f8aa"
+  },
+  {
+   "order": 13,
+   "op": "remove",
+   "path": "/lessons/7/cases/1/checkpoints/2/expected/evidenceRefs/5",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Wildcard A is not received; NSEC proofs and SOA are sufficient for AAAA NODATA.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": "lab-dnssec09:wildcard-nodata:numericBindings-primary:wildcard-a",
+   "expectedBeforeAbsent": false,
+   "expectedBeforeSha256": "40d81371e04cc8981ce6a674c09597c3b75b65e5f3e3c2943ec1878a023139d6"
+  },
+  {
+   "order": 14,
+   "op": "remove",
+   "path": "/lessons/7/cases/1/checkpoints/4/expected/cacheEntries/0/evidenceRefs/5",
+   "finding": "DNS09-WILDCARD-NODATA-CATALOG-A-01",
+   "reason": "Wildcard A is not received; cache evidence must contain only received proof/chain/SOA.",
+   "sources": [
+    "rfc4035",
+    "rfc4034",
+    "rfc4592"
+   ],
+   "target": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+   "expectedBefore": "lab-dnssec09:wildcard-nodata:numericBindings-primary:wildcard-a",
+   "expectedBeforeAbsent": false,
+   "expectedBeforeSha256": "40d81371e04cc8981ce6a674c09597c3b75b65e5f3e3c2943ec1878a023139d6"
+  }
+ ]
+}

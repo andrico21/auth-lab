@@ -1,0 +1,1146 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-independent-review-corrections-input-audit",
+  "author": "DnsAuthErrata",
+  "productionExistedDuringCorrection": true,
+  "independence": {
+    "applicationSourceRead": false,
+    "testsRead": false,
+    "productionContractEvaluatorRead": false,
+    "productionDiagnosticsRead": false,
+    "productionEvaluatorExecuted": false,
+    "osSandboxEnforcementClaimed": false,
+    "expectedStatesDerivedFromApplicationOutput": false
+  },
+  "scope": {
+    "affectedFindings": [
+      "DNS-R01",
+      "DNS-R03",
+      "DNS-R05",
+      "DNS-R06"
+    ],
+    "identityInventory": {
+      "lessons": 22,
+      "namedCases": 159
+    },
+    "patchCount": 30,
+    "negativeAndFailureCheckpointDeclarationsScanned": 51
+  },
+  "sources": [
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/s01-rfc4033.txt",
+      "bytes": 65726,
+      "sha256": "2e63aad16e3cf4077995a6b63d8780bc87c5dce2418827ba328340c4a67677b0"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/s06-rfc4035-text.txt",
+      "bytes": 130589,
+      "sha256": "8978b120636c69b2080b12768266ec48cd4c0879583310863a62f7c409908084"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/s09-rfc2308-text.txt",
+      "bytes": 41428,
+      "sha256": "7fdfca474a92f7dfee13e70998c40c263104087da46cac91944f643562ce3fba"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/publication/rfc6781.raw",
+      "bytes": 193523,
+      "sha256": "e56e103b6ff142a4e7599be4e6710dc58fdf72f95c9cfe98bfdb0ebe13a6c95a"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/update-rfc9905.txt",
+      "bytes": 9850,
+      "sha256": "cdd32cd9123cc316a71d15c09c9f09b162eb9bfa9d1d18b1f6be45a765f78fb3"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/sources/rfc6840.txt",
+      "bytes": 47283,
+      "sha256": "32c2a8c755f37f3467b4ca098fc0283efe53d2648e93c3ae966cfa390a50bfaf"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/sources/rfc5155.txt",
+      "bytes": 112140,
+      "sha256": "c3083458ed7ef69360397a7a6ec44374b245e4e5a03725c834c54908cb7f77ff"
+    }
+  ],
+  "consultedFiles": [
+    {
+      "path": "docs/dnssec-expansion/contract-errata/cache-kind-erratum.json",
+      "bytes": 2798,
+      "sha256": "f4d6052bf2278b62656638f58dcff78a2ac9bce71d0e8b8b3741bc196e4e264b"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/client-context-erratum.json",
+      "bytes": 4189,
+      "sha256": "bba7ce2c482433c82e80a36e0fb9151ebe4f2fd0a7ed708ecdb65b65ea4e8a54"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-cache-kind/contract-addendum.json",
+      "bytes": 2948,
+      "sha256": "f500a7278bac53f72b9cf5c43927601c2b4d7aefd2f5e81fc2887d4f6ec5a4f3"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-cache-kind/worksheet-publication.json",
+      "bytes": 1122685,
+      "sha256": "4152649110d465de7a562a83bc97814c3a84dbd042ce3c70ff1ac777e152ad09"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-cache-kind/worksheet-resolution.json",
+      "bytes": 5664202,
+      "sha256": "4f3b6901297359a58f10cd87785afeb6d047e3a7906728cd171dee234a4bfc89"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-cache-kind/worksheet.json",
+      "bytes": 6705865,
+      "sha256": "330fbc0db84e21e116d78da6ea316fb4694cd16d40c73f13a8c49f7a0100c055"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-client-context/contract-addendum.json",
+      "bytes": 2857,
+      "sha256": "3a0bad331b33f2fe45f01832a1029c8b5064a6aec638ddda5761b8d9c0e1a4bb"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-client-context/worksheet-publication.json",
+      "bytes": 1122685,
+      "sha256": "4152649110d465de7a562a83bc97814c3a84dbd042ce3c70ff1ac777e152ad09"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-client-context/worksheet-resolution.json",
+      "bytes": 5664204,
+      "sha256": "03c39153f73dffa9c28fca61adde906eeb440af9198f48798df65c2e6f3b5796"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-client-context/worksheet.json",
+      "bytes": 6702212,
+      "sha256": "c7fc1efdd3b0e011499da4cf3bd19e2ae95b21885a1ac4975d6458646d0c77bc"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-completion/contract-addendum.json",
+      "bytes": 2860,
+      "sha256": "06ec9dc1d179634f88cbcbadc70df57c4d6fe9164503c52c6052ec52153b72c6"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-publication.json",
+      "bytes": 1113966,
+      "sha256": "34ca3c3b55829e3402299a125f408ef0a74609f1c223e23cc834d1c0393dd332"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet-resolution.json",
+      "bytes": 5604911,
+      "sha256": "72424f5380942d2bba570fe0fceca8c5e234e4bd64372d4cd2ac751a77e30656"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-completion/worksheet.json",
+      "bytes": 6629866,
+      "sha256": "d1f319e715da522e5a64e564514e1b6791486cb276394ebb380ca6e42c895bbc"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-receipts/contract-addendum.json",
+      "bytes": 3129,
+      "sha256": "40c2c97a737f5c1032c5b4393a3c4f3380eed40709def2e5cbffd7e5c7d12d75"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-receipts/worksheet-publication.json",
+      "bytes": 1122685,
+      "sha256": "4152649110d465de7a562a83bc97814c3a84dbd042ce3c70ff1ac777e152ad09"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-receipts/worksheet-resolution.json",
+      "bytes": 5664020,
+      "sha256": "2a170c5b4bbe2328dbec4939e06434ad111d5c30160248e86a8605ed384e7564"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-receipts/worksheet.json",
+      "bytes": 6698486,
+      "sha256": "d189ae3805268d378f4c2acd32f8a562ada4557b9ae67a1493734d47ecfbaedd"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective/contract-addendum.json",
+      "bytes": 3663,
+      "sha256": "a7b0013612ed44da1fda94360d99ab1a9c365f6fb17f95d6bf92a7c85367cb56"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective/worksheet-publication.json",
+      "bytes": 1112461,
+      "sha256": "b37c001fc0a866c39bb19da9e5c0e3696d49202d06d0be08fcd7b212ee831cac"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective/worksheet-resolution.json",
+      "bytes": 5596221,
+      "sha256": "cf2baaaa75c7d894ac61b492582e1b10ea06a2e7860d2fa1754404b2fafe3cb1"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective/worksheet.json",
+      "bytes": 6618951,
+      "sha256": "cee8806fbec443618158d75f971a20662f389d30564e2065d3712e75cb6fd8a1"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-freeze.json",
+      "bytes": 68646,
+      "sha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19"
+    },
+    {
+      "path": "docs/dnssec-expansion/inputs/dnssec-review-and-worker-comments.html",
+      "bytes": 68765,
+      "sha256": "ece30d331ef1072e00f6ef8ca871da68794b9598f315d84d0423578058f45e26"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/complete-path-fixtures.json",
+      "bytes": 53395,
+      "sha256": "a94a106399372c65a7e1e3f2e6a8b44738e13c8ee7c72c5ce96cdf7ba0e02f7f"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+      "bytes": 91858,
+      "sha256": "10e8b7d6587ab77023d03ba91df7a83372a35f575e306e68afe4288f02f81c61"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+      "bytes": 27775,
+      "sha256": "566996bb9b6e08c9aab6b25d9d4cb4489e97b3a6d76aa806b1b47522410ef2dc"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/denial-anchor/fixtures.json",
+      "bytes": 5606,
+      "sha256": "6d1a09887942d7568583804e7df47870faea9c10a96ee050a8f0b72b59cb8b40"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/denial-anchor/verification.json",
+      "bytes": 9104,
+      "sha256": "3395164ab8229dc5f3610f5a5ae1f1bdb73aa1e1246fd5c90bde71bf918cd540"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/runtime-and-licenses.json",
+      "bytes": 3734,
+      "sha256": "9cec1d85dadc0a728405c70253abb879291a68b261c63f26d3291df183969668"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/sources/rfc5155.txt",
+      "bytes": 112140,
+      "sha256": "c3083458ed7ef69360397a7a6ec44374b245e4e5a03725c834c54908cb7f77ff"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/sources/rfc6840.txt",
+      "bytes": 47283,
+      "sha256": "32c2a8c755f37f3467b4ca098fc0283efe53d2648e93c3ae966cfa390a50bfaf"
+    },
+    {
+      "path": "docs/dnssec-expansion/source-ledger.json",
+      "bytes": 68810,
+      "sha256": "afc8aeb598d45efc5218706562fea81c2639322d46b94ebd1d2584aaee254160"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/publication/rfc6781.raw",
+      "bytes": 193523,
+      "sha256": "e56e103b6ff142a4e7599be4e6710dc58fdf72f95c9cfe98bfdb0ebe13a6c95a"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/s01-rfc4033.txt",
+      "bytes": 65726,
+      "sha256": "2e63aad16e3cf4077995a6b63d8780bc87c5dce2418827ba328340c4a67677b0"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/s06-rfc4035-text.txt",
+      "bytes": 130589,
+      "sha256": "8978b120636c69b2080b12768266ec48cd4c0879583310863a62f7c409908084"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/s09-rfc2308-text.txt",
+      "bytes": 41428,
+      "sha256": "7fdfca474a92f7dfee13e70998c40c263104087da46cac91944f643562ce3fba"
+    },
+    {
+      "path": "docs/dnssec-expansion/sources/resolution/update-rfc9905.txt",
+      "bytes": 9850,
+      "sha256": "cdd32cd9123cc316a71d15c09c9f09b162eb9bfa9d1d18b1f6be45a765f78fb3"
+    },
+    {
+      "path": "tools/verification/apply-dnssec-cache-kind-errata.mjs",
+      "bytes": 7334,
+      "sha256": "7e494ae7874d0867273997cb471df3c99d6d5166c5f40eef0bc64aec4414bce0"
+    },
+    {
+      "path": "tools/verification/build-dnssec-public-completion.mjs",
+      "bytes": 8027,
+      "sha256": "a5c114f30dff6bd995a8f3cf5b45b8a45f7667019581895033e6ba3594a26533"
+    },
+    {
+      "path": "tools/verification/dnssec-crypto/generate.py",
+      "bytes": 15676,
+      "sha256": "8bf3f0898affb79460001227a66f82a7a6d6f295ce8178c45078281c415b3341"
+    },
+    {
+      "path": "tools/verification/dnssec-crypto/generate_resolution_profiles.py",
+      "bytes": 10206,
+      "sha256": "8d54e7865c56ff1e32e783d8e91e5c76647439352e11508cf6e6be50dc1d82ee"
+    },
+    {
+      "path": "tools/verification/dnssec-crypto/reference_bytes.py",
+      "bytes": 8518,
+      "sha256": "f125553239f8da4b143d82e059e3a5df1f356b0fe99d6d37752e774e1125c480"
+    },
+    {
+      "path": "tools/verification/dnssec-crypto/verify_resolution_profiles.py",
+      "bytes": 9379,
+      "sha256": "e77d0395c947469ba0a991952afa812501e1925d5f0aa283f5766de539f0fb23"
+    }
+  ],
+  "sourceJustifiedCoordination": [
+    {
+      "peer": "DnsNetworkFix",
+      "content": "Independent stub retains own proof/cache; anchorless resolver fetch context does not inherit local result. No verdict packet."
+    },
+    {
+      "peer": "DnsPublishFix",
+      "content": "Explicit model validation declaration5/7/13/15; actual mathematical fixture coverage13/15. Confirmed old/dual dataTTL3600, final alg15 dataTTL7200; timeline assessed against RFC6781 with actual immutable signature windows."
+    },
+    {
+      "peer": "DnsDenialFix",
+      "content": "RFC2308 NXDOMAIN name/class versus NODATA/compact/failure key distinctions; R04 independent numeric controls requested."
+    }
+  ],
+  "decisions": {
+    "R01": "InitialCache false already correct. Remove inherited resolver validated-cache statement, declare separate checking contexts; ownership and accepted sequence/checkpoint/cache checking context stay at dnsStub. Catalog holdings are not proof transfers. All other network profiles unchanged.",
+    "R03": "Correct exactly3 newly inserted ordinary NXDOMAIN entries. Preserve seeded DNS10 correct name/class entry. NODATA/ENT/no-DS and compact/CO remain type-specific; failure keys retain checkingContext. Keep receipt1792713600,expiry1792713900 and signed deadline1792717200.",
+    "R05": {
+      "rule": "RFC6781 4.1.4: old DS withdrawal -> convergence+old DS TTL -> old DNSKEY withdrawal -> convergence+old DNSKEY TTL -> old ordinary signature withdrawal -> convergence+old data TTL. No requirement that validator verify every advertised algorithm.",
+      "offsets": {
+        "publish-alg13-and-alg15-ordinary-signatures": 0,
+        "publish-dual-algorithm-signed-zone": 3900,
+        "publish-dual-algorithm-ds": 8100,
+        "parent-dual-algorithm-ds-converged": 8700,
+        "select-usable-alg15-path": 8700,
+        "retire-alg13-parent-ds": 95100,
+        "late-old-containing-ds-cache": 95699,
+        "parent-alg13-ds-converged": 95700,
+        "retire-alg13-after-ds-and-child-cache-dependencies": 182100,
+        "child-alg13-key-removal-converged": 182400,
+        "retire-alg13-ordinary-signatures": 186000,
+        "child-alg13-signature-removal-converged": 186300,
+        "old-alg13-data-dependencies-ended": 189900,
+        "lastOldDsReceipt": 95699,
+        "lastOldDsCacheExpires": 182099,
+        "oldDsDependencyEnds": 182100,
+        "oldDnskeyDependencyEnds": 186000,
+        "ordinaryDataDependencyEnds": 189900
+      },
+      "lateOldAlgorithmOnlyCohort": {
+        "receivedAt": 1792809299,
+        "expiresAt": 1792895699,
+        "supports": [
+          13
+        ],
+        "at95701": "secure while the old key and signatures remain",
+        "at182100": "old cache expired; fresh alg15-only DS is insecure for this profile, not bogus"
+      },
+      "freshOldAlgorithmOnlyCohort": "Fresh alg15-only DS after withdrawal is unsupported/insecure under the explicit13-only capability control.",
+      "dualCapableCohort": "A supported alg15 path remains usable through all stages.",
+      "fixtureValidity": "Referenced complete-path/long-profile RRSIG inception1792713000 and expiration1803081600 enclose final observation1792903500. All exact tuples unchanged.",
+      "inheritedSetupRepair": "maximumZoneTtl7200 is replaced by represented old/dual ordinary TTL3600; final alg15-only TTL7200 separately declared. Base one-hour signatures are catalog only, not chosen later validation evidence."
+    },
+    "R06": "Registry MUST implementation support is not installed capability evidence. Explicit synthetic declaration supports5/7/13/15, operator accepts13/15, publisher signs13/15; fixed signed coverage13/15 only. SHA1 cause operator-policy; alg17 actual implementation-capability; digest250 separate digest-capability; NSEC3 SHA1 not changed."
+  },
+  "unchanged": [
+    "All354 frozen original files and all5 prior additive overlays",
+    "All22/159 IDs/defaults and named outcomes",
+    "Every existing public numeric/signature/hash tuple",
+    "NODATA/type key, compact/CO response context, failure context, receipt and expiration clocks outside explicit R05 chronology",
+    "All prior failures, native/live limits, G01 and performance conditions remain attributable and unwaived"
+  ],
+  "negativeCacheDeclarationInventory": [
+    {
+      "planId": "DNS01",
+      "caseId": "tampered-answer",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS03",
+      "caseId": "supported-ds-mismatch",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS03",
+      "caseId": "missing-ds-proof",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "signature-expired",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "signature-not-yet-valid",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "wrong-clock",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "missing-dnskey",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "missing-rrsig",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "wrong-signer-or-key",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "wrong-covered-data",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "dnskey-protocol-not-three",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS04",
+      "caseId": "zone-key-flag-clear",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS06",
+      "caseId": "upstream-servfail-cd-zero",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS06",
+      "caseId": "local-checks-cd-one-data",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS06",
+      "caseId": "dnssec-stripping-forwarder",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS06",
+      "caseId": "forwarder-loop-or-unreachable",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS07",
+      "caseId": "nxdomain",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NXDOMAIN"
+    },
+    {
+      "planId": "DNS07",
+      "caseId": "existing-name-nodata",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "AAAA",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS07",
+      "caseId": "empty-nonterminal",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "branch.lab.example.",
+        "A",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS07",
+      "caseId": "wildcard-excluded",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "ghost.lab.example.",
+        "A",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NXDOMAIN"
+    },
+    {
+      "planId": "DNS07",
+      "caseId": "no-ds-at-delegation",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "lab.example.",
+        "DS",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS07",
+      "caseId": "incomplete-proof",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS07",
+      "caseId": "proof-from-wrong-zone",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS08",
+      "caseId": "nsec3-nxdomain",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NXDOMAIN"
+    },
+    {
+      "planId": "DNS08",
+      "caseId": "nsec3-nodata",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "AAAA",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS08",
+      "caseId": "missing-closest-encloser",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS08",
+      "caseId": "hash-parameter-mismatch",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS08",
+      "caseId": "excessive-iterations-policy",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS09",
+      "caseId": "wildcard-nodata",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "foo.lab.example.",
+        "AAAA",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS09",
+      "caseId": "wildcard-missing-proof",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "foo.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS09",
+      "caseId": "cname-bogus-target",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "alias.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS10",
+      "caseId": "signature-expires-first",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS10",
+      "caseId": "negative-cache-hit",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NXDOMAIN"
+    },
+    {
+      "planId": "DNS11",
+      "caseId": "tcp-blocked",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS11",
+      "caseId": "edns-stripped",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS11",
+      "caseId": "encrypted-but-bogus-dns-data",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS20",
+      "caseId": "bogus-servfail-with-ede",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS20",
+      "caseId": "same-failure-without-ede",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS20",
+      "caseId": "cd-one-diagnostic-data",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD1"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS20",
+      "caseId": "transport-timeout",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS20",
+      "caseId": "failure-cache-suppresses-retry",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS20",
+      "caseId": "temporary-negative-trust-anchor",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS21",
+      "caseId": "compact-nonexistent-name",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS21",
+      "caseId": "genuine-nodata",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "www.lab.example.",
+        "AAAA",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS21",
+      "caseId": "empty-nonterminal",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "branch.lab.example.",
+        "A",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS21",
+      "caseId": "co-enabled",
+      "checkpoint": "co-is-per-hop-and-cache-must-record-context",
+      "kind": "compact-negative",
+      "key": null,
+      "negativeKind": null,
+      "rcode": "NXDOMAIN"
+    },
+    {
+      "planId": "DNS21",
+      "caseId": "co-enabled",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NXDOMAIN"
+    },
+    {
+      "planId": "DNS21",
+      "caseId": "co-disabled-downstream",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "no.lab.example.",
+        "A",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS21",
+      "caseId": "no-wide-aggressive-synthesis",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "authenticated-negative",
+      "key": [
+        "public-v1",
+        "resolver-public-v1",
+        "other.lab.example.",
+        "A",
+        "IN"
+      ],
+      "negativeKind": null,
+      "rcode": "NOERROR"
+    },
+    {
+      "planId": "DNS22",
+      "caseId": "stale-private-anchor",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "private-v1",
+        "resolver-private-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    },
+    {
+      "planId": "DNS22",
+      "caseId": "private-view-versus-public-chain",
+      "checkpoint": "accepted-use-and-cache-boundary",
+      "kind": "failure",
+      "key": [
+        "private-v1",
+        "public-only-v1",
+        "www.lab.example.",
+        "A",
+        "IN",
+        "CD0"
+      ],
+      "negativeKind": null,
+      "rcode": "SERVFAIL"
+    }
+  ],
+  "execution": "Independent signed numeric producer and, on explicit parent request, independent byte/OpenSSL verifier executed (105 predicates, seven genuine signature verifications). No application builds/tests/gates/formatters/browser. Parent runs all authority transforms and application verification."
+}

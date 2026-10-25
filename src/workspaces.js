@@ -11,6 +11,7 @@ export const STUDIO_WORKSPACES = Object.freeze([
   {id:'files',title:'Files',summary:'NFS identity, transport and file policy; shortcut to the accepted SMB lessons',defaultId:'lab-nfs-v42-kerberos-read'},
   {id:'kubernetes',title:'Kubernetes',summary:'Human and workload credentials, accepted identities and API authorization',defaultId:'lab-k8s01'},
   {id:'mcp',title:'MCP',summary:'Protected-resource discovery, independent grants and host/tool policy',defaultId:'lab-mcp01'},
+  {id:'dnssec',title:'DNSSEC',summary:'DNS resolution, validation, caches, signing and delegation operations',defaultId:'lab-dnssec01'},
 ].map(Object.freeze));
 export const STUDIO_FAMILIES = Object.freeze([
   {workspace:'kerberos',id:'ad-ds',title:'AD DS Kerberos',summary:'Password sign-in, smart cards, armoring and forests',defaultId:'lab-ad-first-sign-in',routeSegment:''},
@@ -39,6 +40,11 @@ export const STUDIO_FAMILIES = Object.freeze([
   {workspace:'kubernetes',id:'workload-identity',title:'Workload identity',summary:'Bound service-account tokens, rotation and independent resource grants',defaultId:'lab-k8s09',routeSegment:'workload-identity'},
   {workspace:'kubernetes',id:'delegation-extensions',title:'Delegation and extensions',summary:'Impersonation and extension-service trust boundaries',defaultId:'lab-k8s14',routeSegment:'delegation-extensions'},
   {workspace:'mcp',id:'authorization',title:'MCP authorization',summary:'Dated HTTP authorization profiles, proxy boundaries and distinct stdio/host policy',defaultId:'lab-mcp01',routeSegment:'authorization'},
+  {workspace:'dnssec',id:'resolution',title:'Resolution',summary:'Follow queries, referrals, aliases and independently expiring cache evidence',defaultId:'lab-dnssec01',routeSegment:'resolution'},
+  {workspace:'dnssec',id:'validation',title:'Validation',summary:'Explain signature decisions, denial proofs, failures and compact denial',defaultId:'lab-dnssec04',routeSegment:'validation'},
+  {workspace:'dnssec',id:'forwarding-trust',title:'Forwarding and trust',summary:'Separate stub, recursive, upstream, transport and private-anchor trust',defaultId:'lab-dnssec06',routeSegment:'forwarding-trust'},
+  {workspace:'dnssec',id:'signing-publication',title:'Signing and publication',summary:'Create signed RRsets and publish or transfer a zone without leaking private keys',defaultId:'lab-dnssec02',routeSegment:'signing-publication'},
+  {workspace:'dnssec',id:'keys-delegation',title:'Keys and delegation',summary:'Track rollover, trust-anchor maintenance, parent DS and multiple signers',defaultId:'lab-dnssec12',routeSegment:'keys-delegation'},
 ].map(Object.freeze));
 export function workspaceOf(model){
   if(model?.workspace===undefined)return 'web';
@@ -86,8 +92,19 @@ export function visibleActorId(id,actors,expanded=false){
   while(!expanded&&actors[current]?.parentId&&!visited.has(current)){visited.add(current);current=actors[current].parentId;}
   return current;
 }
+export function scenarioActorIds(steps){
+  const ids=new Set(),ledgers=new Set();
+  for(const step of steps){
+    ids.add(step.from);ids.add(step.to);
+    const operations=step.attributeOperations;
+    if(!operations||ledgers.has(operations))continue;
+    ledgers.add(operations);
+    for(const operation of operations)ids.add(operation.actorId);
+  }
+  return [...ids];
+}
 export function scenarioPositions(model,steps,actors,expanded=false){
-  const ids=[...new Set(steps.flatMap(step=>[step.from,step.to,...(step.attributeOperations||[]).map(op=>op.actorId)]).map(id=>visibleActorId(id,actors,expanded)))];
+  const ids=[...new Set(scenarioActorIds(steps).map(id=>visibleActorId(id,actors,expanded)))];
   const authored=model.positions||model.actorPositions||model.layout?.positions||model.layout||{};
   const grid=[{x:145,y:120},{x:560,y:120},{x:975,y:120},{x:145,y:365},{x:560,y:365},{x:975,y:365},{x:145,y:610},{x:560,y:610},{x:975,y:610}];
   return Object.fromEntries(ids.map((id,index)=>[id,authored[id]||actors[id]?.position||grid[index]]).filter(([,point])=>point&&Number.isFinite(point.x)&&Number.isFinite(point.y)));

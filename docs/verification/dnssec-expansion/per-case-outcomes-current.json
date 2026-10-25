@@ -1,0 +1,4922 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNSSEC-current-159-case-outcome-index",
+  "recordedAt": "2026-10-24T09:00:11.269Z",
+  "passed": true,
+  "producers": [
+    {
+      "path": "docs/verification/dnssec-expansion/contract-source-10/status.json",
+      "sha256": "06961884e00e3682ad0f6f366a781e0864df2857aec3aebbfbf4eb50d7384786",
+      "bytes": 2195672
+    },
+    {
+      "path": "docs/verification/dnssec-expansion/contract-emitted-06/status.json",
+      "sha256": "19c014ec4684e8ab0e6a100b05c402961b1c2a5b46b5640b819c01185f5c36a2",
+      "bytes": 2201594
+    }
+  ],
+  "cases": [
+    {
+      "id": "lab-dnssec01",
+      "caseId": "cold-secure",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 12,
+      "prefixes": 127,
+      "events": 63,
+      "fieldRows": 1481,
+      "exactRows": 158,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec01",
+      "caseId": "warm-answer-cache",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 29,
+      "events": 14,
+      "fieldRows": 176,
+      "exactRows": 58,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec01",
+      "caseId": "partial-chain-cache",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 63,
+      "events": 31,
+      "fieldRows": 603,
+      "exactRows": 87,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec01",
+      "caseId": "tampered-answer",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 53,
+      "events": 26,
+      "fieldRows": 438,
+      "exactRows": 73,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "split-ksk-zsk",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 133,
+      "events": 66,
+      "fieldRows": 1552,
+      "exactRows": 172,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "combined-key",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 139,
+      "events": 69,
+      "fieldRows": 1511,
+      "exactRows": 169,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "equivalent-presentation",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "lab.example.",
+          "qtype": "MX",
+          "qclass": "IN",
+          "data": [
+            "10 mail1.lab.example.",
+            "20 mail2.lab.example."
+          ]
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 131,
+      "events": 65,
+      "fieldRows": 1393,
+      "exactRows": 168,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "lab.example.",
+          "qtype": "MX",
+          "qclass": "IN",
+          "data": [
+            "10 mail1.lab.example.",
+            "20 mail2.lab.example."
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "changed-rdata",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-mismatch"
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 129,
+      "events": 64,
+      "fieldRows": 1346,
+      "exactRows": 164,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-mismatch"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "opaque-rdata-case-change",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-mismatch"
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 129,
+      "events": 64,
+      "fieldRows": 1346,
+      "exactRows": 164,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-mismatch"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "changed-owner",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-mismatch"
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 129,
+      "events": 64,
+      "fieldRows": 1346,
+      "exactRows": 164,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-mismatch"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "keytag-collision",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 131,
+      "events": 65,
+      "fieldRows": 1366,
+      "exactRows": 177,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "signed-child",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 77,
+      "events": 38,
+      "fieldRows": 713,
+      "exactRows": 94,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "proved-no-ds",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "refused",
+          "policy": "secure-only",
+          "reason": "insecure-not-bogus",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 432,
+      "exactRows": 65,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "refused",
+          "policy": "secure-only",
+          "reason": "insecure-not-bogus",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "supported-ds-mismatch",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 77,
+      "events": 38,
+      "fieldRows": 686,
+      "exactRows": 92,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "missing-ds-proof",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 57,
+      "events": 28,
+      "fieldRows": 402,
+      "exactRows": 59,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "no-covering-anchor",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "indeterminate"
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 45,
+      "events": 22,
+      "fieldRows": 331,
+      "exactRows": 34,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "indeterminate"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "signed-island-with-local-anchor",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 528,
+      "exactRows": 56,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "unsupported-only-ds",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "insecure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 516,
+      "exactRows": 73,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "insecure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "valid",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 45,
+      "events": 22,
+      "fieldRows": 331,
+      "exactRows": 68,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "signature-expired",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 129,
+      "events": 64,
+      "fieldRows": 1272,
+      "exactRows": 137,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "signature-not-yet-valid",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 127,
+      "events": 63,
+      "fieldRows": 1272,
+      "exactRows": 143,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "wrong-clock",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 127,
+      "events": 63,
+      "fieldRows": 1272,
+      "exactRows": 137,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "missing-dnskey",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 59,
+      "events": 29,
+      "fieldRows": 463,
+      "exactRows": 76,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "missing-rrsig",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 45,
+      "events": 22,
+      "fieldRows": 254,
+      "exactRows": 62,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "wrong-signer-or-key",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 47,
+      "events": 23,
+      "fieldRows": 328,
+      "exactRows": 71,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "wrong-covered-data",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 45,
+      "events": 22,
+      "fieldRows": 304,
+      "exactRows": 66,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "one-valid-plus-one-invalid-signature",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 47,
+      "events": 23,
+      "fieldRows": 355,
+      "exactRows": 78,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "dnskey-protocol-not-three",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 45,
+      "events": 22,
+      "fieldRows": 304,
+      "exactRows": 66,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "zone-key-flag-clear",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 45,
+      "events": 22,
+      "fieldRows": 304,
+      "exactRows": 66,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "unaware-stub",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "stubDnssecVerified": false,
+          "trust": "ordinary configured DNS service"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 51,
+      "events": 25,
+      "fieldRows": 356,
+      "exactRows": 84,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "stubDnssecVerified": false,
+          "trust": "ordinary configured DNS service"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "trusted-resolver-ad",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "declared-resolver-and-channel",
+          "stubDnssecVerified": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 49,
+      "events": 24,
+      "fieldRows": 383,
+      "exactRows": 85,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "declared-resolver-and-channel",
+          "stubDnssecVerified": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "ad-interest-without-do",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "declared-resolver-and-channel",
+          "stubDnssecVerified": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 49,
+      "events": 24,
+      "fieldRows": 347,
+      "exactRows": 83,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "declared-resolver-and-channel",
+          "stubDnssecVerified": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "validating-stub",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 189,
+      "events": 94,
+      "fieldRows": 1973,
+      "exactRows": 198,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "forged-ad-untrusted-hop",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "refused",
+          "reason": "untrusted-ad-assertion",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 47,
+      "events": 23,
+      "fieldRows": 231,
+      "exactRows": 54,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "refused",
+          "reason": "untrusted-ad-assertion",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "do-zero-explicit-dnskey-query",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "requestedType": "DNSKEY",
+          "publicKeys": [
+            "child-ksk-g1",
+            "child-zsk-g1"
+          ],
+          "privateKeys": [],
+          "stubDnssecVerified": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 49,
+      "events": 24,
+      "fieldRows": 347,
+      "exactRows": 82,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "requestedType": "DNSKEY",
+          "publicKeys": [
+            "child-ksk-g1",
+            "child-zsk-g1"
+          ],
+          "privateKeys": [],
+          "stubDnssecVerified": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "response-flags-and-cached-ad",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 33,
+      "events": 16,
+      "fieldRows": 162,
+      "exactRows": 55,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "local-validates-upstream-fetches",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 63,
+      "events": 31,
+      "fieldRows": 517,
+      "exactRows": 99,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "upstream-validates-local-relies",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 75,
+      "events": 37,
+      "fieldRows": 570,
+      "exactRows": 108,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "both-validate",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 67,
+      "events": 33,
+      "fieldRows": 581,
+      "exactRows": 122,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "upstream-servfail-cd-zero",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 425,
+      "exactRows": 92,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "local-checks-cd-one-data",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 454,
+      "exactRows": 93,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "dnssec-stripping-forwarder",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 63,
+      "events": 31,
+      "fieldRows": 418,
+      "exactRows": 90,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "forwarder-loop-or-unreachable",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 5,
+      "prefixes": 39,
+      "events": 19,
+      "fieldRows": 187,
+      "exactRows": 58,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "cached-upstream-servfail-cd-zero-then-cd-one",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 55,
+      "events": 27,
+      "fieldRows": 365,
+      "exactRows": 90,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "nxdomain",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 565,
+      "exactRows": 94,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "existing-name-nodata",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "www.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 55,
+      "events": 27,
+      "fieldRows": 472,
+      "exactRows": 79,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "www.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "empty-nonterminal",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata-ent",
+          "qname": "branch.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 57,
+      "events": 28,
+      "fieldRows": 472,
+      "exactRows": 81,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata-ent",
+          "qname": "branch.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "wildcard-excluded",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "ghost.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 565,
+      "exactRows": 94,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "ghost.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "no-ds-at-delegation",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true,
+          "requestedType": "DS",
+          "delegatedChildSecurityStatus": "insecure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 55,
+      "events": 27,
+      "fieldRows": 472,
+      "exactRows": 69,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true,
+          "requestedType": "DS",
+          "delegatedChildSecurityStatus": "insecure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "incomplete-proof",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 63,
+      "events": 31,
+      "fieldRows": 516,
+      "exactRows": 79,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "proof-from-wrong-zone",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 51,
+      "events": 25,
+      "fieldRows": 391,
+      "exactRows": 69,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "nsec3-nxdomain",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 69,
+      "events": 34,
+      "fieldRows": 658,
+      "exactRows": 111,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "nsec3-nodata",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "www.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 57,
+      "events": 28,
+      "fieldRows": 472,
+      "exactRows": 81,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "www.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "unsigned-optout-delegation",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.unsigned.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "insecure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 75,
+      "events": 37,
+      "fieldRows": 628,
+      "exactRows": 113,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.unsigned.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "insecure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "missing-closest-encloser",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 57,
+      "events": 28,
+      "fieldRows": 457,
+      "exactRows": 81,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "hash-parameter-mismatch",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 523,
+      "exactRows": 91,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "excessive-iterations-policy",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 53,
+      "events": 26,
+      "fieldRows": 391,
+      "exactRows": 71,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "wildcard-positive",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "foo.lab.example.",
+          "addresses": [
+            "192.0.2.90"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 55,
+      "events": 27,
+      "fieldRows": 442,
+      "exactRows": 76,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "foo.lab.example.",
+          "addresses": [
+            "192.0.2.90"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "wildcard-nodata",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata-wildcard",
+          "qname": "foo.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 535,
+      "exactRows": 93,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata-wildcard",
+          "qname": "foo.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "wildcard-missing-proof",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 47,
+      "events": 23,
+      "fieldRows": 295,
+      "exactRows": 56,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "cname-secure-target",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "alias.lab.example.",
+          "addresses": [
+            "192.0.2.80"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 75,
+      "events": 37,
+      "fieldRows": 699,
+      "exactRows": 106,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "alias.lab.example.",
+          "addresses": [
+            "192.0.2.80"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "cname-insecure-target",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "alias.lab.example.",
+          "addresses": [
+            "192.0.2.80"
+          ],
+          "trust": "insecure"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 73,
+      "events": 36,
+      "fieldRows": 588,
+      "exactRows": 93,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "alias.lab.example.",
+          "addresses": [
+            "192.0.2.80"
+          ],
+          "trust": "insecure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "cname-bogus-target",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 71,
+      "events": 35,
+      "fieldRows": 618,
+      "exactRows": 96,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "dname-synthesized-cname",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "host.branch.lab.example.",
+          "addresses": [
+            "192.0.2.80"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 81,
+      "events": 40,
+      "fieldRows": 729,
+      "exactRows": 112,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "host.branch.lab.example.",
+          "addresses": [
+            "192.0.2.80"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "positive-cache-hit",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 37,
+      "events": 18,
+      "fieldRows": 171,
+      "exactRows": 54,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "expired-ttl",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 149,
+      "events": 74,
+      "fieldRows": 1537,
+      "exactRows": 163,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "signature-expires-first",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 10,
+      "prefixes": 153,
+      "events": 76,
+      "fieldRows": 1483,
+      "exactRows": 133,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "short-rrsig-ttl",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 69,
+      "events": 34,
+      "fieldRows": 547,
+      "exactRows": 78,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "short-original-ttl",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 69,
+      "events": 34,
+      "fieldRows": 547,
+      "exactRows": 78,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "negative-cache-hit",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 35,
+      "events": 17,
+      "fieldRows": 212,
+      "exactRows": 68,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "aggressive-nsec",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "synthesized-nxdomain",
+          "qname": "ghost.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 33,
+      "events": 16,
+      "fieldRows": 185,
+      "exactRows": 59,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "synthesized-nxdomain",
+          "qname": "ghost.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "aggressive-nsec3",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "synthesized-nxdomain",
+          "qname": "other.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 33,
+      "events": 16,
+      "fieldRows": 185,
+      "exactRows": 59,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "synthesized-nxdomain",
+          "qname": "other.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "wildcard-synthesis",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "bar.lab.example.",
+          "addresses": [
+            "192.0.2.90"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 37,
+      "events": 18,
+      "fieldRows": 185,
+      "exactRows": 59,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "bar.lab.example.",
+          "addresses": [
+            "192.0.2.90"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "out-of-proof-range",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "zz.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 47,
+      "events": 23,
+      "fieldRows": 349,
+      "exactRows": 80,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "zz.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "udp-complete",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 51,
+      "events": 25,
+      "fieldRows": 392,
+      "exactRows": 86,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "udp-truncated-tcp-retry",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 67,
+      "events": 33,
+      "fieldRows": 490,
+      "exactRows": 92,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "tcp-blocked",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 53,
+      "events": 26,
+      "fieldRows": 274,
+      "exactRows": 58,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "edns-stripped",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 53,
+      "events": 26,
+      "fieldRows": 349,
+      "exactRows": 81,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "dot-authenticated-resolver",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 418,
+      "exactRows": 98,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "encrypted-but-bogus-dns-data",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 59,
+      "events": 29,
+      "fieldRows": 355,
+      "exactRows": 92,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "resign-before-expiry",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 233,
+      "events": 116,
+      "fieldRows": 2436,
+      "exactRows": 247,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "zsk-prepublish",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 211,
+      "events": 105,
+      "fieldRows": 2310,
+      "exactRows": 238,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "zsk-double-sign",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 303,
+      "events": 151,
+      "fieldRows": 3277,
+      "exactRows": 309,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "old-key-removed-too-early",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "cached-signature-key-unavailable"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 401,
+      "events": 200,
+      "fieldRows": 4354,
+      "exactRows": 392,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "cached-signature-key-unavailable"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "secondary-lags",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "lagged-signature-key-unavailable"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 207,
+      "events": 103,
+      "fieldRows": 2195,
+      "exactRows": 228,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "lagged-signature-key-unavailable"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "signature-refresh-outage",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-expired"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 133,
+      "events": 66,
+      "fieldRows": 1319,
+      "exactRows": 161,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-expired"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "ksk-double-ds",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 509,
+      "events": 254,
+      "fieldRows": 5348,
+      "exactRows": 467,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "ksk-double-ksk-method",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 11,
+      "prefixes": 287,
+      "events": 143,
+      "fieldRows": 3013,
+      "exactRows": 292,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "combined-key-rollover",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 219,
+      "events": 109,
+      "fieldRows": 2391,
+      "exactRows": 229,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "parent-ds-delayed",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 231,
+      "events": 115,
+      "fieldRows": 2411,
+      "exactRows": 265,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "old-ds-cache",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 259,
+      "events": 129,
+      "fieldRows": 2787,
+      "exactRows": 294,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "premature-old-key-removal",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "supported-ds-no-matching-key"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 259,
+      "events": 129,
+      "fieldRows": 2745,
+      "exactRows": 262,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "supported-ds-no-matching-key"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "modern-baseline",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 127,
+      "events": 63,
+      "fieldRows": 1366,
+      "exactRows": 165,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "dual-algorithm-rollover",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 253,
+      "events": 126,
+      "fieldRows": 2656,
+      "exactRows": 258,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "algorithm-unsupported",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 207,
+      "events": 103,
+      "fieldRows": 2182,
+      "exactRows": 217,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "unsupported-digest-only",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 207,
+      "events": 103,
+      "fieldRows": 2182,
+      "exactRows": 217,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "modern-and-obsolete-paths",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 211,
+      "events": 105,
+      "fieldRows": 2258,
+      "exactRows": 231,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "sha1-signing-disabled",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 209,
+      "events": 104,
+      "fieldRows": 2182,
+      "exactRows": 217,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "sha1-digest-compatibility",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 127,
+      "events": 63,
+      "fieldRows": 1365,
+      "exactRows": 165,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "nsec3-sha1-not-signature-policy",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "NODATA",
+          "qname": "www.lab.example.",
+          "qtype": "AAAA",
+          "qclass": "IN"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 135,
+      "events": 67,
+      "fieldRows": 1447,
+      "exactRows": 194,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "NODATA",
+          "qname": "www.lab.example.",
+          "qtype": "AAAA",
+          "qclass": "IN"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "provisioned-anchor",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      },
+      "checkpoints": 4,
+      "prefixes": 27,
+      "events": 13,
+      "fieldRows": 217,
+      "exactRows": 37,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "untrusted-self-signed-key",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      },
+      "checkpoints": 3,
+      "prefixes": 25,
+      "events": 12,
+      "fieldRows": 247,
+      "exactRows": 37,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "rfc5011-add",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 59,
+      "events": 25,
+      "fieldRows": 1121,
+      "exactRows": 81,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "add-hold-down-interrupted",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 4897,
+      "events": 54,
+      "fieldRows": 413227,
+      "exactRows": 9701,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "revoke-and-remove",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 3403,
+      "events": 79,
+      "fieldRows": 254203,
+      "exactRows": 6751,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "offline-misses-rollover",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      },
+      "checkpoints": 4,
+      "prefixes": 29,
+      "events": 14,
+      "fieldRows": 250,
+      "exactRows": 39,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "manual-recovery",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      },
+      "checkpoints": 4,
+      "prefixes": 49,
+      "events": 24,
+      "fieldRows": 467,
+      "exactRows": 63,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "consistent-update",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 5,
+      "prefixes": 201,
+      "events": 100,
+      "fieldRows": 2101,
+      "exactRows": 207,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "consistent-ds-removal",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 263,
+      "events": 131,
+      "fieldRows": 2782,
+      "exactRows": 261,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "one-authority-stale",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 3,
+      "prefixes": 191,
+      "events": 95,
+      "fieldRows": 2042,
+      "exactRows": 207,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "cds-cdnskey-keyset-disagreement",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 3,
+      "prefixes": 191,
+      "events": 95,
+      "fieldRows": 2034,
+      "exactRows": 203,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "nodata-versus-removal",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 3,
+      "prefixes": 191,
+      "events": 95,
+      "fieldRows": 2042,
+      "exactRows": 205,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "unreachable-authority-retry",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 5,
+      "prefixes": 305,
+      "events": 152,
+      "fieldRows": 3139,
+      "exactRows": 292,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "digest-policy-comparison",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 4,
+      "prefixes": 199,
+      "events": 99,
+      "fieldRows": 2099,
+      "exactRows": 209,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "dsync-notify-trigger",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 293,
+      "events": 146,
+      "fieldRows": 3072,
+      "exactRows": 285,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "invalid-dsync-target",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 2,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 600,
+      "exactRows": 63,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "malformed-delete-signal",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 3,
+      "prefixes": 191,
+      "events": 95,
+      "fieldRows": 2025,
+      "exactRows": 203,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "authenticated-rfc9615-bootstrap",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 519,
+      "events": 259,
+      "fieldRows": 5628,
+      "exactRows": 562,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "unauthenticated-child-only-claim",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 3,
+      "prefixes": 193,
+      "events": 96,
+      "fieldRows": 2042,
+      "exactRows": 202,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "signaling-zone-not-secure",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 3,
+      "prefixes": 419,
+      "events": 209,
+      "fieldRows": 4427,
+      "exactRows": 427,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "only-in-domain-nameservers",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 2,
+      "prefixes": 63,
+      "events": 31,
+      "fieldRows": 662,
+      "exactRows": 93,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "parent-policy-declines",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 4,
+      "prefixes": 449,
+      "events": 224,
+      "fieldRows": 4904,
+      "exactRows": 501,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "update-would-break-validation",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 3,
+      "prefixes": 197,
+      "events": 98,
+      "fieldRows": 2027,
+      "exactRows": 205,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "concurrent-manual-update",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 423,
+      "events": 211,
+      "fieldRows": 4262,
+      "exactRows": 410,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "report-and-retry",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 333,
+      "events": 166,
+      "fieldRows": 3351,
+      "exactRows": 320,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "shared-ksk-model",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 147,
+      "events": 73,
+      "fieldRows": 1592,
+      "exactRows": 191,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "separate-ksk-model",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 143,
+      "events": 71,
+      "fieldRows": 1571,
+      "exactRows": 194,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "cached-keys-provider-switch",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 211,
+      "events": 105,
+      "fieldRows": 2293,
+      "exactRows": 244,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "missing-cross-provider-key",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "cross-provider-key-unavailable"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 227,
+      "events": 113,
+      "fieldRows": 2342,
+      "exactRows": 234,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "cross-provider-key-unavailable"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "coordinated-rollover",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 157,
+      "events": 78,
+      "fieldRows": 1744,
+      "exactRows": 212,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "provider-migration",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 153,
+      "events": 76,
+      "fieldRows": 1532,
+      "exactRows": 191,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "conflicting-cds-intent",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 3,
+      "prefixes": 151,
+      "events": 75,
+      "fieldRows": 1500,
+      "exactRows": 152,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "offline-signer-secondary",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 213,
+      "events": 106,
+      "fieldRows": 1839,
+      "exactRows": 398,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "notify-ixfr",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 183,
+      "events": 91,
+      "fieldRows": 1665,
+      "exactRows": 340,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "axfr-fallback",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 211,
+      "events": 105,
+      "fieldRows": 1860,
+      "exactRows": 401,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "tsig-authenticated-update",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      },
+      "checkpoints": 9,
+      "prefixes": 245,
+      "events": 122,
+      "fieldRows": 2038,
+      "exactRows": 421,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "tsig-valid-policy-denied",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "refused",
+          "operation": "UPDATE",
+          "reason": "policy-denied"
+        }
+      },
+      "checkpoints": 2,
+      "prefixes": 27,
+      "events": 13,
+      "fieldRows": 202,
+      "exactRows": 77,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "refused",
+          "operation": "UPDATE",
+          "reason": "policy-denied"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "tsig-failure",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "operation": "UPDATE",
+          "reason": "TSIG-BADSIG"
+        }
+      },
+      "checkpoints": 2,
+      "prefixes": 29,
+      "events": 14,
+      "fieldRows": 209,
+      "exactRows": 80,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "operation": "UPDATE",
+          "reason": "TSIG-BADSIG"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "zonemd-mismatch",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      },
+      "checkpoints": 4,
+      "prefixes": 65,
+      "events": 32,
+      "fieldRows": 617,
+      "exactRows": 173,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "bogus-servfail-with-ede",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 49,
+      "events": 24,
+      "fieldRows": 329,
+      "exactRows": 80,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "same-failure-without-ede",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 49,
+      "events": 24,
+      "fieldRows": 329,
+      "exactRows": 80,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "cd-one-diagnostic-data",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "refused",
+          "reason": "diagnostic-data-not-validated-for-use",
+          "positiveAnswerAccepted": false,
+          "rawDataAvailableForInspection": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 51,
+      "events": 25,
+      "fieldRows": 365,
+      "exactRows": 84,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "refused",
+          "reason": "diagnostic-data-not-validated-for-use",
+          "positiveAnswerAccepted": false,
+          "rawDataAvailableForInspection": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "transport-timeout",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 5,
+      "prefixes": 39,
+      "events": 19,
+      "fieldRows": 187,
+      "exactRows": 53,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "failure-cache-suppresses-retry",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 37,
+      "events": 18,
+      "fieldRows": 108,
+      "exactRows": 49,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "retry-after-expiry",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 63,
+      "events": 31,
+      "fieldRows": 397,
+      "exactRows": 90,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "temporary-negative-trust-anchor",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 10,
+      "prefixes": 179,
+      "events": 89,
+      "fieldRows": 1715,
+      "exactRows": 208,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "compact-nonexistent-name",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nonexistent-name",
+          "rcode": "NOERROR",
+          "authenticatedNxname": true,
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 59,
+      "events": 29,
+      "fieldRows": 501,
+      "exactRows": 80,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nonexistent-name",
+          "rcode": "NOERROR",
+          "authenticatedNxname": true,
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "genuine-nodata",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "www.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 59,
+      "events": 29,
+      "fieldRows": 501,
+      "exactRows": 80,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "www.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "empty-nonterminal",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata-ent",
+          "qname": "branch.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 501,
+      "exactRows": 82,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata-ent",
+          "qname": "branch.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "co-enabled",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 59,
+      "events": 29,
+      "fieldRows": 532,
+      "exactRows": 83,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "co-disabled-downstream",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nonexistent-name",
+          "rcode": "NOERROR",
+          "authenticatedNxname": true,
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 33,
+      "events": 16,
+      "fieldRows": 185,
+      "exactRows": 59,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nonexistent-name",
+          "rcode": "NOERROR",
+          "authenticatedNxname": true,
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "explicit-nxname-query",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "INVALID_QUERY_TYPE",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 5,
+      "prefixes": 29,
+      "events": 14,
+      "fieldRows": 102,
+      "exactRows": 40,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "INVALID_QUERY_TYPE",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "no-wide-aggressive-synthesis",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nonexistent-name",
+          "rcode": "NOERROR",
+          "authenticatedNxname": true,
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 61,
+      "events": 30,
+      "fieldRows": 501,
+      "exactRows": 83,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nonexistent-name",
+          "rcode": "NOERROR",
+          "authenticatedNxname": true,
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "private-signed-zone-local-anchor",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "198.51.100.80"
+          ],
+          "view": "private-v1",
+          "trust": "secure-local-private-anchor"
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 67,
+      "events": 33,
+      "fieldRows": 561,
+      "exactRows": 55,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "198.51.100.80"
+          ],
+          "view": "private-v1",
+          "trust": "secure-local-private-anchor"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "private-signed-zone-no-covering-anchor",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "198.51.100.80"
+          ],
+          "view": "private-v1",
+          "trust": "indeterminate-no-anchor",
+          "dnssecVerified": false
+        }
+      },
+      "checkpoints": 6,
+      "prefixes": 67,
+      "events": 33,
+      "fieldRows": 557,
+      "exactRows": 53,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "198.51.100.80"
+          ],
+          "view": "private-v1",
+          "trust": "indeterminate-no-anchor",
+          "dnssecVerified": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "conditional-forward-with-local-validation",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "198.51.100.80"
+          ],
+          "view": "private-v1",
+          "trust": "secure-local-private-anchor"
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 95,
+      "events": 47,
+      "fieldRows": 823,
+      "exactRows": 72,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "198.51.100.80"
+          ],
+          "view": "private-v1",
+          "trust": "secure-local-private-anchor"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "different-client-trust-stores",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "results": {
+            "clientA": {
+              "addresses": [
+                "192.0.2.80",
+                "192.0.2.81"
+              ],
+              "view": "public-v1",
+              "securityStatus": "secure"
+            },
+            "clientB": {
+              "addresses": [
+                "198.51.100.80"
+              ],
+              "view": "private-v1",
+              "securityStatus": "secure"
+            }
+          }
+        }
+      },
+      "checkpoints": 8,
+      "prefixes": 71,
+      "events": 35,
+      "fieldRows": 527,
+      "exactRows": 112,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "results": {
+            "clientA": {
+              "addresses": [
+                "192.0.2.80",
+                "192.0.2.81"
+              ],
+              "view": "public-v1",
+              "securityStatus": "secure"
+            },
+            "clientB": {
+              "addresses": [
+                "198.51.100.80"
+              ],
+              "view": "private-v1",
+              "securityStatus": "secure"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "stale-private-anchor",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 65,
+      "events": 32,
+      "fieldRows": 498,
+      "exactRows": 49,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "private-view-versus-public-chain",
+      "sourcePassed": true,
+      "sourceFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      },
+      "checkpoints": 7,
+      "prefixes": 93,
+      "events": 46,
+      "fieldRows": 772,
+      "exactRows": 112,
+      "emittedPassed": true,
+      "emittedFinal": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    }
+  ],
+  "scope": "Navigation and exact final-outcome comparison derived from the selected complete Source10/emitted06 raw reports; not an independent outcome oracle."
+}

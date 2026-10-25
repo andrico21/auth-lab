@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {installHarness} from './dom-harness.mjs';
+import {installHarness,HarnessEvent} from './dom-harness.mjs';
 import {ADLAB_ATTRIBUTES,ADLAB_SCENARIOS} from '../src/kerberos-ad-lab.js';
 import {buildAttributeTrace} from '../src/attribute-trace.js';
 import {buildProtocolInstances,reconstructProtocolState,validateProtocolScenario} from '../src/protocol-state.js';
@@ -71,6 +71,8 @@ for(const [id,target] of [['lab-ad-first-sign-in','cifs/other.corp.test'],['lab-
       const sendIndex=app.traceQueue.findIndex(step=>step.sourceStepId.endsWith('-service-tgs-reply')&&step.traceKind==='send');assert.ok(sendIndex>=0,'The focused reply includes its Send moment');
       app.selectStep(sendIndex,false);const send=app.currentStep;
       assert.equal(send.payload.find(field=>field.attributeId==='adTGSReply').value,expected);
+      const statePanel=app.querySelector('#protocol-state-panel');statePanel.setAttribute('open','');statePanel.dispatchEvent(new HarnessEvent('toggle'));
+      for(const details of app.querySelectorAll('#protocol-instance-list [data-instance-history]')){details.setAttribute('open','');details.dispatchEvent(new HarnessEvent('toggle'));}
       assert.ok(app.querySelector('#protocol-instance-list').textContent.includes(expected),'Focused instance inspector presents the same protected reply');
       assert.deepEqual(app.protocolSnapshot().state,full.state,'Focused Send uses the complete same source prefix');
       app.player.seek([send],.3,'attribute-step');

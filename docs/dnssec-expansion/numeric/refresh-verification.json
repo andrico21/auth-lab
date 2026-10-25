@@ -1,0 +1,165 @@
+{
+  "checks": 17,
+  "fixtureSha256": "f4b56e67c5cf51d72f498ea1e287f470515a6c9d380008a1be5e1a580ed2e6d2",
+  "kind": "dnssec-independent-refresh-verification",
+  "observations": [
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "www-a-refresh-old-expiry10000",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "observation": {
+        "valid": true
+      },
+      "offset": 7000,
+      "signatureId": "www-a-refresh-old-expiry10000"
+    },
+    {
+      "observation": {
+        "valid": true
+      },
+      "offset": 10000,
+      "signatureId": "www-a-refresh-old-expiry10000"
+    },
+    {
+      "observation": {
+        "exceptionClass": "ValidationFailure",
+        "message": "expired",
+        "valid": false
+      },
+      "offset": 10001,
+      "signatureId": "www-a-refresh-old-expiry10000"
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "www-a-refresh-same-key-new",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "observation": {
+        "valid": true
+      },
+      "offset": 7000,
+      "signatureId": "www-a-refresh-same-key-new"
+    },
+    {
+      "observation": {
+        "valid": true
+      },
+      "offset": 10000,
+      "signatureId": "www-a-refresh-same-key-new"
+    },
+    {
+      "observation": {
+        "valid": true
+      },
+      "offset": 10001,
+      "signatureId": "www-a-refresh-same-key-new"
+    }
+  ],
+  "result": "pass",
+  "results": [
+    {
+      "id": "refresh-pinned-sha256",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-old-expiry10000:input",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-old-expiry10000:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-old-expiry10000:independent-time-7000",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-old-expiry10000:library-time-7000",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-old-expiry10000:independent-time-10000",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-old-expiry10000:library-time-10000",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-old-expiry10000:independent-time-10001",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-old-expiry10000:library-time-10001",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-same-key-new:input",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-same-key-new:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-same-key-new:independent-time-7000",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-same-key-new:library-time-7000",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-same-key-new:independent-time-10000",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-same-key-new:library-time-10000",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-same-key-new:independent-time-10001",
+      "result": "pass"
+    },
+    {
+      "id": "www-a-refresh-same-key-new:library-time-10001",
+      "result": "pass"
+    }
+  ],
+  "schemaVersion": 1
+}

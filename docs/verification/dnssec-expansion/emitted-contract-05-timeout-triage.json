@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNSSEC-emitted-resource-timeout-triage",
+  "recordedAt": "2026-10-24T08:07:13.574Z",
+  "originalRun": "contract-emitted-05",
+  "originalRunNotAccepted": true,
+  "deadlineSeconds": 900,
+  "observedCommandWallSeconds": 902.65,
+  "completedCaseFragments": 103,
+  "remainingWithoutCompleteCaseFragments": 56,
+  "lastCase": {
+    "id": "lab-dnssec15",
+    "caseId": "add-hold-down-interrupted",
+    "lastCompletedStage": "emitted-app-controls",
+    "lastIncompleteStage": "case-inputs-after-sha256",
+    "assertions": 15743758,
+    "failures": 0,
+    "canonicalPrefixes": 4897,
+    "fieldRows": 413227,
+    "exactObjects": 2431,
+    "fullAndFieldForwardPositions": 1273729,
+    "fullAndFieldBackwardPositions": 1273729,
+    "appControlsElapsedMs": 159002.716
+  },
+  "afterTerminationInputCheck": {
+    "path": "contract-emitted-05/inputs-after-timeout.json",
+    "capturedAtRecordTimeNotAtDeadline": true,
+    "sourceAndVerificationAndIndependentInputsUnchanged": true
+  },
+  "resourceEvidence": {
+    "memoryGiB": {
+      "total": 7.8,
+      "used": 5.8,
+      "available": 2,
+      "swapUsed": 3.5
+    },
+    "vmstatSecondSamplesKiBPerSecond": {
+      "swapIn": [
+        13760,
+        12348,
+        15100,
+        12048
+      ],
+      "swapOut": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "largestHolder": {
+      "pid": 5161,
+      "ppid": 4670,
+      "uid": 1000,
+      "terminal": "pts/2",
+      "command": "opencode --auto",
+      "rssKiB": 4262012,
+      "ownership": "Separate user terminal; not an OMP QA child"
+    },
+    "ownEvalWorker": {
+      "pid": 29251,
+      "ppid": 4330,
+      "rssKiB": 69868
+    },
+    "diagnosis": "[INFERENCE] System memory/swap contention, not demonstrated application regression. Unchanged dense-case stage assertions ran much slower; no assertion failures were observed at the incomplete boundary."
+  },
+  "userDecision": "Keep opencode running; do not kill it or MicroK8s.",
+  "disposition": "Blocked pending about4GiB more available RAM. Repeat the same complete gate with900s only after memory/swap conditions permit; no subset/resume acceptance, timeout increase or application/hash-logic change."
+}

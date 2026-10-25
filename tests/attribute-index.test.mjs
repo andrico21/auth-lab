@@ -16,7 +16,7 @@ const ids=steps=>[...new Set(steps.map(step=>step.sourceStepId))];
 function mount(){const app=new AuthFlowStudio();document.body.appendChild(app);app.connectedCallback();app.selectLabScenario('core');select(app,'mode','passkey');select(app,'architecture','native');select(app,'upstream','keycloak');select(app,'authenticator','hello');return app;}
 function unmount(app){app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();}
 function select(app,id,value){const control=app.querySelector('#'+id);assert.ok(control,id+' control exists');control.value=value;control.dispatchEvent(new HarnessEvent('change'));}
-function hover(node){node.dispatchEvent(new HarnessEvent('mouseover',{relatedTarget:null}));}
+function hover(node){node.dispatchEvent(new HarnessEvent('pointerover',{pointerType:'mouse',relatedTarget:null}));}
 function finish(app){clock.until(()=>app.player.status!=='playing');}
 function has(queue,{source,from,to,kind,attribute}){
   return queue.some(step=>(!source||step.sourceStepId===source)&&step.from===from&&step.to===to&&step.traceKind===kind&&step.payload.some(field=>field.attributeId===attribute));
@@ -35,6 +35,30 @@ test('the separate index stays available while participants and exchanges are in
     assert.equal(app.querySelector('#attribute-index'),index);
     index.querySelector('#attribute-index-toggle').click();assert.equal(index.hidden,true);
     app.querySelector('#index-open').click();assert.equal(index.hidden,false);
+  }finally{unmount(app);}
+});
+
+test('reopening a closed index refreshes the current journey and selected field before interaction',()=>{
+  const app=mount();try{
+    const search=app.refs['attribute-search'];
+    let focused;app.addEventListener('focusin',event=>{focused=event.target;});
+    search.value='CD';search.dispatchEvent(new HarnessEvent('input'));
+    app.querySelector('#attribute-index-toggle').click();
+    app.selectLabScenario('lab-dnssec05');app.selectLessonVariant('response-flags-and-cached-ad');
+    app.selectAttribute('dnssec_header_flags_CD',false);
+    assert.equal(app.refs['attribute-index'].hidden,true);
+    app.querySelector('#index-open').click();
+    assert.equal(app.refs['attribute-index'].hidden,false);
+    assert.equal(focused,search);
+    assert.equal(search.value,'CD');
+    const selected=app.refs['attribute-index'].querySelector('[data-index-attribute="dnssec_header_flags_CD"]');
+    assert.ok(selected&&!selected.hidden);
+    assert.equal(selected.getAttribute('aria-pressed'),'true');
+    selected.click();
+    assert.equal(app.attributeSelection,'dnssec_header_flags_CD');
+    assert.equal(app.player.status,'playing');
+    assert.ok(app.traceQueue.some(step=>step.sourceStepId==='lab-dnssec05:response-flags-and-cached-ad:stub:q'));
+    assert.ok(app.traceQueue.every(step=>step.sourceStepId.startsWith('lab-dnssec05:response-flags-and-cached-ad:')));
   }finally{unmount(app);}
 });
 

@@ -1,0 +1,3826 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNSSEC-current-derived-case-outcome-navigation",
+  "source": {
+    "path": "docs/verification/dnssec-review-corrections/source-contract-04/canonical-prefix-reference.json",
+    "sha256": "772e4562f68452e89ac0599880787c25ea5c99b9aff9ce78622fef3ca57b4c7c",
+    "bytes": 11973318
+  },
+  "sourceCheck": {
+    "path": "docs/verification/dnssec-review-corrections/source-contract-04/status.json",
+    "sha256": "c838b9a71d8b11089708adc6f19fa671b61d28c9c840436018d69d5f7856a20d",
+    "bytes": 2207105
+  },
+  "emittedCheck": {
+    "path": "docs/verification/dnssec-review-corrections/emitted-contract-04/status.json",
+    "sha256": "8ddb6752b7fe7fc707e73d765d20de733024a23a7ffdda43accf2fe8037d357a",
+    "bytes": 2213027
+  },
+  "caseCount": 159,
+  "defaultsAreNamedCaseAliases": true,
+  "scope": "Derived navigation from actually checked final Source04, not independently authored expected values or an additional execution.",
+  "rows": [
+    {
+      "id": "lab-dnssec01",
+      "caseId": "cold-secure",
+      "variant": "default",
+      "sourceSteps": 63,
+      "canonicalPrefixes": 127,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec01:rrset-answer-v1",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec01:cold-secure:holding:84"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec01",
+      "caseId": "warm-answer-cache",
+      "variant": "warm-answer-cache",
+      "sourceSteps": 14,
+      "canonicalPrefixes": 29,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec01:cached-rrset-www-a",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec01:warm-answer-cache:holding:52"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec01",
+      "caseId": "partial-chain-cache",
+      "variant": "partial-chain-cache",
+      "sourceSteps": 31,
+      "canonicalPrefixes": 63,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec01:rrset-answer-v1",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec01:partial-chain-cache:holding:61"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec01",
+      "caseId": "tampered-answer",
+      "variant": "tampered-answer",
+      "sourceSteps": 26,
+      "canonicalPrefixes": 53,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec01:rrset-answer-v1",
+        "actorId": "dnsAdversary",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec01:tampered-answer:holding:63"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "split-ksk-zsk",
+      "variant": "default",
+      "sourceSteps": 66,
+      "canonicalPrefixes": 133,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec02:rrset-answer-v1",
+        "actorId": "dnsStub",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec02:split-ksk-zsk:holding:108"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "combined-key",
+      "variant": "combined-key",
+      "sourceSteps": 69,
+      "canonicalPrefixes": 139,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec02:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec02:combined-key:holding:100"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "equivalent-presentation",
+      "variant": "equivalent-presentation",
+      "sourceSteps": 65,
+      "canonicalPrefixes": 131,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec02:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec02:equivalent-presentation:holding:90"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "lab.example.",
+          "qtype": "MX",
+          "qclass": "IN",
+          "data": [
+            "10 mail1.lab.example.",
+            "20 mail2.lab.example."
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "changed-rdata",
+      "variant": "changed-rdata",
+      "sourceSteps": 64,
+      "canonicalPrefixes": 129,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec02:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec02:changed-rdata:holding:86"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-mismatch"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "opaque-rdata-case-change",
+      "variant": "opaque-rdata-case-change",
+      "sourceSteps": 64,
+      "canonicalPrefixes": 129,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec02:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec02:opaque-rdata-case-change:holding:86"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-mismatch"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "changed-owner",
+      "variant": "changed-owner",
+      "sourceSteps": 64,
+      "canonicalPrefixes": 129,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec02:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec02:changed-owner:holding:86"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-mismatch"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec02",
+      "caseId": "keytag-collision",
+      "variant": "keytag-collision",
+      "sourceSteps": 65,
+      "canonicalPrefixes": 131,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec02:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec02:keytag-collision:holding:92"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "signed-child",
+      "variant": "default",
+      "sourceSteps": 38,
+      "canonicalPrefixes": 77,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec03:signed-child:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec03:signed-child:holding:67"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "proved-no-ds",
+      "variant": "proved-no-ds",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec03:proved-no-ds:received:4",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec03:proved-no-ds:holding:51"
+      },
+      "final": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "refused",
+          "policy": "secure-only",
+          "reason": "insecure-not-bogus",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "supported-ds-mismatch",
+      "variant": "supported-ds-mismatch",
+      "sourceSteps": 38,
+      "canonicalPrefixes": 77,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec03:supported-ds-mismatch:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec03:supported-ds-mismatch:holding:67"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "missing-ds-proof",
+      "variant": "missing-ds-proof",
+      "sourceSteps": 28,
+      "canonicalPrefixes": 57,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec03:missing-ds-proof:received:3",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec03:missing-ds-proof:holding:43"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "no-covering-anchor",
+      "variant": "no-covering-anchor",
+      "sourceSteps": 22,
+      "canonicalPrefixes": 45,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec03:no-covering-anchor:received:0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec03:no-covering-anchor:holding:14"
+      },
+      "final": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "indeterminate"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "signed-island-with-local-anchor",
+      "variant": "signed-island-with-local-anchor",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec03:signed-island-with-local-anchor:received:1",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec03:signed-island-with-local-anchor:holding:28"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec03",
+      "caseId": "unsupported-only-ds",
+      "variant": "unsupported-only-ds",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec03:unsupported-only-ds:received:4",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec03:unsupported-only-ds:holding:54"
+      },
+      "final": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "insecure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "valid",
+      "variant": "default",
+      "sourceSteps": 22,
+      "canonicalPrefixes": 45,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:valid:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:valid:holding:61"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "signature-expired",
+      "variant": "signature-expired",
+      "sourceSteps": 64,
+      "canonicalPrefixes": 129,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:signature-expired:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:signature-expired:holding:33"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "signature-not-yet-valid",
+      "variant": "signature-not-yet-valid",
+      "sourceSteps": 63,
+      "canonicalPrefixes": 127,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:signature-not-yet-valid:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:signature-not-yet-valid:holding:35"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "wrong-clock",
+      "variant": "wrong-clock",
+      "sourceSteps": 63,
+      "canonicalPrefixes": 127,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:wrong-clock:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:wrong-clock:holding:33"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "missing-dnskey",
+      "variant": "missing-dnskey",
+      "sourceSteps": 29,
+      "canonicalPrefixes": 59,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:missing-dnskey:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:missing-dnskey:holding:59"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "missing-rrsig",
+      "variant": "missing-rrsig",
+      "sourceSteps": 22,
+      "canonicalPrefixes": 45,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:missing-rrsig:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:missing-rrsig:holding:60"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "wrong-signer-or-key",
+      "variant": "wrong-signer-or-key",
+      "sourceSteps": 23,
+      "canonicalPrefixes": 47,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:wrong-signer-or-key:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:wrong-signer-or-key:holding:61"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "wrong-covered-data",
+      "variant": "wrong-covered-data",
+      "sourceSteps": 22,
+      "canonicalPrefixes": 45,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:wrong-covered-data:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:wrong-covered-data:holding:61"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "one-valid-plus-one-invalid-signature",
+      "variant": "one-valid-plus-one-invalid-signature",
+      "sourceSteps": 23,
+      "canonicalPrefixes": 47,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:one-valid-plus-one-invalid-signature:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:one-valid-plus-one-invalid-signature:holding:62"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "dnskey-protocol-not-three",
+      "variant": "dnskey-protocol-not-three",
+      "sourceSteps": 22,
+      "canonicalPrefixes": 45,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:dnskey-protocol-not-three:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:dnskey-protocol-not-three:holding:61"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec04",
+      "caseId": "zone-key-flag-clear",
+      "variant": "zone-key-flag-clear",
+      "sourceSteps": 22,
+      "canonicalPrefixes": 45,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec04:zone-key-flag-clear:received:5",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec04:zone-key-flag-clear:holding:61"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "unaware-stub",
+      "variant": "default",
+      "sourceSteps": 25,
+      "canonicalPrefixes": 51,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec05:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec05:unaware-stub:holding:54"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "stubDnssecVerified": false,
+          "trust": "ordinary configured DNS service"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "trusted-resolver-ad",
+      "variant": "trusted-resolver-ad",
+      "sourceSteps": 24,
+      "canonicalPrefixes": 49,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec05:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec05:trusted-resolver-ad:holding:55"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "declared-resolver-and-channel",
+          "stubDnssecVerified": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "ad-interest-without-do",
+      "variant": "ad-interest-without-do",
+      "sourceSteps": 24,
+      "canonicalPrefixes": 49,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec05:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec05:ad-interest-without-do:holding:55"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "declared-resolver-and-channel",
+          "stubDnssecVerified": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "validating-stub",
+      "variant": "validating-stub",
+      "sourceSteps": 94,
+      "canonicalPrefixes": 189,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec05:received-answer",
+        "actorId": "dnsStub",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec05:validating-stub:holding:121"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "forged-ad-untrusted-hop",
+      "variant": "forged-ad-untrusted-hop",
+      "sourceSteps": 23,
+      "canonicalPrefixes": 47,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec05:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec05:forged-ad-untrusted-hop:holding:63"
+      },
+      "final": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "refused",
+          "reason": "untrusted-ad-assertion",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "do-zero-explicit-dnskey-query",
+      "variant": "do-zero-explicit-dnskey-query",
+      "sourceSteps": 24,
+      "canonicalPrefixes": 49,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec05:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec05:do-zero-explicit-dnskey-query:holding:54"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "requestedType": "DNSKEY",
+          "publicKeys": [
+            "child-ksk-g1",
+            "child-zsk-g1"
+          ],
+          "privateKeys": [],
+          "stubDnssecVerified": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec05",
+      "caseId": "response-flags-and-cached-ad",
+      "variant": "response-flags-and-cached-ad",
+      "sourceSteps": 17,
+      "canonicalPrefixes": 35,
+      "fieldId": "dnssec_rrsig_record",
+      "inspection": {
+        "artifactId": "lab-dnssec05:signature-www-a-signature",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec05:response-flags-and-cached-ad:holding:10"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "local-validates-upstream-fetches",
+      "variant": "default",
+      "sourceSteps": 31,
+      "canonicalPrefixes": 63,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec06:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec06:local-validates-upstream-fetches:holding:72"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "upstream-validates-local-relies",
+      "variant": "upstream-validates-local-relies",
+      "sourceSteps": 37,
+      "canonicalPrefixes": 75,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec06:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec06:upstream-validates-local-relies:holding:73"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "both-validate",
+      "variant": "both-validate",
+      "sourceSteps": 33,
+      "canonicalPrefixes": 67,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec06:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec06:both-validate:holding:73"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "upstream-servfail-cd-zero",
+      "variant": "upstream-servfail-cd-zero",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec06:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec06:upstream-servfail-cd-zero:holding:89"
+      },
+      "final": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "local-checks-cd-one-data",
+      "variant": "local-checks-cd-one-data",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec06:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec06:local-checks-cd-one-data:holding:90"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "dnssec-stripping-forwarder",
+      "variant": "dnssec-stripping-forwarder",
+      "sourceSteps": 31,
+      "canonicalPrefixes": 63,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec06:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec06:dnssec-stripping-forwarder:holding:88"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "forwarder-loop-or-unreachable",
+      "variant": "forwarder-loop-or-unreachable",
+      "sourceSteps": 19,
+      "canonicalPrefixes": 39,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec06:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec06:forwarder-loop-or-unreachable:holding:79"
+      },
+      "final": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec06",
+      "caseId": "cached-upstream-servfail-cd-zero-then-cd-one",
+      "variant": "cached-upstream-servfail-cd-zero-then-cd-one",
+      "sourceSteps": 27,
+      "canonicalPrefixes": 55,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec06:received-answer",
+        "actorId": "dnsUpstream",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec06:cached-upstream-servfail-cd-zero-then-cd-one:holding:11"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "nxdomain",
+      "variant": "default",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec07:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec07:nxdomain:holding:49"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "existing-name-nodata",
+      "variant": "existing-name-nodata",
+      "sourceSteps": 27,
+      "canonicalPrefixes": 55,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec07:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec07:existing-name-nodata:holding:47"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "www.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "empty-nonterminal",
+      "variant": "empty-nonterminal",
+      "sourceSteps": 28,
+      "canonicalPrefixes": 57,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec07:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec07:empty-nonterminal:holding:49"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata-ent",
+          "qname": "branch.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "wildcard-excluded",
+      "variant": "wildcard-excluded",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec07:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec07:wildcard-excluded:holding:49"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "ghost.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "no-ds-at-delegation",
+      "variant": "no-ds-at-delegation",
+      "sourceSteps": 27,
+      "canonicalPrefixes": 55,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec07:received-proof-0",
+        "actorId": "dnsParent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec07:no-ds-at-delegation:holding:35"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true,
+          "requestedType": "DS",
+          "delegatedChildSecurityStatus": "insecure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "incomplete-proof",
+      "variant": "incomplete-proof",
+      "sourceSteps": 31,
+      "canonicalPrefixes": 63,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec07:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec07:incomplete-proof:holding:47"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec07",
+      "caseId": "proof-from-wrong-zone",
+      "variant": "proof-from-wrong-zone",
+      "sourceSteps": 25,
+      "canonicalPrefixes": 51,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec07:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec07:proof-from-wrong-zone:holding:47"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "nsec3-nxdomain",
+      "variant": "default",
+      "sourceSteps": 34,
+      "canonicalPrefixes": 69,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec08:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec08:nsec3-nxdomain:holding:53"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "nsec3-nodata",
+      "variant": "nsec3-nodata",
+      "sourceSteps": 28,
+      "canonicalPrefixes": 57,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec08:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec08:nsec3-nodata:holding:49"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "www.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "unsigned-optout-delegation",
+      "variant": "unsigned-optout-delegation",
+      "sourceSteps": 37,
+      "canonicalPrefixes": 75,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec08:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec08:unsigned-optout-delegation:holding:54"
+      },
+      "final": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.unsigned.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "insecure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "missing-closest-encloser",
+      "variant": "missing-closest-encloser",
+      "sourceSteps": 28,
+      "canonicalPrefixes": 57,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec08:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec08:missing-closest-encloser:holding:51"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "hash-parameter-mismatch",
+      "variant": "hash-parameter-mismatch",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec08:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec08:hash-parameter-mismatch:holding:53"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec08",
+      "caseId": "excessive-iterations-policy",
+      "variant": "excessive-iterations-policy",
+      "sourceSteps": 26,
+      "canonicalPrefixes": 53,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec08:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec08:excessive-iterations-policy:holding:49"
+      },
+      "final": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "wildcard-positive",
+      "variant": "default",
+      "sourceSteps": 27,
+      "canonicalPrefixes": 55,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec09:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec09:wildcard-positive:holding:47"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "foo.lab.example.",
+          "addresses": [
+            "192.0.2.90"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "wildcard-nodata",
+      "variant": "wildcard-nodata",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec09:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec09:wildcard-nodata:holding:51"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata-wildcard",
+          "qname": "foo.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "wildcard-missing-proof",
+      "variant": "wildcard-missing-proof",
+      "sourceSteps": 23,
+      "canonicalPrefixes": 47,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec09:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec09:wildcard-missing-proof:holding:45"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "cname-secure-target",
+      "variant": "cname-secure-target",
+      "sourceSteps": 37,
+      "canonicalPrefixes": 75,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec09:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec09:cname-secure-target:holding:47"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "alias.lab.example.",
+          "addresses": [
+            "192.0.2.80"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "cname-insecure-target",
+      "variant": "cname-insecure-target",
+      "sourceSteps": 36,
+      "canonicalPrefixes": 73,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec09:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec09:cname-insecure-target:holding:47"
+      },
+      "final": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "alias.lab.example.",
+          "addresses": [
+            "192.0.2.80"
+          ],
+          "trust": "insecure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "cname-bogus-target",
+      "variant": "cname-bogus-target",
+      "sourceSteps": 35,
+      "canonicalPrefixes": 71,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec09:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec09:cname-bogus-target:holding:47"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec09",
+      "caseId": "dname-synthesized-cname",
+      "variant": "dname-synthesized-cname",
+      "sourceSteps": 40,
+      "canonicalPrefixes": 81,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec09:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec09:dname-synthesized-cname:holding:47"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "host.branch.lab.example.",
+          "addresses": [
+            "192.0.2.80"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "positive-cache-hit",
+      "variant": "default",
+      "sourceSteps": 18,
+      "canonicalPrefixes": 37,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-answer",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:positive-cache-hit:holding:32"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "expired-ttl",
+      "variant": "expired-ttl",
+      "sourceSteps": 74,
+      "canonicalPrefixes": 149,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-answer-fresh",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:expired-ttl:holding:111"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "signature-expires-first",
+      "variant": "signature-expires-first",
+      "sourceSteps": 76,
+      "canonicalPrefixes": 153,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-answer-fresh",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:signature-expires-first:holding:81"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "short-rrsig-ttl",
+      "variant": "short-rrsig-ttl",
+      "sourceSteps": 34,
+      "canonicalPrefixes": 69,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-answer-fresh",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:short-rrsig-ttl:holding:56"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "short-original-ttl",
+      "variant": "short-original-ttl",
+      "sourceSteps": 34,
+      "canonicalPrefixes": 69,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-answer-fresh",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:short-original-ttl:holding:56"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "negative-cache-hit",
+      "variant": "negative-cache-hit",
+      "sourceSteps": 17,
+      "canonicalPrefixes": 35,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-proof-0",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:negative-cache-hit:holding:32"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "aggressive-nsec",
+      "variant": "aggressive-nsec",
+      "sourceSteps": 16,
+      "canonicalPrefixes": 33,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-proof-0",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:aggressive-nsec:holding:32"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "synthesized-nxdomain",
+          "qname": "ghost.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "aggressive-nsec3",
+      "variant": "aggressive-nsec3",
+      "sourceSteps": 16,
+      "canonicalPrefixes": 33,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-proof-0",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:aggressive-nsec3:holding:32"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "synthesized-nxdomain",
+          "qname": "other.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "wildcard-synthesis",
+      "variant": "wildcard-synthesis",
+      "sourceSteps": 18,
+      "canonicalPrefixes": 37,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-proof-0",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:wildcard-synthesis:holding:32"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "bar.lab.example.",
+          "addresses": [
+            "192.0.2.90"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec10",
+      "caseId": "out-of-proof-range",
+      "variant": "out-of-proof-range",
+      "sourceSteps": 23,
+      "canonicalPrefixes": 47,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec10:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec10:out-of-proof-range:holding:68"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "zz.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "udp-complete",
+      "variant": "default",
+      "sourceSteps": 25,
+      "canonicalPrefixes": 51,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec11:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec11:udp-complete:holding:54"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "udp-truncated-tcp-retry",
+      "variant": "udp-truncated-tcp-retry",
+      "sourceSteps": 33,
+      "canonicalPrefixes": 67,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec11:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec11:udp-truncated-tcp-retry:holding:54"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "tcp-blocked",
+      "variant": "tcp-blocked",
+      "sourceSteps": 26,
+      "canonicalPrefixes": 53,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec11:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec11:tcp-blocked:holding:64"
+      },
+      "final": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "edns-stripped",
+      "variant": "edns-stripped",
+      "sourceSteps": 26,
+      "canonicalPrefixes": 53,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec11:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec11:edns-stripped:holding:68"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "dot-authenticated-resolver",
+      "variant": "dot-authenticated-resolver",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec11:received-answer",
+        "actorId": "dnsUpstream",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec11:dot-authenticated-resolver:holding:12"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec11",
+      "caseId": "encrypted-but-bogus-dns-data",
+      "variant": "encrypted-but-bogus-dns-data",
+      "sourceSteps": 29,
+      "canonicalPrefixes": 59,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec11:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec11:encrypted-but-bogus-dns-data:holding:90"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "resign-before-expiry",
+      "variant": "default",
+      "sourceSteps": 116,
+      "canonicalPrefixes": 233,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec12:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec12:resign-before-expiry:holding:136"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "zsk-prepublish",
+      "variant": "zsk-prepublish",
+      "sourceSteps": 105,
+      "canonicalPrefixes": 211,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec12:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec12:zsk-prepublish:holding:128"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "zsk-double-sign",
+      "variant": "zsk-double-sign",
+      "sourceSteps": 151,
+      "canonicalPrefixes": 303,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec12:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec12:zsk-double-sign:holding:168"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "old-key-removed-too-early",
+      "variant": "old-key-removed-too-early",
+      "sourceSteps": 201,
+      "canonicalPrefixes": 403,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec12:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec12:old-key-removed-too-early:holding:204"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "cached-signature-key-unavailable"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "secondary-lags",
+      "variant": "secondary-lags",
+      "sourceSteps": 103,
+      "canonicalPrefixes": 207,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec12:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec12:secondary-lags:holding:121"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "lagged-signature-key-unavailable"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec12",
+      "caseId": "signature-refresh-outage",
+      "variant": "signature-refresh-outage",
+      "sourceSteps": 66,
+      "canonicalPrefixes": 133,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec12:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec12:signature-refresh-outage:holding:84"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "signature-expired"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "ksk-double-ds",
+      "variant": "default",
+      "sourceSteps": 254,
+      "canonicalPrefixes": 509,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec13:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec13:ksk-double-ds:holding:255"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "ksk-double-ksk-method",
+      "variant": "ksk-double-ksk-method",
+      "sourceSteps": 143,
+      "canonicalPrefixes": 287,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec13:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec13:ksk-double-ksk-method:holding:163"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "combined-key-rollover",
+      "variant": "combined-key-rollover",
+      "sourceSteps": 109,
+      "canonicalPrefixes": 219,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec13:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec13:combined-key-rollover:holding:131"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "parent-ds-delayed",
+      "variant": "parent-ds-delayed",
+      "sourceSteps": 115,
+      "canonicalPrefixes": 231,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec13:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec13:parent-ds-delayed:holding:139"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "old-ds-cache",
+      "variant": "old-ds-cache",
+      "sourceSteps": 129,
+      "canonicalPrefixes": 259,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec13:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec13:old-ds-cache:holding:151"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec13",
+      "caseId": "premature-old-key-removal",
+      "variant": "premature-old-key-removal",
+      "sourceSteps": 129,
+      "canonicalPrefixes": 259,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec13:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec13:premature-old-key-removal:holding:149"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "supported-ds-no-matching-key"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "modern-baseline",
+      "variant": "default",
+      "sourceSteps": 63,
+      "canonicalPrefixes": 127,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec14:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec14:modern-baseline:holding:88"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "dual-algorithm-rollover",
+      "variant": "dual-algorithm-rollover",
+      "sourceSteps": 171,
+      "canonicalPrefixes": 343,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec14:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec14:dual-algorithm-rollover:holding:180"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "algorithm-unsupported",
+      "variant": "algorithm-unsupported",
+      "sourceSteps": 103,
+      "canonicalPrefixes": 207,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec14:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec14:algorithm-unsupported:holding:124"
+      },
+      "final": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "unsupported-digest-only",
+      "variant": "unsupported-digest-only",
+      "sourceSteps": 103,
+      "canonicalPrefixes": 207,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec14:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec14:unsupported-digest-only:holding:124"
+      },
+      "final": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "modern-and-obsolete-paths",
+      "variant": "modern-and-obsolete-paths",
+      "sourceSteps": 105,
+      "canonicalPrefixes": 211,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec14:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec14:modern-and-obsolete-paths:holding:124"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "sha1-signing-disabled",
+      "variant": "sha1-signing-disabled",
+      "sourceSteps": 104,
+      "canonicalPrefixes": 209,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec14:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec14:sha1-signing-disabled:holding:124"
+      },
+      "final": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "sha1-digest-compatibility",
+      "variant": "sha1-digest-compatibility",
+      "sourceSteps": 63,
+      "canonicalPrefixes": 127,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec14:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec14:sha1-digest-compatibility:holding:88"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec14",
+      "caseId": "nsec3-sha1-not-signature-policy",
+      "variant": "nsec3-sha1-not-signature-policy",
+      "sourceSteps": 67,
+      "canonicalPrefixes": 135,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec14:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec14:nsec3-sha1-not-signature-policy:holding:114"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "NODATA",
+          "qname": "www.lab.example.",
+          "qtype": "AAAA",
+          "qclass": "IN"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "provisioned-anchor",
+      "variant": "default",
+      "sourceSteps": 13,
+      "canonicalPrefixes": 27,
+      "fieldId": "dnssec_trust_record",
+      "inspection": {
+        "artifactId": "lab-dnssec15:anchor-independent-context",
+        "actorId": "dnsValidator",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec15:provisioned-anchor:holding:1"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "untrusted-self-signed-key",
+      "variant": "untrusted-self-signed-key",
+      "sourceSteps": 12,
+      "canonicalPrefixes": 25,
+      "fieldId": "dnssec_trust_record",
+      "inspection": {
+        "artifactId": "lab-dnssec15:anchor-independent-context",
+        "actorId": "dnsValidator",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec15:untrusted-self-signed-key:holding:1"
+      },
+      "final": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "rfc5011-add",
+      "variant": "rfc5011-add",
+      "sourceSteps": 25,
+      "canonicalPrefixes": 59,
+      "fieldId": "dnssec_trust_record",
+      "inspection": {
+        "artifactId": "lab-dnssec15:anchor-independent-context",
+        "actorId": "dnsValidator",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec15:rfc5011-add:holding:1"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "add-hold-down-interrupted",
+      "variant": "add-hold-down-interrupted",
+      "sourceSteps": 54,
+      "canonicalPrefixes": 4897,
+      "fieldId": "dnssec_trust_record",
+      "inspection": {
+        "artifactId": "lab-dnssec15:anchor-independent-context",
+        "actorId": "dnsValidator",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec15:add-hold-down-interrupted:holding:1"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "revoke-and-remove",
+      "variant": "revoke-and-remove",
+      "sourceSteps": 79,
+      "canonicalPrefixes": 3403,
+      "fieldId": "dnssec_trust_record",
+      "inspection": {
+        "artifactId": "lab-dnssec15:anchor-independent-context",
+        "actorId": "dnsValidator",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec15:revoke-and-remove:holding:1"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "offline-misses-rollover",
+      "variant": "offline-misses-rollover",
+      "sourceSteps": 14,
+      "canonicalPrefixes": 29,
+      "fieldId": "dnssec_trust_record",
+      "inspection": {
+        "artifactId": "lab-dnssec15:anchor-independent-context",
+        "actorId": "dnsValidator",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec15:offline-misses-rollover:holding:1"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec15",
+      "caseId": "manual-recovery",
+      "variant": "manual-recovery",
+      "sourceSteps": 24,
+      "canonicalPrefixes": 49,
+      "fieldId": "dnssec_trust_record",
+      "inspection": {
+        "artifactId": "lab-dnssec15:anchor-independent-context",
+        "actorId": "dnsValidator",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec15:manual-recovery:holding:1"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "scope": "anchor-management-only",
+          "reason": "No leaf DNS query is performed."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "consistent-update",
+      "variant": "default",
+      "sourceSteps": 100,
+      "canonicalPrefixes": 201,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:bundle-21-rrset",
+        "actorId": "dnsParent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:consistent-update:holding:161"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "consistent-ds-removal",
+      "variant": "consistent-ds-removal",
+      "sourceSteps": 131,
+      "canonicalPrefixes": 263,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:late-old-ds-receipt-receipt",
+        "actorId": "dnsParent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:consistent-ds-removal:holding:195"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "one-authority-stale",
+      "variant": "one-authority-stale",
+      "sourceSteps": 95,
+      "canonicalPrefixes": 191,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:intent-0-CDS-receipt",
+        "actorId": "dnsParentAgent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:one-authority-stale:holding:100"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "cds-cdnskey-keyset-disagreement",
+      "variant": "cds-cdnskey-keyset-disagreement",
+      "sourceSteps": 95,
+      "canonicalPrefixes": 191,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:intent-0-CDS-receipt",
+        "actorId": "dnsParentAgent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:cds-cdnskey-keyset-disagreement:holding:100"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "nodata-versus-removal",
+      "variant": "nodata-versus-removal",
+      "sourceSteps": 95,
+      "canonicalPrefixes": 191,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:intent-0-CDS-receipt",
+        "actorId": "dnsParentAgent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:nodata-versus-removal:holding:100"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "unreachable-authority-retry",
+      "variant": "unreachable-authority-retry",
+      "sourceSteps": 152,
+      "canonicalPrefixes": 305,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:bundle-27-rrset",
+        "actorId": "dnsParent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:unreachable-authority-retry:holding:214"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "digest-policy-comparison",
+      "variant": "digest-policy-comparison",
+      "sourceSteps": 99,
+      "canonicalPrefixes": 199,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:bundle-22-rrset",
+        "actorId": "dnsParent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:digest-policy-comparison:holding:163"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "dsync-notify-trigger",
+      "variant": "dsync-notify-trigger",
+      "sourceSteps": 146,
+      "canonicalPrefixes": 293,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:bundle-29-rrset",
+        "actorId": "dnsParent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:dsync-notify-trigger:holding:218"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "invalid-dsync-target",
+      "variant": "invalid-dsync-target",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:unusable-dsync-scheme0-receipt",
+        "actorId": "dnsParent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:invalid-dsync-target:holding:16"
+      },
+      "final": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec16",
+      "caseId": "malformed-delete-signal",
+      "variant": "malformed-delete-signal",
+      "sourceSteps": 95,
+      "canonicalPrefixes": 191,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec16:intent-0-CDS-receipt",
+        "actorId": "dnsParentAgent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec16:malformed-delete-signal:holding:100"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "authenticated-rfc9615-bootstrap",
+      "variant": "default",
+      "sourceSteps": 259,
+      "canonicalPrefixes": 519,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec17:remote-before-bootstrap-no-ds-receipt",
+        "actorId": "dnsParent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec17:authenticated-rfc9615-bootstrap:holding:396"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "unauthenticated-child-only-claim",
+      "variant": "unauthenticated-child-only-claim",
+      "sourceSteps": 96,
+      "canonicalPrefixes": 193,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec17:bootstrap-apex-0-CDNSKEY-receipt",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec17:unauthenticated-child-only-claim:holding:103"
+      },
+      "final": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "signaling-zone-not-secure",
+      "variant": "signaling-zone-not-secure",
+      "sourceSteps": 209,
+      "canonicalPrefixes": 419,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec17:insecure-provider-no-ds-net-receipt",
+        "actorId": "dnsSignalExampleNet",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec17:signaling-zone-not-secure:holding:223"
+      },
+      "final": {
+        "securityStatus": "insecure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "only-in-domain-nameservers",
+      "variant": "only-in-domain-nameservers",
+      "sourceSteps": 31,
+      "canonicalPrefixes": 63,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec17:bootstrap-parent-no-ds-receipt",
+        "actorId": "dnsParent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec17:only-in-domain-nameservers:holding:66"
+      },
+      "final": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "parent-policy-declines",
+      "variant": "parent-policy-declines",
+      "sourceSteps": 224,
+      "canonicalPrefixes": 449,
+      "fieldId": "dnssec_dnskey_record",
+      "inspection": {
+        "artifactId": "lab-dnssec17:bundle-9-key-child-ksk-g1",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec17:parent-policy-declines:holding:77"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "update-would-break-validation",
+      "variant": "update-would-break-validation",
+      "sourceSteps": 98,
+      "canonicalPrefixes": 197,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec17:intent-0-CDS-receipt",
+        "actorId": "dnsParentAgent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec17:update-would-break-validation:holding:100"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "concurrent-manual-update",
+      "variant": "concurrent-manual-update",
+      "sourceSteps": 211,
+      "canonicalPrefixes": 423,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec17:current-delete-0-CDS-receipt",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec17:concurrent-manual-update:holding:224"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec17",
+      "caseId": "report-and-retry",
+      "variant": "report-and-retry",
+      "sourceSteps": 166,
+      "canonicalPrefixes": 333,
+      "fieldId": "dnssec_publication_record",
+      "inspection": {
+        "artifactId": "lab-dnssec17:report-published-ds-change",
+        "actorId": "dnsParentAgent",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec17:report-and-retry:holding:236"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "shared-ksk-model",
+      "variant": "default",
+      "sourceSteps": 73,
+      "canonicalPrefixes": 147,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec18:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec18:shared-ksk-model:holding:100"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "separate-ksk-model",
+      "variant": "separate-ksk-model",
+      "sourceSteps": 71,
+      "canonicalPrefixes": 143,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec18:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec18:separate-ksk-model:holding:102"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "cached-keys-provider-switch",
+      "variant": "cached-keys-provider-switch",
+      "sourceSteps": 105,
+      "canonicalPrefixes": 211,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec18:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec18:cached-keys-provider-switch:holding:121"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "missing-cross-provider-key",
+      "variant": "missing-cross-provider-key",
+      "sourceSteps": 113,
+      "canonicalPrefixes": 227,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec18:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec18:missing-cross-provider-key:holding:119"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "reason": "cross-provider-key-unavailable"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "coordinated-rollover",
+      "variant": "coordinated-rollover",
+      "sourceSteps": 78,
+      "canonicalPrefixes": 157,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec18:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec18:coordinated-rollover:holding:117"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "provider-migration",
+      "variant": "provider-migration",
+      "sourceSteps": 76,
+      "canonicalPrefixes": 153,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec18:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec18:provider-migration:holding:101"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "qclass": "IN",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec18",
+      "caseId": "conflicting-cds-intent",
+      "variant": "conflicting-cds-intent",
+      "sourceSteps": 75,
+      "canonicalPrefixes": 151,
+      "fieldId": "dnssec_rrsig_record",
+      "inspection": {
+        "artifactId": "lab-dnssec18:material-rrsig-provider-b-cds-intent-signature",
+        "actorId": "dnsProviderB",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec18:conflicting-cds-intent:holding:104"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "offline-signer-secondary",
+      "variant": "default",
+      "sourceSteps": 106,
+      "canonicalPrefixes": 213,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec19:returned-answer",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec19:offline-signer-secondary:holding:326"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "notify-ixfr",
+      "variant": "notify-ixfr",
+      "sourceSteps": 91,
+      "canonicalPrefixes": 183,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec19:returned-answer",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec19:notify-ixfr:holding:287"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "axfr-fallback",
+      "variant": "axfr-fallback",
+      "sourceSteps": 105,
+      "canonicalPrefixes": 211,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec19:returned-answer",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec19:axfr-fallback:holding:328"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "tsig-authenticated-update",
+      "variant": "tsig-authenticated-update",
+      "sourceSteps": 122,
+      "canonicalPrefixes": 245,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec19:returned-answer",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec19:tsig-authenticated-update:holding:342"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "qtype": "A",
+          "data": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ]
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "tsig-valid-policy-denied",
+      "variant": "tsig-valid-policy-denied",
+      "sourceSteps": 13,
+      "canonicalPrefixes": 27,
+      "fieldId": "dnssec_tsig_record",
+      "inspection": {
+        "artifactId": "lab-dnssec19:update-response-rr-0",
+        "actorId": "dnsPrimary",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec19:tsig-valid-policy-denied:holding:92"
+      },
+      "final": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "refused",
+          "operation": "UPDATE",
+          "reason": "policy-denied"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "tsig-failure",
+      "variant": "tsig-failure",
+      "sourceSteps": 14,
+      "canonicalPrefixes": 29,
+      "fieldId": "dnssec_tsig_record",
+      "inspection": {
+        "artifactId": "lab-dnssec19:update-response-rr-0",
+        "actorId": "dnsPrimary",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec19:tsig-failure:holding:94"
+      },
+      "final": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "operation": "UPDATE",
+          "reason": "TSIG-BADSIG"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec19",
+      "caseId": "zonemd-mismatch",
+      "variant": "zonemd-mismatch",
+      "sourceSteps": 32,
+      "canonicalPrefixes": 65,
+      "fieldId": "dnssec_publication_record",
+      "inspection": {
+        "artifactId": "lab-dnssec19:zonemd-zone-file",
+        "actorId": "dnsPrimary",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec19:zonemd-mismatch:holding:100"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "pending",
+          "reason": "No leaf lookup/application acceptance in this management case."
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "bogus-servfail-with-ede",
+      "variant": "default",
+      "sourceSteps": 24,
+      "canonicalPrefixes": 49,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec20:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec20:bogus-servfail-with-ede:holding:66"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "same-failure-without-ede",
+      "variant": "same-failure-without-ede",
+      "sourceSteps": 24,
+      "canonicalPrefixes": 49,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec20:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec20:same-failure-without-ede:holding:66"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "cd-one-diagnostic-data",
+      "variant": "cd-one-diagnostic-data",
+      "sourceSteps": 25,
+      "canonicalPrefixes": 51,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec20:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec20:cd-one-diagnostic-data:holding:69"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "refused",
+          "reason": "diagnostic-data-not-validated-for-use",
+          "positiveAnswerAccepted": false,
+          "rawDataAvailableForInspection": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "transport-timeout",
+      "variant": "transport-timeout",
+      "sourceSteps": 19,
+      "canonicalPrefixes": 39,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec20:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec20:transport-timeout:holding:61"
+      },
+      "final": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "failure-cache-suppresses-retry",
+      "variant": "failure-cache-suppresses-retry",
+      "sourceSteps": 18,
+      "canonicalPrefixes": 37,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec20:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec20:failure-cache-suppresses-retry:holding:61"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "retry-after-expiry",
+      "variant": "retry-after-expiry",
+      "sourceSteps": 31,
+      "canonicalPrefixes": 63,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec20:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec20:retry-after-expiry:holding:58"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "qname": "www.lab.example.",
+          "addresses": [
+            "192.0.2.80",
+            "192.0.2.81"
+          ],
+          "trust": "secure"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec20",
+      "caseId": "temporary-negative-trust-anchor",
+      "variant": "temporary-negative-trust-anchor",
+      "sourceSteps": 90,
+      "canonicalPrefixes": 181,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec20:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec20:temporary-negative-trust-anchor:holding:132"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "compact-nonexistent-name",
+      "variant": "default",
+      "sourceSteps": 29,
+      "canonicalPrefixes": 59,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec21:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec21:compact-nonexistent-name:holding:49"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nonexistent-name",
+          "rcode": "NOERROR",
+          "authenticatedNxname": true,
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "genuine-nodata",
+      "variant": "genuine-nodata",
+      "sourceSteps": 29,
+      "canonicalPrefixes": 59,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec21:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec21:genuine-nodata:holding:49"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata",
+          "qname": "www.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "empty-nonterminal",
+      "variant": "empty-nonterminal",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec21:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec21:empty-nonterminal:holding:51"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nodata-ent",
+          "qname": "branch.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "co-enabled",
+      "variant": "co-enabled",
+      "sourceSteps": 29,
+      "canonicalPrefixes": 59,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec21:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec21:co-enabled:holding:49"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nxdomain",
+          "qname": "no.lab.example.",
+          "positiveAnswerAccepted": false,
+          "authenticated": true
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "co-disabled-downstream",
+      "variant": "co-disabled-downstream",
+      "sourceSteps": 16,
+      "canonicalPrefixes": 33,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec21:received-proof-0",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec21:co-disabled-downstream:holding:32"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nonexistent-name",
+          "rcode": "NOERROR",
+          "authenticatedNxname": true,
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "explicit-nxname-query",
+      "variant": "explicit-nxname-query",
+      "sourceSteps": 14,
+      "canonicalPrefixes": 29,
+      "fieldId": "dnssec_question_record",
+      "inspection": {
+        "artifactId": "lab-dnssec21:rejected-metatype-question",
+        "actorId": "dnsResolver",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec21:explicit-nxname-query:holding:41"
+      },
+      "final": {
+        "securityStatus": "not-checked",
+        "applicationResult": {
+          "status": "error",
+          "code": "INVALID_QUERY_TYPE",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec21",
+      "caseId": "no-wide-aggressive-synthesis",
+      "variant": "no-wide-aggressive-synthesis",
+      "sourceSteps": 30,
+      "canonicalPrefixes": 61,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec21:received-proof-0",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec21:no-wide-aggressive-synthesis:holding:53"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "negative",
+          "kind": "nonexistent-name",
+          "rcode": "NOERROR",
+          "authenticatedNxname": true,
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "private-signed-zone-local-anchor",
+      "variant": "default",
+      "sourceSteps": 33,
+      "canonicalPrefixes": 67,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec22:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec22:private-signed-zone-local-anchor:holding:11"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "198.51.100.80"
+          ],
+          "view": "private-v1",
+          "trust": "secure-local-private-anchor"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "private-signed-zone-no-covering-anchor",
+      "variant": "private-signed-zone-no-covering-anchor",
+      "sourceSteps": 33,
+      "canonicalPrefixes": 67,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec22:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec22:private-signed-zone-no-covering-anchor:holding:10"
+      },
+      "final": {
+        "securityStatus": "indeterminate",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "198.51.100.80"
+          ],
+          "view": "private-v1",
+          "trust": "indeterminate-no-anchor",
+          "dnssecVerified": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "conditional-forward-with-local-validation",
+      "variant": "conditional-forward-with-local-validation",
+      "sourceSteps": 47,
+      "canonicalPrefixes": 95,
+      "fieldId": "dnssec_rrset_record",
+      "inspection": {
+        "artifactId": "lab-dnssec22:received-answer",
+        "actorId": "dnsChild",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec22:conditional-forward-with-local-validation:holding:11"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "addresses": [
+            "198.51.100.80"
+          ],
+          "view": "private-v1",
+          "trust": "secure-local-private-anchor"
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "different-client-trust-stores",
+      "variant": "different-client-trust-stores",
+      "sourceSteps": 35,
+      "canonicalPrefixes": 71,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec22:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec22:different-client-trust-stores:holding:93"
+      },
+      "final": {
+        "securityStatus": "secure",
+        "applicationResult": {
+          "status": "answer",
+          "results": {
+            "clientA": {
+              "addresses": [
+                "192.0.2.80",
+                "192.0.2.81"
+              ],
+              "view": "public-v1",
+              "securityStatus": "secure"
+            },
+            "clientB": {
+              "addresses": [
+                "198.51.100.80"
+              ],
+              "view": "private-v1",
+              "securityStatus": "secure"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "stale-private-anchor",
+      "variant": "stale-private-anchor",
+      "sourceSteps": 32,
+      "canonicalPrefixes": 65,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec22:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec22:stale-private-anchor:holding:32"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    },
+    {
+      "id": "lab-dnssec22",
+      "caseId": "private-view-versus-public-chain",
+      "variant": "private-view-versus-public-chain",
+      "sourceSteps": 46,
+      "canonicalPrefixes": 93,
+      "fieldId": "dnssec_event_record",
+      "inspection": {
+        "artifactId": "lab-dnssec22:application-result",
+        "actorId": "dnsApp",
+        "representationId": "plain",
+        "holdingId": "lab-dnssec22:private-view-versus-public-chain:holding:97"
+      },
+      "final": {
+        "securityStatus": "bogus",
+        "applicationResult": {
+          "status": "error",
+          "code": "DNS_RESOLUTION_FAILED",
+          "positiveAnswerAccepted": false
+        }
+      }
+    }
+  ]
+}

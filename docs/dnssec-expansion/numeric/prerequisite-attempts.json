@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "kind": "pre-recorder-tool-observations",
+  "captureMethod": "Transcribed verbatim from tool outputs before record.py existed; successful subsequent attempts and all fixture runs are separately captured in runs/.",
+  "attempts": [
+    {
+      "command": "python3 --version && python3 -m pip --version && openssl version",
+      "exitCode": 1,
+      "stdout": "Python 3.14.4\n",
+      "stderr": "/usr/bin/python3: No module named pip\n",
+      "stoppedBefore": "openssl version"
+    },
+    {
+      "command": "python3 -c \"import importlib.util,sys; print(sys.version); print({m:bool(importlib.util.find_spec(m)) for m in ['dns','cryptography','ensurepip','venv']})\" && openssl version && command -v uv",
+      "exitCode": 0,
+      "stdout": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]\n{'dns': False, 'cryptography': True, 'ensurepip': False, 'venv': True}\nOpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026)\n/home/andrico/.local/bin/uv\n"
+    },
+    {
+      "command": "uv venv --python /usr/bin/python3 tools/verification/dnssec-crypto/.venv && uv pip install --python tools/verification/dnssec-crypto/.venv/bin/python dnspython==2.8.0 cryptography==46.0.3 && uv --version",
+      "exitCode": 2,
+      "stderr": "Using CPython 3.14.4 interpreter at: /usr/bin/python3\nCreating virtual environment at: tools/verification/dnssec-crypto/.venv\nUsing Python 3.14.4 environment at: tools/verification/dnssec-crypto/.venv\nerror: Failed to fetch: `https://pypi.org/simple/dnspython/`\n  Caused by: error sending request for url (https://pypi.org/simple/dnspython/)\n  Caused by: client error (Connect)\n  Caused by: invalid peer certificate: UnknownIssuer\n\nhint: Consider enabling use of system TLS certificates with the `--system-certs` command-line flag\n",
+      "resolution": "Retried with system certificate store, no TLS verification bypass."
+    },
+    {
+      "command": "uv --system-certs pip install --python tools/verification/dnssec-crypto/.venv/bin/python dnspython==2.8.0 cryptography==46.0.3 && uv --version",
+      "exitCode": 0,
+      "observedInstalled": {"dnspython": "2.8.0", "cryptography": "46.0.3", "cffi": "2.1.1", "pycparser": "3.12"},
+      "uvVersion": "uv 0.12.10 (x86_64-unknown-linux-gnu)"
+    },
+    {
+      "command": "python3 tools/verification/dnssec-crypto/capture.py",
+      "exitCode": 0,
+      "stdout": "{\n  \"captures\": 21,\n  \"bytes\": 7316333,\n  \"failures\": []\n}\n",
+      "scope": "Initial sources and dependency captures; later source additions are recorded separately."
+    }
+  ],
+  "preservedFixtureFailure": {
+    "capture": "runs/run-006.json",
+    "stage": "Independent supplemental ZONEMD reconstruction",
+    "reason": "Verifier decoded only the first whitespace-separated RRSIG Base64 chunk, dropping40 signature octets per record.",
+    "correction": "Join all Base64 signature chunks before decode. Baseline and supplemental fixture bytes unchanged.",
+    "successfulAttempt": "runs/run-007.json"
+  },
+  "additionalFailures": [
+    {
+      "capture": "runs/run-017.json",
+      "stage": "Baseline immutable-byte reproduction while producing signed ZONEMD variant",
+      "reason": "dnspython Message.to_wire defaults to randomized RRset order, affecting captured compressed MX occurrence bytes.",
+      "correction": "Pin the original captured10-before20 MX occurrence and want_shuffle=False. Frozen baseline bytes unchanged.",
+      "successfulAttempt": "runs/run-018.json"
+    },
+    {
+      "capture": "runs/run-022.json",
+      "stage": "RFC8078 errata raw capture through original redirect",
+      "reason": "URLError(ConnectionResetError(104, 'Connection reset by peer'))",
+      "correction": "Fetch canonical RFC Editor errata search URL directly, with normal TLS verification.",
+      "successfulAttempt": "runs/run-023.json",
+      "failureRetainedIn": "capture-ledger.json"
+    }
+  ],
+  "expectedNegativeObservations": {
+    "capture": "library-observations.json",
+    "rawRfc8080": "Unmodified published RRSIG parse fails; corrected header with old signature also fails. Verified technical erratum4935 supplies valid corrected signatures.",
+    "serialTime": "dnspython2.8.0 uses plain comparisons;4 wraparound-valid literals disagree. Do not report library validation of wraparound.",
+    "mutations": "Changed A, opaque TXT case, owner and NSEC next-name case fail unchanged signatures."
+  }
+}

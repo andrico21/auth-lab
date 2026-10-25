@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-dnssec-publication-input-erratum",
+  "scope": {
+    "worksheet": "docs/dnssec-expansion/worksheet-publication.json",
+    "lessons": 9,
+    "cases": 66,
+    "plan": "docs/dnssec-expansion/inputs/worker-plan.html",
+    "frozenFreeze": "docs/dnssec-expansion/contract-freeze.json",
+    "frozenFreezeSha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19",
+    "readOnly": true,
+    "notes": "No src/, evaluator output, or parent implementation was used. All findings are internal to the publication worksheet, the plan, the dispositions, and the final numeric fixture objects. All 66 publication cases have setup.initialCache = []; the DNS03-style non-empty authenticated cache defect does not recur literally in this shard. The analogous failures are missing holder/anchor/observation declarations and signed-membership mismatches."
+  },
+  "findings": [
+    {
+      "id": "PUB-01",
+      "priority": 1,
+      "confidence": 0.97,
+      "status": "normative-defect",
+      "title": "DNS17 bootstrap cases declare a parent DS despite the RFC9615 absent-DS prerequisite",
+      "cases": [
+        "DNS17:authenticated-rfc9615-bootstrap",
+        "DNS17:unauthenticated-child-only-claim",
+        "DNS17:signaling-zone-not-secure",
+        "DNS17:only-in-domain-nameservers",
+        "DNS17:parent-policy-declines"
+      ],
+      "conflictingFields": [
+        "setup.bootstrap.parentDsInitiallyAbsent = true",
+        "setup.initialPublication.parentDsGeneration = ds0",
+        "setup.initialPublication.parentDsKeys = [child-ksk-g1]",
+        "setup.initialPublication.dsDigestType = 2",
+        "ownership.initialPublicHolders.dnsParent = [ds0-K0]",
+        "checkpoints: reject-circular-bootstrap-trust/signaling-path-not-secure/check-bootstrap-independent-namespace-prerequisite/parent-acceptance-policy-declines expect parentDsGeneration = absent; validate-independent-signaling-zone expects bootstrap.parentDsAbsent = true"
+      ],
+      "evidence": [
+        "RFC9615 section 3 Step 1 requires verifying that the child has no DS at the parent and that at least one NS is outside the child domain; worksheet sourceSections S20 sections 3 and 4.1-4.4",
+        "worker-plan.html DNS17 acceptance requires absent parent DS and an eligible out-of-domain NS as explicit prerequisites",
+        "Each case's own checkpoint expects the parent DS to be absent"
+      ],
+      "correction": "For the five bootstrap cases set the literal initial parent state to absent: initialPublication.parentDsGeneration = absent, parentDsKeys = [], dsDigestType = null/omit, and ownership.initialPublicHolders.dnsParent = []. Keep the three automation cases (update-would-break-validation, concurrent-manual-update, report-and-retry) at ds0/K0 because their setup.automation explicitly starts with an existing DS.",
+      "impact": "The evaluator sees an already securely delegated child, so the DNS17 bootstrap prerequisite and the expected indeterminate/insecure/secure-bootstrap outcomes are not input-consistent."
+    },
+    {
+      "id": "PUB-02",
+      "priority": 1,
+      "confidence": 0.96,
+      "status": "normative-defect",
+      "title": "DNS15 revoke-and-remove assumes B is already Valid but never declares B in the initial trust store or DNSKEY observation",
+      "cases": ["DNS15:revoke-and-remove"],
+      "conflictingFields": [
+        "setup.caseConditions = A and B already Valid",
+        "ownership.anchors.dnsValidator = [child-ksk-g1]",
+        "setup.initialPublication.dnskeys = [child-ksk-g1, child-zsk-g1]",
+        "setup.initialPublication.dnskeySignatures = [child-ksk-g1]",
+        "checkpoints[withdrawal-is-missing-not-revoked].expected.trustStores.dnsValidator.anchors = [child-ksk-g1, child-ksk-g2] at clock 1792800000"
+      ],
+      "evidence": [
+        "RFC5011 section 4 state table: a key is Valid only after the add hold-down and validated observations; B cannot become Valid without a prior B-containing authenticated DNSKEY observation",
+        "worksheet sourceSections S14 sections 2.1-4",
+        "No checkpoint before 1792800000 installs B; the first checkpoint already expects A and B in the trust store"
+      ],
+      "correction": "Declare B in the initial trusted state. At minimum set ownership.anchors.dnsValidator = [child-ksk-g1, child-ksk-g2] and add child-ksk-g2 to the initial DNSKEY membership with an actual B-containing signature. The existing exact object child-anchor-observation (records K0, K1, Z0) plus child-anchor-observation-long-signature can represent that observation; alternatively add a dedicated B-containing zone DNSKEY fixture. Do not leave the first checkpoint as the first declaration of B.",
+      "impact": "The day-1 Missing/Valid and day-3 revocation states depend on B already being trusted; the literal inputs only contain A."
+    },
+    {
+      "id": "PUB-03",
+      "priority": 1,
+      "confidence": 0.95,
+      "status": "normative-defect",
+      "title": "DNS18 Model 1/Model 2 checkpoints use 3-key DNSKEY sets, but the bound signatures cover the 4-key provider-shared-dnskey RRset",
+      "cases": [
+        "DNS18:shared-ksk-model",
+        "DNS18:separate-ksk-model",
+        "DNS18:cached-keys-provider-switch",
+        "DNS18:provider-migration"
+      ],
+      "conflictingFields": [
+        "numeric/dnssec-numeric-fixtures.json rrsets.provider-shared-dnskey.records = [K0, Z0, Kb, Zb] (4 keys)",
+        "numeric/dnssec-numeric-fixtures.json signatures.provider-shared-dnskey-by-original-long.rrsetId = provider-shared-dnskey (K0 signer)",
+        "numeric/dnssec-numeric-fixtures.json signatures.provider-shared-dnskey-by-provider-long.rrsetId = provider-shared-dnskey (Kb signer)",
+        "numeric/dnssec-numeric-fixtures.json signatures.provider-shared-dnskey-by-child-ksk-g1.rrsetId = provider-shared-dnskey (K0 signer)",
+        "DNS18:shared-ksk-model checkpoints[owner-distributes-signed-combined-keyset].expected.publication.commonDnskeys = [K0, Z0, Zb]",
+        "DNS18:separate-ksk-model checkpoints[separate-provider-dnskey-generations].expected.publication.providers.A.dnskeys = [K0, Z0, Zb] and providers.B.dnskeys = [Kb, Z0, Zb]",
+        "DNS18:cached-keys-provider-switch checkpoints[cache-a-authenticated-public-keys].expected.cacheEntries.dnskeys.keys = [K0, Z0, Zb] with selectedSignatureBindings.keysetSignature = provider-shared-dnskey-by-child-ksk-g1",
+        "DNS18:provider-migration checkpoints[prepare-provider-b-public-path].expected.publication.providers.B.dnskeys = [Kb, Z0, Zb] with selectedSignatureBindings.signatures containing provider-shared-dnskey-by-provider-long"
+      ],
+      "evidence": [
+        "RFC8901 sections 2.1.1 and 2.1.2: Model 1 uses one common KSK plus each provider's ZSKs; Model 2 uses each provider's own KSK plus all providers' ZSKs. A 4-key union containing both KSKs and both ZSKs is neither provider's DNSKEY RRset.",
+        "RFC8901 section 3: the ZSKs from all providers must be present in each provider's apex DNSKEY RRset and vouched for by the single KSK (Model 1) or that provider's KSK (Model 2).",
+        "worksheet longProfileNumericBindings.scope: long-window signatures are bound to their exact rrsetId and must never be attached to a case-specific modified DNSKEY set",
+        "worksheet dispositions: a signature is never attached to a changed owner, type or RRset merely because its key is the same"
+      ],
+      "correction": "Add exact signed DNSKEY RRsets for the model-specific memberships: Model 1/shared and Model 2 provider A = [child-ksk-g1, child-zsk-g1, provider-b-zsk-g1] signed by child-ksk-g1; Model 2 provider B and provider-migration B = [provider-b-ksk-g1, child-zsk-g1, provider-b-zsk-g1] signed by provider-b-ksk-g1; cached provider-A keyset = the same 3-key A set. Do not use provider-shared-dnskey (4 keys) for any of these checkpoints.",
+      "impact": "A cryptographic verifier checking the bound signature over the checkpoint's DNSKEY membership will reject the 3-key sets, so the secure/keyset-cache outcomes are not supported by the declared signed objects."
+    },
+    {
+      "id": "PUB-04",
+      "priority": 1,
+      "confidence": 0.93,
+      "status": "normative-defect",
+      "title": "DNS18 parent DS initial state conflicts with the case's own holder declaration and Model 2/overlap checkpoints",
+      "cases": [
+        "DNS18:separate-ksk-model",
+        "DNS18:conflicting-cds-intent",
+        "DNS18:provider-migration"
+      ],
+      "conflictingFields": [
+        "DNS18:separate-ksk-model: setup.initialPublication.parentDsGeneration = ds0 and parentDsKeys = [child-ksk-g1], but ownership.initialPublicHolders.dnsParent = [DS(K0), DS(provider-b-ksk-g1)] and checkpoints[separate-provider-dnskey-generations].expected.publication.parentDsKeys = [child-ksk-g1, provider-b-ksk-g1]; caseConditions says the parent DS references both KSKs",
+        "DNS18:conflicting-cds-intent: setup.initialPublication.parentDsGeneration = ds0 and parentDsKeys = [child-ksk-g1], but ownership.initialPublicHolders.dnsParent = [DS(K0), DS(provider-b-ksk-g1)], checkpoints[fetch-every-provider-intent].expected.publication.parentDsGeneration = ds-ab and parentDsKeys = [child-ksk-g1, provider-b-ksk-g1]; caseConditions says the existing parent DS supports both",
+        "DNS18:provider-migration: setup.initialPublication.parentDsGeneration = ds0 and parentDsKeys = [child-ksk-g1], but ownership.initialPublicHolders.dnsParent = [DS(K0), DS(provider-b-ksk-g1)]; checkpoints[add-b-ds-path] adds ds-ab/both at clock 1792714200"
+      ],
+      "evidence": [
+        "RFC8901 section 2.1.2: the parent DS RRset for Model 2 comprises DS records corresponding to the KSKs of each provider",
+        "worksheet sourceSections S15 sections 2.1.1, 2.1.2, 3, 6, 7",
+        "The design distinguishes initialPublicHolders (literal starting holding) from later checkpoint publication"
+      ],
+      "correction": "For separate-ksk-model and conflicting-cds-intent, set initialPublication.parentDsGeneration to the joint generation (ds-ab or equivalent) and parentDsKeys = [child-ksk-g1, provider-b-ksk-g1]. For provider-migration, keep the literal initial DS at [child-ksk-g1] and change ownership.initialPublicHolders.dnsParent to [DS(K0)]; B is added only by checkpoints[add-b-ds-path].",
+      "impact": "The literal parent delegation state either omits a DS that the case says already exists or includes one before the sequence adds it."
+    },
+    {
+      "id": "PUB-05",
+      "priority": 1,
+      "confidence": 0.95,
+      "status": "normative-defect",
+      "title": "DNS14 DS input fields contradict the case's selected digest/algorithm and the available numeric DS objects",
+      "cases": [
+        "DNS14:sha1-digest-compatibility",
+        "DNS14:unsupported-digest-only",
+        "DNS14:algorithm-unsupported"
+      ],
+      "conflictingFields": [
+        "DNS14:sha1-digest-compatibility: setup.numericBindings.dsId = child-ksk-g1-sha1-historical (digestType 1) and checkpoints[inspect-distinct-digest-policy].expected.algorithmPolicy.dsDigest = 1, but setup.initialPublication.dsDigestType = 2 and caseConditions says there is no digest2 alternative",
+        "DNS14:unsupported-digest-only: checkpoints[classify-authenticated-unsupported-digest].expected.algorithmPolicy.dsDigestTypes = [250], but setup.initialPublication.dsDigestType = 2; the existing exact object numeric/resolution-profile-fixtures.json rrsets.parent-ds-unsupported-digest250 has record 22775 13 250 ... and signature parent-ds-unsupported-digest250-signature (key example-zsk-g1)",
+        "DNS14:algorithm-unsupported: checkpoints[classify-authenticated-unsupported-algorithm].expected.algorithmPolicy.advertisedSigningAlgorithms = [17], but setup.initialPublication.dsDigestType = 2 and parentDsKeys = [child-ksk-g1] (alg13); the only numeric unsupported-algorithm DS object is numeric/resolution-profile-fixtures.json rrsets.parent-ds-unsupported-alg250 with record 22775 250 2 ... and signature parent-ds-unsupported-alg250-signature; no algorithm-17 DS object exists"
+      ],
+      "evidence": [
+        "RFC4509 section 3: when a SHA256 DS is present, a SHA1 DS is ignored; the case explicitly removes the digest2 alternative",
+        "RFC6840 sections 5.2, 5.4 and 5.11 and RFC9905 sections 2, 4 and 5 for authenticated unsupported-algorithm/digest classification; worksheet sourceSections S03/S16/S18",
+        "numeric/dnssec-numeric-fixtures.json ds.child-ksk-g1-sha1-historical.digestType = 1",
+        "numeric/resolution-profile-fixtures.json rrsets.parent-ds-unsupported-digest250 and rrsets.parent-ds-unsupported-alg250"
+      ],
+      "correction": "For sha1-digest-compatibility set initialPublication.dsDigestType = 1 (keep parentDsKeys = [child-ksk-g1]) and bind the existing child-ksk-g1-sha1-historical object. For unsupported-digest-only bind numericBindings to the existing parent-ds-unsupported-digest250 object and set initialPublication.dsDigestType = 250. For algorithm-unsupported either (a) change the case to algorithm 250 and bind parent-ds-unsupported-alg250, or (b) add an actual algorithm-17 DS object and signature; the current alg17 text cannot be satisfied by the frozen numeric inputs.",
+      "impact": "A literal evaluator reading initialPublication would see a supported alg13/digest2 DS and classify the delegation secure, contradicting the selected insecure outcomes."
+    },
+    {
+      "id": "PUB-06",
+      "priority": 1,
+      "confidence": 0.92,
+      "status": "normative-defect",
+      "title": "DNS02 keytag-collision publishes and signs with collision keys that have no declared private custodian and no DNSKEY signature over the published set",
+      "cases": ["DNS02:keytag-collision"],
+      "conflictingFields": [
+        "setup.initialPublication.dnskeys = [child-ksk-g1, collision-a, collision-b]",
+        "setup.initialPublication.dnskeySignatures = [child-ksk-g1]",
+        "setup.initialPublication.answerSignatures = [collision-b]",
+        "setup.keys does not define collision-a or collision-b",
+        "ownership.privateKeys.dnsSigner does not include collision-a or collision-b",
+        "numeric/dnssec-numeric-fixtures.json signatures.www-a-collision.keyId = collision-b",
+        "numeric/dnssec-numeric-fixtures.json signatures.child-dnskey-g1-by-ksk.rrsetId = child-dnskey-g1, whose records are only [K0, Z0]"
+      ],
+      "evidence": [
+        "RFC4034 sections 3.1.8 and Appendix B: a key tag is a lookup aid, not unique key identity; both collision keys share tag 46075 and the actual signer candidate must be present in the DNSKEY RRset",
+        "numeric/dnssec-numeric-fixtures.json keys.collision-a.keyTag = 46075 and keys.collision-b.keyTag = 46075",
+        "worksheet custodyInvariants: only the private-key owner signs"
+      ],
+      "correction": "Add collision-a and collision-b to setup.keys (role ZSK, flags 256, protocol 3, algorithm 13) and to ownership.privateKeys.dnsSigner. Add a child-ksk-g1 signature over the exact 3-key DNSKEY RRset [child-ksk-g1, collision-a, collision-b]; the existing child-dnskey-g1-by-ksk signature covers only [K0, Z0] and cannot be reused.",
+      "impact": "The answer signature's actual signer has no declared private holder, and the DNSKEY RRset containing the two colliding candidates has no matching signature, so the secure valid-path outcome is not supported."
+    },
+    {
+      "id": "PUB-07",
+      "priority": 1,
+      "confidence": 0.95,
+      "status": "normative-defect",
+      "title": "DNS14 dual-algorithm-rollover uses an alg15 signer with no declared private custodian",
+      "cases": ["DNS14:dual-algorithm-rollover"],
+      "conflictingFields": [
+        "checkpoints[publish-dual-algorithm-signed-zone].expected.publication.dnskeyAlgorithms = [13, 15]",
+        "checkpoints[publish-dual-algorithm-signed-zone].expected.publication.dnskeySignatureAlgorithms = [13, 15]",
+        "selectedSignatureBindingsByCase[DNS14:dual-algorithm-rollover].signatures includes child-dual-algorithm-dnskey-alg15 and www-a-long-ed25519",
+        "numeric/long-profile-fixtures.json signatures.child-dual-algorithm-dnskey-alg15.keyId = child-ed25519-g1",
+        "numeric/long-profile-fixtures.json signatures.www-a-long-ed25519.keyId = child-ed25519-g1",
+        "ownership.privateKeys.dnsSigner does not include child-ed25519-g1",
+        "setup.keys does not define child-ed25519-g1"
+      ],
+      "evidence": [
+        "numeric/dnssec-numeric-fixtures.json keys.child-ed25519-g1 has flags 257, protocol 3, algorithm 15 and generation.privateCustodian = dnsSigner",
+        "worksheet custodyInvariants: only the private-key owner signs"
+      ],
+      "correction": "Add child-ed25519-g1 to setup.keys (role CSK/algorithm-15 signer, flags 257, protocol 3, algorithm 15) and to ownership.privateKeys.dnsSigner for this case.",
+      "impact": "The alg15 DNSKEY and answer signatures cannot be produced by any declared private holder."
+    },
+    {
+      "id": "PUB-08",
+      "priority": 1,
+      "confidence": 0.92,
+      "status": "normative-defect",
+      "title": "DNS18 coordinated-rollover activates child-zsk-g2 without declaring its private custody",
+      "cases": ["DNS18:coordinated-rollover"],
+      "conflictingFields": [
+        "checkpoints[activate-a-new-zsk].expected.publication.answerSignatures = [child-zsk-g2]",
+        "selectedSignatureBindingsByCase[DNS18:coordinated-rollover].signature = www-a-rollover-new-long",
+        "numeric/lifecycle-fixtures.json signatures.www-a-rollover-new-long.keyId = child-zsk-g2",
+        "ownership.privateKeys.dnsPrimary = [child-zsk-g1] (no child-zsk-g2)",
+        "setup.keys defines child-zsk-g2 as successor-ZSK"
+      ],
+      "evidence": [
+        "worksheet custodyInvariants: only the private-key owner signs",
+        "checkpoint import-z1-and-sign-both-provider-keysets says privateKeysCopied = false, so the new ZSK private key must remain with one declared signer"
+      ],
+      "correction": "Add child-zsk-g2 to ownership.privateKeys.dnsPrimary (the provider-A signer) for this case, or add an explicit checkpoint that declares the new private-key custody before activation.",
+      "impact": "The activated answer signature's private key has no declared holder."
+    },
+    {
+      "id": "PUB-09",
+      "priority": 1,
+      "confidence": 0.9,
+      "status": "normative-defect",
+      "title": "Parent/root ZSK private keys that sign DS RRsets are absent from every custody declaration",
+      "cases": ["all cases whose selected signatures or upper path include parent/root DS signatures, including DNS02:combined-key, DNS13:ksk-double-ds, DNS13:ksk-double-ksk-method, DNS13:old-ds-cache, DNS13:premature-old-key-removal, DNS14:dual-algorithm-rollover, DNS16:dsync-notify-trigger, DNS18:separate-ksk-model, DNS18:provider-migration, DNS19:zonemd-mismatch"],
+      "conflictingFields": [
+        "ownership.privateKeys.dnsParent = [example-ksk-g1] in all cases",
+        "ownership.privateKeys.dnsRoot = [root-ksk-g1] in all cases",
+        "numeric/dnssec-numeric-fixtures.json signatures.example-child-ds-signature.keyId = example-zsk-g1",
+        "numeric/dnssec-numeric-fixtures.json signatures.root-example-ds-signature.keyId = root-zsk-g1",
+        "numeric/lifecycle-fixtures.json signatures.example-child-ds-rollover-long.keyId = example-zsk-g1, example-child-ds-g2-long.keyId = example-zsk-g1, example-child-ds-path-long.keyId = example-zsk-g1",
+        "numeric/profile-fixtures.json signatures.parent-ds-for-child-csk-g1-signature.keyId = example-zsk-g1 and parent-ds-overlap-g1-g2-signature.keyId = example-zsk-g1",
+        "numeric/record-profile-fixtures.json signatures.parent-dsync-cds-signature.keyId = example-zsk-g1",
+        "numeric/long-profile-fixtures.json signatures.parent-ds-dual-algorithm-long-signature, parent-ds-provider-overlap-long-signature, parent-ds-provider-b-only-long-signature and root-example-ds-path-long use example-zsk-g1 or root-zsk-g1",
+        "worksheet keyAliasLegend and setup.keys never mention example-zsk-g1 or root-zsk-g1; root-zsk-g1 never appears anywhere in worksheet-publication.json",
+        "automationNumericBindings.DSYNC.keyId = example-zsk-g1"
+      ],
+      "evidence": [
+        "worksheet custodyInvariants: only the private-key owner signs",
+        "custodyActorRoles.dnsParent/dnsRoot describe a co-located signer plus authority, not a KSK-only custody restriction",
+        "RFC4034/4035 DNSSEC signing model: DS RRsets are signed by the parent zone's ZSK, not the KSK that signs the parent DNSKEY RRset"
+      ],
+      "correction": "Add example-zsk-g1 to ownership.privateKeys.dnsParent and root-zsk-g1 to ownership.privateKeys.dnsRoot for every case that consumes those signatures, and add both to keyAliasLegend/setup.keys where role metadata is needed. If the DS RRsets are intended to be pre-authenticated external inputs rather than case-produced signatures, remove the signing claim and state that explicitly.",
+      "impact": "Many selected parent/root DS signatures are produced by keys that no actor in the worksheet holds; if the numeric fixture's privateCustodian = dnsSigner is treated as authoritative, the child signer would hold parent/root private keys, violating parent-agent safety."
+    },
+    {
+      "id": "PUB-10",
+      "priority": 1,
+      "confidence": 0.88,
+      "status": "normative-defect",
+      "title": "DNS17 authenticated bootstrap and parent-policy-declines assert secure independent signaling without any signaling-zone DNSSEC chain",
+      "cases": ["DNS17:authenticated-rfc9615-bootstrap", "DNS17:parent-policy-declines"],
+      "conflictingFields": [
+        "setup.bootstrap.signalingNames = [_dsboot.lab.example._signal.ns1.provider.example.net., _dsboot.lab.example._signal.ns2.provider.example.org.]",
+        "setup.bootstrap.signalingChains = [root-anchor -> net. -> example.net. -> signaling-zone, root-anchor -> org. -> example.org. -> signaling-zone]",
+        "checkpoints[validate-independent-signaling-zone].expected.signatureChecked = true",
+        "checkpoints[validate-independent-signaling-zone].expected.chainEstablished = true",
+        "checkpoints[validate-independent-signaling-zone].expected.securityStatus = secure",
+        "checkpoints[validate-independent-signaling-zone].expected.publication.bootstrap.signalingZonesSecure = true",
+        "selectedSignatureBindingsByCase[authenticated-rfc9615-bootstrap].independentSignalingNamespace = explicit setup.bootstrap.signalingNames (names only, no signatures)"
+      ],
+      "evidence": [
+        "RFC9615 sections 4.1-4.4: the signaling response must be DNSSEC-validated under an independently secure operator namespace; names alone are not an authenticated chain",
+        "worksheet ownership.initialPublicHolders contains no provider.example.net./provider.example.org. records and ownership.privateKeys contains no keys for net., org., example.net., example.org. or the signaling zones",
+        "No numeric fixture defines the net./org./provider signaling DNSKEY, DS or RRSIG objects"
+      ],
+      "correction": "Add explicit signaling-chain objects for both the .net and .org paths (root DNSKEY, root-to-net/org DS, net/org DNSKEY, net/org-to-example.net/org DS, example.net/org DNSKEY, signaling-zone DNSKEY/DS, and the signed _dsboot records) plus holder declarations for the operator signers, and reference those exact signature IDs in validate-independent-signaling-zone. If those objects are not added, downgrade the checkpoint to signatureChecked = false, chainEstablished = false and the expected status to indeterminate/not-checked.",
+      "impact": "The secure independent-bootstrap and parent-policy outcomes rely on a chain that exists only as prose; the literal inputs cannot validate the signaling zone."
+    },
+    {
+      "id": "PUB-11",
+      "priority": 2,
+      "confidence": 0.82,
+      "status": "normative-defect",
+      "title": "DNS13 ksk-double-ksk-method old-DS cache expiry exceeds the declared DS TTL at the checkpoint clock",
+      "cases": ["DNS13:ksk-double-ksk-method"],
+      "conflictingFields": [
+        "checkpoints[retain-old-key-for-old-ds-cache].expected.clock = 1792718600 (base+5000)",
+        "checkpoints[retain-old-key-for-old-ds-cache].expected.cacheEntries.ds.expiresAt = 1792805100 (base+91500)",
+        "setup.lifetimes.dsTtl = 86400",
+        "difference 1792805100 - 1792718600 = 86500 > 86400",
+        "the implied receipt time 1792805100 - 86400 = 1792718700 (base+5100), which is 100 seconds after the checkpoint",
+        "timeDependencies says the old DS is served until 5100 and old-key removal is at 91500"
+      ],
+      "evidence": [
+        "worksheet lifetimes and cacheEntries are literal; no receivedAt field is supplied to justify a longer TTL",
+        "RFC7583 section 3.3.1 Double-KSK timing; worksheet sourceSections S13"
+      ],
+      "correction": "Either move the checkpoint clock to 1792718700 (base+5100) or set expiresAt to 1792805000 (base+91400). Keep the 91500 removal horizon in timeDependencies as the worst-case dependency.",
+      "impact": "At the stated checkpoint clock the cache entry cannot exist with the declared 86400-second TTL; a strict cache validator would reject the input."
+    },
+    {
+      "id": "PUB-12",
+      "priority": 2,
+      "confidence": 0.82,
+      "status": "normative-defect",
+      "title": "DNS16 consistent-ds-removal old-DS cache expiry exceeds the declared DS TTL at the checkpoint clock",
+      "cases": ["DNS16:consistent-ds-removal"],
+      "conflictingFields": [
+        "checkpoints[old-ds-cache-still-needs-child-signatures].expected.clock = 1792714600 (base+1000)",
+        "checkpoints[old-ds-cache-still-needs-child-signatures].expected.cacheEntries.ds.expiresAt = 1792801200 (base+87600)",
+        "setup.lifetimes.dsTtl = 86400",
+        "difference 1792801200 - 1792714600 = 86600 > 86400",
+        "the implied receipt time 1792801200 - 86400 = 1792714800 (base+1200), which is 200 seconds after the checkpoint",
+        "timeDependencies says the latest old DS is served by the parent at 1200 and potential dependency runs until 87600"
+      ],
+      "evidence": [
+        "worksheet lifetimes and cacheEntries are literal; no receivedAt field is supplied",
+        "RFC7583/RFC6781 DS cache dependency model referenced by worksheet sourceSections S13/S19"
+      ],
+      "correction": "Either move the checkpoint clock to 1792714800 (base+1200) or set expiresAt to 1792800000 (base+86400) for an entry received at base. Keep the 87600 worst-case horizon in timeDependencies.",
+      "impact": "At the stated checkpoint clock the old-DS cache entry is future-dated relative to its implied 86400-second TTL."
+    }
+  ],
+  "ambiguities": [
+    {
+      "id": "AMB-01",
+      "cases": ["DNS15:provisioned-anchor"],
+      "issue": "initialPublicHolders has no dnsRoot entry although the case expects raw-trust-point-dnskey-received.received = true for root-ksk-g1 and the numeric root-dnskey-g1 object exists. If initialPublicHolders is intended to be exhaustive, add dnsRoot: [root-dnskey-g1]; if the root DNSKEY is fetched from an implicit authority, state that source explicitly.",
+      "classification": "unresolved holder-declaration ambiguity; not counted as a confirmed defect"
+    },
+    {
+      "id": "AMB-02",
+      "cases": ["DNS19:notify-ixfr", "DNS19:zonemd-mismatch"],
+      "issue": "Both cases assume the secondary already holds the g0 zone (notify-only-hint.publication.transfer.secondaryGeneration = g0; zonemd-mismatch.preservedState = previous complete g0 serving generation), but ownership.initialPublicHolders has no dnsSecondary entry. Add the g0 secondary holdings or state that the secondary starts empty and the g0 generation is established by an unshown prior transfer.",
+      "classification": "unresolved holder-declaration ambiguity"
+    },
+    {
+      "id": "AMB-03",
+      "cases": ["DNS02:combined-key", "DNS13:combined-key-rollover"],
+      "issue": "initialPublicHolders.dnsParent = [ds0-K0] while initialPublication.parentDsKeys = [child-csk-g1] (and DNS02 uses parentDsGeneration ds-c0). K0 and C0 are distinct keys (tags 22775 vs 64296), so this is a record-identity mismatch, not a cosmetic label. DNS02:combined-key also omits initialPublication.dsDigestType; the bound cell is child-csk-g1-sha256 (digest 2). Change the holder to ds-c0-C0 / ds0-C0 and add dsDigestType = 2 for DNS02.",
+      "classification": "likely defect; lower priority because the checkpoints' parentDsKeys are correct"
+    },
+    {
+      "id": "AMB-04",
+      "cases": ["DNS15:revoke-and-remove", "DNS15:add-hold-down-interrupted"],
+      "issue": "The RFC5011 observations use DNSKEY RRsets with different ZSK membership: revoked-dnskey is [revoked A, B] and omits Z0, while child-anchor-observation includes Z0; add-hold-down present uses child-dnskey-rollover [K0, Z0, K1, Z1] while the omission set child-anchor-omission is [K0, Z0], so two keys change, not only B. If the trust-point observation is intentionally SEP-only, state that; otherwise add exact [revoked A, B, Z0] and [K0, Z0, K1] sets with matching signatures.",
+      "classification": "unresolved observation-membership ambiguity"
+    },
+    {
+      "id": "AMB-05",
+      "cases": ["all cases with root/parent private keys"],
+      "issue": "numeric/dnssec-numeric-fixtures.json keys.root-ksk-g1, root-zsk-g1, example-ksk-g1 and example-zsk-g1 all declare generation.privateCustodian = dnsSigner, while worksheet ownership assigns root keys to dnsRoot, example keys to dnsParent, and dnsSigner only child keys. The fixture scope calls the private material signer-only illustration, so this may be a generation label; if privateCustodian is authoritative it violates parent-agent safety. Clarify the field or align it with the worksheet.",
+      "classification": "cross-file custody-label ambiguity"
+    },
+    {
+      "id": "AMB-06",
+      "cases": ["DNS14:sha1-signing-disabled", "DNS14:modern-and-obsolete-paths"],
+      "issue": "Both cases claim archival alg5-only or alg5/alg12 DS material, but no alg5 or alg12 numeric DS/key/signature object exists in the final fixtures. The valid alg13 path and the operator-policy outcome are present; the obsolete extras are only policy strings. Add the claimed archival objects or remove the fixture claim. This does not contradict the secure/insecure outcome by itself.",
+      "classification": "missing-literal-input ambiguity"
+    },
+    {
+      "id": "AMB-07",
+      "cases": ["DNS16:dsync-notify-trigger"],
+      "issue": "sequence step 2 send-and-ack-notify-cds uses actorId dnsParentAgent, but RFC9859 section 4.1 assigns the outgoing NOTIFY(CDS) to the notification sender (the child side); the DSYNC record is parent-published and signed by example-zsk-g1. The checkpoint's QR=0 query is a sender message, so the actor appears to be the receiver, not the sender. Split the sender/receiver actors or relabel the checkpoint. This is an actor-role ambiguity unless the evaluator derives the sender from the QR bit.",
+      "classification": "actor-role ambiguity"
+    },
+    {
+      "id": "AMB-08",
+      "cases": ["DNS19:tsig-valid-policy-denied", "DNS19:tsig-failure"],
+      "issue": "Both outcomes use securityStatus = not-checked with verificationKind = local-check. Other not-checked management cases use verificationKind = not-performed. If verificationKind is a DNSSEC field, these should be not-performed; if it describes the TSIG/authorization check, say so. The TSIG reasonCode and rcode are otherwise consistent with RFC8945.",
+      "classification": "field-semantics ambiguity"
+    }
+  ],
+  "positiveChecks": [
+    "All 66 publication cases have setup.initialCache = []; there is no literal DNS03-style non-empty authenticated cache defect in this shard.",
+    "All seven DNS15 outcomes are management-only: rcode = null, flags.hops = [], applicationResult.status = pending, acceptedForUse = false, cached = false, returnedToStub = false. No fabricated stub/application success was found.",
+    "DNS16 and DNS17 management-only outcomes likewise have rcode = null, hops = [], no leaf acceptance/cache, and explicit management scopes.",
+    "The DNS15 rfc5011-add hold-down arithmetic is correct: firstOriginalTtl 3024000, addEligibleAt 1795737600, observations 0/1296000/2592000, installation only after a validated observation at 1795737601.",
+    "The DNS15 revoke key-tag lineage is correct: 257 -> 385 changes tag 22775 -> 22903 with the same public key; remove bookkeeping at base+2937600 is 30 days after withdrawal at base+345600.",
+    "The DNS12 refresh and ZSK rollover checkpoints are consistent with the declared 7200/3600/300 timings and the long signature windows; no selected checkpoint signature is outside its inception/expiration window.",
+    "The DNS14 dual-algorithm DNSKEY RRset membership [K0, Z0, child-ed25519-g1] matches the numeric child-dual-algorithm-dnskey RRset; the defect is the missing alg15 private custody, not the RRset signature membership.",
+    "The DNS18 coordinated-rollover role sets [K0, Z0, Z1, Zb] and [K0, Z1, Zb] match providerModel1Overlap/providerModel1Final exactly; the defect is the missing Z1 private custody, not the role membership.",
+    "The DNS19 TSIG records match RFC8945: valid-but-unauthorized returns authenticated REFUSED with tsigError 0; MAC mismatch returns NOTAUTH with BADSIG 16, unsigned response and zero MAC size.",
+    "The RFC8078 erratum 5049 delete sentinel encoding is consistent: CDS rdataHex 0000000000, CDNSKEY rdataHex 0000030000, presentation 0 0 0 00 / 0 3 0 AA==."
+  ]
+}

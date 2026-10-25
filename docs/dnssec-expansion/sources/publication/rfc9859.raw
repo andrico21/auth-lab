@@ -1,0 +1,2559 @@
+
+<!DOCTYPE html>
+
+
+
+
+
+
+
+<html data-bs-theme="auto" lang="en">
+    <head>
+        
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>
+            
+                RFC 9859 - Generalized DNS Notifications
+            
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://static.ietf.org/fonts/inter/import.css" rel="stylesheet">
+        <link href="https://static.ietf.org/fonts/noto-sans-mono/import.css" rel="stylesheet">
+        
+            <link rel="stylesheet" href="https://static.ietf.org/dt/12.82.1/ietf/css/document_html_referenced.css">
+            
+                <link rel="stylesheet" href="https://static.ietf.org/dt/12.82.1/ietf/css/document_html_txt.css">
+            
+            <script type="module" crossorigin="" src="https://static.ietf.org/dt/12.82.1/assets/embedded-73a0c4fc.js"></script>
+<link href="https://static.ietf.org/dt/12.82.1/assets/create-pinia-singleton-03577dc2.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+<link href="https://static.ietf.org/dt/12.82.1/assets/Scrollbar-3f2fb773.js" type="text/javascript" crossorigin="anonymous" rel="modulepreload" as="script" />
+            <script src="https://static.ietf.org/dt/12.82.1/ietf/js/document_html.js"></script>
+            <script src="https://static.ietf.org/dt/12.82.1/ietf/js/theme.js"></script>
+        
+        <link rel="alternate" type="application/atom+xml" title="Document changes" href="/feed/document-changes/rfc9859/">
+        <meta name="description"
+            
+                content="Generalized DNS Notifications (RFC 9859, )"
+            >
+        
+
+<link rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-180.png">
+<link rel="icon"
+      sizes="32x32"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-32.png">
+<link rel="icon"
+      sizes="16x16"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon"
+      href="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-mask.svg"
+      color="#ffffff">
+<meta name="msapplication-TileColor"
+      content="#ffffff">
+<meta name="theme-color"
+      content="#ffffff">
+        
+
+
+
+
+<meta property="og:title" content="RFC 9859: Generalized DNS Notifications">
+<meta property="og:url" content="https://datatracker.ietf.org/doc/html/rfc9859">
+
+
+<link rel="canonical" href="https://www.rfc-editor.org/info/rfc9859/">
+
+<meta property="og:site_name" content="IETF Datatracker">
+<meta property="og:description" content="This document generalizes and extends the use of DNS NOTIFY (RFC 1996) beyond conventional zone transfer hints to allow other types of actions that were previously lacking a trigger mechanism to be triggered via the DNS. Notifications merely nudge the receiver to initiate a predefined action promptly (instead of on a schedule); they do not alter the action itself (including any security checks it might employ). To enable this functionality, a method for discovering the receiver endpoint for such notification messages is introduced, via the new DSYNC record type. Notification types are recorded in a new registry, with initial support for parental NS and DS record updates including DNSSEC bootstrapping.">
+<meta property="og:type" content="article">
+
+<meta property="og:image" content="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-card.png">
+<meta property="og:image:alt" content="Logo of the IETF">
+<meta property="article:section" content="IETF - Internet Engineering Task Force">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+
+<meta property="article:author" content="Johan Stenstam">
+<meta property="article:author" content="Peter Thomassen">
+<meta property="article:author" content="John R. Levine">
+
+
+
+        
+        <style>
+            
+            .diff-form .select2-selection__rendered {
+                direction: rtl;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <noscript><iframe class="status" title="Site status" src="/status/latest"></iframe></noscript>
+<div class="vue-embed" data-component="Status"></div>
+        <div class="btn-toolbar sidebar-toolbar position-fixed top-0 end-0 m-2 m-lg-3 d-print-none">
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary btn-sm me-1 dropdown-toggle d-flex align-items-center"
+                    id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown"
+                    aria-label="Toggle theme">
+                        <i class="theme-icon-active bi bi-circle-half"></i>
+                </button>
+
+                <ul class="dropdown-menu" aria-labelledby="bd-theme">
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center"
+                            data-bs-theme-value="light" aria-pressed="false">
+                            <i class="me-2 opacity-50 theme-icon bi bi-sun-fill"></i>
+                            Light<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center"
+                            data-bs-theme-value="dark" aria-pressed="false">
+                            <i class="me-2 opacity-50 theme-icon bi bi-moon-stars-fill"></i>
+                            Dark<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item d-flex align-items-center active"
+                            data-bs-theme-value="auto" aria-pressed="true">
+                            <i class="me-2 opacity-50 theme-icon bi bi-circle-half"></i>
+                            Auto<i class="bi bi-check2 ms-auto d-none"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm sidebar-toggle"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#sidebar"
+                    aria-expanded="true"
+                    aria-controls="sidebar"
+                    aria-label="Toggle metadata sidebar"
+                    title="Toggle metadata sidebar">
+            <i class="bi bi-arrow-bar-left sidebar-shown"></i>
+            <i class="bi bi-arrow-bar-right sidebar-collapsed"></i>
+            </button>
+        </div>
+        <nav class="navbar bg-light-subtle px-1 fixed-top d-print-none d-md-none">
+            <a class="nav-link ps-1"
+               href="/doc/rfc9859/">
+                
+                    RFC 9859
+                
+                <br class="d-sm-none">
+
+                <span class="ms-sm-3 badge rounded-pill badge-ps">
+                    
+                        Proposed Standard
+                    
+                </span>
+            </a>
+            <button class="navbar-toggler p-1"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#docinfo-collapse"
+                    aria-controls="docinfo-collapse"
+                    aria-expanded="false"
+                    aria-label="Show document information">
+                <span class="navbar-toggler-icon small"></span>
+            </button>
+            <div class="navbar-nav navbar-nav-scroll overscroll-none collapse pt-1" id="docinfo-collapse">
+                <div class="bg-light-subtle p-0">
+                    <table class="table table-sm table-borderless small">
+                        <tbody class="meta align-top">
+                            <tr>
+                                <th scope="row"></th>
+                                <th scope="row">Title</th>
+                                <td class="edit"></td>
+                                <td>Generalized DNS Notifications</td>
+                            </tr>
+                        </tbody>
+                        
+
+
+
+
+
+
+
+<tbody class="meta align-top ">
+    <tr>
+        <th scope="row">Document</th>
+        <th scope="row">Document type</th>
+        <td class="edit"></td>
+        <td>
+            
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Proposed Standard
+    
+</span>
+
+            
+                
+                    <br>September 2025
+                
+                <br>
+                
+                
+                    <a class="btn btn-sm btn-warning"
+                       title="Click to report an error in the document."
+                       href="https://www.rfc-editor.org/errata.php#reportnew"
+                       target="_blank">
+                        Report errata
+                    </a>
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                    <div>
+                        Was
+                        <a href="/doc/draft-ietf-dnsop-generalized-notify/09/">draft-ietf-dnsop-generalized-notify</a>
+                        (<a href="/wg/dnsop/about/">dnsop WG</a>)
+                    </div>
+                
+            
+            
+            
+                
+
+
+
+
+    
+
+
+            
+        </td>
+    </tr>
+    
+        <tr>
+            <td></td>
+            <th scope="row">Select version</th>
+            <td class="edit"></td>
+            <td>
+                
+
+
+
+    <ul class="revision-list pagination pagination-sm text-center flex-wrap my-0">
+        
+            
+            
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-00"
+                        rel="nofollow">
+                            00
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-01"
+                        rel="nofollow">
+                            01
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-02"
+                        rel="nofollow">
+                            02
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-03"
+                        rel="nofollow">
+                            03
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-04"
+                        rel="nofollow">
+                            04
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-05"
+                        rel="nofollow">
+                            05
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-06"
+                        rel="nofollow">
+                            06
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-07"
+                        rel="nofollow">
+                            07
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-08"
+                        rel="nofollow">
+                            08
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-09"
+                        rel="nofollow">
+                            09
+                        </a>
+                    </li>
+                
+            
+            
+            <li class="page-item rfc active">
+                <a class="page-link"
+                href="/doc/html/rfc9859">
+                    RFC 9859
+                </a>
+            </li>
+        
+    </ul>
+
+            </td>
+        </tr>
+        
+            <tr>
+                <td></td>
+                <th scope="row">Compare versions</th>
+                <td class="edit"></td>
+                <td>
+                    
+
+
+
+<form class="form-horizontal diff-form"
+      action="https://author-tools.ietf.org/iddiff"
+      method="get"
+      target="_blank">
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="From revision"
+                    name="url1">
+                
+                    <option value="rfc9859">
+                        RFC 9859
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-09" selected>
+                        draft-ietf-dnsop-generalized-notify-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-08">
+                        draft-ietf-dnsop-generalized-notify-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-07">
+                        draft-ietf-dnsop-generalized-notify-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-06">
+                        draft-ietf-dnsop-generalized-notify-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-05">
+                        draft-ietf-dnsop-generalized-notify-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-04">
+                        draft-ietf-dnsop-generalized-notify-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-03">
+                        draft-ietf-dnsop-generalized-notify-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-02">
+                        draft-ietf-dnsop-generalized-notify-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-01">
+                        draft-ietf-dnsop-generalized-notify-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-00">
+                        draft-ietf-dnsop-generalized-notify-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="To revision"
+                    name="url2">
+                
+                    <option value="rfc9859" selected>
+                        RFC 9859
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-09">
+                        draft-ietf-dnsop-generalized-notify-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-08">
+                        draft-ietf-dnsop-generalized-notify-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-07">
+                        draft-ietf-dnsop-generalized-notify-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-06">
+                        draft-ietf-dnsop-generalized-notify-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-05">
+                        draft-ietf-dnsop-generalized-notify-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-04">
+                        draft-ietf-dnsop-generalized-notify-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-03">
+                        draft-ietf-dnsop-generalized-notify-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-02">
+                        draft-ietf-dnsop-generalized-notify-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-01">
+                        draft-ietf-dnsop-generalized-notify-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-00">
+                        draft-ietf-dnsop-generalized-notify-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--html"
+                    name="difftype">
+                Side-by-side
+            </button>
+            
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--hwdiff"
+                    name="difftype">
+                Inline
+            </button>
+
+
+</form>
+
+                </td>
+            </tr>
+        
+    
+    <tr>
+        <td></td>
+        <th scope="row">Authors</th>
+        <td class="edit">
+            
+        </td>
+        <td>
+            
+            
+                <span ><a 
+           title="Datatracker profile of Johan Stenstam"
+            href="/person/johan.stenstam@internetstiftelsen.se" >J. Stenstam</a> <a 
+               href="mailto:johan.stenstam%40internetstiftelsen.se"
+               aria-label="Compose email to johan.stenstam@internetstiftelsen.se"
+               title="Compose email to johan.stenstam@internetstiftelsen.se">
+                <i class="bi bi-envelope"></i></a></span>,
+            
+                <span ><a 
+           title="Datatracker profile of Peter Thomassen"
+            href="/person/peter@desec.io" >P. Thomassen</a> <a 
+               href="mailto:peter%40desec.io"
+               aria-label="Compose email to peter@desec.io"
+               title="Compose email to peter@desec.io">
+                <i class="bi bi-envelope"></i></a></span>,
+            
+                <span ><a 
+           title="Datatracker profile of John R. Levine"
+            href="/person/ietf@johnlevine.com" >J. Levine</a> <a 
+               href="mailto:ietf%40johnlevine.com"
+               aria-label="Compose email to ietf@johnlevine.com"
+               title="Compose email to ietf@johnlevine.com">
+                <i class="bi bi-envelope"></i></a></span>
+            
+            
+                <br>
+                <a class="btn btn-primary btn-sm mt-1" href="mailto:rfc9859@ietf.org?subject=rfc9859" title="Send email to the document authors">Email authors</a>
+            
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            RFC stream
+        </th>
+        <td class="edit">
+            
+        </td>
+        <td >
+            
+                
+                
+                    
+                        
+
+
+
+<img alt="IETF Logo"
+     class="d-lm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-white.svg"
+        
+     
+     >
+
+<img alt="IETF Logo"
+     class="d-dm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor.svg"
+        
+     
+     >
+                    
+                
+                
+            
+        </td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            Other formats
+        </th>
+        <td class="edit">
+        </td>
+        <td>
+            
+                
+    <div class="buttonlist">
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9859.txt">
+            
+                <i class="bi bi-file-text"></i> txt
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9859.html">
+            
+                <i class="bi bi-file-code"></i> html
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9859.xml">
+            
+                <i class="bi bi-file-code"></i> xml
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+            download="rfc9859.pdf"
+          
+         
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9859.pdf">
+            
+                <i class="bi bi-file-pdf"></i> pdf
+            
+        </a>
+        
+    
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/rfc9859/bibtex/">
+            
+                <i class="bi bi-file-ruled"></i> bibtex
+            
+        </a>
+        
+    
+</div>
+
+            
+        </td>
+    </tr>
+    
+    
+        
+            <tr>
+                <td>
+                </td>
+                <th scope="row">
+                    Additional resources
+                </th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                        
+                            
+                                <a href="https://mailarchive.ietf.org/arch/browse/dnsop/?q=rfc9859 OR %22draft-ietf-dnsop-generalized-notify%22">
+                                    Mailing list discussion
+                                </a>
+                            
+                        
+                    
+                </td>
+            </tr>
+        
+    
+</tbody>
+                        <tr>
+                            <th scope="row"></th>
+                            <th scope="row"></th>
+                            <td class="edit"></td>
+                            <td>
+                                <a class="btn btn-sm btn-warning mb-3"
+                                target="_blank"
+                                href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+                                    Report a bug
+                                    <i class="bi bi-bug"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </nav>
+        <div class="row g-0">
+            <div class="col-md-9 d-flex justify-content-center lh-sm"
+                 data-bs-spy="scroll"
+                 data-bs-target="#toc-nav"
+                 data-bs-smooth-scroll="true"
+                 tabindex="0"
+                 id="content">
+                
+                    <div class="rfchtml">
+                        <br class="noprint">
+                        <div class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">RFC 9859</td>
+<td class="center">Generalized Notifications</td>
+<td class="right">September 2025</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Stenstam, et al.</td>
+<td class="center">Standards Track</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-stream">Stream:</dt>
+<dd class="stream">Internet Engineering Task Force (IETF)</dd>
+<dt class="label-rfc">RFC:</dt>
+<dd class="rfc"><a href="https://www.rfc-editor.org/rfc/rfc9859" class="eref">9859</a></dd>
+<dt class="label-category">Category:</dt>
+<dd class="category">Standards Track</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2025-09" class="published">September 2025</time>
+    </dd>
+<dt class="label-issn">ISSN:</dt>
+<dd class="issn">2070-1721</dd>
+<dt class="label-authors">Authors:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">J. Stenstam</div>
+<div class="org">The Swedish Internet Foundation</div>
+</div>
+<div class="author">
+      <div class="author-name">P. Thomassen</div>
+<div class="org">deSEC, Secure Systems Engineering</div>
+</div>
+<div class="author">
+      <div class="author-name">J. Levine</div>
+<div class="org">Standcore LLC</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="rfcnum">RFC 9859</h1>
+<h1 id="title">Generalized DNS Notifications</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document generalizes and extends the use of DNS NOTIFY (RFC 1996) beyond
+conventional zone transfer hints to allow other types of actions
+that were previously lacking a trigger mechanism to be triggered via the DNS.
+Notifications merely nudge the receiver to initiate a predefined action promptly
+(instead of on a schedule); they do not alter the action itself
+(including any security checks it might employ).<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">To enable this functionality, a method for discovering the receiver endpoint
+for such notification messages is introduced, via the new DSYNC record type.
+Notification types are recorded in a new registry, with initial support for
+parental NS and DS record updates including DNSSEC bootstrapping.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+            This is an Internet Standards Track document.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+            This document is a product of the Internet Engineering Task Force
+            (IETF).  It represents the consensus of the IETF community.  It has
+            received public review and has been approved for publication by
+            the Internet Engineering Steering Group (IESG).  Further
+            information on Internet Standards is available in Section 2 of 
+            RFC 7841.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+            Information about the current status of this document, any
+            errata, and how to provide feedback on it may be obtained at
+            <span><a href="https://www.rfc-editor.org/info/rfc9859">https://www.rfc-editor.org/info/rfc9859</a></span>.<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2025 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-design-goals-for-delegation" class="internal xref">Design Goals for Delegation Maintenance</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-requirements-notation" class="internal xref">Requirements Notation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-dsync-rr-type" class="internal xref">DSYNC RR Type</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-wire-format" class="internal xref">Wire Format</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-presentation-format" class="internal xref">Presentation Format</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.3">
+                <p id="section-toc.1-1.2.2.3.1"><a href="#section-2.3" class="auto internal xref">2.3</a>.  <a href="#name-semantics" class="internal xref">Semantics</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-publication-of-notification" class="internal xref">Publication of Notification Targets</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-wildcard-method" class="internal xref">Wildcard Method</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-child-specific-method" class="internal xref">Child-specific Method</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-delegation-maintenance-cds-" class="internal xref">Delegation Maintenance: CDS/CDNSKEY and CSYNC Notifications</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-endpoint-discovery" class="internal xref">Endpoint Discovery</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-sending-notifications" class="internal xref">Sending Notifications</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2.2.1">
+                    <p id="section-toc.1-1.4.2.2.2.1.1"><a href="#section-4.2.1" class="auto internal xref">4.2.1</a>.  <a href="#name-timeouts-and-error-handling" class="internal xref">Timeouts and Error Handling</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2.2.2">
+                    <p id="section-toc.1-1.4.2.2.2.2.1"><a href="#section-4.2.2" class="auto internal xref">4.2.2</a>.  <a href="#name-roles" class="internal xref">Roles</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-processing-of-notify-messag" class="internal xref">Processing of NOTIFY Messages for Delegation Maintenance</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-dsync-rr-type-2" class="internal xref">DSYNC RR Type</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-dsync-scheme-registration" class="internal xref">DSYNC Scheme Registration</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-_dsync-underscore-name" class="internal xref">_dsync Underscore Name</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-efficiency-and-convergence-" class="internal xref">Efficiency and Convergence Issues in DNS Scanning</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-original-notify-for-zone-tr" class="internal xref">Original NOTIFY for Zone Transfer Nudging</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-similar-issues-for-ds-maint" class="internal xref">Similar Issues for DS Maintenance and Beyond</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-addresses" class="internal xref">Authors' Addresses</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-1-1">The original DNS notifications <span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>, which are here referred to as
+"NOTIFY(SOA)", are sent from a primary server to a secondary server to
+minimize the latter's convergence time to a new version of the
+zone. This mechanism successfully addresses a significant inefficiency
+in the original protocol.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">Today, similar inefficiencies occur in new use cases, in particular delegation
+maintenance (DS and NS record updates). Just as in the NOTIFY(SOA) case, a new
+set of notification types will have a major positive benefit by
+allowing the DNS infrastructure to completely sidestep these
+inefficiencies. For additional context, see <a href="#context" class="auto internal xref">Appendix A</a>.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">Although this document primarily deals with applying generalized notifications
+to the delegation maintenance use case, future extension for other applications
+(such as multi-signer key exchange) is possible.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">No DNS protocol changes are introduced by this document. Instead, the mechanism
+makes use of a wider range of DNS messages allowed by the protocol.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">Readers are expected to be familiar with DNSSEC <span>[<a href="#RFC9364" class="cite xref">RFC9364</a>]</span>, including
+<span>[<a href="#RFC6781" class="cite xref">RFC6781</a>]</span>, <span>[<a href="#RFC7344" class="cite xref">RFC7344</a>]</span>, <span>[<a href="#RFC7477" class="cite xref">RFC7477</a>]</span>, <span>[<a href="#RFC7583" class="cite xref">RFC7583</a>]</span>, <span>[<a href="#RFC8078" class="cite xref">RFC8078</a>]</span>,
+<span>[<a href="#RFC8901" class="cite xref">RFC8901</a>]</span>, and <span>[<a href="#RFC9615" class="cite xref">RFC9615</a>]</span>.
+DNS-specific terminology can be found in <span>[<a href="#RFC9499" class="cite xref">RFC9499</a>]</span>.<a href="#section-1-5" class="pilcrow">¶</a></p>
+<div id="design-goals-for-delegation-maintenance">
+<section id="section-1.1">
+        <h3 id="name-design-goals-for-delegation">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-design-goals-for-delegation" class="section-name selfRef">Design Goals for Delegation Maintenance</a>
+        </h3>
+<p id="section-1.1-1">When the parent operator is interested in notifications for delegation
+maintenance (such as DS or NS update hints), a service to accept these notifications will need to be
+made available. Depending on the
+context, this service may be run by the parent operator
+or by a designated entity who is in charge of handling the domain's
+delegation data (such as a domain registrar).<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">It seems desirable to minimize the number of steps that the notification sender
+needs to perform in order to figure out where to send the NOTIFY. This suggests
+that the lookup process be ignorant of the details of the parent-side
+relationships (e.g., whether or not there is a registrar). This is
+addressed by parameterizing the lookup with the name of the child. The
+parent operator may then announce the notification endpoint
+in a delegation-specific way by publishing it at a child-specific name.
+(A catch-all endpoint may be indicated by wildcarding.)<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+<p id="section-1.1-3">The solution specified here is thus for the parent operator to publish
+the address where someone listens for notifications, in a child-specific
+way (see <a href="#signaling" class="auto internal xref">Section 3</a>). Potential senders can easily determine the name
+of the parent and then look up that information (see <a href="#discovery" class="auto internal xref">Section 4.1</a>).<a href="#section-1.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="requirements-notation">
+<section id="section-1.2">
+        <h3 id="name-requirements-notation">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-requirements-notation" class="section-name selfRef">Requirements Notation</a>
+        </h3>
+<p id="section-1.2-1">
+    The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>",
+    "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>",
+    "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>",
+    "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+    "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be
+    interpreted as described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they appear in all capitals, as
+    shown here.<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="dsyncrdtype">
+<section id="section-2">
+      <h2 id="name-dsync-rr-type">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-dsync-rr-type" class="section-name selfRef">DSYNC RR Type</a>
+      </h2>
+<p id="section-2-1">This section defines the DSYNC RR type, which is subsequently used for
+discovering notification endpoints.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<div id="wire-format">
+<section id="section-2.1">
+        <h3 id="name-wire-format">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-wire-format" class="section-name selfRef">Wire Format</a>
+        </h3>
+<p id="section-2.1-1">The DSYNC RDATA wire format is encoded as follows:<a href="#section-2.1-1" class="pilcrow">¶</a></p>
+<span id="name-dsync-rdata-wire-format"></span><figure id="figure-1">
+          <div class="alignLeft art-text artwork" id="section-2.1-2.1">
+<pre>
+                     1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 3 3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| RRtype                        | Scheme        | Port
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+                | Target ...  /
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-/</pre>
+</div>
+<figcaption><a href="#figure-1" class="selfRef">Figure 1</a>:
+<a href="#name-dsync-rdata-wire-format" class="selfRef">DSYNC RDATA Wire Format</a>
+          </figcaption></figure>
+<span class="break"></span><dl class="dlParallel" id="section-2.1-3">
+          <dt id="section-2.1-3.1">RRtype:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-3.2">
+            <p id="section-2.1-3.2.1">The type of generalized NOTIFY that this DSYNC RR defines the
+desired target address for (see the "Resource Record (RR) TYPEs"
+registry at <span>&lt;<a href="https://www.iana.org/assignments/dns-parameters/">https://www.iana.org/assignments/dns-parameters/</a>&gt;</span>). For now, only CDS and CSYNC are supported values, with
+the former indicating an updated CDS or CDNSKEY record set.<a href="#section-2.1-3.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-3.3">Scheme:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-3.4">
+            <p id="section-2.1-3.4.1">The mode used for contacting the desired notification address. This is an
+8-bit unsigned integer. Records with value 0 (null scheme) are ignored by consumers.
+Value 1 is described in
+      this document, and values 128-255 are Reserved for Private Use.
+      Other values are currently unassigned. Future assignments are
+      maintained in the registry created in <a href="#schemeregistry" class="auto internal xref">Section 6.2</a>.<a href="#section-2.1-3.4.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-3.5">Port:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-3.6">
+            <p id="section-2.1-3.6.1">The transport port number on the target host of the notification service. This
+is a 16-bit unsigned integer in network byte order. Records with
+value 0 are ignored by consumers.<a href="#section-2.1-3.6.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-3.7">Target:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-3.8">
+            <p id="section-2.1-3.8.1">The fully-qualified, uncompressed domain name of the target host
+providing the service of listening for generalized notifications of the
+specified type. This name <span class="bcp14">MUST</span> resolve to one or more address records.<a href="#section-2.1-3.8.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="presentation-format">
+<section id="section-2.2">
+        <h3 id="name-presentation-format">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-presentation-format" class="section-name selfRef">Presentation Format</a>
+        </h3>
+<p id="section-2.2-1">The presentation format of the RDATA portion is as follows:<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2-2.1">
+            <p id="section-2.2-2.1.1">The RRtype field is represented as a mnemonic from the "Resource
+Record (RR) TYPEs" registry.<a href="#section-2.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.2-2.2">
+            <p id="section-2.2-2.2.1">The Scheme field is represented by its mnemonic if assigned (see
+<a href="#schemeregistry" class="auto internal xref">Section 6.2</a>), and is otherwise represented as an unsigned decimal integer.<a href="#section-2.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.2-2.3">
+            <p id="section-2.2-2.3.1">The Port field is represented as an unsigned decimal integer.<a href="#section-2.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-2.2-2.4">
+            <p id="section-2.2-2.4.1">The Target field is represented as a &lt;domain-name&gt; (<span><a href="https://rfc-editor.org/rfc/rfc1035#section-5.1" class="relref">Section 5.1</a> of [<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>).<a href="#section-2.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="semantics">
+<section id="section-2.3">
+        <h3 id="name-semantics">
+<a href="#section-2.3" class="section-number selfRef">2.3. </a><a href="#name-semantics" class="section-name selfRef">Semantics</a>
+        </h3>
+<p id="section-2.3-1">For now, the only scheme defined is 1 (mnemonic: NOTIFY).  By publishing a
+DSYNC record with this scheme, a parent indicates that they would like child
+operators to send them a NOTIFY message (see <a href="#cnotify" class="auto internal xref">Section 4</a>) upon publication of
+a new CDS/CDNSKEY/CSYNC RRset to the address and port number that correspond to that DSYNC record, using conventional
+DNS transport <span>[<a href="#RFC1035" class="cite xref">RFC1035</a>]</span>.<a href="#section-2.3-1" class="pilcrow">¶</a></p>
+<p id="section-2.3-2">Example (for the owner names of these records, see <a href="#signaling" class="auto internal xref">Section 3</a>):<a href="#section-2.3-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-2.3-3">
+<pre>
+IN DSYNC  CDS   NOTIFY 5359 cds-scanner.example.net.
+IN DSYNC  CSYNC NOTIFY 5360 csync-scanner.example.net.
+</pre><a href="#section-2.3-3" class="pilcrow">¶</a>
+</div>
+<p id="section-2.3-4">Should a need for other mechanisms arise, other schemes may be defined
+to deal with such requirements using alternative logic.<a href="#section-2.3-4" class="pilcrow">¶</a></p>
+<p id="section-2.3-5">Schemes are independent of the RRtype. They merely specify a method of
+contacting the target (whereas the RRtype is part of the notification
+payload).<a href="#section-2.3-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="signaling">
+<section id="section-3">
+      <h2 id="name-publication-of-notification">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-publication-of-notification" class="section-name selfRef">Publication of Notification Targets</a>
+      </h2>
+<p id="section-3-1">To use generalized notifications, it is necessary for the sender to know
+where to direct each NOTIFY message. This section describes the
+procedure for discovering that notification target.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">Note that generalized NOTIFY messages are but one mechanism for
+improving the efficiency of automated delegation maintenance. Other
+alternatives, such as contacting the parent operator via an API or
+DNS Update <span>[<a href="#RFC2136" class="cite xref">RFC2136</a>]</span>, may (or may not) be more suitable in
+individual cases. Like generalized notifications, they similarly require
+a means for discovering where to send the API or DNS Update requests.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">As the scope for the publication mechanism is wider than only to
+support generalized notifications, a unified approach that works
+independently of the notification method is specified in this section.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">Parent operators participating in the discovery scheme for the purpose of
+delegation maintenance notifications <span class="bcp14">MUST</span> publish endpoint information
+using the record type defined in <a href="#dsyncrdtype" class="auto internal xref">Section 2</a> under the <code>_dsync</code>
+subdomain of the parent zone, as described in the following subsections.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-5">There <span class="bcp14">MUST NOT</span> be more than one DSYNC record for each combination of
+RRtype and Scheme.
+It is <span class="bcp14">RECOMMENDED</span> that zones containing DSYNC records be secured with DNSSEC.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">For practical purposes, the parent operator <span class="bcp14">MAY</span> delegate the <code>_dsync</code>
+domain as a separate zone and/or synthesize records under it. If
+child-specificity is not needed, the parent can publish a static
+wildcard DSYNC record.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<div id="wildcard-method">
+<section id="section-3.1">
+        <h3 id="name-wildcard-method">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-wildcard-method" class="section-name selfRef">Wildcard Method</a>
+        </h3>
+<p id="section-3.1-1">If the parent operator itself performs CDS/CDNSKEY or CSYNC processing
+for some or all delegations, or if the parent operator wants to relay notifications to some
+other party, a default notification target may be specified as follows:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-2">
+<pre>
+*._dsync.example.  IN DSYNC  CDS   NOTIFY port target
+*._dsync.example.  IN DSYNC  CSYNC NOTIFY port target
+</pre><a href="#section-3.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-3">To accommodate indirect delegation management models, the
+designated notification target may relay notifications to a third party
+(such as the registrar, in ICANN's model). The details of such
+arrangements are out of scope for this document.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">If for some reason the parent operator cannot publish wildcard records,
+the wildcard label may be dropped from the DSYNC owner name (i.e., it
+may be published at the <code>_dsync</code> label instead). This practice requires
+an additional step during discovery (see <a href="#discovery" class="auto internal xref">Section 4.1</a>) and is
+therefore <span class="bcp14">NOT RECOMMENDED</span>.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="child-specific-method">
+<section id="section-3.2">
+        <h3 id="name-child-specific-method">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-child-specific-method" class="section-name selfRef">Child-specific Method</a>
+        </h3>
+<p id="section-3.2-1">It is also possible to publish child-specific records where the parent zone's
+labels are stripped from the child's Fully Qualified Domain Name (FQDN), and the result is used in place of
+the wildcard label.<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.2-2">As an example, consider a registrar offering domains like
+<code>child.example</code>, delegated from <code>example</code> zone. If the registrar
+provides the notification endpoint, e.g., <code>rr-endpoint.example:5300</code>,
+the parent may publish this information as follows:<a href="#section-3.2-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.2-3">
+<pre>
+child._dsync.example.  IN DSYNC  CDS NOTIFY 5300 rr-endpoint.example.
+</pre><a href="#section-3.2-3" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="cnotify">
+<section id="section-4">
+      <h2 id="name-delegation-maintenance-cds-">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-delegation-maintenance-cds-" class="section-name selfRef">Delegation Maintenance: CDS/CDNSKEY and CSYNC Notifications</a>
+      </h2>
+<p id="section-4-1">Delegation maintenance notifications address the inefficiencies related
+to scanning child zones for CDS/CDNSKEY records
+<span>[<a href="#RFC7344" class="cite xref">RFC7344</a>]</span> <span>[<a href="#RFC8078" class="cite xref">RFC8078</a>]</span> <span>[<a href="#RFC9615" class="cite xref">RFC9615</a>]</span>. (For an overview of the issues,
+see <a href="#context" class="auto internal xref">Appendix A</a>.)<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">NOTIFY messages for delegation maintenance <span class="bcp14">MUST</span> be formatted as described in
+<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>, with the <code>qtype</code> field replaced as appropriate.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3">To address the CDS/CDNSKEY dichotomy, the NOTIFY(CDS) message (with
+<code>qtype=CDS</code>) is defined to indicate any child-side changes pertaining
+to an upcoming update of DS records.
+As the child DNS operator generally is unaware of whether the parent
+side consumes CDS records or prefers CDNSKEY, or when that policy
+changes, it seems advisable to publish both types of records,
+preferably using automation features of common authoritative nameserver
+software for ensuring consistency.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">Upon receipt of NOTIFY(CDS), the parent-side recipient (typically, registry or
+registrar) <span class="bcp14">SHOULD</span> initiate the same DNS lookups and verifications for
+DNSSEC bootstrapping <span>[<a href="#RFC9615" class="cite xref">RFC9615</a>]</span> or DS maintenance
+<span>[<a href="#RFC7344" class="cite xref">RFC7344</a>]</span> <span>[<a href="#RFC8078" class="cite xref">RFC8078</a>]</span> that would otherwise be triggered based on a
+timer.<a href="#section-4-4" class="pilcrow">¶</a></p>
+<p id="section-4-5">The CSYNC <span>[<a href="#RFC7477" class="cite xref">RFC7477</a>]</span> inefficiency may be similarly treated, with the
+child sending a NOTIFY(CSYNC) message (with <code>qtype=CSYNC</code>) to an address
+where the parent operator (or a designated party) is listening for CSYNC
+notifications.<a href="#section-4-5" class="pilcrow">¶</a></p>
+<p id="section-4-6">In both cases, the notification will speed up processing times by
+providing the recipient with a hint that a particular child zone has
+published new CDS, CDNSKEY, and/or CSYNC records.<a href="#section-4-6" class="pilcrow">¶</a></p>
+<div id="discovery">
+<section id="section-4.1">
+        <h3 id="name-endpoint-discovery">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-endpoint-discovery" class="section-name selfRef">Endpoint Discovery</a>
+        </h3>
+<p id="section-4.1-1">To locate the target for outgoing delegation maintenance notifications,
+the notification sender <span class="bcp14">MUST</span> perform the following steps:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.1-2">
+   <li id="section-4.1-2.1">
+            <p id="section-4.1-2.1.1">Construct the lookup name by inserting the <code>_dsync</code> label after the
+first label of the delegation owner name.<a href="#section-4.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-2.2">
+            <p id="section-4.1-2.2.1">Perform a lookup of type DSYNC for the lookup name, and validate the
+response if DNSSEC is enabled. If this results in a positive DSYNC answer,
+return it.<a href="#section-4.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.1-2.3">
+            <p id="section-4.1-2.3.1">If the query resulted in a negative response:<a href="#section-4.1-2.3.1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-4.1-2.3.2.1">
+                <p id="section-4.1-2.3.2.1.1">If the response's SOA record indicates that the parent is more than
+one label away from the <code>_dsync</code> label, construct a new lookup name
+by inserting the <code>_dsync</code> label into the delegation owner name just
+before the parent zone labels inferred from the negative response.
+Then go to step 2.<a href="#section-4.1-2.3.2.1.1" class="pilcrow">¶</a></p>
+<p id="section-4.1-2.3.2.1.2">
+For example, assume that <code>subsub.sub.child.example</code> is delegated from
+<code>example</code> (and not from <code>sub.child.example</code> or <code>child.example</code>). The
+initial DSYNC query relating to it is thus directed at
+<code>subsub._dsync.sub.child.example</code>. This is expected to result in a
+negative response from <code>example</code>, and another query for
+<code>subsub.sub.child._dsync.example</code> is then required.<a href="#section-4.1-2.3.2.1.2" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.1-2.3.2.2">
+                <p id="section-4.1-2.3.2.2.1">Otherwise, if the lookup name has any labels in front of the
+<code>_dsync</code> label, remove them to construct a new lookup name (such
+as <code>_dsync.example</code>). Then go to step 2.
+(This is to enable zone structures without wildcards.)<a href="#section-4.1-2.3.2.2.1" class="pilcrow">¶</a></p>
+</li>
+              <li class="normal" id="section-4.1-2.3.2.3">
+                <p id="section-4.1-2.3.2.3.1">Otherwise, return null (no notification target available).<a href="#section-4.1-2.3.2.3.1" class="pilcrow">¶</a></p>
+</li>
+            </ul>
+</li>
+        </ol>
+</section>
+</div>
+<div id="sending-notifications">
+<section id="section-4.2">
+        <h3 id="name-sending-notifications">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-sending-notifications" class="section-name selfRef">Sending Notifications</a>
+        </h3>
+<p id="section-4.2-1">When creating or changing a CDS/CDNSKEY/CSYNC RRset in the child zone,
+the DNS operator <span class="bcp14">SHOULD</span> send a suitable notification to one of the
+endpoints discovered as described in <a href="#discovery" class="auto internal xref">Section 4.1</a>.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2-2">A NOTIFY message can only carry information about changes concerning one
+child zone. When there are changes to several child zones, the sender
+<span class="bcp14">MUST</span> send a separate notification for each one.<a href="#section-4.2-2" class="pilcrow">¶</a></p>
+<p id="section-4.2-3">When a primary name server publishes a new RRset in the child, there
+typically is a time delay until all publicly visible copies of the zone
+are updated. If the primary sends a notification at the exact time of
+publication, there is a potential for CDS/CDNSKEY/CSYNC processing to be
+attempted before the corresponding records are served. As a result, a
+desired update may not be detected (or appear inconsistent), preventing
+it from being applied.<a href="#section-4.2-3" class="pilcrow">¶</a></p>
+<p id="section-4.2-4">Therefore, it is <span class="bcp14">RECOMMENDED</span> that the child would delay sending notifications
+to the recipient until a consistent public view of the pertinent
+records could be ensured.<a href="#section-4.2-4" class="pilcrow">¶</a></p>
+<div id="timeouts-and-error-handling">
+<section id="section-4.2.1">
+          <h4 id="name-timeouts-and-error-handling">
+<a href="#section-4.2.1" class="section-number selfRef">4.2.1. </a><a href="#name-timeouts-and-error-handling" class="section-name selfRef">Timeouts and Error Handling</a>
+          </h4>
+<p id="section-4.2.1-1">NOTIFY messages are expected to elicit a response from the recipient
+(<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>, Section 4.7). If no response is received, senders <span class="bcp14">SHOULD</span>
+employ the same logic as for SOA notifications (<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>, Sections 3.5 and 3.6).<a href="#section-4.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-4.2.1-2">The recipient's attempt to act upon the delegation update request may
+fail for a variety of reasons (e.g., due to violation of the continuity
+requirement set forth in <span>[<a href="#RFC7344" class="cite xref">RFC7344</a>], <a href="https://rfc-editor.org/rfc/rfc7344#section-4.1" class="relref">Section 4.1</a></span>). Such failures may
+occur asynchronously, even after the NOTIFY response has been sent.<a href="#section-4.2.1-2" class="pilcrow">¶</a></p>
+<p id="section-4.2.1-3">In order to learn about such failures, senders <span class="bcp14">MAY</span> include an
+EDNS0 Report-Channel option <span>[<a href="#RFC9567" class="cite xref">RFC9567</a>]</span> in the NOTIFY message to
+request that the receiving side report any errors by making a report query
+with an appropriate extended DNS error (EDE) code as described in
+<span>[<a href="#RFC8914" class="cite xref">RFC8914</a>]</span>.
+(The prohibition of this option in queries (<span>[<a href="#RFC9567" class="cite xref">RFC9567</a>], <a href="https://rfc-editor.org/rfc/rfc9567#section-6.1" class="relref">Section 6.1</a></span>) only
+applies to resolver queries and thus does not cover NOTIFY messages.)<a href="#section-4.2.1-3" class="pilcrow">¶</a></p>
+<p id="section-4.2.1-4">When including this EDNS0 option, the second label (QTYPE) of the report query name is equal to the qtype received in the NOTIFY message.
+Its agent domain <span class="bcp14">MUST</span> be subordinate
+or equal to one of the NS hostnames, as listed in the child's delegation
+in the parent zone.
+This is to prevent malicious senders from causing the NOTIFY recipient
+to send unsolicited report queries to unrelated third parties.<a href="#section-4.2.1-4" class="pilcrow">¶</a></p>
+<p id="section-4.2.1-5">For example, when receiving a NOTIFY(CDS) message for "example.com"
+          with agent domain "errors.ns1.example.net", and when the requested DS
+          update is found to break the delegation, then the following report
+          query with EDE code 6 (DNSSEC Bogus) may be made (preferably over TCP):<a href="#section-4.2.1-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.2.1-6">
+<pre>
+qname: _er.59.example.com.6._er.errors.ns1.example.net.
+qtype: TXT</pre><a href="#section-4.2.1-6" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="roles">
+<section id="section-4.2.2">
+          <h4 id="name-roles">
+<a href="#section-4.2.2" class="section-number selfRef">4.2.2. </a><a href="#name-roles" class="section-name selfRef">Roles</a>
+          </h4>
+<p id="section-4.2.2-1">While the CDS/CDNSKEY/CSYNC processing that follows the receipt of a NOTIFY
+will often be performed by the registry, the protocol anticipates that
+in some contexts (especially for ICANN gTLDs) registrars may take on
+the task. In such cases, the current registrar notification endpoint may
+be published, enabling notifications to be directed to the
+appropriate target. The mechanics of how this is arranged between
+registry and registrar are out of scope for this document; the protocol
+only offers the possibility to arrange things such that from the child
+perspective, how the parent-side parties are
+organized is inconsequential: Notifications are simply sent to the published address.<a href="#section-4.2.2-1" class="pilcrow">¶</a></p>
+<p id="section-4.2.2-2">Because of the security model where a notification by itself never
+causes a change (it can only speed up the time until the next
+check for the same thing), the sender's identity is not crucial.
+This opens up the possibility of having an arbitrary party (e.g., a
+service separate from a nameserver) send the notifications, enabling this functionality
+even before the emergence of built-in support in nameserver software.<a href="#section-4.2.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="processing-of-notify-messages-for-delegation-maintenance">
+<section id="section-4.3">
+        <h3 id="name-processing-of-notify-messag">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-processing-of-notify-messag" class="section-name selfRef">Processing of NOTIFY Messages for Delegation Maintenance</a>
+        </h3>
+<p id="section-4.3-1">The following algorithm applies to NOTIFY(CDS) and NOTIFY(CSYNC) processing.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<p id="section-4.3-2">NOTIFY messages carrying notification payloads (records) for more
+than one child zone <span class="bcp14">MUST</span> be discarded, as sending them is an error.<a href="#section-4.3-2" class="pilcrow">¶</a></p>
+<p id="section-4.3-3">Otherwise, upon receipt of a (potentially forwarded) NOTIFY message for
+a particular child zone at the published notification endpoint,
+the receiving side (parent registry or registrar) has two options:<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.3-4">
+   <li id="section-4.3-4.1">
+            <p id="section-4.3-4.1.1">Acknowledge receipt by sending a NOTIFY response as described in
+<span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>, Section 4.7, and schedule
+an immediate check of the CDS/CDNSKEY/CSYNC RRsets published by that
+particular child zone (as appropriate for the type of NOTIFY received).<a href="#section-4.3-4.1.1" class="pilcrow">¶</a></p>
+<p id="section-4.3-4.1.2">
+If the NOTIFY message contains an EDNS0 Report-Channel
+option <span>[<a href="#RFC9567" class="cite xref">RFC9567</a>]</span> with an agent domain subordinate or equal to one of the NS
+hostnames listed in the delegation, the processing party <span class="bcp14">SHOULD</span>
+report any errors occurring during CDS/CDNSKEY/CSYNC processing by sending
+a report query with an appropriate EDE code as
+described in <span>[<a href="#RFC8914" class="cite xref">RFC8914</a>]</span>. Reporting may be done asynchronously
+(outside of the NOTIFY transaction).<a href="#section-4.3-4.1.2" class="pilcrow">¶</a></p>
+<p id="section-4.3-4.1.3">
+When using periodic scanning, notifications preempt the scanning
+timer. If the NOTIFY-induced check finds that the CDS/CDNSKEY/CSYNC RRset
+is indeed new or has changed, the corresponding child's timer may
+be reset and the scanning frequency reduced (e.g., to once a week).
+If a CDS/CDNSKEY/CSYNC change is later detected through scanning (without
+having received a notification), the NOTIFY-related state <span class="bcp14">SHOULD</span> be
+cleared, reverting to the default scanning schedule for this child.<a href="#section-4.3-4.1.3" class="pilcrow">¶</a></p>
+<p id="section-4.3-4.1.4">
+When introducing CDS/CDNSKEY/CSYNC scanning support at the same time
+as NOTIFY support, backwards compatibility considerations
+regarding the scanning interval do not apply; a low-frequency
+scanning schedule <span class="bcp14">MAY</span> thus be used by default in such cases.<a href="#section-4.3-4.1.4" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.3-4.2">
+            <p id="section-4.3-4.2.1">Do not act upon the notification. To prevent retries, recipients
+<span class="bcp14">SHOULD</span> acknowledge the notification by sending a NOTIFY response
+even when otherwise ignoring the request, combined with a report
+query if feasible (see above). One reason to do this may be a rate
+limit (see <a href="#security" class="auto internal xref">Section 5</a>), in which case "Blocked" (15) may be a
+suitable extended DNS error code.<a href="#section-4.3-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-4.3-5">Implementing the first option will significantly decrease the
+convergence time (between publication of a new CDS/CDNSKEY/CSYNC record in the
+child and publication of the resulting DS), thereby providing improved
+service for the child.<a href="#section-4.3-5" class="pilcrow">¶</a></p>
+<p id="section-4.3-6">If, in addition to scheduling an immediate check for the child zone of
+the notification, the scanning schedule is also modified to be less
+frequent, the cost of providing the scanning service will be reduced.<a href="#section-4.3-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="security">
+<section id="section-5">
+      <h2 id="name-security-considerations">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-5-1">If an action is triggered by the receipt of a DNS NOTIFY, its execution relies
+on the same security model that the receiving party would apply if the action
+were triggered by something else. This is because the notification affects
+the action's timing alone. For example, DS bootstrapping is expected to be
+performed the same way, independently of the type of trigger; this includes all
+security and authentication requirements (e.g., <span>[<a href="#RFC9615" class="cite xref">RFC9615</a>]</span>) that the parent
+registry/registrar has chosen to apply.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The original NOTIFY specification sidesteps most security issues by not
+relying on the information in the NOTIFY message in any way and instead
+only using it to "enter the state it would if the zone's refresh timer
+had expired" (Section 4.7 of <span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span>).<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">This security model is reused for generalized NOTIFY messages. Therefore, it
+seems impossible to affect the behaviour of the recipient of
+the NOTIFY other than by hastening the timing for when different checks
+are initiated.
+As a consequence, while notifications themselves can be secured via access
+control mechanisms, this is not a requirement.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-4">In general, the receipt of a notification message will cause the
+receiving party to perform one or more outbound queries for the records
+of interest (for example, NOTIFY(CDS) will cause CDS/CDNSKEY
+queries). When done using standard DNS, the size of these queries is
+comparable to that of the NOTIFY messages themselves, rendering any
+amplification attempts futile. The number of queries triggered per
+notification is also limited by the requirement that a NOTIFY message
+can refer to one child only.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">However, when the outgoing query occurs via encrypted transport, some
+amplification is possible, both with respect to bandwidth and
+computational burden. In this case, the usual principle of bounding the
+work applies, even under unforeseen events.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">Therefore, receivers <span class="bcp14">MUST</span> implement rate limiting for notification
+processing. It is <span class="bcp14">RECOMMENDED</span> to configure rate limiting independently
+for both the notification's source IP address and the name of the zone
+that is conveyed in the NOTIFY message. Rate limiting also mitigates
+the processing load from garbage notifications.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-7">Alternative solutions (such as signing notifications and validating
+their signatures) appear significantly more expensive without tangible
+benefit.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<p id="section-5-8">In order to facilitate schemes that are authenticated outside of DNSSEC
+(such as via SIG(0)), zones containing DSYNC records are not required to
+be signed. Spoofed DSYNC responses would prevent notifications from
+reaching their legitimate target, and a different party may receive
+unsolicited notifications; however, both effects can also be achieved
+in the presence of DNSSEC. The illegitimate target is also enabled to
+learn notification contents in real time, which may be a privacy concern
+for the sender. If so, the sender may choose to ignore unsigned DSYNC
+records.<a href="#section-5-8" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-6">
+      <h2 id="name-iana-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<div id="dsync-rr-type">
+<section id="section-6.1">
+        <h3 id="name-dsync-rr-type-2">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-dsync-rr-type-2" class="section-name selfRef">DSYNC RR Type</a>
+        </h3>
+<p id="section-6.1-1">IANA has registered DSYNC in the "Resource Record (RR) TYPEs" registry
+under the "Domain Name System (DNS) Parameters" registry group as follows:<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-6.1-2">
+          <dt id="section-6.1-2.1">Type:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-2.2">DSYNC<a href="#section-6.1-2.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-2.3">Value:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-2.4">66<a href="#section-6.1-2.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-2.5">Meaning:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-2.6">Endpoint discovery for delegation
+          synchronization<a href="#section-6.1-2.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.1-2.7">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.1-2.8">RFC 9859<a href="#section-6.1-2.8" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="schemeregistry">
+<section id="section-6.2">
+        <h3 id="name-dsync-scheme-registration">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-dsync-scheme-registration" class="section-name selfRef">DSYNC Scheme Registration</a>
+        </h3>
+<p id="section-6.2-1">IANA has created the following new registry in the
+"Domain Name System (DNS) Parameters" registry group:<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-6.2-2">
+          <dt id="section-6.2-2.1">Name:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.2-2.2">DSYNC: Location of Synchronization Endpoints<a href="#section-6.2-2.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.2-2.3">Registration Procedure:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.2-2.4">Expert Review<a href="#section-6.2-2.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.2-2.5">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.2-2.6">RFC 9859<a href="#section-6.2-2.6" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<p id="section-6.2-3">The initial contents for the registry are as follows:<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+          <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">RRtype</th>
+              <th class="text-left" rowspan="1" colspan="1">Scheme (Mnemonic)</th>
+              <th class="text-left" rowspan="1" colspan="1">Purpose</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+              <td class="text-left" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">Null scheme (no-op)</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9859</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">CDS</td>
+              <td class="text-left" rowspan="1" colspan="1">1 (NOTIFY)</td>
+              <td class="text-left" rowspan="1" colspan="1">Delegation management</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9859</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">CSYNC</td>
+              <td class="text-left" rowspan="1" colspan="1">1 (NOTIFY)</td>
+              <td class="text-left" rowspan="1" colspan="1">Delegation management</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9859</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+              <td class="text-left" rowspan="1" colspan="1">2-127</td>
+              <td class="text-left" rowspan="1" colspan="1">Unassigned</td>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1"> </td>
+              <td class="text-left" rowspan="1" colspan="1">128-255</td>
+              <td class="text-left" rowspan="1" colspan="1">Reserved for Private Use</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9859</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-6.2-5">Requests to register additional entries <span class="bcp14">MUST</span> include the following fields:<a href="#section-6.2-5" class="pilcrow">¶</a></p>
+<span class="break"></span><dl class="dlCompact dlParallel" id="section-6.2-6">
+          <dt id="section-6.2-6.1">RRtype:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.2-6.2">An RRtype that is defined for use<a href="#section-6.2-6.2" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.2-6.3">Scheme:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.2-6.4">The mode used for contacting the desired
+          notification address<a href="#section-6.2-6.4" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.2-6.5">Mnemonic:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.2-6.6">The scheme's shorthand string used in
+          presentation format<a href="#section-6.2-6.6" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.2-6.7">Purpose:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.2-6.8">Use case description<a href="#section-6.2-6.8" class="pilcrow">¶</a>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-6.2-6.9">Reference:</dt>
+          <dd style="margin-left: 1.5em" id="section-6.2-6.10">Location of specification or registration
+          source<a href="#section-6.2-6.10" class="pilcrow">¶</a>
+</dd>
+        <dd class="break"></dd>
+</dl>
+<p id="section-6.2-7">Registration requests are to be recorded by IANA after Expert Review <span>[<a href="#RFC8126" class="cite xref">RFC8126</a>]</span>.
+Expert Reviewers should take the points below into consideration; however, 
+they are experts and should be given substantial latitude:<a href="#section-6.2-7" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.2-8.1">
+            <p id="section-6.2-8.1.1">Point squatting should be discouraged.  Reviewers are encouraged
+    to get sufficient information for registration requests to ensure
+    that the usage is not going to duplicate one that is already
+    registered and that the point is likely to be used in deployments.
+    The code points tagged as "Private Use" are intended for testing
+    purposes and closed environments.  Code points in other ranges
+    should not be assigned for testing.<a href="#section-6.2-8.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.2-8.2">
+            <p id="section-6.2-8.2.1">A specification of a scheme is desirable, but early assignment before a
+    specification is available is also possible.  When
+    specifications are not provided, the description provided needs to
+    have sufficient information to identify what the point is being
+    used for. A scheme number may have exactly one mnemonic.<a href="#section-6.2-8.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-6.2-8.3">
+            <p id="section-6.2-8.3.1">Experts should take into account that field values are fit for purpose.
+For example, the mnemonic should be indicative and have a plausible
+connection to the scheme's notification mechanism.<a href="#section-6.2-8.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="dsync-underscore-name">
+<section id="section-6.3">
+        <h3 id="name-_dsync-underscore-name">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-_dsync-underscore-name" class="section-name selfRef">_dsync Underscore Name</a>
+        </h3>
+<p id="section-6.3-1">Per <span>[<a href="#RFC8552" class="cite xref">RFC8552</a>]</span>, IANA has registered the following entries to the
+"Underscored and Globally Scoped DNS Node Names" registry within the "Domain Name System (DNS) Parameters" registry group:<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-2">
+          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">RR Type</th>
+              <th class="text-left" rowspan="1" colspan="1">_NODE NAME</th>
+              <th class="text-left" rowspan="1" colspan="1">Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">DSYNC</td>
+              <td class="text-left" rowspan="1" colspan="1">_dsync</td>
+              <td class="text-left" rowspan="1" colspan="1">RFC 9859</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-7">
+      <h2 id="name-references">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-7.1">
+        <h3 id="name-normative-references">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC1035">[RFC1035]</dt>
+        <dd>
+<span class="refAuthor">Mockapetris, P.</span>, <span class="refTitle">"Domain names - implementation and specification"</span>, <span class="seriesInfo">STD 13</span>, <span class="seriesInfo">RFC 1035</span>, <span class="seriesInfo">DOI 10.17487/RFC1035</span>, <time datetime="1987-11" class="refDate">November 1987</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc1035">https://www.rfc-editor.org/info/rfc1035</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC1996">[RFC1996]</dt>
+        <dd>
+<span class="refAuthor">Vixie, P.</span>, <span class="refTitle">"A Mechanism for Prompt Notification of Zone Changes (DNS NOTIFY)"</span>, <span class="seriesInfo">RFC 1996</span>, <span class="seriesInfo">DOI 10.17487/RFC1996</span>, <time datetime="1996-08" class="refDate">August 1996</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc1996">https://www.rfc-editor.org/info/rfc1996</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2136">[RFC2136]</dt>
+        <dd>
+<span class="refAuthor">Vixie, P., Ed.</span>, <span class="refAuthor">Thomson, S.</span>, <span class="refAuthor">Rekhter, Y.</span>, and <span class="refAuthor">J. Bound</span>, <span class="refTitle">"Dynamic Updates in the Domain Name System (DNS UPDATE)"</span>, <span class="seriesInfo">RFC 2136</span>, <span class="seriesInfo">DOI 10.17487/RFC2136</span>, <time datetime="1997-04" class="refDate">April 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc2136">https://www.rfc-editor.org/info/rfc2136</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7344">[RFC7344]</dt>
+        <dd>
+<span class="refAuthor">Kumari, W.</span>, <span class="refAuthor">Gudmundsson, O.</span>, and <span class="refAuthor">G. Barwood</span>, <span class="refTitle">"Automating DNSSEC Delegation Trust Maintenance"</span>, <span class="seriesInfo">RFC 7344</span>, <span class="seriesInfo">DOI 10.17487/RFC7344</span>, <time datetime="2014-09" class="refDate">September 2014</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7344">https://www.rfc-editor.org/info/rfc7344</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7477">[RFC7477]</dt>
+        <dd>
+<span class="refAuthor">Hardaker, W.</span>, <span class="refTitle">"Child-to-Parent Synchronization in DNS"</span>, <span class="seriesInfo">RFC 7477</span>, <span class="seriesInfo">DOI 10.17487/RFC7477</span>, <time datetime="2015-03" class="refDate">March 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7477">https://www.rfc-editor.org/info/rfc7477</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8078">[RFC8078]</dt>
+        <dd>
+<span class="refAuthor">Gudmundsson, O.</span> and <span class="refAuthor">P. Wouters</span>, <span class="refTitle">"Managing DS Records from the Parent via CDS/CDNSKEY"</span>, <span class="seriesInfo">RFC 8078</span>, <span class="seriesInfo">DOI 10.17487/RFC8078</span>, <time datetime="2017-03" class="refDate">March 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8078">https://www.rfc-editor.org/info/rfc8078</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8126">[RFC8126]</dt>
+        <dd>
+<span class="refAuthor">Cotton, M.</span>, <span class="refAuthor">Leiba, B.</span>, and <span class="refAuthor">T. Narten</span>, <span class="refTitle">"Guidelines for Writing an IANA Considerations Section in RFCs"</span>, <span class="seriesInfo">BCP 26</span>, <span class="seriesInfo">RFC 8126</span>, <span class="seriesInfo">DOI 10.17487/RFC8126</span>, <time datetime="2017-06" class="refDate">June 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8126">https://www.rfc-editor.org/info/rfc8126</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8174">https://www.rfc-editor.org/info/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8552">[RFC8552]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D.</span>, <span class="refTitle">"Scoped Interpretation of DNS Resource Records through "Underscored" Naming of Attribute Leaves"</span>, <span class="seriesInfo">BCP 222</span>, <span class="seriesInfo">RFC 8552</span>, <span class="seriesInfo">DOI 10.17487/RFC8552</span>, <time datetime="2019-03" class="refDate">March 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8552">https://www.rfc-editor.org/info/rfc8552</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8914">[RFC8914]</dt>
+        <dd>
+<span class="refAuthor">Kumari, W.</span>, <span class="refAuthor">Hunt, E.</span>, <span class="refAuthor">Arends, R.</span>, <span class="refAuthor">Hardaker, W.</span>, and <span class="refAuthor">D. Lawrence</span>, <span class="refTitle">"Extended DNS Errors"</span>, <span class="seriesInfo">RFC 8914</span>, <span class="seriesInfo">DOI 10.17487/RFC8914</span>, <time datetime="2020-10" class="refDate">October 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8914">https://www.rfc-editor.org/info/rfc8914</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9364">[RFC9364]</dt>
+        <dd>
+<span class="refAuthor">Hoffman, P.</span>, <span class="refTitle">"DNS Security Extensions (DNSSEC)"</span>, <span class="seriesInfo">BCP 237</span>, <span class="seriesInfo">RFC 9364</span>, <span class="seriesInfo">DOI 10.17487/RFC9364</span>, <time datetime="2023-02" class="refDate">February 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9364">https://www.rfc-editor.org/info/rfc9364</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9499">[RFC9499]</dt>
+        <dd>
+<span class="refAuthor">Hoffman, P.</span> and <span class="refAuthor">K. Fujiwara</span>, <span class="refTitle">"DNS Terminology"</span>, <span class="seriesInfo">BCP 219</span>, <span class="seriesInfo">RFC 9499</span>, <span class="seriesInfo">DOI 10.17487/RFC9499</span>, <time datetime="2024-03" class="refDate">March 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9499">https://www.rfc-editor.org/info/rfc9499</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9567">[RFC9567]</dt>
+        <dd>
+<span class="refAuthor">Arends, R.</span> and <span class="refAuthor">M. Larson</span>, <span class="refTitle">"DNS Error Reporting"</span>, <span class="seriesInfo">RFC 9567</span>, <span class="seriesInfo">DOI 10.17487/RFC9567</span>, <time datetime="2024-04" class="refDate">April 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9567">https://www.rfc-editor.org/info/rfc9567</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9615">[RFC9615]</dt>
+      <dd>
+<span class="refAuthor">Thomassen, P.</span> and <span class="refAuthor">N. Wisiol</span>, <span class="refTitle">"Automatic DNSSEC Bootstrapping Using Authenticated Signals from the Zone's Operator"</span>, <span class="seriesInfo">RFC 9615</span>, <span class="seriesInfo">DOI 10.17487/RFC9615</span>, <time datetime="2024-07" class="refDate">July 2024</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc9615">https://www.rfc-editor.org/info/rfc9615</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-7.2">
+        <h3 id="name-informative-references">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="RFC6781">[RFC6781]</dt>
+        <dd>
+<span class="refAuthor">Kolkman, O.</span>, <span class="refAuthor">Mekking, W.</span>, and <span class="refAuthor">R. Gieben</span>, <span class="refTitle">"DNSSEC Operational Practices, Version 2"</span>, <span class="seriesInfo">RFC 6781</span>, <span class="seriesInfo">DOI 10.17487/RFC6781</span>, <time datetime="2012-12" class="refDate">December 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc6781">https://www.rfc-editor.org/info/rfc6781</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7583">[RFC7583]</dt>
+        <dd>
+<span class="refAuthor">Morris, S.</span>, <span class="refAuthor">Ihren, J.</span>, <span class="refAuthor">Dickinson, J.</span>, and <span class="refAuthor">W. Mekking</span>, <span class="refTitle">"DNSSEC Key Rollover Timing Considerations"</span>, <span class="seriesInfo">RFC 7583</span>, <span class="seriesInfo">DOI 10.17487/RFC7583</span>, <time datetime="2015-10" class="refDate">October 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc7583">https://www.rfc-editor.org/info/rfc7583</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8901">[RFC8901]</dt>
+      <dd>
+<span class="refAuthor">Huque, S.</span>, <span class="refAuthor">Aras, P.</span>, <span class="refAuthor">Dickinson, J.</span>, <span class="refAuthor">Vcelak, J.</span>, and <span class="refAuthor">D. Blacka</span>, <span class="refTitle">"Multi-Signer DNSSEC Models"</span>, <span class="seriesInfo">RFC 8901</span>, <span class="seriesInfo">DOI 10.17487/RFC8901</span>, <time datetime="2020-09" class="refDate">September 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/info/rfc8901">https://www.rfc-editor.org/info/rfc8901</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="context">
+<section id="appendix-A">
+      <h2 id="name-efficiency-and-convergence-">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-efficiency-and-convergence-" class="section-name selfRef">Efficiency and Convergence Issues in DNS Scanning</a>
+      </h2>
+<div id="original-notify-for-zone-transfer-nudging">
+<section id="appendix-A.1">
+        <h3 id="name-original-notify-for-zone-tr">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-original-notify-for-zone-tr" class="section-name selfRef">Original NOTIFY for Zone Transfer Nudging</a>
+        </h3>
+<p id="appendix-A.1-1"><span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span> introduced the concept of a DNS NOTIFY message, which was used
+to improve the convergence time for secondary servers when a DNS zone
+had been updated in the primary server. The basic idea was to augment the
+original "pull" mechanism (a periodic SOA query) with a "push"
+mechanism (a NOTIFY) for a common case that was otherwise very
+inefficient (due to either slow convergence or wasteful and overly
+frequent scanning of the primary for changes).<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.1-2">While it is possible to indicate how frequently checks should occur
+(via the SOA Refresh parameter), these checks did not allow catching
+zone changes that fall between checkpoints. <span>[<a href="#RFC1996" class="cite xref">RFC1996</a>]</span> addressed the
+   optimization of the time-and-cost trade-off between a secondary server 
+   frequently checking for new versions of a zone and infrequent checks by replacing 
+   scheduled scanning with the more efficient NOTIFY mechanism.<a href="#appendix-A.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="similar-issues-for-ds-maintenance-and-beyond">
+<section id="appendix-A.2">
+        <h3 id="name-similar-issues-for-ds-maint">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-similar-issues-for-ds-maint" class="section-name selfRef">Similar Issues for DS Maintenance and Beyond</a>
+        </h3>
+<p id="appendix-A.2-1">Today, we have similar issues with slow updates of DNS data in spite of
+the data having been published. The two most obvious cases are CDS and
+CSYNC scanners deployed in a growing number of TLD registries. Because of
+the large number of child delegations, scanning for CDS and CSYNC records
+is rather slow (as in, infrequent).<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-2">Only a very small number of the delegations will have updated
+a CDS or CDNSKEY record in between two scanning runs. However, frequent
+scanning for CDS and CDNSKEY records is costly, and infrequent scanning
+causes slower convergence (i.e., delay until the DS RRset is updated).<a href="#appendix-A.2-2" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-3">Unlike in the original case, where the primary is able to suggest the
+scanning interval via the SOA Refresh parameter, an equivalent mechanism
+does not exist for DS-related scanning.<a href="#appendix-A.2-3" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-4">All of the above also applies to automated NS and glue record
+maintenance via CSYNC scanning <span>[<a href="#RFC7477" class="cite xref">RFC7477</a>]</span>. Again, given that CSYNC
+records change only rarely, frequent scanning of a large number of
+delegations seems disproportionately costly, while infrequent scanning
+causes slower convergence (delay until the delegation is updated).<a href="#appendix-A.2-4" class="pilcrow">¶</a></p>
+<p id="appendix-A.2-5">While use of the NOTIFY mechanism for coordinating the key exchange in
+multi-signer setups <span>[<a href="#RFC8901" class="cite xref">RFC8901</a>]</span> is
+conceivable, the detailed specification is left for future work.<a href="#appendix-A.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgements">
+<section id="appendix-B">
+      <h2 id="name-acknowledgements">
+<a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="appendix-B-1">The authors acknowledge the contributions and reviews of the
+      following individuals (in order of their first contribution or review):
+      <span class="contact-name">Joe Abley</span>, <span class="contact-name">Mark Andrews</span>,
+      <span class="contact-name">Christian Elmerot</span>, <span class="contact-name">Ólafur       Guðmundsson</span>, <span class="contact-name">Paul Wouters</span>, <span class="contact-name">Brian Dickson</span>, <span class="contact-name">Warren Kumari</span>,
+      <span class="contact-name">Geoff Huston</span>, <span class="contact-name">Patrick       Mevzek</span>, <span class="contact-name">Tim Wicinski</span>, <span class="contact-name">Q       Misell</span>, <span class="contact-name">Stefan Ubbink</span>, <span class="contact-name">Matthijs Mekking</span>, <span class="contact-name">Kevin P. Fleming</span>,
+      <span class="contact-name">Nicolai Leymann</span>, <span class="contact-name">Giuseppe       Fioccola</span>, <span class="contact-name">Peter Yee</span>, <span class="contact-name">Tony       Li</span>, <span class="contact-name">Paul Wouters</span>, <span class="contact-name">Roman       Danyliw</span>, <span class="contact-name">Peter van Dijk</span>, <span class="contact-name">John Scudder</span>, <span class="contact-name">Éric Vyncke</span>, and
+      <span class="contact-name">Oli Schacher</span>.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-C">
+      <h2 id="name-authors-addresses">
+<a href="#name-authors-addresses" class="section-name selfRef">Authors' Addresses</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Johan Stenstam</span></div>
+<div dir="auto" class="left"><span class="org">The Swedish Internet Foundation</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:johan.stenstam@internetstiftelsen.se" class="email">johan.stenstam@internetstiftelsen.se</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Peter Thomassen</span></div>
+<div dir="auto" class="left"><span class="org">deSEC, Secure Systems Engineering</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:peter@desec.io" class="email">peter@desec.io</a>
+</div>
+</address>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">John Levine</span></div>
+<div dir="auto" class="left"><span class="org">Standcore LLC</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:standards@standcore.com" class="email">standards@standcore.com</a>
+</div>
+</address>
+</section>
+</div>
+</div>
+
+                    </div>
+                
+            </div>
+            <div class="d-print-none col-md-3 bg-light-subtle collapse show" id="sidebar">
+                <div class="position-fixed border-start sidebar overflow-scroll overscroll-none no-scrollbar">
+                    <div class="d-flex flex-column vh-100 pt-2 pt-lg-3 ps-3 pl-md-2 pl-lg-3">
+                        <div>
+                            <a class="btn btn-primary btn-sm" href="/doc/rfc9859/">Datatracker</a>
+                            <p class="fw-bold pt-2">
+                                
+                                    RFC 9859
+                                
+                                <br>
+                                
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Proposed Standard
+    
+</span>
+
+                            </p>
+                        </div>
+                        
+                        <ul class="nav nav-tabs nav-fill small me-2" role="tablist">
+                            <li class="nav-item" role="presentation" title="Document information">
+                                <button class="nav-link px-2"
+                                        id="docinfo-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#docinfo-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="docinfo-tab-pane"
+                                        aria-selected="true">
+                                    <i class="bi bi-info-circle"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Info</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation" title="Table of contents">
+                                <button class="nav-link px-2"
+                                        id="toc-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#toc-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="toc-tab-pane"
+                                        aria-selected="false">
+                                    <i class="bi bi-list-ol"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Contents</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation" title="Preferences">
+                                <button class="nav-link px-2"
+                                        id="pref-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#pref-tab-pane"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="pref-tab-pane"
+                                        aria-selected="false">
+                                    <i class="bi bi-gear"></i><span class="d-none d-md-block d-xl-inline ms-xl-1">Prefs</span>
+                                </button>
+                            </li>
+                        </ul>
+                        <div class="overflow-auto tab-content pt-2 me-2">
+                            <div class="tab-pane"
+                                 id="docinfo-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="docinfo-tab"
+                                 tabindex="0">
+                                <table class="table table-sm table-borderless">
+                                    
+
+
+
+
+
+
+
+<tbody class="meta align-top ">
+    <tr>
+        <th scope="row">Document</th>
+        <th scope="row">Document type</th>
+        <td class="edit"></td>
+        <td>
+            
+
+
+
+
+
+<span class="text-success">RFC
+    
+    - Proposed Standard
+    
+</span>
+
+            
+                
+                    <br>September 2025
+                
+                <br>
+                
+                
+                    <a class="btn btn-sm btn-warning"
+                       title="Click to report an error in the document."
+                       href="https://www.rfc-editor.org/errata.php#reportnew"
+                       target="_blank">
+                        Report errata
+                    </a>
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                    <div>
+                        Was
+                        <a href="/doc/draft-ietf-dnsop-generalized-notify/09/">draft-ietf-dnsop-generalized-notify</a>
+                        (<a href="/wg/dnsop/about/">dnsop WG</a>)
+                    </div>
+                
+            
+            
+            
+                
+
+
+
+
+    
+
+
+            
+        </td>
+    </tr>
+    
+        <tr>
+            <td></td>
+            <th scope="row">Select version</th>
+            <td class="edit"></td>
+            <td>
+                
+
+
+
+    <ul class="revision-list pagination pagination-sm text-center flex-wrap my-0">
+        
+            
+            
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-00"
+                        rel="nofollow">
+                            00
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-01"
+                        rel="nofollow">
+                            01
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-02"
+                        rel="nofollow">
+                            02
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-03"
+                        rel="nofollow">
+                            03
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-04"
+                        rel="nofollow">
+                            04
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-05"
+                        rel="nofollow">
+                            05
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-06"
+                        rel="nofollow">
+                            06
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-07"
+                        rel="nofollow">
+                            07
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-08"
+                        rel="nofollow">
+                            08
+                        </a>
+                    </li>
+                
+                    <li class="page-item">
+                        <a class="page-link"
+                        href="/doc/html/draft-ietf-dnsop-generalized-notify-09"
+                        rel="nofollow">
+                            09
+                        </a>
+                    </li>
+                
+            
+            
+            <li class="page-item rfc active">
+                <a class="page-link"
+                href="/doc/html/rfc9859">
+                    RFC 9859
+                </a>
+            </li>
+        
+    </ul>
+
+            </td>
+        </tr>
+        
+            <tr>
+                <td></td>
+                <th scope="row">Compare versions</th>
+                <td class="edit"></td>
+                <td>
+                    
+
+
+
+<form class="form-horizontal diff-form"
+      action="https://author-tools.ietf.org/iddiff"
+      method="get"
+      target="_blank">
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="From revision"
+                    name="url1">
+                
+                    <option value="rfc9859">
+                        RFC 9859
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-09" selected>
+                        draft-ietf-dnsop-generalized-notify-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-08">
+                        draft-ietf-dnsop-generalized-notify-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-07">
+                        draft-ietf-dnsop-generalized-notify-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-06">
+                        draft-ietf-dnsop-generalized-notify-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-05">
+                        draft-ietf-dnsop-generalized-notify-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-04">
+                        draft-ietf-dnsop-generalized-notify-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-03">
+                        draft-ietf-dnsop-generalized-notify-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-02">
+                        draft-ietf-dnsop-generalized-notify-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-01">
+                        draft-ietf-dnsop-generalized-notify-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-00">
+                        draft-ietf-dnsop-generalized-notify-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <select class="form-select form-select-sm mb-1 select2-field"
+                    data-max-entries="1"
+                    data-width="resolve"
+                    data-allow-clear="false"
+                    data-minimum-input-length="0"
+                    aria-label="To revision"
+                    name="url2">
+                
+                    <option value="rfc9859" selected>
+                        RFC 9859
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-09">
+                        draft-ietf-dnsop-generalized-notify-09
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-08">
+                        draft-ietf-dnsop-generalized-notify-08
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-07">
+                        draft-ietf-dnsop-generalized-notify-07
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-06">
+                        draft-ietf-dnsop-generalized-notify-06
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-05">
+                        draft-ietf-dnsop-generalized-notify-05
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-04">
+                        draft-ietf-dnsop-generalized-notify-04
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-03">
+                        draft-ietf-dnsop-generalized-notify-03
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-02">
+                        draft-ietf-dnsop-generalized-notify-02
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-01">
+                        draft-ietf-dnsop-generalized-notify-01
+                        
+                    </option>
+                
+                    <option value="draft-ietf-dnsop-generalized-notify-00">
+                        draft-ietf-dnsop-generalized-notify-00
+                        
+                    </option>
+                
+                
+            </select>
+
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--html"
+                    name="difftype">
+                Side-by-side
+            </button>
+            
+            <button type="submit"
+                    class="btn btn-primary btn-sm"
+                    value="--hwdiff"
+                    name="difftype">
+                Inline
+            </button>
+
+
+</form>
+
+                </td>
+            </tr>
+        
+    
+    <tr>
+        <td></td>
+        <th scope="row">Authors</th>
+        <td class="edit">
+            
+        </td>
+        <td>
+            
+            
+                <span ><a 
+           title="Datatracker profile of Johan Stenstam"
+            href="/person/johan.stenstam@internetstiftelsen.se" >J. Stenstam</a> <a 
+               href="mailto:johan.stenstam%40internetstiftelsen.se"
+               aria-label="Compose email to johan.stenstam@internetstiftelsen.se"
+               title="Compose email to johan.stenstam@internetstiftelsen.se">
+                <i class="bi bi-envelope"></i></a></span>,
+            
+                <span ><a 
+           title="Datatracker profile of Peter Thomassen"
+            href="/person/peter@desec.io" >P. Thomassen</a> <a 
+               href="mailto:peter%40desec.io"
+               aria-label="Compose email to peter@desec.io"
+               title="Compose email to peter@desec.io">
+                <i class="bi bi-envelope"></i></a></span>,
+            
+                <span ><a 
+           title="Datatracker profile of John R. Levine"
+            href="/person/ietf@johnlevine.com" >J. Levine</a> <a 
+               href="mailto:ietf%40johnlevine.com"
+               aria-label="Compose email to ietf@johnlevine.com"
+               title="Compose email to ietf@johnlevine.com">
+                <i class="bi bi-envelope"></i></a></span>
+            
+            
+                <br>
+                <a class="btn btn-primary btn-sm mt-1" href="mailto:rfc9859@ietf.org?subject=rfc9859" title="Send email to the document authors">Email authors</a>
+            
+        </td>
+    </tr>
+    
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            RFC stream
+        </th>
+        <td class="edit">
+            
+        </td>
+        <td >
+            
+                
+                
+                    
+                        
+
+
+
+<img alt="IETF Logo"
+     class="d-lm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor-white.svg"
+        
+     
+     >
+
+<img alt="IETF Logo"
+     class="d-dm-none w-25 mt-1"
+     
+     
+        
+             src="https://static.ietf.org/dt/12.82.1/ietf/images/ietf-logo-nor.svg"
+        
+     
+     >
+                    
+                
+                
+            
+        </td>
+    </tr>
+    
+    <tr>
+        <td></td>
+        <th scope="row">
+            Other formats
+        </th>
+        <td class="edit">
+        </td>
+        <td>
+            
+                
+    <div class="buttonlist">
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9859.txt">
+            
+                <i class="bi bi-file-text"></i> txt
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9859.html">
+            
+                <i class="bi bi-file-code"></i> html
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9859.xml">
+            
+                <i class="bi bi-file-code"></i> xml
+            
+        </a>
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+            download="rfc9859.pdf"
+          
+         
+          target="_blank"
+          href="https://www.rfc-editor.org/rfc/rfc9859.pdf">
+            
+                <i class="bi bi-file-pdf"></i> pdf
+            
+        </a>
+        
+    
+        
+    
+        
+        <a class="btn btn-primary btn-sm"
+          
+          target="_blank"
+          href="/doc/rfc9859/bibtex/">
+            
+                <i class="bi bi-file-ruled"></i> bibtex
+            
+        </a>
+        
+    
+</div>
+
+            
+        </td>
+    </tr>
+    
+    
+        
+            <tr>
+                <td>
+                </td>
+                <th scope="row">
+                    Additional resources
+                </th>
+                <td class="edit">
+                    
+                </td>
+                <td>
+                    
+                        
+                        
+                            
+                                <a href="https://mailarchive.ietf.org/arch/browse/dnsop/?q=rfc9859 OR %22draft-ietf-dnsop-generalized-notify%22">
+                                    Mailing list discussion
+                                </a>
+                            
+                        
+                    
+                </td>
+            </tr>
+        
+    
+</tbody>
+                                </table>
+                                <a class="btn btn-sm btn-warning mb-3"
+                                target="_blank"
+                                href="https://github.com/ietf-tools/datatracker/issues/new/choose">
+                                    Report a datatracker bug
+                                    <i class="bi bi-bug"></i>
+                                </a>
+                            </div>
+                            <div class="tab-pane mb-5"
+                                 id="toc-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="toc-tab"
+                                 tabindex="0">
+                                <nav class="nav nav-pills flex-column small" id="toc-nav">
+                                </nav>
+                            </div>
+                            <div class="tab-pane mb-5 small"
+                                 id="pref-tab-pane"
+                                 role="tabpanel"
+                                 aria-labelledby="pref-tab"
+                                 tabindex="0">
+                                <label class="form-label fw-bold mb-2">Show sidebar by default</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="sidebar" id="on-radio">
+                                    <label class="btn btn-outline-primary" for="on-radio">Yes</label>
+                                    <input type="radio" class="btn-check" name="sidebar" id="off-radio">
+                                    <label class="btn btn-outline-primary" for="off-radio">No</label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">Tab to show by default</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="deftab" id="docinfo-radio">
+                                    <label class="btn btn-outline-primary" for="docinfo-radio">
+                                        <i class="bi bi-info-circle me-1"></i>Info
+                                    </label>
+                                    <input type="radio" class="btn-check" name="deftab" id="toc-radio">
+                                    <label class="btn btn-outline-primary" for="toc-radio">
+                                        <i class="bi bi-list-ol me-1"></i>Contents
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">HTMLization configuration</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="htmlconf" id="txt-radio">
+                                    <label class="btn btn-outline-primary" for="txt-radio" title="This is the traditional HTMLization method.">
+                                        <i class="bi bi-badge-sd me-1"></i>HTMLize the plaintext
+                                    </label>
+                                    <input type="radio" class="btn-check" name="htmlconf" id="html-radio">
+                                    <label class="btn btn-outline-primary" for="html-radio" title="This is the modern HTMLization method.">
+                                        <i class="bi bi-badge-hd me-1"></i>Plaintextify the HTML
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2" for="ptsize">Maximum font size</label>
+                                <input type="range" class="form-range" min="7" max="16" id="ptsize" oninput="ptdemo.value = ptsize.value">
+                                <label class="form-label fw-bold mt-4 mb-2">Page dependencies</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="pagedeps" id="inline-radio">
+                                    <label class="btn btn-outline-primary" for="inline-radio" title="Generate larger, standalone web pages that do not require network access to render.">
+                                        <i class="bi bi-box me-1"></i>Inline
+                                    </label>
+                                    <input type="radio" class="btn-check" name="pagedeps" id="reference-radio">
+                                    <label class="btn btn-outline-primary" for="reference-radio" title="Generate regular web pages that require network access to render.">
+                                        <i class="bi bi-link-45deg me-1"></i>Reference
+                                    </label>
+                                </div>
+                                <label class="form-label fw-bold mt-4 mb-2">Citation links</label>
+                                <div class="btn-group-vertical btn-group-sm d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="reflinks" id="refsection-radio">
+                                    <label class="btn btn-outline-primary" for="refsection-radio" title="Citation links go to the reference section.">
+                                        <i class="bi bi-arrow-clockwise"></i> Go to reference section
+                                    </label>
+                                    <input type="radio" class="btn-check" name="reflinks" id="citation-radio">
+                                    <label class="btn btn-outline-primary" for="citation-radio" title="Citation links go directly to the cited document.">
+                                        <i class="bi bi-link-45deg me-1"></i>Go to linked document
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+<script>
+  var _paq = window._paq || [];
+  
+  _paq.push(['disableCookies']);
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.ietf.org/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', 7]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//analytics.ietf.org/matomo.php?idsite=7" style="border:0;" alt="" /></p></noscript>
+
+    <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a4ef4d4a9d8d0d5c',t:'MTc5Mjc0MzQxMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

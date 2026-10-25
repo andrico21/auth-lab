@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-eighth-cache-namespace-schema-location-audit",
+  "productionExistedDuringCorrection": true,
+  "claimsPreProductionAddendum": false,
+  "schemaDesignDiscoveryIndependenceClaimed": false,
+  "schemaContract": {
+    "providedBy": "Main integration owner, explicit task declaration",
+    "declaration": "NETWORK cache context has one canonical namespace object {cacheOwner,checkingOwner,view,trustStore}. Expected namespace values belong under cacheEntries[i].namespace; do not duplicate namespace fields at cache-entry top level.",
+    "scope": "Parent-supplied consumer API path mapping only, not independently discovered schema design or production-output observation."
+  },
+  "independence": {
+    "applicationSourceRead": false,
+    "testsRead": false,
+    "productionContractEvaluatorRead": false,
+    "productionDiagnosticsRead": false,
+    "productionEvaluatorExecuted": false,
+    "expectedValuesDerivedFromApplicationOutput": false,
+    "osSandboxEnforcementClaimed": false
+  },
+  "consultedFiles": [
+    {
+      "path": "docs/dnssec-expansion/inputs/dnssec-review-and-worker-comments.html",
+      "bytes": 68765,
+      "sha256": "ece30d331ef1072e00f6ef8ca871da68794b9598f315d84d0423578058f45e26"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-mixed-path-policy/worksheet-resolution.json",
+      "bytes": 5664817,
+      "sha256": "9d2380b4e6a43a9a9082f1c516ff50534f3439b79c61e7925aec045ad9c99b19"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-mixed-path-policy/worksheet.json",
+      "bytes": 6727718,
+      "sha256": "97c42a3ae12a2939bcbd89a546ebbf7350ff8c3caf03e3e94b1317dbdf2a4f9f"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/effective-mixed-path-policy/contract-addendum.json",
+      "bytes": 9044,
+      "sha256": "b4d113783a82fa2c55e523985b218b697203eb9d663b92804787574d559519ff"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/review-corrections-proposal.json",
+      "bytes": 57786,
+      "sha256": "dbc72e7bf7dcacfa10b6a412e9fcc7d1661302f4accd1ff2175c195776c741db"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-errata/mixed-path-policy-proposal.json",
+      "bytes": 11897,
+      "sha256": "c19a5516e76b352b746f461a11f46f0537a1b2ef2f71d6a240472f708594b5f2"
+    },
+    {
+      "path": "docs/dnssec-expansion/contract-freeze.json",
+      "bytes": 68646,
+      "sha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19"
+    }
+  ],
+  "sourceAssessment": {
+    "review": "DNS-R01 requires stub-owned validation/proof/cache under stub-public-v1. Review explicitly does not prescribe the application cache API.",
+    "priorAuthority": "Sixth independently sourced checkingOwner dnsStub and trustStore stub-public-v1 remain unchanged. Seventh inherited them at cache-entry top level.",
+    "correction": "Relocate those exact two scalar values into existing-or-new namespace; remove both top-level keys. Preserve existing namespace cacheOwner/view if present. Sealed selected entry has no namespace, so this patch adds only the two already-authorized expectations, not new cacheOwner/view assertions.",
+    "semanticChange": false,
+    "duplicateAliasesAdded": false
+  },
+  "preserved": [
+    "All354 originals and all7 prior worksheet/seal layers",
+    "All22/159 IDs/defaults/setup/outcomes and R01 actor/cache semantic values",
+    "Every public numeric tuple, cache key, evidence binding, receipt, deadline and security status",
+    "All seventh mixed-policy cause distinctions",
+    "No changes for other parent-owned quality findings or broader release/manual/native/performance status"
+  ],
+  "execution": "No emit/check/test/build/formatter, numeric producer/verifier or application evaluator executed for this layer."
+}

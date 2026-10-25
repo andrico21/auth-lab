@@ -1,0 +1,4779 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNSSEC-independent-numeric-to-source-gate",
+  "passed": true,
+  "scope": "Public source canonicalization, key tags, reference-bound mathematical matching, eligibility, DS, serial arithmetic, TTL and chain boundaries. Independent native cryptographic calculations are the separately captured pinned Python/OpenSSL producer reports, not browser execution or live DNS.",
+  "argv": [
+    "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+    "/home/andrico/auth-lab-held-objects/tools/verification/check-dnssec-numeric.mjs",
+    "--out",
+    "docs/verification/dnssec-review-corrections/numeric-04"
+  ],
+  "runtime": {
+    "executable": "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+    "bun": "1.4.2",
+    "version": "v26.3.0"
+  },
+  "runner": {
+    "path": "tools/verification/check-dnssec-numeric.mjs",
+    "sha256": "a9fb6256ca799e33872ed23e4b4a34af6ede2fd521578833f1ae68e89a10aeb7"
+  },
+  "cases": [
+    {
+      "name": "complete-public-keys",
+      "passed": true,
+      "objects": 33
+    },
+    {
+      "name": "complete-public-rrsets",
+      "passed": true,
+      "objects": 181
+    },
+    {
+      "name": "complete-public-signatures",
+      "passed": true,
+      "objects": 212
+    },
+    {
+      "name": "complete-public-ds",
+      "passed": true,
+      "objects": 23
+    },
+    {
+      "name": "complete-public-nsec3",
+      "passed": true,
+      "objects": 29
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-csk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-csk-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-ed25519-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-ksk-g1-revoked",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-ksk-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/denial-anchor/fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json",
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-zsk-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:collision-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:collision-b",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:example-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:example-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json",
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:provider-b-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:provider-b-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:root-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:root-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:root-ksk-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:other-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:other-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-zsk-protocol2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:child-zsk-zoneflag-clear",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-example-net-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-example-net-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-example-org-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-example-org-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-net-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-net-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-org-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-org-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-provider-net-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-provider-net-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-provider-org-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "key-tag-and-public-bytes:signal-provider-org-zsk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-rollover",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-mx",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-ns",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-nsec",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-soa",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-txt",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:example-child-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:example-dnskey-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:nsec3-proof-0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:nsec3-proof-1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:nsec3-proof-2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:provider-shared-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:revoked-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:root-dnskey-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:root-example-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:wildcard-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:www-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:www-nsec",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-anchor-observation",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-manual-day90",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:example-child-ds-g2-ttl86400",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:example-child-ds-rollover-ttl86400",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:root-anchor-observation",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:www-a-original-ttl60",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:www-a-rollover-ttl7200",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-anchor-omission",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-csk-g1-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-csk-g2-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-ed25519-g1-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-for-child-csk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-for-child-csk-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-for-child-ed25519-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-overlap-g1-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-nsec-with-zonemd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/zonemd-auth-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-zonemd-auth",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/zonemd-auth-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cdnskey-delete-singleton",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cdnskey-intent",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cds-delete-singleton",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cds-intent",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-csync",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dname",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-ns1-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-ns1-aaaa",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-ns2-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-ns2-aaaa",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:compact-branch-ent",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:compact-ent-descendant",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:compact-no-nxname",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:compact-other-nxname",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:compact-www-nodata",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:cross-zone-cname",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:dname-synthesized-unsigned-cname",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:example-other-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:other-dnskey-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:other-host-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:other-www-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-dsync-cds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-dsync-notify-address",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:private-child-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:private-www-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:www-aaaa",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:www-a-refresh-ttl7200",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/refresh-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dual-algorithm-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-dual-algorithm",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-provider-b-only",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-provider-overlap",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:www-a-long-profile-ttl7200",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-g2-final",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/complete-path-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-zsk-missing",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-zsk-protocol2-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-zsk-zoneflag-clear-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-a-address",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-a-to-www",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-a-to-x-branch",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-apex-to-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-apex-to-wildcard",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-iteration1-0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-iteration1-1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-iteration1-2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-iteration1-3",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-iteration1-param",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-no-wildcard-0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-no-wildcard-1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-no-wildcard-2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-no-wildcard-3",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-optout-0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-optout-1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-optout-2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-optout-3",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-salt-aa-0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-salt-aa-1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-salt-aa-2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-salt-aa-3",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-salt-aa-param",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-nsec3-zero-param",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-parent-unsigned-lab",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-unsigned-delegation-glue",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-unsigned-delegation-ns",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-wildcard-to-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-www-to-apex",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-x-branch-address",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-x-branch-to-www",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:denial-z-address",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-unsupported-alg250",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-unsupported-digest250",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:example-soa-negative-cache",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/parent-negative-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-ksk-only-final",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/role-rollover-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-zsk-only-final",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/role-rollover-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-csk-overlap2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-ksk-overlap3",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-provider-model1-final3",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-provider-model1-overlap4",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-zsk-overlap3",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-a-b-g0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-dnskey-collision",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-archival-alg5",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-obsolete-alg12-digest3",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-obsolete-alg5",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-unsupported-alg17",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:postfreeze-child-cdnskey-claim",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:postfreeze-child-cds-claim",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:postfreeze-parent-delegation-outside-ns",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:provider-dnskey-model2-b-kb-z0-zb",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:provider-dnskey-shared-k0-z0-zb",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:revoked-dnskey-a-b-z0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-example-net-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-example-net-parent-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-example-org-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-example-org-parent-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-net-cdnskey-child-claim",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-net-cds-child-claim",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-net-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-net-parent-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-org-cdnskey-child-claim",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-org-cds-child-claim",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-org-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-org-parent-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-provider-net-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-provider-net-parent-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-provider-org-dnskey",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:signal-provider-org-parent-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:other-parent-no-ds-ns",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/resolution-fixtures-owner-wire-corrected.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:other-parent-no-ds-nsec",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/resolution-fixtures-owner-wire-corrected.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:other-www-a-unsigned-no-ds",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/resolution-fixtures-owner-wire-corrected.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:zz-a",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/resolution-fixtures-owner-wire-corrected.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cdnskey-delete-by-newk",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cdnskey-malformed-delete",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cdnskey-newk-only",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cds-delete-by-newk",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cds-malformed-delete-plus-newk",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cds-mixed-ds4",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-cds-newk-only",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-historical-sha1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-ds-modern-obsolete",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-dsync-missing-target",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-dsync-port0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-dsync-scheme0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:parent-dsync-scheme99",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:provider-b-cdnskey-intent",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:provider-b-cds-intent",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:provider-net-nods",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:provider-org-nods",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:remote-old-nods-soa-min3600",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:remote-old-nods-ttl3600",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-soa-2026102200",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:child-soa-2026102302",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:transfer-apex-nsec",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:transfer-delegation-nsec",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:transfer-unsigned-glue",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:transfer-unsigned-ns",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:transfer-wildcard-nsec",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:transfer-www-nsec",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:www-a-initial-update",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:review-correction-nsec-dname-apex",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:review-correction-nsec-dname-branch",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:review-correction-nsec-dname-z",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:review-correction-nsec3-ancestor-delegation-0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:review-correction-nsec3-ancestor-delegation-1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:review-correction-nsec3-dname-0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "immutable-rrset:review-correction-nsec3-dname-1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-g1-by-ksk",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-rollover-by-child-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-rollover-by-child-ksk-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-mx-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-ns-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-nsec-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-soa-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-txt-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:example-child-ds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:example-dnskey-g1-by-ksk",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:nsec3-proof-0-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:nsec3-proof-1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:nsec3-proof-2-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-shared-dnskey-by-child-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-shared-dnskey-by-provider-b-ksk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:revoked-dnskey-self-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:root-dnskey-g1-by-ksk",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:root-example-ds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:wildcard-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-collision",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-csk",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-ed25519",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-provider-b",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-wrap",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 8,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-nsec-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-anchor-observation-long-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-manual-day90-current-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1801742400,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-rollover-new-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-rollover-old-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-successor-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797984000,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:example-child-ds-g2-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:example-child-ds-refreshed-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797984000,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:example-child-ds-rollover-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-shared-dnskey-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797984000,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:revoked-dnskey-day3-self-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1794570900,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:root-anchor-observation-long-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-original-ttl60-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-rollover-new-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-rollover-old-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-successor-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/lifecycle-fixtures.json"
+      ],
+      "clock": 1797984000,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-anchor-omission-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-csk-g1-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-csk-g2-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-ed25519-g1-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-for-child-csk-g1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-for-child-csk-g2-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-for-child-ed25519-g1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-overlap-g1-g2-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-nsec-with-zonemd-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/zonemd-auth-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-zonemd-auth-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/zonemd-auth-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cdnskey-delete-singleton-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cdnskey-intent-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cds-delete-singleton-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cds-intent-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-csync-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dname-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-ns1-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-ns1-aaaa-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-ns2-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-ns2-aaaa-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:compact-branch-ent-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:compact-ent-descendant-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:compact-no-nxname-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:compact-other-nxname-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:compact-www-nodata-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:cross-zone-cname-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:example-other-ds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:other-dnskey-g1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:other-host-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:other-www-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-dsync-cds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-dsync-notify-address-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:private-child-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:private-www-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-aaaa-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-refresh-old-expiry10000",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/refresh-fixtures.json"
+      ],
+      "clock": 1792718300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-refresh-same-key-new",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/refresh-fixtures.json"
+      ],
+      "clock": 1793321100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-g1-path-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dual-algorithm-dnskey-alg13",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dual-algorithm-dnskey-alg15",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:example-child-ds-path-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:example-dnskey-path-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-dual-algorithm-long-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-provider-b-only-long-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-provider-overlap-long-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-shared-dnskey-by-original-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-shared-dnskey-by-provider-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:root-dnskey-path-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:root-example-ds-path-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-long-csk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-long-csk-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-long-ed25519",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-long-provider-b",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/long-profile-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-g2-final-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/complete-path-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-complete-path-csk-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/complete-path-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-complete-path-csk-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/complete-path-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-complete-path-ed25519",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/complete-path-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-complete-path-g1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/complete-path-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-complete-path-g2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/complete-path-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-complete-path-provider-b",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/complete-path-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-zsk-missing-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-zsk-protocol2-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-zsk-protocol2-leaf-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": false
+    },
+    {
+      "name": "canonical-signature-reference:child-zsk-zoneflag-clear-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-zsk-zoneflag-clear-leaf-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": false
+    },
+    {
+      "name": "canonical-signature-reference:denial-a-address-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-a-to-www-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-a-to-x-branch-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-apex-to-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-apex-to-wildcard-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-iteration1-0-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-iteration1-1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-iteration1-2-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-iteration1-3-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-iteration1-param-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-no-wildcard-0-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-no-wildcard-1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-no-wildcard-2-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-no-wildcard-3-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-optout-0-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-optout-1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-optout-2-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-optout-3-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-salt-aa-0-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-salt-aa-1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-salt-aa-2-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-salt-aa-3-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-salt-aa-param-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-nsec3-zero-param-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-parent-unsigned-lab-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-wildcard-to-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-www-to-apex-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-x-branch-address-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-x-branch-to-www-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:denial-z-address-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-unsupported-alg250-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-unsupported-digest250-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:example-soa-negative-cache-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/parent-negative-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-ksk-only-final-long-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/role-rollover-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-zsk-only-final-long-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/role-rollover-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-csk-overlap2-by-child-csk-g1-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-csk-overlap2-by-child-csk-g2-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-ksk-overlap3-by-child-ksk-g1-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-ksk-overlap3-by-child-ksk-g2-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-provider-model1-final3-by-child-ksk-g1-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-provider-model1-overlap4-by-child-ksk-g1-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-zsk-overlap3-by-child-ksk-g1-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-a-b-g0-by-ksk",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-dnskey-collision-by-ksk",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-archival-alg5-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-obsolete-alg12-digest3-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-obsolete-alg5-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-unsupported-alg17-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:postfreeze-child-cdnskey-claim-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:postfreeze-child-cds-claim-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-dnskey-model2-b-kb-z0-zb-by-provider-b-ksk-g1-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-dnskey-shared-k0-z0-zb-by-child-ksk-g1-1h",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-dnskey-shared-k0-z0-zb-by-child-ksk-g1-long",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1797897300,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:revoked-dnskey-a-b-z0-self-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1794570900,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-example-net-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-example-net-parent-ds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-example-org-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-example-org-parent-ds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-net-cdnskey-child-claim-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-net-cds-child-claim-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-net-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-net-parent-ds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-org-cdnskey-child-claim-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-org-cds-child-claim-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-org-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-org-parent-ds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-provider-net-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-provider-net-parent-ds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-provider-org-dnskey-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:signal-provider-org-parent-ds-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:other-parent-no-ds-nsec-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/resolution-fixtures-owner-wire-corrected.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:zz-a-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/resolution-fixtures-owner-wire-corrected.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:revoked-dnskey-a-b-z0-by-b-refresh",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/denial-anchor/fixtures.json"
+      ],
+      "clock": 1794570900,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cdnskey-delete-by-newk-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cdnskey-malformed-delete-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cdnskey-newk-only-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cds-delete-by-newk-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cds-malformed-delete-plus-newk-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cds-mixed-ds4-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-cds-newk-only-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-historical-sha1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-ds-modern-obsolete-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-dsync-missing-target-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-dsync-port0-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-dsync-scheme0-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:parent-dsync-scheme99-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-b-cdnskey-intent-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-b-cds-intent-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-net-nods-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:provider-org-nods-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:remote-old-nods-soa-min3600-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:remote-old-nods-ttl3600-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-soa-2026102200-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:child-soa-2026102302-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:transfer-apex-nsec-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:transfer-delegation-nsec-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:transfer-wildcard-nsec-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:transfer-www-nsec-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:www-a-initial-update-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:review-correction-nsec-dname-apex-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:review-correction-nsec-dname-branch-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:review-correction-nsec-dname-z-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:review-correction-nsec3-ancestor-delegation-0-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:review-correction-nsec3-ancestor-delegation-1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:review-correction-nsec3-dname-0-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "canonical-signature-reference:review-correction-nsec3-dname-1-signature",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ],
+      "clock": 1792715100,
+      "mathematicalResult": true,
+      "usable": true
+    },
+    {
+      "name": "owner-key-ds-digest:child-csk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:child-csk-g2-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:child-ed25519-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:child-ksk-g1-revoked-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:child-ksk-g1-sha1-historical",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 1
+    },
+    {
+      "name": "owner-key-ds-digest:child-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:child-ksk-g2-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:child-zsk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:child-zsk-g2-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:example-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:example-zsk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:provider-b-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:provider-b-zsk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:root-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:root-zsk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:other-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/record-profile-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:signal-example-net-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:signal-example-org-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:signal-net-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:signal-org-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:signal-provider-net-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:signal-provider-org-ksk-g1-sha256",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json"
+      ],
+      "digestType": 2
+    },
+    {
+      "name": "owner-key-ds-digest:child-ksk-g1-sha384",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json"
+      ],
+      "digestType": 4
+    },
+    {
+      "name": "independent-nsec3-reference:*.lab.example.:i0:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:*.lab.example.:i0:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:*.lab.example.:i12:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:*.lab.example.:i1:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:lab.example.:i0:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:lab.example.:i0:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:lab.example.:i12:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:lab.example.:i1:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:no.lab.example.:i0:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:no.lab.example.:i0:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:no.lab.example.:i12:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:no.lab.example.:i1:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:unsigned.lab.example.:i0:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:unsigned.lab.example.:i0:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:unsigned.lab.example.:i12:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:unsigned.lab.example.:i1:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:www.lab.example.:i0:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:www.lab.example.:i0:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:www.lab.example.:i12:saltaabbccdd",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:www.lab.example.:i1:saltempty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:nsec3-other-lab-zero-empty",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/post-freeze-completion/denial-anchor/fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:review-correction-name-0",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:review-correction-name-1",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:review-correction-name-2",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:review-correction-name-3",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:review-correction-name-4",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:review-correction-name-5",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:review-correction-name-6",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "independent-nsec3-reference:review-correction-name-7",
+      "passed": true,
+      "origins": [
+        "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json"
+      ]
+    },
+    {
+      "name": "serial-time:before-inception",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:at-inception",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:at-expiration",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:after-expiration",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:wrap-before-inception",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:wrap-at-inception",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:wrap-before-zero",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:wrap-zero",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:wrap-at-expiration",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:wrap-after-expiration",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "serial-time:half-range-undefined",
+      "passed": true,
+      "source": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json"
+    },
+    {
+      "name": "ttl-limiting-term:receivedTtl",
+      "passed": true
+    },
+    {
+      "name": "ttl-limiting-term:rrsigTtl",
+      "passed": true
+    },
+    {
+      "name": "ttl-limiting-term:originalTtl",
+      "passed": true
+    },
+    {
+      "name": "ttl-limiting-term:signatureExpiration",
+      "passed": true
+    },
+    {
+      "name": "actual-key-and-rdata-mutations",
+      "passed": true
+    },
+    {
+      "name": "signature-mathematics-versus-time-eligibility",
+      "passed": true
+    },
+    {
+      "name": "same-tag-different-public-key-candidates",
+      "passed": true,
+      "collisions": 1
+    },
+    {
+      "name": "public-projection-has-no-private-scalar-input",
+      "passed": true,
+      "sourceFiles": [
+        "src/dnssec-fixtures.js",
+        "src/dnssec-addendum-fixtures.js",
+        "src/dnssec-completion-fixtures.js",
+        "src/dnssec-review-fixtures.js",
+        "dist/auth-flow-studio.html"
+      ],
+      "independentSyntheticScalarInputsChecked": 30
+    }
+  ],
+  "failures": [],
+  "totals": {
+    "keys": 33,
+    "rrsets": 181,
+    "signatures": 212,
+    "ds": 23,
+    "nsec3": 29
+  },
+  "independentInputs": [
+    {
+      "path": "docs/dnssec-expansion/numeric/FINAL-FIXTURE-IDENTITIES.json",
+      "bytes": 43152,
+      "sha256": "97b4e87155826dbfd184687c821bf842a5a68901c567977a84ba3ce93577027f"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-contract-errata/POST-FREEZE-CATALOG.json",
+      "bytes": 137065,
+      "sha256": "2c8c7a134e56714d09be1371c8b8cd6f90cb8dc1737fe381f78d59f0e53fa7c5"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/POST-FREEZE-COMPLETION-CATALOG.json",
+      "bytes": 109414,
+      "sha256": "5cbea7727bdcea3eb75a2e3be542eb38ab6788c1b54f644927ef56613029a0ee"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/review-corrections/PUBLIC-CATALOG.json",
+      "bytes": 12333,
+      "sha256": "7f2eba596704ba73bddc3d20a1616b8ecce9cd6b8b4a57229df0a511b1c43f28"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/dnssec-numeric-fixtures.json",
+      "bytes": 91858,
+      "sha256": "10e8b7d6587ab77023d03ba91df7a83372a35f575e306e68afe4288f02f81c61"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/independent-verification.json",
+      "bytes": 43763,
+      "sha256": "5aa1ec83a87eff7d120f7b23ae036cc933524452543c20f0788711faab97a04c"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/lifecycle-fixtures.json",
+      "bytes": 34892,
+      "sha256": "cfb51583bfb32a133f725ce2cc160d69ca681e4ad1186ddfab26b68f7d6cc62c"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/lifecycle-verification.json",
+      "bytes": 18987,
+      "sha256": "e20f3ff99d4b9c5b19c783db94cf094a01ab8f98550d574791f4fa211fec2db4"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/profile-fixtures.json",
+      "bytes": 16200,
+      "sha256": "bd33cf280db5f65287d51e39637b3a1458ba96c29d8006b5adebcf0613c2b746"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/profile-verification.json",
+      "bytes": 6806,
+      "sha256": "4758965be1bc7bc05ec01039c0b56422ee4d8a52ef88e8393d8674ec3500233c"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/zonemd-auth-fixtures.json",
+      "bytes": 8205,
+      "sha256": "d786c89a673dc69de5bf8e58732997dd8536d3efbba9255a57081a0b63b3bb07"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/zonemd-auth-verification.json",
+      "bytes": 10862,
+      "sha256": "f8c21df9d1c144915ad6a4291e7b854b60586f0626bd9a71994bfc1afe8af2fd"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/record-profile-fixtures.json",
+      "bytes": 48889,
+      "sha256": "bf398d383837758821a3a4d859417f4df70fb612b7883b064339900df29199ed"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/record-profile-verification.json",
+      "bytes": 26158,
+      "sha256": "d06bc944d5304cd4c270ceba84ef47d2cbea6c2e6a4d8734b7a5b6d3543f2994"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/refresh-fixtures.json",
+      "bytes": 3640,
+      "sha256": "f4b56e67c5cf51d72f498ea1e287f470515a6c9d380008a1be5e1a580ed2e6d2"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/refresh-verification.json",
+      "bytes": 3697,
+      "sha256": "1337ea4df0b6960c671bb188794d54205a62f6cbcf86b5490fbc1d792817e5df"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/long-profile-fixtures.json",
+      "bytes": 27775,
+      "sha256": "566996bb9b6e08c9aab6b25d9d4cb4489e97b3a6d76aa806b1b47522410ef2dc"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/long-profile-verification.json",
+      "bytes": 27617,
+      "sha256": "8ea574cc28f050735ff31dc54e30918a2c1500b8e23d7fc1943ba1f34635a728"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/complete-path-fixtures.json",
+      "bytes": 53395,
+      "sha256": "a94a106399372c65a7e1e3f2e6a8b44738e13c8ee7c72c5ce96cdf7ba0e02f7f"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/complete-path-verification.json",
+      "bytes": 444989,
+      "sha256": "6090c4a59cedda55d447b71f30f8b4121bb72c5c99141df946caf832e8f74291"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/resolution-profile-fixtures.json",
+      "bytes": 77476,
+      "sha256": "4001c10f0f19a52d69d7d07198874ea4d96a448e75ac4f35d0bb7f97f282973d"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/resolution-profile-verification.json",
+      "bytes": 47350,
+      "sha256": "8a261fae59309c7d0ddbecabd5c3a1283208ac87bbcddb5fc2483e9fffc75c7a"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/parent-negative-fixtures.json",
+      "bytes": 2573,
+      "sha256": "0d0c433ab595dec3991ad83d26ed1ff71fa3656205e7fcc7388f8db6d43646f3"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/parent-negative-verification.json",
+      "bytes": 1671,
+      "sha256": "99733b96576f067981ccb66b3d864d4e2d12f82ba80fea0977e27cd49a2329f3"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/role-rollover-fixtures.json",
+      "bytes": 7777,
+      "sha256": "59ce4eac57f5cf9a55d9a07354aecfc7b8e9d79d979c613c6b8d66cd9e6e5589"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/role-rollover-verification.json",
+      "bytes": 30219,
+      "sha256": "842e4d43898220f1917a580da26d9f8dd1679c3d510ab2534e78b47fdec2c0be"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/overlap-keysets-fixtures.json",
+      "bytes": 26882,
+      "sha256": "3353197bb242090cc514a5dc8a1aaaf42ca7bd2305b0aca3bab8e41b8f1f6d42"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/overlap-keysets-verification.json",
+      "bytes": 138721,
+      "sha256": "c0051800e10d75730ec9d21131d64b7344f19a78344109b7d7a17a9c80bf2cf9"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json",
+      "bytes": 104506,
+      "sha256": "0851dc665e7f3def9684e96eb66c28554860355258c035d7501f4ad3ee6b7d35"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-verification.json",
+      "bytes": 124849,
+      "sha256": "afd21bc47884740cb29ef05b09ef367a9f12c2b4a84a76b1fe04cb2ab5bc5019"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-contract-errata/resolution-fixtures-owner-wire-corrected.json",
+      "bytes": 7505,
+      "sha256": "dd797c8d3172a79490eee6ddee7ccfbbfa496d4416924bce83e17ad3a520b9f9"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-contract-errata/resolution-verification.json",
+      "bytes": 44276,
+      "sha256": "d827560d719ebaef6318bbbf8e1c375ec87c7987c57ec235233f5ac95edd9871"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/denial-anchor/fixtures.json",
+      "bytes": 5606,
+      "sha256": "6d1a09887942d7568583804e7df47870faea9c10a96ee050a8f0b72b59cb8b40"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/denial-anchor/verification.json",
+      "bytes": 9104,
+      "sha256": "3395164ab8229dc5f3610f5a5ae1f1bdb73aa1e1246fd5c90bde71bf918cd540"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+      "bytes": 49823,
+      "sha256": "17298b31bd88cb5e3215d003e7a255aa179609caee1d8a62cb9d3b56621576db"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+      "bytes": 35238,
+      "sha256": "cc054c117407b6102cae8aea0ad8c982de4592bf09204fcc1da688768e33b47b"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json",
+      "bytes": 225837,
+      "sha256": "500792e5fe444097baa76c4b549204ea17f6c46d98b92354f9880b88d91a1549"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-verification-v2.json",
+      "bytes": 123645,
+      "sha256": "2db7172240089eacc53cc75ddcec44c0b50a70c4a8f48bd9627a847b12f41532"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/review-corrections/denial-authority-fixtures.json",
+      "bytes": 22591,
+      "sha256": "3cd9d0a42ed1117f9a8bac5869d4b75d98e1ae5d2367513b040d31714c6f3253"
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/review-corrections/denial-authority-verification.json",
+      "bytes": 2745,
+      "sha256": "0740abee47d2d10fbd3e267a2f51a0e4e402b3fee777f145833b299c9ac70cb6"
+    }
+  ],
+  "inputIdentity": {
+    "sourceFiles": {
+      "assets/apple-touch-icon.png": "d3de104b83d203451cd1ae449115a773d091e9d39351be9fa6878678b4ed6dad",
+      "assets/favicon.ico": "cf29cf6dd38624c4f91172e5b2258468f3997bbb4ec12640904a72a5f76e88fe",
+      "assets/favicon.svg": "2d7e8ce475a9324ca07da79323eb0b7c082641012fb46c06876f71e0e33efe07",
+      "build.mjs": "55252523ac8f225a6135b008e1fb7a1bac87c1f3a342ae3234d6e2e0e5e4ee19",
+      "index.html": "c889ff91c2bf49863cfdc69a5c14fd8f85926aa4fedfaded5282430f6f99b9bf",
+      "package.json": "9ceb4d7518d756e6d0d4c6d42f5ca14f43b27ce9bcfa7e498f3ee62c3342730c",
+      "security-policy.mjs": "d3c9d693fb4a118a9617f3c50f45cb257756888d1808c958c53c7263f94eb7a4",
+      "src/actor-art.js": "5ae660b4dc11b0e8c3743b44954fa3e6a277eb4994e5c3e39254f17be808cfca",
+      "src/app.js": "6a001f956e621d8e38a8a932a05862d5b3f04ca8d3e2914a7780790eb414a57b",
+      "src/architecture-variants.js": "33c136bc4e88f7a0b1de9ffa9626c8fb5e70e69b31128f65afaa37b1f681b663",
+      "src/attribute-trace.js": "b7d3f39fb135502441b134567dd7b997f58f1cbda06e3904a17af95eab141bdb",
+      "src/attribute-usage.js": "f40b1a638bf3e44525707412f63da6d703bbbe56c044f3d3a2d32af86f7d9c93",
+      "src/branching-lab.js": "cb8d4bfaade6f41ec1c9a2f43f9925e3c4a6faefd209e406e8862b7cfb5a0e50",
+      "src/ciba-data.js": "7e22e6da118054f63aee70669d758eebda18b3e629b6d9c39ba87f28704503c1",
+      "src/device-flow-data.js": "8f8e164aa287d11d7911eaa673c8b8f2803c509141fda6bda0bd809228f5410d",
+      "src/dnssec-addendum-fixtures.js": "bca25176d14a5cd877fe19a6623b35b37d933d704303b56792b005e1051b9980",
+      "src/dnssec-anchor-cases.js": "7d999e20a8e480b795b444f1e286da46b5f148bc92a96f7692e86a44f72af918",
+      "src/dnssec-authoring.js": "5c386d207f3a5eef2021e24068ed1c8c36fa21c67d325856f805b2c5f3c9d1b2",
+      "src/dnssec-completion-fixtures.js": "fa707170a18f615c059ce8d405aad686eee6ce63210d3112706e399d028f19e6",
+      "src/dnssec-denial-cases.js": "2bc386d7ab642778c995edd3699ff3f1ce6a151a14830303f32f790a1a00de0c",
+      "src/dnssec-denial.js": "3a0f8c81405e6db0dd6f232eca4bfd7dfdece1f1c43d3d62ec75d35d647b55f5",
+      "src/dnssec-fields.js": "f53da7320f403edcb05f6c056c423104b014d108a5150f6d40b26d34fcc441da",
+      "src/dnssec-fixtures.js": "15dddf2c06f4fb717675f309be3762ccbe94133e9a150537c2b61f607313a671",
+      "src/dnssec-lab.js": "4801c992518ac27c850feb56f8c2e2fe47ddbaff3be2f23e3f88b0e431d50d96",
+      "src/dnssec-lessons.js": "58be9c564ae95e9c7b6631f3d4b0567db4d5b90d5ba7ac23d5b5038a35707360",
+      "src/dnssec-lookup.js": "355353007a6f3e9dd9ee165e1ba4fa1226a37e989d216ac81cf2bc5a948e8e49",
+      "src/dnssec-network-cases.js": "571bbd86039d57b7fa962fc75c7239842a808ae4710f1e6d6102325d88f69e70",
+      "src/dnssec-parent-automation.js": "fe1b0938266f5bb2a370800d55f3c5965d1478254b853c4c80c792cf3b746ede",
+      "src/dnssec-parent-cases.js": "2b88e5e07673734ee806ef365f93603ddc734ebeb298a1881599c9d308536291",
+      "src/dnssec-publication.js": "3233eb37ddd310308828902ccbc1a8e001e0ec217c50800bb0552c0310d42f88",
+      "src/dnssec-resolution-cases.js": "c4503102e86825289445f381d7b3044b3e5f2e3ef73027a1b60659ab18f5310a",
+      "src/dnssec-review-fixtures.js": "79675f22f31840e0363c1882a0780eebab730fb772dc0d629aad7e0c9a9b1192",
+      "src/dnssec-signature-fingerprints.js": "e5bde28796e702c67f7da926c82d0fabcfcfc579396116b6b73f6d77c9377cec",
+      "src/dnssec-signing-cases.js": "0e8549b71108924c7cef80d3aaaf6b7e86e724eba6b322c4981ecf06c5bdece0",
+      "src/dnssec-validation.js": "59fd813e50d1bcbec2b9126a6ec18a2edbd52195dd2f97907d992b1a8d970cc5",
+      "src/dnssec-zone-publication-cases.js": "a9a92e11ef48ca9344f26ab2370002e72723fb5eec41c54020cea480281f527e",
+      "src/extended-grants-lab.js": "c5ad10984ba7a4f4b54936d61ad7ae258156cb4faa8190cb03968bc667aa1fdb",
+      "src/fido-direct.js": "6ae6d3788b8ae68674aae63ddcd72419ee7e2ff7f9101e945588af0f0121805c",
+      "src/focus-target.js": "02c62ab2f8b84914702a6641e3db0b6d6d4e15709d7b9fe134f9f436c6175373",
+      "src/held-object-ad.js": "4307cdaa37e3e75c03d1b71ac4aff2cbae50b51342055d11c7603727562772be",
+      "src/held-object-authoring.js": "e4474549fc2b25a85715050654c2fdbf8fa6a2bb87fcbd32dc67eabe76ac097a",
+      "src/held-object-core.js": "089f1273855155cce308f3304e0b1b949bf6677953e188835097fdb433895e81",
+      "src/held-object-dnssec.js": "7a39b50568e94ece43f51a875688cf70b3257bd6d4bcd6b8b1caa93bd34a57a8",
+      "src/held-object-jwt.js": "961fcd869ba6a0126557c0e818a22af80974fe672b0768e355d3ef862d5c0996",
+      "src/held-object-kerberos.js": "132d5e092f83ba953e248d632b3aa0705d5eff693d30e829c3b3888aac5d2d90",
+      "src/held-object-kubernetes.js": "38fd952d8bdb2c6f6d397a039a5a25ea33d4791382304145bb6c0e7db495cb69",
+      "src/held-object-mcp.js": "466b209d27d7d19450e96a47dcd30fcb9e9fee779fe2405c79c6c034f977a5c7",
+      "src/held-object-network.js": "0436dcd3c6e0622826224aa9eef776b588ae77dc7f9aee810edd210a4d73a8e1",
+      "src/held-object-nfs.js": "81230fe001d245227a302968b7e9c33b9cb4298015c2d211056b70e5cefcacbd",
+      "src/held-object-pake.js": "8f29eefec4234ef19557da54c4bae9079052b562a9f04aae2b1d9adb103a674e",
+      "src/held-object-protection.js": "0eea48eaaca6104be63420270c1c46af1e9ed525c8f0531de46057cd5b344575",
+      "src/held-object-smb.js": "cff4792d0479bc4bfb22d38f1321855e9cf326c37b9087cb154bd9caf1fbf04b",
+      "src/held-object-spake.js": "21ad8c42af6acbd4a128c39db24111aa8e8e12c7a3544001a5e0bfdbe05aea47",
+      "src/held-object-ssh.js": "d59714703145bc3314e7fc79e62c9d55f06fa6e085adc6a207f1dfd596aec96d",
+      "src/held-object-state.js": "4462ed96567a0c02eabe5b8f9a9cbcbb45cd4da962f93f3650b2719b01a593de",
+      "src/held-object-unix-workstation.js": "a2ad10e0f92d2e90e1a30c250a9f0749a6c23fe055e974116476c2a03e04bc71",
+      "src/held-object-view.js": "69847ec159d3aa31c25947b96b8bdee7feda9790ef3801285114000f61bed84a",
+      "src/held-object-web.js": "02bdd4fbaee6a98b165fe82a8b8ab6d78d62666d1dc2ba3263d1073f3241cfd6",
+      "src/held-object-windows-workstation.js": "5379e14cf244a4239e40b9bd6a280594d8fbffcd88f79be7cd4e9800061870a8",
+      "src/held-object-windows.js": "72998568b16a1b7c21c443d6953f8ce581d73cfb03d397cfb420c3e0d1b14305",
+      "src/held-objects.js": "912ba4b0396b2834d8066db60899988278c681a56813d99df6723e41204cacc8",
+      "src/jwe-data.js": "cc4ecc3736743b08e93848768303bc2b67497994696518e8d2323cb38f8d1de2",
+      "src/jwt-policy.js": "fbc33eb98d579d6c6cafc2416d3c32b8bb990a2c77ed907f33c9205f729603fb",
+      "src/jwt-validation-lab.js": "2157d2ad605ed98d209c915e370630a0e4ca5caeca23bea7be6cef21346b3f9b",
+      "src/kerberos-ad-lab.js": "bc19e6ef815f0db4c2a1f55b7ff16329d9f2310475defad965c23edfa75482ae",
+      "src/kerberos-context.js": "5a93566bed856c2d3f8d400b92b36a9c8ee36f7c9c50987a3b667530f167376f",
+      "src/kerberos-crypto-lab.js": "52b5025fb078e476bf82968604b986bf6d340c94dee3d40da00ebe55c0006fe7",
+      "src/kerberos-forest-lab.js": "3391b525a9447a503c7374558d1de5bc68d9ab86230eb06515c19ab69e9da7e8",
+      "src/kerberos-spake-lab.js": "d572636f64d5478802bcadb4617756b13e14d1c770e62d4b0e168fd3bb62cb63",
+      "src/kubernetes-auth-lab.js": "6c0351e054b23f0a212b9b7d329969ab9a1a1dc012f3f033c65b178c6006a79b",
+      "src/kubernetes-case-data.js": "3f5fa5df7a70d9224cfac4eae93a342bf5dd16bfeede644e59de4b051317c74c",
+      "src/kubernetes-fixtures.js": "d7f591591500f5099961e9f0b1f87a8d60ef2b8f09e0abf4357e172c38c2089a",
+      "src/kubernetes-rbac-lab.js": "88908a83db658a6772bd974e0ca34f1998b44effca0e0656c02ef1b40e1b79bb",
+      "src/kubernetes-request-model.js": "658aedf2f10bea7db7432420cb0ee5f02b5e5cab421f1ad38cf70268366765fb",
+      "src/lab-catalog.js": "0e87077615ca59bb96ae2c09631f5096afeba7d5865048d9c0296540cc97722a",
+      "src/lab-common.js": "1775d9b34fde2759bc450e203441726aef4606694ed2bc1b80fc01c439e4c152",
+      "src/layout.js": "fb0d24f84c7f9f469c2e666a38f471b3f51c90ffd2e79610b428ee2305542d0b",
+      "src/learning-presets.js": "4e65463b73c45e0163e4397017e0ee3b2c36995253110514d4fb9fea0e21a892",
+      "src/lifecycle-lab.js": "ab8a5f4214e3216c61a76c2f0faa93ca448cad1ab85eb7c97367de64dccbac63",
+      "src/linux-elevation-lab.js": "f05b14ff5870c2c4d4128c9ceca9ac2dca6ecf56f5cb43d09aedd59c66fb1955",
+      "src/linux-logon-lab.js": "089c7e713ec37d1644e5fb6918af269e02bd366796519e0ccd6250050ed984e8",
+      "src/macos-elevation-lab.js": "9d31dcb24df7c4c4fe8ccc7b3ccd32f4af3798317ff10fd1f7fe444666f9a672",
+      "src/macos-logon-lab.js": "5c4a9514f2621c7641f14a490a8add2fff780631ea30dae0e9bff92303c7111a",
+      "src/mcp-auth-lab.js": "9670373b1f828e96f73a0b08ed192504304edaef71936d27bae2cbd85bf56674",
+      "src/network-access-lab.js": "9e12998f4c4a5e835df41773bcb54b14a59d577a8208d1d7b9ade8cfd77cd1ee",
+      "src/nfs-access-lab.js": "a8361ac9b4a18389e21b98a200bbf4bb668d230d3f3d6da8d4021ddb09d94211",
+      "src/pake-lab.js": "2e17dfa0bad15424d5064eaa43af538b7fe77b14d6c8d4d66d627f699791ed32",
+      "src/player.js": "9922ac1ff2e757ca1db34c408717c6ced10b485f833d459db3fcc1e0f1700002",
+      "src/protection-lab.js": "9e426a0d4cb81922e9bfdcec605ba17a74786b6e3838c013bb6a20be729dc61e",
+      "src/protocol-data.js": "91614e638014a8586731c2576e07ffcb7e105c1ac51152c50d66d2b3ff32ccb5",
+      "src/protocol-state.js": "195419e1a5794e365046b18b9ae3635dbe4b0b6dda19c5046fd6aa1757bce9d1",
+      "src/runtime-environment.js": "6a6abbae3dd4224afe12a335031c783d2e1eb220a97ca28e5f44fe6eebed2fa1",
+      "src/saml-advanced-lab.js": "4adae1da2e7b4e3c50a92bbbe9675d871f141fc1e6f70b98bbe3767a42ee3e06",
+      "src/saml-data.js": "e498aff9e87e564cb6ed842838997a4879732fc1709b40a3ae14886c2925e5e0",
+      "src/scenario-context.js": "2330c5c661f156201a9e28dde1f116ede39037f62a67a7ed86c0b89a10222cc4",
+      "src/scenario-picker.js": "cb5a9e6890b3e0717c52c9b14abf5b3e1a726df85183d2a542769262b9a0d951",
+      "src/service-account-data.js": "46fffe4ee3784c9ec5e85250abf0cce71b5c1c23740196f7d5c8e9a76b891343",
+      "src/single-realm.js": "9d4163825e77e086b683365868c6989f6db6ee0c72de9d55e21f20ea3ac9e199",
+      "src/smb-access-lab.js": "85d738d1e1e2cb8a742dcbfcf30fc55dd1616ae1e3f049cfee1ec4da9d9b951d",
+      "src/smb-multichannel-lab.js": "cfb6e051f18af47e2c79033765bcd985646e37d16b3511715cfb7f376dfc9eda",
+      "src/ssh-access-lab.js": "a09cfcf6ef0414b09a484f2505d9f439e5cfdd41adf49cdca3ee821d30843de1",
+      "src/step-overlay-layout.js": "7b5de2baf0de1d29fbb362826cdb1e98dff5008b3269aafe56e6864d0d7315d4",
+      "src/styles.css": "dc9c4fe803a2c5cb9ec2fed3096606143f0fbe204e285b606cf9f27c4dc2f46d",
+      "src/token-exchange-data.js": "b4eb103f7eb48f921d5f89742a4feb7159a499524e96abfe6667c376fd11074a",
+      "src/web-api-lab.js": "fd59babd517212c13ffef8cab28375566d61976d8a6c59c2b311ac89424cc629",
+      "src/windows-auth-lab.js": "b72940b52b56429c9d4a902b59429612b2be095c611cbaa3033477f02c77090d",
+      "src/windows-elevation-lab.js": "1454e29d58eac8484546d03e21c8d9a0108ca5303aa8155fade780e92abdf787",
+      "src/windows-logon-lab.js": "e102133ae9d768888c1a70b85e9b923eadc978a118a88bb52a7df230a333c9ce",
+      "src/workspaces.js": "a2f562c121701b0b28285bb175ce061f6f013057db1c4956cf1dfb7b76413393",
+      "tests/advanced-ui.test.mjs": "118340824f38891db03fa87cee65df4f5b9a4c833c553780070651021d46ee62",
+      "tests/api-response-values-regression.test.mjs": "0667e6073d99fbd23bf293fdef8aa3de1a441325f608af9033af0366ec7f26f4",
+      "tests/architecture-variants.test.mjs": "edd0d71355c311409b02d9986b8e83deea76347938f3a9336f718db15e2fee48",
+      "tests/attribute-batch-replay.test.mjs": "5b9e8acc9daf512862bbb1296d868f7b3ee31864e6235b0ead43e619f69818a9",
+      "tests/attribute-index.test.mjs": "4308386108b8969ba5b987a1d4a9d8e173affaaf3006461fe626c773ccda9416",
+      "tests/attribute-usage.test.mjs": "d165a2973bc49d8669215fad4463cbe799d9f0153c579bf40b8592040f942774",
+      "tests/audience-effects-ui.test.mjs": "edfbaa36f8c308aa6f258dc4528ddf18fb298e4c3c275c05ba8d83c50051b08e",
+      "tests/branching-lab.test.mjs": "c77f43e4e9dac1c45a0d2b3216e33affa5503032eb9122399de2fff9849e1a68",
+      "tests/ciba.test.mjs": "ee18ae1e022e099bf44d9b9f6b83a45fb48d948003e0759701ad5dd7b320319b",
+      "tests/code3-environment-contract.test.mjs": "5f0d7a82f8145cd50bc54af132392f42e887b76b988e44ec8f3ec7754ed30ed0",
+      "tests/configuration-layout-regression.test.mjs": "436a70e1d8da78c3e1ff2007ae936459146f85c7bb9d8654e5111e18ffe0cc0f",
+      "tests/core-audience-occurrence-regression.test.mjs": "5b0fd40b6926da58b6c7bad072a9bce5c96730a254b7dd44679f04e0bb096385",
+      "tests/csp.test.mjs": "c8e950a89961e851d92e3492e2df7521ae990cd16bc61c798cc3abd869d1ed03",
+      "tests/ctap-participant-ui.test.mjs": "0f09bb0c2ff7cdc5570429b2650d73bf4bf1cd49003168022e49aa47283fd022",
+      "tests/device-flow.test.mjs": "4e7f4ddd01e54163cc0b40cedfad091ca7f859624d97953213e492193aa10e4c",
+      "tests/dnssec-denial-authority.test.mjs": "95bd943d286a276b063d11262aabe34adc539c7ea59718fadae5be8f67d6098c",
+      "tests/dnssec-denial-corrections.test.mjs": "ccad7259cd81dd72f526730a89207a4e9823fe597f4191b26ce76c0fa50397ec",
+      "tests/dnssec-lifetimes.test.mjs": "6d4db026cf70656f5c41002e6bd1ec1c1bb795b6f160aac538bc48bc694f9584",
+      "tests/dnssec-network-corrections.test.mjs": "a78a8cd5212a76683e37527c2a3179926b211c6a6133a19cdd0995b4f8a943c3",
+      "tests/dnssec-publication-corrections.test.mjs": "819f7eff70e8210b6b1c751434bed04ed44a23909c6081f4701d666826c603f9",
+      "tests/dnssec-teaching-corrections.test.mjs": "8c6a2a77753c9a76595bdbf87a85d2554effd6bf53f666a59cc1934af20f92ca",
+      "tests/dom-harness.mjs": "f4c4eecd44a338edbbf13b5dc17e046fb05d1b9078364884666ec9ea15c4f746",
+      "tests/dom-harness.test.mjs": "5608a896889da1c81a14ae9aa6df7da04722d1639cd05525e06691c26ccb9e01",
+      "tests/dom-runtime.test.mjs": "b2b5535f156932a338b89f4f1889e0bea3a8fd7ef2ead2f4a1326a79c37450f6",
+      "tests/extended-grants-lab.test.mjs": "99c756147a14a032f85da9e0893b118ace39256c0b5f8c11591ccd9f295eed73",
+      "tests/fido-direct.test.mjs": "f1048ac2f45c3c09a11f810e31a21ef6a6dbace98099d686362bfc5278b5da61",
+      "tests/focus-return-regression.test.mjs": "21655765ca1a31084c75dc855d98af07a245c6d31b5d9e1e7fca147e7b0e792b",
+      "tests/generic-jwe-values-regression.test.mjs": "0b603b8f3bfc3513ad67b094de61e71c09c19f3aff2b032b085457a608f87b0d",
+      "tests/held-object-ad.test.mjs": "f2c1bdd256bf49209b1690e2086b09f299b62db6d9b423f22049e43687d0e9d1",
+      "tests/held-object-core.test.mjs": "c17419be6ecbe166c9519518e8ab7af8e10647ee554935981e2a64c0e6ad51f3",
+      "tests/held-object-jwt.test.mjs": "d5b7e05b601c65f8727d5194f26d0ee40e2702146de17203c3a8f409ee113384",
+      "tests/held-object-kerberos.test.mjs": "b44e7451aab2dcc69672e06dfcc8652fdb4b4d85331cca0343ec70bdc59ec4b0",
+      "tests/held-object-kubernetes.test.mjs": "da39ef5186a5d0ab8e67495a6a037459c771948125ad18e6e5817bc8dafcc291",
+      "tests/held-object-layout.test.mjs": "b26dc782df15a7895129c96898bb1608878a0d9c6eb110be10e15325c3a5f866",
+      "tests/held-object-mcp.test.mjs": "833baab9ad705ff241a2f2137d01614e49725c5d27322750fb0ccf51c4e8ee3c",
+      "tests/held-object-network.test.mjs": "bd9f523ac91890be6548096aef679b3d57ad93575dd2369387660de1a76c403b",
+      "tests/held-object-nfs.test.mjs": "7877a4a648b3ab03009a80a7c697dd941bd9430f6d15995eb5878412ef66a864",
+      "tests/held-object-pake.test.mjs": "aa15e8767477f015c3846344ea74cade9ba605ff8e7c3e30c807c2cf4c8e5e24",
+      "tests/held-object-protection.test.mjs": "772d58db7314fc49bf9aa66b5c9309401057f57865cc2d85a3b1a31d207720eb",
+      "tests/held-object-spake.test.mjs": "adab58184c3cf8ba5c14f0d23fcc2aceec4f6df2b7ffa30f3f82c6880b7c5420",
+      "tests/held-object-ssh.test.mjs": "1a17f0d43a77b2b4ee4c9e0b29850a623f294fc5b0a8671b73da94b31debcea3",
+      "tests/held-object-state.test.mjs": "1edc9e69dd08b6e8c7d13f4e5f2bc1b0add840ef4de61c618237cc467afa2148",
+      "tests/held-object-ui.test.mjs": "38c137d7693d35f6c24b1830570a33be40196b1ef01400d7f2c780605510b19a",
+      "tests/held-object-unix-workstation.test.mjs": "a6e6aee1073ff5b449b2049e9f45955468e2e97f72eb623e40a35b80309eac83",
+      "tests/held-object-web.test.mjs": "a4c409b124b451d212133cc13913742d0e31ca4a372e250fbc850d7d80fb5c5f",
+      "tests/held-object-windows-workstation.test.mjs": "8a384cb5e1a2a2460ef37a3faaa75045f01a5033eb47ffe0a7796dc58a27c31c",
+      "tests/held-object-windows.test.mjs": "51eb92b2179ffa7ab3a646e946fe6c23f517161b85d02dc7059f6cfe36ca304f",
+      "tests/html2-context-r1.test.mjs": "a2e1411fc4decec544d4790e513ae2ec8b71177712db30f9c1b0e1c1672ccaf6",
+      "tests/independent-protocol-boundaries.test.mjs": "0b8d75fc202b2f327b9138eaae1b94c2214151daf5f353131a4c19bbaf19aacd",
+      "tests/jwe-compact-continuity-regression.test.mjs": "50d1ad9dde32c1b53758a8201c25ac0ae786d5b9bd0438054511cf815b93c2b9",
+      "tests/jwe.test.mjs": "af6cd412b423e715ecb91d446f72180b546a49f940e8c96cfbf2c0f59ab02001",
+      "tests/jwt-policy.test.mjs": "a224ce97176c5cec5d06941bacebea3a6ca919e5e92b85edebf371e260389418",
+      "tests/jwt-validation-lab.test.mjs": "bb22eeffbc1bf5e3a546a1ac6ee20b11f1d9d14efb168a7b8fe61901a51f89d6",
+      "tests/kerberos-ad-lab.test.mjs": "b218dd9732c125d12d34273ab5310d8175db883e984f7f7df2f44655fc14e941",
+      "tests/kerberos-crypto-lab.test.mjs": "8327ad9ac2008259bdf0c782508cb34b5f7885638cceb3996503fd01cdd3428f",
+      "tests/kerberos-forest-lab.test.mjs": "59fe19707668af277a0306a5dbe2b159e12563a76eb3c1ebc4514d0d99ac3b79",
+      "tests/kerberos-spake-lab.test.mjs": "39643c092adc123ef58cf2ca76739790eba6542c011307fe603969334cec4396",
+      "tests/keyboard-independent-regression.test.mjs": "b48d3928f038fa744ba69229098f6f9c9d2ac24c8485df71c37ebe05a1326be2",
+      "tests/kubernetes-auth-lab.test.mjs": "ae30705d536dc9be11381ad945bebafa053cc123be34612ab929927a77980f23",
+      "tests/kubernetes-canonical-cases.test.mjs": "f89ce91927dbf0834786dae2bf79e86bb4c4ce6a9281d4b17e11a8eaa304fb0e",
+      "tests/kubernetes-rbac-lab.test.mjs": "84d21c57dd313426a25ce21d9a83115608d4eaac3f12e9d31e41d1573ece5859",
+      "tests/kubernetes-workload-lab.test.mjs": "f0c8e575aba6d7b4323d24678a8ab5689e511efbbc85d021a46881785ae67793",
+      "tests/lab-catalog-collisions.test.mjs": "58d80c39d4b13f2a427ba788b333888f7457116c96edf3f51bb774db9c9e652a",
+      "tests/layout.test.mjs": "806f0aad984fc13c9ad6aed96301048f9ed29e45775aac1236e707569cfae386",
+      "tests/learning-presets.test.mjs": "64c3cb930020363ecd783b35e4b3193fbc4707d5080ec23bb13e4da3f7d43ae5",
+      "tests/lesson-chapter-projection.test.mjs": "2ef7c7aaa22478a5d0ade31a7dad9298c78811c184fae5a5995c9fda13f363e5",
+      "tests/lifecycle-independent-regression.test.mjs": "f7b93e6507f2add777d0790fe639c3077130e36d6c74bb4f504129905a3af8ed",
+      "tests/lifecycle-lab.test.mjs": "121d82df63604474675fab4d8fd74d95b869b67db3d448dc16974fafd4049a0c",
+      "tests/mcp-auth-lab.test.mjs": "cfa9b6bd7b386483ee35a91e298a3c842fa003cc2666392d58b8ee3ae3af1fca",
+      "tests/mcp-canonical-cases.test.mjs": "a6fd371c99164647264a3c5dc2f8d776675fc8661cdac88b933f5f004ee237dc",
+      "tests/movement-independent-regression.test.mjs": "d79c764b605851d78b94d03cbb205b3efbda8ad29d5f608c943ee877c5213aa2",
+      "tests/network-access-lab.test.mjs": "c7d11b882a079fc1dae9ebb78d7ccdea14095b686f2393da3bc178f230c1d56a",
+      "tests/new-protocol-ledger-regression.test.mjs": "88b115d4a01c1044dc67e6abdb8b57bf1e66a4711e3010accf7935728816cf6a",
+      "tests/new-protocol-ui.test.mjs": "ed818e663451a7e061e31e950bc462225e33bd42f211c2d43a45a5771fe7f1f0",
+      "tests/next-expansion-replay.test.mjs": "2d59e16d7605812d8b82d548631d21b780eec4b0c066c458e92239a7d2162287",
+      "tests/nfs-access-lab.test.mjs": "758ed86810c61337fa8b815a36d9f8bef63dd0da394cee15be641724cffc1ad6",
+      "tests/p6-review-jwt.test.mjs": "f4de7dbc72535411db948ff849a0f6467d53e9e4b68052d3b419bc1dcd1ae757",
+      "tests/p6-review-mcp.test.mjs": "e0d68aa2e1006c51cd8d9e71a4688dbbe5cac2874537b93cd80a8bbd506617a5",
+      "tests/p6-review-nfs.test.mjs": "f8fce1843da89d47e07d95c2a6cd2cb7f6b4e6aa31747a4c56e9ba0a617d7124",
+      "tests/p6-review-unix.test.mjs": "b61cc3540c065e46c271ee712841edb31c730ca30bb83f533de6f52d1ca8a62a",
+      "tests/p6-review-windows.test.mjs": "d4eb5f09da97831e1c3c623f656bc087964742abaf2f79d83c31893ec6dc2b36",
+      "tests/pake-lab.test.mjs": "26009a77025aa85d514f4d35a7b5995bf6e3fa4ca40f13eba22bf6674a23f9c5",
+      "tests/participant-context-ui.test.mjs": "483617cf72edc7bed9a701cdc197e3e5dfb66dea9805b3f89cd1eb18493af004",
+      "tests/player-controls-ui.test.mjs": "d68e71a64be4497043c6361d50fccfb79c18fd519d59d62adf176803bc62b65a",
+      "tests/player-seek.test.mjs": "001218ef9b725989e019a25b0b6330501644650e77da3b95af330c22ac27da89",
+      "tests/protection-lab.test.mjs": "59e66e10b1027cff9727c5433a3da3d24ba5faab2f59a63af4fa84f533f23d30",
+      "tests/protocol-state.test.mjs": "fe95bdb8e859bcdfcca743a4320bd8b9b99a06340f6bccc417361e8bb3ace58c",
+      "tests/protocol.test.mjs": "4add991e5e34867946373273d0c0879d200555cb06034ea22f448c9447c13ffd",
+      "tests/ready-scenarios.test.mjs": "9317c9a0b45bdbc6fa9364042af886f452bc66985e68aec4fbc097f6e172fbb2",
+      "tests/replay-state-regression.test.mjs": "f740f56c0409ca913bde8359fb7d8848f1414f2a682192ce8871b4a4e952cc58",
+      "tests/resize-focus-regression.test.mjs": "c52118f18d18ccf0b9233dbfac76f62b387c65906ed8ba026c3c0c675d457ff2",
+      "tests/review-input-identity.test.mjs": "a78afc497c3d12377a4c811d14e973a59c0f1698a8524ca422c8e1c7a690dcf4",
+      "tests/review-network-replay-ui.test.mjs": "d96266626bbd13f7e6b182d776dc24f10f202a5cdddb7d71bb7dd7710c0ad579",
+      "tests/review-pake.test.mjs": "d2fdaff2f91be2d588680cb19db35905edcba58164fa1e708b665c495d7343c5",
+      "tests/review-profile-navigation-ui.test.mjs": "e167836d45ffe54bbe563089cdb7e0261b9f441d56a15af3e95e543e72301aff",
+      "tests/reviewer-code1-regression.test.mjs": "144ae7683e5f3b09e4bc654d927f6b86ed0c81b8abc9b1b865419a16f302b0fc",
+      "tests/reviewer-code1-ui.test.mjs": "c44e78712d471b45cdc2aa8b831d50887854d3394b01c4e8ab56bd103aa79138",
+      "tests/routing-review-regression.test.mjs": "5d874ed53309946c996277a6702e290cb4267f3b70593282afed7832c822d014",
+      "tests/runtime-client-ownership-regression.test.mjs": "5975110e343ecfbe52ce57de3610b03a65c0968ab7fde1f43fa75386d138241e",
+      "tests/runtime-environment.test.mjs": "3e4c3eb494744d0a5ba8ae8dfd07f9a2b29780da2d15fe01d8af5f6d1932f252",
+      "tests/saml-advanced-lab.test.mjs": "2f20768e94c35a4e194e2f292a74c532c441dc5e5268384e6c48876befa61b97",
+      "tests/saml-value-continuity.test.mjs": "4eb206ab2ccaf5582e3a4528615d30c64aa38cd77feee6c586b2ef6f70dd750e",
+      "tests/saml.test.mjs": "3aa561855047593d0c434122f8b8dfa10bbc62be00961be54fbfe6e59ab942ef",
+      "tests/scenario-picker.test.mjs": "a5a06387fbb888a1070e650a976b5040453ec2404b71b624d4933e6974a092b3",
+      "tests/service-account.test.mjs": "e47e08616b4515b02fc39829beb84cf94a88bd4861ed07d6255888205cb261a8",
+      "tests/single-realm.test.mjs": "d0c332e9149aa109de4143c47d6248c853d2c65e2e78b99cef2422a7287d4bc2",
+      "tests/smb-access-lab.test.mjs": "2e6ad52072ea632898094ddf48c0ec42d89136d5cda04f0bc942a38b17011bfd",
+      "tests/smb-multichannel-lab.test.mjs": "a4ef70845c79d63533e7122aa173145b0351380f3e4e2b1933ee23ccc73806ef",
+      "tests/smb-ui.test.mjs": "69537bb7facd47f4b9f618a5cdec2db4625eb5219ac3573e71d07589a1d216d3",
+      "tests/ssh-access-lab.test.mjs": "3fd5093a4c4fb48cfabc7abefd8772da2dfb9e9194078afc988cde45f94d26ca",
+      "tests/ssh-review-fixes.test.mjs": "3d8d8f7b8e152c4462133c158cb961eb1138800a4a896c768414aac7d0af468f",
+      "tests/step-overlay-layout.test.mjs": "bcb68befe181f1734d546f5290d92e34f7d95cd4dc7ed30e3f0d88d82eb3f33f",
+      "tests/step-overlay.test.mjs": "81b1728df704d0d6e9d880fee14b363dd026d547d33271defcb463f23806a083",
+      "tests/token-exchange.test.mjs": "91cdf0447dcf63fba327e8b5181bb0c61a2e9e04a3ddb3c3f76c9a830e96048e",
+      "tests/universal-ui.test.mjs": "f1be0636c0b8a282e76a46551e00bf46679e3e5f12e173053d1420f6841e6d4f",
+      "tests/unix-workstation.test.mjs": "32aabe2a7f0f8575581320eaee7f21c4e11605ca71eaf1715c470e668174e857",
+      "tests/web-api-lab.test.mjs": "e2cc67433d9635edaaa9f7a364c3b77005a22e52bce1292a8947910e7c754e46",
+      "tests/windows-auth-lab.test.mjs": "858f6e17f5c0db724ecdef171f18541e33f0a66ce756de3db3447852239fdc9c",
+      "tests/windows-elevation.test.mjs": "15de6e008596f279cb10e442fec982acb464e404ae608d049ef18d11db9a907b",
+      "tests/windows-workstation.test.mjs": "c804e650fbd7a0ced4923252036e7243c786de8f093451945179c57b3072464f",
+      "tests/workspace-ui.test.mjs": "a5b1e86a29336a315f29f39ab1cfecdf1bd0242155bd48ed802e61fc0d36a7cd",
+      "tests/workspaces.test.mjs": "9bd9fb1fc4bfb69f7458fb1fdb9596418325edbbfa2218eaf584b4962433cc60"
+    },
+    "verificationFiles": {
+      "tools/verification/README.md": "8829c4e4db175019c1bc4cba7c48fe378903031ff71eaa03191fdd410992e6cc",
+      "tools/verification/apply-dnssec-cache-kind-errata.mjs": "7e494ae7874d0867273997cb471df3c99d6d5166c5f40eef0bc64aec4414bce0",
+      "tools/verification/apply-dnssec-cache-namespace-location-errata.mjs": "9f5fef4532e31861c5b4551d96c3da846d86bb06369b67d85b76a7c5ed9ba162",
+      "tools/verification/apply-dnssec-client-context-errata.mjs": "42ead01b120a57552c0c2307dae0444f1c96392633351e1f90e62e6332c18990",
+      "tools/verification/apply-dnssec-completion-errata.mjs": "68d4b851b2f2141d2bfd204a6dd99468edc2d49cd27ef54fd450b4c412f07875",
+      "tools/verification/apply-dnssec-contract-errata.mjs": "2d4fa244474598ccee9536dc3afe530656f886d4db02b2ebe1c1da77334cab5b",
+      "tools/verification/apply-dnssec-mixed-path-policy-errata.mjs": "63a75e386fd920d4cb0ce129611bb908a39c81e8345c3db62ebd39f00a320dc0",
+      "tools/verification/apply-dnssec-receipt-errata.mjs": "44a2523225a5b4d03956cca37dcb0aff7b74cbd7accf16162ffca416e48591c5",
+      "tools/verification/apply-dnssec-review-corrections-errata.mjs": "6fc995446d01d7b65f0b7b6c02a17ae1e4106f9059277e00895c7688fd1e9f72",
+      "tools/verification/build-dnssec-public-addendum.mjs": "9674535c9de3ec415217e94f953600c99963a3a8d80c86c4b996f604a2c8523b",
+      "tools/verification/build-dnssec-public-completion.mjs": "a5c114f30dff6bd995a8f3cf5b45b8a45f7667019581895033e6ba3594a26533",
+      "tools/verification/build-dnssec-public-review-corrections.mjs": "44f7d0203e88ee78f85bc422f5d86f09d234f1d5bcdef2f94e3fa22b3d2b7dd8",
+      "tools/verification/build-dnssec-signature-fingerprints.mjs": "251461e8e67bfff3737fea400b45fa66a005d9057d9627dc3d7eb02eb43f28e7",
+      "tools/verification/check-dnssec-contract.mjs": "8fa3c09003df1f3a8ede00076a5567dc0e14246301af16da470456be9dfeb917",
+      "tools/verification/check-dnssec-numeric.mjs": "a9fb6256ca799e33872ed23e4b4a34af6ede2fd521578833f1ae68e89a10aeb7",
+      "tools/verification/code3-environment-bundle-check.mjs": "fc3be20b98f3f32121d23e99b72aea66180a6b9e4901d13af33aae97b6e9b5cd",
+      "tools/verification/combine-dnssec-native-core.mjs": "9ed830130e0d6c5f9741d68610f6c536e3df47c858b60fddf471a857042cc512",
+      "tools/verification/compiled-bundle-smoke.mjs": "0201d30bda9186a734fabd3e745ac027eb0e6ca83205a11b73a514dd253a1bd1",
+      "tools/verification/dnssec-crypto/.gitignore": "159b25cb390c50b82694cbbddaefcb51f62956163c95433c34116e5420e1c272",
+      "tools/verification/dnssec-crypto/README-D0-paths.txt": "8d1c1289306cd5c676856c8971536283e89443c3e47db0392a8f49cccd8dbc20",
+      "tools/verification/dnssec-crypto/README.txt": "a62ea95bc5e0c9f1a06f8a9c949c70759dc743fd5b50d9d18272a6ab7ba17047",
+      "tools/verification/dnssec-crypto/capture.py": "a62854c361c3c14ba71f0a1ca60259aab78c2e261143a1fe94fd7bb15d8ab971",
+      "tools/verification/dnssec-crypto/generate.py": "8bf3f0898affb79460001227a66f82a7a6d6f295ce8178c45078281c415b3341",
+      "tools/verification/dnssec-crypto/generate_complete_paths.py": "eb8de3cab1c4025cef06e6f396409f191b2520cffebed06e015e1a0f3082fcdd",
+      "tools/verification/dnssec-crypto/generate_lifecycle.py": "d50d52574e68e90f88179a2c5b998a07c940ee29f5c4332d27dedf4234af5955",
+      "tools/verification/dnssec-crypto/generate_long_profiles.py": "f4c7c36363aec7dbe8c9f8a21031ba12e9b10101c05a05b6eefc76b4191f164f",
+      "tools/verification/dnssec-crypto/generate_overlap_keysets.py": "671fac70aae14489b0a0186aa5b7ac8e7f38926e26f93fd08284afc2aa70699b",
+      "tools/verification/dnssec-crypto/generate_parent_negative.py": "f94933d311eb69d5c84b1cbda40577c79260301fb98d47f7081f0be5d3ea6b88",
+      "tools/verification/dnssec-crypto/generate_profiles.py": "7bac7157922463de4f952f30d205076c8f2f1d5fa2793e70f5b140c2f6c39332",
+      "tools/verification/dnssec-crypto/generate_records.py": "0346e220ce6b2b29a7f76d04f50c6269989d9aa05e88d682123b8c2ca268d13c",
+      "tools/verification/dnssec-crypto/generate_refresh.py": "176a61c58a1c271b1c512b030a3c523d5ddeb436cdf29f4a2f701af6b2cd52fe",
+      "tools/verification/dnssec-crypto/generate_resolution_profiles.py": "8d54e7865c56ff1e32e783d8e91e5c76647439352e11508cf6e6be50dc1d82ee",
+      "tools/verification/dnssec-crypto/generate_review_corrections.py": "b0e5f59c0d93e44a35575d34e84551f5f45cf2f22333e7e61d731e09357664e3",
+      "tools/verification/dnssec-crypto/generate_role_rollovers.py": "df43a0f99be35fad154e2bbc18dd1288b0e858b6b49d1268623390a74e9ee3ea",
+      "tools/verification/dnssec-crypto/generate_zonemd_auth.py": "9c6c8784126ed05f56fd7fce681e1b4eeb5835d0553a468a8ff87045349b3023",
+      "tools/verification/dnssec-crypto/library_check.py": "7e1f8df6a6ca2176e40d153d980f4d16da7b92ea16b6866fbbecaa13f2562955",
+      "tools/verification/dnssec-crypto/post-freeze-completion/README.txt": "a6ac827d4926becfc38044493347ba299af075673ded66d9af32ff9cb847fb20",
+      "tools/verification/dnssec-crypto/post-freeze-completion/denial-anchor/generate.py": "ef9dd7220b3979ff616cd309819dded087f23e4acad2b7abec127eac7ada0f3f",
+      "tools/verification/dnssec-crypto/post-freeze-completion/denial-anchor/record.py": "214c1638b46216e4ce4075cc865fe7e55632d7b70e07e42da05f7cec6ef20ec6",
+      "tools/verification/dnssec-crypto/post-freeze-completion/denial-anchor/verify.py": "dd5e825a7b3a919cb89fb9b85231666e83907fb03747cfa66463b151d987b0fb",
+      "tools/verification/dnssec-crypto/post-freeze-completion/dns19/independent_bytes.py": "aa07cfb3a143617b2b94420a173cfbd8e68956aa9f91bd3eef66765b57b526e9",
+      "tools/verification/dnssec-crypto/post-freeze-completion/dns19/produce.py": "b9fdcb4bccf611641aab66232e9444e092fb7c1e3ed3040d1e0744ef8699cc20",
+      "tools/verification/dnssec-crypto/post-freeze-completion/dns19/record.py": "1a00b5a8e65cf7d4ed4825f3b11e5aacc434f82b85d06a0e87991d729b0a12b3",
+      "tools/verification/dnssec-crypto/post-freeze-completion/dns19/verify.py": "c90e9191870f7bb43898bc9f23e2c77adf1d1a39f21dc8be30a5ccc74213e443",
+      "tools/verification/dnssec-crypto/post-freeze-completion/parent-signing/README.txt": "dacc9aa85a9288da5013264d01dee787ca28bdb5b50dacbb15dff4e3f869e8db",
+      "tools/verification/dnssec-crypto/post-freeze-completion/parent-signing/produce.py": "2dd0bc26a02d3b8d643b9cb5d3e2ab012553dc6f5814dcc1de381f42b004c4a9",
+      "tools/verification/dnssec-crypto/post-freeze-completion/parent-signing/verify.py": "1cf5c8a07b30b63c6486a9b07fac7ef96d429fd524c386fdc60f90dc9c4879d1",
+      "tools/verification/dnssec-crypto/post-freeze-completion/seal.py": "b109a4618bf220164262a9fe8ad462ee85646e094fba93d6e6356b500af43913",
+      "tools/verification/dnssec-crypto/post-freeze-contract-errata/README.txt": "4d7b75fe78f55afb4a3397b6f6645eeeab562736b3d50ec06bbda4d711d8f011",
+      "tools/verification/dnssec-crypto/post-freeze-contract-errata/correct_owner_wire.py": "7ee0003f97d8bde019a77d86c621eee1e283740ffca6e6cf03f1e19235047688",
+      "tools/verification/dnssec-crypto/post-freeze-contract-errata/generate.py": "83e9e43e3409a593865e44cf47ad6999d7e49cab01d5e190249459014b300272",
+      "tools/verification/dnssec-crypto/post-freeze-contract-errata/record.py": "e424d78376c66986ba16f609bfb52fc6d90e473935d09499b18e579b029697c5",
+      "tools/verification/dnssec-crypto/post-freeze-contract-errata/seal.py": "979188b38329376ba5ecf5536d05a3e02c3569d361dabeafb487392b6aa3f556",
+      "tools/verification/dnssec-crypto/post-freeze-contract-errata/verify.py": "cc4935a905ae230df2042839dcf4c6b5cb526740a060aac00ff782cde847ee32",
+      "tools/verification/dnssec-crypto/provenance.py": "bfad3e13eb6259545a48346b832c854ecc8beedd640688cde6da44f72c1d8f9d",
+      "tools/verification/dnssec-crypto/published-vectors.json": "9b72e79020fbcf8657a6d6e8c0c5fbd11d165413ec22be550a44844f4646e54c",
+      "tools/verification/dnssec-crypto/record.py": "a361684cfbb3bb300e725b200a04b05755477c8adaa986d6663ce189258a6f32",
+      "tools/verification/dnssec-crypto/reference_bytes.py": "f125553239f8da4b143d82e059e3a5df1f356b0fe99d6d37752e774e1125c480",
+      "tools/verification/dnssec-crypto/requirements.txt": "24c62a92f1a8992f2469ba6cf381a8d07e4c21ae0e058592c596221947b6fd41",
+      "tools/verification/dnssec-crypto/seal.py": "cd66c5d515f499e341cd4ed32858ec8d2aedba60e0720c89d931c99cc4eb4ce3",
+      "tools/verification/dnssec-crypto/seal_additions.py": "46c9cfd1358f588a237a9e76fb9a22f37953f11c432015101d36a193623f03ab",
+      "tools/verification/dnssec-crypto/seal_final.py": "5a605a11a3445302875a49cf51b34f2f5fdc9fd80967a10e02b2a0e7174c7f53",
+      "tools/verification/dnssec-crypto/verify.py": "88baf5677ec76a78f217580f55588eedab57a696cb04fd3597c3df369ed1f185",
+      "tools/verification/dnssec-crypto/verify_complete_paths.py": "eab522016d87f68be1dff73f517296343eef4595a48a1b8ab6f9b657e4d5b9d3",
+      "tools/verification/dnssec-crypto/verify_lifecycle.py": "89c1b1fe33b2648a52f6a7218bc0755a42cb115bd087ddad8effb2a5f15e475e",
+      "tools/verification/dnssec-crypto/verify_long_profiles.py": "6c40546e886554a6db0bc07c38b8d5754711430be94292d38c087b758f52a3e6",
+      "tools/verification/dnssec-crypto/verify_overlap_keysets.py": "3612573c27e53b713a8dac34b508078c16669361320461fd4c8eeabc3abf9aa0",
+      "tools/verification/dnssec-crypto/verify_parent_negative.py": "78ba69ec15315d6dad707b6b6737a9d42bb4871293ee0b9152f7e4f94debfcec",
+      "tools/verification/dnssec-crypto/verify_profiles.py": "78224974704f80371843dc48845e1202e7d71ef2f5751fae255cffd39311ba9a",
+      "tools/verification/dnssec-crypto/verify_records.py": "9cceda8c0ed32e739e44057d4326348833216053bb37dfb0ea7c96645f915824",
+      "tools/verification/dnssec-crypto/verify_refresh.py": "a5897addfda8b69e0c9ec16e124176d2d53659ac1a504890af4be6c71bb387d0",
+      "tools/verification/dnssec-crypto/verify_resolution_profiles.py": "e77d0395c947469ba0a991952afa812501e1925d5f0aa283f5766de539f0fb23",
+      "tools/verification/dnssec-crypto/verify_review_corrections.py": "817d88a17d4a847511f6fe6370bdaedccce004accbc180c6d8df59dcbb58c3c1",
+      "tools/verification/dnssec-crypto/verify_role_rollovers.py": "70a786ef1cc17817ce865f79aa7f50bc8a7c3406ca408b05fdfded9f151000a1",
+      "tools/verification/dnssec-crypto/verify_zonemd_auth.py": "bb25a55a36bf962695cf4adac1e8827007eaab61a17d03c17d58154f34020757",
+      "tools/verification/dnssec-native-controls.mjs": "4b15ee1cf7b083ee06fe38ea56a7098d0d6c119a18a077c74c3faba5ea8f55e2",
+      "tools/verification/expansion-crypto/.gitignore": "2f21d2245886c2ee7c64b5b515976d29bad0baed47b5fb9e23ff8779179a4393",
+      "tools/verification/expansion-crypto/LICENSES.txt": "2adf1c9ffc58ff3bac30548b66b8715b74312e5585011d2b0ab34818d36434e4",
+      "tools/verification/expansion-crypto/README.md": "8c754b935e98de974715089b8812ff2b03d607657d7556e93f3c0939ec1b8835",
+      "tools/verification/expansion-crypto/bun.lock": "254991becc2b224f1acd22ee16b540e6902eda68458d2de4b662d2c7c4a5e4ea",
+      "tools/verification/expansion-crypto/check-vectors.mjs": "db1813f17c21881d024cc7d549bc6a60a1a2aed124b6300394eb4d37131ba255",
+      "tools/verification/expansion-crypto/derive-synthetic.py": "9306e30da7967b49858d30e25e235c902dd68a8c398b56830d04ace02ab07e49",
+      "tools/verification/expansion-crypto/fixtures/credssp-public-input.json": "0d85c408962be9b95a806adfafb257218f5eb41c5ce88a0eeadbe20c6c2964e9",
+      "tools/verification/expansion-crypto/fixtures/next-jwt-official.json": "fef5aafdd7c76078003d08ca128c21c3fff4ae3f093e144a532a4caa7ad7e029",
+      "tools/verification/expansion-crypto/fixtures/ntlmv2.json": "aa23f9faa3cd8e996102624a68f79ee7bbc09cc00ec52818d6630d15822db3fe",
+      "tools/verification/expansion-crypto/fixtures/rfc9382.json": "96d4d09308ee0d15e0b1992cf697c8193df2ba79046712bb67b433408f3fdbd2",
+      "tools/verification/expansion-crypto/fixtures/rfc9383.json": "43132db8b3185f0d02e5c0b0f8c051518e894cee897c808f17aaa670be1fd177",
+      "tools/verification/expansion-crypto/fixtures/rfc9588.json": "cadee826f8387bbe3d31776d7f70bcec78eb59d14be3b1fb7ca2524d6325b1d2",
+      "tools/verification/expansion-crypto/fixtures/synthetic.json": "57497f5d03f4c08fbb5c3bf1c3a2a55be81a85dcc49baa90a218ff68e1bbb7dc",
+      "tools/verification/expansion-crypto/kerberos-vectors.mjs": "89b31dbdc24f2d56440c9f925896b2dd9d825f1817e60b5cee6f0164a2b8f4fc",
+      "tools/verification/expansion-crypto/next-jwt-vectors.mjs": "f7c94abefbdd0139cd2ea07d76294679d603c6db6197163b8a8fe438474fdd48",
+      "tools/verification/expansion-crypto/package.json": "caea1769f26aef60fd30ba7ac53a19a72b5caab0b5250a35ad97823b06b062fc",
+      "tools/verification/expansion-crypto/pake-vectors.mjs": "234672752879587c46b250eb7e4d521ba914e44bc1cb42207d94e0baa3864cd4",
+      "tools/verification/expansion-crypto/primitives.mjs": "bc829ca03f5736654c94c9e429b7392f13eee7dcd16e114769da25248feb0269",
+      "tools/verification/expansion-crypto/sources.json": "8b82d42a12d0d773835214d736982034bab9efa0dd0690868350cd913306e304",
+      "tools/verification/expansion-crypto/sources/mit-prf-dk.txt": "532c178e2d773dfe051bbaba5d9ce5a77ec1b75f655d6ec3acf5e462491852cc",
+      "tools/verification/expansion-crypto/sources/ms-cssp-v6.txt": "5319e3d8cadefc4b8d9828687e992909517652f2a2a7218b8c06401b1a2c09e6",
+      "tools/verification/expansion-crypto/sources/ms-nlmp-selected.txt": "f467ab3f2fe12b5b25db689401dc6db857802854573f3bca1eb713ffeacefdb3",
+      "tools/verification/expansion-crypto/sources/rfc3961.txt": "1c4d7facc88d6d6d9fa4b2d0b92366e37c8f506455c545762a76fd83ecc7c970",
+      "tools/verification/expansion-crypto/sources/rfc3962.txt": "1a6bf9edff650f92e8c5f85a450335c168545169bfdd51977393d15a6932f1f0",
+      "tools/verification/expansion-crypto/sources/rfc6113.txt": "69c49f1a5dfae03d7e1011fae7aa2e838d346b6e4b13091e0d10022e368d278c",
+      "tools/verification/expansion-crypto/sources/rfc7517-certificate.txt": "8b2321f6e4cd196a69db78605c74d29783c3f5ebf6a10a1446daae0788978009",
+      "tools/verification/expansion-crypto/sources/rfc9382-selected.txt": "bdd7b1635b66a1aa82c776b7adf70dc99f72abf4078b6065f90d0a54a7653cc2",
+      "tools/verification/expansion-crypto/sources/rfc9383-selected.txt": "1c0d12f6a887d27b7228508150454b252e1ab656173148d23dd296bb878fb5e8",
+      "tools/verification/expansion-crypto/sources/rfc9588-selected.txt": "bd0923333414366d449fd617385d8262b29b6a3cb1071a4d3dae4751d3ffd9e5",
+      "tools/verification/expansion-crypto/windows-vectors.mjs": "bbc1f28f7f702f80ea9baa468089c33740a85563f3242294d5c78cfeb02d9ab9",
+      "tools/verification/expansion-disposition.mjs": "945f5cf879539735d1abec3ba787735720ed09ccb013e5c15fe2f4894277f6af",
+      "tools/verification/extract-next-expansion-plan.mjs": "bb80841dda6c723efb5ba8c77f03dc493230968de60635d72e53bda64c2709e0",
+      "tools/verification/freeze-dnssec-contract.mjs": "89308900e2c6b5928ef5dd9f0550d77d000f3ed041d5c31c0cb7ac317e211223",
+      "tools/verification/held-object-fixtures.mjs": "712f6cd9bf139e7fced9d96be78bc2de14ec2c3234bf79a0bfe95710ad16fc32",
+      "tools/verification/held-objects-browser-check.mjs": "ab31ec6dfa14ec8535334711b5ae27e04d79f88c0d8e1dd4f2755ad4c150457c",
+      "tools/verification/held-objects-check.mjs": "3845b0876a48a9002e97a122dd12f3d2aa58ffbdbff852fb5db9862cad131640",
+      "tools/verification/html2-r1-bundle-check.mjs": "6e7d62bcefb954f431ec054033abfc4b5c7c37d222b363b514d1791bfa9fbc55",
+      "tools/verification/independent-geometry-check.mjs": "3e63255a39e688f51b50886a1706cdee420d09410578a6bad4ecd9468a9318c1",
+      "tools/verification/native-browser-acceptance.mjs": "1f3298176a4ff44547f31c6ec2ad7eef235613c0d5bc4b019e6949916f05cb84",
+      "tools/verification/native-qa/.gitignore": "ca1838cde9e4cfb493f3ea87a08bf973a9d6102aac688fc8828107d5586042aa",
+      "tools/verification/native-qa/bun.lock": "1ccf0edb3acde6d1a9c905ce31baf7ded56e315c86ec4ab54d4e466dbfa43bf7",
+      "tools/verification/native-qa/package.json": "0b5e79ac26a505eaec5ebff96697beadd3816a64ec12c323593cf4c2e1e175ec",
+      "tools/verification/package-dnssec-review.mjs": "9d6e876c119abdac7a8c804f94eaf883e44129393e80abcbc5c598a0d846c3f2",
+      "tools/verification/package-expansion-review.mjs": "a7078795ea3fe29586d98433b541f3c16a1348308f9a7e2b4d4fb90e56650bda",
+      "tools/verification/package-next-expansion-review.mjs": "4111ad62173079193af49cf0395f895e18e988edbfff49d5bc47bbee785dc84d",
+      "tools/verification/package-review-corrections.mjs": "684fad7d3583c2142a00ed485f12f32c3708c797400e77db82a2aec82e56c1ac",
+      "tools/verification/profile-expansion-replay.mjs": "0e64b0668aeaa4d8845e0e16029c3c880d629f9b43314886067bb654b3ed7670",
+      "tools/verification/reconcile-next-expansion-runtime-evidence.mjs": "16c4d8556df5888cee630b69a0b8818757d073bfa1c9f62a9c9435579e47d1a2",
+      "tools/verification/refresh-next-expansion-ledger.mjs": "f1e3776ffc5b90abbedfdd82d8e52ad33f3a4afff53634540076a277bd270067",
+      "tools/verification/review-file-smoke.mjs": "486116dbe144c97b5ce5868967d9000e16628a34f6379a72653d77537db1d4eb",
+      "tools/verification/review-input-identity.mjs": "255c501b4f29230a793fdfc1b5684fe591f405a34e246693f6c56103f0b3126f",
+      "tools/verification/run-dnssec-correction-native.mjs": "013e75561d82923f8ed2655177dd9397ae65ab9be76ec14af3c27bf2ceadc16f",
+      "tools/verification/run-dnssec-native.mjs": "7af754ed0e382550e2680ad624780ce64f2fd30333482f0574d408cf0d7736fe",
+      "tools/verification/run-dnssec-performance-supplement.mjs": "c0656cdd03ff676bfcb4b68c8c00ca1b0b18ca7187d099a93ebead2f46b18a65",
+      "tools/verification/run-expansion-native.mjs": "fc4a46bb4aaa8cf51b133bde7cef6f0a7135172912a61d6155c2e8b405c4d785",
+      "tools/verification/run-focused-native.mjs": "fa32e7d7349d61d2661ee6f3f22c3af4419f9e9a3ffa0f5e7e8cd691e4bb52d0",
+      "tools/verification/run-next-expansion-contracts.mjs": "4a6805850fe8ed09bcebf870d8c023811463a6f17f2e34201213ebf04313e77d",
+      "tools/verification/run-next-expansion-native.mjs": "e82a1ede640afa8777bc660412c1a486095f8a659b6a68271304b07fa30564ed",
+      "tools/verification/run-next-expansion-performance.mjs": "ab9abf15f333a5da529a4dac62b7504edc9c52177210bfe67adbbe50471d51e1",
+      "tools/verification/run-regressions.mjs": "537923f71513fdb2ebdd1397e54d8a92f5d9fe1f53eec88788b97ce3a1a9bb9f",
+      "tools/verification/run-review-corrections-crypto.mjs": "7eac438f4d3a9403f2a538ce9118841875974374949ca6d19668ba2d35456ed4",
+      "tools/verification/run-review-corrections-native.mjs": "eecd60089518195149f94b2ab40c6aa028b247070082088eb87bc392d5b886a1"
+    },
+    "manifestSha256": "839831094ee7bad0f22d475d7f547b4bb5de9247b0020e8dca64db84aa71c2a9",
+    "standaloneSha256": "2855771e27155606b15e33bc3bfeea956192a031b5ddbe8774cad3ec16757c5a",
+    "runnerSha256": "a9fb6256ca799e33872ed23e4b4a34af6ede2fd521578833f1ae68e89a10aeb7",
+    "identityHelperSha256": "255c501b4f29230a793fdfc1b5684fe591f405a34e246693f6c56103f0b3126f"
+  },
+  "identityUnchanged": true,
+  "status": "passed",
+  "exitCode": 0
+}

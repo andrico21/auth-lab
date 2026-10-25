@@ -1,6 +1,12 @@
 import {resolveKerberosContext} from './kerberos-context.js';
 
-const contextClone=value=>Array.isArray(value)?value.map(contextClone):value&&typeof value==='object'?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,contextClone(item)])):value;
+const contextClone=(value,memo=null)=>{
+  const object=value&&typeof value==='object';
+  if(object&&memo?.has(value))return memo.get(value);
+  const result=Array.isArray(value)?value.map(item=>contextClone(item,memo)):object?Object.fromEntries(Object.entries(value).map(([key,item])=>[key,contextClone(item,memo)])):value;
+  if(object)memo?.set(value,result);
+  return result;
+};
 const contextSet=(object,path,value)=>{const keys=String(path).split('.');if(keys.some(key=>['__proto__','constructor','prototype'].includes(key)))return;let target=object;for(const key of keys.slice(0,-1)){if(!target[key]||typeof target[key]!=='object')target[key]={};target=target[key];}target[keys.at(-1)]=value;};
 const contextGet=(object,path)=>String(path).split('.').reduce((value,key)=>value&&typeof value==='object'&&Object.hasOwn(value,key)?value[key]:undefined,object);
 const contextOpaque=value=>/cipher|opaque|signature|signed[- ]?(?:wire|bytes)|encrypted|private|secret/i.test(String(value||''));
@@ -29,6 +35,9 @@ export function projectScenarioContext(model,steps,context={}){
   context=contextNormalizedPrincipal(model,context);
   const bindings=(model.runtimeBindings||[]).filter(binding=>context[binding.field]);
   const initialState=contextClone(model.initialState||{}),protocolValues=contextClone(model.protocolValues||{});
+  // With no scalar substitutions, retain shared declaration identity within this
+  // detached projection. Bound operands and mutable initial state stay isolated.
+  if(!bindings.length)return {steps:contextClone(steps,new Map()),initialState,protocolValues};
   const projected=steps.map(step=>{
     const next=contextClone(step);
     for(const binding of bindings){

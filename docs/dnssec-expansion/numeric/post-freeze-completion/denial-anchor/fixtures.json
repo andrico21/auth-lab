@@ -1,0 +1,103 @@
+{
+  "anchorRefresh": {
+    "aRevocationSelfSignatureId": "revoked-dnskey-a-b-z0-self-signature",
+    "aSelfSignatureSource": "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json",
+    "bOrdinaryRefreshSignatureId": "revoked-dnskey-a-b-z0-by-b-refresh",
+    "rrsetId": "revoked-dnskey-a-b-z0",
+    "signatureRoles": "Separate actual A-revocation self-signature and already-Valid B ordinary refresh. No upper path or leaf query inferred."
+  },
+  "baseClock": 1792713600,
+  "freezeAuthoritySha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19",
+  "keyReferences": {
+    "child-ksk-g2": {
+      "algorithm": 13,
+      "dnskeyRdataHex": "0101030dac14e8542cb030d3931ac00ade7723f014ae80880e3f9964f42b39042e8ea6c08dd8ff433277b1694869dd5e66fccc965452f045c4cf4be1010742750f1bb825",
+      "flags": 257,
+      "id": "child-ksk-g2",
+      "keyTag": 46400,
+      "owner": "lab.example.",
+      "protocol": 3,
+      "publicKeyHex": "ac14e8542cb030d3931ac00ade7723f014ae80880e3f9964f42b39042e8ea6c08dd8ff433277b1694869dd5e66fccc965452f045c4cf4be1010742750f1bb825",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErBToVCywMNOTGsAK3ncj8BSugIgO\nP5lk9Cs5BC6OpsCN2P9DMnexaUhp3V5m/MyWVFLwRcTPS+EBB0J1Dxu4JQ==\n-----END PUBLIC KEY-----\n"
+    }
+  },
+  "kind": "dnssec-public-denial-anchor-completion-fixtures",
+  "nsec3": {
+    "nsec3-other-lab-zero-empty": {
+      "finalHashHex": "a1b7166b57d09ed282764e2eff9166e7185b1af1",
+      "hashAlgorithm": 1,
+      "hashBase32hex": "K6RHCQQNQ2FD50JM9ONFV4B6SSC5M6NH",
+      "id": "nsec3-other-lab-zero-empty",
+      "initialHashHex": "a1b7166b57d09ed282764e2eff9166e7185b1af1",
+      "iterations": 0,
+      "owner": "other.lab.example.",
+      "ownerWireHex": "056f74686572036c6162076578616d706c6500",
+      "saltHex": "",
+      "totalHashApplications": 1
+    }
+  },
+  "nsec3ReferenceTuples": [
+    {
+      "finalHashHex": "a1b7166b57d09ed282764e2eff9166e7185b1af1",
+      "hashAlgorithm": 1,
+      "hashBase32hex": "K6RHCQQNQ2FD50JM9ONFV4B6SSC5M6NH",
+      "id": "nsec3-other-lab-zero-empty",
+      "initialHashHex": "a1b7166b57d09ed282764e2eff9166e7185b1af1",
+      "iterations": 0,
+      "owner": "other.lab.example.",
+      "ownerWireHex": "056f74686572036c6162076578616d706c6500",
+      "saltHex": "",
+      "totalHashApplications": 1
+    }
+  ],
+  "postFreeze": true,
+  "provenance": {
+    "newDependencySetupExecuted": false,
+    "producer": "Pinned dnspython2.8.0 NSEC3 plus cryptography46.0.3 deterministic signing; Python3.14.4",
+    "referenceEnvironment": "docs/dnssec-expansion/numeric/runtime-and-licenses.json",
+    "sourceHashes": {
+      "docs/dnssec-expansion/numeric/sources/rfc5011.txt": "e00a848ca0fb6da1925ea828ea893a746f4d02528d70fedaab44b447c0778ed1",
+      "docs/dnssec-expansion/numeric/sources/rfc5155.txt": "c3083458ed7ef69360397a7a6ec44374b245e4e5a03725c834c54908cb7f77ff"
+    },
+    "sourceSections": [
+      "RFC5155 section5",
+      "RFC5011 sections2.1,2.2,2.3,2.4"
+    ]
+  },
+  "rrsetReferences": {
+    "revoked-dnskey-a-b-z0": {
+      "id": "revoked-dnskey-a-b-z0",
+      "path": "docs/dnssec-expansion/numeric/post-freeze-contract-errata/publication-fixtures.json",
+      "sha256": "0851dc665e7f3def9684e96eb66c28554860355258c035d7501f4ad3ee6b7d35"
+    }
+  },
+  "schemaVersion": 1,
+  "scope": "Public numerical reference tuples only; no private key bytes or expected application/hold-down acceptance. B refresh signature is an actual fixed tuple, not manufactured hourly observations.",
+  "signatures": {
+    "revoked-dnskey-a-b-z0-by-b-refresh": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1796169600,
+      "id": "revoked-dnskey-a-b-z0-by-b-refresh",
+      "inception": 1792972200,
+      "keyId": "child-ksk-g2",
+      "keyTag": 46400,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "revoked-dnskey-a-b-z0",
+      "rrsigRdataHex": "00300d0200000e106b0f5f806ade95a8b540036c6162076578616d706c65008dc6067643078d37c3cf1253390923c2658a84e27c08cd16a42cca9740be680d6081c9d3da6ccbf4ae9c6fe04884f282c95624bc47f8f1508ea078357294826f",
+      "rrsigRdataSha256": "32e037f1ee5325394fa5b4b26de203b99fc376796ac201b5a62543f9809464ab",
+      "rrsigText": "DNSKEY 13 2 3600 20261202000000 20261025235000 46400 lab.example. jcYGdkMHjTfDzxJTOQkjwmWKhOJ8CM0W pCzKl0C+aA1ggcnT2mzL9K6cb+BIhPKC yVYkvEf48VCOoHg1cpSCbw==",
+      "signatureHex": "8dc6067643078d37c3cf1253390923c2658a84e27c08cd16a42cca9740be680d6081c9d3da6ccbf4ae9c6fe04884f282c95624bc47f8f1508ea078357294826f",
+      "signer": "lab.example.",
+      "signingInputHex": "00300d0200000e106b0f5f806ade95a8b540036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000440100030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07036c6162076578616d706c65000030000100000e1000440101030dac14e8542cb030d3931ac00ade7723f014ae80880e3f9964f42b39042e8ea6c08dd8ff433277b1694869dd5e66fccc965452f045c4cf4be1010742750f1bb825036c6162076578616d706c65000030000100000e1000440181030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+      "signingInputSha256": "6b84cd082ff90be9fc8e6dfeeff28d803936dc959eeecc9ae133c3f46b0a4f96",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    }
+  },
+  "worksheetHashClaim": {
+    "claim": "K6RHCQQNQ2FD50JM9ONFV4B6SSC5M6NH",
+    "role": "Unauthoritative claim retained for comparison; actual vector generated independently from canonical owner bytes."
+  }
+}

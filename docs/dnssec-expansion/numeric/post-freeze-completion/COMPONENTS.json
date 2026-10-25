@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-public-completion-component-bindings",
+  "postFreeze": true,
+  "freezeAuthoritySha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19",
+  "selectedContractNotes": {
+    "dns17RemoteOldNoDs": {
+      "selectedSource": "Existing independently audited TTL300 NSEC and SOA minimum300",
+      "remoteReceipt": 1792714100,
+      "remoteExpiry": 1792714400,
+      "relativeReceipt": "base+500",
+      "relativeExpiry": "base+800",
+      "completionTtl3600ProfileSelected": false,
+      "authority": "Main explicitly retained the minimal audited300s profile; the extra3600s tuple is separately verified material only."
+    },
+    "applicationPublicProjection": "Exclude all generation/derivation/seed/provenance metadata. DNS19 HMAC keys are opaque fingerprint/custody refs in tsigKeys, never DNSKEY entries; exclude secretRef from the application allowlist."
+  },
+  "components": [
+    {
+      "id": "denial-anchor",
+      "dataset": "docs/dnssec-expansion/numeric/post-freeze-completion/denial-anchor/fixtures.json",
+      "datasetSha256": "6d1a09887942d7568583804e7df47870faea9c10a96ee050a8f0b72b59cb8b40",
+      "report": "docs/dnssec-expansion/numeric/post-freeze-completion/denial-anchor/verification.json",
+      "reportSha256": "3395164ab8229dc5f3610f5a5ae1f1bdb73aa1e1246fd5c90bde71bf918cd540",
+      "reportBinding": "fixtureSha256",
+      "successEvidence": {"kind": "result", "path": "result", "value": "pass"},
+      "codeFiles": [
+        "tools/verification/dnssec-crypto/post-freeze-completion/denial-anchor/generate.py",
+        "tools/verification/dnssec-crypto/post-freeze-completion/denial-anchor/verify.py",
+        "tools/verification/dnssec-crypto/post-freeze-completion/denial-anchor/record.py"
+      ],
+      "publicNamespaces": {
+        "nsec3": "nsec3",
+        "nsec3ReferenceTuples": "nsec3ReferenceTuples",
+        "signatures": "signatures",
+        "rrsetReferences": "rrsetReferences",
+        "keys": {"sourceField": "keyReferences", "publicFields": ["id", "owner", "flags", "protocol", "algorithm", "keyTag", "publicKeyHex", "dnskeyRdataHex", "publicKeyPem"]}
+      },
+      "selectionNotes": {"bRefresh": "Already-Valid B ordinary authorization remains separate from A's revoked-bit self-signature. Local checks do not manufacture network receipts."},
+      "scope": "Actual independent other.lab.example. hash and B refresh signature over unchanged complete A-revoked/B/Z0; local numerical clocks only, no upper path/leaf/hold-down acceptance."
+    },
+    {
+      "id": "parent-signing",
+      "dataset": "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-fixtures.json",
+      "datasetSha256": "17298b31bd88cb5e3215d003e7a255aa179609caee1d8a62cb9d3b56621576db",
+      "report": "docs/dnssec-expansion/numeric/post-freeze-completion/parent-signing/parent-signing-verification.json",
+      "reportSha256": "cc054c117407b6102cae8aea0ad8c982de4592bf09204fcc1da688768e33b47b",
+      "reportBinding": "dataset.sha256",
+      "successEvidence": {
+        "kind": "signature-observations",
+        "path": "signatureObservations",
+        "count": 32,
+        "fields": {"independentBytes": "equal", "cryptography": "verified", "dnspython": "verified", "openssl.exitCode": 0}
+      },
+      "codeFiles": [
+        "tools/verification/dnssec-crypto/post-freeze-completion/parent-signing/produce.py",
+        "tools/verification/dnssec-crypto/post-freeze-completion/parent-signing/verify.py"
+      ],
+      "publicNamespaces": {
+        "rrsets": "rrsets",
+        "signatures": "signatures",
+        "ds": "ds",
+        "signalDigestReferenceTuples": "signalDigestReferenceTuples",
+        "keys": {"sourceField": "keys", "publicFields": ["id", "owner", "flags", "protocol", "algorithm", "keyTag", "text", "publicKeyHex", "publicKeyBase64", "dnskeyRdataHex", "publicKeyPem", "custody", "publicRdataSource"]}
+      },
+      "selectionNotes": {"remoteOldNoDs": "remote-old-nods-ttl3600 and remote-old-nods-soa-min3600 are UNSELECTED additional numerical profiles, not the independently audited DNS17 minimal300s case; do not override its base+500 receipt/base+800 expiry.", "historicalSha1": "Already-published validation input only; not permission for new publisher generation.", "opaqueObsoleteExtras": "Parent-authenticated envelopes only, not real legacy DNSKEY paths."},
+      "scope": "Exact source-owned parent/signaling/publication input signatures, positive DS2/DS4 tuples and independently authenticated provider ancestor noDS proofs. No stored application authorization, endpoint lookup or acceptance result."
+    },
+    {
+      "id": "dns19",
+      "dataset": "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-fixtures.json",
+      "datasetSha256": "500792e5fe444097baa76c4b549204ea17f6c46d98b92354f9880b88d91a1549",
+      "report": "docs/dnssec-expansion/numeric/post-freeze-completion/dns19/dns19-verification-v2.json",
+      "reportSha256": "2db7172240089eacc53cc75ddcec44c0b50a70c4a8f48bd9627a847b12f41532",
+      "reportBinding": "fixtureSha256",
+      "successEvidence": {"kind": "result", "path": "result", "value": "pass"},
+      "codeFiles": [
+        "tools/verification/dnssec-crypto/post-freeze-completion/dns19/produce.py",
+        "tools/verification/dnssec-crypto/post-freeze-completion/dns19/verify.py",
+        "tools/verification/dnssec-crypto/post-freeze-completion/dns19/independent_bytes.py",
+        "tools/verification/dnssec-crypto/post-freeze-completion/dns19/record.py"
+      ],
+      "publicNamespaces": {
+        "keys": {"sourceField": "dnssecKeys", "publicFields": ["id", "owner", "flags", "protocol", "algorithm", "keyTag", "text", "publicKeyHex", "publicKeyBase64", "dnskeyRdataHex", "publicKeyPem", "lineage"]},
+        "tsigKeys": {"sourceField": "keys", "publicFields": ["id", "keyName", "algorithm", "fingerprint", "custodians", "scope"]},
+        "rrsets": "rrsets",
+        "signatures": "signatures",
+        "messages": "messages",
+        "streams": "streams",
+        "updates": "updates",
+        "macReferenceTuples": "macReferenceTuples",
+        "zonemdReferenceTuples": "zonemdReferenceTuples",
+        "tsigManagementPolicy": "managementPolicy"
+      },
+      "selectionNotes": {"allowedUpdateDirection": "Explicit initial signed .82 A changes to frozen .80/.81 and actual signed SOA2302. Transfer-only variants retain .80/.81.", "hmacNamespace": "Opaque fingerprint/ref/custody only; secretRef and provenance are deliberately excluded from application projection.", "acl": "Authenticated response RCODE and selected rule are input facts, not a grant inferred from MAC validity."},
+      "scope": "Actual TSIG request/response/TCP-chain wire, positive recomputed MACs including changed-input mutation, complete AXFR/IXFR/fallback/update zones, signed SOA2302 and two complete original/mutated ZONEMD SHA384 reference tuples. No live server or ACL acceptance claim."
+    }
+  ]
+}

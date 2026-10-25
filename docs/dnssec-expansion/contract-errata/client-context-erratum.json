@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-independent-client-context-input-erratum",
+  "target": {
+    "path": "docs/dnssec-expansion/contract-errata/effective-receipts/worksheet-resolution.json",
+    "sha256": "2a170c5b4bbe2328dbec4939e06434ad111d5c30160248e86a8605ed384e7564",
+    "bytes": 5664020
+  },
+  "mergedTarget": {
+    "path": "docs/dnssec-expansion/contract-errata/effective-receipts/worksheet.json",
+    "sha256": "d189ae3805268d378f4c2acd32f8a562ada4557b9ae67a1493734d47ecfbaedd",
+    "bytes": 6698486
+  },
+  "previousAddendum": {
+    "path": "docs/dnssec-expansion/contract-errata/effective-receipts/contract-addendum.json",
+    "sha256": "40c2c97a737f5c1032c5b4393a3c4f3380eed40709def2e5cbffd7e5c7d12d75",
+    "bytes": 3129
+  },
+  "audit": {
+    "path": "docs/dnssec-expansion/contract-errata/input-audits/client-context-audit.raw",
+    "sha256": "e0e0fff4a27c836bc11502d6815a6920b6222ac719f870570f1bb55629220f67",
+    "bytes": 22367
+  },
+  "independence": {
+    "reportedBy": "DnssecClientInputAudit read-only scout",
+    "productionSourceConsultedByAuditor": false,
+    "productionExecutionPerformedByAuditor": false,
+    "osSandboxEnforcementClaimed": false,
+    "productionExistedDuringCorrection": true,
+    "scope": "Input-only chosen-profile/internal-consistency audit, not an implementation review or acceptance"
+  },
+  "patchCount": 4,
+  "patches": [
+    {
+      "order": 1,
+      "op": "replace",
+      "path": "/lessons/12/cases/3/checkpoints/2/expected/cacheEntries/0/kind",
+      "expectedBefore": "positive",
+      "value": "answer",
+      "finding": "The same clientA cache occurrence is classified answer at accepted-use/outcome; no new receipt or generation occurs between namespace and acceptance checkpoints.",
+      "expectedBeforeCanonicalSha256": "ec67c5ca00e5983723e8bbc9bafbd0903fa1722f4fea5f999156a417f69fc2b6",
+      "valueCanonicalSha256": "b2437a6aa53010b70011f253d0ef2e75d5a15350811531d9b82c27e77a706081"
+    },
+    {
+      "order": 2,
+      "op": "replace",
+      "path": "/lessons/12/cases/3/checkpoints/2/expected/cacheEntries/1/kind",
+      "expectedBefore": "positive",
+      "value": "answer",
+      "finding": "The same clientB cache occurrence is classified answer at accepted-use/outcome; no new receipt or generation occurs.",
+      "expectedBeforeCanonicalSha256": "ec67c5ca00e5983723e8bbc9bafbd0903fa1722f4fea5f999156a417f69fc2b6",
+      "valueCanonicalSha256": "b2437a6aa53010b70011f253d0ef2e75d5a15350811531d9b82c27e77a706081"
+    },
+    {
+      "order": 3,
+      "op": "add",
+      "path": "/lessons/12/cases/3/ownership/anchors/dnsValidator/1",
+      "expectedBeforeAbsent": true,
+      "value": "root-ksk-g1, trusted out-of-band in clientA-public-v1 (scope .)",
+      "finding": "Declare already-selected clientA anchor namespace without replacing the base resolver-public context.",
+      "valueCanonicalSha256": "d7e48c7f55774bf35ec681f973f33bdbb843b1f8effcb83e662eccf5c32aeb67"
+    },
+    {
+      "order": 4,
+      "op": "add",
+      "path": "/lessons/12/cases/3/ownership/anchors/dnsValidator/2",
+      "expectedBeforeAbsent": true,
+      "value": "child-csk-g1, trusted operator provisioned in clientB-private-v1 (scope lab.example.)",
+      "finding": "Declare already-selected clientB private anchor and operator provisioning without promoting forwarding to trust.",
+      "valueCanonicalSha256": "7db78f4c10b55a915b01e0579073ced086d5ce368c4311d1b6cea2484fe70f05"
+    }
+  ],
+  "preserved": [
+    "All159 named cases/defaults and every setup/outcome/security/application disposition",
+    "One literal dnsValidator with two per-client contexts; three selected conversations and their exact flags",
+    "Both public/private fixture bytes, signatures, trust stores, clocks and cache deadlines",
+    "All prior frozen layers and the original354 D0 inputs",
+    "Signer-only private capability ownership; evidence associations never imply trust or possession"
+  ],
+  "notPermitted": [
+    "Changing expected topology to match two physical Source validators",
+    "Collapsing real per-client evidence/cache namespace ownership",
+    "Changing packet flags, DNSSEC outcomes, cryptographic tuples or acceptance boundaries"
+  ]
+}

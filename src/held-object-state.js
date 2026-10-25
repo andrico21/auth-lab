@@ -2,28 +2,35 @@ import { reconstructProtocolState } from './protocol-state.js';
 
 const forbidden = new Set(['__proto__', 'prototype', 'constructor']);
 const engines = new WeakMap();
+const heldFrozenValues = new WeakSet();
 const own = (value, key) => Object.hasOwn(value, key);
 const initialCursor = Object.freeze({ eventIndex: -1, milestone: 'initial' });
 
-function copy(value, seen = new Set()) {
+function copy(value, seen = new Set(), memo = null) {
   if (value === null || typeof value !== 'object') {
     if (typeof value === 'function' || typeof value === 'symbol' || typeof value === 'bigint' || typeof value === 'number' && !Number.isFinite(value)) throw new TypeError('Held objects require finite plain data.');
     return value;
   }
-  if (seen.has(value) || !Array.isArray(value) && ![Object.prototype, null].includes(Object.getPrototypeOf(value))) throw new TypeError('Held objects require acyclic plain data.');
+  const array = Array.isArray(value), prototype = array ? null : Object.getPrototypeOf(value);
+  if (seen.has(value) || !array && prototype !== Object.prototype && prototype !== null) throw new TypeError('Held objects require acyclic plain data.');
+  if (memo?.has(value)) return memo.get(value);
   seen.add(value);
-  const result = Array.isArray(value) ? [] : {};
+  const result = array ? [] : {};
+  if (memo) memo.set(value, result);
   for (const key of Object.keys(value)) {
     if (forbidden.has(key)) throw new TypeError('Unsafe held-object key.');
-    result[key] = copy(value[key], seen);
+    result[key] = copy(value[key], seen, memo);
   }
   seen.delete(value);
   return result;
 }
 function freeze(value) {
-  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
-    Object.values(value).forEach(freeze);
-    Object.freeze(value);
+  if (value && typeof value === 'object' && !heldFrozenValues.has(value)) {
+    if (!Object.isFrozen(value)) {
+      Object.values(value).forEach(freeze);
+      Object.freeze(value);
+    }
+    heldFrozenValues.add(value);
   }
   return value;
 }
@@ -128,11 +135,12 @@ function checkBindings(data, state, holdings) {
 }
 
 function build(planInput, { model = null, steps } = {}) {
-  const plan = copy(planInput);
+  // Immutable declarations can share cloned aliases; mutable state copies cannot.
+  const plan = copy(planInput, new Set(), new Map());
   requireValue(plan && typeof plan === 'object' && !Array.isArray(plan), 'A held-object plan must be an object.');
   text(plan.contextId, 'contextId');
   text(plan.scenarioId, 'scenarioId');
-  const source = copy(resolveSteps(model, steps));
+  const source = copy(resolveSteps(model, steps), new Set(), new Map());
   const data = { plan, steps: source, actors: actorIds(plan), artifacts: new Map(), events: [], positions: new Map([[initialCursor, 0]]), coverage: [], checkpoints: new Map(), trace: new Map() };
   requireValue(new Set(data.actors).size === data.actors.length, 'Duplicate logical actor ID.');
   for (const id of data.actors) text(id, 'Actor ID');
@@ -169,7 +177,7 @@ function build(planInput, { model = null, steps } = {}) {
   for (const [index, step] of source.entries()) {
     text(step.id, 'Source step ID'); requireValue(!ids.has(step.id), 'Duplicate source step ID.'); ids.add(step.id);
     const event = eventDefinitions[step.id] ?? {};
-    const milestones = copy(event.milestones ?? []);
+    const milestones = copy(event.milestones ?? [], new Set(), new Map());
     if (!milestones.some(item => item.id === 'complete')) milestones.push({ id: 'complete', at: 1, effects: [] });
     let previous = -1;
     const cursors = new Map([['before', freeze({ eventIndex: index, milestone: 'before' })]]);
@@ -196,7 +204,7 @@ function build(planInput, { model = null, steps } = {}) {
     }
     milestones.at(-1).stateEffects = [...(milestones.at(-1).stateEffects || []), ...remaining];
     requireValue(!(stock.some(effect => effect.op === 'advance') && milestones.some(milestone => milestone.effects.some(effect => effect.op === 'advance'))), 'Protocol time must not be advanced twice by stock and held effects.');
-    data.events.push({ ...event, milestones, cursors });
+    data.events.push({ ...event, milestones, cursors, milestoneTimes: new Map([['before', 0], ...milestones.map(milestone => [milestone.id, milestone.at])]) });
   }
   for (const key of Object.keys(eventDefinitions)) requireValue(ids.has(key), `Unknown source event: ${key}.`);
   for (const [order, record] of list(plan.coverage ?? [], 'coverage').entries()) {
@@ -229,6 +237,8 @@ function build(planInput, { model = null, steps } = {}) {
   const state = copy(reconstructProtocolState(model, -1));
   const holdings = new Map(), created = new Set(), holdingIds = new Set(), observations = [], authority = new Map();
   let ordinal = 0;
+  const createdArtifacts = [];
+  let artifactSnapshot = freeze([]);
   function apply(effect, cursor) {
     requireValue(effect && typeof effect === 'object', 'A held effect must be an object.');
     const timestamp = { ...cursor };
@@ -236,6 +246,7 @@ function build(planInput, { model = null, steps } = {}) {
     if (['create', 'acquire', 'observe', 'authority'].includes(effect.op)) artifact(effect.artifactId);
     if (effect.op === 'create') {
       requireValue(!created.has(effect.artifactId), 'Duplicate artifact creation transition.'); created.add(effect.artifactId);
+      createdArtifacts.push(freeze({ ...data.artifacts.get(effect.artifactId), contextId: plan.contextId, qualifiedArtifactId: `${plan.contextId}#${effect.artifactId}` }));
     } else if (effect.op === 'acquire') {
       text(effect.holdingId, 'holdingId'); actor(effect.actorId); representation(effect.artifactId, effect.representationId); text(effect.store, 'Holding store');
       requireValue(created.has(effect.artifactId), 'Acquisition precedes artifact creation.');
@@ -266,6 +277,8 @@ function build(planInput, { model = null, steps } = {}) {
     } else throw new TypeError('Unknown held-object effect operation.');
   }
   function checkpoint(cursor, at = 0) {
+    // Creation is append-only. Reuse immutable identities and unchanged catalog arrays.
+    if (artifactSnapshot.length !== createdArtifacts.length) artifactSnapshot = freeze(createdArtifacts.slice());
     const coverage = applicableCoverage(data, data.positions.get(cursor));
     const supported = coverage.filter(record => record.support === 'supported');
     const coverageStatus = supported.some(record => record.status === 'not-modeled') ? 'not-modeled' : supported.some(record => record.status === 'partial') ? 'partial' : 'complete';
@@ -273,7 +286,7 @@ function build(planInput, { model = null, steps } = {}) {
     const inFlight = (event?.messages || []).filter(message => at >= message.start && at < message.end);
     data.checkpoints.set(cursor, freeze({ contextId: plan.contextId, cursor, protocolClock: state.protocolClock,
       holdings: [...holdings.values()].sort((a, b) => (a.displayOrder ?? Infinity) - (b.displayOrder ?? Infinity) || a.ordinal - b.ordinal || a.holdingId.localeCompare(b.holdingId)),
-      artifacts: [...created].map(id => ({ ...data.artifacts.get(id), contextId: plan.contextId, qualifiedArtifactId: `${plan.contextId}#${id}` })),
+      artifacts: artifactSnapshot,
       inFlight: copy(inFlight), observations: observations.slice(), authority: [...authority.values()], coverage: copy(coverage), coverageStatus, state: copy(state) }));
   }
   for (const effect of list(plan.initial ?? [], 'initial effects')) apply(effect, initialCursor);
@@ -310,9 +323,13 @@ function canonical(data, cursor = initialCursor) {
   const event = data.events[cursor.eventIndex];
   if (cursor.progress !== undefined) {
     requireValue(Number.isFinite(cursor.progress) && cursor.progress >= 0 && cursor.progress <= 1, 'Cursor progress must be normalized.');
-    let result = event.cursors.get('before');
-    for (const milestone of event.milestones) if (milestone.at <= cursor.progress) result = event.cursors.get(milestone.id);
-    return result;
+    let low = 0, high = event.milestones.length;
+    while (low < high) {
+      const middle = (low + high) >>> 1;
+      if (event.milestones[middle].at <= cursor.progress) low = middle + 1;
+      else high = middle;
+    }
+    return event.cursors.get(low ? event.milestones[low - 1].id : 'before');
   }
   const result = event.cursors.get(cursor.milestone ?? 'complete'); requireValue(result, 'Unknown cursor milestone.'); return result;
 }
@@ -349,11 +366,9 @@ export function inspectHeldObject(snapshot, holdingId) {
     expired: artifact.expiresAt !== undefined && snapshot.protocolClock >= artifact.expiresAt });
 }
 
-/** Exact immutable identity, never a field type or value match. */
-export function heldObjectTrace(compiled, artifactId) {
-  const data = engine(compiled); requireValue(data.artifacts.has(artifactId), 'Unknown exact artifact ID.');
-  if (data.trace.has(artifactId)) return data.trace.get(artifactId);
-  const artifact = data.artifacts.get(artifactId), rows = [], history = new Map();
+function heldTraceOccurrences(data) {
+  if (data.traceOccurrences) return data.traceOccurrences;
+  const byArtifact = new Map(), history = new Map();
   const remember = effect => {
     if (effect.op === 'acquire') history.set(effect.holdingId, effect);
     else if (effect.op === 'move') {
@@ -362,6 +377,63 @@ export function heldObjectTrace(compiled, artifactId) {
     }
   };
   for (const effect of data.plan.initial || []) remember(effect);
+  for (const [index, event] of data.events.entries()) {
+    const ending = new Array(event.milestones.length);
+    for (const message of event.messages || []) {
+      let low = 0, high = event.milestones.length;
+      while (low < high) {
+        const middle = (low + high) >>> 1;
+        if (event.milestones[middle].at < message.end) low = middle + 1;
+        else high = middle;
+      }
+      (ending[low] ??= []).push(message);
+    }
+    let previous = event.cursors.get('before');
+    for (const [position, milestone] of event.milestones.entries()) {
+      const end = event.cursors.get(milestone.id), groups = new Map();
+      const group = artifactId => {
+        let value = groups.get(artifactId);
+        if (!value) {
+          value = { index, milestone, previous, end, kinds: new Set(), related: [], messages: [] };
+          groups.set(artifactId, value);
+        }
+        return value;
+      };
+      for (const effect of milestone.effects) {
+        const holding = history.get(effect.holdingId), artifactId = effect.artifactId ?? holding?.artifactId;
+        remember(effect);
+        if (artifactId === undefined) continue;
+        const value = group(artifactId);
+        value.kinds.add(effect.op);
+        value.related.push({ effect, holding: effect.op === 'acquire' ? effect : effect.op === 'move' ? history.get(effect.toHoldingId ?? effect.holdingId) : holding });
+      }
+      for (const message of ending[position] || []) {
+        const seen = new Set();
+        for (const object of message.objects) {
+          if (seen.has(object.artifactId)) continue;
+          seen.add(object.artifactId);
+          const value = group(object.artifactId);
+          value.messages.push(message); value.kinds.add('send');
+        }
+      }
+      for (const [artifactId, value] of groups) {
+        let values = byArtifact.get(artifactId);
+        if (!values) { values = []; byArtifact.set(artifactId, values); }
+        values.push(value);
+      }
+      previous = end;
+    }
+  }
+  data.traceOccurrences = byArtifact;
+  return byArtifact;
+}
+
+/** Exact immutable identity, never a field type or value match. */
+export function heldObjectTrace(compiled, artifactId) {
+  const data = engine(compiled); requireValue(data.artifacts.has(artifactId), 'Unknown exact artifact ID.');
+  if (data.trace.has(artifactId)) return data.trace.get(artifactId);
+  const artifact = data.artifacts.get(artifactId), rows = [];
+  const occurrences = heldTraceOccurrences(data).get(artifactId) || [];
   const occurrence = (snapshot, before, actorId, representationId, preferred) => {
     const current = snapshot.holdings.filter(item => item.artifactId === artifactId && item.actorId === actorId && (representationId === undefined || item.representationId === representationId));
     const prior = before.holdings.filter(item => item.artifactId === artifactId && item.actorId === actorId && (representationId === undefined || item.representationId === representationId));
@@ -381,22 +453,7 @@ export function heldObjectTrace(compiled, artifactId) {
       ...occurrence(seeded, seeded, owner, holding?.representationId, holding),
       attributeOperations: [], attributeValues: {}, protocolEffects: [], checks: [] }));
   }
-  for (const [index, event] of data.events.entries()) {
-    let previous = event.cursors.get('before');
-    for (const milestone of event.milestones) {
-      const end = event.cursors.get(milestone.id), kinds = new Set(), related = [];
-      for (const effect of milestone.effects) {
-        const holding = history.get(effect.holdingId), id = effect.artifactId ?? holding?.artifactId;
-        remember(effect);
-        if (id === artifactId) {
-          kinds.add(effect.op);
-          related.push({ effect, holding: effect.op === 'acquire' ? effect : effect.op === 'move' ? history.get(effect.toHoldingId ?? effect.holdingId) : holding });
-        }
-      }
-      const startAt = previous.milestone === 'before' ? 0 : event.milestones.find(item => item.id === previous.milestone).at;
-      const messages = (event.messages || []).filter(message => message.objects.some(object => object.artifactId === artifactId) && message.end <= milestone.at && message.end > startAt);
-      if (messages.length) kinds.add('send');
-      if (kinds.size) {
+  for (const { index, milestone, previous, end, kinds, related, messages } of occurrences) {
         const message = messages.at(-1), object = message?.objects.find(item => item.artifactId === artifactId);
         const last = related.at(-1), actorId = message?.to ?? last?.effect.actorId ?? last?.effect.authorityId ?? last?.holding?.actorId ?? artifact.creator;
         const explicit = [...related].reverse().find(item => item.effect.actorId === actorId && item.effect.representationId !== undefined);
@@ -409,9 +466,6 @@ export function heldObjectTrace(compiled, artifactId) {
           traceKind: [...kinds].join('/'), title: `${artifact.label}: ${[...kinds].join(', ')}`, from: messages[0]?.from ?? actorId, to: message?.to ?? actorId,
           ...occurrence(data.checkpoints.get(end), data.checkpoints.get(previous), actorId, representationId, preferred),
           attributeOperations: [], attributeValues: {}, protocolEffects: [], checks: [] }));
-      }
-      previous = end;
-    }
   }
   const trace = freeze(rows); data.trace.set(artifactId, trace); return trace;
 }
@@ -437,7 +491,7 @@ export function heldCursorForPlayback(compiled, playerSnapshot = {}, selectedSte
     if (progress <= 0) return start;
     if (start.eventIndex === end.eventIndex) {
       const event = data.events[end.eventIndex];
-      const at = cursor => cursor.milestone === 'before' ? 0 : event.milestones.find(item => item.id === cursor.milestone).at;
+      const at = cursor => event.milestoneTimes.get(cursor.milestone);
       return canonical(data, { eventIndex: end.eventIndex, progress: at(start) + (at(end) - at(start)) * progress });
     }
     return start;

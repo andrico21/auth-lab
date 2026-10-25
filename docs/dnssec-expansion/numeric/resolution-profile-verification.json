@@ -1,0 +1,1991 @@
+{
+  "candidateFilterSource": "def _find_candidate_keys(\n    keys: Dict[dns.name.Name, dns.rdataset.Rdataset | dns.node.Node], rrsig: RRSIG\n) -> List[DNSKEY] | None:\n    value = keys.get(rrsig.signer)\n    if isinstance(value, dns.node.Node):\n        rdataset = value.get_rdataset(dns.rdataclass.IN, dns.rdatatype.DNSKEY)\n    else:\n        rdataset = value\n    if rdataset is None:\n        return None\n    return [\n        cast(DNSKEY, rd)\n        for rd in rdataset\n        if rd.algorithm == rrsig.algorithm\n        and key_id(rd) == rrsig.key_tag\n        and (rd.flags & Flag.ZONE) == Flag.ZONE  # RFC 4034 2.1.1\n        and rd.protocol == 3  # RFC 4034 2.1.2\n    ]\n",
+  "candidateFilterSourceSha256": "ae70dc8e0b8a4eb0ad6946bb5993fe1457a2539bcaf406623f120a33482c2c30",
+  "checks": 220,
+  "fixtureSha256": "4001c10f0f19a52d69d7d07198874ea4d96a448e75ac4f35d0bb7f97f282973d",
+  "kind": "dnssec-independent-resolution-profile-verification",
+  "limits": [
+    "Denial RRset signatures and explicit interval/hash mathematics verified; application security-status/policy remains worksheet-owned",
+    "Protocol2 and ZoneFlagclear leaf cryptographic signatures pass, DNSSEC candidate eligibility fails as intended",
+    "Unsigned delegation NS/glue have no signatures",
+    "Unknown DS digest250 is opaque fixed data, not a fabricated computed digest",
+    "Separate conventional/NSEC3/private variants must not be merged into one contradictory zone",
+    "No production evaluator or live interoperability execution"
+  ],
+  "observations": [
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "child-dnskey-zsk-missing-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "child-dnskey-zsk-missing-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "child-zsk-protocol2-dnskey-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "child-zsk-protocol2-dnskey-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "child-zsk-protocol2-leaf-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": false,
+      "id": "child-zsk-protocol2-leaf-signature:library",
+      "observation": {
+        "exceptionClass": "ValidationFailure",
+        "message": "verify failure",
+        "valid": false
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "child-zsk-zoneflag-clear-dnskey-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "child-zsk-zoneflag-clear-dnskey-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "child-zsk-zoneflag-clear-leaf-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": false,
+      "id": "child-zsk-zoneflag-clear-leaf-signature:library",
+      "observation": {
+        "exceptionClass": "ValidationFailure",
+        "message": "verify failure",
+        "valid": false
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-a-address-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-a-address-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-a-to-www-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-a-to-www-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-a-to-x-branch-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-a-to-x-branch-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-apex-to-a-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-apex-to-a-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-apex-to-wildcard-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-apex-to-wildcard-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-iteration1-0-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-iteration1-0-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-iteration1-1-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-iteration1-1-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-iteration1-2-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-iteration1-2-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-iteration1-3-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-iteration1-3-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-iteration1-param-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-iteration1-param-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-no-wildcard-0-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-no-wildcard-0-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-no-wildcard-1-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-no-wildcard-1-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-no-wildcard-2-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-no-wildcard-2-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-no-wildcard-3-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-no-wildcard-3-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-optout-0-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-optout-0-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-optout-1-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-optout-1-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-optout-2-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-optout-2-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-optout-3-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-optout-3-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-salt-aa-0-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-salt-aa-0-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-salt-aa-1-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-salt-aa-1-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-salt-aa-2-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-salt-aa-2-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-salt-aa-3-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-salt-aa-3-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-salt-aa-param-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-salt-aa-param-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-nsec3-zero-param-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-nsec3-zero-param-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-parent-unsigned-lab-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-parent-unsigned-lab-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-wildcard-to-a-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-wildcard-to-a-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-www-to-apex-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-www-to-apex-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-x-branch-address-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-x-branch-address-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-x-branch-to-www-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-x-branch-to-www-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "denial-z-address-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "denial-z-address-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "parent-ds-unsupported-alg250-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "parent-ds-unsupported-alg250-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "parent-ds-unsupported-digest250-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "expectedEligible": true,
+      "id": "parent-ds-unsupported-digest250-signature:library",
+      "observation": {
+        "valid": true
+      }
+    },
+    {
+      "authenticatedDnskeySignatureId": "child-zsk-protocol2-dnskey-signature",
+      "eligibleCandidateCount": 0,
+      "id": "protocol2-candidate",
+      "leafSignatureId": "child-zsk-protocol2-leaf-signature",
+      "observation": {
+        "exceptionClass": "ValidationFailure",
+        "message": "verify failure",
+        "valid": false
+      },
+      "stage": "Candidate protocol/ZoneFlag/presence prerequisite, not corrupted DNSKEY-set RRSIG."
+    },
+    {
+      "authenticatedDnskeySignatureId": "child-zsk-zoneflag-clear-dnskey-signature",
+      "eligibleCandidateCount": 0,
+      "id": "zoneflag-clear-candidate",
+      "leafSignatureId": "child-zsk-zoneflag-clear-leaf-signature",
+      "observation": {
+        "exceptionClass": "ValidationFailure",
+        "message": "verify failure",
+        "valid": false
+      },
+      "stage": "Candidate protocol/ZoneFlag/presence prerequisite, not corrupted DNSKEY-set RRSIG."
+    },
+    {
+      "authenticatedDnskeySignatureId": "child-dnskey-zsk-missing-signature",
+      "eligibleCandidateCount": 0,
+      "id": "missing-candidate",
+      "leafSignatureId": "www-a-signature",
+      "observation": {
+        "exceptionClass": "ValidationFailure",
+        "message": "verify failure",
+        "valid": false
+      },
+      "stage": "Candidate protocol/ZoneFlag/presence prerequisite, not corrupted DNSKEY-set RRSIG."
+    },
+    {
+      "coveringRrsetId": "denial-nsec3-no-wildcard-1",
+      "hash": "AUUUA6IHUSQNDQNDBCU2KFU2VLDNHHK4",
+      "id": "nsec3-no-wildcard:interval",
+      "matching": false,
+      "query": "no.lab.example."
+    },
+    {
+      "coveringRrsetId": "denial-nsec3-no-wildcard-2",
+      "hash": "I8NU1UPJAS0CJ2HR5VFHUEMNE79QCBQL",
+      "id": "nsec3-no-wildcard:interval",
+      "matching": false,
+      "query": "*.lab.example."
+    }
+  ],
+  "result": "pass",
+  "results": [
+    {
+      "id": "resolution-profiles-pinned-sha256",
+      "result": "pass"
+    },
+    {
+      "id": "resolution-baseline-binding",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2:rdata",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2:tag",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2:same-public-lineage",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear:rdata",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear:tag",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear:same-public-lineage",
+      "result": "pass"
+    },
+    {
+      "id": "child-dnskey-zsk-missing-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "child-dnskey-zsk-missing-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "child-dnskey-zsk-missing-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2-dnskey-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2-dnskey-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2-dnskey-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2-leaf-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2-leaf-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2-leaf-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear-dnskey-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear-dnskey-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear-dnskey-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear-leaf-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear-leaf-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear-leaf-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-address-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-address-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-address-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-www-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-www-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-www-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-x-branch-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-x-branch-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-x-branch-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-apex-to-a-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-apex-to-a-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-apex-to-a-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-apex-to-wildcard-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-apex-to-wildcard-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-apex-to-wildcard-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-0-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-0-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-0-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-1-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-1-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-1-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-2-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-2-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-2-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-3-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-3-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-3-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-param-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-param-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-param-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-0-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-0-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-0-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-1-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-1-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-1-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-2-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-2-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-2-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-3-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-3-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-3-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-0-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-0-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-0-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-1-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-1-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-1-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-2-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-2-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-2-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-3-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-3-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-3-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-0-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-0-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-0-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-1-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-1-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-1-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-2-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-2-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-2-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-3-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-3-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-3-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-param-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-param-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-param-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-zero-param-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-zero-param-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-zero-param-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-parent-unsigned-lab-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-parent-unsigned-lab-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-parent-unsigned-lab-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-wildcard-to-a-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-wildcard-to-a-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-wildcard-to-a-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-www-to-apex-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-www-to-apex-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-www-to-apex-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-x-branch-address-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-x-branch-address-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-x-branch-address-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-x-branch-to-www-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-x-branch-to-www-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-x-branch-to-www-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "denial-z-address-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "denial-z-address-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "denial-z-address-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-unsupported-alg250-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-unsupported-alg250-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-unsupported-alg250-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-unsupported-digest250-signature:canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-unsupported-digest250-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-unsupported-digest250-signature:library-dnssec-eligibility",
+      "result": "pass"
+    },
+    {
+      "id": "child-dnskey-zsk-missing:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-protocol2-dnskey:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "child-zsk-zoneflag-clear-dnskey:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-address:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-www:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-x-branch:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-apex-to-a:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-apex-to-wildcard:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-0:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-1:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-2:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-3:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-iteration1-param:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-0:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-1:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-2:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-no-wildcard-3:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-0:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-1:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-2:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-optout-3:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-0:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-1:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-2:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-3:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-salt-aa-param:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-nsec3-zero-param:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-parent-unsigned-lab:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-unsigned-delegation-glue:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-unsigned-delegation-ns:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-wildcard-to-a:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-www-to-apex:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-x-branch-address:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-x-branch-to-www:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "denial-z-address:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-unsupported-alg250:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-unsupported-digest250:canonical-rdata",
+      "result": "pass"
+    },
+    {
+      "id": "protocol2-candidate:dnskey-set-authenticated-before-candidate-check",
+      "result": "pass"
+    },
+    {
+      "id": "protocol2-candidate:no-eligible-candidate",
+      "result": "pass"
+    },
+    {
+      "id": "protocol2-candidate:leaf-not-accepted-by-library",
+      "result": "pass"
+    },
+    {
+      "id": "zoneflag-clear-candidate:dnskey-set-authenticated-before-candidate-check",
+      "result": "pass"
+    },
+    {
+      "id": "zoneflag-clear-candidate:no-eligible-candidate",
+      "result": "pass"
+    },
+    {
+      "id": "zoneflag-clear-candidate:leaf-not-accepted-by-library",
+      "result": "pass"
+    },
+    {
+      "id": "missing-candidate:dnskey-set-authenticated-before-candidate-check",
+      "result": "pass"
+    },
+    {
+      "id": "missing-candidate:no-eligible-candidate",
+      "result": "pass"
+    },
+    {
+      "id": "missing-candidate:leaf-not-accepted-by-library",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-www:covers-no.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-www:covers-foo.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "denial-apex-to-a:covers-*.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "denial-a-to-x-branch:covers-branch.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "parent-nsec-not-child-signer",
+      "result": "pass"
+    },
+    {
+      "id": "parent-nsec-no-soa-or-ds",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:hash-lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:next-link-0",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:hash-a.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:next-link-1",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:hash-z.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:next-link-2",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:hash-www.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:next-link-3",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:not-matching-no.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:single-covering-no.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:not-matching-*.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-no-wildcard:single-covering-*.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-optout:hash-lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-optout:next-link-0",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-optout:hash-a.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-optout:next-link-1",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-optout:hash-z.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-optout:next-link-2",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-optout:hash-www.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "nsec3-optout:next-link-3",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:hash-z.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:next-link-0",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:hash-lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:next-link-1",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:hash-a.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:next-link-2",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:hash-www.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:next-link-3",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:hash-a.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:next-link-0",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:hash-z.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:next-link-1",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:hash-lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:next-link-2",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:hash-www.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:next-link-3",
+      "result": "pass"
+    },
+    {
+      "id": "optout-unsigned-hash",
+      "result": "pass"
+    },
+    {
+      "id": "optout-single-flagged-covering-interval",
+      "result": "pass"
+    },
+    {
+      "id": "optout-flagged-owner-covers-unsigned",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:distinct-modern-input-z.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:distinct-modern-input-lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:distinct-modern-input-a.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "iteration1:distinct-modern-input-www.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:distinct-modern-input-a.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:distinct-modern-input-z.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:distinct-modern-input-lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "salt-aa:distinct-modern-input-www.lab.example.",
+      "result": "pass"
+    },
+    {
+      "id": "unsupported-algorithm-id",
+      "result": "pass"
+    },
+    {
+      "id": "unsupported-digest-id",
+      "result": "pass"
+    }
+  ],
+  "schemaVersion": 1
+}

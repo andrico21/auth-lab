@@ -1,0 +1,325 @@
+{
+  "kind": "dnssec-resolution-independent-audit",
+  "worksheet": {
+    "path": "docs/dnssec-expansion/worksheet-resolution.json",
+    "sha256": "b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5",
+    "lessons": 13,
+    "cases": 93
+  },
+  "freeze": {
+    "path": "docs/dnssec-expansion/contract-freeze.json",
+    "sha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19",
+    "unchanged": true
+  },
+  "limits": [
+    "No production source, evaluator, build, test, lint or formatter was read or run.",
+    "Numeric signatures, digests and key tags were not re-verified; the review checks internal input/expectation consistency and primary-source rules.",
+    "Cases not listed are not asserted defect-free; only evidence-backed conflicts are recorded.",
+    "All corrections must be separate independently attributable oracle errata; the frozen file must remain unchanged."
+  ],
+  "findings": [
+    {
+      "id": "DNS03-SC-01",
+      "cases": ["DNS03/signed-child"],
+      "priority": 1,
+      "confidence": 0.97,
+      "title": "DNS03 signed-child claims a secure chain without retrieving the parent DS or child DNSKEY",
+      "fields": [
+        "setup.initialCache.authenticatedParentDs = false",
+        "setup.initialCache.authenticatedChildDnskey = false",
+        "outcome.flags.hops = [lab-dnssec03:leaf (dnsResolver->dnsChild, A), lab-dnssec03:stub (dnsStub->dnsResolver, A)]",
+        "sequence has no dnsResolver->dnsParent or lab.example. DNSKEY event",
+        "checkpoints[parent-to-child-authentication].expected.publication.dsAuthenticated = true",
+        "checkpoints[parent-to-child-authentication].expected.publication.dnskeyRrsetAuthenticated = true",
+        "local-verification-bound-to-evidence.evidenceRefs includes chain-3:example-child-ds and chain-4:child-dnskey-g1",
+        "outcome.securityStatus = secure; acceptedForUse = true; stub response AD = 1",
+        "setup.rrsets.parentDsCatalog is catalog-only; setup.rrsetCatalogScope says it is not implicitly received or accepted",
+        "policyNotes says numeric bytes do not imply a check occurred"
+      ],
+      "sources": [
+        "RFC4035 section 4.2: an iterative resolver MUST query the parent zone for a missing DS, not the child zone",
+        "RFC4035 section 5.2: DS authenticated using a parent DNSKEY; matching child DNSKEY must be present with Zone flag and must sign the child apex DNSKEY RRset",
+        "RFC4035 section 3.1.4 and section 3.1.4.1 plus verified erratum 5226: DS is parent-side authoritative data",
+        "RFC4035 section 4.3: without the necessary DNSSEC RRs the result is Indeterminate, not Secure"
+      ],
+      "impact": "The two listed hops deliver only the child A and the stub exchange. Neither the parent-published lab.example DS nor the child lab.example DNSKEY RRset is received, and the initial cache explicitly denies both. The secure status and AD=1 assertion are therefore unsupported and the chainEstablished=true checkpoint is unreachable from the declared inputs.",
+      "minimum_correction": "Add a parent DS retrieval (for example dnsResolver->dnsParent, lab.example. DS or an A referral carrying the DS) and a child DNSKEY retrieval (dnsResolver->dnsChild, lab.example. DNSKEY), with unique message IDs and sequence send/receive events. Alternatively, if the case is intended to start from cached trust, set both cache flags true and add exact DS/DNSKEY cache entries with provenance. Do not leave the present combination of false cache flags, two hops and secure checkpoints."
+    },
+    {
+      "id": "DNS03-DSM-01",
+      "cases": ["DNS03/supported-ds-mismatch", "DNS03/unsupported-only-ds"],
+      "priority": 1,
+      "confidence": 0.94,
+      "title": "DNS03 DS variants assert an authenticated parent DS while initialCache denies it and no parent hop exists",
+      "fields": [
+        "supported-ds-mismatch setup.delegation.parentDsAuthenticated = true",
+        "supported-ds-mismatch setup.initialCache.authenticatedParentDs = false",
+        "supported-ds-mismatch checkpoints[supported-path-fails-before-child-key-acceptance].publication.dsAuthenticated = true",
+        "supported-ds-mismatch setup.initialCache.authenticatedChildDnskey = false and no lab.example. DNSKEY hop for child-dnskey-g2-final",
+        "supported-ds-mismatch outcome.flags.hops only lab-dnssec03:leaf (dnsChild A) and lab-dnssec03:stub",
+        "unsupported-only-ds setup.delegation.parentDsAuthenticated = true",
+        "unsupported-only-ds setup.initialCache.authenticatedParentDs = false",
+        "unsupported-only-ds numericBindings.authenticatedDs:parent-ds-unsupported-alg250 is in evidenceRefs but has no parent hop",
+        "unsupported-only-ds outcome.flags.hops only lab-dnssec03:leaf and lab-dnssec03:stub"
+      ],
+      "sources": [
+        "RFC4035 section 4.2: MUST query the parent zone for a missing DS",
+        "RFC4035 section 5.2: DS must be authenticated with a parent DNSKEY; matching child DNSKEY RRset is needed for the mismatch comparison",
+        "RFC4035 section 3.1.4.1 plus erratum 5226: parent-side DS response"
+      ],
+      "impact": "The supported-ds-mismatch verdict needs both the authenticated DS and the received child DNSKEY set; unsupported-only-ds needs the authenticated DS. The initial cache says no DS is present, the only content hop is to the child, and the child DNSKEY set is not fetched. The cases cannot distinguish \"authenticated DS but digest mismatch\" or \"authenticated unsupported-only DS\" from missing DS evidence.",
+      "minimum_correction": "Add a parent DS hop (or an exact authenticated DS cache entry) and, for supported-ds-mismatch, a child DNSKEY hop for child-dnskey-g2-final. Move delegation.parentDsAuthenticated to a checkpoint reached after the receipt, or align it with initialCache.authenticatedParentDs."
+    },
+    {
+      "id": "DNS03-NDS-01",
+      "cases": ["DNS03/proved-no-ds"],
+      "priority": 1,
+      "confidence": 0.92,
+      "title": "DNS03 proved-no-ds uses a parent-zone NSEC proof without any parent-zone exchange",
+      "fields": [
+        "setup.rrsets.authorityProofs[0].zone = example.",
+        "setup.rrsets.authorityProofs[0].rrsetId = denial-parent-unsigned-lab (signer example-zsk-g1)",
+        "setup.responseInputs.parentProof.zone = example.",
+        "setup.initialCache has no denial proof entry",
+        "outcome.flags.hops only lab-dnssec03:leaf (dnsResolver->dnsChild A) and lab-dnssec03:stub",
+        "checkpoints[signed-parent-no-ds-is-positive-evidence].publication.parentNsecAuthenticated = true",
+        "local-verification-bound-to-evidence.evidenceRefs includes proofs-0:denial-parent-unsigned-lab",
+        "DNS03/proof-from-wrong-zone delivers the same parent NSEC through a child hop and is classified bogus"
+      ],
+      "sources": [
+        "RFC4035 section 4.2: when retrieving missing parental NSEC RRs at a zone cut, a security-aware iterative resolver MUST query the parent zone, not the child zone",
+        "RFC4035 section 5.2: a resolver MUST use the parent NSEC RR to prove that a DS RRset does not exist; parent and child NSEC RRs are distinguishable",
+        "RFC4035 section 3.1.4: parent referral includes DS or parental NSEC",
+        "RFC4035 Appendix C.8: DS queries go to the parent servers"
+      ],
+      "impact": "The only content exchange is to the child. A parent-zone NSEC received from the child is exactly the wrong-zone condition that DNS03/proof-from-wrong-zone classifies as bogus. The insecure verdict, parentNsecAuthenticated=true and denialChecked=true have no valid provenance.",
+      "minimum_correction": "Add a dnsResolver->dnsParent hop for lab.example. DS (as DNS07/no-ds-at-delegation does) returning NOERROR with the parent NSEC and RRSIG, with sequence events and unique IDs. Alternatively declare the NSEC as an exact pre-validated cache proof with provenance; do not leave it as an unbound parentProof next to a child-only hop."
+    },
+    {
+      "id": "DNS03-ISL-01",
+      "cases": ["DNS03/signed-island-with-local-anchor"],
+      "priority": 1,
+      "confidence": 0.88,
+      "title": "DNS03 signed-island anchors only the KSK but never retrieves the DNSKEY RRset/ZSK used by the answer",
+      "fields": [
+        "setup.anchorInputs[0].keyRef = child-ksk-g1",
+        "setup.initialCache.authenticatedChildDnskey = false",
+        "setup.rrsets.signature.keyRef = child-zsk-g1",
+        "numericBindings.chain contains only child-dnskey-g1; no lab.example. DNSKEY hop",
+        "checkpoints[island-anchor-restores-independent-path].expected.chainEstablished = true",
+        "local-verification-bound-to-evidence.evidenceRefs includes chain-0:child-dnskey-g1",
+        "setup.delegation.parentAuthenticatedNoDs = true with no NSEC proof and no parent hop"
+      ],
+      "sources": [
+        "RFC4035 section 5.1: an island validator needs an initial authenticated zone key and all normal validation still applies",
+        "RFC4035 section 5.2: matching child DNSKEY, Zone flag and self-signed child apex DNSKEY RRset",
+        "RFC4035 section 5.3.1 and section 5.3.3: RRSIG must match a DNSKEY and the covered RRset"
+      ],
+      "impact": "The configured anchor is the KSK (child-ksk-g1) while the answer is signed by the ZSK (child-zsk-g1). The validator cannot obtain the ZSK or verify the DNSKEY RRset without receiving chain-0. The secure verdict is unsupported; the parentAuthenticatedNoDs claim is also unproven.",
+      "minimum_correction": "Add a dnsResolver->dnsChild lab.example. DNSKEY hop and sequence events, or configure the complete DNSKEY RRset as the local anchor. Remove parentAuthenticatedNoDs or add the parent NSEC proof and parent hop."
+    },
+    {
+      "id": "DNS04-WC-01",
+      "cases": ["DNS04/wrong-clock"],
+      "priority": 1,
+      "confidence": 0.9,
+      "title": "DNS04 wrong-clock declares prerequisite evidence expired at the validator clock it claims to use",
+      "fields": [
+        "setup.prerequisiteValidationPolicy.validatorCheckedAt = 1792717201",
+        "setup.prerequisiteValidationPolicy.keyEvidenceUsableUntil = 1792713900",
+        "setup.prerequisiteValidationPolicy.receivedTtl = 300",
+        "checkpoints[long-upper-path-checked-before-leaf-time-failure].expected.validators.dnsValidator.prerequisiteChainEstablished = true",
+        "same checkpoint prerequisiteCheckedAt = 1792717201",
+        "setup.validators.dnsValidator.clockNow = 1792717201",
+        "timeDependencies.representedProtocolTime = 1792713600",
+        "timeDependencies.validatorCheckedAt = 1792717201"
+      ],
+      "sources": [
+        "RFC4035 section 5.3.1: the validator's notion of current time must be within RRSIG Inception/Expiration",
+        "RFC4035 section 5.3.3: authenticated TTL is bounded by received TTL, RRSIG TTL, Original TTL and expiration minus current time",
+        "RFC4035 section 4.3 / RFC4033 section 5: temporal and evidence dependencies",
+        "RFC1982 serial arithmetic"
+      ],
+      "impact": "At the declared validator clock the upper-path DS/DNSKEY evidence is already expired (usable only to 1792713900), so the claimed established chain at 1792717201 is unreachable. The intended leaf signature-time failure would be preceded by an upper-path failure.",
+      "minimum_correction": "Set keyEvidenceUsableUntil = 1792717501 (fresh receipt at 1792717201 plus 300 seconds) and represent the fresh prerequisite receipt, or record that the chain fails at the upper path and change the reason/failure stage. Do not leave a chainEstablished checkpoint with expired key evidence."
+    },
+    {
+      "id": "DNS10-OOP-01",
+      "cases": ["DNS10/out-of-proof-range"],
+      "priority": 1,
+      "confidence": 0.98,
+      "title": "DNS10 out-of-proof-range answers a zz query with the www RRset",
+      "fields": [
+        "setup.query.qname = zz.lab.example.",
+        "setup.rrsets.answer.owner = www.lab.example.",
+        "setup.rrsets.answer.numericRrsetId = www-a",
+        "numericBindings.primary.owner = www.lab.example.",
+        "outcome.applicationResult.qname = zz.lab.example. with addresses 192.0.2.80 and 192.0.2.81",
+        "outcome cacheEntries[0].key qname = zz.lab.example.",
+        "outcome.flags.hops[leaf].question.qname = zz.lab.example."
+      ],
+      "sources": [
+        "RFC1034 section 4.3.2 and RFC1035 section 4.1: the answer must answer the question, except for CNAME chains",
+        "RFC4035 section 5.3.1: RRSIG and RRset must have the same owner name and the signer must be the containing zone",
+        "RFC4035 section 5.3.3: validation binds the exact RRset, not an unrelated owner"
+      ],
+      "impact": "The www-a RRSIG is valid for www.lab.example, not for zz.lab.example. The application nevertheless receives a secure answer for zz with www's addresses, and the cache key is zz while the evidence reference is www. The secure verdict is for the wrong owner and the answer does not answer the query.",
+      "minimum_correction": "Provide a distinct signed zz.lab.example. A RRset with its own RRSIG/numeric binding and use it in rrsets.answer, numericBindings.primary, evidenceRefs and the application result; or change the query to www.lab.example. and redefine the out-of-range proof case."
+    },
+    {
+      "id": "DNS09-WND-01",
+      "cases": ["DNS09/wildcard-nodata"],
+      "priority": 1,
+      "confidence": 0.98,
+      "title": "DNS09 wildcard-nodata declares the wildcard RRset as AAAA with IPv4 RDATA",
+      "fields": [
+        "setup.wildcard.type = AAAA",
+        "setup.wildcard.rdata = [192.0.2.90]",
+        "setup.wildcard.wildcardTypes = [A, RRSIG, NSEC]",
+        "setup.rrsets.answer.type = A",
+        "setup.rrsets.answer.numericRrsetId = wildcard-a",
+        "checkpoints[wildcard-nodata-needs-both-proof-components].publication.wildcardAAAA = false",
+        "setup.query.qtype = AAAA"
+      ],
+      "sources": [
+        "RFC1035 section 3.4.1: A RDATA is a 32-bit IPv4 address",
+        "RFC3596 section 2.2: AAAA RDATA is a 128-bit IPv6 address",
+        "RFC4035 section 5.4 and RFC4592 section 2.2: wildcard owner/type and type-bitmap semantics"
+      ],
+      "impact": "An AAAA RRset with 192.0.2.90 is not a valid DNS RR and contradicts wildcardTypes=[A,...] and wildcardAAAA=false. A consumer could try to validate an impossible AAAA RRset or reject the fixture before reaching the NODATA proof.",
+      "minimum_correction": "Set setup.wildcard.type = A. Keep wildcardTypes and wildcardAAAA=false, and keep the A wildcard signature/numeric binding. Do not supply an AAAA RDATA unless a real AAAA fixture and a different verdict are intended."
+    },
+    {
+      "id": "DNS22-DCTS-01",
+      "cases": ["DNS22/different-client-trust-stores"],
+      "priority": 1,
+      "confidence": 0.92,
+      "title": "DNS22 different-client-trust-stores has no clientB private route or evidence receipt",
+      "fields": [
+        "setup.route is public iterative (root/parent/child)",
+        "setup.clients.clientB.route = conditional private upstream",
+        "setup.clients.clientB.trustStore = clientB-private-v1; anchors = [child-csk-g1]; answer = [198.51.100.80]",
+        "outcome.flags.hops only lab-dnssec22:leaf (dnsResolver->dnsChild, public A) and lab-dnssec22:stub",
+        "local-verification-bound-to-evidence.evidenceRefs includes additional-0:private-www-a and additional-1:private-child-dnskey",
+        "outcome.applicationResult.results.clientB = secure 198.51.100.80",
+        "accepted-use cacheEntries contains only public-v1/resolver-public-v1"
+      ],
+      "sources": [
+        "RFC4035 section 5.1 and section 5.2: authentication path and evidence are per validation context",
+        "RFC4033 section 5: trust and evidence dependencies",
+        "RFC9499 sections 6 and 9-11: trust store, view and cache separation",
+        "worker plan DNS22 acceptance: do not merge caches, views or keys between contexts"
+      ],
+      "impact": "The public child hop returns the public A signed by child-zsk-g1; it cannot deliver the private 198.51.100.80 A signed by child-csk-g1 or the private DNSKEY. The clientB secure result and the private cache entry in the checkpoint have no message provenance.",
+      "minimum_correction": "Add a clientB conditional/private hop to 198.51.100.53 carrying private-www-a and private-child-dnskey, with sequence events and unique IDs, and add the private cache entry with full provenance to outcome.cacheEntries. Alternatively declare an exact clientB initial cache/anchor receipt with provenance."
+    },
+    {
+      "id": "DNS22-PVC-01",
+      "cases": ["DNS22/private-view-versus-public-chain"],
+      "priority": 2,
+      "confidence": 0.88,
+      "title": "DNS22 private-view-versus-public-chain declares conditional-forward but the content hop is authoritative from dnsChild",
+      "fields": [
+        "setup.route.mode = conditional-forward",
+        "setup.route.destination = 198.51.100.53",
+        "setup.route.suffix = lab.example.",
+        "setup.route.installsAnchor = false",
+        "outcome.flags.hops[0] from dnsResolver to dnsChild, response AA = 1, RA = 0",
+        "DNS22/conditional-forward-with-local-validation uses dnsUpstream for the same destination with response AA = 0, RA = 1"
+      ],
+      "sources": [
+        "RFC1035 section 4.1.1: AA is set only for authoritative data",
+        "RFC4035 section 3.1.6 and section 3.2: authoritative versus recursive flag behavior",
+        "worker plan: a forwarder does not automatically mean validator or authoritative signer"
+      ],
+      "impact": "The hop is attributed to the public child authority and marked AA=1 despite the case declaring a conditional forward to 198.51.100.53. The private answer's provenance is therefore misattributed and the route/flag pair is inconsistent with the sibling conditional-forward case.",
+      "minimum_correction": "Change the hop's to-actor to dnsUpstream (or a distinct private conditional upstream at 198.51.100.53) and set response AA=0/RA=1, or change setup.route to private-authoritative if AA=1 is intended."
+    },
+    {
+      "id": "CACHE-KEY-01",
+      "cases": ["DNS06/local-checks-cd-one-data", "DNS20/cd-one-diagnostic-data", "all kind=failure cache entries except DNS20/failure-cache-suppresses-retry and DNS20/retry-after-expiry"],
+      "priority": 2,
+      "confidence": 0.88,
+      "title": "Failure-cache entries omit the profile's checkingContext key element",
+      "fields": [
+        "profile.failureCache.cacheKey = [view, trustStore, qname, qtype, qclass, checkingContext]",
+        "most kind=failure cacheEntries[].key arrays have 5 elements",
+        "DNS20/failure-cache-suppresses-retry and retry-after-expiry use 6 elements ending in CD0",
+        "timeDependencies.failureCache.keyIncludesCheckingContext = true in affected cases",
+        "DNS06/local-checks-cd-one-data (upstream CD=1) and DNS20/cd-one-diagnostic-data (stub CD=1) have 5-element failure keys"
+      ],
+      "sources": [
+        "RFC4035 section 4.7: BAD-cache behavior is selected by the CD bit on the query",
+        "RFC6840 section 5.9: CD handling and cached upstream context",
+        "RFC9520 section 3: bounded failure caching",
+        "worksheet disposition: failure-cache key includes view/trust/checking context"
+      ],
+      "impact": "A CD=1 diagnostic/local-check failure can be keyed like a CD=0 checking failure, so a later checking query can reuse the wrong-context failure or a diagnostic query can be suppressed. The case's own checking-context separation is not represented in the key.",
+      "minimum_correction": "Append an explicit checking-context element (CD0/CD1 or equivalent) to every kind=failure cache entry key, matching profile.failureCache.cacheKey and the DNS20 CD0 examples. Keep ordinary answer keys unchanged."
+    },
+    {
+      "id": "CLOCK-SIG-01",
+      "cases": ["DNS03/supported-ds-mismatch", "DNS22/stale-private-anchor"],
+      "priority": 2,
+      "confidence": 0.9,
+      "title": "Declared signature remaining/clock expiration contradict the bound long-valid RRSIG",
+      "fields": [
+        "DNS03/supported-ds-mismatch rrsets.signature.expiration = 1803081600",
+        "DNS03/supported-ds-mismatch setup.clock.expiration = 1792717200",
+        "DNS03/supported-ds-mismatch timeDependencies.ttlBoundSeconds.signatureRemaining = 3600",
+        "DNS22/stale-private-anchor rrsets.signature.expiration = 1803081600",
+        "DNS22/stale-private-anchor setup.clock.expiration = 1792717200",
+        "DNS22/stale-private-anchor timeDependencies.ttlBoundSeconds.signatureRemaining = 3600",
+        "both cases have clock.now/receipt = 1792713600, so expiration minus receipt is 10368000 seconds"
+      ],
+      "sources": [
+        "RFC4035 section 5.3.1: RRSIG Expiration/Inception are the signed validity bounds",
+        "RFC4035 section 5.3.3: signature expiration is one of the TTL bounds",
+        "RFC1982 serial arithmetic"
+      ],
+      "impact": "The time-dependency declaration is off by 10,368,000 seconds and the clock expiration is not the selected signature expiration. The effective TTL is 300 from the received RRset, so these two bogus outcomes are unchanged, but the oracle's cache/signature deadline is inaccurate.",
+      "minimum_correction": "Set setup.clock.expiration and timeDependencies.clock.expiration to 1803081600 and signatureRemaining to 10368000 for both cases, or explicitly separate the baseline clock bound from the actual signed signature deadline."
+    },
+    {
+      "id": "DNS05-DO0-01",
+      "cases": ["DNS05/do-zero-explicit-dnskey-query"],
+      "priority": 2,
+      "confidence": 0.9,
+      "title": "DNS05 do-zero responseInputs DNSKEY TTL 3600 contradicts received TTL 300",
+      "fields": [
+        "setup.responseInputs.answer.ttl = 3600",
+        "setup.rrsets.answer.ttl = 300",
+        "numericBindings.primary.receivedRrsetTtl = 300",
+        "timeDependencies.ttlBoundSeconds.receivedRrset = 300",
+        "cacheEntries[0].receivedAt = 1792713600 and expiresAt = 1792713900"
+      ],
+      "sources": [
+        "RFC4035 section 5.3.3: received TTL and RRSIG/OriginalTTL bounds",
+        "RFC2181 section 8: received TTL versus cache TTL"
+      ],
+      "impact": "A consumer using responseInputs would cache the DNSKEY for 3600 seconds instead of 300, contradicting the declared cache boundary and TTL fields.",
+      "minimum_correction": "Set setup.responseInputs.answer.ttl = 300."
+    },
+    {
+      "id": "DNS09-XZONE-01",
+      "cases": ["DNS09/cname-secure-target", "DNS09/cname-insecure-target", "DNS09/cname-bogus-target", "DNS09/dname-synthesized-cname"],
+      "priority": 2,
+      "confidence": 0.7,
+      "title": "Cross-zone alias targets use an undeclared other.example authority/zone",
+      "fields": [
+        "setup.zones = [., example., lab.example.]",
+        "setup.target.zone = other.example. (or the DNAME target host.other.example.)",
+        "numericBindings.additional includes example-other-ds, other-dnskey-g1 and other-www-a",
+        "outcome.flags.hops target is dnsResolver->dnsParent for www.other.example. A with response AA = 1",
+        "no other.example authority address or zone declaration"
+      ],
+      "sources": [
+        "RFC1034 section 4.3.2: referral versus authoritative answer at a zone cut",
+        "RFC4035 section 3.1.4 and section 3.1.4.1: DS is parent-side, DNSKEY and answer are child-side",
+        "RFC4035 section 5.2: parent-to-child authentication path"
+      ],
+      "impact": "The target zone's DS, DNSKEY and A evidence is not tied to a declared zone/authority. If dnsParent is only the example authority, AA=1 for www.other.example is invalid and the target answer/DNSKEY must come from the other.example authority. If dnsParent serves both zones, that multi-zone fact is undeclared.",
+      "minimum_correction": "Add other.example. to setup.zones and either declare a distinct other.example authority/hop or explicitly declare that dnsParent serves both zones; attach the target DS/DNSKEY/A evidence to the declared response."
+    }
+  ]
+}

@@ -76,7 +76,7 @@ export class HarnessElement extends EventTarget {
   removeAttribute(name){this.attributes.delete(name);}
   get hidden(){return this.hasAttribute('hidden');} set hidden(value){value?this.setAttribute('hidden',''):this.removeAttribute('hidden');}
   get disabled(){return this.hasAttribute('disabled');} set disabled(value){value?this.setAttribute('disabled',''):this.removeAttribute('disabled');}
-  get value(){if(this._value!==undefined)return this._value;if(this.tagName==='SELECT')return this.querySelector('option')?.getAttribute('value')||'';return this.getAttribute('value')||'';} set value(v){this._value=String(v);}
+  get value(){if(this._value!==undefined)return this._value;if(this.tagName==='SELECT')return (this.querySelector('option[selected]')||this.querySelector('option'))?.getAttribute('value')||'';return this.getAttribute('value')||'';} set value(v){this._value=String(v);}
   querySelectorAll(selector){const groups=selectorGroups(selector),results=[];const visit=node=>{for(const child of node.childNodes){if(!(child instanceof HarnessElement))continue;if(groups.some(group=>matchesSelector(child,group)))results.push(child);visit(child);}};visit(this);return results;}
   querySelector(selector){const groups=selectorGroups(selector);const visit=node=>{for(const child of node.childNodes){if(!(child instanceof HarnessElement))continue;if(groups.some(group=>matchesSelector(child,group)))return child;const match=visit(child);if(match)return match;}return null;};return visit(this);}
   matches(selector){return selectorGroups(selector).some(group=>matchesSelector(this,group));}

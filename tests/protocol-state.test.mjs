@@ -275,6 +275,25 @@ test('immutable instance fields cannot become different issued bytes at a later 
   assert.equal(validateProtocolScenario(reordered).valid, true, 'object key ordering does not change the fixture value');
 });
 
+test('deep structured occurrences ignore object key order but preserve nested value types', () => {
+  const nested = (leaf, reverse = false) => {
+    let value = { value: leaf };
+    for (let depth = 0; depth < 12; depth++) value = reverse ? { child: value, depth } : { depth, child: value };
+    return value;
+  };
+  const operation = value => ({ attributeId: 'claims', instanceId: 'structured-claim', fieldPath: 'claims', representation: 'decoded-local', kind: 'use', actorId: 'app', value });
+  const original = nested(7), reordered = nested(7, true), changed = nested('7', true);
+  const fixture = second => model({}, [event('first', [], [operation(original)]), event('second', [], [operation(second)])], { actors: () => ({ app: {} }) });
+  const equivalent = fixture(reordered);
+  assert.deepEqual(validateProtocolScenario(equivalent), { valid: true, errors: [], warnings: [] });
+  assert.deepEqual(buildProtocolInstances(equivalent, 1)[0].occurrences.map(item => item.value), [original, reordered]);
+  const invalid = validateProtocolScenario(fixture(changed));
+  assert.equal(invalid.valid, false);
+  assert.equal(invalid.errors.some(error => error.code === 'invalid-exact-value'), true);
+  assert.throws(() => buildProtocolInstances(fixture(changed), 1), TypeError);
+});
+
+
 test('effect validation rejects malformed paths, invalid clock changes and invalid append targets', () => {
   const invalidEffects = [
     put('__proto__.polluted', true), put('constructor.prototype.polluted', true),

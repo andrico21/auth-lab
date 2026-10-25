@@ -1,0 +1,1425 @@
+kind: dnssec-resolution-errata-proposal
+schemaVersion: 1
+status: proposal-only-not-applied
+target:
+  path: docs/dnssec-expansion/worksheet-resolution.json
+  sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+  bytes: 5495788
+freeze:
+  path: docs/dnssec-expansion/contract-freeze.json
+  sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+  unchanged: true
+production:
+  existed: true
+  consulted: false
+  statement: >-
+    Production modules and the production evaluator existed but were not read,
+    imported, executed or used to derive any expectation. No build, test, lint,
+    formatter, browser run or production fix was performed. All expectations are
+    derived from the frozen worksheet, captured primary sources, the authored
+    worker plan and independently produced numeric identities.
+invariants:
+  lesson_count: 13
+  case_count: 93
+  lesson_ids: [DNS01, DNS03, DNS04, DNS05, DNS06, DNS07, DNS08, DNS09, DNS10, DNS11, DNS20, DNS21, DNS22]
+  case_ids_unchanged: true
+  default_case_ids_unchanged: true
+  teaching_boundaries_preserved: true
+  frozen_numeric_package_modified: false
+  new_numeric_artifacts_allowed_only_under: docs/dnssec-expansion/numeric/post-freeze-contract-errata/
+  patch_semantics: >-
+    Patch pointers are JSON Pointer paths against the original frozen
+    worksheet. Operations are listed in application order. For op=add to an
+    array index, expect_absent means the target index did not exist in the
+    original document; for op=add to /-, the value is appended. For
+    op=replace/remove, expect is the exact original value or an
+    expect_selector identifying the exact original object. No other bytes or
+    array members are to be re-serialized or reordered.
+  template_resolution: >-
+    Where a patch uses template plus bindings, every placeholder is bound by
+    the listed bindings; no placeholder remains. The expanded value is exact.
+inputs:
+  worksheet-resolution.json:
+    sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    bytes: 5495788
+  contract-freeze.json:
+    sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    bytes: 68646
+  numeric/dnssec-numeric-fixtures.json:
+    sha256: 10e8b7d6587ab77023d03ba91df7a83372a35f575e306e68afe4288f02f81c61
+    bytes: 91858
+  numeric/record-profile-fixtures.json:
+    sha256: bf398d383837758821a3a4d859417f4df70fb612b7883b064339900df29199ed
+    bytes: 48889
+  numeric/resolution-profile-fixtures.json:
+    sha256: 4001c10f0f19a52d69d7d07198874ea4d96a448e75ac4f35d0bb7f97f282973d
+    bytes: 77476
+  sources/resolution/s06-rfc4035-text.txt:
+    sha256: 8978b120636c69b2080b12768266ec48cd4c0879583310863a62f7c409908084
+    bytes: 130589
+  sources/resolution/s05-rfc4034-text.txt:
+    sha256: 6c32963b76808ec4e5f1282b5e13c5216df4670d21e1590bf29af4066f49b355
+    bytes: 63879
+  sources/resolution/s22-rfc1034-text.txt:
+    sha256: d6b10a71441df879cc2817d23f2dad120c8a5f87e74eba1e4ed4b743a76a891a
+    bytes: 126103
+  sources/resolution/s22-rfc1035-text.txt:
+    sha256: d14ae809fc9b41bbcae26bb38c937c9515808b944f3252b00de9fe0e95f4fdfb
+    bytes: 122549
+  sources/resolution/s04-rfc9499-text.txt:
+    sha256: 270b62df854911dddd246f6c081952106897983a5e02dfe8b3819d72843d9ab1
+    bytes: 119428
+  sources/resolution/s03-rfc6840-text.txt:
+    sha256: 32c2a8c755f37f3467b4ca098fc0283efe53d2648e93c3ae966cfa390a50bfaf
+    bytes: 47283
+  sources/resolution/s10-rfc8198-text.txt:
+    sha256: 78b49d40dc78dffb30fd1aad7313c21800ff9642ab60c27b1a507d2662bec80a
+    bytes: 27918
+  sources/resolution/s12-rfc9520-text.txt:
+    sha256: 424b5e297db737b7cc7f21d37d30dca211f3f237264c3c6ef3d17653a4e1c531
+    bytes: 33948
+  sources/resolution/s26-rfc4592-text.txt:
+    sha256: 69bf6d3d435324a24747807106b5b4050c1f15e9f9fb8e0b67f3ab13d22f98bc
+    bytes: 43991
+  sources/resolution/s26-rfc6672-text.txt:
+    sha256: 50cbe190ac838ca006a4642a818c101aaeca623f36fe33e979d1afc92fa11799
+    bytes: 45704
+  sources/resolution/s28-eid5226.html:
+    sha256: 1b9371fac01d50415828161f24407a147a1f168b05b757861822b78e625e25a4
+    bytes: null
+    note: verified erratum 5226 capture; exact byte count not repeated here
+sources:
+  rfc4035:
+    title: DNS Security Extensions
+    url: https://www.rfc-editor.org/rfc/rfc4035.html
+    capture: docs/dnssec-expansion/sources/resolution/s06-rfc4035-text.txt
+    sha256: 8978b120636c69b2080b12768266ec48cd4c0879583310863a62f7c409908084
+    sections:
+      "3.1.4": >-
+        A security-aware authoritative name server returning a referral includes
+        the DS RRset and RRSIG when present, or the NSEC RR and RRSIG proving no
+        DS when absent.
+      "3.1.4.1": >-
+        The DS RRset for a delegation is stored in the parent zone; a
+        security-aware resolver sends queries to the parent zone when looking
+        for a needed DS RR.
+      "4.2": >-
+        When attempting to retrieve a missing DS, a security-aware
+        iterative-mode resolver MUST query the name servers for the parent zone,
+        not the child zone. When retrieving missing parental-side NSEC RRs at a
+        zone cut, it MUST query the parent zone, not the child zone.
+      "4.3": >-
+        Indeterminate is the state where the resolver cannot obtain the
+        necessary DNSSEC RRs; Bogus is the state where it ought to establish a
+        chain but cannot.
+      "5.1": >-
+        An island of security requires an independently obtained initial
+        authenticated zone key; all normal validation processes still apply.
+      "5.2": >-
+        Given a DS RR, the child apex DNSKEY RRset is authenticated only if the
+        DS is authenticated by a parent DNSKEY, the DS matches a child DNSKEY,
+        the matching DNSKEY has the Zone flag set and signs the child apex
+        DNSKEY RRset. A resolver MUST use the parent NSEC RR when proving that a
+        DS RRset does not exist.
+      "5.3.1": >-
+        An RRSIG can authenticate an RRset only if owner/class, signer, type
+        covered, labels, inception/expiration and matching DNSKEY conditions
+        hold.
+      "5.3.3": >-
+        An authenticated RRset TTL is no greater than the minimum of the
+        received RRset TTL, received RRSIG TTL, RRSIG Original TTL and the
+        difference between signature expiration and current time.
+  rfc4034:
+    title: Resource Records for the DNS Security Extensions
+    url: https://www.rfc-editor.org/rfc/rfc4034.html
+    capture: docs/dnssec-expansion/sources/resolution/s05-rfc4034-text.txt
+    sha256: 6c32963b76808ec4e5f1282b5e13c5216df4670d21e1590bf29af4066f49b355
+    sections:
+      "2.1": DNSKEY/RRSIG/DS/NSEC RDATA fields and key tag calculation.
+      "3.1": RRSIG covers exactly one RRset; signer, labels, Original TTL and signature fields are signed.
+  rfc1034:
+    title: Domain Names - Concepts and Facilities
+    url: https://www.rfc-editor.org/rfc/rfc1034.html
+    capture: docs/dnssec-expansion/sources/resolution/s22-rfc1034-text.txt
+    sha256: d6b10a71441df879cc2817d23f2dad120c8a5f87e74eba1e4ed4b743a76a891a
+    sections:
+      "4.3.2": >-
+        The ideal answer is from a server authoritative for the query; a
+        non-authoritative server returns a referral closer to the answer.
+      "6.2.7": >-
+        A.ISI.EDU is authoritative for both the ARPA domain and the ISI.EDU
+        domain; the AA bit guarantees authority only for data matching QNAME.
+  rfc1035:
+    title: Domain Names - Implementation and Specification
+    url: https://www.rfc-editor.org/rfc/rfc1035.html
+    capture: docs/dnssec-expansion/sources/resolution/s22-rfc1035-text.txt
+    sha256: d14ae809fc9b41bbcae26bb38c937c9515808b944f3252b00de9fe0e95f4fdfb
+    sections:
+      "4.1.1": >-
+        AA is valid in responses and specifies that the responding name server
+        is an authority for the domain name in the question section.
+      "3.4.1": A RDATA ADDRESS is a 32-bit Internet address.
+  rfc9499:
+    title: DNS Terminology
+    url: https://www.rfc-editor.org/rfc/rfc9499.html
+    capture: docs/dnssec-expansion/sources/resolution/s04-rfc9499-text.txt
+    sha256: 270b62df854911dddd246f6c081952106897983a5e02dfe8b3819d72843d9ab1
+    sections:
+      "6": Validation, trust anchor and trust store roles.
+      "9-11": Resolver, cache and security-state terminology; earlier definitions remain distinct.
+  rfc6840:
+    title: Clarifications and Implementation Notes for DNSSEC
+    url: https://www.rfc-editor.org/rfc/rfc6840.html
+    capture: docs/dnssec-expansion/sources/resolution/s03-rfc6840-text.txt
+    sha256: 32c2a8c755f37f3467b4ca098fc0283efe53d2648e93c3ae966cfa390a50bfaf
+    sections:
+      "5.9": CD handling, upstream failure context and cached BAD data.
+  rfc8198:
+    title: Aggressive Use of DNSSEC-Validated Cache
+    url: https://www.rfc-editor.org/rfc/rfc8198.html
+    capture: docs/dnssec-expansion/sources/resolution/s10-rfc8198-text.txt
+    sha256: 78b49d40dc78dffb30fd1aad7313c21800ff9642ab60c27b1a507d2662bec80a
+    sections:
+      "5.1-5.3": NSEC/NSEC3/wildcard synthesis requires sufficient validated cache evidence.
+      "5.4": Negative TTL is bounded by SOA.MINIMUM and SOA TTL; NSEC/NSEC3 TTL may be reduced.
+  rfc9520:
+    title: Negative Caching of DNS Resolution Failures
+    url: https://www.rfc-editor.org/rfc/rfc9520.html
+    capture: docs/dnssec-expansion/sources/resolution/s12-rfc9520-text.txt
+    sha256: 424b5e297db737b7cc7f21d37d30dca211f3f237264c3c6ef3d17653a4e1c531
+    sections:
+      "3": Bounded resolution-failure caching.
+  rfc4592:
+    title: The Role of Wildcards in the Domain Name System
+    url: https://www.rfc-editor.org/rfc/rfc4592.html
+    capture: docs/dnssec-expansion/sources/resolution/s26-rfc4592-text.txt
+    sha256: 69bf6d3d435324a24747807106b5b4050c1f15e9f9fb8e0b67f3ab13d22f98bc
+    sections:
+      "2.2": Wildcard owner/type semantics and synthesis.
+      "3.3": Wildcard matching and closest encloser.
+  rfc6672:
+    title: DNAME Redirection in the DNS
+    url: https://www.rfc-editor.org/rfc/rfc6672.html
+    capture: docs/dnssec-expansion/sources/resolution/s26-rfc6672-text.txt
+    sha256: 50cbe190ac838ca006a4642a818c101aaeca623f36fe33e979d1afc92fa11799
+    sections:
+      "3.1": DNAME substitution and synthesized CNAME.
+      "5.3": DNAME and DNSSEC behavior.
+  erratum5226:
+    title: RFC4035 erratum 5226
+    url: https://errata.rfc-editor.org/eid5226/
+    capture: docs/dnssec-expansion/sources/resolution/s28-eid5226.html
+    sha256: 1b9371fac01d50415828161f24407a147a1f168b05b757861822b78e625e25a4
+    status: Verified
+    type: Technical
+    correction: >-
+      The special DS response condition applies when the server is not
+      authoritative for ANY zone above the child apex, not only the immediate
+      parent.
+authored_profile:
+  worker-plan:
+    path: docs/dnssec-expansion/inputs/worker-plan.html
+    sha256: e50d93f4072270ea3522aaeb0ae81c8012adbb515d19c7bcae52136ea6cc9994
+    relevant: >-
+      Root, parent and child authorities label zone ownership and delegation
+      cuts. A server can serve several zones without merging their signing
+      authority. Distinguish authoritative answers from recursive service.
+      Do not invent a network hop between local components.
+  scenario-manifest:
+    path: docs/dnssec-expansion/scenario-manifest.json
+    sha256: null
+    relevant: DNS03 acceptance requires parent-authenticated DS, matching child key and child DNSKEY RRset acceptance; DNS09 acceptance requires each relevant zone to use its own DS/DNSKEY/proof path.
+numeric_dependencies:
+  - id: zz-a
+    status: promised-by-DnssecNumericFixtures
+    agent: DnssecNumericFixtures
+    request: >-
+      Additive signed zz.lab.example. A fixture with records 192.0.2.80 and
+      192.0.2.81, canonical RDATA c0000250/c0000251, published OriginalTTL 3600,
+      received RRset/RRSIG TTL 300, inception 1792713000, expiration 1792717200,
+      signer lab.example., key child-zsk-g1, algorithm 13, labels 3, key tag
+      55402.
+    promised_fields:
+      rrset_id: zz-a
+      signature_id: zz-a-signature
+      owner: zz.lab.example.
+      type: A
+      class: IN
+      records: [192.0.2.80, 192.0.2.81]
+      canonical_rdata_hex: [c0000250, c0000251]
+      signed_original_ttl: 3600
+      received_rrset_ttl: 300
+      received_rrsig_ttl: 300
+      inception: 1792713000
+      expiration: 1792717200
+      signer: lab.example.
+      key_id: child-zsk-g1
+      algorithm: 13
+      labels: 3
+      key_tag: 55402
+    final_report: awaiting exact file path, file sha256/bytes, signature RDATA hex/sha256, signingInputSha256 and verification statement
+  - id: other-unsigned-target
+    status: promised-by-DnssecNumericFixtures
+    agent: DnssecNumericFixtures
+    request: >-
+      Additive unsigned www.other.example. A occurrence 192.0.2.80 with
+      received TTL 300, plus parent other.example. NSEC zzz.example. with
+      NS/RRSIG/NSEC and no DS/SOA, signed by example-zsk-g1, original and
+      received TTL 300, baseline inception 1792713000 and expiration 1792717200.
+    promised_fields:
+      unsigned_rrset_id: other-www-a-unsigned
+      unsigned_owner: www.other.example.
+      unsigned_type: A
+      unsigned_records: [192.0.2.80]
+      unsigned_received_ttl: 300
+      unsigned_signature: null
+      nsec_id: denial-parent-unsigned-other
+      nsec_owner: other.example.
+      nsec_next: zzz.example.
+      nsec_types: [NS, RRSIG, NSEC]
+      nsec_original_ttl: 300
+      nsec_received_ttl: 300
+      nsec_signer: example.
+      nsec_key_id: example-zsk-g1
+      nsec_algorithm: 13
+      nsec_key_tag: 30008
+      nsec_signature_id: denial-parent-unsigned-other-signature
+    final_report: awaiting exact NSEC canonical RDATA hex, signature RDATA hex/sha256, signingInputSha256, file paths and file hashes
+templates:
+  dns03_parent_ds_hop:
+    id: ${case_id}:parent-ds
+    from: dnsResolver
+    to: dnsParent
+    transport: UDP
+    question:
+      qname: lab.example.
+      qtype: DS
+      qclass: IN
+      qdcount: 1
+    query:
+      id: ${case_id}:parent-ds:q
+      flags: {QR: 0, AA: 0, TC: 0, RD: 0, RA: 0, AD: 0, CD: 1, DO: 1, CO: 0, opcode: 0, Z: 0}
+      edns: {present: true, version: 0, udpPayloadSize: 1232}
+      messageId: ${message_id}
+    response:
+      id: ${case_id}:parent-ds:r
+      inReplyTo: ${case_id}:parent-ds:q
+      flags: {QR: 1, AA: 1, TC: 0, RD: 0, RA: 0, AD: 0, CD: 0, DO: 1, CO: 0, opcode: 0, Z: 0}
+      rcode: NOERROR
+      edns: {present: true, version: 0, udpPayloadSize: 1232}
+      messageId: ${message_id}
+    evidenceRefs: [${evidence_ref}]
+  dns03_child_key_hop:
+    id: ${case_id}:child-key
+    from: dnsResolver
+    to: dnsChild
+    transport: UDP
+    question:
+      qname: lab.example.
+      qtype: DNSKEY
+      qclass: IN
+      qdcount: 1
+    query:
+      id: ${case_id}:child-key:q
+      flags: {QR: 0, AA: 0, TC: 0, RD: 0, RA: 0, AD: 0, CD: 1, DO: 1, CO: 0, opcode: 0, Z: 0}
+      edns: {present: true, version: 0, udpPayloadSize: 1232}
+      messageId: ${message_id}
+    response:
+      id: ${case_id}:child-key:r
+      inReplyTo: ${case_id}:child-key:q
+      flags: {QR: 1, AA: 1, TC: 0, RD: 0, RA: 0, AD: 0, CD: 0, DO: 1, CO: 0, opcode: 0, Z: 0}
+      rcode: NOERROR
+      edns: {present: true, version: 0, udpPayloadSize: 1232}
+      messageId: ${message_id}
+    evidenceRefs: [${evidence_ref}]
+  sequence_send:
+    id: ${event_id}
+    actorId: dnsResolver
+    kind: network-send
+    hopRef: ${hop_id}
+    action: Use declared route; query occurrence has its own correlation identity.
+  sequence_receive:
+    id: ${event_id}
+    actorId: dnsResolver
+    kind: network-receive
+    hopRef: ${hop_id}
+    action: Receive public records untrusted; response receipt is not local DNSSEC verification.
+  dns09_target_hop:
+    id: ${case_id}:target
+    from: dnsResolver
+    to: dnsParent
+    transport: UDP
+    question:
+      qname: ${qname}
+      qtype: A
+      qclass: IN
+      qdcount: 1
+    query:
+      id: ${case_id}:target:q
+      flags: {QR: 0, AA: 0, TC: 0, RD: 0, RA: 0, AD: 0, CD: 1, DO: 1, CO: 0, opcode: 0, Z: 0}
+      edns: {present: true, version: 0, udpPayloadSize: 1232}
+      messageId: ${message_id}
+    response:
+      id: ${case_id}:target:r
+      inReplyTo: ${case_id}:target:q
+      flags: {QR: 1, AA: 1, TC: 0, RD: 0, RA: 0, AD: 0, CD: 0, DO: 1, CO: 0, opcode: 0, Z: 0}
+      rcode: NOERROR
+      edns: {present: true, version: 0, udpPayloadSize: 1232}
+      messageId: ${message_id}
+    evidenceRefs: ${evidence_refs}
+findings:
+  - id: DNS03-SC-01
+    cases: [DNS03/signed-child]
+    priority: 1
+    confidence: 0.97
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The case's initial cache explicitly denies both the parent DS and the
+      child DNSKEY, and the only content hop is the child A query. The secure
+      outcome and the parent-to-child-authentication checkpoint therefore use
+      evidence that is never received. The parentDsCatalog is catalog-only by
+      the case's own rrsetCatalogScope, and numericBindings.chain is a binding,
+      not a receipt.
+    policy:
+      before: Secure/AD=1 after two hops despite no parent DS or child DNSKEY receipt, with both cache flags false.
+      after: Secure/AD=1 only after a parent DS response and a child DNSKEY response are received; both receipts appear in the hop/sequence transcript before the authentication checkpoint.
+    sources: [rfc4035, rfc4034]
+    patches:
+      - op: add
+        path: /lessons/1/cases/0/outcome/flags/hops/0
+        expect_absent: true
+        value:
+          id: lab-dnssec03:signed-child:parent-ds
+          from: dnsResolver
+          to: dnsParent
+          transport: UDP
+          question: {qname: lab.example., qtype: DS, qclass: IN, qdcount: 1}
+          query:
+            id: lab-dnssec03:signed-child:parent-ds:q
+            flags: {QR: 0, AA: 0, TC: 0, RD: 0, RA: 0, AD: 0, CD: 1, DO: 1, CO: 0, opcode: 0, Z: 0}
+            edns: {present: true, version: 0, udpPayloadSize: 1232}
+            messageId: 16642
+          response:
+            id: lab-dnssec03:signed-child:parent-ds:r
+            inReplyTo: lab-dnssec03:signed-child:parent-ds:q
+            flags: {QR: 1, AA: 1, TC: 0, RD: 0, RA: 0, AD: 0, CD: 0, DO: 1, CO: 0, opcode: 0, Z: 0}
+            rcode: NOERROR
+            edns: {present: true, version: 0, udpPayloadSize: 1232}
+            messageId: 16642
+          evidenceRefs: [lab-dnssec03:signed-child:numericBindings-chain-3:example-child-ds]
+      - op: add
+        path: /lessons/1/cases/0/outcome/flags/hops/1
+        expect_absent: true
+        value:
+          id: lab-dnssec03:signed-child:child-key
+          from: dnsResolver
+          to: dnsChild
+          transport: UDP
+          question: {qname: lab.example., qtype: DNSKEY, qclass: IN, qdcount: 1}
+          query:
+            id: lab-dnssec03:signed-child:child-key:q
+            flags: {QR: 0, AA: 0, TC: 0, RD: 0, RA: 0, AD: 0, CD: 1, DO: 1, CO: 0, opcode: 0, Z: 0}
+            edns: {present: true, version: 0, udpPayloadSize: 1232}
+            messageId: 16643
+          response:
+            id: lab-dnssec03:signed-child:child-key:r
+            inReplyTo: lab-dnssec03:signed-child:child-key:q
+            flags: {QR: 1, AA: 1, TC: 0, RD: 0, RA: 0, AD: 0, CD: 0, DO: 1, CO: 0, opcode: 0, Z: 0}
+            rcode: NOERROR
+            edns: {present: true, version: 0, udpPayloadSize: 1232}
+            messageId: 16643
+          evidenceRefs: [lab-dnssec03:signed-child:numericBindings-chain-4:child-dnskey-g1]
+      - op: add
+        path: /lessons/1/cases/0/checkpoints/5/expected/response/hops/0
+        expect_absent: true
+        value_ref: same-as:/lessons/1/cases/0/outcome/flags/hops/0
+      - op: add
+        path: /lessons/1/cases/0/checkpoints/5/expected/response/hops/1
+        expect_absent: true
+        value_ref: same-as:/lessons/1/cases/0/outcome/flags/hops/1
+      - op: add
+        path: /lessons/1/cases/0/sequence/2
+        expect_absent: true
+        value:
+          id: lab-dnssec03:signed-child:parent-ds:q
+          actorId: dnsResolver
+          kind: network-send
+          hopRef: lab-dnssec03:signed-child:parent-ds
+          action: Use declared route; query occurrence has its own correlation identity.
+      - op: add
+        path: /lessons/1/cases/0/sequence/3
+        expect_absent: true
+        value:
+          id: lab-dnssec03:signed-child:parent-ds:r:raw
+          actorId: dnsResolver
+          kind: network-receive
+          hopRef: lab-dnssec03:signed-child:parent-ds
+          action: Receive public records untrusted; response receipt is not local DNSSEC verification.
+      - op: add
+        path: /lessons/1/cases/0/sequence/4
+        expect_absent: true
+        value:
+          id: lab-dnssec03:signed-child:child-key:q
+          actorId: dnsResolver
+          kind: network-send
+          hopRef: lab-dnssec03:signed-child:child-key
+          action: Use declared route; query occurrence has its own correlation identity.
+      - op: add
+        path: /lessons/1/cases/0/sequence/5
+        expect_absent: true
+        value:
+          id: lab-dnssec03:signed-child:child-key:r:raw
+          actorId: dnsResolver
+          kind: network-receive
+          hopRef: lab-dnssec03:signed-child:child-key
+          action: Receive public records untrusted; response receipt is not local DNSSEC verification.
+  - id: DNS03-DSM-01a
+    cases: [DNS03/supported-ds-mismatch]
+    priority: 1
+    confidence: 0.94
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The case declares the parent DS authenticated in setup while the initial
+      cache says it is not present, and the only hops are the child A query and
+      the stub. The child DNSKEY g2 needed for the digest mismatch is also not
+      received. The checkpoint asserts the DS and child-key failure state before
+      any retrieval.
+    policy:
+      before: Authenticated DS and received child DNSKEY are asserted from bindings while cache flags are false and no parent/child key hop exists.
+      after: Parent DS and child DNSKEY g2 are received in the transcript; the existing mismatch checkpoint is reached only after both receipts.
+    sources: [rfc4035, rfc4034]
+    patches:
+      - op: remove
+        path: /lessons/1/cases/2/setup/delegation/parentDsAuthenticated
+        expect: true
+      - op: add
+        path: /lessons/1/cases/2/outcome/flags/hops/0
+        expect_absent: true
+        template: dns03_parent_ds_hop
+        bindings:
+          case_id: lab-dnssec03:supported-ds-mismatch
+          message_id: 16642
+          evidence_ref: lab-dnssec03:supported-ds-mismatch:numericBindings-chain-3:example-child-ds
+      - op: add
+        path: /lessons/1/cases/2/outcome/flags/hops/1
+        expect_absent: true
+        template: dns03_child_key_hop
+        bindings:
+          case_id: lab-dnssec03:supported-ds-mismatch
+          message_id: 16643
+          evidence_ref: lab-dnssec03:supported-ds-mismatch:numericBindings-chain-4:child-dnskey-g2-final
+      - op: add
+        path: /lessons/1/cases/2/checkpoints/5/expected/response/hops/0
+        expect_absent: true
+        value_ref: same-as:/lessons/1/cases/2/outcome/flags/hops/0
+      - op: add
+        path: /lessons/1/cases/2/checkpoints/5/expected/response/hops/1
+        expect_absent: true
+        value_ref: same-as:/lessons/1/cases/2/outcome/flags/hops/1
+      - op: add
+        path: /lessons/1/cases/2/sequence/2
+        expect_absent: true
+        template: sequence_send
+        bindings: {event_id: lab-dnssec03:supported-ds-mismatch:parent-ds:q, hop_id: lab-dnssec03:supported-ds-mismatch:parent-ds}
+      - op: add
+        path: /lessons/1/cases/2/sequence/3
+        expect_absent: true
+        template: sequence_receive
+        bindings: {event_id: lab-dnssec03:supported-ds-mismatch:parent-ds:r:raw, hop_id: lab-dnssec03:supported-ds-mismatch:parent-ds}
+      - op: add
+        path: /lessons/1/cases/2/sequence/4
+        expect_absent: true
+        template: sequence_send
+        bindings: {event_id: lab-dnssec03:supported-ds-mismatch:child-key:q, hop_id: lab-dnssec03:supported-ds-mismatch:child-key}
+      - op: add
+        path: /lessons/1/cases/2/sequence/5
+        expect_absent: true
+        template: sequence_receive
+        bindings: {event_id: lab-dnssec03:supported-ds-mismatch:child-key:r:raw, hop_id: lab-dnssec03:supported-ds-mismatch:child-key}
+  - id: DNS03-DSM-01b
+    cases: [DNS03/unsupported-only-ds]
+    priority: 1
+    confidence: 0.92
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The authenticated unsupported-only DS distinction is asserted while the
+      initial cache says no parent DS is present and no parent hop exists. The
+      authenticatedDs binding is not a receipt.
+    policy:
+      before: Authenticated unsupported-only DS asserted from a binding with no parent exchange.
+      after: Parent DS is received before the unsupported-algorithm classification; no child DNSKEY is required for the selected insecure result.
+    sources: [rfc4035, rfc4034]
+    patches:
+      - op: remove
+        path: /lessons/1/cases/6/setup/delegation/parentDsAuthenticated
+        expect: true
+      - op: add
+        path: /lessons/1/cases/6/outcome/flags/hops/0
+        expect_absent: true
+        template: dns03_parent_ds_hop
+        bindings:
+          case_id: lab-dnssec03:unsupported-only-ds
+          message_id: 16642
+          evidence_ref: lab-dnssec03:unsupported-only-ds:numericBindings-authenticatedDs:parent-ds-unsupported-alg250
+      - op: add
+        path: /lessons/1/cases/6/checkpoints/5/expected/response/hops/0
+        expect_absent: true
+        value_ref: same-as:/lessons/1/cases/6/outcome/flags/hops/0
+      - op: add
+        path: /lessons/1/cases/6/sequence/2
+        expect_absent: true
+        template: sequence_send
+        bindings: {event_id: lab-dnssec03:unsupported-only-ds:parent-ds:q, hop_id: lab-dnssec03:unsupported-only-ds:parent-ds}
+      - op: add
+        path: /lessons/1/cases/6/sequence/3
+        expect_absent: true
+        template: sequence_receive
+        bindings: {event_id: lab-dnssec03:unsupported-only-ds:parent-ds:r:raw, hop_id: lab-dnssec03:unsupported-only-ds:parent-ds}
+  - id: DNS03-NDS-01
+    cases: [DNS03/proved-no-ds]
+    priority: 1
+    confidence: 0.92
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The parent-zone NSEC proof is declared but the only content hop is to the
+      child. RFC4035 section 4.2 requires the parent zone for parental NSEC
+      retrieval and section 5.2 requires the parent NSEC for no-DS proof. The
+      sibling proof-from-wrong-zone case uses the same parent NSEC through a
+      child hop and calls it bogus.
+    policy:
+      before: Parent-zone denial proof authenticated without a parent exchange.
+      after: Parent DS query/response delivers the parent NSEC/RRSIG; the insecure no-DS verdict is bound to that receipt.
+    sources: [rfc4035, erratum5226]
+    patches:
+      - op: add
+        path: /lessons/1/cases/1/outcome/flags/hops/0
+        expect_absent: true
+        template: dns03_parent_ds_hop
+        bindings:
+          case_id: lab-dnssec03:proved-no-ds
+          message_id: 16642
+          evidence_ref: lab-dnssec03:proved-no-ds:numericBindings-proofs-0:denial-parent-unsigned-lab
+      - op: add
+        path: /lessons/1/cases/1/checkpoints/5/expected/response/hops/0
+        expect_absent: true
+        value_ref: same-as:/lessons/1/cases/1/outcome/flags/hops/0
+      - op: add
+        path: /lessons/1/cases/1/setup/responseInputs/parentProof/hopRef
+        expect_absent: true
+        value: lab-dnssec03:proved-no-ds:parent-ds
+      - op: add
+        path: /lessons/1/cases/1/setup/delegation/nsec/hopRef
+        expect_absent: true
+        value: lab-dnssec03:proved-no-ds:parent-ds
+      - op: add
+        path: /lessons/1/cases/1/sequence/2
+        expect_absent: true
+        template: sequence_send
+        bindings: {event_id: lab-dnssec03:proved-no-ds:parent-ds:q, hop_id: lab-dnssec03:proved-no-ds:parent-ds}
+      - op: add
+        path: /lessons/1/cases/1/sequence/3
+        expect_absent: true
+        template: sequence_receive
+        bindings: {event_id: lab-dnssec03:proved-no-ds:parent-ds:r:raw, hop_id: lab-dnssec03:proved-no-ds:parent-ds}
+  - id: DNS03-ISL-01
+    cases: [DNS03/signed-island-with-local-anchor]
+    priority: 1
+    confidence: 0.88
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The anchor is only the KSK child-ksk-g1, while the answer is signed by
+      the ZSK child-zsk-g1. The DNSKEY RRset that carries the ZSK is evidence
+      chain-0 but is never received and the initial cache says the child DNSKEY
+      is not authenticated. RFC4035 section 5.1 preserves normal validation for
+      islands; section 5.2 requires the matching DNSKEY and self-signed DNSKEY
+      RRset.
+    policy:
+      before: KSK-only anchor treated as sufficient for a ZSK-signed answer without receiving the DNSKEY RRset.
+      after: The child DNSKEY RRset is received and validated under the configured KSK before the answer is accepted.
+    sources: [rfc4035, rfc4034]
+    patches:
+      - op: add
+        path: /lessons/1/cases/5/outcome/flags/hops/0
+        expect_absent: true
+        template: dns03_child_key_hop
+        bindings:
+          case_id: lab-dnssec03:signed-island-with-local-anchor
+          message_id: 16642
+          evidence_ref: lab-dnssec03:signed-island-with-local-anchor:numericBindings-chain-0:child-dnskey-g1
+      - op: add
+        path: /lessons/1/cases/5/checkpoints/5/expected/response/hops/0
+        expect_absent: true
+        value_ref: same-as:/lessons/1/cases/5/outcome/flags/hops/0
+      - op: remove
+        path: /lessons/1/cases/5/setup/delegation/parentAuthenticatedNoDs
+        expect: true
+      - op: add
+        path: /lessons/1/cases/5/sequence/2
+        expect_absent: true
+        template: sequence_send
+        bindings: {event_id: lab-dnssec03:signed-island-with-local-anchor:child-key:q, hop_id: lab-dnssec03:signed-island-with-local-anchor:child-key}
+      - op: add
+        path: /lessons/1/cases/5/sequence/3
+        expect_absent: true
+        template: sequence_receive
+        bindings: {event_id: lab-dnssec03:signed-island-with-local-anchor:child-key:r:raw, hop_id: lab-dnssec03:signed-island-with-local-anchor:child-key}
+  - id: DNS04-WC-01
+    cases: [DNS04/wrong-clock]
+    priority: 1
+    confidence: 0.9
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The policy claims fresh network verification at the validator clock
+      1792717201 but sets keyEvidenceUsableUntil to 1792713900, 3601 seconds
+      before that clock. At the validator's clock the upper-path evidence is
+      expired, so the claimed leaf signature-time failure is preceded by an
+      upper-path failure.
+    policy:
+      before: Upper path declared established at 1792717201 with evidence usable only to 1792713900.
+      after: Upper path is freshly received at 1792717201 and usable through 1792717501, or the case records an upper-path failure instead of a leaf failure.
+    sources: [rfc4035]
+    patches:
+      - op: replace
+        path: /lessons/2/cases/3/setup/prerequisiteValidationPolicy/keyEvidenceUsableUntil
+        expect: 1792713900
+        value: 1792717501
+      - op: add
+        path: /lessons/2/cases/3/setup/prerequisiteValidationPolicy/freshReceiptAt
+        expect_absent: true
+        value: 1792717201
+      - op: add
+        path: /lessons/2/cases/3/setup/prerequisiteValidationPolicy/freshReceiptTtl
+        expect_absent: true
+        value: 300
+  - id: DNS10-OOP-01
+    cases: [DNS10/out-of-proof-range]
+    priority: 1
+    confidence: 0.98
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    status: pending_numeric_zz-a
+    rationale: >-
+      The question is zz.lab.example. A but the received answer owner, numeric
+      RRset and signature are www.lab.example./www-a. The www RRSIG cannot
+      authenticate an answer for zz; RFC1034 section 4.3.2 and RFC4035 section
+      5.3.1 require the answer and RRSIG owner to match the question. The zz
+      question must be preserved; no exact zz fixture exists in the frozen
+      numeric package.
+    policy:
+      before: Secure answer for zz is sourced from the www RRset/signature.
+      after: Secure answer for zz is sourced only from the additive signed zz-a/zz-a-signature fixture; the cache key and application qname remain zz.
+    sources: [rfc1034, rfc1035, rfc4035]
+    numeric_dependency: zz-a
+    patches:
+      - op: replace
+        path: /lessons/8/cases/9/setup/rrsets/answer/owner
+        expect: www.lab.example.
+        value: zz.lab.example.
+      - op: replace
+        path: /lessons/8/cases/9/setup/rrsets/answer/numericRrsetId
+        expect: www-a
+        value: zz-a
+      - op: replace
+        path: /lessons/8/cases/9/setup/rrsets/signature/numericSignatureId
+        expect: www-a-signature
+        value: zz-a-signature
+      - op: replace
+        path: /lessons/8/cases/9/setup/rrsets/signature/signatureRdataSha256
+        expect: d8ad1aada70b4b6957224b98d44199245ba14dbb3c6e8da8bdaea15174226cfe
+        value: FROM_NUMERIC_REPORT
+      - op: replace
+        path: /lessons/8/cases/9/setup/numericBindings/primary
+        expect_selector: {rrsetId: www-a, signatureId: www-a-signature, owner: www.lab.example.}
+        value:
+          purpose: answer
+          numericFile: FROM_NUMERIC_REPORT
+          rrsetId: zz-a
+          signatureId: zz-a-signature
+          owner: zz.lab.example.
+          type: A
+          class: IN
+          records: [192.0.2.80, 192.0.2.81]
+          canonicalRdataHex: [c0000250, c0000251]
+          publishedRrsetTtl: 3600
+          receivedRrsetTtl: 300
+          receivedRrsigTtl: 300
+          signedMetadata: {algorithm: 13, labels: 3, originalTtl: 3600, inception: 1792713000, expiration: 1792717200, keyId: child-zsk-g1, keyTag: 55402, signer: lab.example., typeCovered: 1}
+          signatureRdataSha256: FROM_NUMERIC_REPORT
+          signingInputSha256: FROM_NUMERIC_REPORT
+          bindingRule: Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record.
+          occurrenceId: lab-dnssec10:out-of-proof-range:numericBindings-primary:zz-a
+      - op: remove
+        path: /lessons/8/cases/9/setup/evidenceBindingIndex/lab-dnssec10:out-of-proof-range:numericBindings-primary:www-a
+        expect_selector: {rrsetId: www-a, signatureId: www-a-signature}
+      - op: add
+        path: /lessons/8/cases/9/setup/evidenceBindingIndex/lab-dnssec10:out-of-proof-range:numericBindings-primary:zz-a
+        expect_absent: true
+        value: {numericFile: FROM_NUMERIC_REPORT, rrsetId: zz-a, signatureId: zz-a-signature, signatureRdataSha256: FROM_NUMERIC_REPORT, purpose: answer}
+      - op: replace
+        path: /lessons/8/cases/9/checkpoints/3/expected/evidenceRefs/6
+        expect: lab-dnssec10:out-of-proof-range:numericBindings-primary:www-a
+        value: lab-dnssec10:out-of-proof-range:numericBindings-primary:zz-a
+      - op: replace
+        path: /lessons/8/cases/9/checkpoints/4/expected/cacheEntries/0/evidenceRefs/6
+        expect: lab-dnssec10:out-of-proof-range:numericBindings-primary:www-a
+        value: lab-dnssec10:out-of-proof-range:numericBindings-primary:zz-a
+  - id: DNS09-WND-01
+    cases: [DNS09/wildcard-nodata]
+    priority: 1
+    confidence: 0.98
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The wildcard object declares type AAAA with RDATA 192.0.2.90, which is
+      an IPv4 address, while wildcardTypes is A/RRSIG/NSEC, the received
+      RRset/signature is type A, and the checkpoint says wildcardAAAA=false.
+      The input is internally impossible and contradicts the NODATA proof.
+    policy:
+      before: Wildcard is described as AAAA with IPv4 RDATA.
+      after: Wildcard is described as A with the existing A RRset/signature; the AAAA query remains NODATA because the bitmap excludes AAAA.
+    sources: [rfc4035, rfc4592, rfc1035]
+    patches:
+      - op: replace
+        path: /lessons/7/cases/1/setup/wildcard/type
+        expect: AAAA
+        value: A
+  - id: DNS22-DCTS-01
+    cases: [DNS22/different-client-trust-stores]
+    priority: 1
+    confidence: 0.92
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      clientB is declared with a conditional private upstream, private trust
+      store, private anchor and 198.51.100.80 answer, but the only content hop
+      is the public child A query. The private A and private DNSKEY are only
+      bindings; the public child response cannot deliver them. The clientB
+      secure result and private cache entry therefore have no receipt.
+    policy:
+      before: Two clients are reported secure from one public leaf hop; the private answer/key are bindings only.
+      after: clientA uses the public leaf; clientB uses its own conditional private hop carrying the private A and DNSKEY; both cache entries carry provenance.
+    sources: [rfc4035, rfc9499]
+    patches:
+      - op: add
+        path: /lessons/12/cases/3/setup/clients/clientB/routeDetail
+        expect_absent: true
+        value: {mode: conditional-forward, suffix: lab.example., destination: 198.51.100.53}
+      - op: add
+        path: /lessons/12/cases/3/outcome/flags/hops/1
+        expect_absent: true
+        value:
+          id: lab-dnssec22:different-client-trust-stores:clientB-private
+          from: dnsResolver
+          to: dnsUpstream
+          transport: UDP
+          question: {qname: www.lab.example., qtype: A, qclass: IN, qdcount: 1}
+          query:
+            id: lab-dnssec22:different-client-trust-stores:clientB-private:q
+            flags: {QR: 0, AA: 0, TC: 0, RD: 1, RA: 0, AD: 1, CD: 1, DO: 1, CO: 0, opcode: 0, Z: 0}
+            edns: {present: true, version: 0, udpPayloadSize: 1232}
+            messageId: 16642
+          response:
+            id: lab-dnssec22:different-client-trust-stores:clientB-private:r
+            inReplyTo: lab-dnssec22:different-client-trust-stores:clientB-private:q
+            flags: {QR: 1, AA: 0, TC: 0, RD: 1, RA: 1, AD: 0, CD: 1, DO: 1, CO: 0, opcode: 0, Z: 0}
+            rcode: NOERROR
+            edns: {present: true, version: 0, udpPayloadSize: 1232}
+            messageId: 16642
+          evidenceRefs: [lab-dnssec22:different-client-trust-stores:numericBindings-additional-0:private-www-a, lab-dnssec22:different-client-trust-stores:numericBindings-additional-1:private-child-dnskey]
+      - op: add
+        path: /lessons/12/cases/3/checkpoints/6/expected/response/hops/1
+        expect_absent: true
+        value_ref: same-as:/lessons/12/cases/3/outcome/flags/hops/1
+      - op: add
+        path: /lessons/12/cases/3/sequence/4
+        expect_absent: true
+        value:
+          id: lab-dnssec22:different-client-trust-stores:clientB-private:q
+          actorId: dnsResolver
+          kind: network-send
+          hopRef: lab-dnssec22:different-client-trust-stores:clientB-private
+          action: Use declared route; query occurrence has its own correlation identity.
+      - op: add
+        path: /lessons/12/cases/3/sequence/5
+        expect_absent: true
+        value:
+          id: lab-dnssec22:different-client-trust-stores:clientB-private:r:raw
+          actorId: dnsResolver
+          kind: network-receive
+          hopRef: lab-dnssec22:different-client-trust-stores:clientB-private
+          action: Receive public records untrusted; response receipt is not local DNSSEC verification.
+      - op: add
+        path: /lessons/12/cases/3/checkpoints/5/expected/cacheEntries/1
+        expect_absent: true
+        value:
+          id: lab-dnssec22:different-client-trust-stores:clientB-private-cache
+          kind: answer
+          key: [private-v1, clientB-private-v1, www.lab.example., A, IN]
+          receivedAt: 1792713600
+          expiresAt: 1792713900
+          signatureDeadline: 1792717200
+          validationOwner: dnsValidator
+          securityStatus: secure
+          evidenceRefs: [lab-dnssec22:different-client-trust-stores:numericBindings-additional-0:private-www-a, lab-dnssec22:different-client-trust-stores:numericBindings-additional-1:private-child-dnskey]
+  - id: DNS22-PVC-01
+    cases: [DNS22/private-view-versus-public-chain]
+    priority: 2
+    confidence: 0.88
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The route is conditional-forward to 198.51.100.53, but the only content
+      hop is attributed to dnsChild and marked AA=1. The sibling
+      conditional-forward case uses dnsUpstream with AA=0/RA=1. RFC1035
+      section 4.1.1 and RFC4035 section 3.1.6 require the flags to match the
+      actual role.
+    policy:
+      before: Conditional-forward route represented as an authoritative child response.
+      after: Conditional-forward route represented by dnsUpstream with recursive flags, and private evidence refs attached to the hop.
+    sources: [rfc1035, rfc4035]
+    patches:
+      - op: replace
+        path: /lessons/12/cases/5/outcome/flags/hops/0/to
+        expect: dnsChild
+        value: dnsUpstream
+      - op: replace
+        path: /lessons/12/cases/5/outcome/flags/hops/0/query/flags/RD
+        expect: 0
+        value: 1
+      - op: replace
+        path: /lessons/12/cases/5/outcome/flags/hops/0/query/flags/AD
+        expect: 0
+        value: 1
+      - op: replace
+        path: /lessons/12/cases/5/outcome/flags/hops/0/response/flags/AA
+        expect: 1
+        value: 0
+      - op: replace
+        path: /lessons/12/cases/5/outcome/flags/hops/0/response/flags/RD
+        expect: 0
+        value: 1
+      - op: replace
+        path: /lessons/12/cases/5/outcome/flags/hops/0/response/flags/RA
+        expect: 0
+        value: 1
+      - op: replace
+        path: /lessons/12/cases/5/outcome/flags/hops/0/response/flags/CD
+        expect: 0
+        value: 1
+      - op: add
+        path: /lessons/12/cases/5/outcome/flags/hops/0/evidenceRefs
+        expect_absent: true
+        value: [lab-dnssec22:private-view-versus-public-chain:numericBindings-primary:private-www-a, lab-dnssec22:private-view-versus-public-chain:numericBindings-privateDnskey:private-child-dnskey]
+      - op: replace
+        path: /lessons/12/cases/5/checkpoints/5/expected/response/hops/0/to
+        expect: dnsChild
+        value: dnsUpstream
+      - op: replace
+        path: /lessons/12/cases/5/checkpoints/5/expected/response/hops/0/query/flags/RD
+        expect: 0
+        value: 1
+      - op: replace
+        path: /lessons/12/cases/5/checkpoints/5/expected/response/hops/0/query/flags/AD
+        expect: 0
+        value: 1
+      - op: replace
+        path: /lessons/12/cases/5/checkpoints/5/expected/response/hops/0/response/flags/AA
+        expect: 1
+        value: 0
+      - op: replace
+        path: /lessons/12/cases/5/checkpoints/5/expected/response/hops/0/response/flags/RD
+        expect: 0
+        value: 1
+      - op: replace
+        path: /lessons/12/cases/5/checkpoints/5/expected/response/hops/0/response/flags/RA
+        expect: 0
+        value: 1
+      - op: replace
+        path: /lessons/12/cases/5/checkpoints/5/expected/response/hops/0/response/flags/CD
+        expect: 0
+        value: 1
+      - op: add
+        path: /lessons/12/cases/5/checkpoints/5/expected/response/hops/0/evidenceRefs
+        expect_absent: true
+        value: [lab-dnssec22:private-view-versus-public-chain:numericBindings-primary:private-www-a, lab-dnssec22:private-view-versus-public-chain:numericBindings-privateDnskey:private-child-dnskey]
+  - id: CACHE-KEY-01
+    cases: [all kind=failure cache entries except the two DNS20 CD0 entries]
+    priority: 2
+    confidence: 0.88
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The profile requires view/trustStore/qname/qtype/qclass/checkingContext.
+      Almost every failure key has only five elements; only the two DNS20
+      bad-cache examples append CD0. The checking context is the cache owner's
+      downstream query context, not the upstream query's CD bit and not a case
+      name. Thus DNS06 local-checks-cd-one-data uses CD0 (the downstream stub
+      query), while DNS20 cd-one-diagnostic-data uses CD1 (the downstream stub
+      query).
+    policy:
+      before: Failure cache keys are shared across checking contexts; CD1 diagnostic/local failures can collide with CD0 checking failures.
+      after: Every failure key appends the actual downstream checking context CD0 or CD1; ordinary answer keys are unchanged; the two existing DNS20 CD0 keys remain unchanged.
+    sources: [rfc4035, rfc6840, rfc9520]
+    patches:
+      - op: replace
+        path: /lessons/0/cases/3/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/1/cases/2/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/1/cases/3/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/2/cases/1/checkpoints/5/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/2/cases/2/checkpoints/5/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/2/cases/3/checkpoints/5/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/2/cases/4/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/2/cases/5/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/2/cases/6/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/2/cases/7/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/2/cases/9/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/2/cases/10/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/4/cases/3/checkpoints/3/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/4/cases/4/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/4/cases/5/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/4/cases/6/checkpoints/2/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/5/cases/5/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, no.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, no.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/5/cases/6/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, no.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, no.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/6/cases/3/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, no.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, no.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/6/cases/4/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, no.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, no.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/6/cases/5/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, no.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, no.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/7/cases/2/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, foo.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, foo.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/7/cases/5/checkpoints/5/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, alias.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, alias.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/8/cases/2/checkpoints/7/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/9/cases/2/checkpoints/3/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/9/cases/3/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/9/cases/5/checkpoints/5/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/10/cases/0/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/10/cases/1/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/10/cases/2/checkpoints/4/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD1]
+      - op: replace
+        path: /lessons/10/cases/3/checkpoints/2/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/10/cases/6/checkpoints/7/expected/cacheEntries/0/key
+        expect: [public-v1, resolver-public-v1, www.lab.example., A, IN]
+        value: [public-v1, resolver-public-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/12/cases/4/checkpoints/4/expected/cacheEntries/0/key
+        expect: [private-v1, resolver-private-v1, www.lab.example., A, IN]
+        value: [private-v1, resolver-private-v1, www.lab.example., A, IN, CD0]
+      - op: replace
+        path: /lessons/12/cases/5/checkpoints/4/expected/cacheEntries/0/key
+        expect: [private-v1, public-only-v1, www.lab.example., A, IN]
+        value: [private-v1, public-only-v1, www.lab.example., A, IN, CD0]
+  - id: CLOCK-SIG-01
+    cases: [DNS03/supported-ds-mismatch, DNS22/stale-private-anchor]
+    priority: 2
+    confidence: 0.9
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      Both cases bind an RRSIG whose expiration is 1803081600 but declare the
+      clock expiration 1792717200 and a signatureRemaining of 3600. At receipt
+      1792713600 the signed signature has 10368000 seconds remaining. The
+      effective cache TTL is 300 from the RRset, so the bogus verdicts remain,
+      but the time dependency is not faithful to the signed evidence.
+    policy:
+      before: Clock expiration and signatureRemaining describe the baseline 1792717200 leaf, not the bound 1803081600 RRSIG.
+      after: Clock/signature bounds match the bound RRSIG; signatureRemaining is 10368000.
+    sources: [rfc4035]
+    patches:
+      - op: replace
+        path: /lessons/1/cases/2/setup/clock/expiration
+        expect: 1792717200
+        value: 1803081600
+      - op: replace
+        path: /lessons/1/cases/2/timeDependencies/clock/expiration
+        expect: 1792717200
+        value: 1803081600
+      - op: replace
+        path: /lessons/1/cases/2/timeDependencies/ttlBoundSeconds/signatureRemaining
+        expect: 3600
+        value: 10368000
+      - op: replace
+        path: /lessons/12/cases/4/setup/clock/expiration
+        expect: 1792717200
+        value: 1803081600
+      - op: replace
+        path: /lessons/12/cases/4/timeDependencies/clock/expiration
+        expect: 1792717200
+        value: 1803081600
+      - op: replace
+        path: /lessons/12/cases/4/timeDependencies/ttlBoundSeconds/signatureRemaining
+        expect: 3600
+        value: 10368000
+  - id: DNS05-DO0-01
+    cases: [DNS05/do-zero-explicit-dnskey-query]
+    priority: 2
+    confidence: 0.9
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      responseInputs.answer.ttl is 3600 while the selected received RRset,
+      numeric binding, time dependency and cache expiry all use 300. The
+      response input would produce a different cache boundary.
+    policy:
+      before: Received DNSKEY answer TTL 3600 in responseInputs.
+      after: Received DNSKEY answer TTL 300, matching rrsets.answer, primary.receivedRrsetTtl, timeDependencies and cache expiry.
+    sources: [rfc4035, rfc1035]
+    patches:
+      - op: replace
+        path: /lessons/3/cases/5/setup/responseInputs/answer/ttl
+        expect: 3600
+        value: 300
+  - id: DNS09-XZONE-01
+    cases: [DNS09/cname-secure-target, DNS09/cname-insecure-target, DNS09/cname-bogus-target, DNS09/dname-synthesized-cname]
+    priority: 2
+    confidence: 0.82
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    rationale: >-
+      The alias cases require the signed/unsigned other.example target but
+      omit it from setup.zones and never declare which authority serves it.
+      The authored plan allows one server to serve several zones without
+      merging signing authority, and RFC1034 section 6.2.7 gives the
+      multi-zone authoritative example. The minimal resolution is to declare
+      dnsParent as serving both example. and other.example., with separate
+      signing authority, and to attach the target evidence to the existing or
+      added target hop.
+    policy:
+      before: other.example. target zone/authority is implicit; the only target hop is authoritative from dnsParent with no zone declaration.
+      after: other.example. is declared in zones; dnsParent is explicitly a multi-zone authority with separate signing authority; target hops carry the exact target evidence refs.
+    sources: [rfc1034, rfc1035, rfc4035, erratum5226]
+    patches:
+      - op: replace
+        path: /lessons/7/cases/3/setup/zones
+        expect: [., example., lab.example.]
+        value: [., example., lab.example., other.example.]
+      - op: add
+        path: /lessons/7/cases/3/setup/route/authorities
+        expect_absent: true
+        value: {dnsParent: {servesZones: [example., other.example.], signingAuthoritySeparate: true}}
+      - op: replace
+        path: /lessons/7/cases/3/ownership/initialPublicHolders/dnsParent
+        expect: [example DNSKEY, signed lab DS and NS/glue]
+        value: [example DNSKEY, signed lab DS and NS/glue, also serves other.example.; other.example keys/answer under separate signing authority]
+      - op: add
+        path: /lessons/7/cases/3/outcome/flags/hops/1/evidenceRefs
+        expect_absent: true
+        value: [lab-dnssec09:cname-secure-target:numericBindings-additional-0:other-www-a, lab-dnssec09:cname-secure-target:numericBindings-additional-1:example-other-ds, lab-dnssec09:cname-secure-target:numericBindings-additional-2:other-dnskey-g1]
+      - op: add
+        path: /lessons/7/cases/3/checkpoints/6/expected/response/hops/1/evidenceRefs
+        expect_absent: true
+        value: [lab-dnssec09:cname-secure-target:numericBindings-additional-0:other-www-a, lab-dnssec09:cname-secure-target:numericBindings-additional-1:example-other-ds, lab-dnssec09:cname-secure-target:numericBindings-additional-2:other-dnskey-g1]
+      - op: add
+        path: /lessons/7/cases/3/sourceSections/-
+        expect_absent: true
+        value: {group: S22, url: https://www.rfc-editor.org/rfc/rfc1034.html, sections: [4.2, 4.3.2, 6.2.7]}
+      - op: replace
+        path: /lessons/7/cases/4/setup/zones
+        expect: [., example., lab.example.]
+        value: [., example., lab.example., other.example.]
+      - op: add
+        path: /lessons/7/cases/4/setup/route/authorities
+        expect_absent: true
+        value: {dnsParent: {servesZones: [example., other.example.], signingAuthoritySeparate: true}}
+      - op: replace
+        path: /lessons/7/cases/4/ownership/initialPublicHolders/dnsParent
+        expect: [example DNSKEY, signed lab DS and NS/glue]
+        value: [example DNSKEY, signed lab DS and NS/glue, also serves other.example.; other.example keys/answer under separate signing authority]
+      - op: add
+        path: /lessons/7/cases/4/sourceSections/-
+        expect_absent: true
+        value: {group: S22, url: https://www.rfc-editor.org/rfc/rfc1034.html, sections: [4.2, 4.3.2, 6.2.7]}
+      - op: replace
+        path: /lessons/7/cases/5/setup/zones
+        expect: [., example., lab.example.]
+        value: [., example., lab.example., other.example.]
+      - op: add
+        path: /lessons/7/cases/5/setup/route/authorities
+        expect_absent: true
+        value: {dnsParent: {servesZones: [example., other.example.], signingAuthoritySeparate: true}}
+      - op: replace
+        path: /lessons/7/cases/5/ownership/initialPublicHolders/dnsParent
+        expect: [example DNSKEY, signed lab DS and NS/glue]
+        value: [example DNSKEY, signed lab DS and NS/glue, also serves other.example.; other.example keys/answer under separate signing authority]
+      - op: add
+        path: /lessons/7/cases/5/outcome/flags/hops/1/evidenceRefs
+        expect_absent: true
+        value: [lab-dnssec09:cname-bogus-target:numericBindings-additional-0:other-www-a, lab-dnssec09:cname-bogus-target:numericBindings-additional-1:example-other-ds, lab-dnssec09:cname-bogus-target:numericBindings-additional-2:other-dnskey-g1]
+      - op: add
+        path: /lessons/7/cases/5/checkpoints/5/expected/response/hops/1/evidenceRefs
+        expect_absent: true
+        value: [lab-dnssec09:cname-bogus-target:numericBindings-additional-0:other-www-a, lab-dnssec09:cname-bogus-target:numericBindings-additional-1:example-other-ds, lab-dnssec09:cname-bogus-target:numericBindings-additional-2:other-dnskey-g1]
+      - op: add
+        path: /lessons/7/cases/5/sourceSections/-
+        expect_absent: true
+        value: {group: S22, url: https://www.rfc-editor.org/rfc/rfc1034.html, sections: [4.2, 4.3.2, 6.2.7]}
+      - op: replace
+        path: /lessons/7/cases/6/setup/zones
+        expect: [., example., lab.example.]
+        value: [., example., lab.example., other.example.]
+      - op: add
+        path: /lessons/7/cases/6/setup/route/authorities
+        expect_absent: true
+        value: {dnsParent: {servesZones: [example., other.example.], signingAuthoritySeparate: true}}
+      - op: replace
+        path: /lessons/7/cases/6/ownership/initialPublicHolders/dnsParent
+        expect: [example DNSKEY, signed lab DS and NS/glue]
+        value: [example DNSKEY, signed lab DS and NS/glue, also serves other.example.; other.example keys/answer under separate signing authority]
+      - op: add
+        path: /lessons/7/cases/6/outcome/flags/hops/1
+        expect_absent: true
+        template: dns09_target_hop
+        bindings:
+          case_id: lab-dnssec09:dname-synthesized-cname
+          qname: host.other.example.
+          message_id: 16642
+          evidence_refs: [lab-dnssec09:dname-synthesized-cname:numericBindings-additional-1:other-host-a, lab-dnssec09:dname-synthesized-cname:numericBindings-additional-2:example-other-ds, lab-dnssec09:dname-synthesized-cname:numericBindings-additional-3:other-dnskey-g1]
+      - op: add
+        path: /lessons/7/cases/6/checkpoints/5/expected/response/hops/1
+        expect_absent: true
+        value_ref: same-as:/lessons/7/cases/6/outcome/flags/hops/1
+      - op: add
+        path: /lessons/7/cases/6/sequence/4
+        expect_absent: true
+        value:
+          id: lab-dnssec09:dname-synthesized-cname:target:q
+          actorId: dnsResolver
+          kind: network-send
+          hopRef: lab-dnssec09:dname-synthesized-cname:target
+          action: Use declared route; query occurrence has its own correlation identity.
+      - op: add
+        path: /lessons/7/cases/6/sequence/5
+        expect_absent: true
+        value:
+          id: lab-dnssec09:dname-synthesized-cname:target:r:raw
+          actorId: dnsResolver
+          kind: network-receive
+          hopRef: lab-dnssec09:dname-synthesized-cname:target
+          action: Receive public records untrusted; response receipt is not local DNSSEC verification.
+      - op: add
+        path: /lessons/7/cases/6/sourceSections/-
+        expect_absent: true
+        value: {group: S22, url: https://www.rfc-editor.org/rfc/rfc1034.html, sections: [4.2, 4.3.2, 6.2.7]}
+  - id: DNS09-INSECURE-01
+    cases: [DNS09/cname-insecure-target]
+    priority: 1
+    confidence: 0.9
+    production_consulted: false
+    worksheet_sha256: b013da69b7a532fc62f074f91f215d1fae9dcf8251f3c01d29894239cb0cdac5
+    freeze_sha256: b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19
+    status: pending_numeric_other-unsigned-target
+    rationale: >-
+      The case says the target is unsigned and the parent authenticated no DS,
+      but its additional bindings contain a signed www.other.example. A, a
+      parent-issued DS for other.example. and a signed other.example DNSKEY.
+      That is the secure-target evidence, not an unsigned no-DS target. The
+      DnssecNumericFixtures agent has promised an independent unsigned A
+      occurrence and a parent other.example NSEC proving NS present with no
+      DS/SOA.
+    policy:
+      before: Insecure/unsigned target uses a signed A, a DS and a DNSKEY as evidence.
+      after: Insecure target uses the additive unsigned www.other.example. A occurrence and the parent other.example NSEC no-DS proof; target keyRef is null and the authenticated path stops at example.
+    sources: [rfc4035, rfc1034, rfc4592]
+    numeric_dependency: other-unsigned-target
+    patches:
+      - op: replace
+        path: /lessons/7/cases/4/setup/target/targetSigned
+        expect: false
+        value: false
+      - op: replace
+        path: /lessons/7/cases/4/setup/target/keyRef
+        expect: other-zsk-g1
+        value: null
+      - op: replace
+        path: /lessons/7/cases/4/setup/target/trustPath
+        expect: [root-ksk-g1, example-ksk-g1, other-ksk-g1, other-zsk-g1]
+        value: [root-ksk-g1, example-ksk-g1]
+      - op: replace
+        path: /lessons/7/cases/4/setup/numericBindings/additional/0
+        expect_selector: {rrsetId: other-www-a, signatureId: other-www-a-signature}
+        value:
+          purpose: answer
+          numericFile: FROM_NUMERIC_REPORT
+          rrsetId: other-www-a-unsigned
+          signatureId: null
+          owner: www.other.example.
+          type: A
+          class: IN
+          records: [192.0.2.80]
+          canonicalRdataHex: [c0000250]
+          publishedRrsetTtl: 3600
+          receivedRrsetTtl: 300
+          receivedRrsigTtl: 0
+          signedMetadata: null
+          signatureRdataSha256: null
+          signingInputSha256: null
+          bindingRule: Unsigned target occurrence under an authenticated no-DS delegation; no RRSIG is attached.
+          occurrenceId: lab-dnssec09:cname-insecure-target:numericBindings-additional-0:other-www-a-unsigned
+      - op: replace
+        path: /lessons/7/cases/4/setup/numericBindings/additional/1
+        expect_selector: {rrsetId: example-other-ds, signatureId: example-other-ds-signature}
+        value:
+          purpose: denial-proof
+          numericFile: FROM_NUMERIC_REPORT
+          rrsetId: denial-parent-unsigned-other
+          signatureId: denial-parent-unsigned-other-signature
+          owner: other.example.
+          type: NSEC
+          class: IN
+          records: [zzz.example. NS RRSIG NSEC]
+          canonicalRdataHex: FROM_NUMERIC_REPORT
+          publishedRrsetTtl: 300
+          receivedRrsetTtl: 300
+          receivedRrsigTtl: 300
+          signedMetadata: {algorithm: 13, labels: 2, originalTtl: 300, inception: 1792713000, expiration: 1792717200, keyId: example-zsk-g1, keyTag: 30008, signer: example., typeCovered: 47}
+          signatureRdataSha256: FROM_NUMERIC_REPORT
+          signingInputSha256: FROM_NUMERIC_REPORT
+          bindingRule: Signed records, OriginalTTL, signer/key identity and validity fields are immutable; only received/cache TTL may decrease. Any explicit mutation is a separate occurrence, not a re-signed record.
+          occurrenceId: lab-dnssec09:cname-insecure-target:numericBindings-additional-1:denial-parent-unsigned-other
+      - op: remove
+        path: /lessons/7/cases/4/setup/evidenceBindingIndex/lab-dnssec09:cname-insecure-target:numericBindings-additional-0:other-www-a
+        expect_selector: {rrsetId: other-www-a, signatureId: other-www-a-signature}
+      - op: remove
+        path: /lessons/7/cases/4/setup/evidenceBindingIndex/lab-dnssec09:cname-insecure-target:numericBindings-additional-1:example-other-ds
+        expect_selector: {rrsetId: example-other-ds, signatureId: example-other-ds-signature}
+      - op: add
+        path: /lessons/7/cases/4/setup/evidenceBindingIndex/lab-dnssec09:cname-insecure-target:numericBindings-additional-0:other-www-a-unsigned
+        expect_absent: true
+        value: {numericFile: FROM_NUMERIC_REPORT, rrsetId: other-www-a-unsigned, signatureId: null, signatureRdataSha256: null, purpose: answer}
+      - op: add
+        path: /lessons/7/cases/4/setup/evidenceBindingIndex/lab-dnssec09:cname-insecure-target:numericBindings-additional-1:denial-parent-unsigned-other
+        expect_absent: true
+        value: {numericFile: FROM_NUMERIC_REPORT, rrsetId: denial-parent-unsigned-other, signatureId: denial-parent-unsigned-other-signature, signatureRdataSha256: FROM_NUMERIC_REPORT, purpose: denial-proof}
+      - op: replace
+        path: /lessons/7/cases/4/checkpoints/3/expected/evidenceRefs
+        expect: [lab-dnssec09:cname-insecure-target:numericBindings-chain-0:root-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-chain-1:root-example-ds, lab-dnssec09:cname-insecure-target:numericBindings-chain-2:example-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-chain-3:example-child-ds, lab-dnssec09:cname-insecure-target:numericBindings-chain-4:child-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-primary:cross-zone-cname, lab-dnssec09:cname-insecure-target:numericBindings-additional-0:other-www-a, lab-dnssec09:cname-insecure-target:numericBindings-additional-1:example-other-ds, lab-dnssec09:cname-insecure-target:numericBindings-additional-2:other-dnskey-g1]
+        value: [lab-dnssec09:cname-insecure-target:numericBindings-chain-0:root-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-chain-1:root-example-ds, lab-dnssec09:cname-insecure-target:numericBindings-chain-2:example-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-chain-3:example-child-ds, lab-dnssec09:cname-insecure-target:numericBindings-chain-4:child-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-primary:cross-zone-cname, lab-dnssec09:cname-insecure-target:numericBindings-additional-0:other-www-a-unsigned, lab-dnssec09:cname-insecure-target:numericBindings-additional-1:denial-parent-unsigned-other]
+      - op: replace
+        path: /lessons/7/cases/4/checkpoints/5/expected/cacheEntries/0/evidenceRefs
+        expect: [lab-dnssec09:cname-insecure-target:numericBindings-chain-0:root-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-chain-1:root-example-ds, lab-dnssec09:cname-insecure-target:numericBindings-chain-2:example-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-chain-3:example-child-ds, lab-dnssec09:cname-insecure-target:numericBindings-chain-4:child-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-primary:cross-zone-cname, lab-dnssec09:cname-insecure-target:numericBindings-additional-0:other-www-a, lab-dnssec09:cname-insecure-target:numericBindings-additional-1:example-other-ds, lab-dnssec09:cname-insecure-target:numericBindings-additional-2:other-dnskey-g1]
+        value: [lab-dnssec09:cname-insecure-target:numericBindings-chain-0:root-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-chain-1:root-example-ds, lab-dnssec09:cname-insecure-target:numericBindings-chain-2:example-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-chain-3:example-child-ds, lab-dnssec09:cname-insecure-target:numericBindings-chain-4:child-dnskey-g1, lab-dnssec09:cname-insecure-target:numericBindings-primary:cross-zone-cname, lab-dnssec09:cname-insecure-target:numericBindings-additional-0:other-www-a-unsigned, lab-dnssec09:cname-insecure-target:numericBindings-additional-1:denial-parent-unsigned-other]
+      - op: add
+        path: /lessons/7/cases/4/outcome/flags/hops/1/evidenceRefs
+        expect_absent: true
+        value: [lab-dnssec09:cname-insecure-target:numericBindings-additional-0:other-www-a-unsigned, lab-dnssec09:cname-insecure-target:numericBindings-additional-1:denial-parent-unsigned-other]
+      - op: add
+        path: /lessons/7/cases/4/checkpoints/6/expected/response/hops/1/evidenceRefs
+        expect_absent: true
+        value: [lab-dnssec09:cname-insecure-target:numericBindings-additional-0:other-www-a-unsigned, lab-dnssec09:cname-insecure-target:numericBindings-additional-1:denial-parent-unsigned-other]
+unresolved:
+  - DNS10-OOP-01 zz-a/zz-a-signature final numeric report: exact file path(s), file sha256/bytes, signature RDATA hex/sha256, signingInputSha256 and verification statement.
+  - DNS09-INSECURE-01 other-unsigned-target final numeric report: exact NSEC canonical RDATA hex, signature RDATA hex/sha256, signingInputSha256, file path(s) and file hashes.
+  - The existing frozen numeric package must remain unchanged; all new material is additive under numeric/post-freeze-contract-errata/.
+limits:
+  - This proposal does not apply patches, edit frozen files, regenerate worksheet.json, or claim candidate acceptance.
+  - Numeric signature bytes are not fabricated; fields marked FROM_NUMERIC_REPORT are blocked on the additive fixture report.
+  - AAAA wire-format source capture (RFC3596) is not present in the frozen source ledger; the wildcard-nodata correction avoids inventing AAAA RDATA by selecting the existing type A wildcard.
+  - Cases not listed are not asserted defect-free.

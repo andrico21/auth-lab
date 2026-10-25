@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 2,
+  "kind": "DNSSEC-correction-regression-revision-and-attribution",
+  "recordedAt": "2026-10-24T18:06:37.898Z",
+  "previous": {
+    "path": "docs/verification/dnssec-review-corrections/regression-test-revisions-01.json",
+    "sha256": "2381022bb92d8ec976bc73e4a314e20b4ce6c480dbccf90ee38a037cf89817d4",
+    "bytes": 3222
+  },
+  "sourceCandidate": {
+    "path": "docs/verification/dnssec-review-corrections/candidate-inputs-03.json",
+    "sha256": "1d9d6475bdc332e8ffb53485fc11f15c2a36790a75f806a5b9391c7b5ce2b1b1",
+    "bytes": 69272
+  },
+  "testInputs": [
+    {
+      "path": "tests/dnssec-network-corrections.test.mjs",
+      "sha256": "a78a8cd5212a76683e37527c2a3179926b211c6a6133a19cdd0995b4f8a943c3",
+      "bytes": 8121
+    },
+    {
+      "path": "tests/dnssec-denial-corrections.test.mjs",
+      "sha256": "ccad7259cd81dd72f526730a89207a4e9823fe597f4191b26ce76c0fa50397ec",
+      "bytes": 6967
+    },
+    {
+      "path": "tests/dnssec-denial-authority.test.mjs",
+      "sha256": "95bd943d286a276b063d11262aabe34adc539c7ea59718fadae5be8f67d6098c",
+      "bytes": 3489
+    },
+    {
+      "path": "tests/dnssec-publication-corrections.test.mjs",
+      "sha256": "819f7eff70e8210b6b1c751434bed04ed44a23909c6081f4701d666826c603f9",
+      "bytes": 10906
+    },
+    {
+      "path": "tests/dnssec-teaching-corrections.test.mjs",
+      "sha256": "8c6a2a77753c9a76595bdbf87a85d2554effd6bf53f666a59cc1934af20f92ca",
+      "bytes": 13052
+    },
+    {
+      "path": "tests/attribute-index.test.mjs",
+      "sha256": "4308386108b8969ba5b987a1d4a9d8e173affaaf3006461fe626c773ccda9416",
+      "bytes": 36893
+    }
+  ],
+  "beforeEvidence": [
+    {
+      "path": "focused-before-01",
+      "scope": "Initial chronological before run includes incorrect numeric-type/field-ID/harness-selector assumptions; not every failure is a product defect."
+    },
+    {
+      "path": "focused-before-02",
+      "scope": "Retrospective corrected-test replay on exact225 reviewed application inputs plus four corrected test overlays:12pass24fail36tests. This run did not chronologically precede production edits; current additional fixtures/tests are not pretended to have existed then."
+    },
+    {
+      "path": "r07-relay-owner-before-01.json",
+      "scope": "One actual newly discovered fetch-only resolver checking-owner regression failed; independent closed-index freshness consumer control passed.23 other tests filtered, not full-suite evidence."
+    },
+    {
+      "path": "cache-kind-unsigned-ttl-before-01.json",
+      "scope": "Actual new NXDOMAIN discriminator and absent carried RRSIG metadata controls failed before their fixes."
+    },
+    {
+      "path": "attempt-prefix-before-01.json",
+      "scope": "Actual API falsely declared3undelivered attempts at the first query;1pass1fail13filtered. Rendered reached-ID control passed before aggregation cutover and guards against losing IDs afterward."
+    }
+  ],
+  "repairs": [
+    {
+      "kind": "test-data-locator",
+      "change": "Match numeric RRSIG TypeCovered1, not string A; select declared dnssec_header_flags_CD, not invented field; use supported DOM children."
+    },
+    {
+      "kind": "forbidden-incidental-tests-removed",
+      "change": "Removed exact caption/header wording pins and new legacy renderer value-copy echo. Actual current-prefix fields, flags, identities, transitions, errors, focus and contextual teaching remain exercised."
+    },
+    {
+      "kind": "harness-only-focus-observation",
+      "change": "HarnessElement.focus dispatches focusin without setting document.activeElement. New index-reopening regression observes that actual event instead of assuming unsupported state; no application focus fallback introduced."
+    },
+    {
+      "kind": "harness-only-platform-exposure",
+      "change": "The isolated emitted VM now receives native host structuredClone, which the real browser already provides. Initial compiled-teaching01 setup error is not labelled a browser/application defect; production has no fake cloning fallback."
+    }
+  ],
+  "semanticAdditions": [
+    {
+      "file": "tests/dnssec-network-corrections.test.mjs",
+      "contract": "Physical stub proof/cache custody, packet TTL/RRSIG immutability, fetch-only relay owner and prefix-bounded concrete retries1/2/3/2/1."
+    },
+    {
+      "file": "tests/dnssec-denial-corrections.test.mjs",
+      "contract": "Actual inserted cache eligibility/classification, authority restrictions and absent signatures in real unsigned delegation/alias packet records."
+    },
+    {
+      "file": "tests/dnssec-denial-authority.test.mjs",
+      "contract": "Additional independently signed NSEC/NSEC3/DNAME authority controls, not new named lesson cases."
+    },
+    {
+      "file": "tests/dnssec-publication-corrections.test.mjs",
+      "contract": "Last-old-DS cohort chronology, actual evaluator capability cohorts, independently distinct constraints and explicit cache revalidation policy."
+    },
+    {
+      "file": "tests/dnssec-teaching-corrections.test.mjs",
+      "contract": "Rendered real query/response flags, current identities, retained error separation, all reached retry IDs/flags, reset/rewind, readable verdict, CSYNC source/context and focus."
+    },
+    {
+      "file": "tests/attribute-index.test.mjs",
+      "contract": "Closing, changing journey and selected field, then reopening preserves query and refreshes usable current selection before interaction; no render-call-count or source-text assertion."
+    }
+  ],
+  "passingFocusedEvidence": {
+    "source": {
+      "path": "focused-after-07/status.json",
+      "passed": 52,
+      "failed": 0,
+      "files": 5,
+      "seconds": 20.21,
+      "sourceUnchanged": true,
+      "verificationInputsChanged": false
+    },
+    "emittedUi": {
+      "path": "compiled-teaching-03.json",
+      "passed": 8,
+      "failed": 0,
+      "files": 1,
+      "seconds": 15.38
+    },
+    "indexReopening": {
+      "path": "hidden-index-reopen-after-01.json",
+      "passed": 1,
+      "failed": 0,
+      "filtered": 18,
+      "seconds": 7.88
+    }
+  },
+  "limits": "Focused/DOM results are not all159 immutable-contract acceptance, full regression, native geometry/CSP, genuine200percent zoom, humanG01, latency acceptance or Astra closure. Each final gate keeps its own exact identities and terminal status."
+}

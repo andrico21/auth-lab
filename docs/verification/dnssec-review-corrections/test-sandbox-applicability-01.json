@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "kind": "DNSSEC-test-only-sandbox-repair-applicability",
+  "recordedAt": "2026-10-24T19:44:46.885Z",
+  "passed": true,
+  "previousInputs": {
+    "path": "docs/verification/dnssec-review-corrections/candidate-inputs-03.json",
+    "sha256": "1d9d6475bdc332e8ffb53485fc11f15c2a36790a75f806a5b9391c7b5ce2b1b1",
+    "bytes": 69272
+  },
+  "currentInputs": {
+    "path": "docs/verification/dnssec-review-corrections/candidate-inputs-04.json",
+    "sha256": "42491b7f0e36dd2e9156abf006c28ea18f0da51c5206a37700f0b9c4a9530268",
+    "bytes": 69823
+  },
+  "currentSourceIdentity": {
+    "algorithm": "sha256-path-nul-bytes-nul-v1",
+    "sha256": "481ace7a7a7985e503f29e8d0a51675bda3ddafdb7c1e80fed5a3b6a7a100554",
+    "files": 231
+  },
+  "changedTest": {
+    "path": "tests/dom-runtime.test.mjs",
+    "beforeSha256": "fbff61f8bed37174cf15b9cd9ea555582b4fb855c6d7086f2fe26dabe3e8c01c",
+    "afterSha256": "b2b5535f156932a338b89f4f1889e0bea3a8fd7ef2ead2f4a1326a79c37450f6",
+    "change": "VM sandbox exposes genuine host structuredClone. Incidental CSS-length assertion removed without re-pinning; network asset constraints and actual boot/playback checks retained."
+  },
+  "unchangedProductAssetCompilerInputs": 109,
+  "unchangedTestHarness": "tests/dom-harness.mjs",
+  "standalone": {
+    "path": "dist/auth-flow-studio.html",
+    "sha256": "2855771e27155606b15e33bc3bfeea956192a031b5ddbe8774cad3ec16757c5a",
+    "bytes": 5242317
+  },
+  "nativeEvidence": {
+    "path": "docs/verification/dnssec-review-corrections/native-03/native-status.json",
+    "sha256": "8abac54a35eb476aec494fa716fbc07e55380377c8814e96ce58c065f40ac66f",
+    "bytes": 2468780
+  },
+  "nativeEvidenceScope": "60actual native cells exercised identical application, CSS and standalone bytes. dom-runtime.test.mjs is not imported/executed by native verifier; recorded old full231-file identity remains unchanged, never restamped.",
+  "failedFullSuite": {
+    "path": "docs/verification/dnssec-review-corrections/regressions-01/held-objects-regression-status.json",
+    "sha256": "c43d03ac0a1c1ab5404aa4e950563abcc0c4683a8c498d05def0928fc604ac7f",
+    "bytes": 130339
+  },
+  "targetedAfter": {
+    "path": "docs/verification/dnssec-review-corrections/dom-runtime-vm-after-01.json",
+    "sha256": "b9e624b8e9677414fa7e69d577b0aa3af6823b4f29adf52e4c28da7bf1eb97dd",
+    "bytes": 753
+  },
+  "pending": "Fresh full regression and complete source/emitted identity rebind will report separately. This scope proof is not a new full-suite run, new native matrix, independent review or release acceptance."
+}

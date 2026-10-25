@@ -1,0 +1,1597 @@
+{
+  "baseClock": 1792713600,
+  "baselineSha256": "10e8b7d6587ab77023d03ba91df7a83372a35f575e306e68afe4288f02f81c61",
+  "keys": {
+    "child-zsk-protocol2": {
+      "algorithm": 13,
+      "dnskeyRdataHex": "0100020ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+      "flags": 256,
+      "generation": {
+        "privateCustodian": "dnsSigner",
+        "privateIsNetworkRecord": false,
+        "samePrivateMaterialAs": "child-zsk-g1"
+      },
+      "id": "child-zsk-protocol2",
+      "keyTag": 55146,
+      "lineage": "child-zsk-g1",
+      "owner": "lab.example.",
+      "protocol": 2,
+      "publicKeyBase64": "3GyieUAv4h2uPwt6+0o9oC8fm38jTqQKtzowJvXxAAONJycEZeVC0Qc7794ESZNaES7xWfRdIXe6M54th9HtBw==",
+      "publicKeyHex": "dc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3GyieUAv4h2uPwt6+0o9oC8fm38j\nTqQKtzowJvXxAAONJycEZeVC0Qc7794ESZNaES7xWfRdIXe6M54th9HtBw==\n-----END PUBLIC KEY-----\n",
+      "purpose": "Deliberately ineligible DNSSEC candidate, not a conformant signing-profile key.",
+      "text": "256 2 13 3GyieUAv4h2uPwt6+0o9oC8fm38jTqQK tzowJvXxAAONJycEZeVC0Qc7794ESZNa ES7xWfRdIXe6M54th9HtBw=="
+    },
+    "child-zsk-zoneflag-clear": {
+      "algorithm": 13,
+      "dnskeyRdataHex": "0001030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+      "flags": 1,
+      "generation": {
+        "privateCustodian": "dnsSigner",
+        "privateIsNetworkRecord": false,
+        "samePrivateMaterialAs": "child-zsk-g1"
+      },
+      "id": "child-zsk-zoneflag-clear",
+      "keyTag": 55147,
+      "lineage": "child-zsk-g1",
+      "owner": "lab.example.",
+      "protocol": 3,
+      "publicKeyBase64": "3GyieUAv4h2uPwt6+0o9oC8fm38jTqQKtzowJvXxAAONJycEZeVC0Qc7794ESZNaES7xWfRdIXe6M54th9HtBw==",
+      "publicKeyHex": "dc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+      "publicKeyPem": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE3GyieUAv4h2uPwt6+0o9oC8fm38j\nTqQKtzowJvXxAAONJycEZeVC0Qc7794ESZNaES7xWfRdIXe6M54th9HtBw==\n-----END PUBLIC KEY-----\n",
+      "purpose": "Deliberately ineligible DNSSEC candidate, not a conformant signing-profile key.",
+      "text": "1 3 13 3GyieUAv4h2uPwt6+0o9oC8fm38jTqQK tzowJvXxAAONJycEZeVC0Qc7794ESZNa ES7xWfRdIXe6M54th9HtBw=="
+    }
+  },
+  "kind": "dnssec-independent-resolution-profile-fixtures",
+  "profiles": {
+    "conventional-ent": {
+      "descendantRrsetId": "denial-x-branch-address",
+      "emptyNonTerminal": "branch.lab.example.",
+      "existingDataNames": [
+        "lab.example.",
+        "a.lab.example.",
+        "x.branch.lab.example.",
+        "www.lab.example."
+      ],
+      "nsecRrsetIds": [
+        "denial-apex-to-a",
+        "denial-a-to-x-branch",
+        "denial-x-branch-to-www",
+        "denial-www-to-apex"
+      ]
+    },
+    "conventional-no-wildcard": {
+      "absentNames": [
+        "*.lab.example.",
+        "no.lab.example.",
+        "foo.lab.example."
+      ],
+      "apexTypes": [
+        "NS",
+        "SOA",
+        "DNSKEY",
+        "RRSIG",
+        "NSEC"
+      ],
+      "commonSignedRrsets": [
+        "child-ns",
+        "child-soa",
+        "child-dnskey-g1",
+        "denial-a-address",
+        "www-a"
+      ],
+      "existingNames": [
+        "lab.example.",
+        "a.lab.example.",
+        "www.lab.example."
+      ],
+      "nsecRrsetIds": [
+        "denial-apex-to-a",
+        "denial-a-to-www",
+        "denial-www-to-apex"
+      ]
+    },
+    "conventional-wildcard": {
+      "existingNames": [
+        "lab.example.",
+        "*.lab.example.",
+        "a.lab.example.",
+        "www.lab.example."
+      ],
+      "nsecRrsetIds": [
+        "denial-apex-to-wildcard",
+        "denial-wildcard-to-a",
+        "denial-a-to-www",
+        "denial-www-to-apex"
+      ],
+      "wildcardRrsetId": "wildcard-a",
+      "wildcardSignatureId": "wildcard-a-signature"
+    },
+    "missing-candidate": {
+      "absentKeyId": "child-zsk-g1",
+      "dnskeyRrsetId": "child-dnskey-zsk-missing",
+      "dnskeySignatureId": "child-dnskey-zsk-missing-signature",
+      "leafSignatureId": "www-a-signature"
+    },
+    "nsec3-no-wildcard": {
+      "chain": [
+        {
+          "coversUnsignedHash": false,
+          "flags": 0,
+          "nextHash": "63QA5GUBMD1FR1RBM0IB74SP2B7KN3MP",
+          "originalOwner": "lab.example.",
+          "ownerHash": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+          "rrsetId": "denial-nsec3-no-wildcard-0"
+        },
+        {
+          "coversUnsignedHash": false,
+          "flags": 0,
+          "nextHash": "B5P9CTBLEJN2D20QS6OI19819MH9L9FU",
+          "originalOwner": "a.lab.example.",
+          "ownerHash": "63QA5GUBMD1FR1RBM0IB74SP2B7KN3MP",
+          "rrsetId": "denial-nsec3-no-wildcard-1"
+        },
+        {
+          "coversUnsignedHash": false,
+          "flags": 0,
+          "nextHash": "MP2N9NEQCHDA8FJ7ERR34CK76UFSAK6R",
+          "originalOwner": "z.lab.example.",
+          "ownerHash": "B5P9CTBLEJN2D20QS6OI19819MH9L9FU",
+          "rrsetId": "denial-nsec3-no-wildcard-2"
+        },
+        {
+          "coversUnsignedHash": true,
+          "flags": 0,
+          "nextHash": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+          "originalOwner": "www.lab.example.",
+          "ownerHash": "MP2N9NEQCHDA8FJ7ERR34CK76UFSAK6R",
+          "rrsetId": "denial-nsec3-no-wildcard-3"
+        }
+      ],
+      "hashAlgorithm": 1,
+      "iterations": 0,
+      "nsec3paramRrsetId": "denial-nsec3-zero-param",
+      "originalNames": [
+        "lab.example.",
+        "a.lab.example.",
+        "www.lab.example.",
+        "z.lab.example."
+      ],
+      "saltHex": "",
+      "wildcardAbsent": true,
+      "zone": "lab.example."
+    },
+    "nsec3-optout-unsigned-delegation": {
+      "chain": [
+        {
+          "coversUnsignedHash": false,
+          "flags": 0,
+          "nextHash": "63QA5GUBMD1FR1RBM0IB74SP2B7KN3MP",
+          "originalOwner": "lab.example.",
+          "ownerHash": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+          "rrsetId": "denial-nsec3-optout-0"
+        },
+        {
+          "coversUnsignedHash": false,
+          "flags": 0,
+          "nextHash": "B5P9CTBLEJN2D20QS6OI19819MH9L9FU",
+          "originalOwner": "a.lab.example.",
+          "ownerHash": "63QA5GUBMD1FR1RBM0IB74SP2B7KN3MP",
+          "rrsetId": "denial-nsec3-optout-1"
+        },
+        {
+          "coversUnsignedHash": false,
+          "flags": 0,
+          "nextHash": "MP2N9NEQCHDA8FJ7ERR34CK76UFSAK6R",
+          "originalOwner": "z.lab.example.",
+          "ownerHash": "B5P9CTBLEJN2D20QS6OI19819MH9L9FU",
+          "rrsetId": "denial-nsec3-optout-2"
+        },
+        {
+          "coversUnsignedHash": true,
+          "flags": 1,
+          "nextHash": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+          "originalOwner": "www.lab.example.",
+          "ownerHash": "MP2N9NEQCHDA8FJ7ERR34CK76UFSAK6R",
+          "rrsetId": "denial-nsec3-optout-3"
+        }
+      ],
+      "omittedDelegation": "unsigned.lab.example.",
+      "omittedHash": "PUS4DUM3OLILLT8OJU28IN3BC7U1P784",
+      "originalSignedNames": [
+        "lab.example.",
+        "a.lab.example.",
+        "www.lab.example.",
+        "z.lab.example."
+      ],
+      "unsignedGlueRrsetId": "denial-unsigned-delegation-glue",
+      "unsignedNsRrsetId": "denial-unsigned-delegation-ns",
+      "zone": "lab.example."
+    },
+    "nsec3-parameter-comparisons": {
+      "iteration1": {
+        "chain": [
+          {
+            "flags": 0,
+            "nextHash": "9R1436LJJO6VKV9M1GV5DVI84FJ8OLP8",
+            "originalOwner": "z.lab.example.",
+            "ownerHash": "8G3AJ4NL201ET260A4KC3VDLUPO7QUM8",
+            "rrsetId": "denial-nsec3-iteration1-0"
+          },
+          {
+            "flags": 0,
+            "nextHash": "EFS5A1HDCVJPHSUVI1J333J7VMVUSI72",
+            "originalOwner": "lab.example.",
+            "ownerHash": "9R1436LJJO6VKV9M1GV5DVI84FJ8OLP8",
+            "rrsetId": "denial-nsec3-iteration1-1"
+          },
+          {
+            "flags": 0,
+            "nextHash": "LRJVTO490R64D4UTTKBD6OO3UEPI53TK",
+            "originalOwner": "a.lab.example.",
+            "ownerHash": "EFS5A1HDCVJPHSUVI1J333J7VMVUSI72",
+            "rrsetId": "denial-nsec3-iteration1-2"
+          },
+          {
+            "flags": 0,
+            "nextHash": "8G3AJ4NL201ET260A4KC3VDLUPO7QUM8",
+            "originalOwner": "www.lab.example.",
+            "ownerHash": "LRJVTO490R64D4UTTKBD6OO3UEPI53TK",
+            "rrsetId": "denial-nsec3-iteration1-3"
+          }
+        ],
+        "hashAlgorithm": 1,
+        "iterations": 1,
+        "nsec3paramRrsetId": "denial-nsec3-iteration1-param",
+        "saltHex": ""
+      },
+      "salt-aa": {
+        "chain": [
+          {
+            "flags": 0,
+            "nextHash": "MRV0V7UAFF5DNH60EAUEHHP61SIV3L0R",
+            "originalOwner": "a.lab.example.",
+            "ownerHash": "3K3SHA8FEDS177L4B0UC65DTTB4B8QD7",
+            "rrsetId": "denial-nsec3-salt-aa-0"
+          },
+          {
+            "flags": 0,
+            "nextHash": "SDAML2TEJ4F0L82LD29JO5GQJJA4AU5F",
+            "originalOwner": "z.lab.example.",
+            "ownerHash": "MRV0V7UAFF5DNH60EAUEHHP61SIV3L0R",
+            "rrsetId": "denial-nsec3-salt-aa-1"
+          },
+          {
+            "flags": 0,
+            "nextHash": "STJF536ODF0CGRB8FFUBO08IMQJOUU6R",
+            "originalOwner": "lab.example.",
+            "ownerHash": "SDAML2TEJ4F0L82LD29JO5GQJJA4AU5F",
+            "rrsetId": "denial-nsec3-salt-aa-2"
+          },
+          {
+            "flags": 0,
+            "nextHash": "3K3SHA8FEDS177L4B0UC65DTTB4B8QD7",
+            "originalOwner": "www.lab.example.",
+            "ownerHash": "STJF536ODF0CGRB8FFUBO08IMQJOUU6R",
+            "rrsetId": "denial-nsec3-salt-aa-3"
+          }
+        ],
+        "hashAlgorithm": 1,
+        "iterations": 0,
+        "nsec3paramRrsetId": "denial-nsec3-salt-aa-param",
+        "saltHex": "aa"
+      }
+    },
+    "parent-unsigned-delegation": {
+      "childZone": "lab.example.",
+      "dsAbsentInThisVariant": true,
+      "nsecRrsetId": "denial-parent-unsigned-lab",
+      "parentZone": "example.",
+      "signerKeyId": "example-zsk-g1",
+      "wrongZoneReuseMustNotProveChildDenial": true
+    },
+    "protocol2-candidate": {
+      "candidateKeyId": "child-zsk-protocol2",
+      "dnskeyRrsetId": "child-zsk-protocol2-dnskey",
+      "dnskeySignatureId": "child-zsk-protocol2-dnskey-signature",
+      "expectedDnssecCandidateEligible": false,
+      "expectedLeafCryptographicValid": true,
+      "failurePrerequisite": "protocol-not3",
+      "leafSignatureId": "child-zsk-protocol2-leaf-signature"
+    },
+    "unsupported-parent-ds": {
+      "opaqueDigestHex": "0000000000000000000000000000000000000000000000000000000000000000",
+      "rrsetIds": [
+        "parent-ds-unsupported-alg250",
+        "parent-ds-unsupported-digest250"
+      ],
+      "signerKeyId": "example-zsk-g1",
+      "unknownDigestHasComputedMeaning": false
+    },
+    "zoneflag-clear-candidate": {
+      "candidateKeyId": "child-zsk-zoneflag-clear",
+      "dnskeyRrsetId": "child-zsk-zoneflag-clear-dnskey",
+      "dnskeySignatureId": "child-zsk-zoneflag-clear-dnskey-signature",
+      "expectedDnssecCandidateEligible": false,
+      "expectedLeafCryptographicValid": true,
+      "failurePrerequisite": "zone-flag-clear",
+      "leafSignatureId": "child-zsk-zoneflag-clear-leaf-signature"
+    }
+  },
+  "queriedNameHashes": {
+    "*.lab.example.": "I8NU1UPJAS0CJ2HR5VFHUEMNE79QCBQL",
+    "foo.lab.example.": "L8JRGCS3093CM2M33ANK43MH6Q9C8D60",
+    "lab.example.": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5",
+    "no.lab.example.": "AUUUA6IHUSQNDQNDBCU2KFU2VLDNHHK4",
+    "unsigned.lab.example.": "PUS4DUM3OLILLT8OJU28IN3BC7U1P784"
+  },
+  "rrsets": {
+    "child-dnskey-zsk-missing": {
+      "canonicalRdataHex": [
+        "0101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48"
+      ],
+      "class": "IN",
+      "id": "child-dnskey-zsk-missing",
+      "owner": "lab.example.",
+      "records": [
+        "257 3 13 Pu0xeazW0puWQsZkqHFph4asNCh+1iew 7bKuiVYAaWdHLCv+EHfcc1uIpLSfRPF8 YM4gks+nS7FCOOZcNMVOSA=="
+      ],
+      "ttl": 3600,
+      "type": "DNSKEY",
+      "typeCode": 48
+    },
+    "child-zsk-protocol2-dnskey": {
+      "canonicalRdataHex": [
+        "0100020ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+        "0101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48"
+      ],
+      "class": "IN",
+      "id": "child-zsk-protocol2-dnskey",
+      "owner": "lab.example.",
+      "records": [
+        "257 3 13 Pu0xeazW0puWQsZkqHFph4asNCh+1iew 7bKuiVYAaWdHLCv+EHfcc1uIpLSfRPF8 YM4gks+nS7FCOOZcNMVOSA==",
+        "256 2 13 3GyieUAv4h2uPwt6+0o9oC8fm38jTqQK tzowJvXxAAONJycEZeVC0Qc7794ESZNa ES7xWfRdIXe6M54th9HtBw=="
+      ],
+      "ttl": 3600,
+      "type": "DNSKEY",
+      "typeCode": 48
+    },
+    "child-zsk-zoneflag-clear-dnskey": {
+      "canonicalRdataHex": [
+        "0001030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+        "0101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48"
+      ],
+      "class": "IN",
+      "id": "child-zsk-zoneflag-clear-dnskey",
+      "owner": "lab.example.",
+      "records": [
+        "257 3 13 Pu0xeazW0puWQsZkqHFph4asNCh+1iew 7bKuiVYAaWdHLCv+EHfcc1uIpLSfRPF8 YM4gks+nS7FCOOZcNMVOSA==",
+        "1 3 13 3GyieUAv4h2uPwt6+0o9oC8fm38jTqQK tzowJvXxAAONJycEZeVC0Qc7794ESZNa ES7xWfRdIXe6M54th9HtBw=="
+      ],
+      "ttl": 3600,
+      "type": "DNSKEY",
+      "typeCode": 48
+    },
+    "denial-a-address": {
+      "canonicalRdataHex": [
+        "c0000201"
+      ],
+      "class": "IN",
+      "id": "denial-a-address",
+      "owner": "a.lab.example.",
+      "records": [
+        "192.0.2.1"
+      ],
+      "ttl": 300,
+      "type": "A",
+      "typeCode": 1
+    },
+    "denial-a-to-www": {
+      "canonicalRdataHex": [
+        "03777777036c6162076578616d706c65000006400000000003"
+      ],
+      "class": "IN",
+      "id": "denial-a-to-www",
+      "owner": "a.lab.example.",
+      "records": [
+        "www.lab.example. A RRSIG NSEC"
+      ],
+      "ttl": 300,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "denial-a-to-x-branch": {
+      "canonicalRdataHex": [
+        "0178066272616e6368036c6162076578616d706c65000006400000000003"
+      ],
+      "class": "IN",
+      "id": "denial-a-to-x-branch",
+      "owner": "a.lab.example.",
+      "records": [
+        "x.branch.lab.example. A RRSIG NSEC"
+      ],
+      "ttl": 300,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "denial-apex-to-a": {
+      "canonicalRdataHex": [
+        "0161036c6162076578616d706c6500000722000000000380"
+      ],
+      "class": "IN",
+      "id": "denial-apex-to-a",
+      "owner": "lab.example.",
+      "records": [
+        "a.lab.example. NS SOA RRSIG NSEC DNSKEY"
+      ],
+      "ttl": 300,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "denial-apex-to-wildcard": {
+      "canonicalRdataHex": [
+        "012a036c6162076578616d706c6500000722000000000380"
+      ],
+      "class": "IN",
+      "id": "denial-apex-to-wildcard",
+      "owner": "lab.example.",
+      "records": [
+        "*.lab.example. NS SOA RRSIG NSEC DNSKEY"
+      ],
+      "ttl": 300,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "denial-nsec3-iteration1-0": {
+      "canonicalRdataHex": [
+        "0100000100144ec2419ab39e0dfa7d360c3e56fe4823e68c57280006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-iteration1-0",
+      "owner": "8G3AJ4NL201ET260A4KC3VDLUPO7QUM8.lab.example.",
+      "records": [
+        "1 0 1 - 9R1436LJJO6VKV9M1GV5DVI84FJ8OLP8 A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-iteration1-1": {
+      "canonicalRdataHex": [
+        "01000001001473f855062d67e798f3df9066318e67fdbfee48e2000722000000000290"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-iteration1-1",
+      "owner": "9R1436LJJO6VKV9M1GV5DVI84FJ8OLP8.lab.example.",
+      "records": [
+        "1 0 1 - EFS5A1HDCVJPHSUVI1J333J7VMVUSI72 NS SOA DNSKEY RRSIG NSEC3PARAM"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-iteration1-2": {
+      "canonicalRdataHex": [
+        "010000010014aee7fee08906cc4693dded16d36303f3b3228fb40006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-iteration1-2",
+      "owner": "EFS5A1HDCVJPHSUVI1J333J7VMVUSI72.lab.example.",
+      "records": [
+        "1 0 1 - LRJVTO490R64D4UTTKBD6OO3UEPI53TK A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-iteration1-3": {
+      "canonicalRdataHex": [
+        "0100000100144406a992f51002ee88c05128c1fdb5f6707d7ac80006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-iteration1-3",
+      "owner": "LRJVTO490R64D4UTTKBD6OO3UEPI53TK.lab.example.",
+      "records": [
+        "1 0 1 - 8G3AJ4NL201ET260A4KC3VDLUPO7QUM8 A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-iteration1-param": {
+      "canonicalRdataHex": [
+        "0100000100"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-iteration1-param",
+      "owner": "lab.example.",
+      "records": [
+        "1 0 1 -"
+      ],
+      "ttl": 300,
+      "type": "NSEC3PARAM",
+      "typeCode": 51
+    },
+    "denial-nsec3-no-wildcard-0": {
+      "canonicalRdataHex": [
+        "01000000001430f4a2c3cbb342fd876bb024b3939912cf4b8ed9000722000000000290"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-no-wildcard-0",
+      "owner": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5.lab.example.",
+      "records": [
+        "1 0 0 - 63QA5GUBMD1FR1RBM0IB74SP2B7KN3MP NS SOA DNSKEY RRSIG NSEC3PARAM"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-no-wildcard-1": {
+      "canonicalRdataHex": [
+        "010000000014597296757574ee26881ae1b120a5014da29aa5fe0006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-no-wildcard-1",
+      "owner": "63QA5GUBMD1FR1RBM0IB74SP2B7KN3MP.lab.example.",
+      "records": [
+        "1 0 0 - B5P9CTBLEJN2D20QS6OI19819MH9L9FU A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-no-wildcard-2": {
+      "canonicalRdataHex": [
+        "010000000014b64574ddda645aa43e6776f6323287379fc550db0006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-no-wildcard-2",
+      "owner": "B5P9CTBLEJN2D20QS6OI19819MH9L9FU.lab.example.",
+      "records": [
+        "1 0 0 - MP2N9NEQCHDA8FJ7ERR34CK76UFSAK6R A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-no-wildcard-3": {
+      "canonicalRdataHex": [
+        "010000000014013eb06d1b383112f6a950bd1be60030de75bb250006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-no-wildcard-3",
+      "owner": "MP2N9NEQCHDA8FJ7ERR34CK76UFSAK6R.lab.example.",
+      "records": [
+        "1 0 0 - 04VB0R8R70OH5TL9A2UHNPG063F7BEP5 A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-optout-0": {
+      "canonicalRdataHex": [
+        "01000000001430f4a2c3cbb342fd876bb024b3939912cf4b8ed9000722000000000290"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-optout-0",
+      "owner": "04VB0R8R70OH5TL9A2UHNPG063F7BEP5.lab.example.",
+      "records": [
+        "1 0 0 - 63QA5GUBMD1FR1RBM0IB74SP2B7KN3MP NS SOA DNSKEY RRSIG NSEC3PARAM"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-optout-1": {
+      "canonicalRdataHex": [
+        "010000000014597296757574ee26881ae1b120a5014da29aa5fe0006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-optout-1",
+      "owner": "63QA5GUBMD1FR1RBM0IB74SP2B7KN3MP.lab.example.",
+      "records": [
+        "1 0 0 - B5P9CTBLEJN2D20QS6OI19819MH9L9FU A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-optout-2": {
+      "canonicalRdataHex": [
+        "010000000014b64574ddda645aa43e6776f6323287379fc550db0006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-optout-2",
+      "owner": "B5P9CTBLEJN2D20QS6OI19819MH9L9FU.lab.example.",
+      "records": [
+        "1 0 0 - MP2N9NEQCHDA8FJ7ERR34CK76UFSAK6R A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-optout-3": {
+      "canonicalRdataHex": [
+        "010100000014013eb06d1b383112f6a950bd1be60030de75bb250006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-optout-3",
+      "owner": "MP2N9NEQCHDA8FJ7ERR34CK76UFSAK6R.lab.example.",
+      "records": [
+        "1 1 0 - 04VB0R8R70OH5TL9A2UHNPG063F7BEP5 A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-salt-aa-0": {
+      "canonicalRdataHex": [
+        "0100000001aa14b6fe0f9fca7bcadbc4c072bce8c7260f25f1d41b0006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-salt-aa-0",
+      "owner": "3K3SHA8FEDS177L4B0UC65DTTB4B8QD7.lab.example.",
+      "records": [
+        "1 0 0 aa MRV0V7UAFF5DNH60EAUEHHP61SIV3L0R A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-salt-aa-1": {
+      "canonicalRdataHex": [
+        "0100000001aa14e3556a8bae991e0aa05568933c161a9cd44578af0006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-salt-aa-1",
+      "owner": "MRV0V7UAFF5DNH60EAUEHHP61SIV3L0R.lab.example.",
+      "records": [
+        "1 0 0 aa SDAML2TEJ4F0L82LD29JO5GQJJA4AU5F A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-salt-aa-2": {
+      "canonicalRdataHex": [
+        "0100000001aa14e766f28cd86bc0c86d687bfcbc0112b6a78f78db000722000000000290"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-salt-aa-2",
+      "owner": "SDAML2TEJ4F0L82LD29JO5GQJJA4AU5F.lab.example.",
+      "records": [
+        "1 0 0 aa STJF536ODF0CGRB8FFUBO08IMQJOUU6R NS SOA DNSKEY RRSIG NSEC3PARAM"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-salt-aa-3": {
+      "canonicalRdataHex": [
+        "0100000001aa141d07c8a90f7378139ea4583cc315bdeac8b469a70006400000000002"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-salt-aa-3",
+      "owner": "STJF536ODF0CGRB8FFUBO08IMQJOUU6R.lab.example.",
+      "records": [
+        "1 0 0 aa 3K3SHA8FEDS177L4B0UC65DTTB4B8QD7 A RRSIG"
+      ],
+      "ttl": 300,
+      "type": "NSEC3",
+      "typeCode": 50
+    },
+    "denial-nsec3-salt-aa-param": {
+      "canonicalRdataHex": [
+        "0100000001aa"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-salt-aa-param",
+      "owner": "lab.example.",
+      "records": [
+        "1 0 0 aa"
+      ],
+      "ttl": 300,
+      "type": "NSEC3PARAM",
+      "typeCode": 51
+    },
+    "denial-nsec3-zero-param": {
+      "canonicalRdataHex": [
+        "0100000000"
+      ],
+      "class": "IN",
+      "id": "denial-nsec3-zero-param",
+      "owner": "lab.example.",
+      "records": [
+        "1 0 0 -"
+      ],
+      "ttl": 300,
+      "type": "NSEC3PARAM",
+      "typeCode": 51
+    },
+    "denial-parent-unsigned-lab": {
+      "canonicalRdataHex": [
+        "046e657874076578616d706c65000006200000000003"
+      ],
+      "class": "IN",
+      "id": "denial-parent-unsigned-lab",
+      "owner": "lab.example.",
+      "records": [
+        "next.example. NS RRSIG NSEC"
+      ],
+      "ttl": 300,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "denial-unsigned-delegation-glue": {
+      "canonicalRdataHex": [
+        "c00002c8"
+      ],
+      "class": "IN",
+      "id": "denial-unsigned-delegation-glue",
+      "owner": "ns.unsigned.lab.example.",
+      "records": [
+        "192.0.2.200"
+      ],
+      "ttl": 300,
+      "type": "A",
+      "typeCode": 1
+    },
+    "denial-unsigned-delegation-ns": {
+      "canonicalRdataHex": [
+        "026e7308756e7369676e6564036c6162076578616d706c6500"
+      ],
+      "class": "IN",
+      "id": "denial-unsigned-delegation-ns",
+      "owner": "unsigned.lab.example.",
+      "records": [
+        "ns.unsigned.lab.example."
+      ],
+      "ttl": 300,
+      "type": "NS",
+      "typeCode": 2
+    },
+    "denial-wildcard-to-a": {
+      "canonicalRdataHex": [
+        "0161036c6162076578616d706c65000006400000000003"
+      ],
+      "class": "IN",
+      "id": "denial-wildcard-to-a",
+      "owner": "*.lab.example.",
+      "records": [
+        "a.lab.example. A RRSIG NSEC"
+      ],
+      "ttl": 300,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "denial-www-to-apex": {
+      "canonicalRdataHex": [
+        "036c6162076578616d706c65000006400000000003"
+      ],
+      "class": "IN",
+      "id": "denial-www-to-apex",
+      "owner": "www.lab.example.",
+      "records": [
+        "lab.example. A RRSIG NSEC"
+      ],
+      "ttl": 300,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "denial-x-branch-address": {
+      "canonicalRdataHex": [
+        "c0000216"
+      ],
+      "class": "IN",
+      "id": "denial-x-branch-address",
+      "owner": "x.branch.lab.example.",
+      "records": [
+        "192.0.2.22"
+      ],
+      "ttl": 300,
+      "type": "A",
+      "typeCode": 1
+    },
+    "denial-x-branch-to-www": {
+      "canonicalRdataHex": [
+        "03777777036c6162076578616d706c65000006400000000003"
+      ],
+      "class": "IN",
+      "id": "denial-x-branch-to-www",
+      "owner": "x.branch.lab.example.",
+      "records": [
+        "www.lab.example. A RRSIG NSEC"
+      ],
+      "ttl": 300,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "denial-z-address": {
+      "canonicalRdataHex": [
+        "c00002fa"
+      ],
+      "class": "IN",
+      "id": "denial-z-address",
+      "owner": "z.lab.example.",
+      "records": [
+        "192.0.2.250"
+      ],
+      "ttl": 300,
+      "type": "A",
+      "typeCode": 1
+    },
+    "parent-ds-unsupported-alg250": {
+      "canonicalRdataHex": [
+        "58f7fa020000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "class": "IN",
+      "id": "parent-ds-unsupported-alg250",
+      "owner": "lab.example.",
+      "records": [
+        "22775 250 2 0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "ttl": 3600,
+      "type": "DS",
+      "typeCode": 43
+    },
+    "parent-ds-unsupported-digest250": {
+      "canonicalRdataHex": [
+        "58f70dfa0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "class": "IN",
+      "id": "parent-ds-unsupported-digest250",
+      "owner": "lab.example.",
+      "records": [
+        "22775 13 250 0000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "ttl": 3600,
+      "type": "DS",
+      "typeCode": 43
+    }
+  },
+  "schemaVersion": 1,
+  "scope": "Separate explicit zone variants, not mutations of a shared published zone. Conventional no-wildcard apex omits MX/TXT because that variant has none. Denial RRset byte validity is distinct from complete validator proof/policy decisions. NSEC3PARAM is authority coordination, not replacement for actual proof parameters. Candidate leaf signatures are numerically valid but candidate DNSKEY protocol/flags deliberately fail DNSSEC eligibility.",
+  "signatures": {
+    "child-dnskey-zsk-missing-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "child-dnskey-zsk-missing-signature",
+      "inception": 1792713000,
+      "keyId": "child-ksk-g1",
+      "keyTag": 22775,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-dnskey-zsk-missing",
+      "rrsigRdataHex": "00300d0200000e106adab1906adaa12858f7036c6162076578616d706c6500f7ff2f31ea4315a5b474b22eb346f55859d9ee2e3ca8e92fb303a5eae578fcef0d0ab93e3eef853a28387295fecae6cb394f066d1aae72783368c190a94d2008",
+      "rrsigText": "DNSKEY 13 2 3600 20261023010000 20261022235000 22775 lab.example. 9/8vMepDFaW0dLIus0b1WFnZ7i48qOkv swOl6uV4/O8NCrk+Pu+FOig4cpX+yubL OU8GbRqucngzaMGQqU0gCA==",
+      "signatureHex": "f7ff2f31ea4315a5b474b22eb346f55859d9ee2e3ca8e92fb303a5eae578fcef0d0ab93e3eef853a28387295fecae6cb394f066d1aae72783368c190a94d2008",
+      "signer": "lab.example.",
+      "signingInputHex": "00300d0200000e106adab1906adaa12858f7036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000440101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+      "signingInputSha256": "585a4310d1b62d02e10ab57103b136f518b3cc629a142225629d10a8cffab03c",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    },
+    "child-zsk-protocol2-dnskey-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "child-zsk-protocol2-dnskey-signature",
+      "inception": 1792713000,
+      "keyId": "child-ksk-g1",
+      "keyTag": 22775,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-zsk-protocol2-dnskey",
+      "rrsigRdataHex": "00300d0200000e106adab1906adaa12858f7036c6162076578616d706c65007c4191f4280b5de1c8051f578f726daec7ea51810b170f64303b65d6e44298d8299399d445713b545922e7e79868b1360a1203bd12a1ce66b0b57251fe00edaa",
+      "rrsigText": "DNSKEY 13 2 3600 20261023010000 20261022235000 22775 lab.example. fEGR9CgLXeHIBR9Xj3JtrsfqUYELFw9k MDtl1uRCmNgpk5nURXE7VFki5+eYaLE2 ChIDvRKhzmawtXJR/gDtqg==",
+      "signatureHex": "7c4191f4280b5de1c8051f578f726daec7ea51810b170f64303b65d6e44298d8299399d445713b545922e7e79868b1360a1203bd12a1ce66b0b57251fe00edaa",
+      "signer": "lab.example.",
+      "signingInputHex": "00300d0200000e106adab1906adaa12858f7036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000440100020ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07036c6162076578616d706c65000030000100000e1000440101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+      "signingInputSha256": "290df91e58deeafabf802783367228861315024690c0e51e0e97e24fc87bfabe",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    },
+    "child-zsk-protocol2-leaf-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "child-zsk-protocol2-leaf-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-protocol2",
+      "keyTag": 55146,
+      "labels": 3,
+      "originalTtl": 3600,
+      "rrsetId": "www-a",
+      "rrsigRdataHex": "00010d0300000e106adab1906adaa128d76a036c6162076578616d706c6500ce1b34e479f7cbedfe02d7055c90e2ac240c5500459f55f319fc4d2f7f872f256f666e0e5aabb67142bcfe149a0b99d10645ff7938ab3b6ed7e6a263b31b2581",
+      "rrsigText": "A 13 3 3600 20261023010000 20261022235000 55146 lab.example. zhs05Hn3y+3+AtcFXJDirCQMVQBFn1Xz GfxNL3+HLyVvZm4OWqu2cUK8/hSaC5nR BkX/eTirO27X5qJjsxslgQ==",
+      "signatureHex": "ce1b34e479f7cbedfe02d7055c90e2ac240c5500459f55f319fc4d2f7f872f256f666e0e5aabb67142bcfe149a0b99d10645ff7938ab3b6ed7e6a263b31b2581",
+      "signer": "lab.example.",
+      "signingInputHex": "00010d0300000e106adab1906adaa128d76a036c6162076578616d706c650003777777036c6162076578616d706c65000001000100000e100004c000025003777777036c6162076578616d706c65000001000100000e100004c0000251",
+      "signingInputSha256": "a60967492c4171461b7e6237c2b4fb000c6eb6a47e3572763cb5056e3317be81",
+      "typeCovered": 1,
+      "verificationAt": 1792713600
+    },
+    "child-zsk-zoneflag-clear-dnskey-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "child-zsk-zoneflag-clear-dnskey-signature",
+      "inception": 1792713000,
+      "keyId": "child-ksk-g1",
+      "keyTag": 22775,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-zsk-zoneflag-clear-dnskey",
+      "rrsigRdataHex": "00300d0200000e106adab1906adaa12858f7036c6162076578616d706c65000ca72ada47671c2cfcd39568ef249f74cae366cfe61fb4173f5ff424a8aaa9080bcc2c8d71613967662927a44dc731d5d42540201ff3fc880346f19db55026b8",
+      "rrsigText": "DNSKEY 13 2 3600 20261023010000 20261022235000 22775 lab.example. DKcq2kdnHCz805Vo7ySfdMrjZs/mH7QX P1/0JKiqqQgLzCyNcWE5Z2YpJ6RNxzHV 1CVAIB/z/IgDRvGdtVAmuA==",
+      "signatureHex": "0ca72ada47671c2cfcd39568ef249f74cae366cfe61fb4173f5ff424a8aaa9080bcc2c8d71613967662927a44dc731d5d42540201ff3fc880346f19db55026b8",
+      "signer": "lab.example.",
+      "signingInputHex": "00300d0200000e106adab1906adaa12858f7036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000440001030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07036c6162076578616d706c65000030000100000e1000440101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+      "signingInputSha256": "8f2332a2b72ea3ee02d92ac27be1c5619cbd14e9c28693cec238ed2def8a2955",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    },
+    "child-zsk-zoneflag-clear-leaf-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "child-zsk-zoneflag-clear-leaf-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-zoneflag-clear",
+      "keyTag": 55147,
+      "labels": 3,
+      "originalTtl": 3600,
+      "rrsetId": "www-a",
+      "rrsigRdataHex": "00010d0300000e106adab1906adaa128d76b036c6162076578616d706c65002c376ff3202625ebe0f08e4f56d6a6e9dfac900890901f3799668f463dfa8131b1df11e28b96a56a7882a40f3d0d1891c89ae308b3855d7d8318312c1cfe2b58",
+      "rrsigText": "A 13 3 3600 20261023010000 20261022235000 55147 lab.example. LDdv8yAmJevg8I5PVtam6d+skAiQkB83 mWaPRj36gTGx3xHii5alaniCpA89DRiR yJrjCLOFXX2DGDEsHP4rWA==",
+      "signatureHex": "2c376ff3202625ebe0f08e4f56d6a6e9dfac900890901f3799668f463dfa8131b1df11e28b96a56a7882a40f3d0d1891c89ae308b3855d7d8318312c1cfe2b58",
+      "signer": "lab.example.",
+      "signingInputHex": "00010d0300000e106adab1906adaa128d76b036c6162076578616d706c650003777777036c6162076578616d706c65000001000100000e100004c000025003777777036c6162076578616d706c65000001000100000e100004c0000251",
+      "signingInputSha256": "1666d4fdcc3b8f4254c132c1e2eef380fdc12e7df8b65e15f1491717aad944f8",
+      "typeCovered": 1,
+      "verificationAt": 1792713600
+    },
+    "denial-a-address-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-a-address-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-a-address",
+      "rrsigRdataHex": "00010d030000012c6adab1906adaa128d86a036c6162076578616d706c6500a8c36ef829384c5b669f5aad2f5473e94a471321a5d501dad71bfc684ff38ce2978367abb66c31b0af22cb96e908211d26515da26e1eb9d3a295ca47e828ea7f",
+      "rrsigText": "A 13 3 300 20261023010000 20261022235000 55402 lab.example. qMNu+Ck4TFtmn1qtL1Rz6UpHEyGl1QHa 1xv8aE/zjOKXg2ertmwxsK8iy5bpCCEd JlFdom4eudOilcpH6Cjqfw==",
+      "signatureHex": "a8c36ef829384c5b669f5aad2f5473e94a471321a5d501dad71bfc684ff38ce2978367abb66c31b0af22cb96e908211d26515da26e1eb9d3a295ca47e828ea7f",
+      "signer": "lab.example.",
+      "signingInputHex": "00010d030000012c6adab1906adaa128d86a036c6162076578616d706c65000161036c6162076578616d706c6500000100010000012c0004c0000201",
+      "signingInputSha256": "bcb8b20902286b654b6a3bd8f0c4ae2e3924af6e19de9795de9a9a34a65d79c3",
+      "typeCovered": 1,
+      "verificationAt": 1792713600
+    },
+    "denial-a-to-www-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-a-to-www-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-a-to-www",
+      "rrsigRdataHex": "002f0d030000012c6adab1906adaa128d86a036c6162076578616d706c6500c84a30241f36906b346f153debc830b14ca0eb786c67ab5a05282e2edca3378621684a2eacbb2972b138103c02e01bac9a7f2e58fb44b9eb05c992d26dcd56c9",
+      "rrsigText": "NSEC 13 3 300 20261023010000 20261022235000 55402 lab.example. yEowJB82kGs0bxU968gwsUyg63hsZ6ta BSguLtyjN4YhaEourLspcrE4EDwC4Bus mn8uWPtEuesFyZLSbc1WyQ==",
+      "signatureHex": "c84a30241f36906b346f153debc830b14ca0eb786c67ab5a05282e2edca3378621684a2eacbb2972b138103c02e01bac9a7f2e58fb44b9eb05c992d26dcd56c9",
+      "signer": "lab.example.",
+      "signingInputHex": "002f0d030000012c6adab1906adaa128d86a036c6162076578616d706c65000161036c6162076578616d706c6500002f00010000012c001903777777036c6162076578616d706c65000006400000000003",
+      "signingInputSha256": "19eb327e588898b4cc168759833c03edf22836670bab100fd5b49c963ed73b87",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "denial-a-to-x-branch-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-a-to-x-branch-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-a-to-x-branch",
+      "rrsigRdataHex": "002f0d030000012c6adab1906adaa128d86a036c6162076578616d706c6500eeb2461673fe65309d0963fdfdf474acd05b7b5e0f47b67bed55307a2e102dd95ff8fa72456ee5d3f85f408f5c4b0d00dcbc0c279c87e32ac3a434dfa1b020bf",
+      "rrsigText": "NSEC 13 3 300 20261023010000 20261022235000 55402 lab.example. 7rJGFnP+ZTCdCWP9/fR0rNBbe14PR7Z7 7VUwei4QLdlf+PpyRW7l0/hfQI9cSw0A 3LwMJ5yH4yrDpDTfobAgvw==",
+      "signatureHex": "eeb2461673fe65309d0963fdfdf474acd05b7b5e0f47b67bed55307a2e102dd95ff8fa72456ee5d3f85f408f5c4b0d00dcbc0c279c87e32ac3a434dfa1b020bf",
+      "signer": "lab.example.",
+      "signingInputHex": "002f0d030000012c6adab1906adaa128d86a036c6162076578616d706c65000161036c6162076578616d706c6500002f00010000012c001e0178066272616e6368036c6162076578616d706c65000006400000000003",
+      "signingInputSha256": "7d645b785f2112eb260af0a6936dcd86727d97f21e21d60d1a9cd8895650ecbc",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "denial-apex-to-a-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-apex-to-a-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 2,
+      "originalTtl": 300,
+      "rrsetId": "denial-apex-to-a",
+      "rrsigRdataHex": "002f0d020000012c6adab1906adaa128d86a036c6162076578616d706c6500ecf452dcbcc413fa964255845065e58aed2ca9413bef821f6f441e82fb902dbef44c8ac1878ddf446c9d54505a571e858a6b2cb7b8a981c0047f863ceab71bff",
+      "rrsigText": "NSEC 13 2 300 20261023010000 20261022235000 55402 lab.example. 7PRS3LzEE/qWQlWEUGXliu0sqUE774If b0QegvuQLb70TIrBh43fRGydVFBaVx6F imsst7ipgcAEf4Y86rcb/w==",
+      "signatureHex": "ecf452dcbcc413fa964255845065e58aed2ca9413bef821f6f441e82fb902dbef44c8ac1878ddf446c9d54505a571e858a6b2cb7b8a981c0047f863ceab71bff",
+      "signer": "lab.example.",
+      "signingInputHex": "002f0d020000012c6adab1906adaa128d86a036c6162076578616d706c6500036c6162076578616d706c6500002f00010000012c00180161036c6162076578616d706c6500000722000000000380",
+      "signingInputSha256": "4e10f38f4e3345803feb9be46c94f60c8b935a85b0a232c461f9bd36e652a478",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "denial-apex-to-wildcard-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-apex-to-wildcard-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 2,
+      "originalTtl": 300,
+      "rrsetId": "denial-apex-to-wildcard",
+      "rrsigRdataHex": "002f0d020000012c6adab1906adaa128d86a036c6162076578616d706c6500d5a0bc2bf0f1eece0b9df08f0af1ecb1f6e84ccbf7c422eb0da0c21c0e8e931f6eaafcc025439892f329177f6efface4b49305c7b27f7d018f09a80ddeacfa51",
+      "rrsigText": "NSEC 13 2 300 20261023010000 20261022235000 55402 lab.example. 1aC8K/Dx7s4LnfCPCvHssfboTMv3xCLr DaDCHA6Okx9uqvzAJUOYkvMpF39u/6zk tJMFx7J/fQGPCagN3qz6UQ==",
+      "signatureHex": "d5a0bc2bf0f1eece0b9df08f0af1ecb1f6e84ccbf7c422eb0da0c21c0e8e931f6eaafcc025439892f329177f6efface4b49305c7b27f7d018f09a80ddeacfa51",
+      "signer": "lab.example.",
+      "signingInputHex": "002f0d020000012c6adab1906adaa128d86a036c6162076578616d706c6500036c6162076578616d706c6500002f00010000012c0018012a036c6162076578616d706c6500000722000000000380",
+      "signingInputSha256": "299e447adee69e25386e7adf6e5364e7c6b46c1877ef69169b91ae8019647b5e",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-iteration1-0-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-iteration1-0-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-iteration1-0",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500948b1d872f148258d789d05630ba2db32fca7c4946e61412d776d2a4bc0ce93a5a5cee7d6b4f2977190afd83d05a7be9206f9ce73adf31f1ae9d52b64f2bf56e",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. lIsdhy8UgljXidBWMLotsy/KfElG5hQS 13bSpLwM6TpaXO59a08pdxkK/YPQWnvp IG+c5zrfMfGunVK2Tyv1bg==",
+      "signatureHex": "948b1d872f148258d789d05630ba2db32fca7c4946e61412d776d2a4bc0ce93a5a5cee7d6b4f2977190afd83d05a7be9206f9ce73adf31f1ae9d52b64f2bf56e",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650020386733616a346e6c323031657432363061346b633376646c75706f3771756d38036c6162076578616d706c6500003200010000012c00220100000100144ec2419ab39e0dfa7d360c3e56fe4823e68c57280006400000000002",
+      "signingInputSha256": "8c49b9ff4e3c255be66f8750c142d0e17248488a60442f328e1d6e077d4aac0f",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-iteration1-1-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-iteration1-1-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-iteration1-1",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650016aea06ca80eba445708220e3e0ea13c9a516119f870c2c542cd175bd9ef5b0170bbab4460afe988fe68b094720f9d4cdd49ac6e9a4ce5917d2025dc5395b59e",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. Fq6gbKgOukRXCCIOPg6hPJpRYRn4cMLF Qs0XW9nvWwFwu6tEYK/piP5osJRyD51M 3UmsbppM5ZF9ICXcU5W1ng==",
+      "signatureHex": "16aea06ca80eba445708220e3e0ea13c9a516119f870c2c542cd175bd9ef5b0170bbab4460afe988fe68b094720f9d4cdd49ac6e9a4ce5917d2025dc5395b59e",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500203972313433366c6a6a6f36766b76396d316776356476693834666a386f6c7038036c6162076578616d706c6500003200010000012c002301000001001473f855062d67e798f3df9066318e67fdbfee48e2000722000000000290",
+      "signingInputSha256": "bd3c71f1c6ed2dfdb62108bfeea4da037f8e44922c06577adb8dfb94606ade9c",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-iteration1-2-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-iteration1-2-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-iteration1-2",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650007577de1749a4567f206691bedfdf2e95af8f0f566fdb33e509aa6f1932ea5848b9ab28056f2fb84d638387d766cb4c94781093539407813246d3e926c6c5f31",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. B1d94XSaRWfyBmkb7f3y6Vr48PVm/bM+ UJqm8ZMupYSLmrKAVvL7hNY4OH12bLTJ R4EJNTlAeBMkbT6SbGxfMQ==",
+      "signatureHex": "07577de1749a4567f206691bedfdf2e95af8f0f566fdb33e509aa6f1932ea5848b9ab28056f2fb84d638387d766cb4c94781093539407813246d3e926c6c5f31",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650020656673356131686463766a706873757669316a3333336a37766d767573693732036c6162076578616d706c6500003200010000012c0022010000010014aee7fee08906cc4693dded16d36303f3b3228fb40006400000000002",
+      "signingInputSha256": "e3ea53eda00cb33d81284806ad15a8eb147db4aa502eaf8bbdaf4ef193fd83e2",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-iteration1-3-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-iteration1-3-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-iteration1-3",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650080d0d5fb73ce5bed9d0da89cba8eb476668792303a9a221454a38bd3291360eaf60a84f37bd46c9f7d3688b72f5d43a3bfce0e6e847fd6a964164786c85245c0",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. gNDV+3POW+2dDaicuo60dmaHkjA6miIU VKOL0ykTYOr2CoTze9Rsn302iLcvXUOj v84OboR/1qlkFkeGyFJFwA==",
+      "signatureHex": "80d0d5fb73ce5bed9d0da89cba8eb476668792303a9a221454a38bd3291360eaf60a84f37bd46c9f7d3688b72f5d43a3bfce0e6e847fd6a964164786c85245c0",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500206c726a76746f34393072363464347574746b6264366f6f33756570693533746b036c6162076578616d706c6500003200010000012c00220100000100144406a992f51002ee88c05128c1fdb5f6707d7ac80006400000000002",
+      "signingInputSha256": "ed1f7468fd4b9abbfe9f1fc633d604f23852bf010a58e5a8253b36335de85a9b",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-iteration1-param-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-iteration1-param-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 2,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-iteration1-param",
+      "rrsigRdataHex": "00330d020000012c6adab1906adaa128d86a036c6162076578616d706c65009c12d837c8fb9c47310113188b2983253ecd3e7374cf4b1e721b4454f06140a64b9be19ce712ce98f32d590eae85d9e3a594eb08b397e6bdc0b28ae68a8a5ac0",
+      "rrsigText": "NSEC3PARAM 13 2 300 20261023010000 20261022235000 55402 lab.example. nBLYN8j7nEcxARMYiymDJT7NPnN0z0se chtEVPBhQKZLm+Gc5xLOmPMtWQ6uhdnj pZTrCLOX5r3AsormiopawA==",
+      "signatureHex": "9c12d837c8fb9c47310113188b2983253ecd3e7374cf4b1e721b4454f06140a64b9be19ce712ce98f32d590eae85d9e3a594eb08b397e6bdc0b28ae68a8a5ac0",
+      "signer": "lab.example.",
+      "signingInputHex": "00330d020000012c6adab1906adaa128d86a036c6162076578616d706c6500036c6162076578616d706c6500003300010000012c00050100000100",
+      "signingInputSha256": "21b28e324becaba7a0b6d79c4334d871304c188164ee1effb882ac83954e7be8",
+      "typeCovered": 51,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-no-wildcard-0-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-no-wildcard-0-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-no-wildcard-0",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500cbc5d9b7837ecae977660e35d5e2339776e4da1493f0f0b6e160a241a5ae0a3aa6fe4942b8941084ef7ae3be672d9eee8649473fa63eaf182366b6b99e92b533",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. y8XZt4N+yul3Zg411eIzl3bk2hST8PC2 4WCiQaWuCjqm/klCuJQQhO96475nLZ7u hklHP6Y+rxgjZra5npK1Mw==",
+      "signatureHex": "cbc5d9b7837ecae977660e35d5e2339776e4da1493f0f0b6e160a241a5ae0a3aa6fe4942b8941084ef7ae3be672d9eee8649473fa63eaf182366b6b99e92b533",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650020303476623072387237306f6835746c39613275686e7067303633663762657035036c6162076578616d706c6500003200010000012c002301000000001430f4a2c3cbb342fd876bb024b3939912cf4b8ed9000722000000000290",
+      "signingInputSha256": "5788da4625f6844c213ebfb3c340c964b29074d65b39f6e98ebdb8da4c22391f",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-no-wildcard-1-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-no-wildcard-1-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-no-wildcard-1",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500f0bb75f0dc624ffcb57ac2e40f2dee3fab35e54ff86a018c6d56bd0c852b274423c7a717b669056525aaee98d8853c2fa8159e522b8a91909246ecfa44fa9459",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. 8Lt18NxiT/y1esLkDy3uP6s15U/4agGM bVa9DIUrJ0Qjx6cXtmkFZSWq7pjYhTwv qBWeUiuKkZCSRuz6RPqUWQ==",
+      "signatureHex": "f0bb75f0dc624ffcb57ac2e40f2dee3fab35e54ff86a018c6d56bd0c852b274423c7a717b669056525aaee98d8853c2fa8159e522b8a91909246ecfa44fa9459",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c65002036337161356775626d643166723172626d306962373473703262376b6e336d70036c6162076578616d706c6500003200010000012c0022010000000014597296757574ee26881ae1b120a5014da29aa5fe0006400000000002",
+      "signingInputSha256": "b4d66be33fba9d316f23a9ef8ed5480a95d9be5b18cd12b79a98195f927a4110",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-no-wildcard-2-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-no-wildcard-2-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-no-wildcard-2",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500ab7b1c7612d47474465e061ebee9d18ea431291f47a8823b3415d16404188716d63920902b02ba812f706165fa0ae0484134b73828402803fa5e6d2962d68698",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. q3scdhLUdHRGXgYevunRjqQxKR9HqII7 NBXRZAQYhxbWOSCQKwK6gS9wYWX6CuBI QTS3OChAKAP6Xm0pYtaGmA==",
+      "signatureHex": "ab7b1c7612d47474465e061ebee9d18ea431291f47a8823b3415d16404188716d63920902b02ba812f706165fa0ae0484134b73828402803fa5e6d2962d68698",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650020623570396374626c656a6e326432307173366f6931393831396d68396c396675036c6162076578616d706c6500003200010000012c0022010000000014b64574ddda645aa43e6776f6323287379fc550db0006400000000002",
+      "signingInputSha256": "8ca12a631dc9f4b215e8ee37ede813f4980d54188e7172f1783fea8561f50ad4",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-no-wildcard-3-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-no-wildcard-3-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-no-wildcard-3",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650051a837326cdad78641149cbfda3ed937d51732a9e3e4ef5f80c2939ebd075da06cafc8828b612fa34aec04193012af6a867063fe5b252703be75b85a115d3cdf",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. Uag3Mmza14ZBFJy/2j7ZN9UXMqnj5O9f gMKTnr0HXaBsr8iCi2Evo0rsBBkwEq9q hnBj/lslJwO+dbhaEV083w==",
+      "signatureHex": "51a837326cdad78641149cbfda3ed937d51732a9e3e4ef5f80c2939ebd075da06cafc8828b612fa34aec04193012af6a867063fe5b252703be75b85a115d3cdf",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500206d70326e396e65716368646138666a376572723334636b3736756673616b3672036c6162076578616d706c6500003200010000012c0022010000000014013eb06d1b383112f6a950bd1be60030de75bb250006400000000002",
+      "signingInputSha256": "06677a47baa2e44f4f06eab72fbc9f34344f453a3fe49395003440be49f52529",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-optout-0-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-optout-0-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-optout-0",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500cbc5d9b7837ecae977660e35d5e2339776e4da1493f0f0b6e160a241a5ae0a3aa6fe4942b8941084ef7ae3be672d9eee8649473fa63eaf182366b6b99e92b533",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. y8XZt4N+yul3Zg411eIzl3bk2hST8PC2 4WCiQaWuCjqm/klCuJQQhO96475nLZ7u hklHP6Y+rxgjZra5npK1Mw==",
+      "signatureHex": "cbc5d9b7837ecae977660e35d5e2339776e4da1493f0f0b6e160a241a5ae0a3aa6fe4942b8941084ef7ae3be672d9eee8649473fa63eaf182366b6b99e92b533",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650020303476623072387237306f6835746c39613275686e7067303633663762657035036c6162076578616d706c6500003200010000012c002301000000001430f4a2c3cbb342fd876bb024b3939912cf4b8ed9000722000000000290",
+      "signingInputSha256": "5788da4625f6844c213ebfb3c340c964b29074d65b39f6e98ebdb8da4c22391f",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-optout-1-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-optout-1-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-optout-1",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500f0bb75f0dc624ffcb57ac2e40f2dee3fab35e54ff86a018c6d56bd0c852b274423c7a717b669056525aaee98d8853c2fa8159e522b8a91909246ecfa44fa9459",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. 8Lt18NxiT/y1esLkDy3uP6s15U/4agGM bVa9DIUrJ0Qjx6cXtmkFZSWq7pjYhTwv qBWeUiuKkZCSRuz6RPqUWQ==",
+      "signatureHex": "f0bb75f0dc624ffcb57ac2e40f2dee3fab35e54ff86a018c6d56bd0c852b274423c7a717b669056525aaee98d8853c2fa8159e522b8a91909246ecfa44fa9459",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c65002036337161356775626d643166723172626d306962373473703262376b6e336d70036c6162076578616d706c6500003200010000012c0022010000000014597296757574ee26881ae1b120a5014da29aa5fe0006400000000002",
+      "signingInputSha256": "b4d66be33fba9d316f23a9ef8ed5480a95d9be5b18cd12b79a98195f927a4110",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-optout-2-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-optout-2-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-optout-2",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500ab7b1c7612d47474465e061ebee9d18ea431291f47a8823b3415d16404188716d63920902b02ba812f706165fa0ae0484134b73828402803fa5e6d2962d68698",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. q3scdhLUdHRGXgYevunRjqQxKR9HqII7 NBXRZAQYhxbWOSCQKwK6gS9wYWX6CuBI QTS3OChAKAP6Xm0pYtaGmA==",
+      "signatureHex": "ab7b1c7612d47474465e061ebee9d18ea431291f47a8823b3415d16404188716d63920902b02ba812f706165fa0ae0484134b73828402803fa5e6d2962d68698",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650020623570396374626c656a6e326432307173366f6931393831396d68396c396675036c6162076578616d706c6500003200010000012c0022010000000014b64574ddda645aa43e6776f6323287379fc550db0006400000000002",
+      "signingInputSha256": "8ca12a631dc9f4b215e8ee37ede813f4980d54188e7172f1783fea8561f50ad4",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-optout-3-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-optout-3-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-optout-3",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500c5d93b06e1f6c1094cfcc7aeaee68c8e378a588ca2cdc417258a3cd456922f2d4f75c6ca505373dc6684f53771b9baa678b0f1cb4f90b6af6f4abf7e99551060",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. xdk7BuH2wQlM/MeuruaMjjeKWIyizcQX JYo81FaSLy1PdcbKUFNz3GaE9Tdxubqm eLDxy0+Qtq9vSr9+mVUQYA==",
+      "signatureHex": "c5d93b06e1f6c1094cfcc7aeaee68c8e378a588ca2cdc417258a3cd456922f2d4f75c6ca505373dc6684f53771b9baa678b0f1cb4f90b6af6f4abf7e99551060",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500206d70326e396e65716368646138666a376572723334636b3736756673616b3672036c6162076578616d706c6500003200010000012c0022010100000014013eb06d1b383112f6a950bd1be60030de75bb250006400000000002",
+      "signingInputSha256": "7296df433ff015884c769accf6c1d496f6d30bff9ba0ce1d6d5339e36e189348",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-salt-aa-0-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-salt-aa-0-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-salt-aa-0",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500dcbba450bdc4552e3754e6e666bde9c623c7162caa36ef9c8ebddd832413666529a7908565a9831defbc6c9a655cdea9f917f0c25505d4f49d28467989589709",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. 3LukUL3EVS43VObmZr3pxiPHFiyqNu+c jr3dgyQTZmUpp5CFZamDHe+8bJplXN6p +RfwwlUF1PSdKEZ5iViXCQ==",
+      "signatureHex": "dcbba450bdc4552e3754e6e666bde9c623c7162caa36ef9c8ebddd832413666529a7908565a9831defbc6c9a655cdea9f917f0c25505d4f49d28467989589709",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650020336b3373686138666564733137376c3462307563363564747462346238716437036c6162076578616d706c6500003200010000012c00230100000001aa14b6fe0f9fca7bcadbc4c072bce8c7260f25f1d41b0006400000000002",
+      "signingInputSha256": "8b63b5a3a3e0ab9e337d3795f3c9e69b6b2b374a691120ec69e7c78ec708f62a",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-salt-aa-1-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-salt-aa-1-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-salt-aa-1",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c65001fd129552092a85f67df74db8f6c40ae503afd4dbf0f808cce2f0431abbb160d2a23f94cc9994df717f285c2ee1e3c385eb19b1be2a71af79f7c489b63b0e562",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. H9EpVSCSqF9n33Tbj2xArlA6/U2/D4CM zi8EMau7Fg0qI/lMyZlN9xfyhcLuHjw4 XrGbG+KnGveffEibY7DlYg==",
+      "signatureHex": "1fd129552092a85f67df74db8f6c40ae503afd4dbf0f808cce2f0431abbb160d2a23f94cc9994df717f285c2ee1e3c385eb19b1be2a71af79f7c489b63b0e562",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500206d72763076377561666635646e683630656175656868703631736976336c3072036c6162076578616d706c6500003200010000012c00230100000001aa14e3556a8bae991e0aa05568933c161a9cd44578af0006400000000002",
+      "signingInputSha256": "4c4864d4aded3d6df2823ec427651ab785c669c46bdee806b91c7391c0bdefe6",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-salt-aa-2-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-salt-aa-2-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-salt-aa-2",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500f400fc712a79341088eb305573e9cd2cf19d573556e77302762b2dcc621ab93ce7041ecdc859022ddac2d4b1717b9818beec842f44d11b25129f87d67c85f391",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. 9AD8cSp5NBCI6zBVc+nNLPGdVzVW53MC distzGIauTznBB7NyFkCLdrC1LFxe5gY vuyEL0TRGyUSn4fWfIXzkQ==",
+      "signatureHex": "f400fc712a79341088eb305573e9cd2cf19d573556e77302762b2dcc621ab93ce7041ecdc859022ddac2d4b1717b9818beec842f44d11b25129f87d67c85f391",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c6500207364616d6c3274656a3466306c38326c6432396a6f3567716a6a613461753566036c6162076578616d706c6500003200010000012c00240100000001aa14e766f28cd86bc0c86d687bfcbc0112b6a78f78db000722000000000290",
+      "signingInputSha256": "1c2a49371dcf8aee378fc90b04bcc3eb74e461db134616adee3a9a86754c9186",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-salt-aa-3-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-salt-aa-3-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-salt-aa-3",
+      "rrsigRdataHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c650025c9c200f7e0fff06a094ae43b7ed2dad8a6232efa6d1f2c7005c6ec322e4c7b790c3d12bc522a8f6202cac4334314f406523c2a8bca15eaff768061e167bf2c",
+      "rrsigText": "NSEC3 13 3 300 20261023010000 20261022235000 55402 lab.example. JcnCAPfg//BqCUrkO37S2timIy76bR8s cAXG7DIuTHt5DD0SvFIqj2ICysQzQxT0 BlI8KovKFer/doBh4We/LA==",
+      "signatureHex": "25c9c200f7e0fff06a094ae43b7ed2dad8a6232efa6d1f2c7005c6ec322e4c7b790c3d12bc522a8f6202cac4334314f406523c2a8bca15eaff768061e167bf2c",
+      "signer": "lab.example.",
+      "signingInputHex": "00320d030000012c6adab1906adaa128d86a036c6162076578616d706c65002073746a663533366f6466306367726238666675626f3038696d716a6f75753672036c6162076578616d706c6500003200010000012c00230100000001aa141d07c8a90f7378139ea4583cc315bdeac8b469a70006400000000002",
+      "signingInputSha256": "c75e4d81feeb54fff68723d33cc847546fe7b7d71886bc37f66980a8f13795ca",
+      "typeCovered": 50,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-salt-aa-param-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-salt-aa-param-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 2,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-salt-aa-param",
+      "rrsigRdataHex": "00330d020000012c6adab1906adaa128d86a036c6162076578616d706c65000ba1092b49326cbe3355ac609038591985f377b9ff2a6942fc10e92f7565e037373e90846582ff77d6bbc91d46c9dfe33cbc76f3a5ffc7ad665e2c133bb5f7d8",
+      "rrsigText": "NSEC3PARAM 13 2 300 20261023010000 20261022235000 55402 lab.example. C6EJK0kybL4zVaxgkDhZGYXzd7n/KmlC /BDpL3Vl4Dc3PpCEZYL/d9a7yR1Gyd/j PLx286X/x61mXiwTO7X32A==",
+      "signatureHex": "0ba1092b49326cbe3355ac609038591985f377b9ff2a6942fc10e92f7565e037373e90846582ff77d6bbc91d46c9dfe33cbc76f3a5ffc7ad665e2c133bb5f7d8",
+      "signer": "lab.example.",
+      "signingInputHex": "00330d020000012c6adab1906adaa128d86a036c6162076578616d706c6500036c6162076578616d706c6500003300010000012c00060100000001aa",
+      "signingInputSha256": "6ad23c7bf59a2a2fdce4243da486987d21d611d65b6571b567810d9dd40c955d",
+      "typeCovered": 51,
+      "verificationAt": 1792713600
+    },
+    "denial-nsec3-zero-param-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-nsec3-zero-param-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 2,
+      "originalTtl": 300,
+      "rrsetId": "denial-nsec3-zero-param",
+      "rrsigRdataHex": "00330d020000012c6adab1906adaa128d86a036c6162076578616d706c6500ec5715738f515c21369165bbd6db6ecf12dfb60d87e9561fb8327faeaf571e7d05c68c964df1dd72ef004fcc607fc3987c813f1eb48fe57b50d9551805827713",
+      "rrsigText": "NSEC3PARAM 13 2 300 20261023010000 20261022235000 55402 lab.example. 7FcVc49RXCE2kWW71ttuzxLftg2H6VYf uDJ/rq9XHn0FxoyWTfHdcu8AT8xgf8OY fIE/HrSP5XtQ2VUYBYJ3Ew==",
+      "signatureHex": "ec5715738f515c21369165bbd6db6ecf12dfb60d87e9561fb8327faeaf571e7d05c68c964df1dd72ef004fcc607fc3987c813f1eb48fe57b50d9551805827713",
+      "signer": "lab.example.",
+      "signingInputHex": "00330d020000012c6adab1906adaa128d86a036c6162076578616d706c6500036c6162076578616d706c6500003300010000012c00050100000000",
+      "signingInputSha256": "803c7c052b6c4ce389beb732af475f0667e4bb0a508d406370d8ec0cf59f87e7",
+      "typeCovered": 51,
+      "verificationAt": 1792713600
+    },
+    "denial-parent-unsigned-lab-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-parent-unsigned-lab-signature",
+      "inception": 1792713000,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "labels": 2,
+      "originalTtl": 300,
+      "rrsetId": "denial-parent-unsigned-lab",
+      "rrsigRdataHex": "002f0d020000012c6adab1906adaa1287538076578616d706c6500d5f4ba824bc009ac9d213dcdfb58167116b1745f70577939a40437b2dfc4bff68fce51768181e252597888c3d5faefa617c7eb9781af8323ddb2a236f89073da",
+      "rrsigText": "NSEC 13 2 300 20261023010000 20261022235000 30008 example. 1fS6gkvACaydIT3N+1gWcRaxdF9wV3k5 pAQ3st/Ev/aPzlF2gYHiUll4iMPV+u+m F8frl4GvgyPdsqI2+JBz2g==",
+      "signatureHex": "d5f4ba824bc009ac9d213dcdfb58167116b1745f70577939a40437b2dfc4bff68fce51768181e252597888c3d5faefa617c7eb9781af8323ddb2a236f89073da",
+      "signer": "example.",
+      "signingInputHex": "002f0d020000012c6adab1906adaa1287538076578616d706c6500036c6162076578616d706c6500002f00010000012c0016046e657874076578616d706c65000006200000000003",
+      "signingInputSha256": "7247f8069c8c314fa07d9c966e569901c9671a1d5bd16aebd3491908f8753cad",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "denial-wildcard-to-a-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-wildcard-to-a-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 2,
+      "originalTtl": 300,
+      "rrsetId": "denial-wildcard-to-a",
+      "rrsigRdataHex": "002f0d020000012c6adab1906adaa128d86a036c6162076578616d706c6500c5e0ac69bc6c5533622fcfb6518e5806809cf6a301cd5f2ef03ff5d49acc7abde9852a14d99a56b0085e38e3eced10b21cbc469754bdc4900c1fd2c9ca05138a",
+      "rrsigText": "NSEC 13 2 300 20261023010000 20261022235000 55402 lab.example. xeCsabxsVTNiL8+2UY5YBoCc9qMBzV8u 8D/11JrMer3phSoU2ZpWsAheOOPs7RCy HLxGl1S9xJAMH9LJygUTig==",
+      "signatureHex": "c5e0ac69bc6c5533622fcfb6518e5806809cf6a301cd5f2ef03ff5d49acc7abde9852a14d99a56b0085e38e3eced10b21cbc469754bdc4900c1fd2c9ca05138a",
+      "signer": "lab.example.",
+      "signingInputHex": "002f0d020000012c6adab1906adaa128d86a036c6162076578616d706c6500012a036c6162076578616d706c6500002f00010000012c00170161036c6162076578616d706c65000006400000000003",
+      "signingInputSha256": "867494c81ee052ddf30001dd0eaf5c94f84063e3e77bad6e51f06858c73e3e62",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "denial-www-to-apex-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-www-to-apex-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-www-to-apex",
+      "rrsigRdataHex": "002f0d030000012c6adab1906adaa128d86a036c6162076578616d706c650079fdde3b70b77fb6d93f0b2d799dead08429e9d61b2a29c99ce3400bc44d0ec519041910185e2ccc78454c55eeea5b3911a49ab4a1064ac6b7b4bd8e55abc288",
+      "rrsigText": "NSEC 13 3 300 20261023010000 20261022235000 55402 lab.example. ef3eO3C3f7bZPwsteZ3q0IQp6dYbKinJ nONAC8RNDsUZBBkQGF4szHhFTFXu6ls5 EaSatKEGSsa3tL2OVavCiA==",
+      "signatureHex": "79fdde3b70b77fb6d93f0b2d799dead08429e9d61b2a29c99ce3400bc44d0ec519041910185e2ccc78454c55eeea5b3911a49ab4a1064ac6b7b4bd8e55abc288",
+      "signer": "lab.example.",
+      "signingInputHex": "002f0d030000012c6adab1906adaa128d86a036c6162076578616d706c650003777777036c6162076578616d706c6500002f00010000012c0015036c6162076578616d706c65000006400000000003",
+      "signingInputSha256": "1da601c0e26548a5a5d8c5cd18d50610ccbffa5ec17dbc4824f3f9c204cadd20",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "denial-x-branch-address-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-x-branch-address-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 4,
+      "originalTtl": 300,
+      "rrsetId": "denial-x-branch-address",
+      "rrsigRdataHex": "00010d040000012c6adab1906adaa128d86a036c6162076578616d706c6500261ef95a54550237da0adefd1e844d089edac5e5bb7ab13c5ab6c0dd9d577f272d655d9c22a7a049b0a6aefa1d8be9be33ca791f338bad1374fbe82b5d75b647",
+      "rrsigText": "A 13 4 300 20261023010000 20261022235000 55402 lab.example. Jh75WlRVAjfaCt79HoRNCJ7axeW7erE8 WrbA3Z1XfyctZV2cIqegSbCmrvodi+m+ M8p5HzOLrRN0++grXXW2Rw==",
+      "signatureHex": "261ef95a54550237da0adefd1e844d089edac5e5bb7ab13c5ab6c0dd9d577f272d655d9c22a7a049b0a6aefa1d8be9be33ca791f338bad1374fbe82b5d75b647",
+      "signer": "lab.example.",
+      "signingInputHex": "00010d040000012c6adab1906adaa128d86a036c6162076578616d706c65000178066272616e6368036c6162076578616d706c6500000100010000012c0004c0000216",
+      "signingInputSha256": "61c68c52bc2ecd5bbf35f51518aad96fa27ca65ca899aaf0bfb35ab0cdb2fa0a",
+      "typeCovered": 1,
+      "verificationAt": 1792713600
+    },
+    "denial-x-branch-to-www-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-x-branch-to-www-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 4,
+      "originalTtl": 300,
+      "rrsetId": "denial-x-branch-to-www",
+      "rrsigRdataHex": "002f0d040000012c6adab1906adaa128d86a036c6162076578616d706c6500e937f526bf6370a09ea8fcda71da058f01398d17bb111c6bfc2d5da1028e61d53d31ee4e3730cb8a1a75f84b06447e3543ce431d0e75ac5988ba70de58421d26",
+      "rrsigText": "NSEC 13 4 300 20261023010000 20261022235000 55402 lab.example. 6Tf1Jr9jcKCeqPzacdoFjwE5jRe7ERxr /C1doQKOYdU9Me5ONzDLihp1+EsGRH41 Q85DHQ51rFmIunDeWEIdJg==",
+      "signatureHex": "e937f526bf6370a09ea8fcda71da058f01398d17bb111c6bfc2d5da1028e61d53d31ee4e3730cb8a1a75f84b06447e3543ce431d0e75ac5988ba70de58421d26",
+      "signer": "lab.example.",
+      "signingInputHex": "002f0d040000012c6adab1906adaa128d86a036c6162076578616d706c65000178066272616e6368036c6162076578616d706c6500002f00010000012c001903777777036c6162076578616d706c65000006400000000003",
+      "signingInputSha256": "a15d8853969cf8594b35bd98dd3e5d3fc41f52b4cf4e9f154957b9f2242df64c",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "denial-z-address-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "denial-z-address-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 300,
+      "rrsetId": "denial-z-address",
+      "rrsigRdataHex": "00010d030000012c6adab1906adaa128d86a036c6162076578616d706c6500653cdf709d576c27c86ba815f73d734f9bb66d7c576192ca50d3832c6fbeb385df864cdf1c6f4ca06a6b76bb6763d63ac66d4feddcaa78b1a04d5d6077dffa46",
+      "rrsigText": "A 13 3 300 20261023010000 20261022235000 55402 lab.example. ZTzfcJ1XbCfIa6gV9z1zT5u2bXxXYZLK UNODLG++s4XfhkzfHG9MoGprdrtnY9Y6 xm1P7dyqeLGgTV1gd9/6Rg==",
+      "signatureHex": "653cdf709d576c27c86ba815f73d734f9bb66d7c576192ca50d3832c6fbeb385df864cdf1c6f4ca06a6b76bb6763d63ac66d4feddcaa78b1a04d5d6077dffa46",
+      "signer": "lab.example.",
+      "signingInputHex": "00010d030000012c6adab1906adaa128d86a036c6162076578616d706c6500017a036c6162076578616d706c6500000100010000012c0004c00002fa",
+      "signingInputSha256": "82e6f66b897ddadaa61c230379349fc822ff97d47488a28f33b0ab50be4c3c79",
+      "typeCovered": 1,
+      "verificationAt": 1792713600
+    },
+    "parent-ds-unsupported-alg250-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "parent-ds-unsupported-alg250-signature",
+      "inception": 1792713000,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "parent-ds-unsupported-alg250",
+      "rrsigRdataHex": "002b0d0200000e106adab1906adaa1287538076578616d706c65009bd94a96271c89a0f0d14f10d91876c1c1a46144b96258be5a56aaa99db2c8b913bb153da31ba3625da217fe37b3ab33e09ee0948807b6df9dcd4f4e5dfcee7e",
+      "rrsigText": "DS 13 2 3600 20261023010000 20261022235000 30008 example. m9lKlicciaDw0U8Q2Rh2wcGkYUS5Yli+ WlaqqZ2yyLkTuxU9oxujYl2iF/43s6sz 4J7glIgHtt+dzU9OXfzufg==",
+      "signatureHex": "9bd94a96271c89a0f0d14f10d91876c1c1a46144b96258be5a56aaa99db2c8b913bb153da31ba3625da217fe37b3ab33e09ee0948807b6df9dcd4f4e5dfcee7e",
+      "signer": "example.",
+      "signingInputHex": "002b0d0200000e106adab1906adaa1287538076578616d706c6500036c6162076578616d706c6500002b000100000e10002458f7fa020000000000000000000000000000000000000000000000000000000000000000",
+      "signingInputSha256": "ad87d728a8bf6d7d0b2481375a69baa4fc7e085d2c4217548d1e8982aba3cee7",
+      "typeCovered": 43,
+      "verificationAt": 1792713600
+    },
+    "parent-ds-unsupported-digest250-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "parent-ds-unsupported-digest250-signature",
+      "inception": 1792713000,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "parent-ds-unsupported-digest250",
+      "rrsigRdataHex": "002b0d0200000e106adab1906adaa1287538076578616d706c6500bde7b9bbf60b61b758064b194d516c7f5e7a1b69ddee8c2f9a324ef6ca294c2f04b3bc2cbc1b25f785e4329de78a84d112621eaaef16e740629c64dfc882e554",
+      "rrsigText": "DS 13 2 3600 20261023010000 20261022235000 30008 example. vee5u/YLYbdYBksZTVFsf156G2nd7owv mjJO9sopTC8Es7wsvBsl94XkMp3nioTR EmIequ8W50BinGTfyILlVA==",
+      "signatureHex": "bde7b9bbf60b61b758064b194d516c7f5e7a1b69ddee8c2f9a324ef6ca294c2f04b3bc2cbc1b25f785e4329de78a84d112621eaaef16e740629c64dfc882e554",
+      "signer": "example.",
+      "signingInputHex": "002b0d0200000e106adab1906adaa1287538076578616d706c6500036c6162076578616d706c6500002b000100000e10002458f70dfa0000000000000000000000000000000000000000000000000000000000000000",
+      "signingInputSha256": "e57ca14436383caca2b28524c8b02ecdb69d5495962351c8d432ba8a213bacec",
+      "typeCovered": 43,
+      "verificationAt": 1792713600
+    }
+  }
+}
