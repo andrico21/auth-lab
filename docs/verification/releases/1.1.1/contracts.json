@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+    "test",
+    "--isolate",
+    "--timeout=900000",
+    "./tests/dnssec-current-offline.test.mjs",
+    "./tests/review-input-identity.test.mjs",
+    "./tests/csp.test.mjs"
+  ],
+  "cwd": "/home/andrico/auth-lab-held-objects",
+  "startedAt": "2026-10-27T09:16:43.068Z",
+  "finishedAt": "2026-10-27T09:16:52.260Z",
+  "exitCode": 0,
+  "stdout": "bun test v1.4.2 (744846f84)\n",
+  "stderr": "\ntests/dnssec-current-offline.test.mjs:\n(pass) Linux x86_64 offline crypto profile > offline bundle rejects a missing cryptography 50 wheel before setup [110.15ms]\n(pass) Linux x86_64 offline crypto profile > offline bundle rejects artifact tampering even when filename and pinned version remain plausible [95.51ms]\n(pass) Linux x86_64 offline crypto profile > offline bundle rejects requirement hash disagreement with the captured wheel [100.23ms]\n(pass) Linux x86_64 offline crypto profile > offline bundle rejects a locally rehashed wheel which is not the captured upstream artifact [91.23ms]\n(pass) Linux x86_64 offline crypto profile > offline bundle rejects a wheel for an incompatible Python ABI [94.73ms]\n(pass) Linux x86_64 offline crypto profile > offline bundle rejects upstream Python compatibility incompatible with the pinned interpreter [104.87ms]\n(pass) Linux x86_64 offline crypto profile > offline bundle rejects stale cryptography pins rather than accepting an old offline environment [94.33ms]\n(pass) Linux x86_64 offline crypto profile > offline bundle rejects frozen payload drift [91.78ms]\n(pass) Linux x86_64 offline crypto profile > offline bundle rejects historical inventory shrinkage even if remaining identities validate [95.25ms]\n(pass) Linux x86_64 offline crypto profile > bootstrap preserves existing outputs without invoking setup [94.37ms]\n(pass) Linux x86_64 offline crypto profile > missing setup executable preserves its actual OS error before failing [63.47ms]\n\ntests/review-input-identity.test.mjs:\n(pass) generated verification environments cannot invalidate pinned source evidence, but generator changes must [26.98ms]\n(pass) a generated-environment directory name cannot hide a runtime source symlink [2.86ms]\n\ntests/csp.test.mjs:\n(pass) source CSP precedes assets and permits same-origin scripts, styles and icons, with no connections or HTML handlers [2.15ms]\n(pass) standalone CSP authorizes exactly the final embedded script and stylesheet; tampered content has no matching hash [46.24ms]\n(pass) CRLF and CR source files produce identical standalone bytes and browser-matching hashes [169.55ms]\n(pass) script hash covers the emitted closing-tag escaping, not the unescaped source [202.82ms]\n(pass) builder fails closed on missing/changed/late policies or invalid asset placeholders [819.93ms]\n(pass) runtime renders positions through CSSOM and keeps hostile identifier text inert in inputs and help [6377.24ms]\n\n 19 pass\n 0 fail\nRan 19 tests across 3 files. [9.07s]\n"
+}

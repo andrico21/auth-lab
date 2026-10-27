@@ -1,0 +1,310 @@
+{
+  "baseClock": 1792713600,
+  "baselineSha256": "3020803c625ecd0a76548c71292e50132d825978e9a407c2b6d8e964c39edfd4",
+  "kind": "dnssec-independent-numeric-profile-supplement",
+  "profiles": {
+    "anchor-interrupted-add": {
+      "eligibleObservationDay": 50,
+      "initialRrsetId": "child-anchor-observation",
+      "omissionAtDay": 10,
+      "omissionRrsetId": "child-anchor-omission",
+      "readdedAtDay": 20
+    },
+    "combined-key-g1": {
+      "answerSignatureId": "www-a-csk",
+      "dnskeyRrsetId": "child-csk-g1-dnskey",
+      "dsRrsetId": "parent-ds-for-child-csk-g1"
+    },
+    "combined-key-g2": {
+      "dnskeyRrsetId": "child-csk-g2-dnskey",
+      "dsRrsetId": "parent-ds-for-child-csk-g2"
+    },
+    "ed25519-alternate": {
+      "answerSignatureId": "www-a-ed25519",
+      "dnskeyRrsetId": "child-ed25519-g1-dnskey",
+      "dsRrsetId": "parent-ds-for-child-ed25519-g1"
+    }
+  },
+  "rrsets": {
+    "child-anchor-omission": {
+      "canonicalRdataHex": [
+        "0100030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+        "0101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48"
+      ],
+      "class": "IN",
+      "id": "child-anchor-omission",
+      "owner": "lab.example.",
+      "records": [
+        "257 3 13 Pu0xeazW0puWQsZkqHFph4asNCh+1iew 7bKuiVYAaWdHLCv+EHfcc1uIpLSfRPF8 YM4gks+nS7FCOOZcNMVOSA==",
+        "256 3 13 3GyieUAv4h2uPwt6+0o9oC8fm38jTqQK tzowJvXxAAONJycEZeVC0Qc7794ESZNa ES7xWfRdIXe6M54th9HtBw=="
+      ],
+      "ttl": 3600,
+      "type": "DNSKEY",
+      "typeCode": 48
+    },
+    "child-csk-g1-dnskey": {
+      "canonicalRdataHex": [
+        "0101030dea31f16ec0dd47757e94d24e4d3a62102a501c0a0ab8edfca5e32e0ec084024ce993df8bc3789fdbba6c77f9b17b23b3b5a7362af3cd7503859bde191f37318e"
+      ],
+      "class": "IN",
+      "id": "child-csk-g1-dnskey",
+      "owner": "lab.example.",
+      "records": [
+        "257 3 13 6jHxbsDdR3V+lNJOTTpiECpQHAoKuO38 peMuDsCEAkzpk9+Lw3if27psd/mxeyOz tac2KvPNdQOFm94ZHzcxjg=="
+      ],
+      "ttl": 3600,
+      "type": "DNSKEY",
+      "typeCode": 48
+    },
+    "child-csk-g2-dnskey": {
+      "canonicalRdataHex": [
+        "0101030d2fc7d074d4346e4e560de5df3485e75fe4a71b05c62e33bfbcf50d5dbfbdb7f3b9a3b0f0046f7b7f0e95f8fd114b67ad93fc92499794c4e9367acb54932c6a60"
+      ],
+      "class": "IN",
+      "id": "child-csk-g2-dnskey",
+      "owner": "lab.example.",
+      "records": [
+        "257 3 13 L8fQdNQ0bk5WDeXfNIXnX+SnGwXGLjO/ vPUNXb+9t/O5o7DwBG97fw6V+P0RS2et k/ySSZeUxOk2estUkyxqYA=="
+      ],
+      "ttl": 3600,
+      "type": "DNSKEY",
+      "typeCode": 48
+    },
+    "child-ed25519-g1-dnskey": {
+      "canonicalRdataHex": [
+        "0101030f67cae99af6c7420e0b1c3958df23cc617dac47f273122f8c8afeab4ce8695896"
+      ],
+      "class": "IN",
+      "id": "child-ed25519-g1-dnskey",
+      "owner": "lab.example.",
+      "records": [
+        "257 3 15 Z8rpmvbHQg4LHDlY3yPMYX2sR/JzEi+M iv6rTOhpWJY="
+      ],
+      "ttl": 3600,
+      "type": "DNSKEY",
+      "typeCode": 48
+    },
+    "parent-ds-for-child-csk-g1": {
+      "canonicalRdataHex": [
+        "fb280d027f19a02fa054f7b693d2b4b58824b395a037b7a52cc29514766c2c7ac560887d"
+      ],
+      "class": "IN",
+      "id": "parent-ds-for-child-csk-g1",
+      "owner": "lab.example.",
+      "records": [
+        "64296 13 2 7f19a02fa054f7b693d2b4b58824b395a037b7a52cc29514766c2c7ac560887d"
+      ],
+      "ttl": 86400,
+      "type": "DS",
+      "typeCode": 43
+    },
+    "parent-ds-for-child-csk-g2": {
+      "canonicalRdataHex": [
+        "c76d0d029333519f9f0ce7474cdc45cf9f06120eef771941f323fb6fb6b97ee1c7b0598f"
+      ],
+      "class": "IN",
+      "id": "parent-ds-for-child-csk-g2",
+      "owner": "lab.example.",
+      "records": [
+        "51053 13 2 9333519f9f0ce7474cdc45cf9f06120eef771941f323fb6fb6b97ee1c7b0598f"
+      ],
+      "ttl": 86400,
+      "type": "DS",
+      "typeCode": 43
+    },
+    "parent-ds-for-child-ed25519-g1": {
+      "canonicalRdataHex": [
+        "5dce0f0251513ef304aa180899b842a9fb5f20cd320021f13e4e71552e686030b680e444"
+      ],
+      "class": "IN",
+      "id": "parent-ds-for-child-ed25519-g1",
+      "owner": "lab.example.",
+      "records": [
+        "24014 15 2 51513ef304aa180899b842a9fb5f20cd320021f13e4e71552e686030b680e444"
+      ],
+      "ttl": 86400,
+      "type": "DS",
+      "typeCode": 43
+    },
+    "parent-ds-overlap-g1-g2": {
+      "canonicalRdataHex": [
+        "58f70d028fd7109988a9107c7d0a81d7a7951cfd3668c7776aa0be7a746139a51e18b7d8",
+        "b5400d02d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d"
+      ],
+      "class": "IN",
+      "id": "parent-ds-overlap-g1-g2",
+      "owner": "lab.example.",
+      "records": [
+        "22775 13 2 8fd7109988a9107c7d0a81d7a7951cfd3668c7776aa0be7a746139a51e18b7d8",
+        "46400 13 2 d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d"
+      ],
+      "ttl": 86400,
+      "type": "DS",
+      "typeCode": 43
+    }
+  },
+  "schemaVersion": 1,
+  "scope": "Explicit alternate RRset profiles. Child public keys may be combined differently only with the corresponding signed DNSKEY/DS fixture, not by mutating covered bytes.",
+  "signatures": {
+    "child-anchor-omission-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "child-anchor-omission-signature",
+      "inception": 1792713000,
+      "keyId": "child-ksk-g1",
+      "keyTag": 22775,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-anchor-omission",
+      "rrsigRdataHex": "00300d0200000e106b78d7806adaa12858f7036c6162076578616d706c65001a9bacb757ddb461e6bbab946da6a5a92fac45f895c68cf200b0b06f34126550e13bcf973253076b57a2fdd3a41735366836700853e6f788df90e328512bef2c",
+      "rrsigText": "DNSKEY 13 2 3600 20270220000000 20261022235000 22775 lab.example. Gpust1fdtGHmu6uUbaalqS+sRfiVxozy ALCwbzQSZVDhO8+XMlMHa1ei/dOkFzU2 aDZwCFPm94jfkOMoUSvvLA==",
+      "signatureHex": "1a9bacb757ddb461e6bbab946da6a5a92fac45f895c68cf200b0b06f34126550e13bcf973253076b57a2fdd3a41735366836700853e6f788df90e328512bef2c",
+      "signer": "lab.example.",
+      "signingInputHex": "00300d0200000e106b78d7806adaa12858f7036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000440100030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07036c6162076578616d706c65000030000100000e1000440101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+      "signingInputSha256": "4a460d8582e6de43691afc094ca4d21898322779710689ae55958bcf77d65cd9",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    },
+    "child-csk-g1-dnskey-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "child-csk-g1-dnskey-signature",
+      "inception": 1792713000,
+      "keyId": "child-csk-g1",
+      "keyTag": 64296,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-csk-g1-dnskey",
+      "rrsigRdataHex": "00300d0200000e106b78d7806adaa128fb28036c6162076578616d706c6500e7f2368349f329fc7cfd0c657f52224c178a131f0843eaec58d41784042f59395c5298854dece27770342e40a85f0d11b0d7b50e49097e511ec0ff6c26619b48",
+      "rrsigText": "DNSKEY 13 2 3600 20270220000000 20261022235000 64296 lab.example. 5/I2g0nzKfx8/Qxlf1IiTBeKEx8IQ+rs WNQXhAQvWTlcUpiFTezid3A0LkCoXw0R sNe1DkkJflEewP9sJmGbSA==",
+      "signatureHex": "e7f2368349f329fc7cfd0c657f52224c178a131f0843eaec58d41784042f59395c5298854dece27770342e40a85f0d11b0d7b50e49097e511ec0ff6c26619b48",
+      "signer": "lab.example.",
+      "signingInputHex": "00300d0200000e106b78d7806adaa128fb28036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000440101030dea31f16ec0dd47757e94d24e4d3a62102a501c0a0ab8edfca5e32e0ec084024ce993df8bc3789fdbba6c77f9b17b23b3b5a7362af3cd7503859bde191f37318e",
+      "signingInputSha256": "1820aa72f2385ae6bcc3c0b16f701115ee33f769e7b50a521a24e15fe9709ff9",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    },
+    "child-csk-g2-dnskey-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "child-csk-g2-dnskey-signature",
+      "inception": 1792713000,
+      "keyId": "child-csk-g2",
+      "keyTag": 51053,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-csk-g2-dnskey",
+      "rrsigRdataHex": "00300d0200000e106b78d7806adaa128c76d036c6162076578616d706c6500c02ce772735e410d03a8859359e2bd55cce3439562141afeaeb08fdc76ed0bfaedd8eaca621bdffa4fbbb96205c8059ca249da2472ebbfdf227a39c63e374eda",
+      "rrsigText": "DNSKEY 13 2 3600 20270220000000 20261022235000 51053 lab.example. wCzncnNeQQ0DqIWTWeK9VczjQ5ViFBr+ rrCP3HbtC/rt2OrKYhvf+k+7uWIFyAWc oknaJHLrv98iejnGPjdO2g==",
+      "signatureHex": "c02ce772735e410d03a8859359e2bd55cce3439562141afeaeb08fdc76ed0bfaedd8eaca621bdffa4fbbb96205c8059ca249da2472ebbfdf227a39c63e374eda",
+      "signer": "lab.example.",
+      "signingInputHex": "00300d0200000e106b78d7806adaa128c76d036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000440101030d2fc7d074d4346e4e560de5df3485e75fe4a71b05c62e33bfbcf50d5dbfbdb7f3b9a3b0f0046f7b7f0e95f8fd114b67ad93fc92499794c4e9367acb54932c6a60",
+      "signingInputSha256": "f3621c32ebc76aaae4ca1dda4030b2a307d53766b9af14fcd321bb351783001b",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    },
+    "child-ed25519-g1-dnskey-signature": {
+      "algorithm": 15,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "child-ed25519-g1-dnskey-signature",
+      "inception": 1792713000,
+      "keyId": "child-ed25519-g1",
+      "keyTag": 24014,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-ed25519-g1-dnskey",
+      "rrsigRdataHex": "00300f0200000e106b78d7806adaa1285dce036c6162076578616d706c65009ecf8a80415a1097cc813c671104f466c7919352a84b7b5e75e94b30529514c63f08db0c0af2069465979e5c6bf322ec1d54636eed0409ca14235b1c3fdc4d03",
+      "rrsigText": "DNSKEY 15 2 3600 20270220000000 20261022235000 24014 lab.example. ns+KgEFaEJfMgTxnEQT0ZseRk1KoS3te delLMFKVFMY/CNsMCvIGlGWXnlxr8yLs HVRjbu0ECcoUI1scP9xNAw==",
+      "signatureHex": "9ecf8a80415a1097cc813c671104f466c7919352a84b7b5e75e94b30529514c63f08db0c0af2069465979e5c6bf322ec1d54636eed0409ca14235b1c3fdc4d03",
+      "signer": "lab.example.",
+      "signingInputHex": "00300f0200000e106b78d7806adaa1285dce036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000240101030f67cae99af6c7420e0b1c3958df23cc617dac47f273122f8c8afeab4ce8695896",
+      "signingInputSha256": "ba6ef70bcbd1231cc2cf9d46a157724da3b0cd1ce112fca4a12b159ae0a820d6",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    },
+    "parent-ds-for-child-csk-g1-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "parent-ds-for-child-csk-g1-signature",
+      "inception": 1792713000,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "labels": 2,
+      "originalTtl": 86400,
+      "rrsetId": "parent-ds-for-child-csk-g1",
+      "rrsigRdataHex": "002b0d02000151806b78d7806adaa1287538076578616d706c650052567d579ceabbec753e74fcc5b7613c4ce11cba412f15acaf2b4852631608e7ec3b54664ec8b9f90ba3915e992753bc98f1125534ce350db59e07adbee4fd67",
+      "rrsigText": "DS 13 2 86400 20270220000000 20261022235000 30008 example. UlZ9V5zqu+x1PnT8xbdhPEzhHLpBLxWs rytIUmMWCOfsO1RmTsi5+QujkV6ZJ1O8 mPESVTTONQ21ngetvuT9Zw==",
+      "signatureHex": "52567d579ceabbec753e74fcc5b7613c4ce11cba412f15acaf2b4852631608e7ec3b54664ec8b9f90ba3915e992753bc98f1125534ce350db59e07adbee4fd67",
+      "signer": "example.",
+      "signingInputHex": "002b0d02000151806b78d7806adaa1287538076578616d706c6500036c6162076578616d706c6500002b0001000151800024fb280d027f19a02fa054f7b693d2b4b58824b395a037b7a52cc29514766c2c7ac560887d",
+      "signingInputSha256": "26fb31c8fda4b37b958a4e2633537dca6da0cf16c6a582bde323075cd9bc2760",
+      "typeCovered": 43,
+      "verificationAt": 1792713600
+    },
+    "parent-ds-for-child-csk-g2-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "parent-ds-for-child-csk-g2-signature",
+      "inception": 1792713000,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "labels": 2,
+      "originalTtl": 86400,
+      "rrsetId": "parent-ds-for-child-csk-g2",
+      "rrsigRdataHex": "002b0d02000151806b78d7806adaa1287538076578616d706c65003da3ab48cb110dee038bc0c2d813d2228edc6d10345e832cd160a26ee4c71753e8f0fbba464622f94ebf8d3dc0a949b3551653458f774899ea47439f8a7c2ded",
+      "rrsigText": "DS 13 2 86400 20270220000000 20261022235000 30008 example. PaOrSMsRDe4Di8DC2BPSIo7cbRA0XoMs 0WCibuTHF1Po8Pu6RkYi+U6/jT3AqUmz VRZTRY93SJnqR0Ofinwt7Q==",
+      "signatureHex": "3da3ab48cb110dee038bc0c2d813d2228edc6d10345e832cd160a26ee4c71753e8f0fbba464622f94ebf8d3dc0a949b3551653458f774899ea47439f8a7c2ded",
+      "signer": "example.",
+      "signingInputHex": "002b0d02000151806b78d7806adaa1287538076578616d706c6500036c6162076578616d706c6500002b0001000151800024c76d0d029333519f9f0ce7474cdc45cf9f06120eef771941f323fb6fb6b97ee1c7b0598f",
+      "signingInputSha256": "26aba6fe4780229b68cbe7111ecdae5cdc84b1155b5f5fced4e1ccc4c5cfe0ae",
+      "typeCovered": 43,
+      "verificationAt": 1792713600
+    },
+    "parent-ds-for-child-ed25519-g1-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "parent-ds-for-child-ed25519-g1-signature",
+      "inception": 1792713000,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "labels": 2,
+      "originalTtl": 86400,
+      "rrsetId": "parent-ds-for-child-ed25519-g1",
+      "rrsigRdataHex": "002b0d02000151806b78d7806adaa1287538076578616d706c6500badf66c3c2e8d0db9021b7e7cf195e083899c886743815525ceb404c629b86cde6bc805faa966fc7fa6508eb699be3f62cacf254afa4f5b6999364bc99d2e552",
+      "rrsigText": "DS 13 2 86400 20270220000000 20261022235000 30008 example. ut9mw8Lo0NuQIbfnzxleCDiZyIZ0OBVS XOtATGKbhs3mvIBfqpZvx/plCOtpm+P2 LKzyVK+k9baZk2S8mdLlUg==",
+      "signatureHex": "badf66c3c2e8d0db9021b7e7cf195e083899c886743815525ceb404c629b86cde6bc805faa966fc7fa6508eb699be3f62cacf254afa4f5b6999364bc99d2e552",
+      "signer": "example.",
+      "signingInputHex": "002b0d02000151806b78d7806adaa1287538076578616d706c6500036c6162076578616d706c6500002b00010001518000245dce0f0251513ef304aa180899b842a9fb5f20cd320021f13e4e71552e686030b680e444",
+      "signingInputSha256": "9dae2f5bcefae81b7e5b3c357d03c84eeaea6f7559e68641ea58c464c47fce2a",
+      "typeCovered": 43,
+      "verificationAt": 1792713600
+    },
+    "parent-ds-overlap-g1-g2-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "parent-ds-overlap-g1-g2-signature",
+      "inception": 1792713000,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "labels": 2,
+      "originalTtl": 86400,
+      "rrsetId": "parent-ds-overlap-g1-g2",
+      "rrsigRdataHex": "002b0d02000151806b78d7806adaa1287538076578616d706c650065c924f91a075762ced21a59b733bb3d788df303bcd13ce9b3a2f8918c107f22da5c02044ff6e22b5b5ca09fdb8f60c928db6cdd75ec2bad7a1869297d61ff82",
+      "rrsigText": "DS 13 2 86400 20270220000000 20261022235000 30008 example. Zckk+RoHV2LO0hpZtzO7PXiN8wO80Tzp s6L4kYwQfyLaXAIET/biK1tcoJ/bj2DJ KNts3XXsK616GGkpfWH/gg==",
+      "signatureHex": "65c924f91a075762ced21a59b733bb3d788df303bcd13ce9b3a2f8918c107f22da5c02044ff6e22b5b5ca09fdb8f60c928db6cdd75ec2bad7a1869297d61ff82",
+      "signer": "example.",
+      "signingInputHex": "002b0d02000151806b78d7806adaa1287538076578616d706c6500036c6162076578616d706c6500002b000100015180002458f70d028fd7109988a9107c7d0a81d7a7951cfd3668c7776aa0be7a746139a51e18b7d8036c6162076578616d706c6500002b0001000151800024b5400d02d4e53906d3c9dc9bf58833e891be5ec827917060cdd94e1842ba26e8dc272b6d",
+      "signingInputSha256": "5f43754cf4c7e5102651d1738499ba98ef7c8d0b37c5ad18b2a53396ca07ed24",
+      "typeCovered": 43,
+      "verificationAt": 1792713600
+    }
+  }
+}

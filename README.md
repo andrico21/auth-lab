@@ -1,6 +1,6 @@
 # Auth Flow Studio
 
-The current version is **1.1**, with the plain Git tag **`1.1`** and no `v` prefix. The [publication record](docs/windows-protection-expansion/publication-1.1.json) separates this version-only build change and the authorized repository push from the exact candidate-07 review identity and the still-open human, performance and native-platform conditions.
+The current version is **1.1.1**, with the plain Git tag **`1.1.1`** and no `v` prefix. The [publication record](docs/verification/releases/1.1.1/publication.json) binds the cryptography 50.0.0 offline-toolchain upgrade, the compiled version label and the authorized repository push. Historical review evidence and separate human, performance and native-platform conditions retain their original scopes.
 
 An English, interactive teaching app organized into eleven workspaces: **Web sign-in**, **SSH access**, **Kerberos**, **Windows access**, **Network access**, **Foundations**, **Workstations**, **Files**, **Kubernetes**, **MCP** and **DNSSEC**. Grouped workspace/family search and a separate global scenario search lead to complete teaching journeys. The configurable web core covers Keycloak, OIDC/OAuth, SAML, FIDO2/WebAuthn, MFA, native/web clients, brokered identity, JWE/XML Encryption and additional OAuth grants. Participant illustrations, field traces, object identity, protocol-state replay and independent lifetime cards explain who owns each object and when it becomes usable. The app uses Web Components, SVG, CSS and the Web Animations API. Its standalone page works offline without external assets, packages or accounts.
 
@@ -250,17 +250,30 @@ bun run build
 bun run test
 ```
 
-The footer credits [Kirill Andrienko](https://github.com/andrico21), links to [this repository](https://github.com/andrico21/auth-lab), and displays a build-time version. The reproducible source/local default and release tag are **1.1**, without a `v` prefix. Compilation selects `AUTH_FLOW_STUDIO_VERSION` first, then `GITHUB_REF_NAME` when `GITHUB_REF_TYPE=tag`, otherwise the source HTML marker. The label is escaped as data, not executable HTML. No Git checkout or network lookup is needed to rebuild a source ZIP.
+The footer credits [Kirill Andrienko](https://github.com/andrico21), links to [this repository](https://github.com/andrico21/auth-lab), and displays a build-time version. The reproducible source/local default and release tag are **1.1.1**, without a `v` prefix. Compilation selects `AUTH_FLOW_STUDIO_VERSION` first, then `GITHUB_REF_NAME` when `GITHUB_REF_TYPE=tag`, otherwise the source HTML marker. The label is escaped as data, not executable HTML. No Git checkout or network lookup is needed to rebuild a source ZIP.
 
 ```sh
-AUTH_FLOW_STUDIO_VERSION=1.1 bun run build
-GITHUB_REF_TYPE=tag GITHUB_REF_NAME=1.1 bun run build
+AUTH_FLOW_STUDIO_VERSION=1.1.1 bun run build
+GITHUB_REF_TYPE=tag GITHUB_REF_NAME=1.1.1 bun run build
 bun run build --source-version
 ```
 
 `--source-version` deliberately ignores release/environment overrides for the committed-dist freshness check. CI first checks that source-version artifact, pinned cryptographic verification and the full test suite; a tag push or published release then compiles its own tag into the `auth-flow-studio-tagged` Actions artifact. Pages keeps the existing CI-gated `main` publication policy. Creating a release or publishing this change still requires explicit authorization.
 
-CI checks the four generated public DNSSEC projections, executes the actual standalone boot/catalog smoke and runs `check-dnssec-numeric.mjs --out NEW_DIRECTORY` against four sealed independent numeric catalogs. This binds public RRsets, DNSKEYs, RRSIG bytes and displayed fingerprints to those inputs; the runner does not perform live DNS or browser cryptography. Replaying the separately captured Python/OpenSSL calculations requires their pinned verification environment, not application dependencies.
+CI checks the four generated public DNSSEC projections, executes the actual standalone boot/catalog smoke and runs `check-dnssec-numeric.mjs --out NEW_DIRECTORY` against four sealed independent numeric catalogs. This binds public RRsets, DNSKEYs, RRSIG bytes and displayed fingerprints to those inputs; the runner does not perform live DNS or browser cryptography. CI also checks the committed current-reference seal and performs a fresh offline Python/OpenSSL generation and verification replay.
+
+The active verification-only [DNSSEC crypto profile](tools/verification/dnssec-crypto-current/profile.json) pins **cryptography 50.0.0**, dnspython 2.8.0, cffi 2.1.1 and pycparser 3.12. Its [upgrade record and exact proof identities](docs/dnssec-expansion/numeric/runtime-50.0.0/UPGRADE.json) bind the new wheel, source archive, raw upstream metadata, fresh installation receipts, runtime/licence provenance and separately sealed reference output. All 18 producers and 18 verifier/library programs execute under the new runtime; the 19 regenerated datasets retain the accepted public cryptographic bytes.
+
+This offline profile requires **Linux x86_64, CPython 3.14.4, uv 0.12.10 and the system OpenSSL CLI**. These runtime prerequisites are not bundled. Acquiring Python may use the network; dependency installation uses only bundled wheels with a fresh external environment/cache, `--offline`, `--no-index` and `--require-hashes`. This is not OS-enforced network isolation or a Rust/source rebuild.
+
+```sh
+uv python install 3.14.4
+bun run verify:dnssec --check
+bun run verify:dnssec --out "$HOME/.cache/auth-lab-dnssec-current-50.0.0"
+uv run --offline --no-project --python 3.14.4 python tools/verification/dnssec-crypto-current/replay.py --check docs/dnssec-expansion/numeric/runtime-50.0.0/reference
+```
+
+The `--out` directory must not already exist and must be outside the repository. Failed runs retain their actual command receipts; use a new directory after correcting a failure. The original `tools/verification/dnssec-crypto/` requirements, instructions, datasets and seals remain immutable **historical 46.0.3 evidence**, not the active install path. Do not install 50.0.0 into that historical profile or rewrite its hashes. Dependabot version updates now target the current sibling profile; alerts on the retained legacy manifest still require explicit owner disposition and are not dismissed by this migration. Application behavior is unchanged; release 1.1.1 changes only the compiled version label.
 
 `bun run test` pins `--isolate --timeout=900000`: Bun otherwise shares one process and module registry across test files (unlike `node --test`), and its 5 s per-test default would abort the slowest DOM-harness checks, which take 165 s under Node and up to about 8 min under Bun.
 

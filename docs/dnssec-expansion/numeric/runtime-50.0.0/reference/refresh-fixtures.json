@@ -1,0 +1,84 @@
+{
+  "baseClock": 1792713600,
+  "baselineSha256": "3020803c625ecd0a76548c71292e50132d825978e9a407c2b6d8e964c39edfd4",
+  "kind": "dnssec-independent-refresh-time-fixtures",
+  "observations": [
+    {
+      "offset": 7000,
+      "old": "valid",
+      "refreshed": "valid"
+    },
+    {
+      "offset": 10000,
+      "old": "valid",
+      "refreshed": "valid"
+    },
+    {
+      "offset": 10001,
+      "old": "expired",
+      "refreshed": "valid"
+    }
+  ],
+  "rrsets": {
+    "www-a-refresh-ttl7200": {
+      "canonicalRdataHex": [
+        "c0000250",
+        "c0000251"
+      ],
+      "class": "IN",
+      "id": "www-a-refresh-ttl7200",
+      "owner": "www.lab.example.",
+      "records": [
+        "192.0.2.80",
+        "192.0.2.81"
+      ],
+      "ttl": 7200,
+      "type": "A",
+      "typeCode": 1
+    }
+  },
+  "schemaVersion": 1,
+  "scope": "Both signatures use child-zsk-g1 and signed OriginalTTL7200. Outage means refreshed signature was not delivered, not that its fixed cryptographic bytes are invalid.",
+  "signatures": {
+    "www-a-refresh-old-expiry10000": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792723600,
+      "id": "www-a-refresh-old-expiry10000",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 7200,
+      "rrsetId": "www-a-refresh-ttl7200",
+      "rrsigRdataHex": "00010d0300001c206adaca906adaa128d86a036c6162076578616d706c6500d94ff01a471af3d21c8b3c5239f52281cb7b262df8e351967f5ac7c4f27c07e59f3404ab84e966353621557540678554662a136a3ceeb6ab6a2c2a61f73094eb",
+      "rrsigText": "A 13 3 7200 20261023024640 20261022235000 55402 lab.example. 2U/wGkca89IcizxSOfUigct7Ji3441GW f1rHxPJ8B+WfNASrhOlmNTYhVXVAZ4VU ZioTajzutqtqLCph9zCU6w==",
+      "signatureHex": "d94ff01a471af3d21c8b3c5239f52281cb7b262df8e351967f5ac7c4f27c07e59f3404ab84e966353621557540678554662a136a3ceeb6ab6a2c2a61f73094eb",
+      "signer": "lab.example.",
+      "signingInputHex": "00010d0300001c206adaca906adaa128d86a036c6162076578616d706c650003777777036c6162076578616d706c65000001000100001c200004c000025003777777036c6162076578616d706c65000001000100001c200004c0000251",
+      "signingInputSha256": "34d4e674e6f1423ab49e5c7a051e26b974dcc5c2107bf3b88e09b328065c7824",
+      "typeCovered": 1,
+      "verificationAt": 1792713600
+    },
+    "www-a-refresh-same-key-new": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1793923200,
+      "id": "www-a-refresh-same-key-new",
+      "inception": 1792719000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 7200,
+      "rrsetId": "www-a-refresh-ttl7200",
+      "rrsigRdataHex": "00010d0300001c206aed18806adab898d86a036c6162076578616d706c6500f7774b731379789b6d3de14a796af6d6d1dd36e4f181e9dc8ca1a14226a507be818d78747cec1eab04afd2013318a7eaa7dc4327e74f8c31dde3e789674f9267",
+      "rrsigText": "A 13 3 7200 20261106000000 20261023013000 55402 lab.example. 93dLcxN5eJttPeFKeWr21tHdNuTxgenc jKGhQialB76BjXh0fOweqwSv0gEzGKfq p9xDJ+dPjDHd4+eJZ0+SZw==",
+      "signatureHex": "f7774b731379789b6d3de14a796af6d6d1dd36e4f181e9dc8ca1a14226a507be818d78747cec1eab04afd2013318a7eaa7dc4327e74f8c31dde3e789674f9267",
+      "signer": "lab.example.",
+      "signingInputHex": "00010d0300001c206aed18806adab898d86a036c6162076578616d706c650003777777036c6162076578616d706c65000001000100001c200004c000025003777777036c6162076578616d706c65000001000100001c200004c0000251",
+      "signingInputSha256": "e107ed519cabee9f2f6e7616649387c78f006b04a4c3a00fd38f7bd5d4e43acd",
+      "typeCovered": 1,
+      "verificationAt": 1792713600
+    }
+  }
+}

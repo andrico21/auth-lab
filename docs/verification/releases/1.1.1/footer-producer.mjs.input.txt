@@ -1,0 +1,28 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {chromium} from "/home/andrico/auth-lab-held-objects/tools/verification/native-qa/node_modules/playwright-core/index.mjs";
+import {pathToFileURL} from 'node:url';
+const root="/home/andrico/auth-lab-held-objects",out="/home/andrico/auth-lab-held-objects/docs/verification/releases/1.1.1/";
+let browser;
+const report={kind:'release1.1.1-native-visible-footer',source:"d69323ff1f26424a9185cd34cb34b0643e68f993846e6c2377fa1408ae96fbcb",standalone:{"path":"dist/auth-flow-studio.html","sha256":"7255c2da7ae2cf7aa0fa0116b291e1605ce3706075fa1d753780f91f90b78e13","bytes":5583633},startedAt:new Date().toISOString(),errors:[]};
+try{
+ browser=await chromium.launch({executablePath:'/home/andrico/.cache/auth-lab-held-qa/browser/chrome/linux-155.0.8059.84/chrome-linux64/chrome',headless:true,args:['--no-sandbox','--disable-dev-shm-usage','--allow-file-access-from-files']});
+ report.browser=await browser.version();
+ const page=await browser.newPage({viewport:{width:1280,height:900}});
+ page.on('pageerror',error=>report.errors.push(String(error)));
+ await page.goto(pathToFileURL(root+'/dist/auth-flow-studio.html').href,{waitUntil:'load'});
+ await page.waitForFunction(()=>document.querySelector('#studio-version')?.textContent==='1.1.1');
+ report.observed=await page.locator('.studio-credit').evaluate(footer=>({text:footer.textContent,version:footer.querySelector('#studio-version').textContent,links:[...footer.querySelectorAll('a')].map(a=>({text:a.textContent,href:a.href}))}));
+ assert.equal(report.observed.version,'1.1.1');
+ assert.ok(report.observed.links.some(a=>a.text==='Kirill Andrienko'&&a.href==='https://github.com/andrico21'));
+ assert.ok(report.observed.links.some(a=>a.href==='https://github.com/andrico21/auth-lab'));
+ await page.locator('.studio-credit').scrollIntoViewIfNeeded();
+ await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+ await page.locator('.studio-credit').screenshot({path:out+'footer.png'});
+ assert.deepEqual(report.errors,[]);report.passed=true;
+}finally{
+ if(browser){await browser.close();report.ownedBrowserClosed=true;}
+ report.finishedAt=new Date().toISOString();
+ fs.writeFileSync(out+'footer.json',JSON.stringify(report,null,2)+String.fromCharCode(10),{flag:'wx'});
+ console.log(JSON.stringify(report));
+}

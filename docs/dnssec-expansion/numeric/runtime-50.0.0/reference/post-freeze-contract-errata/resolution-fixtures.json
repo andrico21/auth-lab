@@ -1,0 +1,165 @@
+{
+  "baseClock": 1792713600,
+  "baselineFixtureSha256": "3020803c625ecd0a76548c71292e50132d825978e9a407c2b6d8e964c39edfd4",
+  "freezeAuthoritySha256": "b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19",
+  "independentOfProduction": true,
+  "kind": "dnssec-resolution-post-freeze-audit-fixtures",
+  "postFreeze": true,
+  "rrsets": {
+    "other-parent-no-ds-ns": {
+      "canonicalRdataHex": [
+        "036e7331056f74686572076578616d706c6500"
+      ],
+      "class": "IN",
+      "id": "other-parent-no-ds-ns",
+      "owner": "other.example.",
+      "records": [
+        "ns1.other.example."
+      ],
+      "ttl": 300,
+      "type": "NS",
+      "typeCode": 2
+    },
+    "other-parent-no-ds-nsec": {
+      "canonicalRdataHex": [
+        "037a7a7a076578616d706c65000006200000000003"
+      ],
+      "class": "IN",
+      "id": "other-parent-no-ds-nsec",
+      "owner": "other.example.",
+      "receivedRrsetTtl": 300,
+      "records": [
+        "zzz.example. NS RRSIG NSEC"
+      ],
+      "ttl": 300,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "other-www-a-unsigned-no-ds": {
+      "canonicalRdataHex": [
+        "c0000250"
+      ],
+      "class": "IN",
+      "id": "other-www-a-unsigned-no-ds",
+      "owner": "www.other.example.",
+      "receivedRrsetTtl": 300,
+      "records": [
+        "192.0.2.80"
+      ],
+      "signatureRefs": [],
+      "ttl": 3600,
+      "type": "A",
+      "typeCode": 1,
+      "unsignedVariant": true
+    },
+    "zz-a": {
+      "canonicalRdataHex": [
+        "c0000250",
+        "c0000251"
+      ],
+      "class": "IN",
+      "id": "zz-a",
+      "owner": "zz.lab.example.",
+      "receivedRrsetTtl": 300,
+      "records": [
+        "192.0.2.80",
+        "192.0.2.81"
+      ],
+      "ttl": 3600,
+      "type": "A",
+      "typeCode": 1
+    }
+  },
+  "schemaVersion": 1,
+  "scope": "Two explicit resolution audit variants. Unsigned other target does not inherit authentication from parent noDS proof, and existing signed target/profile objects remain unchanged.",
+  "signatures": {
+    "other-parent-no-ds-nsec-signature": {
+      "algorithm": 13,
+      "canonicalRrsetHex": "056f74686572076578616d706c6500002f00010000012c0015037a7a7a076578616d706c65000006200000000003",
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "other-parent-no-ds-nsec-signature",
+      "inception": 1792713000,
+      "keyId": "example-zsk-g1",
+      "keyTag": 30008,
+      "labels": 2,
+      "originalTtl": 300,
+      "receivedRrsigTtl": 300,
+      "rrsetId": "other-parent-no-ds-nsec",
+      "rrsigRdataHex": "002f0d020000012c6adab1906adaa1287538076578616d706c6500f3014bfa616130df518cb6f785e4a7cd2bf81c6b2a8821847debb758a220d79b6764f66f418784e2def3366a048780d508ad7e7e3274ada379b79931ee4f874a",
+      "rrsigRdataSha256": "da92efe88a34c0a1ed7ff5ccf9079ac6aa91af8f2a536dd4b2f477ac7f8fa8d9",
+      "rrsigText": "NSEC 13 2 300 20261023010000 20261022235000 30008 example. 8wFL+mFhMN9RjLb3heSnzSv4HGsqiCGE feu3WKIg15tnZPZvQYeE4t7zNmoEh4DV CK1+fjJ0raN5t5kx7k+HSg==",
+      "signatureHex": "f3014bfa616130df518cb6f785e4a7cd2bf81c6b2a8821847debb758a220d79b6764f66f418784e2def3366a048780d508ad7e7e3274ada379b79931ee4f874a",
+      "signer": "example.",
+      "signingInputHex": "002f0d020000012c6adab1906adaa1287538076578616d706c6500056f74686572076578616d706c6500002f00010000012c0015037a7a7a076578616d706c65000006200000000003",
+      "signingInputSha256": "60a9afa147da5cb05a0e9170226e7f2a3dad6c1b20cc42d42c54ad84271111a9",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "zz-a-signature": {
+      "algorithm": 13,
+      "canonicalRrsetHex": "027a7a036c6162076578616d706c65000001000100000e100004c0000250027a7a036c6162076578616d706c65000001000100000e100004c0000251",
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "zz-a-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 3,
+      "originalTtl": 3600,
+      "receivedRrsigTtl": 300,
+      "rrsetId": "zz-a",
+      "rrsigRdataHex": "00010d0300000e106adab1906adaa128d86a036c6162076578616d706c65008060bd8cef5e2bc69057465b3ccfb9b2fe96cf24b3ab7c8bdb5945a1f9563c42080fa5bd573cfb84d83f357949b54c880220c6d2e7f8916c1248caf56a9b0ef3",
+      "rrsigRdataSha256": "b888399b73f446670c96a59b184909e7c199f819614c23d9e803d2344245a55a",
+      "rrsigText": "A 13 3 3600 20261023010000 20261022235000 55402 lab.example. gGC9jO9eK8aQV0ZbPM+5sv6WzySzq3yL 21lFoflWPEIID6W9Vzz7hNg/NXlJtUyI AiDG0uf4kWwSSMr1apsO8w==",
+      "signatureHex": "8060bd8cef5e2bc69057465b3ccfb9b2fe96cf24b3ab7c8bdb5945a1f9563c42080fa5bd573cfb84d83f357949b54c880220c6d2e7f8916c1248caf56a9b0ef3",
+      "signer": "lab.example.",
+      "signingInputHex": "00010d0300000e106adab1906adaa128d86a036c6162076578616d706c6500027a7a036c6162076578616d706c65000001000100000e100004c0000250027a7a036c6162076578616d706c65000001000100000e100004c0000251",
+      "signingInputSha256": "adb528f6978f803185d445c1a851a76838c9ffbf4d8c1b95ca821f0b8ab86266",
+      "typeCovered": 1,
+      "verificationAt": 1792713600
+    }
+  },
+  "unsignedTargetBinding": {
+    "dsPresent": false,
+    "existingSignedOtherWwwObjectMutated": false,
+    "keyId": "example-zsk-g1",
+    "keyTag": 30008,
+    "newUnsignedTargetVariant": true,
+    "nsPresent": true,
+    "nsecBitmap": [
+      "NS",
+      "RRSIG",
+      "NSEC"
+    ],
+    "nsecNext": "zzz.example.",
+    "nsecOwner": "other.example.",
+    "nsecRrsetId": "other-parent-no-ds-nsec",
+    "nsecSignatureId": "other-parent-no-ds-nsec-signature",
+    "query": "www.other.example.",
+    "receivedRrsetTtl": 300,
+    "receivedRrsigTtl": 300,
+    "signedOriginalTtl": 300,
+    "signer": "example.",
+    "soaPresent": false,
+    "source": "RFC4035 sections3.1.4 and5.2; RFC6840 section4.4",
+    "unsignedRrsetId": "other-www-a-unsigned-no-ds"
+  },
+  "zzBinding": {
+    "canonicalOwnerWireHex": "037a7a036c6162076578616d706c6500",
+    "canonicalRdataHex": [
+      "c0000250",
+      "c0000251"
+    ],
+    "keyDnskeyRdataHex": "0100030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+    "keyId": "child-zsk-g1",
+    "keyTag": 55402,
+    "purpose": "DNS10 out-of-proof-range; preserve exact zz question",
+    "query": "zz.lab.example.",
+    "receivedRrsetTtl": 300,
+    "receivedRrsigTtl": 300,
+    "rrsetId": "zz-a",
+    "signatureId": "zz-a-signature",
+    "signedOriginalTtl": 3600
+  }
+}

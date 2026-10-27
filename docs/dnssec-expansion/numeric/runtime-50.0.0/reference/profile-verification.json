@@ -1,0 +1,287 @@
+{
+  "baselineSha256": "3020803c625ecd0a76548c71292e50132d825978e9a407c2b6d8e964c39edfd4",
+  "checks": [
+    {
+      "id": "child-anchor-omission-signature:independent-canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "child-anchor-omission-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "child-csk-g1-dnskey-signature:independent-canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "child-csk-g1-dnskey-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "child-csk-g2-dnskey-signature:independent-canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "child-csk-g2-dnskey-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "child-ed25519-g1-dnskey-signature:independent-canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "child-ed25519-g1-dnskey-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-for-child-csk-g1-signature:independent-canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-for-child-csk-g1-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-for-child-csk-g2-signature:independent-canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-for-child-csk-g2-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-for-child-ed25519-g1-signature:independent-canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-for-child-ed25519-g1-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-overlap-g1-g2-signature:independent-canonical-input",
+      "result": "pass"
+    },
+    {
+      "id": "parent-ds-overlap-g1-g2-signature:crypto",
+      "result": "pass"
+    },
+    {
+      "id": "omission-is-exact-baseline-keys",
+      "result": "pass"
+    }
+  ],
+  "independentAdditionalChecks": 17,
+  "kind": "dnssec-independent-profile-verification",
+  "observations": [
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "child-anchor-omission-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "id": "child-anchor-omission-signature:dnspython",
+      "now": 1793577600,
+      "result": "pass"
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "child-csk-g1-dnskey-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "id": "child-csk-g1-dnskey-signature:dnspython",
+      "now": 1792713600,
+      "result": "pass"
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "child-csk-g2-dnskey-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "id": "child-csk-g2-dnskey-signature:dnspython",
+      "now": 1792713600,
+      "result": "pass"
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin"
+      ],
+      "exitCode": 0,
+      "id": "child-ed25519-g1-dnskey-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "id": "child-ed25519-g1-dnskey-signature:dnspython",
+      "now": 1792713600,
+      "result": "pass"
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "parent-ds-for-child-csk-g1-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "id": "parent-ds-for-child-csk-g1-signature:dnspython",
+      "now": 1792713600,
+      "result": "pass"
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "parent-ds-for-child-csk-g2-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "id": "parent-ds-for-child-csk-g2-signature:dnspython",
+      "now": 1792713600,
+      "result": "pass"
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "parent-ds-for-child-ed25519-g1-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "id": "parent-ds-for-child-ed25519-g1-signature:dnspython",
+      "now": 1792713600,
+      "result": "pass"
+    },
+    {
+      "argv": [
+        "openssl",
+        "pkeyutl",
+        "-verify",
+        "-pubin",
+        "-inkey",
+        "<scratch>/public.pem",
+        "-rawin",
+        "-in",
+        "<scratch>/input.bin",
+        "-sigfile",
+        "<scratch>/signature.bin",
+        "-digest",
+        "sha256"
+      ],
+      "exitCode": 0,
+      "id": "parent-ds-overlap-g1-g2-signature",
+      "stderr": "",
+      "stdout": "Signature Verified Successfully\n"
+    },
+    {
+      "id": "parent-ds-overlap-g1-g2-signature:dnspython",
+      "now": 1792713600,
+      "result": "pass"
+    }
+  ],
+  "profilesSha256": "1d3440bc28a35f72849aae9a87071830547deaf1f2bfd1e4e101e8ec774deaab",
+  "result": "pass",
+  "schemaVersion": 1,
+  "scope": "Concrete canonical/cryptographic profile bindings; no production evaluator or live server execution."
+}

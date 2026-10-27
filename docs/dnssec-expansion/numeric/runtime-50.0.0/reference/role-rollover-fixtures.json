@@ -1,0 +1,180 @@
+{
+  "baseClock": 1792713600,
+  "kind": "dnssec-independent-single-role-rollover-fixtures",
+  "paths": {
+    "ksk-only-final": {
+      "anchorKeyId": "root-ksk-g1",
+      "exactFinalKeyIds": [
+        "child-ksk-g2",
+        "child-zsk-g1"
+      ],
+      "id": "ksk-only-final",
+      "observedOffsets": [
+        95100,
+        3024000,
+        7776000
+      ],
+      "steps": [
+        {
+          "role": "dnskey",
+          "signatureId": "root-dnskey-path-long"
+        },
+        {
+          "matchedChildKeyIds": [
+            "example-ksk-g1"
+          ],
+          "role": "ds",
+          "signatureId": "root-example-ds-path-long"
+        },
+        {
+          "role": "dnskey",
+          "signatureId": "example-dnskey-path-long"
+        },
+        {
+          "matchedChildKeyIds": [
+            "child-ksk-g2"
+          ],
+          "role": "ds",
+          "signatureId": "example-child-ds-g2-long"
+        },
+        {
+          "role": "dnskey",
+          "signatureId": "child-dnskey-ksk-only-final-long-signature"
+        },
+        {
+          "role": "answer",
+          "signatureId": "www-a-complete-path-g1"
+        }
+      ]
+    },
+    "zsk-only-final": {
+      "anchorKeyId": "root-ksk-g1",
+      "exactFinalKeyIds": [
+        "child-ksk-g1",
+        "child-zsk-g2"
+      ],
+      "id": "zsk-only-final",
+      "observedOffsets": [
+        95100,
+        3024000,
+        7776000
+      ],
+      "steps": [
+        {
+          "role": "dnskey",
+          "signatureId": "root-dnskey-path-long"
+        },
+        {
+          "matchedChildKeyIds": [
+            "example-ksk-g1"
+          ],
+          "role": "ds",
+          "signatureId": "root-example-ds-path-long"
+        },
+        {
+          "role": "dnskey",
+          "signatureId": "example-dnskey-path-long"
+        },
+        {
+          "matchedChildKeyIds": [
+            "child-ksk-g1"
+          ],
+          "role": "ds",
+          "signatureId": "example-child-ds-path-long"
+        },
+        {
+          "role": "dnskey",
+          "signatureId": "child-dnskey-zsk-only-final-long-signature"
+        },
+        {
+          "role": "answer",
+          "signatureId": "www-a-complete-path-g2"
+        }
+      ]
+    }
+  },
+  "rrsets": {
+    "child-dnskey-ksk-only-final": {
+      "canonicalRdataHex": [
+        "0100030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07",
+        "0101030dac14e8542cb030d3931ac00ade7723f014ae80880e3f9964f42b39042e8ea6c08dd8ff433277b1694869dd5e66fccc965452f045c4cf4be1010742750f1bb825"
+      ],
+      "class": "IN",
+      "id": "child-dnskey-ksk-only-final",
+      "owner": "lab.example.",
+      "records": [
+        "257 3 13 rBToVCywMNOTGsAK3ncj8BSugIgOP5lk 9Cs5BC6OpsCN2P9DMnexaUhp3V5m/MyW VFLwRcTPS+EBB0J1Dxu4JQ==",
+        "256 3 13 3GyieUAv4h2uPwt6+0o9oC8fm38jTqQK tzowJvXxAAONJycEZeVC0Qc7794ESZNa ES7xWfRdIXe6M54th9HtBw=="
+      ],
+      "ttl": 3600,
+      "type": "DNSKEY",
+      "typeCode": 48
+    },
+    "child-dnskey-zsk-only-final": {
+      "canonicalRdataHex": [
+        "0100030d70a9d3da06b26554f695d5afad164ba9f0c02b583e09473bd5848770852f3a4ba125149a6b62fae7def74dd42c9128dcfcf1d8160fea91c57598b88213880e78",
+        "0101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48"
+      ],
+      "class": "IN",
+      "id": "child-dnskey-zsk-only-final",
+      "owner": "lab.example.",
+      "records": [
+        "257 3 13 Pu0xeazW0puWQsZkqHFph4asNCh+1iew 7bKuiVYAaWdHLCv+EHfcc1uIpLSfRPF8 YM4gks+nS7FCOOZcNMVOSA==",
+        "256 3 13 cKnT2gayZVT2ldWvrRZLqfDAK1g+CUc7 1YSHcIUvOkuhJRSaa2L65973TdQskSjc /PHYFg/qkcV1mLiCE4gOeA=="
+      ],
+      "ttl": 3600,
+      "type": "DNSKEY",
+      "typeCode": 48
+    }
+  },
+  "schemaVersion": 1,
+  "scope": "Separate final states: ZSK-only rollover preserves KSKg1 and changes only ZSK; KSK-only rollover preserves ZSKg1 and changes only KSK. Actual base-600..day120 signatures are synthetic reference choices, not operational advice. Prior both-g2 fixture is not substituted for either role-specific final keyset.",
+  "signatures": {
+    "child-dnskey-ksk-only-final-long-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "child-dnskey-ksk-only-final-long-signature",
+      "inception": 1792713000,
+      "keyId": "child-ksk-g2",
+      "keyTag": 46400,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-dnskey-ksk-only-final",
+      "rrsigRdataHex": "00300d0200000e106b78d7806adaa128b540036c6162076578616d706c6500f665e95bbe562243fc98a8c5ba9815d530f7a4ba2b305a7a29919d9c48e04e3a5abf380e614815c08210601bb80b2a325c99af44581c6df3ea786c9f373bd7b8",
+      "rrsigText": "DNSKEY 13 2 3600 20270220000000 20261022235000 46400 lab.example. 9mXpW75WIkP8mKjFupgV1TD3pLorMFp6 KZGdnEjgTjpavzgOYUgVwIIQYBu4Cyoy XJmvRFgcbfPqeGyfNzvXuA==",
+      "signatureHex": "f665e95bbe562243fc98a8c5ba9815d530f7a4ba2b305a7a29919d9c48e04e3a5abf380e614815c08210601bb80b2a325c99af44581c6df3ea786c9f373bd7b8",
+      "signer": "lab.example.",
+      "signingInputHex": "00300d0200000e106b78d7806adaa128b540036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000440100030ddc6ca279402fe21dae3f0b7afb4a3da02f1f9b7f234ea40ab73a3026f5f100038d27270465e542d1073befde0449935a112ef159f45d2177ba339e2d87d1ed07036c6162076578616d706c65000030000100000e1000440101030dac14e8542cb030d3931ac00ade7723f014ae80880e3f9964f42b39042e8ea6c08dd8ff433277b1694869dd5e66fccc965452f045c4cf4be1010742750f1bb825",
+      "signingInputSha256": "9f9f34ccf92634ff30205d23a23433dc346dea10a7eec5cc886132c3c37f6c9f",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    },
+    "child-dnskey-zsk-only-final-long-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1803081600,
+      "id": "child-dnskey-zsk-only-final-long-signature",
+      "inception": 1792713000,
+      "keyId": "child-ksk-g1",
+      "keyTag": 22775,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-dnskey-zsk-only-final",
+      "rrsigRdataHex": "00300d0200000e106b78d7806adaa12858f7036c6162076578616d706c6500aff710b32bce6af9f71e591bcd68e6adf34814270ce873b8d26e349e96853b566815756b59a7d50ff374cb647eccf3b00aef66be3672e5ec018704ad4f63eecb",
+      "rrsigText": "DNSKEY 13 2 3600 20270220000000 20261022235000 22775 lab.example. r/cQsyvOavn3HlkbzWjmrfNIFCcM6HO4 0m40npaFO1ZoFXVrWafVD/N0y2R+zPOw Cu9mvjZy5ewBhwStT2Puyw==",
+      "signatureHex": "aff710b32bce6af9f71e591bcd68e6adf34814270ce873b8d26e349e96853b566815756b59a7d50ff374cb647eccf3b00aef66be3672e5ec018704ad4f63eecb",
+      "signer": "lab.example.",
+      "signingInputHex": "00300d0200000e106b78d7806adaa12858f7036c6162076578616d706c6500036c6162076578616d706c65000030000100000e1000440100030d70a9d3da06b26554f695d5afad164ba9f0c02b583e09473bd5848770852f3a4ba125149a6b62fae7def74dd42c9128dcfcf1d8160fea91c57598b88213880e78036c6162076578616d706c65000030000100000e1000440101030d3eed3179acd6d29b9642c664a871698786ac34287ed627b0edb2ae8956006967472c2bfe1077dc735b88a4b49f44f17c60ce2092cfa74bb14238e65c34c54e48",
+      "signingInputSha256": "fe46828f22bd1a3f887a55f63a8b9e936d785d59357aa39043b1e1bbd37c0550",
+      "typeCovered": 48,
+      "verificationAt": 1792713600
+    }
+  },
+  "sourceFixtureSha256": {
+    "complete-path-fixtures.json": "702da34401cd3a9a890a174cf7600a5299860742cff3d55a53e1c2e585029520",
+    "dnssec-numeric-fixtures.json": "3020803c625ecd0a76548c71292e50132d825978e9a407c2b6d8e964c39edfd4",
+    "lifecycle-fixtures.json": "93f82359211561d14429f874633f86ff5977495891fefe2e5fa7f0da347a736b",
+    "long-profile-fixtures.json": "2a386e308ea7812d595927efd43ac7c192d0f2a22526a513e166fd13c6620d91"
+  }
+}

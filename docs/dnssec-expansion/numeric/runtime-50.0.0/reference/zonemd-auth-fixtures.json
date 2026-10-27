@@ -1,0 +1,117 @@
+{
+  "baseClock": 1792713600,
+  "baselineSha256": "3020803c625ecd0a76548c71292e50132d825978e9a407c2b6d8e964c39edfd4",
+  "kind": "dnssec-independent-authenticated-zonemd-fixtures",
+  "rrsets": {
+    "child-nsec-with-zonemd": {
+      "canonicalRdataHex": [
+        "03575757036c6162076578616d706c650000082201800000038001"
+      ],
+      "class": "IN",
+      "id": "child-nsec-with-zonemd",
+      "owner": "lab.example.",
+      "records": [
+        "WWW.lab.example. NS SOA MX TXT RRSIG NSEC DNSKEY ZONEMD"
+      ],
+      "ttl": 3600,
+      "type": "NSEC",
+      "typeCode": 47
+    },
+    "child-zonemd-auth": {
+      "canonicalRdataHex": [
+        "78c3de1d0101eefaa904a00ab03b4c0eb9aaf0e86a11d8915cb4a1f8895d4f78916e8ec7a77f8b705bf5d8dad9631a177d8200dd4fd5"
+      ],
+      "class": "IN",
+      "id": "child-zonemd-auth",
+      "owner": "lab.example.",
+      "records": [
+        "2026102301 1 1 eefaa904a00ab03b4c0eb9aaf0e86a11d8915cb4a1f8895d4f78916e8ec7a77f8b705bf5d8dad9631a177d8200dd4fd5"
+      ],
+      "ttl": 3600,
+      "type": "ZONEMD",
+      "typeCode": 63
+    }
+  },
+  "schemaVersion": 1,
+  "scope": "Signed expected-digest path plus whole-zone SIMPLE SHA384. Variant adds ZONEMD bit to apex NSEC before digest. Digest/RRSIG(ZONEMD) excluded to prevent cycle. No server interoperability.",
+  "signatures": {
+    "child-nsec-with-zonemd-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "child-nsec-with-zonemd-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-nsec-with-zonemd",
+      "rrsigRdataHex": "002f0d0200000e106adab1906adaa128d86a036c6162076578616d706c6500c912fbbefbc6dfa62adca0b10698832be0dedb4feaa3c28decf034892f4b245d4c60b6bd985c0064c4cbb930d51005e8e0ccf5e32bd022b7ab9a2a1f7ea64c6c",
+      "rrsigText": "NSEC 13 2 3600 20261023010000 20261022235000 55402 lab.example. yRL7vvvG36Yq3KCxBpiDK+De20/qo8KN 7PA0iS9LJF1MYLa9mFwAZMTLuTDVEAXo 4Mz14yvQIrermioffqZMbA==",
+      "signatureHex": "c912fbbefbc6dfa62adca0b10698832be0dedb4feaa3c28decf034892f4b245d4c60b6bd985c0064c4cbb930d51005e8e0ccf5e32bd022b7ab9a2a1f7ea64c6c",
+      "signer": "lab.example.",
+      "signingInputHex": "002f0d0200000e106adab1906adaa128d86a036c6162076578616d706c6500036c6162076578616d706c6500002f000100000e10001b03575757036c6162076578616d706c650000082201800000038001",
+      "signingInputSha256": "5db9100f04053e1c7802dbe67a72746b6f1b0159172cb62063b448ba75490a85",
+      "typeCovered": 47,
+      "verificationAt": 1792713600
+    },
+    "child-zonemd-auth-signature": {
+      "algorithm": 13,
+      "expectedCryptographicValid": true,
+      "expiration": 1792717200,
+      "id": "child-zonemd-auth-signature",
+      "inception": 1792713000,
+      "keyId": "child-zsk-g1",
+      "keyTag": 55402,
+      "labels": 2,
+      "originalTtl": 3600,
+      "rrsetId": "child-zonemd-auth",
+      "rrsigRdataHex": "003f0d0200000e106adab1906adaa128d86a036c6162076578616d706c6500c3a8bf4c6156a647a1768724cd261d6342ee29ae35b2fd1effaf2c66ee61ddcc7ffcdd4fe251ff35d0ec843c6d770ffb0a1eab3da84ef9b9fe49674173387b21",
+      "rrsigText": "ZONEMD 13 2 3600 20261023010000 20261022235000 55402 lab.example. w6i/TGFWpkehdockzSYdY0LuKa41sv0e /68sZu5h3cx//N1P4lH/NdDshDxtdw/7 Ch6rPahO+bn+SWdBczh7IQ==",
+      "signatureHex": "c3a8bf4c6156a647a1768724cd261d6342ee29ae35b2fd1effaf2c66ee61ddcc7ffcdd4fe251ff35d0ec843c6d770ffb0a1eab3da84ef9b9fe49674173387b21",
+      "signer": "lab.example.",
+      "signingInputHex": "003f0d0200000e106adab1906adaa128d86a036c6162076578616d706c6500036c6162076578616d706c6500003f000100000e10003678c3de1d0101eefaa904a00ab03b4c0eb9aaf0e86a11d8915cb4a1f8895d4f78916e8ec7a77f8b705bf5d8dad9631a177d8200dd4fd5",
+      "signingInputSha256": "b8a756cf5f8f80270fef7adf787688475d64b7c82d0776533fffd5514f0351b0",
+      "typeCovered": 63,
+      "verificationAt": 1792713600
+    }
+  },
+  "trustPath": {
+    "anchorKeyId": "root-ksk-g1",
+    "delegationDsIds": [
+      "example-ksk-g1-sha256",
+      "child-ksk-g1-sha256"
+    ],
+    "orderedSignatureIds": [
+      "root-dnskey-g1-by-ksk",
+      "root-example-ds-signature",
+      "example-dnskey-g1-by-ksk",
+      "example-child-ds-signature",
+      "child-dnskey-g1-by-ksk",
+      "child-soa-signature",
+      "child-zonemd-auth-signature"
+    ],
+    "scope": "Explicit synthetic locally provisioned root DNSKEY anchor; no live root identity."
+  },
+  "zonemd": {
+    "digestHex": "eefaa904a00ab03b4c0eb9aaf0e86a11d8915cb4a1f8895d4f78916e8ec7a77f8b705bf5d8dad9631a177d8200dd4fd5",
+    "expectedDigestRrsetId": "child-zonemd-auth",
+    "expectedDigestSignatureId": "child-zonemd-auth-signature",
+    "hashAlgorithm": 1,
+    "id": "child-zone-authenticated-simple-sha384",
+    "owner": "lab.example.",
+    "scheme": 1,
+    "serial": 2026102301,
+    "soaRrsetId": "child-soa",
+    "soaSignatureId": "child-soa-signature",
+    "tampering": {
+      "expectedWholeZoneDigestMatch": false,
+      "expectedZoneAccepted": false,
+      "replace": "192.0.2.200",
+      "signedRrsetsPreserved": true,
+      "with": "192.0.2.201"
+    },
+    "zoneText": "lab.example. 3600 IN DNSKEY 257 3 13 Pu0xeazW0puWQsZkqHFph4asNCh+1iew 7bKuiVYAaWdHLCv+EHfcc1uIpLSfRPF8 YM4gks+nS7FCOOZcNMVOSA==\nlab.example. 3600 IN DNSKEY 256 3 13 3GyieUAv4h2uPwt6+0o9oC8fm38jTqQK tzowJvXxAAONJycEZeVC0Qc7794ESZNa ES7xWfRdIXe6M54th9HtBw==\nlab.example. 3600 IN RRSIG DNSKEY 13 2 3600 20261023010000 20261022235000 22775 lab.example. GU0+5g/edXUiPeLZJuhX6qhT5yEWwgB3 KgGkM28zN0+U54UFsS83Dq8MD8BnHnWI tQob6fcaKBmWysW0za7FqA==\nlab.example. 3600 IN NS NS1.lab.example.\nlab.example. 3600 IN NS ns2.lab.example.\nlab.example. 3600 IN RRSIG NS 13 2 3600 20261023010000 20261022235000 55402 lab.example. Gk3SN4grjHtFoEvGWWlZfkaSuam6gafN XehGseNNL77zI7xI/NxdCnObf0Cx7Dpk mk0I9mCPKDcBHiaSYq3HIQ==\nlab.example. 3600 IN SOA ns1.lab.example. hostmaster.lab.example. 2026102301 3600 600 86400 300\nlab.example. 3600 IN RRSIG SOA 13 2 3600 20261023010000 20261022235000 55402 lab.example. ctXH/WXtQ1kiKsLw30Fad67nt8OCFKSK 5mNZYlmJZ54CiYHwOkDodNrB13zszs5I tXG2XauzEUWGGmAO3ud7hg==\nlab.example. 3600 IN MX 20 MAIL2.lab.example.\nlab.example. 3600 IN MX 10 Mail1.LAB.example.\nlab.example. 3600 IN RRSIG MX 13 2 3600 20261023010000 20261022235000 55402 lab.example. pqc1jqpvkVHpQXJK5qPyoRoLPiJ0vpoy oHHBuGbSZFlmkvewa+H203GJDWbhTo4L +ujY8JUytnypcg6h4ceuuQ==\nlab.example. 3600 IN TXT \"OpaqueCase\"\nlab.example. 3600 IN RRSIG TXT 13 2 3600 20261023010000 20261022235000 55402 lab.example. DFIiAoOE8zu7ohpW9jU60IM+6Y/IbVNr P/wgT9ofSBi4mxk8/hxLpzJBM62/XGMx fTISluOSX+9dLD4p9XGLrw==\nlab.example. 3600 IN NSEC WWW.lab.example. NS SOA MX TXT RRSIG NSEC DNSKEY ZONEMD\nlab.example. 3600 IN RRSIG NSEC 13 2 3600 20261023010000 20261022235000 55402 lab.example. yRL7vvvG36Yq3KCxBpiDK+De20/qo8KN 7PA0iS9LJF1MYLa9mFwAZMTLuTDVEAXo 4Mz14yvQIrermioffqZMbA==\nwww.lab.example. 3600 IN A 192.0.2.80\nwww.lab.example. 3600 IN A 192.0.2.81\nwww.lab.example. 3600 IN RRSIG A 13 3 3600 20261023010000 20261022235000 55402 lab.example. vBLQeJ7ZJH3KEOzohSjcsKt7YPfpR2/V 6nfMlczOU50SovgU001FqumPDskIkYKn Y7jhWLJcEfgcfbGFMX8aCA==\nwww.lab.example. 3600 IN NSEC lab.example. A RRSIG NSEC\nwww.lab.example. 3600 IN RRSIG NSEC 13 3 3600 20261023010000 20261022235000 55402 lab.example. QcsyydPfv9VDqY+Ynq4Xb3g3VBcwwzxz 1b9hg1AVtoBoe+1lIRxTslFl9eAyxnsM 6E3bhwRlQaURn80xhZ9zLg==\n*.lab.example. 3600 IN A 192.0.2.90\n*.lab.example. 3600 IN RRSIG A 13 2 3600 20261023010000 20261022235000 55402 lab.example. 2beyQ9RIUHRgKFuqE4YQuGqZqH1t7GM3 EsyNsshS0vXU3b/51NeaV0XW3AcfmQlh Ktcc9j4D+PwQ/qx4xZB/Wg==\nunsigned.lab.example. 3600 IN NS ns.unsigned.lab.example.\nns.unsigned.lab.example. 3600 IN A 192.0.2.200\nlab.example. 3600 IN ZONEMD 2026102301 1 1 eefaa904a00ab03b4c0eb9aaf0e86a11d8915cb4a1f8895d4f78916e8ec7a77f8b705bf5d8dad9631a177d8200dd4fd5\nlab.example. 3600 IN RRSIG ZONEMD 13 2 3600 20261023010000 20261022235000 55402 lab.example. w6i/TGFWpkehdockzSYdY0LuKa41sv0e /68sZu5h3cx//N1P4lH/NdDshDxtdw/7 Ch6rPahO+bn+SWdBczh7IQ==\n",
+    "zonemdText": "2026102301 1 1 eefaa904a00ab03b4c0eb9aaf0e86a11d8915cb4a1f8895d4f78916e8ec7a77f8b705bf5d8dad9631a177d8200dd4fd5"
+  }
+}
