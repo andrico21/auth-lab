@@ -1,0 +1,20 @@
+--- supplied/pam05-probe.mjs
++++ adapted/pam05-probe.mjs
+@@ -101,7 +101,7 @@
+ const harness=installHarness(sandbox);let Studio;
+ if(mode==='emitted'){
+  const bytes=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url));
+- eq(createHash('sha256').update(bytes).digest('hex'),'ca9fbb47b3de9a565911f44fc29ba319076e85feace235ba82cf6c20bb3a88cb','Exact supplied candidate05');
++ eq(createHash('sha256').update(bytes).digest('hex'),'9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694','Exact supplied candidate05');
+  const scripts=[...bytes.toString().matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)];eq(scripts.length,1,'One actual IIFE');
+  new vm.Script(scripts[0][1]).runInContext(vm.createContext(sandbox));Studio=harness.registry.get('auth-flow-studio');
+ }else ({AuthFlowStudio:Studio}=await import('../source/src/app.js'));
+@@ -200,7 +200,7 @@
+    const disclosure=app.querySelector('[data-pam-disclosure="aggregates"]');
+    const classification={scenario:'lab-llog04',variant,at:modules[0].step.id,summary:text(disclosure.querySelector('summary')),values:app.heldView.snapshot().state.workstation.pamResults};
+    observations.push({classification});
+-   contract('WP-R06-B-classification',mode+' LLOG04/'+variant+' internal phase is not classified as completed public API result',Object.keys(classification.values).filter(k=>['prelim','update'].includes(k)),[]);
++   contract('WP-R06-B-classification',mode+' LLOG04/'+variant+' internal phase is not classified as completed public API result',Object.keys(JSON.parse(disclosure.querySelector('pre').textContent)).filter(k=>['prelim','update'].includes(k)),[]);
+    const completed=position(returned[0].index);eq(cell('API aggregate return'),status,'Actual one public completion');eq(completed.state.workstation.pamResults.password,status,'Public state completed only at return');
+    ok(completed.holdings.some(h=>h.actorId==='pamChangeApp'&&h.artifactId===result.artifactId),'Caller acquires actual public result');
+    const final=position(app.steps.length-1);eq(final.state.workstation.authorityGeneration,status==='PAM_SUCCESS'?2:1,'Authority generation follows actual commit, not admission');

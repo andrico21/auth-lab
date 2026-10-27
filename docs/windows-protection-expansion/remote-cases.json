@@ -1,0 +1,3001 @@
+{
+  "schemaVersion": 1,
+  "authorship": "WP0 source-only literal expectations authored before remote production evaluator; structure expanded from literal plan table, no evaluator imports",
+  "planSHA256": "8e66f18b60f352b4d3020af11369b829828cb473cbc8edcccacbe104abc8fc8d",
+  "canonicalCaseCount": 38,
+  "subfixtureCount": 44,
+  "nativeEvidence": "unperformed; no Windows/DC available",
+  "cases": [
+    {
+      "id": "WRA01/default-filtered",
+      "modelId": "lab-wra01",
+      "defaultAlias": true,
+      "defaultSubfixtureId": "local",
+      "subfixtures": [
+        {
+          "id": "local",
+          "profileId": "WRA01/default-filtered/local",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {},
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        },
+        {
+          "id": "domain",
+          "profileId": "WRA01/default-filtered/domain",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA01/explicit-zero",
+      "modelId": "lab-wra01",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA01/explicit-zero/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "latfp": 0
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA01/filter-disabled",
+      "modelId": "lab-wra01",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA01/filter-disabled/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "latfp": 1
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA01/full-token-acl-denied",
+      "modelId": "lab-wra01",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA01/full-token-acl-denied/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "latfp": 1,
+            "shareRule": "deny-user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA01/ordinary-share-allowed",
+      "modelId": "lab-wra01",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA01/ordinary-share-allowed/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "resource": "reports",
+            "shareRule": "allow-user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA01/bad-password",
+      "modelId": "lab-wra01",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA01/bad-password/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "passwordMatches": false
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": false,
+            "admissionAllowed": false,
+            "tokenMode": null,
+            "resourceAllowed": null,
+            "firstDetector": "sam-verify",
+            "returnedResult": "STATUS_LOGON_FAILURE",
+            "clientKnowsResult": true,
+            "serverAuthenticated": false,
+            "clientSessionAccepted": false,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbSAM",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client",
+            "no accepted new session or resource check"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA01/local-standard-user",
+      "modelId": "lab-wra01",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA01/local-standard-user/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "admin": false,
+            "latfp": 1
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "standard",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA01/reused-session",
+      "modelId": "lab-wra01",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "reused",
+      "subfixtures": [
+        {
+          "id": "reused",
+          "profileId": "WRA01/reused-session/reused",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier",
+            "prior accepted filtered session"
+          ],
+          "changedInputs": {
+            "sessionMode": "reuse",
+            "latfp": 1
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": true,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        },
+        {
+          "id": "fresh",
+          "profileId": "WRA01/reused-session/fresh",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "sessionMode": "fresh",
+            "latfp": 1
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        },
+        {
+          "id": "later-proof-denial",
+          "profileId": "WRA01/reused-session/later-proof-denial",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier",
+            "prior accepted filtered session"
+          ],
+          "changedInputs": {
+            "sessionMode": "prior-session-denial",
+            "latfp": 1,
+            "passwordMatches": false
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": false,
+            "admissionAllowed": false,
+            "tokenMode": null,
+            "resourceAllowed": null,
+            "firstDetector": "sam-verify",
+            "returnedResult": "STATUS_LOGON_FAILURE",
+            "clientKnowsResult": true,
+            "serverAuthenticated": false,
+            "clientSessionAccepted": false,
+            "priorSessionRetained": true,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbSAM",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client",
+            "no accepted new session or resource check"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA01/ntlm-unavailable",
+      "modelId": "lab-wra01",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA01/ntlm-unavailable/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "ntlmAllowed": false
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": false,
+            "admissionAllowed": false,
+            "tokenMode": null,
+            "resourceAllowed": null,
+            "firstDetector": "authentication-reject",
+            "returnedResult": "STATUS_NOT_SUPPORTED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": false,
+            "clientSessionAccepted": false,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client",
+            "no accepted new session or resource check"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA02/rid500-aam-off",
+      "modelId": "lab-wra02",
+      "defaultAlias": true,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA02/rid500-aam-off/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "rid": 500,
+            "fat": 0,
+            "latfp": 0
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA02/renamed-rid500",
+      "modelId": "lab-wra02",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA02/renamed-rid500/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "rid": 500,
+            "name": "renamed-admin",
+            "fat": 0,
+            "latfp": 0
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA02/rid500-aam-on",
+      "modelId": "lab-wra02",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA02/rid500-aam-on/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "rid": 500,
+            "fat": 1,
+            "latfp": 0
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA02/rid500-filter-disabled",
+      "modelId": "lab-wra02",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA02/rid500-filter-disabled/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "rid": 500,
+            "fat": 1,
+            "latfp": 1
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA02/name-is-not-rid",
+      "modelId": "lab-wra02",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA02/name-is-not-rid/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "name": "Administrator"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA02/account-disabled",
+      "modelId": "lab-wra02",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA02/account-disabled/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "rid": 500,
+            "enabled": false
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": false,
+            "tokenMode": null,
+            "resourceAllowed": null,
+            "firstDetector": "target-admission",
+            "returnedResult": "STATUS_ACCOUNT_DISABLED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": false,
+            "clientSessionAccepted": false,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client",
+            "no accepted new session or resource check"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA03/domain-admin-joined",
+      "modelId": "lab-wra03",
+      "defaultAlias": true,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA03/domain-admin-joined/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "joined": true,
+            "mechanism": "Kerberos"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA03/domain-admin-nonjoined",
+      "modelId": "lab-wra03",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA03/domain-admin-nonjoined/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "joined": false,
+            "mechanism": "Kerberos"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA03/domain-ntlm-explicit",
+      "modelId": "lab-wra03",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA03/domain-ntlm-explicit/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "NTLMv2"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA03/domain-user-read",
+      "modelId": "lab-wra03",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA03/domain-user-read/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "admin": false,
+            "resource": "reports",
+            "shareRule": "allow-user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "standard",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA03/domain-user-admin-denied",
+      "modelId": "lab-wra03",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA03/domain-user-admin-denied/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "admin": false,
+            "latfp": 1
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "standard",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA03/same-name-different-authority",
+      "modelId": "lab-wra03",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "local",
+      "subfixtures": [
+        {
+          "id": "local",
+          "profileId": "WRA03/same-name-different-authority/local",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {},
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        },
+        {
+          "id": "domain",
+          "profileId": "WRA03/same-name-different-authority/domain",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA03/domain-proof-failed",
+      "modelId": "lab-wra03",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA03/domain-proof-failed/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "NTLMv2",
+            "passwordMatches": false
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": false,
+            "admissionAllowed": false,
+            "tokenMode": null,
+            "resourceAllowed": null,
+            "firstDetector": "dc-verify",
+            "returnedResult": "STATUS_LOGON_FAILURE",
+            "clientKnowsResult": true,
+            "serverAuthenticated": false,
+            "clientSessionAccepted": false,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbDC",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client",
+            "no accepted new session or resource check"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA04/network-logon-denied",
+      "modelId": "lab-wra04",
+      "defaultAlias": true,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA04/network-logon-denied/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "denyNetwork": true
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": false,
+            "tokenMode": null,
+            "resourceAllowed": null,
+            "firstDetector": "target-admission",
+            "returnedResult": "STATUS_LOGON_TYPE_NOT_GRANTED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": false,
+            "clientSessionAccepted": false,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client",
+            "no accepted new session or resource check"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA04/share-denied",
+      "modelId": "lab-wra04",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA04/share-denied/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "latfp": 1,
+            "shareRule": "deny-user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA04/file-denied",
+      "modelId": "lab-wra04",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA04/file-denied/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "latfp": 1,
+            "fileRule": "deny-user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": false,
+            "firstDetector": "file-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA04/deny-only-sid",
+      "modelId": "lab-wra04",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "allow-ace",
+      "subfixtures": [
+        {
+          "id": "allow-ace",
+          "profileId": "WRA04/deny-only-sid/allow-ace",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {},
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        },
+        {
+          "id": "deny-ace",
+          "profileId": "WRA04/deny-only-sid/deny-ace",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "shareRule": "deny-admin-allow-user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA04/client-elevated",
+      "modelId": "lab-wra04",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "elevated",
+      "subfixtures": [
+        {
+          "id": "elevated",
+          "profileId": "WRA04/client-elevated/elevated",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "clientElevated": true
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        },
+        {
+          "id": "standard",
+          "profileId": "WRA04/client-elevated/standard",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "clientElevated": false
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "filtered",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA04/management-endpoint-denied",
+      "modelId": "lab-wra04",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA04/management-endpoint-denied/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "endpoint": "WinRM",
+            "shareRule": "allow-user",
+            "endpointRule": "deny-user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": false,
+            "firstDetector": "endpoint-check",
+            "returnedResult": "WSMan.AccessDenied",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "WSMan endpoint authorization",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA04/signed-denial",
+      "modelId": "lab-wra04",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA04/signed-denial/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "latfp": 1,
+            "shareRule": "deny-user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA04/encrypted-denial",
+      "modelId": "lab-wra04",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA04/encrypted-denial/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "SAM authoritative verifier"
+          ],
+          "changedInputs": {
+            "latfp": 1,
+            "fileRule": "deny-user",
+            "encrypt": true
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": false,
+            "firstDetector": "file-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S01 local/domain and LATFP",
+            "S03 UAC policy values",
+            "S06 deny-only SID",
+            "S24-NLMP 3.3.2",
+            "S24-SMB2 3.3.5.5,3.3.5.7,3.3.5.9"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA05/default-non-elevated",
+      "modelId": "lab-wra05",
+      "defaultAlias": true,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA05/default-non-elevated/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "ap": true
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "non-elevated",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S20 remote policy overview",
+            "S21 exact two remote policy settings and applicability"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA05/broad-allow",
+      "modelId": "lab-wra05",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA05/broad-allow/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "ap": true,
+            "apBroad": true
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S20 remote policy overview",
+            "S21 exact two remote policy settings and applicability"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA05/user-sid-match",
+      "modelId": "lab-wra05",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA05/user-sid-match/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "ap": true,
+            "apList": "user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S20 remote policy overview",
+            "S21 exact two remote policy settings and applicability"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA05/group-sid-match",
+      "modelId": "lab-wra05",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA05/group-sid-match/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "ap": true,
+            "apList": "group"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S20 remote policy overview",
+            "S21 exact two remote policy settings and applicability"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA05/no-list-match",
+      "modelId": "lab-wra05",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA05/no-list-match/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "ap": true,
+            "apList": "unrelated"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "non-elevated",
+            "resourceAllowed": false,
+            "firstDetector": "share-check",
+            "returnedResult": "STATUS_ACCESS_DENIED",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S20 remote policy overview",
+            "S21 exact two remote policy settings and applicability"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA05/broad-overrides-list",
+      "modelId": "lab-wra05",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA05/broad-overrides-list/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "ap": true,
+            "apBroad": true,
+            "apList": "unrelated"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": true,
+            "tokenMode": "full",
+            "resourceAllowed": true,
+            "firstDetector": null,
+            "returnedResult": "STATUS_SUCCESS",
+            "clientKnowsResult": true,
+            "serverAuthenticated": true,
+            "clientSessionAccepted": true,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": null,
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client"
+          ],
+          "resultDomain": "NTSTATUS",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S20 remote policy overview",
+            "S21 exact two remote policy settings and applicability"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA05/nonadmin-listed",
+      "modelId": "lab-wra05",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA05/nonadmin-listed/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "ap": true,
+            "admin": false,
+            "apList": "user"
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": true,
+            "admissionAllowed": false,
+            "tokenMode": null,
+            "resourceAllowed": null,
+            "firstDetector": "applicability",
+            "returnedResult": "needs-evidence",
+            "clientKnowsResult": true,
+            "serverAuthenticated": false,
+            "clientSessionAccepted": false,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client",
+            "no accepted new session or resource check"
+          ],
+          "resultDomain": "profile-applicability",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S20 remote policy overview",
+            "S21 exact two remote policy settings and applicability"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    },
+    {
+      "id": "WRA05/unavailable-profile",
+      "modelId": "lab-wra05",
+      "defaultAlias": false,
+      "defaultSubfixtureId": "default",
+      "subfixtures": [
+        {
+          "id": "default",
+          "profileId": "WRA05/unavailable-profile/default",
+          "initialHoldings": [
+            "source desktop",
+            "source explicit credential",
+            "target policy",
+            "domain authoritative verifier and TARGET$ channel/service key"
+          ],
+          "changedInputs": {
+            "authority": "CORP",
+            "mechanism": "Kerberos",
+            "ap": true,
+            "featureAvailable": false
+          },
+          "stepSequence": [
+            "identity",
+            "negotiate-request",
+            "negotiate-response",
+            "credential-proof",
+            "target-admission",
+            "target-context",
+            "server-session",
+            "client-session",
+            "share-check",
+            "file-check",
+            "result",
+            "attempt-cleanup"
+          ],
+          "expected": {
+            "credentialVerified": false,
+            "admissionAllowed": false,
+            "tokenMode": null,
+            "resourceAllowed": null,
+            "firstDetector": "applicability",
+            "returnedResult": "unavailable-profile",
+            "clientKnowsResult": true,
+            "serverAuthenticated": false,
+            "clientSessionAccepted": false,
+            "priorSessionRetained": false,
+            "noRemotePrompt": true
+          },
+          "firstDetectingActor": "smbServer",
+          "prohibitedDownstreamEffects": [
+            "no client-token transmission",
+            "no invented target-local TGT",
+            "no admin membership manufactured",
+            "no failure before received response known at client",
+            "no accepted new session or resource check"
+          ],
+          "resultDomain": "profile-applicability",
+          "cleanup": {
+            "release": "attempt input, proof, transcript scratch and temporary token handle",
+            "retain": "source desktop, authoritative records, explicitly accepted session/tree and prior session"
+          },
+          "sourceClauses": [
+            "S20 remote policy overview",
+            "S21 exact two remote policy settings and applicability"
+          ],
+          "evidenceLevel": "source-only authored expectation, not native Windows evidence"
+        }
+      ]
+    }
+  ]
+}

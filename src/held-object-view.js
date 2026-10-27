@@ -216,6 +216,7 @@ export class HeldObjectView {
       const config={...app.protocolConfig(),oidcFlow:app.oidcFlow,tokenProtection:app.tokenProtection};
       const contextParts=[app.labScenarioId,config,app.runtimeEnvironment.revision];
       if(app.labModel?.variantId&&app.labModel.variantId!=='default')contextParts.push('variant='+app.labModel.variantId);
+      if(app.labModel?.subfixtureId)contextParts.push('subfixture='+app.labModel.subfixtureId);
       const contextId=JSON.stringify(contextParts);
       const model=app.labModel?{...app.labModel,steps:()=>source.steps,initialState:source.initialState||app.labModel.initialState,protocolValues:source.protocolValues||app.labModel.protocolValues}:null;
       compiled=buildHeldObjects({model,steps:source.steps,actors,config,contextId,choiceId:app.labScenarioId});this.memo.set(source,compiled);
@@ -243,14 +244,14 @@ export class HeldObjectView {
     const width=Math.min(rect.width,viewport.width),height=rect.height;
     const compactPositions=Object.fromEntries(visible.map(id=>[id,base[id]]));
     const authored=app.labModel?.positions||app.labModel?.actorPositions||app.labModel?.layout?.positions||app.labModel?.layout||{};
-    const reference=app.scenarioOwnedActors?{...scenarioPositions(app.labModel,layoutSteps,actors,true),...authored}:getPositions(app.architecture);
+    const reference=app.scenarioOwnedActors?{...authored,...scenarioPositions(app.labModel,layoutSteps,actors,app.showInternals)}:getPositions(app.architecture);
     for(const [child,parent] of Object.entries(aliases))if(reference[child])reference[parent]=reference[child];
     const anchors=Object.fromEntries([...new Set([...all,...Object.values(aliases)])].map(id=>[id,reference[id]||actors[id]?.position]));
-    const signature=JSON.stringify([all,visible,pairs,width>=1120,height>=730,viewport.width,app.moveParticipants,!!app.customLayouts[app.layoutKey],aliases,compactPositions,anchors]);
+    const signature=JSON.stringify([all,visible,pairs,width>=1120,height>=730,viewport.width,app.moveParticipants,!!app.customLayouts[app.layoutKey],aliases,compactPositions,anchors,!!app.labModel?.physicalHostBoundaries]);
     if(this.geometrySignature!==signature){
       this.geometrySignature=signature;
       const eligible=!app.moveParticipants&&!app.customLayouts[app.layoutKey];
-      app.heldGeometry=eligible&&visible.every(id=>Object.keys(actors).filter(owner=>app.nodeId(owner)===id).length<=3)?fullDockGeometry(all,visible,pairs,width,height,aliases,anchors):null;
+      app.heldGeometry=eligible&&!(app.showInternals&&app.labModel?.physicalHostBoundaries)&&visible.every(id=>Object.keys(actors).filter(owner=>app.nodeId(owner)===id).length<=3)?fullDockGeometry(all,visible,pairs,width,height,aliases,anchors):null;
       if(eligible&&!app.heldGeometry)app.heldGeometry=compactDockGeometry(compactPositions,pairs,viewport.width,viewport.width*730/1120,width);
       if(app.heldGeometry?.mode==='compact'&&app.heldGeometry.key===this.rejectedCompactKey)app.heldGeometry=null;
     }

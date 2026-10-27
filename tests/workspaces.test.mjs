@@ -52,7 +52,7 @@ test('parent grouping changes visible ownership only and positions remain actor-
   assert.deepEqual(Object.keys(scenarioPositions(model,steps,actors,true)),['client','as']);assert.equal(steps[0].to,'as');
 });
 test('expanded Windows roles retain separated cards and usable local/IPC graph ports',()=>{
-  for(const [id,variant]of [['lab-wlog08','default'],['lab-welev03','domain-admin-credential']]){
+  for(const [id,variant]of [['lab-wlog08','default'],['lab-welev03','domain-admin-credential'],...['lab-wprot01','lab-wprot02','lab-wprot03','lab-wprot04','lab-wprot05'].map(id=>[id,'default'])]){
     const model=variant==='default'?LAB_MODELS[id]:LAB_MODELS[id].withVariant(variant),steps=model.steps();
     const positions=scenarioPositions(model,steps,model.actors(),true),entries=Object.entries(positions);
     for(const [actor,{x,y}]of entries){
@@ -64,6 +64,17 @@ test('expanded Windows roles retain separated cards and usable local/IPC graph p
       assert.ok(Math.abs(p.x-q.x)>=CARD_BOUNDS.width+20||Math.abs(p.y-q.y)>=CARD_BOUNDS.height+20,id+' overlapping roles '+a+' / '+b);
     }
     assert.deepEqual(validateLayoutRoutes(positions,steps.map(step=>[step.from,step.to])),{ok:true},id+' retains routes for the actual IPC and local operations');
+  }
+});
+test('one workstation physical envelope cannot enclose an external user, account authority or target service',()=>{
+  for(const id of ['lab-wprot01','lab-wprot02','lab-wprot03','lab-wprot04','lab-wprot05'])for(const choice of LAB_MODELS[id].variantChoices){
+    const model=LAB_MODELS[id].withVariant(choice.id),actors=model.actors(),positions=scenarioPositions(model,model.steps(),actors,true);
+    const host=id=>{let actor=actors[id];while(actor?.parentId&&actors[actor.parentId])actor=actors[actor.parentId];return actor?.id;};
+    const local=Object.entries(positions).filter(([id])=>host(id)==='wslWorkstation').map(([,p])=>p);
+    const bounds={left:Math.min(...local.map(p=>p.x))-CARD_BOUNDS.width/2,right:Math.max(...local.map(p=>p.x))+CARD_BOUNDS.width/2,top:Math.min(...local.map(p=>p.y))-CARD_BOUNDS.height/2,bottom:Math.max(...local.map(p=>p.y))+CARD_BOUNDS.height/2};
+    for(const [actor,p]of Object.entries(positions))if(host(actor)!=='wslWorkstation')assert.ok(
+      p.x+CARD_BOUNDS.width/2<=bounds.left||p.x-CARD_BOUNDS.width/2>=bounds.right||p.y+CARD_BOUNDS.height/2<=bounds.top||p.y-CARD_BOUNDS.height/2>=bounds.bottom,
+      id+'/'+choice.id+' would draw external '+actor+' inside the workstation boundary');
   }
 });
 test('DNSSEC network chapters keep every physical role inside the animation frame',()=>{

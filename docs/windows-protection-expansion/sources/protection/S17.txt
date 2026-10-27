@@ -1,0 +1,135 @@
+[MS-KILE]: TGS Exchange | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+3.3.5.7 TGS Exchange
+Feedback
+Summarize this article for me
+In this article
+Kerberos V5 specifies the TGS exchange ([RFC4120]
+section 3.3).
+KILE supports the following extensions to the TGS exchange:
+Check Account Policy for Every Session Ticket Request
+TGT without a PAC
+Domain Local Group Membership
+Cross-Domain Trust and Referrals
+If the TGT received is encrypted with DES and not a referral
+TGT from a realm that only
+supports DES, then the KDC MUST return
+KDC_ERR_ETYPE_NOTSUPP.<65>
+If the server or service has a KerbSupportedEncryptionTypes
+populated with supported encryption types,<66> then the
+KDC SHOULD<67> return in the encrypted part ([Referrals-11]
+Appendix A) of TGS-REP message, a PA-DATA structure with
+padata-type set to PA-SUPPORTED-ENCTYPES [165] to indicate what
+encryption types (section 2.2.7) are
+supported by the server or service. If not, the KDC SHOULD<68> check the server or service
+account's UseDESOnly flag:
+If UseDESOnly is set: the KDC SHOULD, in the encrypted
+pre-auth data part ([Referrals-11], Appendix A) of the TGS-REP message, include
+a PA-DATA structure with padata-type set to PA-SUPPORTED-ENCTYPES [165],
+and padata-value set to 0x3 (section 2.2.7).
+Otherwise:
+If
+the account is krbtgt, and domainControllerFunctionality returns a value
+< 3 ([MS-ADTS]
+section 3.1.1.3.2.25):
+the KDC SHOULD, in the encrypted pre-auth data part of the TGS-REP
+message, include a PA-DATA structure with padata-type set to PA-SUPPORTED-ENCTYPES
+[165], and padata-value set to 0x7 (section 2.2.7).
+If
+the account is krbtgt, and domainControllerFunctionality returns greater
+than or equal to3: the KDC SHOULD, in the encrypted pre-auth data part of the
+TGS-REP message, include a PA-DATA structure with padata-type set to PA-SUPPORTED-ENCTYPES
+[165], padata-value set to 0x1F (section 2.2.7), the Claims-supported bit
+if claims
+is supported, and the FAST-supported bit if FAST is supported.<69>
+DES
+MUST NOT be used to protect the service ticket. If
+DES is the only configured etype, the KDC MUST return KDC_ERR_ETYPE_NOTSUPP.<70>
+If the Application Server's service account AuthorizationDataNotRequired
+is set to TRUE, the KDC MUST NOT include a PAC in the service ticket.
+If the Application Server's service account does not have a
+registered SPN, the KDC MUST return KDC_ERR_MUST_USE_USER2USER.
+If the OTHER_ORGANIZATION SID ([MS-DTYP]
+section 2.4.2.4)
+is in KERB_VALIDATION_INFO.ExtraSids, the PAC MUST be used to perform an
+access check for the Allowed-To-Authenticate right ([MS-ADTS] section 6.1.1.2.7.41)
+against the Active Directory
+object of the account for which the service ticket request is being made. If
+the access check succeeds, the service ticket MUST be issued; otherwise, the
+KDC MUST return KDC_ERR_POLICY.
+If domainControllerFunctionality returns a value
+>= 6 ([MS-ADTS] section 3.1.1.3.2.25) and the account is not also the
+application service account, the KDC MUST determine whether an Authentication
+Policy is applied to the server or service (section 3.3.5.5); if
+Enforced is TRUE then:<71>
+If AllowedToAuthenticateTo is not NULL, the PAC of the user and
+the PAC of the armor TGT MUST be used to perform an access check for the
+ACTRL_DS_CONTROL_ACCESS right against the AllowedToAuthenticateTo. If the
+access check fails, the KDC MUST return KDC_ERR_POLICY.
+If the TGT is issued by a read-only Domain Controller (RODC)
+(section 3.3.5.7.7), the KDC
+MUST reject the request and return KDC_ERR_POLICY. Clients SHOULD send an
+AS-REQ to a full DC with PA-PAC-OPTIONS [167] (section 2.2.10)
+padata type with the Branch Aware bit set to the TGS REQ (section 3.2.5.7).
+If there are no claims in the PAC and the PA-PAC-OPTIONS
+[167] (section 2.2.10) padata type does not have the Claims bit set (section
+2.2.7), then the KDC does not call the TransformClaimsOnTrustTraversal
+procedure ([MS-ADTS] section 3.1.1.11.2.11). Otherwise the KDC calls this
+procedure.
+When KERB_AUTH_DATA_LOOPBACK data is present, the KDC
+copies the authorization data
+field ([RFC4120] section 5.2.6) with ad-type KERB_AUTH_DATA_LOOPBACK (142) and
+ad-data containing KERB_AUTH_DATA_LOOPBACK structure (section 2.2.4)
+as an AD-IF-RELEVANT to the end of authorization data in the service ticket.
+If the PAC_REQUESTOR SID is present in the PAC and
+the client is from the KDC’s realm, the KDC MUST verify that the cname
+on the ticket resolves to an account with the same SID as the PAC_REQUESTOR
+SID (see section 3.3.5.6.1). If it
+does not, the KDC MUST return KDC_ERR_TGT_REVOKED.
+The KILE KDC MUST copy the populated fields from the PAC in
+the TGT to the newly created PAC and, after processing all fields it supports,
+the KILE KDC MUST generate a new Server
+Signature (section 3.3.5.6.4.3) and KDC
+Signature (section 3.3.5.6.4.4) which replace the existing
+signature fields in the PAC. The KDC MUST ensure that the PAC structure
+specified in [MS-PAC]
+does not end with a zero-length buffer.
+Additional resources
+Last updated on
+2026-04-27
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

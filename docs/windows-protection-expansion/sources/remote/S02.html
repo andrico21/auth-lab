@@ -1,0 +1,1781 @@
+ <!DOCTYPE html>
+		<html
+			class="layout layout-holy-grail   show-table-of-contents conceptual show-breadcrumb default-focus"
+			lang="en-us"
+			dir="ltr"
+			data-authenticated="false"
+			data-auth-status-determined="false"
+			data-target="docs"
+			x-ms-format-detection="none"
+		>
+			
+		<head>
+			<title>Local accounts | Microsoft Learn</title>
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			<meta name="color-scheme" content="light dark" />
+
+			<meta name="description" content="Learn how to secure and manage access to the resources on a standalone or member server for services or users." />
+			<link rel="canonical" href="https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts" /> 
+
+			<!-- Non-customizable open graph and sharing-related metadata -->
+			<meta name="twitter:card" content="summary_large_image" />
+			<meta name="twitter:site" content="@MicrosoftLearn" />
+			<meta property="og:type" content="website" />
+			<meta property="og:image:alt" content="Microsoft Learn" />
+			<meta property="og:image" content="https://learn.microsoft.com/en-us/media/open-graph-image.png" />
+			<!-- Page specific open graph and sharing-related metadata -->
+			<meta property="og:title" content="Local accounts" />
+			<meta property="og:url" content="https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts" />
+			<meta property="og:description" content="Learn how to secure and manage access to the resources on a standalone or member server for services or users." />
+			<meta name="platform_id" content="92eeeffe-3642-6b66-fca9-6e6c08f5a122" /> <meta name="scope" content="Windows 10" />
+			<meta name="locale" content="en-us" />
+			 
+			<meta name="uhfHeaderId" content="MSDocsHeader-Windows" />
+
+			<meta name="page_type" content="conceptual" />
+
+			<!--page specific meta tags-->
+			
+
+			<!-- custom meta tags -->
+			
+		<meta name="ms.subservice" content="itpro-security" />
+	
+		<meta name="ms.service" content="windows-client" />
+	
+		<meta name="recommendations" content="true" />
+	
+		<meta name="adobe-target" content="true" />
+	
+		<meta name="ms.collection" content="tier2" />
+	
+		<meta name="breadcrumb_path" content="/windows/resources/breadcrumb/toc.json" />
+	
+		<meta name="ms.localizationpriority" content="medium" />
+	
+		<meta name="manager" content="bpardi" />
+	
+		<meta name="feedback_system" content="Standard" />
+	
+		<meta name="feedback_product_url" content="https://support.microsoft.com/windows/send-feedback-to-microsoft-with-the-feedback-hub-app-f59187f8-8739-22d6-ba93-f66612949332" />
+	
+		<meta name="author" content="officedocspr5" />
+	
+		<meta name="ms.author" content="odocspr" />
+	
+		<meta name="ms.reviewer" content="sulahiri" />
+	
+		<meta name="ms.date" content="2026-04-13T00:00:00Z" />
+	
+		<meta name="ms.topic" content="concept-article" />
+	
+		<meta name="ms.custom" content="identity_protection" />
+	
+		<meta name="document_id" content="74d32ee6-c7ff-9328-97d6-40ad82c73392" />
+	
+		<meta name="document_version_independent_id" content="01f10cbb-4cae-077f-8245-7b0ada8305d7" />
+	
+		<meta name="updated_at" content="2026-10-08T11:38:00Z" />
+	
+		<meta name="original_content_git_url" content="https://github.com/MicrosoftDocs/windows-docs-pr/blob/live/windows/security/identity-protection/access-control/local-accounts.md" />
+	
+		<meta name="gitcommit" content="https://github.com/MicrosoftDocs/windows-docs-pr/blob/b09bc74df9e0b5c34659a509c06b64b7596adf4a/windows/security/identity-protection/access-control/local-accounts.md" />
+	
+		<meta name="git_commit_id" content="b09bc74df9e0b5c34659a509c06b64b7596adf4a" />
+	
+		<meta name="site_name" content="Docs" />
+	
+		<meta name="depot_name" content="TechNet.windows-security" />
+	
+		<meta name="schema" content="Conceptual" />
+	
+		<meta name="toc_rel" content="../../toc.json" />
+	
+		<meta name="pdf_url_template" content="https://learn.microsoft.com/pdfstore/en-us/TechNet.windows-security/{branchName}{pdfName}" />
+	
+		<meta name="feedback_help_link_type" content="" />
+	
+		<meta name="feedback_help_link_url" content="" />
+	
+		<meta name="word_count" content="4126" />
+	
+		<meta name="asset_id" content="identity-protection/access-control/local-accounts" />
+	
+		<meta name="moniker_range_name" content="" />
+	
+		<meta name="item_type" content="Content" />
+	
+		<meta name="source_path" content="windows/security/identity-protection/access-control/local-accounts.md" />
+	
+		<meta name="previous_tlsh_hash" content="839418C2751D0700AF835E47A4169691D2E0AA85AFF0EEC001F7D679BD172E6356646C9AE357674E13330BC30283BE1F13EEA734B03C72E3256EB4FD8268525665CC7B6AE5" />
+	
+		<meta name="github_feedback_content_git_url" content="https://github.com/MicrosoftDocs/windows-itpro-docs/blob/public/windows/security/identity-protection/access-control/local-accounts.md" />
+	
+		<meta name="markdown_url" content="https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts?accept=text/markdown" />
+	 
+		<meta name="cmProducts" content="https://authoring-docs-microsoft.poolparty.biz/devrel/bcbcbad5-4208-4783-8035-8481272c98b8" data-source="generated" />
+	
+		<meta name="spProducts" content="https://authoring-docs-microsoft.poolparty.biz/devrel/43b2e5aa-8a6d-4de2-a252-692232e5edc8" data-source="generated" />
+	
+
+			<!-- Apply persisted/system theme before first paint to prevent wrong-theme flash when scripts are deferred. -->
+			<script id="theme-preference">
+				(function () {
+			try {
+				var stored = localStorage.getItem('theme');
+				var theme = /^(light|dark|high-contrast)$/.test(stored)
+					? stored
+					: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.classList.add('theme-' + theme);
+			} catch (e) {}
+		})();;
+			</script>
+
+			<script id="atlas-layout-preferences">
+				(function () {
+			try {
+				var state = JSON.parse(localStorage.getItem('atlas-layout-preferences') || '{}');
+				var view = state["docs-layout-persistence"] || {};
+				var excludesKey = "";
+				var blocked = {};
+				if (excludesKey) {
+					var exclusions = JSON.parse(localStorage.getItem('atlas-layout-exclusions') || '{}');
+					if (Object.prototype.hasOwnProperty.call(exclusions, excludesKey)) {
+						var scoped = exclusions[excludesKey];
+						if (scoped) {
+							if (typeof scoped === 'object') blocked = scoped;
+						}
+					}
+				}
+				var html = document.documentElement;
+				for (var c in view) {
+					if (Object.prototype.hasOwnProperty.call(blocked, c)) continue;
+					if (view[c]) html.classList.add(c);
+					else html.classList.remove(c);
+				}
+			} catch (e) {}
+		})();;
+			</script>
+
+			<!-- assets and js globals -->
+			
+			<link rel="stylesheet" href="/static/assets/0.4.03574.8308-9505b1c8/styles/site.css" />
+			
+			<script src="https://wcpstatic.microsoft.com/mscc/lib/v2/wcp-consent.js"></script>
+			<!-- Keep this URL in sync with oneDSScriptSelector in instrumentation/one-ds.ts. -->
+			<script async src="https://js.monitor.azure.com/scripts/c/ms.jsll-4.min.js"></script>
+			
+
+			<!-- msdocs global object -->
+			<script id="msdocs-script">
+		var msDocs = {
+  "environment": {
+    "accessLevel": "online",
+    "azurePortalHostname": "portal.azure.com",
+    "reviewFeatures": false,
+    "supportLevel": "production",
+    "systemContent": true,
+    "siteName": "learn",
+    "legacyHosting": false
+  },
+  "data": {
+    "contentLocale": "en-us",
+    "contentDir": "ltr",
+    "userLocale": "en-us",
+    "userDir": "ltr",
+    "pageTemplate": "Conceptual",
+    "layoutStateStorageKey": "docs-layout-persistence",
+    "brand": "",
+    "context": {},
+    "standardFeedback": true,
+    "showFeedbackReport": false,
+    "feedbackHelpLinkType": "",
+    "feedbackHelpLinkUrl": "",
+    "feedbackSystem": "Standard",
+    "feedbackGitHubRepo": "",
+    "feedbackProductUrl": "https://support.microsoft.com/windows/send-feedback-to-microsoft-with-the-feedback-hub-app-f59187f8-8739-22d6-ba93-f66612949332",
+    "extendBreadcrumb": false,
+    "isEditDisplayable": false,
+    "isPrivateUnauthorized": false,
+    "hideViewSource": false,
+    "isPermissioned": false,
+    "hasRecommendations": true
+  },
+  "functions": {}
+};;
+	</script>
+
+			<!-- base scripts, msdocs global should be before this -->
+			<script
+				src="/static/assets/0.4.03574.8308-9505b1c8/scripts/en-us/index-docs.js"
+				async
+			></script>
+			
+
+			<!-- json-ld -->
+			
+		<script >bazadebezolkohpepadr="1182004339"</script><script type="text/javascript" src="https://learn.microsoft.com/akam/13/4673f7a7"  defer></script></head>
+	
+			<body
+				id="body"
+				data-bi-name="body"
+				class="layout-body "
+				lang="en-us"
+				dir="ltr"
+			>
+				<header class="layout-body-header background-color-body-medium">
+		<div class="header-holder has-default-focus">
+			
+		<a
+			href="#main"
+			
+			style="z-index: 1070"
+			class="outline-color-text visually-hidden-until-focused position-fixed inner-focus focus-visible top-0 left-0 right-0 padding-xs text-align-center background-color-body"
+			
+		>
+			Skip to main content
+		</a>
+	
+		<a
+			href="#"
+			data-skip-to-ask-learn
+			style="z-index: 1070"
+			class="outline-color-text visually-hidden-until-focused position-fixed inner-focus focus-visible top-0 left-0 right-0 padding-xs text-align-center background-color-body"
+			hidden
+		>
+			Skip to Ask Learn chat experience
+		</a>
+	
+
+			<div hidden id="cookie-consent-holder" data-test-id="cookie-consent-container"></div>
+			<!-- Unsupported browser warning -->
+			<div
+				id="unsupported-browser"
+				style="background-color: white; color: black; padding: 16px; border-bottom: 1px solid grey;"
+				hidden
+			>
+				<div style="max-width: 800px; margin: 0 auto;">
+					<p style="font-size: 24px">This browser is no longer supported.</p>
+					<p style="font-size: 16px; margin-top: 16px;">
+						Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+					</p>
+					<div style="margin-top: 12px;">
+						<a
+							href="https://go.microsoft.com/fwlink/p/?LinkID=2092881 "
+							style="background-color: #0078d4; border: 1px solid #0078d4; color: white; padding: 6px 12px; border-radius: 2px; display: inline-block;"
+						>
+							Download Microsoft Edge
+						</a>
+						<a
+							href="https://learn.microsoft.com/en-us/lifecycle/faq/internet-explorer-microsoft-edge"
+							style="background-color: white; padding: 6px 12px; border: 1px solid #505050; color: #171717; border-radius: 2px; display: inline-block;"
+						>
+							More info about Internet Explorer and Microsoft Edge
+						</a>
+					</div>
+				</div>
+			</div>
+			<!-- site header -->
+			<div
+				id="ms--site-header"
+				data-test-id="site-header-wrapper"
+				itemscope="itemscope"
+				itemtype="http://schema.org/Organization"
+			>
+				<div
+					id="ms--mobile-nav"
+					class="site-header display-none-tablet padding-inline-none gap-none"
+					data-bi-name="mobile-header"
+					data-test-id="mobile-header"
+				></div>
+				<div
+					id="ms--primary-nav"
+					class="site-header display-none display-flex-tablet"
+					data-bi-name="L1-header"
+					data-test-id="primary-header"
+				></div>
+				<div
+					id="ms--secondary-nav"
+					class="site-header display-none display-flex-tablet"
+					data-bi-name="L2-header"
+					data-test-id="secondary-header"
+					
+				></div>
+			</div>
+			
+		<!-- banner -->
+		<div data-banner>
+			<div id="disclaimer-holder"></div>
+			
+		</div>
+		<!-- banner end -->
+	
+		</div>
+	</header>
+				 <section
+					id="layout-body-menu"
+					class="layout-body-menu border-right display-flex background-color-body-medium"
+					data-bi-name="menu"
+			  >
+					
+		<div
+			id="left-container"
+			class="left-container display-none padding-none display-block-tablet width-full display-none-until-layout-restored"
+			data-toc-container="true"
+		>
+			<div
+				id="ms--toc-content"
+				class="padding-left-sm padding-right-none padding-bottom-sm height-full"
+			>
+				<nav
+					id="affixed-left-container"
+					class="margin-top-xxs-tablet position-sticky display-flex flex-direction-column width-full"
+					aria-label="Primary"
+					data-bi-name="left-toc"
+					role="navigation"
+				>
+					<div
+						id="ms--collapsible-toc-header"
+						class="display-flex flex-direction-row-reverse justify-content-center align-items-center margin-bottom-xxs margin-right-xxs"
+					>
+						<button
+							type="button"
+							class="button button-clear button-sm inner-focus"
+							data-collapsible-toc-toggle
+							aria-expanded="true"
+							hidden
+							aria-controls="ms--toc-content"
+							aria-label="Table of contents"
+						>
+							<span class="icon icon-mirrored-rtl" aria-hidden="true">
+								<span
+									class="docon docon-panel-left-contract display-none-layout-menu-collapsed"
+								></span>
+								<span
+									class="docon docon-panel-left-expand display-none display-inline-layout-menu-collapsed"
+								></span>
+							</span>
+						</button>
+						<div
+							id="ms--collapsible-toc-moniker-slot"
+							class="flex-grow-1 display-none-layout-menu-collapsed"
+						></div>
+					</div>
+				</nav>
+			</div>
+		</div>
+	
+			  </section>
+
+				<main
+					id="main"
+					role="main"
+					class="layout-body-main "
+					data-bi-name="content"
+					lang="en-us"
+					dir="ltr"
+				>
+					
+			<div
+		id="ms--content-header"
+		class="content-header default-focus border-bottom-none"
+		data-bi-name="content-header"
+	>
+		<div class="content-header-controls margin-xxs margin-inline-sm-tablet">
+			<button
+				type="button"
+				class="contents-button button button-sm margin-right-xxs"
+				data-bi-name="contents-expand"
+				aria-haspopup="true"
+				data-contents-button
+			>
+				<span class="icon" aria-hidden="true"><span class="docon docon-menu"></span></span>
+				<span class="contents-expand-title"> Table of contents </span>
+			</button>
+			<button
+				type="button"
+				class="ap-collapse-behavior ap-expanded button button-sm"
+				data-bi-name="ap-collapse"
+				aria-controls="action-panel"
+			>
+				<span class="icon" aria-hidden="true"><span class="docon docon-exit-mode"></span></span>
+				<span>Exit editor mode</span>
+			</button>
+		</div>
+	</div> 
+		<div
+			id="action-panel"
+			role="region"
+			aria-label="Action Panel"
+			class="action-panel"
+			tabindex="-1"
+		></div>
+	
+			<div
+				data-main-column
+				class="reading-width margin-inline-auto layout-padding padding-top-none padding-top-sm-tablet padding-bottom-sm"
+			>
+				<div>
+					
+		<div id="article-header" class="background-color-body margin-bottom-xs display-none-print">
+			<div class="display-flex align-items-center justify-content-space-between">
+				
+		<details
+			id="article-header-breadcrumbs-overflow-popover"
+			class="popover popover-left"
+			data-for="article-header-breadcrumbs"
+		>
+			<summary
+				class="button button-clear button-primary button-sm inner-focus"
+				aria-label="All breadcrumbs"
+			>
+				<span class="icon" aria-hidden="true">
+					<span class="docon docon-more"></span>
+				</span>
+			</summary>
+			<div id="article-header-breadcrumbs-overflow" class="popover-content"></div>
+		</details>
+
+		<bread-crumbs
+			id="article-header-breadcrumbs"
+			role="group"
+			aria-label="Breadcrumbs"
+			data-test-id="article-header-breadcrumbs"
+			class="overflow-hidden flex-grow-1 margin-right-sm margin-right-md-tablet margin-right-lg-desktop margin-left-negative-xxs padding-left-xxs"
+		></bread-crumbs>
+	 
+		<div
+			id="article-header-page-actions"
+			class="opacity-none margin-left-auto display-flex flex-wrap-no-wrap align-items-stretch"
+		>
+			
+		<button
+			class="button button-sm border-none inner-focus display-none-tablet flex-shrink-0 "
+			data-bi-name="ask-learn-assistant-entry"
+			data-test-id="ask-learn-assistant-modal-entry-mobile"
+			data-ask-learn-modal-entry
+			
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-label="Ask Learn"
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+		</button>
+		<button
+			class="button button-sm display-none display-inline-flex-tablet display-none-desktop flex-shrink-0 margin-right-xxs border-color-ask-learn "
+			data-bi-name="ask-learn-assistant-entry"
+			
+			data-test-id="ask-learn-assistant-modal-entry-tablet"
+			data-ask-learn-modal-entry
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+		<button
+			class="button button-sm display-none flex-shrink-0 display-inline-flex-desktop margin-right-xxs border-color-ask-learn "
+			data-bi-name="ask-learn-assistant-entry"
+			
+			data-test-id="ask-learn-assistant-flyout-entry"
+			data-ask-learn-flyout-entry
+			data-flyout-button="toggle"
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-controls="ask-learn-flyout"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+	 
+
+			<details class="popover popover-right" id="article-header-page-actions-overflow">
+				<summary
+					class="justify-content-flex-start button button-clear button-sm button-primary inner-focus"
+					aria-label="More actions"
+					aria-expanded="false"
+					title="More actions"
+				>
+					<span class="icon" aria-hidden="true">
+						<span class="docon docon-more-vertical"></span>
+					</span>
+				</summary>
+				<div class="popover-content">
+					
+		<button
+			type="button"
+			id="ms--focus-mode-button"
+			data-focus-mode
+			data-bi-name="focus-mode-entry"
+			data-page-action-item="overflow-all"
+			data-popover-close
+			class="button button-clear button-sm button-block justify-content-flex-start text-align-left inner-focus display-none display-inline-flex-tablet"
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-glasses"></span>
+			</span>
+			<span>Reading mode</span>
+		</button>
+	 
+		<button
+			data-page-action-item="overflow-mobile"
+			type="button"
+			class="display-block-layout-menu-collapsed button-block button-sm inner-focus button button-clear display-none-tablet justify-content-flex-start text-align-left"
+			data-bi-name="contents-expand"
+			data-contents-button
+			data-popover-close
+		>
+			<span class="icon" aria-hidden="true"
+				><span class="docon docon-editor-list-bullet"></span
+			></span>
+			<span class="contents-expand-title">Table of contents</span>
+		</button>
+	 
+		<a
+			id="lang-link-overflow"
+			class="button-sm inner-focus button button-clear button-block justify-content-flex-start text-align-left"
+			data-bi-name="language-toggle"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			data-read-in-link
+			href="#"
+			hidden
+		>
+			<span class="icon" aria-hidden="true" data-read-in-link-icon>
+				<span class="docon docon-locale-globe"></span>
+			</span>
+			<span data-read-in-link-text>Read in English</span>
+		</a>
+	
+					
+		<button
+			type="button"
+			class="collection button button-clear button-sm button-block justify-content-flex-start text-align-left inner-focus"
+			data-list-type="collection"
+			data-bi-name="collection"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			data-popover-close
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-circle-addition"></span>
+			</span>
+			<span class="collection-status">Add</span>
+		</button>
+	 
+		<button
+			type="button"
+			class="collection button button-block button-clear button-sm justify-content-flex-start text-align-left inner-focus"
+			data-list-type="plan"
+			data-bi-name="plan"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			data-popover-close
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-circle-addition"></span>
+			</span>
+			<span class="plan-status">Add to Plans</span>
+		</button>
+	 
+					
+		<a
+			data-contenteditbtn
+			class="button button-clear button-block button-sm inner-focus justify-content-flex-start text-align-left text-decoration-none"
+			data-bi-name="edit"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			hidden
+			href="https://github.com/MicrosoftDocs/windows-itpro-docs/blob/public/windows/security/identity-protection/access-control/local-accounts.md"
+			data-original_content_git_url="https://github.com/MicrosoftDocs/windows-docs-pr/blob/live/windows/security/identity-protection/access-control/local-accounts.md"
+			data-original_content_git_url_template="{repo}/blob/{branch}/windows/security/identity-protection/access-control/local-accounts.md"
+			data-pr_repo=""
+			data-pr_branch=""
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-edit-outline"></span>
+			</span>
+			<span>Edit</span>
+		</a>
+	  
+		<hr class="margin-block-xxs" />
+		
+				<button
+					class="button button-block button-clear button-sm justify-content-flex-start text-align-left inner-focus"
+					type="button"
+					data-bi-name="copy-markdown"
+					data-page-action-item="overflow-all"
+					data-copy-markdown
+					data-copy-state="idle"
+					data-check-hidden="true"
+				>
+					<span class="icon color-primary" aria-hidden="true">
+						<span data-show-when="idle" class="docon docon-code-lang"></span>
+						<span data-show-when="loading" class="loader" hidden></span>
+						<span data-show-when="success" class="docon docon-check-mark" hidden></span>
+					</span>
+					<span>Copy Markdown</span>
+				</button>
+		   
+				<button
+					class="button button-block button-clear button-sm justify-content-flex-start text-align-left inner-focus"
+					type="button"
+					data-bi-name="print"
+					data-page-action-item="overflow-all"
+					data-popover-close
+					data-print-page
+					data-check-hidden="true"
+				>
+					<span class="icon color-primary" aria-hidden="true">
+						<span class="docon docon-print"></span>
+					</span>
+					<span>Print</span>
+				</button>
+		  
+	
+				</div>
+			</details>
+		</div>
+	
+			</div>
+		</div>
+	  
+		<!-- privateUnauthorizedTemplate is hidden by default -->
+		<div unauthorized-private-section data-bi-name="permission-content-unauthorized-private" hidden>
+			<hr class="hr margin-top-xs margin-bottom-sm" />
+			<div class="notification notification-info">
+				<div class="notification-content">
+					<p class="margin-top-none notification-title">
+						<span class="icon" aria-hidden="true"
+							><span class="docon docon-exclamation-circle-solid"></span
+						></span>
+						<span>Note</span>
+					</p>
+					<p class="margin-top-none authentication-determined not-authenticated">
+						Access to this page requires authorization. You can try <a class="docs-sign-in" href="#" data-bi-name="permission-content-sign-in">signing in</a> or <a  class="docs-change-directory" data-bi-name="permisson-content-change-directory">changing directories</a>.
+					</p>
+					<p class="margin-top-none authentication-determined authenticated">
+						Access to this page requires authorization. You can try <a class="docs-change-directory" data-bi-name="permisson-content-change-directory">changing directories</a>.
+					</p>
+				</div>
+			</div>
+		</div>
+	
+					<div class="content"><h1 id="local-accounts">Local accounts</h1></div>
+					
+		<div
+			id="article-metadata"
+			data-bi-name="article-metadata"
+			data-test-id="article-metadata"
+			class="page-metadata-container display-flex gap-xxs justify-content-space-between align-items-center flex-wrap-wrap"
+		>
+			
+		<div class="margin-block-xxs">
+			<ul class="metadata page-metadata" data-bi-name="page info" lang="en-us" dir="ltr">
+				 <li class="display-inline">Applies to: ✅ <a href=https://learn.microsoft.com/windows/release-health/supported-versions-windows-client target=_blank>Windows 11</a>, ✅ <a href=https://learn.microsoft.com/windows/release-health/supported-versions-windows-client target=_blank>Windows 10</a>, ✅ <a href=https://learn.microsoft.com/windows/release-health/windows-server-release-info target=_blank>Windows Server 2025</a>, ✅ <a href=https://learn.microsoft.com/windows/release-health/windows-server-release-info target=_blank>Windows Server 2022</a>, ✅ <a href=https://learn.microsoft.com/windows/release-health/windows-server-release-info target=_blank>Windows Server 2019</a>, ✅ <a href=https://learn.microsoft.com/windows/release-health/windows-server-release-info target=_blank>Windows Server 2016</a></li>
+			</ul>
+		</div>
+	 
+				<div
+					id="user-feedback"
+					class="margin-block-xxs display-none display-none-print"
+					hidden
+					data-hide-on-archived
+				>
+					
+		<button
+			id="user-feedback-button"
+			data-test-id="conceptual-feedback-button"
+			class="button button-sm button-clear button-primary display-none"
+			type="button"
+			data-bi-name="user-feedback-button"
+			data-user-feedback-button
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-like"></span>
+			</span>
+			<span>Feedback</span>
+		</button>
+	
+				</div>
+		  
+		</div>
+	 
+		<div data-id="ai-summary" class="display-none-print">
+			<div id="ms--ai-summary-cta" class="margin-top-xs display-flex align-items-center">
+				<span class="icon" aria-hidden="true">
+					<span class="docon docon-sparkle-fill gradient-text-vivid"></span>
+				</span>
+				<button
+					id="ms--ai-summary"
+					type="button"
+					class="tag tag-sm tag-suggestion margin-left-xxs"
+					data-test-id="ai-summary-cta"
+					data-bi-name="ai-summary-cta"
+					data-an="ai-summary"
+				>
+					<span class="ai-summary-cta-text">
+						Summarize this article for me
+					</span>
+				</button>
+			</div>
+			<!-- Slot where the client will render the summary card after the user clicks the CTA -->
+			<div id="ms--ai-summary-header" class="margin-top-xs"></div>
+		</div>
+	 
+		<nav
+			id="center-doc-outline"
+			class="doc-outline display-none-desktop display-none-print margin-bottom-sm"
+			data-bi-name="intopic toc"
+			aria-label="In this article"
+		>
+			<h2 id="ms--in-this-article" class="title is-6 margin-block-xs">
+				In this article
+			</h2>
+		</nav>
+	 <div class="content"><p>This article describes the default local user and system accounts for Windows operating systems, and describes how to manage them.</p>
+<p>Local accounts (user accounts and system accounts) are security principals that're used to manage user and system access to the resources on a device. Local user and system accounts are defined locally on a device, and the device is the security authority. These accounts have rights and permissions only on that device.</p>
+<h2 id="default-local-user-accounts">Default local user accounts</h2>
+<p>The <em>default local user accounts</em> are built-in local user accounts that the operating system creates automatically when it installs. You can't remove or delete the default local user accounts. Default local user accounts have rights and permissions to manage access to the local device's resources. They don't provide access to network resources.</p>
+<p>To manage a computer's local user accounts, use the Computer Management Microsoft Management Console (MMC). Computer Management is a collection of administrative tools that you can use to manage a local or remote device. The default local user accounts, and the local user accounts that you create, are located in the Local Users and Groups\Users folder in Computer Management.</p>
+<p>The following sections describe the default local user accounts.</p>
+<h3 id="administrator">Administrator</h3>
+<p>The default local Administrator account is a user account that's intended for system administration. Every computer is a security authority and has an Administrator account (the account <a href="/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers" data-linktype="absolute-path">security identifier</a> (SID) is <code>S-1-5-&lt;SecurityAuthorityName&gt;-500</code>, and its display name is <strong>Administrator</strong>). The Administrator account is the first account that's created during the Windows installation.</p>
+<p>The Administrator account has full control of the files, directories, services, and other resources on the local device. The Administrator account can create other local users, assign user rights, and assign permissions. The Administrator account can take control of local resources at any time by changing the user rights and permissions.</p>
+<p>You can't delete or lock out the default Administrator account. However, you can rename or disable it.</p>
+<p>Windows setup disables the built-in Administrator account and creates another local account that is a member of the Administrators group.</p>
+<p>Members of the Administrators groups can run apps by using elevated permissions without using the <strong>Run as Administrator</strong> command.</p>
+<h4 id="account-group-membership">Account group membership</h4>
+<p>By default, the Administrator account is a member of the Administrators group. It's a best practice to limit the number of users in the Administrators group, because members of the Administrators group have Full Control permissions on the device.</p>
+<p>You can't remove the Administrator account from the Administrators group.</p>
+<h4 id="security-considerations">Security considerations</h4>
+<p>The Administrator account is known to exist on many versions of the Windows operating system. Therefore, it's a best practice to disable the Administrator account when possible to make it more difficult for malicious users to gain access to the server or client computer.</p>
+<p>You can rename the Administrator account. However, a renamed Administrator account continues to use the same automatically-assigned SID, which malicious users can be discover. For more information about how to rename or disable a user account, see <a href="/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc732112(v=ws.11)" data-linktype="absolute-path">Disable or activate a local user account</a> and <a href="/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc725595(v=ws.11)" data-linktype="absolute-path">Rename a local user account</a>.</p>
+<p>As a security best practice, use your local (non-Administrator) account to sign in and then use <strong>Run as administrator</strong> to accomplish tasks that require a higher level of rights or permissions than a standard user account. Don't use the Administrator account to sign in to your computer unless it's necessary. For more information, see <a href="/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc732200(v=ws.11)" data-linktype="absolute-path">Run a program with administrative credentials</a>.</p>
+<p>You can use Group Policy to automatically control the use of the local Administrators group. For more information about Group Policy, see <a href="/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/hh831791(v=ws.11)" data-linktype="absolute-path">Group Policy Overview</a>.</p>
+<div class="IMPORTANT">
+<p>Important</p>
+<ul>
+<li>You can't use a blank password for the Administrator account.</li>
+<li>Even when the Administrator account is disabled, you can still use it to gain access to a computer if you start it in safe mode. The following rules apply when you sign in to a computer in safe mode:
+<ul>
+<li>When networking is enabled, you can use a domain user account that is member of the administrators group.</li>
+<li>When one other member of the local administrators group is enabled, you can use that member account.</li>
+<li>If no other account is enabled, safe mode automatically enables the Administrator account. When you start the computer in normal mode instead of safe mode, the Administrator account is disabled.</li>
+</ul>
+</li>
+</ul>
+</div>
+<h3 id="guest">Guest</h3>
+<p>Occasional or one-time users who don't have an account on the device can use the Guest account to temporarily sign in to the local device. The account security identifier (SID) is <code>S-1-5-21-&lt;SecurityAuthorityName&gt;-501</code>, and its display name is <strong>Guest</strong>. The Guest account has limited user rights and permissions. By default, the Guest account is disabled and has a blank password. Because the Guest account can provide anonymous access, it's considered a security risk. For this reason, it's a best practice to leave the Guest account disabled, unless its use is necessary.</p>
+<h4 id="guest-account-group-membership">Guest account group membership</h4>
+<p>By default, the Guest account is the only member of the default Guests group (the group SID is <code>S-1-5-32-546</code>). This group has the rights and permissions that the Guest account needs to sign in to a device.</p>
+<h4 id="guest-account-security-considerations">Guest account security considerations</h4>
+<p>When enabling the Guest account, only grant limited rights and permissions. For security reasons, don't use the Guest account over the network, and don't allow other computers to access it.</p>
+<p>In addition, the Guest account shouldn't be able to view the event logs. After you enable the Guest account, it's a best practice to monitor the Guest account frequently to make sure that other users can't use services and other resources. Such resources include those that a previous user left available unintentionally.</p>
+<h3 id="defaultaccount">DefaultAccount</h3>
+<p>The DefaultAccount account, also known as the Default System Managed Account (DSMA), is a well-known user account type. DSMA can run processes that are either multi-user aware or user-agnostic.</p>
+<p>The DSMA is disabled by default on the desktop editions and on the Server operating systems with the desktop experience.</p>
+<p>The DSMA has a well-known RID of <code>503</code>. The security identifier (SID) of the DSMA thus has a well-known SID in the following format: <code>S-1-5-21-&lt;SecurityAuthorityName&gt;-503</code>.</p>
+<p>The DSMA is a member of the well-known System Managed Accounts Group, which has a well-known SID of <code>S-1-5-32-581</code>.</p>
+<p>The DSMA alias can be granted access to resources during offline staging even before the account itself is created. The account and the group are created within the Security Accounts Manager (SAM) the first time the computer starts.</p>
+<h4 id="how-windows-uses-the-dsma">How Windows uses the DSMA</h4>
+<p>From a permission perspective, the DSMA is a standard user account.</p>
+<p>Multi-user-manifested-apps (MUMA apps) need the DSMA to run on Windows-based devices. MUMA apps run all the time and react to users signing in and signing out of the device. Unlike Windows Desktop, where apps run in context of the user and get terminated when the user signs off, MUMA apps run by using the DSMA.</p>
+<p>MUMA apps function in shared session SKUs such as Xbox. For example, the Xbox shell is a MUMA app. Today, Xbox automatically signs in as Guest account and all apps run in this context. All the apps are multi-user-aware and respond to events fired by user manager. The apps run as the Guest account.</p>
+<p>In the converged user model, the multi-user-aware apps and multi-user-aware brokers run in a different context from that of the users. For this purpose, the system creates the DSMA.</p>
+<h4 id="how-the-dsma-is-created-on-domain-controllers-dcs">How the DSMA is created on domain controllers (DCs)</h4>
+<p>If the domain was created by using DCs that run  Windows Server 2016-or a later Windows Server version, the DSMA exists on all DCs in the domain as a local account. It resides in the same mini account database as the Administrator of the Directory Service Restore Mode (DSRM).</p>
+<h4 id="recommendations-for-managing-the-dsma">Recommendations for managing the DSMA</h4>
+<p>Microsoft doesn't recommend changing the default configuration, where the account is disabled. There's no security risk with having the account in the disabled state. Changing the default configuration could hinder future scenarios that rely on this account.</p>
+<h3 id="wdagutilityaccount">WDAGUtilityAccount</h3>
+<p>The WDAGUtilityAccount is a predefined local account that Windows Defender Application Guard uses. The account has a well-known SID value, <code>S-1-5-21-&lt;SecurityAuthorityName&gt;-504</code>. By default, this account doesn't belong to any groups.</p>
+<h3 id="wsiaccount">WSIAccount</h3>
+<p>The WSIAccount is a predefined local account that's introduced in Windows 11. Windows uses this account for web-related activities that start from the lock or sign-in screen. Such activities include accessing credential provider web pages for password reset or web-based authentication. It has a well-known SID value, <code>S-1-5-21-&lt;SecurityAuthorityName&gt;-1001</code>. By default, this account belongs to the Users group.</p>
+<h2 id="default-local-system-accounts">Default local system accounts</h2>
+<h3 id="system">SYSTEM</h3>
+<p>The SYSTEM account is used by the operating system and by services that run under Windows. It has a well-known SID value, <code>S-1-5-18</code>. There are many services and processes in the Windows operating system that need the capability to sign in internally, such as during a Windows installation. The SYSTEM account was designed for that purpose, and Windows manages the SYSTEM account's user rights. It's an internal account that doesn't show up in User Manager, and it can't be added to any groups.</p>
+<p>On the other hand, the SYSTEM account does appear on an NTFS file system volume in File Manager in the <strong>Permissions</strong> portion of the <strong>Security</strong> menu. By default, the SYSTEM account is granted Full Control permissions to all files on an NTFS volume. In this context, the SYSTEM account has the same functional rights and permissions as the Administrator account.</p>
+<div class="NOTE">
+<p>Note</p>
+<p>To grant the account Administrators group file permissions does not implicitly give permission to the SYSTEM account. The SYSTEM account's permissions can be removed from a file, but we do not recommend removing them.</p>
+</div>
+<h3 id="network-service">NETWORK SERVICE</h3>
+<p>The NETWORK SERVICE account is a predefined local account the service control manager (SCM) uses. The account has a well-known SID value, <code>S-1-5-20</code>. A service that runs in the context of the NETWORK SERVICE account presents the computer's credentials to remote servers. For more information, see <a href="/en-us/windows/desktop/services/networkservice-account" data-linktype="absolute-path">NetworkService Account</a>.</p>
+<h3 id="local-service">LOCAL SERVICE</h3>
+<p>The LOCAL SERVICE account is a predefined local account that the SCM uses. The account has a well-known SID value, <code>S-1-5-19</code>. It has minimum privileges on the local computer and presents anonymous credentials on the network. For more information, see <a href="/en-us/windows/desktop/services/localservice-account" data-linktype="absolute-path">LocalService Account</a>.</p>
+<h3 id="helpassistant">HelpAssistant</h3>
+<p>The HelpAssistant account is a default local account that's only enabled during Remote Assistance sessions. when no Remote Assistance requests are pending, the HelpAssistant account is automatically disabled.</p>
+<p>HelpAssistant is the primary account that's used to establish a Remote Assistance session. The Remote Assistance session connects to another Windows-based computer, and it's initiated by invitation. To solicit remote assistance, a user sends an invitation from their computer, through e-mail or as a file, to a person who can provide assistance. After the user's invitation for a Remote Assistance session is accepted, the default HelpAssistant account is automatically created to give the person who provides assistance limited access to the computer. The Remote Desktop Help Session Manager service manages the HelpAssistant account.</p>
+<h4 id="helpassistant-account-security-considerations">HelpAssistant account security considerations</h4>
+<p>The SIDs that pertain to the default HelpAssistant account include the following values:</p>
+<ul>
+<li>SID: <code>S-1-5-13</code>, display name <strong>Terminal Server User</strong>. This group includes all users who sign in to a server while Remote Desktop Services is enabled.</li>
+<li>SID: <code>S-1-5-14</code>, display name <strong>Remote Interactive Logon</strong>. This group includes all users who connect to the computer by using a remote desktop connection. This group is a subset of the Interactive group. Access tokens that contain the Remote Interactive Logon SID also contain the Interactive SID.</li>
+</ul>
+<div class="NOTE">
+<p>Note</p>
+<p>These SIDs are classified as "Well-known" SIDs. For more information, see the <a href="/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers#well-known-sids" data-linktype="absolute-path">Well-known SIDs</a> section of <a href="/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers" data-linktype="absolute-path">Security identifiers</a>.</p>
+</div>
+<p>For the Windows Server operating system, Remote Assistance is an optional component that isn't installed by default. You must install Remote Assistance before it can be used.</p>
+<h2 id="how-to-manage-local-user-accounts">How to manage local user accounts</h2>
+<p>As described earlier, the default local user accounts, and the local user accounts you create, reside in the Local Users and Groups\Users folder in Computer Management. For more information about creating and managing local user accounts, see <a href="/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc731899(v=ws.11)" data-linktype="absolute-path">Manage Local Users</a>.</p>
+<p>To limit the ability of local users and groups to perform certain actions, you can use Local Users and Groups to assign rights and permissions on only the local computer. A right authorizes a user to perform certain actions on a device, such as backing up files and folders or shutting down a computer. An access permission is a rule that is associated with an object, usually a file, folder, or printer. It regulates which users can have access to an object on the server and in what manner.</p>
+<p>You can't use Local Users and Groups on a DC to manage accounts on the DC. You can use Local Users and Groups on a DC to target remote computers that aren't DCs, if your network allows remote administration.</p>
+<p>You can also manage local users by using <code>NET.EXE USER</code> and manage local groups by using <code>NET.EXE LOCALGROUP</code>, or by using the <a href="/en-us/powershell/module/microsoft.powershell.localaccounts" data-linktype="absolute-path">Microsoft.PowerShell.LocalAccounts Module</a> cmdlets in Windows PowerShell.</p>
+<h3 id="protect-default-workstation-accounts-while-the-accounts-are-in-use">Protect default workstation accounts while the accounts are in use</h3>
+<p>In Windows the Local Security Authority SubSystem (LSASS) process handles all user and system sessions and credentials. To isolate and protect these credentials, follow these steps:</p>
+<ul>
+<li><p>For all computer roles (e.g. workstations and servers), configure LSASS to be a protected processes light (PPL) process. For more information and instructions, see <a href="/en-us/windows-server/security/credentials-protection-and-management/configuring-additional-lsa-protection" data-linktype="absolute-path">Configure added LSA protection</a>.</p>
+</li>
+<li><p>For workstations, make sure that Credential Guard is running to further isolate active credentials and secrets are isolated. Depending on your computer configuration, Credential Guard is typically active by default on current versions of Windows. For more information about using Credential Guard, see the following articles:</p>
+<ul>
+<li><a href="../credential-guard/" data-linktype="relative-path">Credential Guard overview</a></li>
+<li><a href="../credential-guard/configure" data-linktype="relative-path">Configure Credential Guard</a></li>
+<li><a href="../credential-guard/how-it-works" data-linktype="relative-path">How Credential Guard works</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="restrict-and-protect-local-accounts-that-have-administrative-rights">Restrict and protect local accounts that have administrative rights</h3>
+<p>You can use many approaches to prevent malicious users from using stolen credentials such as a stolen password or password hash, for a local account on one computer from being used to authenticate and use administrative rights and permission on another computer. This type of attack is referred to as <em>lateral movement</em>.</p>
+<p>The simplest approach is to sign in to your computer with a standard user account and then use that account for administrative tasks, instead of using the Administrator account. For example, use a standard account to browse the internet, send email, or use a word processor. When you want to perform administrative tasks such as installing a new program or changing a setting that affects other users, you don't have to switch to an Administrator account. You can use User Account Control (UAC) to prompt you for permission or an administrator password before performing the task, as described in the next section.</p>
+<p>Other approaches that you can use to restrict and protect user accounts that have administrative rights include the following steps:</p>
+<ul>
+<li>Enforce local account restrictions for remote access</li>
+<li>Deny the network logon access right to all local Administrator accounts</li>
+<li>Create unique passwords for local accounts that have administrative rights</li>
+</ul>
+<p>The following sections describe each of these approaches.</p>
+<h3 id="enforce-local-account-restrictions-for-remote-access">Enforce local account restrictions for remote access</h3>
+<p>User Account Control (UAC) is a security feature that informs you when a program makes a change that requires administrative permissions. UAC works by adjusting the permission level of your user account. By default, UAC is set to notify you when applications try to make changes to your computer, but you can change when UAC notifies you.</p>
+<p>UAC makes it possible for an account that has administrative rights to be treated as a standard user nonadministrator account until full rights, also called elevation, is requested and approved. For example, UAC lets an administrator enter credentials during a nonadministrator's user session to perform occasional administrative tasks without having to switch users, sign out, or use the <strong>Run as</strong> command.</p>
+<p>In addition, UAC can require administrators to specifically approve applications that make system-wide changes before those applications are granted permission to run, even in the administrator's user session.</p>
+<p>For example, a default feature of UAC is shown when a local account signs in from a remote computer by using Network logon (for example, by using <code>NET.EXE USE</code>). In this instance, it's issued a standard user token with no administrative rights, but without the ability to request or receive elevation. Consequently, local accounts that sign in by using Network logon can't access administrative shares such as C$, or ADMIN$, or perform any remote administration.</p>
+<p>For more information about UAC, see <a href="/en-us/windows/access-protection/user-account-control/user-account-control-overview" data-linktype="absolute-path">User Account Control</a>.</p>
+<p>The following table shows the Group Policy and registry settings that enforce local account restrictions for remote access.</p>
+<table>
+<thead>
+<tr>
+<th>No.</th>
+<th>Setting</th>
+<th>Detailed Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>Policy location</td>
+<td>Computer Configuration\Windows Settings\Security Settings\Local Policies\Security Options</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Policy name</td>
+<td><a href="/en-us/windows/security/threat-protection/security-policy-settings/user-account-control-admin-approval-mode-for-the-built-in-administrator-account" data-linktype="absolute-path">User Account Control: Admin Approval Mode for the Built-in Administrator account</a></td>
+</tr>
+<tr>
+<td></td>
+<td>Policy setting</td>
+<td>Enabled</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Policy location</td>
+<td>Computer Configuration\Windows Settings\Security Settings\Local Policies\Security Options</td>
+</tr>
+<tr>
+<td></td>
+<td>Policy name</td>
+<td><a href="/en-us/windows/device-security/security-policy-settings/user-account-control-run-all-administrators-in-admin-approval-mode" data-linktype="absolute-path">User Account Control: Run all administrators in Admin Approval Mode</a></td>
+</tr>
+<tr>
+<td></td>
+<td>Policy setting</td>
+<td>Enabled</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Registry subkey</td>
+<td><code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System</code></td>
+</tr>
+<tr>
+<td></td>
+<td>Registry value name</td>
+<td><code>LocalAccountTokenFilterPolicy</code></td>
+</tr>
+<tr>
+<td></td>
+<td>Registry value type</td>
+<td><code>DWORD</code></td>
+</tr>
+<tr>
+<td></td>
+<td>Registry value data</td>
+<td><code>0</code></td>
+</tr>
+</tbody>
+</table>
+<div class="NOTE">
+<p>Note</p>
+<p>You can also enforce the default local account restrictions by using the custom ADMX in Security Templates. For more information, see <a href="/en-us/troubleshoot/windows-server/active-directory/define-security-templates-using-security-templates-snap-in" data-linktype="absolute-path">Define Security Templates By Using the Security Templates Snap-In</a>.</p>
+</div>
+<h4 id="to-enforce-local-account-restrictions-for-remote-access">To enforce local account restrictions for remote access</h4>
+<ol>
+<li><p>Start the <strong>Group Policy Management</strong> Console (GPMC).</p>
+</li>
+<li><p>In the console tree, navigate to <strong>Forest: <em>ForestName</em></strong> &gt; <strong>Domains</strong> &gt; <em><strong>DomainName</strong></em>, where <em>ForestName</em> is the name of the forest, and <em>DomainName</em> is the name of the domain where you want to configure the Group Policy Object (GPO).</p>
+</li>
+<li><p>In the console tree, right-click <strong>Group Policy Objects</strong>, and then select <strong>New</strong></p>
+</li>
+<li><p>In the <strong>New GPO</strong> dialog box, type a name for the new GPO, and then select <strong>OK</strong>. Use the GPO name to indicate that the GPO restricts local administrator rights to a single computer.</p>
+</li>
+<li><p>In the details pane, right-click the new GPO, and then select <strong>Edit</strong>.</p>
+</li>
+<li><p>To enable and configure UAC for the default Administrator account, follow these steps:</p>
+<ol>
+<li>In the Group Policy Management Editor, navigate to <strong>Computer Configuration</strong> &gt; <strong>Policies</strong> &gt; <strong>Windows Settings</strong> &gt; <strong>Security Settings</strong> &gt; <strong>Local Policies</strong> &gt; <strong>Security Options</strong>.</li>
+<li>In the details pane, right-click <strong>User Account Control: Run all administrators in Admin Approval Mode</strong>, and then select <strong>Properties</strong>.</li>
+<li>Select <strong>Define this policy setting</strong>, select <strong>Enabled</strong>, and then select <strong>OK</strong>.</li>
+<li>Right-click <strong>User Account Control: Admin Approval Mode for the Built-in Administrator account</strong>, and then select <strong>Properties</strong>.</li>
+<li>Select <strong>Define this policy setting</strong>, select <strong>Enabled</strong>, and then select <strong>OK</strong>.</li>
+</ol>
+</li>
+<li><p>To apply local account restrictions for domain members to network interfaces, follow these steps:</p>
+<ol>
+<li>In GPMC, navigate to the domain where you want to apply UAC settings to the domain members.</li>
+<li>Create a new GPO, or select an existing GPO that matches the purpose.</li>
+<li>Open the GPO for editing.</li>
+<li>In Group Policy Management Editor, navigate to <strong>Computer Configuration</strong> &gt; <strong>Preferences</strong> &gt; <strong>Windows Settings</strong> &gt; <strong>Registry</strong>.</li>
+<li>Right-click <strong>Registry</strong>, and then select <strong>New</strong> &gt; <strong>Registry Item</strong>.</li>
+<li>In the <strong>New Registry Properties</strong> dialog box, on the <strong>General</strong> tab, change the setting in the <strong>Action</strong> box to <strong>Replace</strong></li>
+<li>Make sure that the <strong>Hive</strong> box is set to <strong>HKEY_LOCAL_MACHINE</strong></li>
+<li>Next to <strong>Key Path</strong>, select <strong>...</strong>, and then select the following subkey: <code>HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System</code></li>
+<li>Select <strong>Select</strong>.</li>
+<li>In the <strong>Value name</strong> box, type <em>LocalAccountTokenFilterPolicy</em>.</li>
+<li>In the <strong>Value type</strong> box, from the drop-down list, select <strong>REG_DWORD</strong>.</li>
+<li>In the <strong>Value data</strong> box, type <em>0</em>, and then select <strong>OK</strong>.</li>
+</ol>
+</li>
+<li><p>To link the GPO to the appropriate organizational unit (OU), follow these steps:</p>
+<ol>
+<li>In GPMC, navigate to <strong>Forest: <em>ForestName</em></strong> &gt; <strong>Domains</strong> &gt; <em><strong>DomainName</strong></em> &gt; <em><strong>OUName</strong></em>, where <em>ForestName</em> is the name of the forest, <em>DomainName</em> is the name of the domain, and <em>OUName</em> is the name of the OU that contains the members that you want to manage. In this case, the OU contains the workstations whose local accounts you want to restrict.</li>
+<li>Right-click <em><strong>OUName</strong></em>, and then select <strong>Link an existing GPO</strong>.</li>
+<li>Select the GPO that you created, and then select <strong>OK</strong>.</li>
+</ol>
+</li>
+<li><p>Update the local policy on each of the workstations in the OU. For example, in a Command Prompt window, run <code>gpupdate /force /target:computer</code>.</p>
+</li>
+<li><p>Test the functionality of enterprise applications on the workstations in that OU, and resolve any issues that the new policy causes.</p>
+</li>
+<li><p>Link the GPO to all other OUs that contain workstations</p>
+</li>
+<li><p>Link the GPO to all other OUs that contain servers</p>
+</li>
+</ol>
+<h3 id="deny-the-network-logon-access-right-to-all-local-administrator-accounts">Deny the network logon access right to all local Administrator accounts</h3>
+<p>Denying local accounts the ability to sign in over a network connection (network logon) can help prevent a malicious attacker from reusing a local account password hash. This procedure helps to prevent lateral movement by making sure that attackers can't use stolen credentials for local accounts from a compromised operating system to compromise other computers that use the same credentials.</p>
+<div class="NOTE">
+<p>Note</p>
+<p>To perform this procedure, you must first identify the name of the local, default Administrator account, which might not be the default user name "Administrator", and any other accounts that are members of the local Administrators group.</p>
+</div>
+<p>The following table shows the Group Policy settings that deny the network logon right for all local Administrator accounts.</p>
+<table>
+<thead>
+<tr>
+<th>No.</th>
+<th>Setting</th>
+<th>Detailed Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>Policy location</td>
+<td>Computer Configuration\Windows Settings\Security Settings\Local Policies\User Rights Assignment</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Policy name</td>
+<td><a href="/en-us/windows/device-security/security-policy-settings/deny-access-to-this-computer-from-the-network" data-linktype="absolute-path">Deny access to this computer from the network</a></td>
+</tr>
+<tr>
+<td></td>
+<td>Policy setting</td>
+<td>Local account and member of Administrators group</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Policy location</td>
+<td>Computer Configuration\Windows Settings\Security Settings\Local Policies\User Rights Assignment</td>
+</tr>
+<tr>
+<td></td>
+<td>Policy name</td>
+<td><a href="/en-us/windows/device-security/security-policy-settings/deny-log-on-through-remote-desktop-services" data-linktype="absolute-path">Deny log on through Remote Desktop Services</a></td>
+</tr>
+<tr>
+<td></td>
+<td>Policy setting</td>
+<td>Local account and member of Administrators group</td>
+</tr>
+</tbody>
+</table>
+<h4 id="to-deny-the-network-logon-right-to-all-local-administrator-accounts">To deny the network logon right to all local administrator accounts</h4>
+<ol>
+<li><p>Start GPMC, and then navigate to <strong>Forest: <em>ForestName</em></strong> &gt; <strong>Domains</strong> &gt; <em><strong>DomainName</strong></em>, where <em>ForestName</em> is the name of the forest, and <em>DomainName</em> is the name of the domain where you want to configure the GPO.</p>
+</li>
+<li><p>In the console tree, right-click <strong>Group Policy Objects</strong>, and then select <strong>New</strong></p>
+</li>
+<li><p>In the <strong>New GPO</strong> dialog box, type a name for the new GPO, and then select <strong>OK</strong>. Use the GPO name to indicate that the GPO restricts the local administrative accounts from interactively signing in to the computer.</p>
+</li>
+<li><p>In the details pane, right-click the new GPO, and then select <strong>Edit</strong>.</p>
+</li>
+<li><p>To configure the user rights to deny the network logon right for administrative local accounts, follow these steps:</p>
+<ol>
+<li>In the Group Policy Management Editor, navigate to <strong>Computer Configuration</strong> &gt; <strong>Policies</strong> &gt; <strong>Windows Settings</strong> &gt; <strong>Security Settings</strong> &gt; <strong>Local Policies</strong> &gt; <strong>User Rights Assignment</strong>.</li>
+<li>In the details pane, right-click <strong>Deny access to this computer from the network</strong>, and then select <strong>Properties</strong>.</li>
+<li>Select <strong>Define these policy settings</strong>, and then select <strong>Add User or Group</strong>.</li>
+<li>Type <em>Local account and member of Administrators group</em>, and then select <strong>OK</strong> twice.</li>
+</ol>
+</li>
+<li><p>To configure the user rights to deny the Remote Desktop (Remote Interactive) logon right for administrative local accounts, follow these steps:</p>
+<ol>
+<li>In the Group Policy Management Editor, still in <strong>User Rights Assignment</strong>, right-click <strong>Deny log on through Remote Desktop Services</strong>, and then select <strong>Properties</strong>.</li>
+<li>Select <strong>Define these policy settings</strong>, and then select <strong>Add User or Group</strong>.</li>
+<li>Type <em>Local account and member of Administrators group</em>, and then select <strong>OK</strong> twice.</li>
+</ol>
+</li>
+<li><p>To link the GPO to the appropriate organizational unit (OU), follow these steps:</p>
+<ol>
+<li>In GPMC, navigate to <strong>Forest: <em>ForestName</em></strong> &gt; <strong>Domains</strong> &gt; <em><strong>DomainName</strong></em> &gt; <em><strong>OUName</strong></em>, where <em>ForestName</em> is the name of the forest, <em>DomainName</em> is the name of the domain, and <em>OUName</em> is the name of the OU that contains the members that you want to manage. In this case, the OU contains the workstations whose local accounts you want to restrict.</li>
+<li>Right-click <em><strong>OUName</strong></em>, and then select <strong>Link an existing GPO</strong>.</li>
+<li>Select the GPO that you created, and then select <strong>OK</strong>.</li>
+</ol>
+</li>
+<li><p>Update the local policy on each of the workstations in the OU. For example, in a Command Prompt window, run <code>gpupdate /force /target:computer</code>.</p>
+</li>
+<li><p>Test the functionality of enterprise applications on the workstations in that OU, and resolve any issues that the new policy causes.</p>
+</li>
+<li><p>Create links to all other OUs that contain workstations</p>
+</li>
+<li><p>Create links to all other OUs that contain servers</p>
+</li>
+</ol>
+<div class="NOTE">
+<p>Note</p>
+<p>If the user name of the default Administrator account is different on workstations and servers, you might have to create separate GPOs for workstations and servers.</p>
+</div>
+<h3 id="create-unique-passwords-for-local-accounts-that-have-administrative-rights">Create unique passwords for local accounts that have administrative rights</h3>
+<p>Passwords should be unique per individual account. While that's typically enforced for individual user accounts, many organizations have identical passwords for common local accounts, such as the default Administrator account or local accounts that the organization uses during operating system deployments.</p>
+<p>Passwords that are left unchanged or changed synchronously to keep them identical add a significant risk for organizations. Randomizing the passwords mitigates "pass-the-hash" attacks by using different passwords for local accounts. Randomized passwords hamper the ability of malicious users to use password hashes of those accounts to compromise other computers.</p>
+<p>You can use any of the following methods to randomize passwords. The methods are listed in order of preference:</p>
+<ul>
+<li>Configuring <a href="/en-us/windows-server/identity/laps/laps-overview" data-linktype="absolute-path">Local Administrator Password Solution (LAPS)</a> to accomplish this task.</li>
+<li>Purchasing and implementing an enterprise tool to accomplish this task. These tools are typically referred to as "privileged password management" tools.</li>
+<li>Creating and implementing a custom script or solution to randomize local account passwords.</li>
+</ul>
+</div>
+					
+		<div
+			id="ms--inline-notifications"
+			class="margin-block-xs"
+			data-bi-name="inline-notification"
+		></div>
+	 
+		<div
+			id="assertive-live-region"
+			role="alert"
+			aria-live="assertive"
+			class="visually-hidden"
+			aria-relevant="additions"
+			aria-atomic="true"
+		></div>
+		<div
+			id="polite-live-region"
+			role="status"
+			aria-live="polite"
+			class="visually-hidden"
+			aria-relevant="additions"
+			aria-atomic="true"
+		></div>
+	
+					
+		<!-- feedback section -->
+		<section
+			id="site-user-feedback-footer"
+			class="font-size-sm margin-top-md display-none-print display-none-desktop"
+			data-test-id="site-user-feedback-footer"
+			data-bi-name="site-feedback-section"
+		>
+			<hr class="hr" />
+			<h2 id="ms--feedback" class="title is-3">Feedback</h2>
+			<div class="display-flex flex-wrap-wrap align-items-center">
+				<p class="font-weight-semibold margin-xxs margin-left-none">
+					Was this page helpful?
+				</p>
+				<div class="buttons">
+					<button
+						class="thumb-rating-button like button button-primary button-sm"
+						data-test-id="footer-rating-yes"
+						data-binary-rating-response="rating-yes"
+						type="button"
+						title="This article is helpful"
+						data-bi-name="button-rating-yes"
+						aria-pressed="false"
+					>
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-like"></span>
+						</span>
+						<span>Yes</span>
+					</button>
+					<button
+						class="thumb-rating-button dislike button button-primary button-sm"
+						id="standard-rating-no-button"
+						hidden
+						data-test-id="footer-rating-no"
+						data-binary-rating-response="rating-no"
+						type="button"
+						title="This article is not helpful"
+						data-bi-name="button-rating-no"
+						aria-pressed="false"
+					>
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-dislike"></span>
+						</span>
+						<span>No</span>
+					</button>
+					<details
+						class="popover popover-top"
+						id="mobile-help-popover"
+						data-test-id="footer-feedback-popover"
+					>
+						<summary
+							class="thumb-rating-button dislike button button-primary button-sm"
+							data-test-id="details-footer-rating-no"
+							data-binary-rating-response="rating-no"
+							title="This article is not helpful"
+							data-bi-name="button-rating-no"
+							aria-pressed="false"
+							data-bi-an="feedback-unhelpful-popover"
+						>
+							<span class="icon" aria-hidden="true">
+								<span class="docon docon-dislike"></span>
+							</span>
+							<span>No</span>
+						</summary>
+						<div
+							class="popover-content width-200 width-300-tablet"
+							role="dialog"
+							aria-labelledby="popover-heading"
+							aria-describedby="popover-description"
+						>
+							<p id="popover-heading" class="font-size-lg margin-bottom-xxs font-weight-semibold">
+								Need help with this topic?
+							</p>
+							<p id="popover-description" class="font-size-sm margin-bottom-xs">
+								Want to try using Ask Learn to clarify or guide you through this topic?
+							</p>
+							
+		<div class="buttons flex-direction-row flex-wrap justify-content-center gap-xxs">
+			<div>
+		<button
+			class="button button-sm border inner-focus display-none margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-test-id="ask-learn-assistant-modal-entry-mobile-feedback"
+			data-ask-learn-modal-entry-feedback
+			data-bi-an=feedback-unhelpful-popover
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-label="Ask Learn"
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+		</button>
+		<button
+			class="button button-sm display-inline-flex display-none-desktop flex-shrink-0 margin-right-xxs border-color-ask-learn margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-bi-an=feedback-unhelpful-popover
+			data-test-id="ask-learn-assistant-modal-entry-tablet-feedback"
+			data-ask-learn-modal-entry-feedback
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+		<button
+			class="button button-sm display-none flex-shrink-0 display-inline-flex-desktop margin-right-xxs border-color-ask-learn margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-bi-an=feedback-unhelpful-popover
+			data-test-id="ask-learn-assistant-flyout-entry-feedback"
+			data-ask-learn-flyout-entry-show-only
+			data-flyout-button="toggle"
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-controls="ask-learn-flyout"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+	</div>
+			<button
+				type="button"
+				class="button button-sm margin-right-xxs"
+				data-help-option="suggest-fix"
+				data-bi-name="feedback-suggest"
+				data-bi-an="feedback-unhelpful-popover"
+				data-test-id="suggest-fix"
+			>
+				<span class="icon" aria-hidden="true">
+					<span class="docon docon-feedback"></span>
+				</span>
+				<span> Suggest a fix? </span>
+			</button>
+		</div>
+	
+						</div>
+					</details>
+				</div>
+			</div>
+		</section>
+		<!-- end feedback section -->
+	
+				</div>
+				
+		<div id="ms--additional-resources-mobile" class="display-none-print">
+			<hr class="hr" hidden />
+			<h2 id="ms--additional-resources-mobile-heading" class="title is-3" hidden>
+				Additional resources
+			</h2>
+			
+		<section
+			id="right-rail-recommendations-mobile"
+			class=""
+			data-bi-name="recommendations"
+			hidden
+		></section>
+	 
+		<section
+			id="right-rail-training-mobile"
+			class=""
+			data-bi-name="learning-resource-card"
+			hidden
+		></section>
+	 
+		<section
+			id="right-rail-events-mobile"
+			class=""
+			data-bi-name="events-card"
+			hidden
+		></section>
+	
+		</div>
+	 
+		<div
+			id="article-metadata-footer"
+			data-bi-name="article-metadata-footer"
+			data-test-id="article-metadata-footer"
+			class="page-metadata-container"
+		>
+			<hr class="hr" />
+			<ul class="metadata page-metadata" data-bi-name="page info" lang="en-us" dir="ltr">
+				<li class="visibility-hidden-visual-diff">
+			<span class="badge badge-sm text-wrap-pretty">
+				<span>Last updated on <local-time format="twoDigitNumeric"
+		datetime="2026-04-15T20:45:00.000Z"
+		data-article-date-source="calculated"
+		class="is-invisible"
+	>
+		2026-04-15
+	</local-time></span>
+			</span>
+		</li>
+			</ul>
+		</div>
+	
+			</div>
+		
+				</main>
+				<aside
+					id="layout-body-aside"
+					class="layout-body-aside  "
+					data-bi-name="aside"
+					aria-label="Additional resources"
+			  >
+					
+		<div
+			id="ms--additional-resources"
+			class="right-container padding-sm display-none display-block-desktop height-full"
+			data-bi-name="pageactions"
+		>
+			<div id="affixed-right-container" data-bi-name="right-column">
+				
+		<nav
+			id="side-doc-outline"
+			class="doc-outline border-bottom padding-bottom-xs margin-bottom-xs scrollbar-width-thin"
+			data-bi-name="intopic toc"
+			aria-label="In this article"
+		>
+			<h3>In this article</h3>
+		</nav>
+	
+				<!-- Feedback -->
+				
+		<section
+			id="ms--site-user-feedback-right-rail"
+			class="font-size-sm display-none-print"
+			data-test-id="site-user-feedback-right-rail"
+			data-bi-name="site-feedback-right-rail"
+		>
+			<div class="display-flex flex-wrap-wrap align-items-center">
+				<p class="font-weight-semibold margin-xxs margin-left-none">
+					Was this page helpful?
+				</p>
+				<div class="display-flex flex-wrap-nowrap">
+					<button
+						class="thumb-rating-button like inner-focus"
+						data-test-id="right-rail-rating-yes"
+						data-binary-rating-response="rating-yes"
+						type="button"
+						title="This article is helpful"
+						aria-label="This article is helpful"
+						data-bi-name="button-rating-yes"
+						aria-pressed="false"
+					>
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-like"></span>
+						</span>
+					</button>
+					<button
+						class="thumb-rating-button dislike inner-focus"
+						id="right-rail-no-button"
+						hidden
+						data-test-id="right-rail-rating-no"
+						data-binary-rating-response="rating-no"
+						type="button"
+						title="This article is not helpful"
+						aria-label="This article is not helpful"
+						data-bi-name="button-rating-no"
+						aria-pressed="false"
+					>
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-dislike"></span>
+						</span>
+					</button>
+					<details class="popover popover-right" id="help-popover" data-test-id="feedback-popover">
+						<summary
+							tabindex="0"
+							class="thumb-rating-button dislike inner-focus"
+							data-test-id="details-right-rail-rating-no"
+							data-binary-rating-response="rating-no"
+							title="This article is not helpful"
+							aria-label="This article is not helpful"
+							data-bi-name="button-rating-no"
+							aria-pressed="false"
+							data-bi-an="feedback-unhelpful-popover"
+						>
+							<span class="icon" aria-hidden="true">
+								<span class="docon docon-dislike"></span>
+							</span>
+						</summary>
+						<div
+							class="popover-content width-200 width-300-tablet"
+							role="dialog"
+							aria-labelledby="popover-heading-right-rail"
+							aria-describedby="popover-description-right-rail"
+						>
+							<p
+								id="popover-heading-right-rail"
+								class="font-size-lg margin-bottom-xxs font-weight-semibold"
+							>
+								Need help with this topic?
+							</p>
+							<p id="popover-description-right-rail" class="font-size-sm margin-bottom-xs">
+								Want to try using Ask Learn to clarify or guide you through this topic?
+							</p>
+							
+		<div class="buttons flex-direction-row flex-wrap justify-content-center gap-xxs">
+			<div>
+		<button
+			class="button button-sm border inner-focus display-none margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-test-id="ask-learn-assistant-modal-entry-mobile-feedback"
+			data-ask-learn-modal-entry-feedback
+			data-bi-an=feedback-unhelpful-popover
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-label="Ask Learn"
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+		</button>
+		<button
+			class="button button-sm display-inline-flex display-none-desktop flex-shrink-0 margin-right-xxs border-color-ask-learn margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-bi-an=feedback-unhelpful-popover
+			data-test-id="ask-learn-assistant-modal-entry-tablet-feedback"
+			data-ask-learn-modal-entry-feedback
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+		<button
+			class="button button-sm display-none flex-shrink-0 display-inline-flex-desktop margin-right-xxs border-color-ask-learn margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-bi-an=feedback-unhelpful-popover
+			data-test-id="ask-learn-assistant-flyout-entry-feedback"
+			data-ask-learn-flyout-entry-show-only
+			data-flyout-button="toggle"
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-controls="ask-learn-flyout"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+	</div>
+			<button
+				type="button"
+				class="button button-sm margin-right-xxs"
+				data-help-option="suggest-fix"
+				data-bi-name="feedback-suggest"
+				data-bi-an="feedback-unhelpful-popover"
+				data-test-id="suggest-fix"
+			>
+				<span class="icon" aria-hidden="true">
+					<span class="docon docon-feedback"></span>
+				</span>
+				<span> Suggest a fix? </span>
+			</button>
+		</div>
+	
+						</div>
+					</details>
+				</div>
+			</div>
+		</section>
+	
+			</div>
+		</div>
+	
+			  </aside> <section
+					id="layout-body-flyout"
+					class="layout-body-flyout "
+					data-bi-name="flyout"
+			  >
+					 <div
+	class="height-full border-left background-color-body-medium"
+	id="ask-learn-flyout"
+></div>
+			  </section> <div class="layout-body-footer " data-bi-name="layout-footer">
+		<footer
+			id="footer"
+			data-test-id="footer"
+			data-bi-name="footer"
+			class="footer-layout padding-xs padding-sm-desktop has-default-focus border-top"
+			role="contentinfo"
+		>
+			<div class="display-flex gap-xs flex-wrap-wrap is-full-height padding-right-lg-desktop">
+				
+		<a
+			data-mscc-ic="false"
+			href="#"
+			data-bi-name="select-locale"
+			class="locale-selector-link flex-shrink-0 button button-sm button-clear external-link-indicator"
+			id=""
+			title=""
+			><span class="icon" aria-hidden="true"
+				><span class="docon docon-world"></span></span
+			><span class="local-selector-link-text">en-us</span></a
+		>
+	 <div class="ccpa-privacy-link" data-ccpa-privacy-link hidden>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://aka.ms/yourcaliforniaprivacychoices"
+			data-bi-name="your-privacy-choices"
+			class="button button-sm button-clear flex-shrink-0 external-link-indicator"
+			id=""
+			title=""
+			>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 30 14"
+			xml:space="preserve"
+			height="16"
+			width="43"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path
+				d="M7.4 12.8h6.8l3.1-11.6H7.4C4.2 1.2 1.6 3.8 1.6 7s2.6 5.8 5.8 5.8z"
+				style="fill-rule:evenodd;clip-rule:evenodd;fill:#fff"
+			></path>
+			<path
+				d="M22.6 0H7.4c-3.9 0-7 3.1-7 7s3.1 7 7 7h15.2c3.9 0 7-3.1 7-7s-3.2-7-7-7zm-21 7c0-3.2 2.6-5.8 5.8-5.8h9.9l-3.1 11.6H7.4c-3.2 0-5.8-2.6-5.8-5.8z"
+				style="fill-rule:evenodd;clip-rule:evenodd;fill:#06f"
+			></path>
+			<path
+				d="M24.6 4c.2.2.2.6 0 .8L22.5 7l2.2 2.2c.2.2.2.6 0 .8-.2.2-.6.2-.8 0l-2.2-2.2-2.2 2.2c-.2.2-.6.2-.8 0-.2-.2-.2-.6 0-.8L20.8 7l-2.2-2.2c-.2-.2-.2-.6 0-.8.2-.2.6-.2.8 0l2.2 2.2L23.8 4c.2-.2.6-.2.8 0z"
+				style="fill:#fff"
+			></path>
+			<path
+				d="M12.7 4.1c.2.2.3.6.1.8L8.6 9.8c-.1.1-.2.2-.3.2-.2.1-.5.1-.7-.1L5.4 7.7c-.2-.2-.2-.6 0-.8.2-.2.6-.2.8 0L8 8.6l3.8-4.5c.2-.2.6-.2.9 0z"
+				style="fill:#06f"
+			></path>
+		</svg>
+	
+			<span>Your Privacy Choices</span></a
+		>
+	
+	</div>
+				<div class="flex-shrink-0">
+		<div class="dropdown has-caret-up">
+			<button
+				data-test-id="theme-selector-button"
+				class="dropdown-trigger button button-clear button-sm inner-focus theme-dropdown-trigger"
+				aria-controls="{{ themeMenuId }}"
+				aria-haspopup="true"
+				aria-expanded="false"
+				data-bi-name="theme"
+			>
+				<span class="icon" aria-hidden="true"><span class="docon docon-sun"></span></span>
+				<span>Theme</span>
+				<span class="icon expanded-indicator" aria-hidden="true">
+					<span class="docon docon-chevron-down-light"></span>
+				</span>
+			</button>
+			<div class="dropdown-menu" id="{{ themeMenuId }}" role="menu">
+				<ul class="theme-selector padding-xxs" data-test-id="theme-dropdown-menu" role="none">
+					<li class="theme display-block" role="none">
+						<button
+							class="button button-clear button-sm theme-control button-block justify-content-flex-start text-align-left"
+							role="menuitemradio"
+							aria-checked="false"
+							data-theme-to="light"
+							tabindex="-1"
+						>
+							<span class="theme-light margin-right-xxs">
+								<span
+									class="theme-selector-icon border display-inline-block has-body-background"
+									aria-hidden="true"
+								>
+									<svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">
+										<rect width="22" height="14" class="has-fill-body-background" />
+										<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+										<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+										<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+										<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+										<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+									</svg>
+								</span>
+							</span>
+							<span> Light </span>
+						</button>
+					</li>
+					<li class="theme display-block" role="none">
+						<button
+							class="button button-clear button-sm theme-control button-block justify-content-flex-start text-align-left"
+							role="menuitemradio"
+							aria-checked="false"
+							data-theme-to="dark"
+							tabindex="-1"
+						>
+							<span class="theme-dark margin-right-xxs">
+								<span
+									class="border theme-selector-icon display-inline-block has-body-background"
+									aria-hidden="true"
+								>
+									<svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">
+										<rect width="22" height="14" class="has-fill-body-background" />
+										<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+										<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+										<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+										<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+										<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+									</svg>
+								</span>
+							</span>
+							<span> Dark </span>
+						</button>
+					</li>
+					<li class="theme display-block" role="none">
+						<button
+							class="button button-clear button-sm theme-control button-block justify-content-flex-start text-align-left"
+							role="menuitemradio"
+							aria-checked="false"
+							data-theme-to="high-contrast"
+							tabindex="-1"
+						>
+							<span class="theme-high-contrast margin-right-xxs">
+								<span
+									class="border theme-selector-icon display-inline-block has-body-background"
+									aria-hidden="true"
+								>
+									<svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">
+										<rect width="22" height="14" class="has-fill-body-background" />
+										<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+										<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+										<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+										<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+										<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+									</svg>
+								</span>
+							</span>
+							<span> High contrast </span>
+						</button>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+			</div>
+			<ul class="links" data-bi-name="footerlinks">
+				<li class="manage-cookies-holder" hidden=""></li>
+				<li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/en-us/principles-for-ai-generated-content"
+			data-bi-name="aiDisclaimer"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>AI Disclaimer</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/en-us/previous-versions/"
+			data-bi-name="archivelink"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Previous Versions</a
+		>
+	
+	</li> <li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://techcommunity.microsoft.com/t5/microsoft-learn-blog/bg-p/MicrosoftLearnBlog"
+			data-bi-name="bloglink"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Blog</a
+		>
+	
+	</li> <li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/en-us/contribute"
+			data-bi-name="contributorGuide"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Contribute</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://go.microsoft.com/fwlink/?LinkId=521839"
+			data-bi-name="privacy"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Privacy</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://go.microsoft.com/fwlink/?linkid=2259814"
+			data-bi-name="consumer-health-privacy"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Consumer Health Privacy</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/en-us/legal/termsofuse"
+			data-bi-name="termsofuse"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Terms of Use</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://www.microsoft.com/legal/intellectualproperty/Trademarks/"
+			data-bi-name="trademarks"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Trademarks</a
+		>
+	
+	</li>
+				<li>&copy; Microsoft 2026</li>
+			</ul>
+		</footer>
+	</footer>
+			<noscript><img src="https://learn.microsoft.com/akam/13/pixel_4673f7a7?a=dD00MzIxOTkzMmU3MzIzOTM0ZjM4M2MyYTAwZmJkZTA3N2Q4NWRmNzRlJmpzPW9mZg==" style="visibility: hidden; position: absolute; left: -999px; top: -999px;" /></noscript></body>
+		</html>

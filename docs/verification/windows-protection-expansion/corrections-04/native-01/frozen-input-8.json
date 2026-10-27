@@ -1,0 +1,888 @@
+{
+  "authorship": "Literal source-only expectations authored before production evaluator; no generated expected answers",
+  "cases": [
+    {
+      "caseId": "PAM01/local-login-success",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/required-deferred-failure",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_AUTH_ERR",
+      "admitted": false,
+      "executedAuth": [
+        2,
+        3
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/requisite-immediate-failure",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_AUTH_ERR",
+      "admitted": false,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [
+        3,
+        4
+      ],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/sufficient-early-success",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [
+        3
+      ],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/sufficient-after-failure",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_AUTH_ERR",
+      "admitted": false,
+      "executedAuth": [
+        2,
+        3,
+        4
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/sufficient-failure-fallback",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2,
+        3
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/optional-nondecisive",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2,
+        3
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/optional-only-success",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/optional-only-failure",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_PERM_DENIED",
+      "admitted": false,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/bracket-success-jump",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2,
+        4
+      ],
+      "skippedAuth": [
+        3
+      ],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/bracket-default-denial",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_AUTH_ERR",
+      "admitted": false,
+      "executedAuth": [
+        2,
+        3
+      ],
+      "skippedAuth": [
+        4
+      ],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/include-termination",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        "afs-child:2"
+      ],
+      "skippedAuth": [
+        3
+      ],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/substack-termination",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_AUTH_ERR",
+      "admitted": false,
+      "executedAuth": [
+        "afs-child:2",
+        3
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/substack-failure",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_AUTH_ERR",
+      "admitted": false,
+      "executedAuth": [
+        "afs-child-fail:2",
+        3
+      ],
+      "skippedAuth": ["afs-child-fail:3"],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/substack-jump-boundary",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2,
+        4
+      ],
+      "skippedAuth": [
+        "afs-child"
+      ],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/account-denied",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": false,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/password-change-required",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/session-failure",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": false,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/module-unavailable",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_MODULE_UNKNOWN",
+      "admitted": false,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/conversation-failure",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_AUTHTOK_ERR",
+      "admitted": false,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/soft-hard-limits",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    },
+    {
+      "caseId": "PAM01/service-selection",
+      "modelId": "lab-pam01",
+      "profileId": "afs-linux-pam-pinned",
+      "auth": "PAM_SUCCESS",
+      "admitted": true,
+      "executedAuth": [
+        2
+      ],
+      "skippedAuth": [],
+      "initialHoldings": [
+        "physical-config",
+        "local-account",
+        "unrelated-session"
+      ],
+      "prohibitedEffects": [
+        "fresh-TGT",
+        "PAM-sets-UID"
+      ],
+      "cleanup": [
+        "pam_end",
+        "conversation-release"
+      ],
+      "retained": [
+        "unrelated-session",
+        "local-account"
+      ],
+      "evidence": "independent source-only authored before evaluator",
+      "sourceClauses": [
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S36"
+      ]
+    }
+  ],
+  "subfixtures": [
+    {
+      "id": "parent-jump",
+      "case": "substack-jump-boundary",
+      "auth": "PAM_SUCCESS",
+      "admitted": true
+    },
+    {
+      "id": "child-in-range",
+      "case": "substack-jump-boundary",
+      "auth": "PAM_SUCCESS",
+      "admitted": true
+    },
+    {
+      "id": "child-overrun",
+      "case": "substack-jump-boundary",
+      "auth": "PAM_PERM_DENIED",
+      "admitted": false
+    },
+    {
+      "id": "change-success",
+      "case": "password-change-required",
+      "auth": "PAM_SUCCESS",
+      "admitted": true
+    },
+    {
+      "id": "change-unsupported",
+      "case": "password-change-required",
+      "auth": "PAM_SUCCESS",
+      "admitted": false
+    },
+    {
+      "id": "change-prelim-failure",
+      "case": "password-change-required",
+      "auth": "PAM_SUCCESS",
+      "admitted": false
+    },
+    {
+      "id": "change-update-failure",
+      "case": "password-change-required",
+      "auth": "PAM_SUCCESS",
+      "admitted": false
+    },
+    {
+      "id": "limits-success",
+      "case": "soft-hard-limits",
+      "auth": "PAM_SUCCESS",
+      "admitted": true
+    },
+    {
+      "id": "limits-application-error",
+      "case": "soft-hard-limits",
+      "auth": "PAM_SUCCESS",
+      "admitted": false
+    },
+    {
+      "id": "service-login",
+      "case": "service-selection",
+      "auth": "PAM_SUCCESS",
+      "admitted": true
+    },
+    {
+      "id": "service-deny",
+      "case": "service-selection",
+      "auth": "PAM_AUTH_ERR",
+      "admitted": false
+    }
+  ]
+}

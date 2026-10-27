@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+    "test",
+    "--isolate",
+    "--timeout=900000",
+    "./tests/pam-existing-order-review.test.mjs"
+  ],
+  "cwd": "/home/andrico/auth-lab-held-objects",
+  "startedAt": "2026-10-26T08:55:59.974Z",
+  "finishedAt": "2026-10-26T08:56:00.235Z",
+  "exitCode": 1,
+  "stdout": "bun test v1.4.2 (744846f84)\n",
+  "stderr": "\ntests/pam-existing-order-review.test.mjs:\n(pass) WP-R06 account rows complete once in causal order: lab-lelev01/default [51.97ms]\n(pass) WP-R06 account rows complete once in causal order: lab-lelev01/account-denied [9.60ms]\n(pass) WP-R06 account rows complete once in causal order: lab-lelev02/default [7.24ms]\n(pass) WP-R06 account rows complete once in causal order: lab-lelev02/access-denied [6.86ms]\n(pass) WP-R06 non-root rootok continues the same API without an early aggregate [4.88ms]\n(pass) WP-R06 real-UID0 sufficient rootok returns before caller consumption without a password hook [1.52ms]\n(pass) WP-R06 target process custody waits for completed open-session aggregate [7.93ms]\n(pass) WP-R05 existing expired-token caller keeps complete internal flags: default [4.42ms]\n(pass) WP-R05 existing expired-token caller keeps complete internal flags: directory-online [1.70ms]\n(pass) WP-R05 existing expired-token caller keeps complete internal flags: directory-unreachable [1.42ms]\n91 |   const checks=Object.entries(model.workstationInventory.events).filter(([,event])=>event.milestones.some(m=>m.effects.some(effect=>effect.op==='observe'&&effect.kind==='verification'&&effect.artifactId===verifier)));\n92 |   assert.deepEqual(checks.map(([eventId])=>eventId),[modules[0].step.id]);\n93 |   const steps=model.steps(),compiled=compileHeldObjects(buildUnixWorkstationHeldObjects({model,steps,actors:model.actors(),choiceId:model.id,contextId:model.id+':single-secret-use'}),{model,steps});\n94 |   const secretHistory=heldObjectTrace(compiled,'lab-llog01:entered-secret');\n95 |   assert.ok(secretHistory.some(row=>row.sourceStepId===modules[0].step.id));\n96 |   assert.equal(secretHistory.some(row=>row.sourceStepId===result.step.id),false);\n              ^\nAssertionError: Expected values to be strictly equal:\n\ntrue !== false\n\n generatedMessage: true,\n     actual: true,\n   expected: false,\n   operator: \"strictEqual\",\n       diff: \"simple\",\n       code: \"ERR_ASSERTION\"\n\n      at /home/andrico/auth-lab-held-objects/tests/pam-existing-order-review.test.mjs:96:10\n      at run (node:async_hooks:144:29)\n      at node:test:1445:26\n      at executeTestNode (node:test:1448:45)\n      at node:test:1591:20\n(fail) local authentication acceptance retains verifier provenance without a second check or caller disclosure [39.06ms]\n\n 10 pass\n 1 fail\nRan 11 tests across 1 file. [249.00ms]\n"
+}

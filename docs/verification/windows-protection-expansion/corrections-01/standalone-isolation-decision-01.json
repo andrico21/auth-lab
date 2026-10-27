@@ -1,0 +1,41 @@
+{
+  "kind": "unchanged-standalone-contract-isolation",
+  "source": "bee82706b7f1342734df9fa19fa8a3eea029f05f849f014346b48643881d5284",
+  "sourceFiles": 254,
+  "priorFailed": {
+    "path": "docs/verification/windows-protection-expansion/corrections-01/full-suite-attempt-02-summary.json",
+    "sha256": "6bb9ccf7a48299f2d6511805334cf0d51dd59d3a8766f8bd6bf0bd1a44105376",
+    "bytes": 29401
+  },
+  "diagnostic": {
+    "path": "docs/verification/windows-protection-expansion/corrections-01/vm-bootstrap-diagnostic-01.json",
+    "sha256": "1270bec0f2e8aab18e56ab3737d448b00ecdee8fceae87fe5e26d59d23f1ba9b",
+    "bytes": 16345
+  },
+  "diagnosticFrozen09c90": {
+    "totalMs": 3826.426574,
+    "timeoutMs": 5000,
+    "dominant": [
+      {
+        "name": "dnssec-lab.js",
+        "milliseconds": 1405.345718
+      },
+      {
+        "name": "windows-logon-lab.js",
+        "milliseconds": 393.26024600000005
+      },
+      {
+        "name": "ssh-access-lab.js",
+        "milliseconds": 189.09157000000005
+      }
+    ]
+  },
+  "decision": "Move the identical existing compiled-standalone test into its own Bun-isolated file instead of re-evaluating the whole bundle after ten source-app DOM tests in the same heavyweight process. No production DNS/legacy initialization is changed; all assertions and5000msVM budget remain byte-identical. Resource-dependent slowdown is not a product timing acceptance claim.",
+  "movedBodyByteIdentical": true,
+  "testNameUnchanged": true,
+  "vmTimeoutMs": 5000,
+  "perTestTimeoutMs": 900000,
+  "newFile": "tests/standalone-runtime.test.mjs",
+  "oldFile": "tests/dom-runtime.test.mjs",
+  "qualification": "Diagnosis observed a3.826sinstrumented isolated bootstrap and a5sfull-suite failure. Shared-process resource pressure is an inference; the unchanged-budget isolated contract and complete suite still must pass."
+}

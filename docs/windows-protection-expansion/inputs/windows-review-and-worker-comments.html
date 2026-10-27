@@ -1,0 +1,2554 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2026-10-26">
+  <title>Windows protection, PAM and discovery — independent review</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"WINDOWS / PAM REVIEW";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+
+  pre{max-width:100%;max-height:480px;overflow:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}
+  pre code{padding:0;background:none;white-space:pre;font-size:12px}
+  details{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:8px}
+  summary{cursor:pointer;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+  summary:focus-visible,pre:focus-visible,.table-scroll:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}
+  @media print{pre{max-height:none;white-space:pre-wrap}pre code{white-space:pre-wrap}nav#TOC{display:none}}
+  </style>
+
+  <style>details{margin:1rem 0;border:1px solid #cbd5e1;border-radius:8px;padding:12px}summary{cursor:pointer;font-weight:700;overflow-wrap:anywhere}details pre{max-height:34rem;overflow:auto}code{overflow-wrap:anywhere}.table-scroll{max-width:100%;overflow-x:auto}main{min-width:0}a{overflow-wrap:anywhere}@media print{details pre{max-height:none}}</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Windows protection, PAM and discovery — independent
+review</h1>
+<p class="subtitle">Candidate-02 · Detailed correction handoff</p>
+<p class="date">26 October 2026</p>
+<div class="plan-stats"><span>7 required corrections</span><span>6 P2 · 1 P3</span><span>Search review passed</span><span>Release conditions open</span></div></header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Review and correction contents</h2>
+<ul>
+<li><a href="#decision-and-exact-handoff" id="toc-decision-and-exact-handoff">Decision and exact handoff</a></li>
+<li><a href="#candidate-identity-and-verification-boundary" id="toc-candidate-identity-and-verification-boundary">Candidate identity
+and verification boundary</a></li>
+<li><a href="#wp-r01-audit-only-policy-incorrectly-changes-ticket-lifetime" id="toc-wp-r01-audit-only-policy-incorrectly-changes-ticket-lifetime">WP-R01
+— audit-only policy incorrectly changes ticket lifetime</a></li>
+<li><a href="#wp-r02-fresh-authentication-mixes-a-duration-with-an-expiry" id="toc-wp-r02-fresh-authentication-mixes-a-duration-with-an-expiry">WP-R02
+— fresh authentication mixes a duration with an expiry</a></li>
+<li><a href="#wp-r03-cleanup-crosses-actor-ownership-boundaries" id="toc-wp-r03-cleanup-crosses-actor-ownership-boundaries">WP-R03 —
+cleanup crosses actor ownership boundaries</a></li>
+<li><a href="#wp-r04-decoded-verification-lacks-the-decoded-holding" id="toc-wp-r04-decoded-verification-lacks-the-decoded-holding">WP-R04 —
+decoded verification lacks the decoded holding</a></li>
+<li><a href="#wp-r05-pam-internal-password-dispatch-drops-the-caller-flag" id="toc-wp-r05-pam-internal-password-dispatch-drops-the-caller-flag">WP-R05
+— PAM internal password dispatch drops the caller flag</a></li>
+<li><a href="#wp-r06-existing-sudosu-pam-explanation-plays-the-stack-backward" id="toc-wp-r06-existing-sudosu-pam-explanation-plays-the-stack-backward">WP-R06
+— existing sudo/su PAM explanation plays the stack backward</a></li>
+<li><a href="#wp-r07-ntlm-proof-description-puts-mic-in-the-wrong-structure" id="toc-wp-r07-ntlm-proof-description-puts-mic-in-the-wrong-structure">WP-R07
+— NTLM proof description puts MIC in the wrong structure</a></li>
+<li><a href="#checks-that-passed-and-limits-that-matter" id="toc-checks-that-passed-and-limits-that-matter">Checks that passed
+and limits that matter</a></li>
+<li><a href="#performance-native-and-release-conditions" id="toc-performance-native-and-release-conditions">Performance, native
+and release conditions</a></li>
+<li><a href="#bounded-correction-sequence-and-return-packet" id="toc-bounded-correction-sequence-and-return-packet">Bounded
+correction sequence and return packet</a></li>
+<li><a href="#primary-references" id="toc-primary-references">Primary
+references</a></li>
+<li><a href="#reproduction-appendix" id="toc-reproduction-appendix">Reproduction appendix</a></li>
+</ul>
+</nav>
+<main id="independent-review"><h2 id="decision-and-exact-handoff">Decision and exact handoff</h2>
+<p><strong>Return for seven bounded corrections: six P2 findings and one
+P3 protocol-description finding.</strong> The requested lessons and
+discovery features are present. Search/navigation and the evidence
+packet passed their reviewed checks. The remaining defects concern
+policy lifetime, fresh-ticket timing, object ownership and
+representation, PAM execution explanations, and an NTLM field
+description. They are reproduced from the candidate; passing existing
+tests does not cover these missing assertions.</p>
+<p><strong>Worker: use this file as the correction assignment for
+candidate-02.</strong> It supplements the unchanged version 3 plan; it
+does not replace it, expand the lesson inventory or authorize
+publication. Preserve the prior DNSSEC/P6/WIN-11 closures and the
+separate release conditions. No acceptance of the overall Windows/PAM
+implementation or release is recorded here.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 1"><table>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">ID</th>
+<th scope="col">Priority</th>
+<th scope="col">Required correction</th>
+<th scope="col">Representative case</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WP-R01</td>
+<td>P2</td>
+<td>Audit-only authentication policy must not apply its ticket
+lifetime.</td>
+<td>WPROT04 / device-denied-audit</td>
+</tr>
+<tr class="even">
+<td>WP-R02</td>
+<td>P2</td>
+<td>Give fresh authentication a coherent new issue time and expiry.</td>
+<td>WPROT03 / fresh-authentication</td>
+</tr>
+<tr class="odd">
+<td>WP-R03</td>
+<td>P2</td>
+<td>Cleanup must occur at the actual owner of each holding.</td>
+<td>WRA01 / default-filtered; WPROT05 / allowed-service</td>
+</tr>
+<tr class="even">
+<td>WP-R04</td>
+<td>P2</td>
+<td>Acquire decoded representations before claiming decoded
+verification.</td>
+<td>S4U and compound-TGS checkpoints</td>
+</tr>
+<tr class="odd">
+<td>WP-R05</td>
+<td>P2</td>
+<td>Preserve caller flags during internal PAM password phases.</td>
+<td>PAM01 / password-change-required</td>
+</tr>
+<tr class="even">
+<td>WP-R06</td>
+<td>P2</td>
+<td>Present existing sudo/su PAM execution in causal order.</td>
+<td>sudo account-denied; su access-denied</td>
+</tr>
+<tr class="odd">
+<td>WP-R07</td>
+<td>P3</td>
+<td>Distinguish NTLM’s message MIC from its AV presence flag.</td>
+<td>Local-SAM and domain-pass-through NTLM</td>
+</tr>
+</tbody>
+</table>
+</div><p>P2 denotes a material lesson/state/replay inconsistency requiring
+correction before this scope closes. P3 is a smaller, concrete
+protocol-description correction. These are findings in a teaching
+application, not claims of exploitable native Windows/PAM
+vulnerabilities. Native Windows evidence remains explicitly
+unperformed.</p>
+<h2 id="candidate-identity-and-verification-boundary">Candidate identity
+and verification boundary</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 2"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Item</th>
+<th scope="col">Reviewed identity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Delivery</td>
+<td><code>auth-flow-studio-windows-protection-source-and-review.zip</code>,
+<code>auth-flow-studio-windows-protection.html</code>,
+<code>START-HERE(7).md</code></td>
+</tr>
+<tr class="even">
+<td>Published parent recorded by packet</td>
+<td><code>ae9dffe2da2bca33c01daee1eaacfcbedfc95aa0</code></td>
+</tr>
+<tr class="odd">
+<td>Current canonical application/test inputs</td>
+<td><strong>250 files</strong>, SHA-256
+<code>14ce8c3ec6ab5754150a3e38a839e2859f202001eb37f02968cb4856b6009ed5</code></td>
+</tr>
+<tr class="even">
+<td>Supplied standalone</td>
+<td><strong>5,571,843 bytes</strong>, SHA-256
+<code>2d0470879948309a1571aed0a8c13b14dd573778c4685b026c4fb7ceaceb5dc3</code></td>
+</tr>
+<tr class="odd">
+<td>Authoritative plan</td>
+<td>Document version 3, SHA-256
+<code>8e66f18b60f352b4d3020af11369b829828cb473cbc8edcccacbe104abc8fc8d</code></td>
+</tr>
+<tr class="even">
+<td>Scope</td>
+<td><strong>11 models / 110 canonical cases</strong>: Windows 88, PAM
+22; <strong>128 unique executions</strong> including required comparison
+members. SEARCH01 has a separate 29-query denominator.</td>
+</tr>
+</tbody>
+</table>
+</div><p>All <strong>1,206</strong> delivered checksum entries match. A fresh
+build from the extracted source produces the exact supplied standalone
+bytes. No candidate source, test, authority input or uploaded evidence
+was edited during review.</p>
+<p>This review checks the declared symbolic model, source and supplied
+compiled application, selected rendered DOM behavior, primary
+protocol/platform semantics, and retained evidence. A DOM harness is not
+a native browser. Source equality and hashes are not independent
+protocol oracles. The current source/browser agreement is useful
+preservation evidence, but both can agree on the same semantic
+error.</p>
+<h2 id="wp-r01-audit-only-policy-incorrectly-changes-ticket-lifetime">WP-R01
+— audit-only policy incorrectly changes ticket lifetime</h2>
+<p><strong>Location:</strong>
+<code>src/windows-protection-lab.js</code>, <code>wprotAS</code>,
+especially line 141 and propagation into the AS decision, FAST issuance
+and accepted state; also the policy result explanation in
+<code>wprotPolicyAS</code>.</p>
+<p><strong>Reproduction:</strong> select <code>lab-wprot04</code>, case
+<code>device-denied-audit</code>, and complete the flow. Inspect the
+effective account policy, AS decision and issued ticket. Both source and
+the uploaded IIFE produce:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 3"><table>
+<thead>
+<tr class="header">
+<th scope="col">Field</th>
+<th scope="col">Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Effective policy enforcement</td>
+<td><code>false</code></td>
+</tr>
+<tr class="even">
+<td>Configured policy lifetime</td>
+<td>120 minutes</td>
+</tr>
+<tr class="odd">
+<td>Admission</td>
+<td>TGT accepted; <code>audit</code>; would-deny recorded</td>
+</tr>
+<tr class="even">
+<td>Applied end / renewal limits</td>
+<td><strong>120 / 120</strong></td>
+</tr>
+<tr class="odd">
+<td>Issued-ticket description</td>
+<td><code>endtime=120min; renew-till=120min</code></td>
+</tr>
+</tbody>
+</table>
+</div><p>The implementation honors audit mode for device admission but still
+enforces its lifetime restriction. <strong>MS-KILE §3.3.5.6</strong>
+conditions application of nonzero policy <code>TGTLifetime</code> on
+effective enforcement. The ordinary baseline in this fixture is 480
+minutes; no separate represented baseline explains the applied 120.</p>
+<p><strong>Required change:</strong> keep configured policy lifetime and
+effective issued lifetime separate. Apply a nonzero policy override only
+when effective enforcement permits it; otherwise retain the
+independently declared ordinary/Protected Users limits applicable to the
+selected profile. Align the decision object, ticket, client reply,
+canonical state and rendered inspector. Do not change the baseline to
+conceal this discrepancy.</p>
+<p><strong>Acceptance:</strong> the audit case still records would-deny
+and accepts authentication, while retaining the ordinary 480-minute
+limits. Enforced 120-minute and unarmored lifetime-only 90-minute
+controls remain correct. If zero lifetime is supported, it must preserve
+the baseline. Add literal expectations for these fields, then check
+full/field/exact-object replay and rewind. The original oracle omitted
+the affected lifetime fields: preserve that historical oracle and add an
+explicitly justified correction layer.</p>
+<h2 id="wp-r02-fresh-authentication-mixes-a-duration-with-an-expiry">WP-R02
+— fresh authentication mixes a duration with an expiry</h2>
+<p><strong>Location:</strong>
+<code>src/windows-protection-lab.js</code>, the WPROT03 fixture,
+<code>wprotAS</code> and old-lineage construction;
+<code>src/windows-logon-lab.js</code>, the shared AS reply’s
+<code>lifetime</code> construction around line 406.</p>
+<p><strong>Reproduction:</strong> select
+<code>WPROT03/fresh-authentication</code> / <code>fresh-lineage</code>
+and complete it. The actual source and supplied standalone expose:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 4"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Time fact</th>
+<th scope="col">Actual</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Attempt clock</td>
+<td>minute <strong>241</strong></td>
+</tr>
+<tr class="even">
+<td>Old lineage</td>
+<td>issued 0; end 240; renew-till 240; expired</td>
+</tr>
+<tr class="odd">
+<td>New credential</td>
+<td>distinct object; accepted;
+<code>newCredentialLineage=true</code></td>
+</tr>
+<tr class="even">
+<td>New reply <code>endMinutes</code> / <code>renewMinutes</code></td>
+<td><strong>240 / 240</strong></td>
+</tr>
+<tr class="odd">
+<td>New canonical end / renewal fields</td>
+<td><strong>240 / 240</strong></td>
+</tr>
+<tr class="even">
+<td>New issue time or declared relative epoch</td>
+<td>absent</td>
+</tr>
+</tbody>
+</table>
+</div><p>The object identity correctly changes, but the same deadline names
+now carry a duration without a new timebase. A learner cannot reconcile
+the accepted new credential with the current clock. This is a
+demonstrated model/inspection inconsistency, not a claim that a native
+KDC issued an expired ticket. RFC 4120 distinguishes the
+start/authentication time, allowed duration and expiry/renewal
+deadlines.</p>
+<p><strong>Required change:</strong> explicitly represent the new
+issue/start time and the 240-minute span. On this fixture’s clock, fresh
+issue at 241 gives end/renewal limits at <strong>481</strong>. Preserve
+the old lineage’s 240 deadlines and expired status. An explicitly named
+relative-duration representation with a per-credential epoch is also
+coherent; unexplained <code>endMinutes=240</code> is not. Update reply,
+credential metadata, canonical state and inspection together. Keep
+changes to shared logon helpers bounded.</p>
+<p><strong>Acceptance:</strong> assert the fresh credential starts on
+the new attempt’s clock, is valid after that clock, and has the declared
+span; the old credential remains expired and the local session remains
+retained. Preserve the time-zero PU case and denied renewal of the
+original lineage. Replay and rewind must not revive or reset that
+original lineage.</p>
+<h2 id="wp-r03-cleanup-crosses-actor-ownership-boundaries">WP-R03 —
+cleanup crosses actor ownership boundaries</h2>
+<p><strong>Locations:</strong>
+<code>src/windows-remote-administration-lab.js</code>, final
+<code>attempt-cleanup</code> around lines 212–213; protection lifecycle
+construction as detailed below. A source-local event must not silently
+perform cleanup in another principal’s process or machine.</p>
+<p>The shared <code>wslAuthor.finish()</code> in
+<code>src/windows-logon-lab.js</code> around lines 170–171 releases
+authored scratch at <code>wslLSA</code>; the new WPROT models call it
+around line 473. The protection module’s existing owner-specific cleanup
+handles imported scratch, but misses these later authored objects.</p>
+<p>Enumeration of all 128 unique executions finds <strong>82 affected
+executions / 73 canonical cases</strong>: all <strong>44 WRA</strong>
+executions and <strong>38 WPROT</strong> executions. All 29 PAM
+executions are clean under this check.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 5"><table>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case and source index</th>
+<th scope="col">Declared local cleanup</th>
+<th scope="col">Actual foreign holdings removed</th>
+<th scope="col">Exact-history actor for example object</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WRA01/default-filtered, 36</td>
+<td><code>smbServer → smbServer</code></td>
+<td><strong>31</strong>, including the client’s credential; owners
+<code>smbClient</code>, <code>smbSAM</code></td>
+<td><code>smbClient</code></td>
+</tr>
+<tr class="even">
+<td>WPROT05/allowed-service, 42</td>
+<td><code>wslLSA → wslLSA</code></td>
+<td><strong>34</strong>; owners <code>wprotComputer</code>,
+<code>wslIso</code>, <code>wslDC</code>, <code>wslFile</code></td>
+<td><code>wslDC</code> for the compound FAST request</td>
+</tr>
+</tbody>
+</table>
+</div><p>Select the case, seek before final cleanup and inspect the example
+object. Advance, rewind, then replay that exact object’s history: the
+full journey and exact history name different local actors for the same
+source event. Both source and the supplied standalone reproduce it.
+Because the shared author serves older Windows lessons, either scope its
+correction deliberately or run affected legacy regressions; do not
+silently rewrite old authority fixtures.</p>
+<p>The fault is visible in the canonical model: a full-journey local
+step names one actor while the exact-object history attributes the
+eviction to a different owner. Correct final absence does not establish
+a correct causal explanation. The plan requires source-owned local
+operations, exact holding identity and replay consistency.</p>
+<p><strong>Required change:</strong> partition live temporary holdings
+by actual owner and emit owner-local cleanup events in the appropriate
+lifecycle order. Release the exact existing holding identities,
+including imported scratch aliases. Do not move credentials to a
+different actor, grant a new representation, or relax the shared holding
+compiler to satisfy the check. Retain accepted authority, persistent
+verifiers/policies, current results and unrelated prior sessions.</p>
+<p><strong>Acceptance:</strong> assert every local cleanup’s
+release/eviction belongs to that local actor. Reconstruct immediately
+before/after every affected cleanup, then verify rewind and equal-prefix
+full/field/exact-object histories. Preserve all original case outcomes
+and retained-state controls. The fix must cover both affected families,
+not only the two representative screenshots/objects.</p>
+<h2 id="wp-r04-decoded-verification-lacks-the-decoded-holding">WP-R04 —
+decoded verification lacks the decoded holding</h2>
+<p><strong>Locations:</strong>
+<code>src/windows-protection-lab.js</code> around lines 249–253 (S4U
+composition) and line 412 (seed-only user TGT); reused helpers in
+<code>src/windows-logon-lab.js</code> around lines 448 and 451
+(compound/host TGS).</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 6"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case / source event</th>
+<th scope="col">Claimed decoded verification</th>
+<th scope="col">KDC holdings and inspector after that event</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WPROT01/constrained-continuation, <code>s4u-proof-check</code>,
+index 33</td>
+<td><code>decoded.s4u-authenticator</code>, <code>plain</code>,
+<code>wslDC</code></td>
+<td>Only wire; fields unreadable; accepted verification listed</td>
+</tr>
+<tr class="even">
+<td>WPROT05/allowed-service, <code>compound-kdc-armor</code>, index
+13</td>
+<td><code>decoded.compound-fast-request</code>, <code>plain</code>,
+<code>wslDC</code></td>
+<td>Same contradiction</td>
+</tr>
+<tr class="odd">
+<td>WPROT05/allowed-service, <code>host-tgs-verify</code>, index 15</td>
+<td><code>decoded.preexisting-user-tgt</code>, <code>plain</code>,
+<code>wslDC</code></td>
+<td>Same contradiction</td>
+</tr>
+</tbody>
+</table>
+</div><p>No KDC plain acquisition for these exact objects occurs anywhere in
+the respective journey. Inspect each object immediately after the named
+event and at the matching verify row in exact-object replay. The source
+application and unmodified uploaded IIFE show identical evidence.</p>
+<p>This finding is about explicit state and inspector consistency. It
+does not demand real cryptography in the browser, nor assert that every
+wire verification needs plaintext. These specific operations claim
+verification of a <strong>decoded/plain</strong> field while the
+verifier’s exact object remains wire-only and unreadable.</p>
+<p><strong>Required change:</strong> model the appropriate local
+decode/decrypt/validation boundary, using the receiver’s already
+available authority/key and the exact received object. Acquire the
+corresponding decoded representation at that receiver before any
+operation that relies on its fields; retain the wire representation and
+provenance. If a verification truly operates on wire bytes, label that
+operation and field accordingly. Do not satisfy the check by globally
+making encrypted objects readable, inventing a sender/receiver
+acquisition at inspection time, or substituting a different ticket
+object.</p>
+<p><strong>Acceptance:</strong> before decode, exact inspection stays
+redacted; after successful decode, the verifier holds the actual decoded
+representation and the claimed field is inspectable at the correct
+source prefix. Failed decode/verification must not install a credential
+based on that failed evidence; later resource denial must retain
+independently accepted credentials. Check source and supplied IIFE,
+full/field/object replay and rewind for all representative stages,
+preserving accepted machine/user authority and policy outcomes.</p>
+<h2 id="wp-r05-pam-internal-password-dispatch-drops-the-caller-flag">WP-R05
+— PAM internal password dispatch drops the caller flag</h2>
+<p><strong>Locations:</strong> <code>src/pam-stack-evaluator.js</code>,
+phase flags and <code>pamEvaluate</code>;
+<code>src/pam-foundations-lab.js</code>, password transaction/dispatch
+construction; <code>src/app.js</code>, internal module dispatch
+rendering. Check existing PAM integration against each actual caller’s
+flags as well.</p>
+<p><strong>Reproduction:</strong>
+<code>PAM01/password-change-required</code>, default
+<code>change-success</code> member:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 7"><table>
+<thead>
+<tr class="header">
+<th scope="col">Source index</th>
+<th scope="col">Invocation</th>
+<th scope="col">Actual flags</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>18</td>
+<td>Public <code>pam_chauthtok</code></td>
+<td><code>PAM_CHANGE_EXPIRED_AUTHTOK</code></td>
+</tr>
+<tr class="even">
+<td>20</td>
+<td>Internal preliminary hook</td>
+<td><code>PAM_PRELIM_CHECK</code> only</td>
+</tr>
+<tr class="odd">
+<td>26</td>
+<td>Internal update hook</td>
+<td><code>PAM_UPDATE_AUTHTOK</code> only</td>
+</tr>
+</tbody>
+</table>
+</div><p>Both source and emitted UI label these as the complete
+<strong>Internal module dispatch / flags</strong>. The pinned Linux-PAM
+<code>pam_password.c</code> combines caller flags with the phase flag.
+Expected internal sets are therefore
+<code>PAM_CHANGE_EXPIRED_AUTHTOK | PAM_PRELIM_CHECK</code> and
+<code>PAM_CHANGE_EXPIRED_AUTHTOK | PAM_UPDATE_AUTHTOK</code>.</p>
+<p><strong>Required change:</strong> carry the public caller’s flag set
+through the transaction and combine it with the internal phase bit in
+the invocation, execution record and inspector. Do not globally assume
+every password operation is expired-only. The public call must remain
+free of libpam’s internal phase flags, and preliminary failure must
+still prevent update.</p>
+<p><strong>Acceptance:</strong> literal complete-flag assertions for all
+three reached password-change members, plus the unsupported-caller and
+no-update controls. Verify rendered source/emitted dispatch text and the
+exact stored records. Preserve callback <code>PAM_CONV_ERR</code> versus
+helper/module <code>PAM_AUTHTOK_ERR</code>; that earlier correction is
+supported by the pinned source and is not reopened.</p>
+<h2 id="wp-r06-existing-sudosu-pam-explanation-plays-the-stack-backward">WP-R06
+— existing sudo/su PAM explanation plays the stack backward</h2>
+<p><strong>Location:</strong>
+<code>src/pam-existing-integration.js</code>, approximately lines
+84–100. It assigns the final <code>pam_access</code> row and API
+aggregate to the original event, then appends the entire configuration
+trace and overwrites the current evaluation with earlier rows.</p>
+<p><strong>Reproduction:</strong> ordinary forward playback through
+account checking, identically observed in source and uploaded IIFE:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 8"><table>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case</th>
+<th scope="col">Source indices 10 → 11 → 12</th>
+<th scope="col">Current accumulator</th>
+<th scope="col">Completed account aggregate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>lab-lelev01/account-denied</code></td>
+<td><code>/etc/pam.d/sudo</code> lines <strong>4 → 3 → 4</strong></td>
+<td>negative denial → positive success → negative denial</td>
+<td>already <code>PAM_PERM_DENIED</code> at all three</td>
+</tr>
+<tr class="even">
+<td><code>lab-lelev02/access-denied</code></td>
+<td><code>/etc/pam.d/su-l</code> lines <strong>5 → 4 → 5</strong></td>
+<td>same reversal</td>
+<td>already <code>PAM_PERM_DENIED</code> at all three</td>
+</tr>
+</tbody>
+</table>
+</div><p>The panel says <strong>PAM configuration → current
+evaluation</strong>, <strong>Current line</strong>, <strong>Accumulator
+after</strong> and <strong>Next row</strong>. Canonical
+<code>workstation.pamEvaluation</code> changes too. This is not an
+explicitly retrospective audit view: no new API call or reset explains
+the apparent reversal. It defeats the user’s requested step-by-step
+configuration explanation.</p>
+<p><strong>Required change:</strong> expose a pending API boundary, then
+the actual module completions in configured order, then the completed
+aggregate and caller consequences. Each current completion occurs once.
+If historical detail is deliberately shown after an atomic return, label
+it retrospective and keep it separate from canonical current execution;
+an ordered expanded execution is the better fit for this plan. Apply the
+same rule to other integration paths with this pattern. Preserve
+non-root partial <code>pam_rootok</code> handling and real-UID0
+sufficient success.</p>
+<p><strong>Acceptance:</strong> source and emitted forward/backward
+checks for sudo denied/default and su denied/default. Assert correct
+physical order, no duplicate current module completion, no future
+aggregate before its completion boundary, and no unexplained accumulator
+reset. Field/exact-object views must agree with the full journey at
+equal prefixes. Existing final outcomes, identities, ownership and
+cleanup remain intact.</p>
+<h2 id="wp-r07-ntlm-proof-description-puts-mic-in-the-wrong-structure">WP-R07
+— NTLM proof description puts MIC in the wrong structure</h2>
+<p><strong>Location:</strong>
+<code>src/windows-remote-administration-lab.js</code>,
+<code>ntlmProof</code> around line 255, supplied to the shared SMB
+authoring. The new label is present in 28 of 44 WRA executions; visible
+exact inspectors reproduce it for local-SAM
+<code>WRA01/default-filtered</code> and domain-pass-through
+<code>WRA03/domain-ntlm-explicit</code> in both source and the supplied
+IIFE.</p>
+<p>The symbolic equation places <code>MIC</code> inside
+<code>blob(timestamp,client-challenge,target-AV,MIC,terminators)</code>.
+The actual transcript MIC is a separate AUTHENTICATE_MESSAGE field. The
+AV pairs can contain the <strong>MsvAvFlags MIC-presence bit</strong>,
+which is not the MIC bytes. The original shared SMB wording already
+makes that distinction.</p>
+<p><strong>Required change:</strong> retain the symbolic scope, with
+unambiguous input naming:
+<code>HMAC-MD5(ResponseKeyNT, ServerChallenge || NTLMv2_CLIENT_CHALLENGE)</code>.
+Describe the client challenge’s AV pairs and MIC-presence flag
+separately from the message MIC computation. Name the eight-byte
+ServerChallenge field rather than interpolating the whole challenge
+display into the equation. That latter clarification is part of this
+correction, not a separate finding. No new numerical cryptographic
+implementation is requested.</p>
+<p><strong>Acceptance:</strong> corrected source and compiled inspector
+values for local-SAM and domain pass-through controls; unchanged
+authentication outcomes and actual message-MIC verification boundary.
+Authority: MS-NLMP §§3.3.2, 2.2.2.7, 2.2.1.3 and 2.2.2.1.</p>
+<h2 id="checks-that-passed-and-limits-that-matter">Checks that passed
+and limits that matter</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Review table 9"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Evidence class</th>
+<th scope="col">Independently established result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Integrity and build</td>
+<td>1,206 checksums; exact rebuilt uploaded HTML; current source
+identity bound.</td>
+</tr>
+<tr class="even">
+<td>Broad repository execution</td>
+<td><strong>129 exact files attempted under Node 24.22.1; 127 passed, 2
+could not load <code>bun:test</code>. 2,442 Node-reported tests
+passed</strong>, zero other failures/skips/cancellations, 790.66
+seconds; application/test identity unchanged. The two files are
+<code>pam-foundations.test.mjs</code> and
+<code>pam-review-corrections.test.mjs</code>. This is not a fully
+passing pinned Bun run; the independent PAM probes below cover the
+reviewed semantics separately. Node/Bun reported test counts are not
+interchangeable.</td>
+</tr>
+<tr class="odd">
+<td>WRA outcomes</td>
+<td>38 cases / 44 executions; 264 literal supporting assertions, plus 64
+existing focused tests. Source and emitted inspectors reproduce
+WP-R07.</td>
+</tr>
+<tr class="even">
+<td>Protection cases</td>
+<td>All 50 canonical cases selected in source and supplied IIFE; source
+also invokes 11 comparison identifiers, including default aliases. New
+semantic checks: source <strong>143/145</strong>, emitted
+<strong>132/134</strong>; the same two failures are WP-R01/R02.</td>
+</tr>
+<tr class="odd">
+<td>PAM</td>
+<td>29 unique executions and 1,114 prefixes per run; <strong>1,846
+source / 1,847 emitted supporting assertions</strong>. The probes
+explicitly reproduce WP-R05/R06; a successful probe exit means its
+reproduction succeeded, not that the product is defect-free.</td>
+</tr>
+<tr class="even">
+<td>State/custody</td>
+<td>All 128 executions inventoried; <strong>35 focused + 27 source UI +
+27 supplied-IIFE assertions</strong> reproduce WP-R03/R04. These are
+successful defect reproductions, not absence-of-defect checks.</td>
+</tr>
+<tr class="odd">
+<td>Search/navigation</td>
+<td><strong>73</strong> focused tests; <strong>205 source + 205
+supplied-IIFE assertions</strong>, equal results; <strong>603</strong>
+retained native-search audit checks covering 87 query records. No
+required correction identified in this slice.</td>
+</tr>
+<tr class="even">
+<td>Evidence audit</td>
+<td><strong>8,037 checks passed</strong>, including retained logs,
+complete fixture equality, primary captures, timing arithmetic and
+explicit omissions.</td>
+</tr>
+<tr class="odd">
+<td>Worker full regression</td>
+<td><strong>2,264 pass / 0 fail across 129 files</strong>, pinned Bun
+1.4.2; raw logs and current bindings audited. This is retained worker
+execution, distinct from the reviewer run.</td>
+</tr>
+<tr class="even">
+<td>Worker browser matrix</td>
+<td><strong>1,815 unique passed cells</strong>; all <strong>384</strong>
+retained browser fixtures match 128 complete source fixtures across
+three modes, totaling <strong>13,062</strong> prefix observations. This
+is retained evidence, not a new reviewer browser collection.</td>
+</tr>
+</tbody>
+</table>
+</div><p>The discovery review checks operator queries including
+<code>filtering</code>, <code>lsa</code>, <code>RunAsPPL</code>,
+<code>credguard</code>, <code>workgroup share</code>, <code>sudo</code>,
+<code>pam.d</code>, <code>sufficient</code>, <code>substack</code>,
+<code>role binding</code> and <code>pkinit</code>. Ranking, consistent
+picker/library order, explicit ambiguous-case choice, exact unique-case
+activation, safe URL fallback and preservation of an active flow while
+typing pass. Tags remain data rather than hidden accessibility prose.
+The PAM line/control panel is present and useful; WP-R05/R06 concern its
+correctness, not missing UI.</p>
+<p>Two current search screenshots and two explicitly earlier
+candidate-01 host screenshots were visually inspected. The earlier host
+screenshots were not relabelled as current captures. Current geometry
+has separate retained browser evidence. No fresh Chromium run was
+possible with the locally available binaries, and no human screen-reader
+acceptance was performed.</p>
+<p>The review also preserves the implemented distinctions between
+local/domain accounts, filtered token versus authentication result,
+network admission versus resource ACL, Credential Guard versus PPL,
+Protected Users versus policy/silo enforcement, and SSH public-key proof
+versus PAM account/session checks. No blanket RFC or native-platform
+certification is claimed.</p>
+<p>The compact packet supplies all current case records, exact PAM
+configurations/oracles, 75 current primary/auxiliary captures, complete
+current matrix results and raw timings. Of the historical <strong>435
+DNSSEC authority files</strong>, <strong>42</strong> are physically
+supplied and <strong>393</strong> have explicit hash/size/reason
+omission records. Those bindings were audited; this is not a fresh
+reread of all 435 bytes. All 138 retained verification producers are
+present. Twenty-five current captures lack their original recorded HTTP
+status; matching bytes do not establish live retrieval success.</p>
+<h2 id="performance-native-and-release-conditions">Performance, native
+and release conditions</h2>
+<p><strong>No performance condition is accepted or waived.</strong> The
+retained current measurements have:</p>
+<ul>
+<li>Standalone HTTP startup: <strong>+1,084.65 ms</strong>,
+approximately 27.97%, material.</li>
+<li>Offline standalone startup: <strong>+1,112.76 ms</strong>,
+approximately 29.13%, material.</li>
+<li>One supplemental <strong>baseline-only</strong> variation cell for
+the SSH PAM account row; its candidate median is faster, so this is not
+labelled a candidate regression.</li>
+</ul>
+<p>The six prior first-search flags and selection flag are not
+reproduced on changed candidate-02 source. That does not erase the
+historical measurements or supply owner acceptance. Source-HTTP startup
+still rises by about 669.68 ms below the preserved threshold. All 90
+candidate-only supplemental cells are descriptive; no zero baseline was
+fabricated. Static index preparation remains included in startup. No new
+performance collection was run by the reviewer.</p>
+<p>Human <strong>G01 speech/comprehension acceptance remains
+open</strong>. All 88 native Windows/DC cases remain unobserved. The
+installed Linux-PAM comparison’s 164 matches and one distribution-patch
+divergence remain disclosed; the pinned expectation was not rewritten to
+hide it. This reviewer did not rerun native PAM calls.</p>
+<p>Keep the six P6 conditions, five DNSSEC corrections-02 material
+conditions, earlier-key continuity, historical/P0 variation, six
+sibling-origin omissions, optional deferrals and live/cross-engine
+limits under their existing authorities. Preserve scoped prior closures.
+None of the results in this report grants release, commit, push,
+deployment or publication authorization.</p>
+<h2 id="bounded-correction-sequence-and-return-packet">Bounded
+correction sequence and return packet</h2>
+<ol type="1">
+<li><strong>Record WP-R01–WP-R07 separately.</strong> Link exact
+candidate identities and source clauses. Keep existing oracles and
+historical attempts immutable; add source-grounded corrections where the
+old expected fields were incomplete or wrong. Do not count these fixes
+as new named lessons/cases.</li>
+<li><strong>Fix state/representation foundations (WP-R03/R04)</strong>
+before refreshing derived prefixes. Preserve actual object IDs and
+accepted authority. Do not weaken shared validation or use generated
+outcome tables as the independent expectation.</li>
+<li><strong>Fix lifetime and PAM semantics
+(WP-R01/R02/R05/R06)</strong>, then the NTLM label (WP-R07). Add
+independent literal checks for the previously untested invariants.
+Exercise unchanged success, denial, audit, old-session and
+failed-preliminary controls.</li>
+<li><strong>Verify affected source and actual emitted behavior.</strong>
+Rebuild and bind the new HTML. Include full/field/exact-object traversal
+and rewind where state changes; actual rendered values where
+explanations change. Rerun the appropriate shared integrations when a
+shared helper changes. Complete the project’s normal regression checks
+under its pinned runtime and accurately identify any unavailable
+check.</li>
+<li><strong>Keep native and performance work proportional.</strong> Use
+targeted browser checks for changed presentation/history. Do not repeat
+unrelated native/performance collections solely to restamp evidence.
+Retained broad receipts keep their original identities; never describe
+an old 1,815-cell run or timing collection as a run of the corrected
+candidate. If fresh measurements are collected, retain raw values and
+unchanged methods/thresholds.</li>
+<li><strong>Return one clearly navigable correction packet:</strong>
+standalone, source/review archive and entrypoint; a response row per
+finding; exact before/after assertions; current source/build hashes;
+current affected test/inspection results; refreshed case/reference
+projections where required; disclosed omitted artifacts; and explicit
+unchanged open gates. Explain which records were rerun and which are
+retained.</li>
+</ol>
+<p>Independent closure is required after these corrections. Do not
+prefill reviewer acceptance. No unrelated feature expansion or broad
+protocol sweep is requested by this report.</p>
+<h2 id="primary-references">Primary references</h2>
+<p>The following links support the correction rules; exact retained
+source revisions remain part of the worker packet.</p>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/a076994a-47a9-4d16-af77-d4abb523afe4">MS-KILE
+§3.3.5.6 — AS exchange</a>: effective enforcement and ticket
+lifetime.</li>
+<li><a href="https://datatracker.ietf.org/doc/html/rfc4120">RFC
+4120</a>, especially §§3.1.3, 5.3 and 5.4.2: ticket/reply times and
+lifetime semantics.</li>
+<li><a href="https://learn.microsoft.com/en-us/windows-server/security/credentials-protection-and-management/protected-users-security-group">Protected
+Users</a>: original lineage restrictions and platform applicability; do
+not flatten its overview wording into a replacement for the explicit
+MS-KILE policy rule.</li>
+<li><a href="https://github.com/linux-pam/linux-pam/blob/584ef2275254016ee68126f90dab6df3604124b9/libpam/pam_password.c">Pinned
+Linux-PAM <code>pam_password.c</code></a>: public flags combined with
+internal phases. The retained immutable file was inspected; the pinned
+web URL could not be fetched during review, while the official current
+indexed file corroborated the same flag combination.</li>
+<li><a href="https://github.com/linux-pam/linux-pam/blob/584ef2275254016ee68126f90dab6df3604124b9/libpam/pam_dispatch.c">Pinned
+Linux-PAM <code>pam_dispatch.c</code></a>: configured handler traversal
+and accumulated results; retained source inspected.</li>
+<li><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/5e550938-91d4-459f-b67d-75d70009e3f3">MS-NLMP
+§3.3.2</a>, <a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/aee311d6-21a7-4470-92a5-c4ecb022a87b">client
+challenge</a>, <a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/033d32cc-88f9-4483-9bf2-b273055038ce">AUTHENTICATE_MESSAGE</a>,
+<a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/83f5e789-660d-4781-8491-5f8c6641f75e">AV_PAIR</a>:
+proof input, separate message MIC and presence flag.</li>
+<li>Version 3 plan §§4, 7, 8 and 10: source-owned events, exact
+possession/history, physical configuration teaching, rendered
+explanation and independent verification. Its exact bytes are preserved
+in the supplied
+<code>docs/windows-protection-expansion/inputs/worker-plan.html</code>.</li>
+</ul>
+<h2 id="reproduction-appendix">Reproduction appendix</h2>
+<p>Save each collapsed source block under
+<code>independent-validation/</code> beside the extracted
+<code>source/</code>; keep the supplied standalone at the packet root
+under its actual filename. These are inert reviewer probes, not
+production changes. Read each probe’s result convention: protection
+probes intentionally exit nonzero on the two defect assertions; other
+probes may exit successfully when they have reproduced and recorded a
+defect.</p>
+<p>From the packet root:</p>
+<pre class="sh" tabindex="0" role="region" aria-label="Reproduction source 1"><code>node independent-validation/protection-semantic-probe.mjs source
+node independent-validation/protection-semantic-probe.mjs emitted
+node independent-validation/state-focused-probe.mjs
+node independent-validation/state-ui-probe.mjs source
+node independent-validation/state-ui-probe.mjs emitted
+node independent-validation/pam-independent-probe.mjs source
+node independent-validation/pam-independent-probe.mjs emitted
+node independent-validation/remote-ui-probe.mjs
+node independent-validation/remote-ui-probe.mjs --emitted
+node independent-validation/search-ux-probe.mjs source
+node independent-validation/search-ux-probe.mjs emitted
+python3 independent-validation/provenance-audit.py</code></pre>
+<p>The complete affected-cleanup matrix is retained below as inert JSON.
+It names every affected execution; its rows are not additional
+findings.</p>
+<details>
+<summary>
+protection-semantic-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 2"><code>import fs from 'node:fs';
+import vm from 'node:vm';
+import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import {buildWindowsProtectionFixture,buildWindowsProtectionSubfixture,WINDOWSPROTECTIONLAB_SCENARIOS,WINDOWSPROTECTIONLAB_SUBFIXTURES} from '../source/src/windows-protection-lab.js';
+import {reconstructProtocolState} from '../source/src/protocol-state.js';
+const mode=process.argv[2]||'source';
+const checks=[];let app,harness;
+const check=(name,pass,actual,expected)=&gt;checks.push({name,pass:!!pass,...(pass?{}:{actual,expected})});
+if(mode==='emitted'){
+ const {installHarness}=await import('../source/tests/dom-harness.mjs');harness=installHarness();
+ const bytes=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url),'utf8');
+ const scripts=[...bytes.matchAll(/&lt;script&gt;([\s\S]*?)&lt;\/script&gt;/g)].map(m=&gt;m[1]);
+ if(scripts.length!==1)throw Error('Expected one supplied emitted IIFE');
+ new vm.Script(scripts[0],{filename:'supplied-windows-protection.js'}).runInThisContext();
+ const Klass=harness.registry.get('auth-flow-studio');app=new Klass();harness.document.body.appendChild(app);app.connectedCallback();
+}
+const select=(id,variant)=&gt;{if(!app)return buildWindowsProtectionFixture(id,variant);app.selectLabScenario(id,{variant});return app.labModel;};
+const end=m=&gt;reconstructProtocolState(m,m.steps().length-1).workstation;
+const obj=(m,key)=&gt;m.workstationInventory.artifacts.find(x=&gt;x.key===key);
+const cases=[];
+for(const d of WINDOWSPROTECTIONLAB_SCENARIOS)for(const v of d.variantChoices){
+ const m=select(d.id,v.id),s=end(m);
+ cases.push({case:m.canonicalCaseId,result:s.resultCode,steps:m.steps().length});
+ check(m.canonicalCaseId+' has client terminal knowledge',s.clientKnowsResult===true,s.clientKnowsResult,true);
+ check(m.canonicalCaseId+' explicit native observation boundary',m.platformProfile.evidenceLevel==='documented symbolic; native unperformed',m.platformProfile.evidenceLevel,'documented symbolic; native unperformed');
+ if(m.id==='lab-wprot05'){
+  const p=obj(m,'target-policy').value;
+  check(m.canonicalCaseId+' target policy owned by actual service',p.account==='CORP\\'+m.fixtureInputs.serviceAccountName,p.account,'CORP\\'+m.fixtureInputs.serviceAccountName);
+  check(m.canonicalCaseId+' target policy independent resource outcome',s.resourceAllowed!==true||s.networkAuthenticated===true,{resource:s.resourceAllowed,network:s.networkAuthenticated},'No allowed resource without authenticated service');
+ }
+}
+// These literals derive from MS-KILE 3.3.5.6 and the declared ordinary 8h
+// reference, not the worker expected ledger or production lifetime helper.
+const audit=select('lab-wprot04','device-denied-audit'),auditEnd=end(audit),auditPolicy=obj(audit,'account-policy').value;
+const auditTicket=audit.workstationInventory.artifacts.find(x=&gt;x.artifactId.endsWith(':issued-ticket:1'));
+const auditWire=auditTicket.representations.flatMap(x=&gt;x.fields).map(x=&gt;x.value).join('\n');
+check('audit policy remains nonenforced',auditPolicy.enforced===false,auditPolicy.enforced,false);
+check('audit denied-device records would-deny while allowing AS',auditEnd.policyWouldDeny===true&amp;&amp;auditEnd.tgtAccepted===true&amp;&amp;auditEnd.resultCode==='audit',auditEnd,'would-deny with accepted AS');
+check('audit-only nonzero TGTLifetime does not replace ordinary AS limits',auditEnd.ticketEndMinutes===480&amp;&amp;auditEnd.ticketRenewMinutes===480,{end:auditEnd.ticketEndMinutes,renew:auditEnd.ticketRenewMinutes,policyLifetime:auditPolicy.lifetimeMinutes,ticket:auditWire},{end:480,renew:480,reason:'MS-KILE applies TGTLifetime only when Enforced is TRUE; ordinary reference here is8h'});
+const enforced=select('lab-wprot04','allowed-device'),enforcedEnd=end(enforced);
+check('enforced120min policy control remains120',enforcedEnd.ticketEndMinutes===120&amp;&amp;enforcedEnd.ticketRenewMinutes===120,{end:enforcedEnd.ticketEndMinutes,renew:enforcedEnd.ticketRenewMinutes},{end:120,renew:120});
+const limited=select('lab-wprot04','policy-lifetime'),limitedEnd=end(limited);
+check('enforced90min unarmored policy control remains90',limitedEnd.ticketEndMinutes===90&amp;&amp;limitedEnd.ticketRenewMinutes===90&amp;&amp;limitedEnd.machineAccepted===false,{end:limitedEnd.ticketEndMinutes,renew:limitedEnd.ticketRenewMinutes,machine:limitedEnd.machineAccepted},{end:90,renew:90,machine:false});
+const fresh=select('lab-wprot03','fresh-authentication'),freshEnd=end(fresh),reply=obj(fresh,'as-client-reply').value,old=obj(fresh,'old-ticket-lineage').value;
+const freshObservation={nowMinutes:fresh.fixtureInputs.nowMinutes,old,replyLifetime:reply.lifetime,stateEnd:freshEnd.ticketEndMinutes,stateRenew:freshEnd.ticketRenewMinutes,newCredentialLineage:freshEnd.newCredentialLineage,accepted:freshEnd.tgtAccepted};
+check('fresh AS has distinct accepted object identity',obj(fresh,'tgt').artifactId!==obj(fresh,'old-ticket-lineage').artifactId&amp;&amp;freshEnd.newCredentialLineage&amp;&amp;freshEnd.tgtAccepted,freshObservation,'new accepted TGT object');
+// Current public field names are end/renew deadlines, with no independent
+// fresh issue epoch. A fixed duration is not an expiry on the existing clock.
+check('fresh AS deadline fields lie after declared attempt clock',reply.lifetime.endMinutes&gt;fresh.fixtureInputs.nowMinutes&amp;&amp;reply.lifetime.renewMinutes&gt;fresh.fixtureInputs.nowMinutes,freshObservation,{issuedMinutes:241,endMinutes:481,renewMinutes:481,durationMinutes:240});
+const denied=select('lab-wprot04','device-denied-enforce'),deniedEnd=end(denied);
+check('AS policy denial preserves accepted machine but no user TGT',deniedEnd.machineAccepted===true&amp;&amp;deniedEnd.tgtAccepted===false&amp;&amp;deniedEnd.clientPolicyErrorAccepted===true,deniedEnd,'machine accepted; user TGT denied; protected error accepted');
+const targetDenied=select('lab-wprot05','target-rule-enforce'),targetEnd=end(targetDenied);
+check('TGS policy denial preserves verified armor but no service ticket',targetEnd.machineAccepted&amp;&amp;targetEnd.hostTicketAccepted===false&amp;&amp;targetEnd.clientPolicyErrorAccepted,targetEnd,'machine accepted; service ticket denied; protected error');
+const acl=select('lab-wprot05','ticket-then-acl-denial'),aclEnd=end(acl);
+check('ACL denial preserves ticket and service authentication',aclEnd.hostTicketAccepted&amp;&amp;aclEnd.networkAuthenticated&amp;&amp;aclEnd.resourceAllowed===false,aclEnd,'accepted service credential/authentication; independent resource denial');
+const comparisons=[];
+if(!app)for(const c of WINDOWSPROTECTIONLAB_SUBFIXTURES){const m=buildWindowsProtectionSubfixture(c.id),s=end(m);comparisons.push({id:c.id,result:s.resultCode});check(c.id+' ends with scoped caller result',s.clientKnowsResult===true,s.clientKnowsResult,true);}
+if(app){app.disconnectedCallback();harness.document.body.removeChild(app);harness.clock.frames.clear();harness.clock.timers.clear();}
+const failures=checks.filter(x=&gt;!x.pass),report={mode,nativeBrowser:false,canonicalCases:cases.length,explicitComparisonInvocations:comparisons.length,checks:checks.length,passed:checks.length-failures.length,failures,cases,comparisons,freshObservation,sourceSHA256:createHash('sha256').update(fs.readFileSync(new URL('../source/src/windows-protection-lab.js',import.meta.url))).digest('hex')};
+const out=new URL('./protection-semantic-'+mode+'.json',import.meta.url);fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({mode,checks:report.checks,passed:report.passed,failed:failures.length,failures:failures.map(x=&gt;x.name),output:fileURLToPath(out)},null,2));
+if(failures.length)process.exitCode=1;</code></pre>
+</details>
+<details>
+<summary>
+state-focused-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 3"><code>import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {buildWindowsRemoteAdministrationFixture} from '../source/src/windows-remote-administration-lab.js';
+import {buildWindowsProtectionFixture} from '../source/src/windows-protection-lab.js';
+import {buildHeldObjects} from '../source/src/held-objects.js';
+import {projectHeldObjects,inspectHeldObject,heldObjectTrace,heldCursorForPlayback} from '../source/src/held-object-state.js';
+
+let assertions=0;
+const check=(value,message)=&gt;{assert.ok(value,message);assertions++;};
+function fixture(model){
+ const steps=model.steps(),compiled=buildHeldObjects({model,steps,actors:model.actors(),config:{},contextId:'independent-state:'+model.id+':'+model.variantId,choiceId:model.id});
+ const at=index=&gt;projectHeldObjects(compiled,{eventIndex:index,milestone:index&lt;0?'initial':'complete'});
+ return {model,steps,compiled,at};
+}
+const report={scope:'Focused source/compiled-held-state reproduction. Not a native browser or Windows execution.',cleanup:[],decodedVerification:[]};
+for(const model of [buildWindowsRemoteAdministrationFixture('lab-wra01','default-filtered','local'),buildWindowsProtectionFixture('lab-wprot05','allowed-service')]){
+ const {steps,compiled,at}=fixture(model),index=steps.findIndex(s=&gt;s.id===model.id+':attempt-cleanup'),step=steps[index],before=at(index-1),after=at(index);
+ check(step.from===step.to&amp;&amp;step.layers.length===0,'cleanup is drawn as one local event');
+ const gone=before.holdings.filter(h=&gt;!after.holdings.some(x=&gt;x.holdingId===h.holdingId));
+ const foreign=gone.filter(h=&gt;h.actorId!==step.from);
+ check(foreign.length&gt;0,'one local event removes remote-owner holdings');
+ const chosen=foreign.find(h=&gt;['smbClient','wslDC'].includes(h.actorId))||foreign[0];
+ const trace=heldObjectTrace(compiled,chosen.artifactId),row=trace.find(r=&gt;r.sourceStepId===step.id);
+ check(!!row,'exact object history includes that same canonical cleanup event');
+ check(row.from===chosen.actorId&amp;&amp;row.to===chosen.actorId,'exact history redraws owner-local eviction');
+ check(row.from!==step.from,'full and exact histories disagree on actor for same atomic source event');
+ const cursor=heldCursorForPlayback(compiled,{step:row,status:'paused',kind:'object',queue:trace,queuePosition:trace.indexOf(row)},row,{selected:true});
+ const filtered=projectHeldObjects(compiled,cursor);
+ check(JSON.stringify(filtered.holdings)===JSON.stringify(after.holdings),'exact-object row executes the whole cross-owner purge');
+ check(JSON.stringify(at(index-1))===JSON.stringify(before),'rewind restores the removed holdings');
+ report.cleanup.push({caseId:model.canonicalCaseId||model.id+'/'+model.variantId,sourceEvent:step.id,sourceActor:step.from,foreignHoldingsRemoved:foreign.length,foreignOwners:[...new Set(foreign.map(h=&gt;h.actorId))],exampleArtifact:chosen.artifactId,exampleOwner:chosen.actorId,exactHistoryActor:row.from,sourceIndex:index});
+}
+for(const spec of [
+ ['lab-wprot01','constrained-continuation','s4u-proof-check','s4u-authenticator'],
+ ['lab-wprot05','allowed-service','compound-kdc-armor','compound-fast-request'],
+ ['lab-wprot05','allowed-service','host-tgs-verify','preexisting-user-tgt']
+]){
+ const [id,variant,stage,key]=spec,model=buildWindowsProtectionFixture(id,variant),{steps,compiled,at}=fixture(model),index=steps.findIndex(s=&gt;s.workstationStage===stage),step=steps[index],artifactId=id+':'+key;
+ const op=step.attributeOperations.find(o=&gt;o.instanceId===artifactId&amp;&amp;o.kind==='verify'&amp;&amp;o.actorId==='wslDC');
+ check(op?.representation==='plain'&amp;&amp;op.fieldPath.startsWith('decoded.'),'verification occurrence explicitly claims decoded plain data');
+ const frame=at(index),held=frame.holdings.filter(h=&gt;h.artifactId===artifactId&amp;&amp;h.actorId==='wslDC');
+ check(held.length===1&amp;&amp;held[0].representationId==='wire','only current KDC representation is wire');
+ check(!frame.holdings.some(h=&gt;h.artifactId===artifactId&amp;&amp;h.actorId==='wslDC'&amp;&amp;h.representationId==='plain'),'claimed decoded KDC holding is absent');
+ const beforeInspection=JSON.stringify(frame),inspected=inspectHeldObject(frame,held[0].holdingId);
+ check(inspected.fields.every(f=&gt;f.redacted&amp;&amp;f.readable===false),'actual inspector exposes only redacted wire fields');
+ check(inspected.observations.some(o=&gt;o.actorId==='wslDC'&amp;&amp;o.representationId==='plain'&amp;&amp;o.result==='accepted'),'same inspector records accepted plain verification');
+ check(JSON.stringify(frame)===beforeInspection,'inspection does not fabricate the missing representation');
+ const acquisitions=Object.values(model.workstationInventory.events).flatMap(e=&gt;e.milestones.flatMap(m=&gt;m.effects)).filter(e=&gt;e.op==='acquire'&amp;&amp;e.actorId==='wslDC'&amp;&amp;e.artifactId===artifactId&amp;&amp;e.representationId==='plain');
+ check(acquisitions.length===0,'no later or earlier declared plain KDC acquisition repairs this mismatch');
+ report.decodedVerification.push({caseId:model.canonicalCaseId,event:step.id,sourceIndex:index,artifactId,operation:{kind:op.kind,representation:op.representation,fieldPath:op.fieldPath,value:op.value},holdings:held.map(h=&gt;({actorId:h.actorId,representationId:h.representationId,store:h.store})),inspectorFields:inspected.fields,verificationObservation:inspected.observations.find(o=&gt;o.actorId==='wslDC'&amp;&amp;o.representationId==='plain')});
+}
+report.assertions=assertions;report.reproduced=true;
+fs.writeFileSync(new URL('state-focused-probe.json',import.meta.url),JSON.stringify(report,null,2));
+console.log(JSON.stringify({reproduced:true,assertions,cleanupExamples:report.cleanup,decodedVerificationExamples:report.decodedVerification.map(r=&gt;({caseId:r.caseId,event:r.event,artifactId:r.artifactId}))},null,2));</code></pre>
+</details>
+<details>
+<summary>
+state-ui-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 4"><code>import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {installHarness} from '../source/tests/dom-harness.mjs';
+const mode=process.argv[2]||'source',sandbox=mode==='emitted'?{structuredClone}:globalThis;
+const harness=installHarness(sandbox);let Klass,htmlHash=null;
+if(mode==='emitted'){
+ const html=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url),'utf8');
+ htmlHash=createHash('sha256').update(html).digest('hex');
+ const scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];assert.equal(scripts.length,1);
+ new vm.Script(scripts[0][1],{filename:'actual-uploaded-windows-protection.html'}).runInContext(vm.createContext(sandbox));
+ Klass=harness.registry.get('auth-flow-studio');
+}else ({AuthFlowStudio:Klass}=await import('../source/src/app.js'));
+let assertions=0;const check=(condition,message)=&gt;{assert.ok(condition,message);assertions++;};
+const report={mode,htmlHash,nativeBrowser:false,method:'Real app handlers and rendered inspector in deterministic DOM harness; unmodified actual uploaded IIFE in emitted mode.',decoded:[],cleanup:[]};
+function mount(id,variant){const app=new Klass();harness.document.body.appendChild(app);app.connectedCallback();app.selectLabScenario(id);app.selectLessonVariant(variant);return app;}
+function unmount(app){app.disconnectedCallback();harness.document.body.removeChild(app);harness.clock.frames.clear();harness.clock.timers.clear();}
+const summary=frame=&gt;JSON.stringify(frame.holdings.map(h=&gt;[h.actorId,h.artifactId,h.representationId,h.store]));
+for(const [id,variant,stage,key] of [
+ ['lab-wprot01','constrained-continuation','s4u-proof-check','s4u-authenticator'],
+ ['lab-wprot05','allowed-service','compound-kdc-armor','compound-fast-request'],
+ ['lab-wprot05','allowed-service','host-tgs-verify','preexisting-user-tgt']
+]){
+ const app=mount(id,variant);
+ try{
+  const index=app.steps.findIndex(s=&gt;s.workstationStage===stage),step=app.steps[index],artifactId=id+':'+key;
+  app.selectStep(index,false);let frame=app.heldView.snapshot();
+  check(frame.cursor.eventIndex===index&amp;&amp;frame.cursor.milestone==='complete','selected actual source completion');
+  const h=frame.holdings.find(h=&gt;h.actorId==='wslDC'&amp;&amp;h.artifactId===artifactId);
+  check(h?.representationId==='wire','KDC current holding remains ciphertext');
+  check(!frame.holdings.some(h=&gt;h.actorId==='wslDC'&amp;&amp;h.artifactId===artifactId&amp;&amp;h.representationId==='plain'),'no decoded holding in real app');
+  const op=step.attributeOperations.find(o=&gt;o.instanceId===artifactId&amp;&amp;o.kind==='verify');
+  check(op?.representation==='plain','same real app source occurrence claims decoded verification');
+  app.heldView.select(h);const text=app.querySelector('#held-inspector').textContent;
+  check(text.includes('Not readable by this holder')&amp;&amp;text.includes('verification · accepted'),'actual inspector shows accepted verification and unreadable-only representation');
+  const full=summary(frame);app.heldView.trace(artifactId);
+  const rowIndex=app.traceQueue.findIndex(r=&gt;r.sourceStepId===step.id);check(rowIndex&gt;=0,'exact history contains affected verification');
+  app.selectStep(rowIndex,false);frame=app.heldView.snapshot();
+  check(summary(frame)===full,'exact replay reproduces same inconsistent inventory prefix');
+  report.decoded.push({caseId:id+'/'+variant,event:step.id,sourceIndex:index,artifactId,verificationRepresentation:op.representation,heldRepresentation:h.representationId,inspectorText:text,exactHistoryIndex:rowIndex});
+ }finally{unmount(app);}
+}
+for(const [id,variant] of [['lab-wra01','default-filtered'],['lab-wprot05','allowed-service']]){
+ const app=mount(id,variant);
+ try{
+  const index=app.steps.findIndex(s=&gt;s.id===id+':attempt-cleanup'),step=app.steps[index];
+  app.selectStep(index-1,false);const before=app.heldView.snapshot();
+  app.selectStep(index,false);const after=app.heldView.snapshot(),gone=before.holdings.filter(h=&gt;!after.holdings.some(x=&gt;x.holdingId===h.holdingId)),foreign=gone.filter(h=&gt;h.actorId!==step.from);
+  check(foreign.length&gt;0,'actual app local cleanup clears foreign owners');
+  const h=foreign.find(h=&gt;['smbClient','wslDC'].includes(h.actorId))||foreign[0];
+  app.selectStep(index-1,false);app.heldView.select(h);app.heldView.trace(h.artifactId);
+  const rowIndex=app.traceQueue.findIndex(r=&gt;r.sourceStepId===step.id),row=app.traceQueue[rowIndex];
+  check(row.from!==step.from&amp;&amp;row.from===h.actorId,'exact history draws a different local actor for same source event');
+  app.selectStep(rowIndex,false);
+  check(summary(app.heldView.snapshot())===summary(after),'exact history still performs global purge');
+  report.cleanup.push({caseId:id+'/'+variant,event:step.id,sourceActor:step.from,exactActor:row.from,artifactId:h.artifactId,foreignRemoved:foreign.length});
+ }finally{unmount(app);}
+}
+report.assertions=assertions;report.reproduced=true;
+fs.writeFileSync(new URL('state-ui-'+mode+'.json',import.meta.url),JSON.stringify(report,null,2));
+console.log(JSON.stringify({mode,htmlHash,assertions,reproduced:true,decodedCases:report.decoded.length,cleanupCases:report.cleanup.length}));</code></pre>
+</details>
+<details>
+<summary>
+pam-independent-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 5"><code>import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {createPamFoundationsCase,PAM_SUBFIXTURES} from '../source/src/pam-foundations-lab.js';
+import {pamEvaluate} from '../source/src/pam-stack-evaluator.js';
+import {PAM_CONFIGURATIONS} from '../source/src/pam-configurations.js';
+import {reconstructProtocolState} from '../source/src/protocol-state.js';
+import {installHarness} from '../source/tests/dom-harness.mjs';
+
+const mode=process.argv[2]||'source',output=new URL('./pam-independent-'+mode+'.json',import.meta.url);
+let checks=0;const ok=(value,message)=&gt;{assert.ok(value,message);checks++;};
+const same=(a,b,message)=&gt;{assert.deepEqual(a,b,message);checks++;};
+const records=[],findings=[];
+const expected={
+ 'local-login-success':['PAM_SUCCESS',true],
+ 'required-deferred-failure':['PAM_AUTH_ERR',false],
+ 'requisite-immediate-failure':['PAM_AUTH_ERR',false],
+ 'sufficient-early-success':['PAM_SUCCESS',true],
+ 'sufficient-after-failure':['PAM_AUTH_ERR',false],
+ 'sufficient-failure-fallback':['PAM_SUCCESS',true],
+ 'optional-nondecisive':['PAM_SUCCESS',true],
+ 'optional-only-success':['PAM_SUCCESS',true],
+ 'optional-only-failure':['PAM_PERM_DENIED',false],
+ 'bracket-success-jump':['PAM_SUCCESS',true],
+ 'bracket-default-denial':['PAM_AUTH_ERR',false],
+ 'include-termination':['PAM_SUCCESS',true],
+ 'substack-termination':['PAM_AUTH_ERR',false],
+ 'substack-failure':['PAM_AUTH_ERR',false],
+ 'substack-jump-boundary':['PAM_SUCCESS',true],
+ 'account-denied':['PAM_SUCCESS',false],
+ 'password-change-required':['PAM_SUCCESS',true],
+ 'session-failure':['PAM_SUCCESS',false],
+ 'module-unavailable':['PAM_MODULE_UNKNOWN',false],
+ 'conversation-failure':['PAM_AUTHTOK_ERR',false],
+ 'soft-hard-limits':['PAM_SUCCESS',true],
+ 'service-selection':['PAM_SUCCESS',true]
+};
+const members={
+ 'child-in-range':['PAM_SUCCESS',true],
+ 'child-overrun':['PAM_PERM_DENIED',false],
+ 'change-unsupported':['PAM_SUCCESS',false],
+ 'change-prelim-failure':['PAM_SUCCESS',false],
+ 'change-update-failure':['PAM_SUCCESS',false],
+ 'limits-application-error':['PAM_SUCCESS',false],
+ 'service-deny':['PAM_AUTH_ERR',false]
+};
+const variants=Object.keys(expected).map(id=&gt;[id,null,expected[id]]);
+for(const [id,subs] of Object.entries(PAM_SUBFIXTURES))for(const sub of subs.slice(1))variants.push([id,sub,members[sub]]);
+same(variants.length,29,'22 canonical defaults plus 7 distinct members');
+let prefixes=0;
+for(const [id,sub,[auth,admitted]] of variants){
+ const m=createPamFoundationsCase(id,sub),steps=m.steps();
+ same(m.pamOutcome.auth,auth,id+'/'+sub+' literal auth outcome');
+ same(m.pamOutcome.admitted,admitted,id+'/'+sub+' literal admission outcome');
+ for(const evaluation of Object.values(m.pamEvaluations))for(const row of evaluation.trace){
+  same(row.text,PAM_CONFIGURATIONS[row.configurationId].text.split('\n')[row.line-1],'Physical row identity');
+  same(row.configurationHash,createHash('sha256').update(PAM_CONFIGURATIONS[row.configurationId].text).digest('hex'),'Actual config bytes');
+ }
+ for(let i=-1;i&lt;steps.length;i++){
+  prefixes++;const w=reconstructProtocolState(m,i).workstation;
+  same(w.unrelatedSession,'other-user-session-retained','Unrelated session survives');
+  if(w.session){ok(w.authenticated&amp;&amp;w.admitted,'Session requires proof and admission');same(w.pamResults.open,'PAM_SUCCESS','Session requires completed open');ok(w.pamResults.account==='PAM_SUCCESS'||w.pamResults.account==='PAM_NEW_AUTHTOK_REQD'&amp;&amp;w.pamResults.password==='PAM_SUCCESS','Expired token changed before service');}
+ }
+ const final=reconstructProtocolState(m,steps.length-1).workstation;
+ same(final.transactionEnded,true,'Transaction ends');same(final.session,false,'Session teardown');same(final.moduleCredentials,false,'Credential bookkeeping teardown');
+ records.push({case:id,subfixture:m.subfixtureId,auth,admitted,steps:steps.length});
+}
+const required=pamEvaluate('afs-sufficient-after-failure','authenticate');
+same(required.trace.filter(r=&gt;r.executed).map(r=&gt;r.mappedAction),['bad','done','ok'],'Remembered required failure prevents sufficient stop');
+same(required.status,'PAM_AUTH_ERR','First negative retained');
+const jump=pamEvaluate('afs-bracket-success-jump','authenticate');
+same(jump.trace[0].accumulatorAfter,{impression:'undefined',status:'PAM_PERM_DENIED'},'Auth jump does not grant');
+const cached=pamEvaluate('afs-close-session-jump','close',{cache:pamEvaluate('afs-close-session-jump','open').cache});
+same(cached.status,'PAM_SESSION_ERR','Pinned cached jump propagates current error, unlike disclosed distribution patch');
+const patch=fs.readFileSync(new URL('../source/docs/pam-foundations/sources/ubuntu-1.7.0-5ubuntu3.2-045-pam-dispatch-jump-is-ignore.patch',import.meta.url),'utf8');
+ok(patch.includes('-\t\tif (use_cached_chain)')&amp;&amp;patch.includes('module as ignored'),'Retained distribution patch removes cached-jump accumulation');
+const source=fs.readFileSync(new URL('../source/docs/pam-foundations/sources/dispatch-password-pam_password.c',import.meta.url),'utf8');
+ok(source.includes('flags|PAM_PRELIM_CHECK')&amp;&amp;source.includes('flags|PAM_UPDATE_AUTHTOK'),'Pinned dispatcher carries caller flags into both internal passes');
+
+const sandbox=mode==='emitted'?{structuredClone}:globalThis;
+const {document,clock,registry}=installHarness(sandbox);
+let Studio;
+if(mode==='emitted'){
+ const html=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url),'utf8');
+ const scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];same(scripts.length,1,'Actual supplied standalone IIFE');
+ new vm.Script(scripts[0][1],{filename:'pam-independent-standalone'}).runInContext(vm.createContext(sandbox));Studio=registry.get('auth-flow-studio');
+}else ({AuthFlowStudio:Studio}=await import('../source/src/app.js'));
+const app=new Studio();document.body.appendChild(app);app.connectedCallback();
+const clean=node=&gt;node?.textContent.replace(/\s+/g,' ').trim();
+const panelCell=label=&gt;{const list=app.querySelector('#pam-configuration-panel .pam-evaluation');const row=[...(list?.children||[])].find(row=&gt;clean(row.querySelector('dt'))===label);return clean(row?.querySelector('dd'));};
+try{
+ app.selectLabScenario('lab-pam01',{variant:'password-change-required'});
+ const call=app.steps.find(s=&gt;s.id==='lab-pam01:call-password-default');same(call.pamEvaluation.flags,'PAM_CHANGE_EXPIRED_AUTHTOK','Actual caller requested expired-only change');
+ const flags=[];
+ for(const phase of ['prelim','update']){
+  const index=app.steps.findIndex(s=&gt;s.pamEvaluation?.apiPhase===phase&amp;&amp;s.pamEvaluation.hookCalled);
+  app.selectStep(index,false);
+  const value=panelCell('Internal module dispatch / flags');
+  ok(value?.includes(phase==='prelim'?'PAM_PRELIM_CHECK':'PAM_UPDATE_AUTHTOK'),'Phase flag visible');
+  flags.push({index,id:app.steps[index].id,phase,flags:app.steps[index].pamEvaluation.flags,rendered:value,expected:'PAM_CHANGE_EXPIRED_AUTHTOK | '+(phase==='prelim'?'PAM_PRELIM_CHECK':'PAM_UPDATE_AUTHTOK')});
+ }
+ findings.push({id:'PAM-R01',reproduced:flags.every(row=&gt;!row.flags.includes('PAM_CHANGE_EXPIRED_AUTHTOK')&amp;&amp;!row.rendered.includes('PAM_CHANGE_EXPIRED_AUTHTOK')),observations:flags});
+ const sequences=[];
+ for(const [id,variant,trigger] of [['lab-lelev01','account-denied','pam-account'],['lab-lelev02','access-denied','su-account']]){
+  app.selectLabScenario(id,{variant});
+  const index=app.steps.findIndex(s=&gt;s.id===id+':'+trigger),rows=[];
+  for(let i=index;i&lt;index+3;i++){
+   app.selectStep(i,false);const w=app.protocolSnapshot().state.workstation;
+   rows.push({index:i,id:app.steps[i].id,title:app.steps[i].title,line:app.steps[i].pamEvaluation.line,raw:panelCell('Raw hook or loader return'),accumulator:panelCell('Accumulator after'),aggregate:w.pamResults.account,activeLine:clean(app.querySelector('#pam-configuration-panel [aria-current="step"]'))});
+  }
+  sequences.push({scenario:id,variant,rows});
+ }
+ findings.push({id:'PAM-R02',reproduced:sequences.every(({rows})=&gt;rows[0].line===rows[2].line&amp;&amp;rows[1].line===rows[0].line-1&amp;&amp;rows[0].aggregate==='PAM_PERM_DENIED'&amp;&amp;rows[1].aggregate==='PAM_PERM_DENIED'&amp;&amp;rows[1].raw==='PAM_SUCCESS'),observations:sequences});
+}finally{app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();}
+ok(findings.every(f=&gt;f.reproduced),'Both reported defects reproduced');
+const result={mode,scope:'Independent literal outcome/config/prefix checks and actual source/emitted DOM reproduction; no native OS execution',supportingChecks:checks,prefixes,canonicalCases:22,uniqueExecutions:29,records,findings};
+fs.writeFileSync(output,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({mode,checks,prefixes,executions:29,findings:findings.map(f=&gt;({id:f.id,reproduced:f.reproduced})),output:output.pathname},null,2));</code></pre>
+</details>
+<details>
+<summary>
+remote-ui-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 6"><code>import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {createHash} from 'node:crypto';
+import {installHarness} from '../source/tests/dom-harness.mjs';
+const emitted=process.argv.includes('--emitted'),sandbox=emitted?{structuredClone}:globalThis;
+const {document,clock,registry}=installHarness(sandbox);
+let Constructor,htmlSha256=null;
+if(emitted){const html=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url),'utf8');htmlSha256=createHash('sha256').update(html).digest('hex');const scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];assert.equal(scripts.length,1);new vm.Script(scripts[0][1],{filename:'supplied-standalone'}).runInContext(vm.createContext(sandbox));Constructor=registry.get('auth-flow-studio');}
+else ({AuthFlowStudio:Constructor}=await import('../source/src/app.js'));
+const observations=[];
+for(const [id,variant] of [['lab-wra01','default-filtered'],['lab-wra03','domain-ntlm-explicit']]){
+ const app=new Constructor();document.body.appendChild(app);app.connectedCallback();
+ try{app.selectLabScenario(id);app.selectLessonVariant(variant);
+  const index=app.steps.findIndex(s=&gt;s.workstationStage==='ntlm-derive');assert.ok(index&gt;=0);app.selectStep(index,false);
+  const proof=app.labModel.workstationInventory.artifacts.find(a=&gt;a.key==='ntlm-proof');
+  const held=app.heldView.snapshot().holdings.find(h=&gt;h.artifactId===proof.artifactId&amp;&amp;h.actorId==='smbClient'&amp;&amp;h.representationId==='plain');assert.ok(held);app.heldView.select(held);
+  const inspector=app.querySelector('#held-inspector');assert.equal(inspector.hidden,false);
+  assert.ok(inspector.textContent.includes(proof.value));assert.ok(proof.value.includes('target-AV,MIC,terminators'));
+  observations.push({id,variant,index,artifactId:proof.artifactId,proof:proof.value,visibleInspector:true,inspectorContainsExactProof:true});
+ }finally{app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();}
+}
+const output={mode:emitted?'supplied-standalone':'source',htmlSha256,observations};fs.writeFileSync(new URL('./remote-ui-'+(emitted?'emitted':'source')+'.json',import.meta.url),JSON.stringify(output,null,2));console.log(JSON.stringify(output,null,2));</code></pre>
+</details>
+<details>
+<summary>
+search-ux-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 7"><code>import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {installHarness,HarnessEvent} from '../source/tests/dom-harness.mjs';
+const mode=process.argv[2]||'source', sandbox=mode==='emitted'?{structuredClone}:globalThis;
+const {document,window,clock,registry}=installHarness(sandbox);
+let AuthFlowStudio;
+if(mode==='emitted'){
+ const html=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url),'utf8');
+ const blocks=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];assert.equal(blocks.length,1);
+ new vm.Script(blocks[0][1],{filename:'reviewer-supplied-standalone'}).runInContext(vm.createContext(sandbox));AuthFlowStudio=registry.get('auth-flow-studio');
+}else({AuthFlowStudio}=await import('../source/src/app.js'));
+window.location={hash:'',href:'https://example.invalid/studio.html'};window.history={pushState(_a,_b,hash){window.location.hash=hash;},replaceState(_a,_b,hash){window.location.hash=hash;}};
+const app=new AuthFlowStudio();document.body.appendChild(app);document.activeElement=document.body;app.connectedCallback();app.addEventListener('focusin',e=&gt;{document.activeElement=e.target;});
+let checks=0;const check=(v,message)=&gt;{checks++;assert.ok(v,message);};const eq=(a,b,message)=&gt;{checks++;assert.equal(JSON.stringify(a),JSON.stringify(b),message);};
+const text=node=&gt;node?.textContent.replace(/\s+/g,' ').trim()||'';
+const input=app.querySelector('#lab-scenario-search'),type=q=&gt;{input.value=q;input.dispatchEvent(new HarnessEvent('input'));return app.scenarioPicker.results;};
+const ids=rows=&gt;Array.from(rows,row=&gt;row.id);const results=[];
+try{
+ app.selectLabScenario('lab-wra01');app.selectStep(app.steps.length-1,false);const baseline=app.scenarioSnapshot(),context=app.heldView.contextId;
+ const queries=[['filtering','lab-wra01',5],['token filtering','lab-wra01',3],['remote uac','lab-wra01',3],['LocalAccountTokenFilterPolicy','lab-wra01',1],['lsa','lab-wprot02',5],['LSA','lab-wprot01',5],['lsass','lab-wprot02',5],['RunAsPPL','lab-wprot02',1],['run as ppl','lab-wprot02',1],['credguard','lab-wprot01',3],['remote credguard','lab-win-rdp-remote-credential-guard',1],['protected users offline','lab-wprot03',5],['workgroup share','lab-smb-nonjoined-ntlm',10],['sudo','lab-lelev01',5],['run as admin','lab-welev02',5],['pam','lab-pam01',3],['pam.d','lab-pam01',3],['soft checks','lab-pam01',3],['hard checks','lab-pam01',3],['requisite','lab-pam01',3],['sufficient','lab-pam01',3],['substack','lab-pam01',3],['role binding','lab-k8s04',10],['pkinit','lab-ad-pkinit-success',10],['dnssec forwarder','lab-dnssec06',10],['CODE_VERIFIER','lab-mcp02',328],['EAP-TLS','lab-net-eap-tls13-wired',328]];
+ for(const [q,id,max]of queries){
+  const rows=type(q),actual=ids(rows),n=actual.indexOf(id);check(n&gt;=0&amp;&amp;n&lt;max,`${q} -&gt; ${id} rank ${n+1}`);eq(actual.length,new Set(actual).size,'no duplicate identities');
+  const dom=app.querySelector('#lab-scenario-results').querySelectorAll('[data-scenario-option]');eq(Array.from(dom,r=&gt;r.dataset.scenarioOption),actual,'picker DOM matches rank');
+  app.refs['lab-search'].value=q;app.refs['lab-search'].dispatchEvent(new HarnessEvent('input'));eq(Array.from(app.refs['lab-cards'].querySelectorAll('[data-lab-scenario]'),r=&gt;r.dataset.labScenario),actual,'library order equals picker');
+  eq(app.scenarioSnapshot(),baseline,'typing does not mutate running state');eq(app.heldView.contextId,context,'typing preserves held context');
+  results.push({query:q,ids:actual,caseSelections:Array.from(rows,r=&gt;({id:r.id,variantId:r.variantId||null,choices:Array.from(r.matchingVariantIds||[])}))});
+ }
+ const normalized=ids(type('  TÓKEN_filtering  '));eq(normalized,ids(type('token filtering')),'accent/separator normalization');eq(ids(type('filtering token')),ids(type('token filtering')),'term order');eq(ids(type('token token filtering')),ids(type('token filtering')),'duplicate terms');
+ eq(type('tlsalert').length,0,'unrelated interior acronym rejected');eq(type('unfindable_word_928734').length,0,'no result query');input.dispatchEvent(new HarnessEvent('keydown',{key:'Enter'}));eq(app.scenarioSnapshot(),baseline,'no-result Enter does not navigate');
+ const sufficient=type('sufficient').find(r=&gt;r.id==='lab-pam01');check(!sufficient.variantId&amp;&amp;sufficient.matchingVariantIds.length&gt;=3,'sufficient remains ambiguous');
+ app.scenarioPicker.choose('lab-pam01');check(!app.querySelector('#search-case-choice').hidden,'choice panel open');eq(app.labScenarioId,'lab-wra01','ambiguity has not navigated');eq(app.heldView.contextId,context,'ambiguity has not changed authority');
+ app.querySelector('[data-cancel-search-case]').click();check(app.querySelector('#search-case-choice').hidden,'cancel hides choice');eq(document.activeElement.id,'lab-scenario-search','cancel focus returns to search');eq(app.scenarioSnapshot(),baseline,'cancel leaves state');
+ const unique=type('requisite').find(r=&gt;r.id==='lab-pam01');eq(unique.variantId,'requisite-immediate-failure','unique case exact target');app.scenarioPicker.choose('lab-pam01');eq(app.lessonVariant,'requisite-immediate-failure','chosen exact case');eq(document.activeElement.id,'play','selection focus returns Play');check(window.location.hash.endsWith('?case=requisite-immediate-failure'),'URL selects exact named case');check(app.heldView.contextId!==context,'selection creates fresh context');check(!app.protocolSnapshot().state.workstation.authenticated,'fresh selected case not authenticated');
+ const lineIndex=app.steps.findIndex(s=&gt;s.pamEvaluation?.executed===true);check(lineIndex&gt;=0,'PAM physical evaluation available');app.selectStep(lineIndex,false);const ev=app.steps[lineIndex].pamEvaluation;const line=app.querySelector('#pam-configuration-panel [aria-current="step"]');eq(Number(line.dataset.pamLine),ev.line,'PAM physical line exact');eq(line.querySelector('code').textContent,ev.text,'PAM displayed configuration exact');check(text(app.querySelector('#pam-configuration-panel')).includes('API aggregate'),'aggregate and raw status distinguished');
+ const base='#/workstations/linux-logon/lab-pam01';for(const query of ['?case=unknown','?case=%00','?case=requisite-immediate-failure&amp;case=substack-failure','?case=requisite-immediate-failure&amp;extra=1']){window.location.hash=base+query;app.openRoute();eq(app.lessonVariant,'local-login-success','invalid route selects declared default');eq(window.location.hash,base,'invalid case removed');check(!app.protocolSnapshot().state.workstation.authenticated,'invalid route fresh default');}
+ app.selectLabScenario('lab-wra01');app.selectStep(app.steps.length-1,false);const panel=app.querySelector('#windows-remote-evidence');check(!panel.hidden,'remote evidence shown');check(text(panel).includes('Configured reference')&amp;&amp;text(panel).includes('Applied at context creation'),'configured/applied policy distinguished');check(text(panel).includes('Before: modeled target input')&amp;&amp;text(panel).includes('After: current target context'),'target before/after distinguished');check(app.protocolSnapshot().state.workstation.credentialVerified&amp;&amp;!app.protocolSnapshot().state.workstation.resourceAllowed,'credential success distinct from resource denial');
+ const chooser=app.querySelector('#lesson-case');chooser.focus();chooser.value='ordinary-share-allowed';chooser.dispatchEvent(new HarnessEvent('change'));eq(document.activeElement.id,'lesson-case','rebuilt case selector focus restored');check(!app.protocolSnapshot().state.workstation.credentialVerified,'case change clears prior proof');app.selectStep(app.steps.length-1,false);check(app.protocolSnapshot().state.workstation.resourceAllowed,'ordinary share succeeds');eq(app.protocolSnapshot().state.workstation.token.mode,'filtered','comparison preserves filtered token');
+ const output={mode,checks,passed:true,queryCount:queries.length,results,scope:'Independent source/actual-emitted-IIFE DOM-harness checks; no native browser or screen-reader claim.'};fs.writeFileSync(new URL(`search-ux-probe-${mode}.json`,import.meta.url),JSON.stringify(output,null,2));console.log(JSON.stringify({mode,checks,passed:true,queryCount:queries.length}));
+}finally{app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();}</code></pre>
+</details>
+<details>
+<summary>
+provenance-audit.py
+</summary>
+<pre class="python" tabindex="0" role="region" aria-label="Reproduction source 8"><code>#!/usr/bin/env python3
+"""Read-only independent retained-evidence audit; does not run production gates."""
+from pathlib import Path
+import json, hashlib, math, statistics, collections, re
+ROOT=Path(__file__).resolve().parent.parent
+S=ROOT/'source'; OUT=ROOT/'independent-validation'
+checks=[]; declared_omissions=[]
+def check(name,ok,detail=None):
+ row={'name':name,'passed':bool(ok)}
+ if not ok:row['detail']=detail
+ checks.append(row)
+def eq(name,a,b):check(name,a==b,{'actual':a,'expected':b})
+def near(name,a,b):check(name,math.isclose(a,b,rel_tol=1e-10,abs_tol=1e-8),{'actual':a,'expected':b})
+def read(p):return json.loads((S/p).read_text())
+def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+inv=json.loads((ROOT/'CONTENTS.json').read_text()); omits={(x['path'],x.get('sha256')):x for x in inv['omitted']}
+seen=set()
+def ref(r,label,allow_omitted=False):
+ if not isinstance(r,dict) or not isinstance(r.get('path'),str) or not isinstance(r.get('sha256'),str):return
+ name=r['path']; key=(name,r['sha256'],r.get('bytes'))
+ if key in seen:return
+ seen.add(key)
+ p=S/name
+ if name=='dist/auth-flow-studio.html':
+  if 'H' in globals() and r['sha256']!=H:
+   eq(label+'/historical-parent-binding',r['sha256'],M['parent']['standalone']['sha256']);eq(label+'/historical-parent-size',r.get('bytes'),M['parent']['standalone']['bytes']);return
+  p=ROOT/'auth-flow-studio-windows-protection.html'
+ if not p.is_file() and allow_omitted and (name,r['sha256']) in omits:
+  o=omits[(name,r['sha256'])];check(label+'/declared-omission',bool(o.get('reason')))
+  if 'bytes'in r:eq(label+'/omitted-bytes',o['bytes'],r['bytes'])
+  declared_omissions.append(name);return
+ check(label+'/exists',p.is_file(),name)
+ if not p.is_file():return
+ eq(label+'/sha256',digest(p),r['sha256'])
+ if 'bytes'in r:eq(label+'/bytes',p.stat().st_size,r['bytes'])
+def refs(o,label,allow_omitted=False):
+ if isinstance(o,dict):
+  if {'path','sha256'}&lt;=o.keys() and not str(o['path']).startswith('/'):ref(o,label,allow_omitted)
+  for k,v in o.items():refs(v,label+'/'+k,allow_omitted)
+ elif isinstance(o,list):
+  for i,v in enumerate(o):refs(v,label+'/'+str(i),allow_omitted)
+M=read('docs/windows-protection-expansion/manifest.json'); C=M['candidate']['canonicalSource']; H=M['candidate']['standalone']['sha256']
+refs(M,'manifest')
+eq('exact-plan-hash',M['plan']['sha256'],'8e66f18b60f352b4d3020af11369b829828cb473cbc8edcccacbe104abc8fc8d')
+eq('models',len(M['scope']['lessons']),11)
+eq('canonical-case-count',sum(x['canonicalCases'] for x in M['scope']['lessons']),110)
+eq('unique-execution-count',sum(x['uniqueExecutions'] for x in M['scope']['lessons']),128)
+eq('case-manifest-uniqueness',len({x['caseId'] for x in M['cases']}),88)
+for key,value in M['authorization'].items():eq('current-authorization/'+key,value,False)
+I=read('docs/windows-protection-expansion/independent-inputs-current.json'); O=read('docs/windows-protection-expansion/independent-inputs.json')
+refs(I,'current-oracle-bindings'); old={x['path']:x for x in O['inputs']}
+for row in I['originalSealInputs']:
+ p=row['logicalPath'];eq('oracle-original-sha/'+p,row['original']['sha256'],old[p]['sha256']);eq('oracle-retained-sha/'+p,row['retained']['sha256'],row['original']['sha256']);eq('oracle-change-declaration/'+p,row['changed'],row['original']['sha256']!=row['current']['sha256'])
+eq('changed-original-six-seal-inputs',sum(x['changed'] for x in I['originalSealInputs']),2)
+PC=read('docs/pam-foundations/review-corrections.json');eq('four-retained-PAM-originals',len(PC['frozenOriginals']),4)
+for row in PC['frozenOriginals']:
+ ref({'path':row['retainedPath'],'sha256':row['retainedSHA256']},'PAM-original/'+row['originalPath']);eq('PAM-original-identity/'+row['originalPath'],row['originalSHA256'],row['retainedSHA256']);ref({'path':row['originalPath'],'sha256':row['correctedSHA256']},'PAM-current/'+row['originalPath'])
+eq('oracle-case-count',len(I['canonicalCaseIds']),110);eq('oracle-unique-cases',len(set(I['canonicalCaseIds'])),110)
+for p in ['docs/windows-protection-expansion/remote-cases.json','docs/windows-protection-expansion/protection-cases.json']:
+ row=next(x for x in I['originalSealInputs'] if x['logicalPath']==p);eq('windows-oracle-unchanged/'+p,row['changed'],False)
+A=read('docs/verification/windows-protection-expansion/source-capture-audit-03.json')
+eq('capture-count',len(A['captures']),75)
+for i,x in enumerate(A['captures']):
+ ref(x['observed'],'capture/'+str(i));eq('capture-original-binding/'+str(i),x['expectedSha256'],x['observed']['sha256'])
+eq('capture-status-unrecorded',sum(x['httpStatus'] is None for x in A['captures']),25)
+eq('source-required-ids',set(A['requiredSourceIds']),{'S'+str(i).zfill(2) for i in range(1,37)})
+eq('capture-problems',A['problems'],[])
+Q=read(M['verification']['source']['canonical']['path']); fixtures={x['executionId']:x for x in Q['fixtures']}
+eq('canonical-current-map',Q['identities']['sourceFiles'],C['files']);eq('canonical-build',Q['identities']['standaloneSha256'],H);eq('canonical-identities-stable',Q['identities'],Q['afterIdentities'])
+eq('canonical-cases',set(Q['canonicalCases']),set(I['canonicalCaseIds']));eq('canonical-executions',len(fixtures),128)
+eq('canonical-prefix-count',sum(len(x['prefixes']) for x in fixtures.values()),4354)
+for k,x in fixtures.items():eq('source-fixture-passed/'+k,x['passed'],True)
+R=read(M['verification']['source']['independentOutcomes']['path']);eq('literal-current-sha',R['candidateCanonicalIdentity'],C['sha256']);eq('literal-executions',len(R['executions']),128);eq('literal-predicates',R['counts']['predicates'],992);eq('literal-failures',R['failures'],[])
+eq('literal-predicate-recount',sum(len(x['expected']) for x in R['executions']),992)
+for x in R['executions']:eq('literal-record-consistency/'+x['executionId'],x['expected'],x['observed'])
+E=read(M['verification']['source']['equivalence']['path']);refs(E,'equivalence',True);OLD=read(E['priorCanonical']['path'])
+eq('complete-candidate01-fixture-equality',Q['fixtures'],OLD['fixtures'])
+eq('complete-candidate01-case-equality',Q['canonicalCases'],OLD['canonicalCases'])
+eq('source-delta-paths',set(x['path'] for x in E['changedCanonicalFiles']),{p for p,h in C['files'].items() if E['priorSource']['files'].get(p)!=h})
+F=read(M['verification']['repositorySuite']['report']['path']);refs(F,'full-suite',True)
+eq('full-suite-source',F['canonicalSource'],C);eq('full-suite-html',F['standalone']['sha256'],H);eq('full-suite-files',len(F['logs']),129);eq('full-suite-file-set',{x['file'] for x in F['logs']},{p.name for p in (S/'tests').glob('*.test.mjs')})
+eq('full-suite-total-pass',sum(x['testsPassed'] for x in F['logs']),2264);eq('full-suite-total-fail',sum(x['testsFailed'] for x in F['logs']),0)
+for x in F['logs']:
+ ref({'path':x['log'],'sha256':x['logSha256'],'bytes':x['logBytes']},'test-log/'+x['file']);eq('test-exit/'+x['file'],x['exitCode'],0)
+ text=(S/x['log']).read_text();eq('test-raw-pass/'+x['file'],int(re.search(r'(\d+) pass',text).group(1)),x['testsPassed']);eq('test-raw-fail/'+x['file'],int(re.search(r'(\d+) fail',text).group(1)),x['testsFailed'])
+N=read(M['verification']['emittedBrowser']['report']['path']);eq('native-source-map',N['before']['sourceFiles'],C['files']);eq('native-html',N['before']['standalone']['sha256'],H);eq('native-identities-stable',N['before'],N['after'])
+eq('native-matrix-size',len(N['matrix']),1815);eq('native-key-unique',len({x['key'] for x in N['matrix']}),1815);eq('native-passed',sum(x['status']=='passed' for x in N['matrix']),1815);eq('native-failures',N['failures'],[]);eq('native-unperformed',N['unperformed'],[])
+NM={x['key']:x for x in N['matrix']}; modes=['source-http','emitted-http','offline-file']; current_native=[]
+for line in (S/'docs/verification/windows-protection-expansion/native-04/canonical-prefixes.jsonl').read_text().splitlines():
+ x=json.loads(line);current_native.append(x);k=x['executionId'];f=fixtures[k];tag='native-prefix/'+x['mode']+'/'+k
+ eq(tag+'/prefixes',x['prefixes'],f['prefixes']);eq(tag+'/initial',x['initial'],f['initial']);eq(tag+'/terminal',x['terminal'],f['final']);eq(tag+'/mismatches',x['mismatches'],[])
+ eq(tag+'/matrix-prefixes',NM[x['mode']+'/'+k+'/canonical']['observed']['prefixes'],len(f['prefixes']))
+eq('native-fixture-count',len(current_native),384);eq('native-fixture-unique',len({(x['mode'],x['executionId']) for x in current_native}),384);eq('native-prefix-total',sum(len(x['prefixes']) for x in current_native),13062)
+for mode in modes:eq('native-mode-complete/'+mode,{x['executionId'] for x in current_native if x['mode']==mode},set(fixtures))
+SR=read('docs/windows-protection-expansion/search-results.json');eq('search-current-sha',SR['candidateCanonicalIdentity'],C['sha256']);eq('search-count',len(SR['checks']),87);eq('search-unique-queries',len({x['query'] for x in SR['checks']}),29)
+for x in SR['checks']:eq('search-pass/'+x['mode']+'/'+x['query'],x['passed'],True)
+P=read('docs/windows-protection-expansion/performance-results.json');refs(P,'performance-index',True)
+SH=read(P['shared']['report']['path']);SU=read(P['supplement']['report']['path'])
+eq('shared-current-map',SH['identities']['candidate']['canonicalSourceFiles'],C['files']);eq('shared-current-html',SH['identities']['candidate']['standalone']['sha256'],H)
+eq('shared-no-errors',SH['errors'],[]);eq('shared-complete',SH['collectionComplete'],True);eq('shared-stable',SH['identityUnchanged'],True);eq('shared-sample-contexts',len(SH['samples']),36)
+eq('supplement-no-errors',SU['errors'],[]);eq('supplement-unperformed',SU['unperformed'],[]);eq('supplement-stable',SU['identities']['before'],SU['identities']['after']);eq('supplement-contexts',len(SU['rows']),36)
+for p,h in C['files'].items():eq('supplement-current-map/'+p,SU['identities']['before']['roots']['candidate']['files'][p]['sha256'],h)
+eq('supplement-current-html',SU['identities']['before']['roots']['candidate']['files']['dist/auth-flow-studio.html']['sha256'],H)
+eq('performance-serial',SH['finishedAt']&lt;SU['startedAt'],True);eq('functional-before-performance',N['finishedAt']&lt;SH['startedAt'],True)
+for key in ['materialRegression','variationUnresolved']:eq('shared-flag-count/'+key,sum(x[key] for x in SH['comparisons']),2 if key=='materialRegression' else 0)
+for key in ['materialRegression','baselineVariable','candidateVariable']:eq('supplement-flag-count/'+key,sum(x[key] for x in SU['comparisons']),1 if key=='baselineVariable' else 0)
+def stats(v):
+ median=statistics.median(v);rng=max(v)-min(v)
+ return {'min':min(v),'max':max(v),'median':median,'rangeMs':rng,'rangeOverMedian':rng/median,'mad':statistics.median([abs(x-median) for x in v])}
+def compare_stats(name,v,observed):
+ eq(name+'/raw-values',v,observed['values'])
+ for k,val in stats(v).items():near(name+'/'+k,val,observed[k])
+for x in SH['comparisons']:
+ key=x['loadingMode']+'/'+x['indexControl']+'/'+x['action']; absolute=100 if x['action']=='startup' else 50
+ for side in ['baseline','candidate']:
+  values=[a['latencyMs'] for sample in SH['samples'] if sample['variant']==side and sample['loadingMode']==x['loadingMode'] and (x['action']=='startup' or sample['indexControl']==x['indexControl']) for a in sample['actions'] if a['name']==x['action']]
+  compare_stats('shared-stats/'+key+'/'+side,values,x[side]);eq('shared-sample-denominator/'+key+'/'+side,len(values),6 if x['action']=='startup' else 3)
+ b=x['baseline'];c=x['candidate'];delta=c['median']-b['median'];near('shared-delta/'+key,delta,x['deltaMs']);near('shared-ratio/'+key,c['median']/b['median'],x['ratio']);eq('shared-threshold/'+key,x['materialRegression'],delta&gt;absolute and c['median']/b['median']&gt;1.25);eq('shared-variation/'+key,x['variationUnresolved'],any(s['rangeMs']&gt;absolute and s['rangeOverMedian']&gt;.25 for s in [b,c]))
+for x in SU['summaries']:
+ key='/'.join([x['side'],x['loadingMode'],x['profile'],x['id']]);values=[a['latencyMs'] for row in SU['rows'] if (row['side'],row['loadingMode'],row['profile'])==(x['side'],x['loadingMode'],x['profile']) for a in row['actions'] if a['id']==x['id']]
+ compare_stats('supplement-stats/'+key,values,x['statistics']);eq('supplement-sample-denominator/'+key,len(values),3)
+for x in SU['comparisons']:
+ key='/'.join([x['loadingMode'],x['profile'],x['id']]);b=x['baseline'];c=x['candidate'];delta=c['median']-b['median'];near('supplement-delta/'+key,delta,x['deltaMs']);eq('supplement-threshold/'+key,x['materialRegression'],delta&gt;50 and c['median']/b['median']&gt;1.25)
+ for side in ['baseline','candidate']:eq('supplement-variation/'+key+'/'+side,x[side+'Variable'],x[side]['rangeMs']&gt;50 and x[side]['rangeOverMedian']&gt;.25)
+eq('supplement-actions',sum(len(x['actions']) for x in SU['rows']),342);eq('supplement-descriptive-cells',sum(x['comparison']=='candidate-only' for x in SU['summaries']),90)
+for row in P['currentFlagDispositions']:
+ eq('flag-unaccepted/'+row['id'],row['accepted'],False);eq('flag-unwaived/'+row['id'],row['waived'],False)
+eq('prior-flag-continuity-count',len(P['priorCandidate01']['flagDispositions']),7)
+NA=read('docs/windows-protection-expansion/native-availability.json');eq('native-windows-not-performed',NA['windows']['performed'],False);eq('native-windows-case-count',len(NA['windows']['cases']),88);eq('human-not-performed',NA['humanG01']['performed'],False)
+for x in NA['windows']['cases']:eq('native-case-not-synthetic/'+x['caseId'],x['symbolicModelResultIsNativeEvidence'],False)
+PA=read('docs/verification/windows-protection-expansion/pam-native-01.json');eq('pam-calls',len(PA['results']),165);eq('pam-matches',sum(x['matches'] for x in PA['results']),164);eq('pam-divergence',sum(not x['matches'] for x in PA['results']),1)
+PR=read('docs/windows-protection-expansion/preserved-release-conditions.json');refs(PR,'preserved-authority',True)
+B=read('docs/windows-protection-expansion/baseline.json');PI=read(PR['preservationEvidence']['path']);refs(PI,'preserved-byte-receipt',True)
+eq('protected-dnssec-count',len(B['protectedDnssecInputs']),435);eq('preservation-checked-count',len(PI['checks']),573)
+for x in PI['checks']:
+ eq('preserved-old-binding/'+x['path'],x['sha256'],x['expectedSha256'])
+ if x['group']=='dnssec':eq('preserved-dnssec-baseline/'+x['path'],x['sha256'],B['protectedDnssecInputs'][x['path']])
+for key,value in PR['currentAssignmentAuthority'].items():
+ if key!='implementationAndNormalLocalVerificationAuthorized':eq('current-preservation-authority/'+key,value,False)
+
+result={'kind':'independent-windows-protection-retained-evidence-audit','checks':len(checks),'passed':all(x['passed'] for x in checks),'failed':[x for x in checks if not x['passed']],'declaredOmissions':sorted(set(declared_omissions)),'sourceSha256':C['sha256'],'standaloneSha256':H,'details':checks,'scope':'Read-only identity, count, exact retained source/browser comparison and raw timing-statistics audit. No production suite, browser, native Windows/PAM or timing collection is executed.'}
+(OUT/'provenance-audit.json').write_text(json.dumps(result,indent=2,default=lambda x:sorted(x) if isinstance(x,set) else str(x)))
+print(json.dumps({'checks':len(checks),'passed':result['passed'],'failed':[{'name':x['name'],'detail':str(x.get('detail'))[:350]} for x in result['failed']]},indent=2))</code></pre>
+</details>
+<details>
+<summary>
+state-cleanup-matrix.json
+</summary>
+<pre class="json" tabindex="0" role="region" aria-label="Reproduction source 9"><code>{
+  "executions": 128,
+  "affectedExecutions": 82,
+  "affectedCanonicalCases": 73,
+  "affected": [
+    {
+      "key": "lab-wra01/default-filtered/local",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/default-filtered/domain",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra01/explicit-zero/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/filter-disabled/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/full-token-acl-denied/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/ordinary-share-allowed/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/bad-password/default",
+      "foreignReleaseCount": 27,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/local-standard-user/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/reused-session/reused",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/reused-session/fresh",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/reused-session/later-proof-denial",
+      "foreignReleaseCount": 27,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra01/ntlm-unavailable/default",
+      "foreignReleaseCount": 13,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient"
+      ]
+    },
+    {
+      "key": "lab-wra02/rid500-aam-off/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra02/renamed-rid500/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra02/rid500-aam-on/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra02/rid500-filter-disabled/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra02/name-is-not-rid/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra02/account-disabled/default",
+      "foreignReleaseCount": 28,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra03/domain-admin-joined/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra03/domain-admin-nonjoined/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra03/domain-ntlm-explicit/default",
+      "foreignReleaseCount": 54,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra03/domain-user-read/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra03/domain-user-admin-denied/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra03/same-name-different-authority/local",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra03/same-name-different-authority/domain",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra03/domain-proof-failed/default",
+      "foreignReleaseCount": 32,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra04/network-logon-denied/default",
+      "foreignReleaseCount": 28,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra04/share-denied/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra04/file-denied/default",
+      "foreignReleaseCount": 40,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra04/deny-only-sid/allow-ace",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra04/deny-only-sid/deny-ace",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra04/client-elevated/elevated",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra04/client-elevated/standard",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra04/management-endpoint-denied/default",
+      "foreignReleaseCount": 27,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra04/signed-denial/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra04/encrypted-denial/default",
+      "foreignReleaseCount": 40,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbSAM"
+      ]
+    },
+    {
+      "key": "lab-wra05/default-non-elevated/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra05/broad-allow/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra05/user-sid-match/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra05/group-sid-match/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra05/no-list-match/default",
+      "foreignReleaseCount": 31,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra05/broad-overrides-list/default",
+      "foreignReleaseCount": 48,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra05/nonadmin-listed/default",
+      "foreignReleaseCount": 24,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient",
+        "smbDC"
+      ]
+    },
+    {
+      "key": "lab-wra05/unavailable-profile/default",
+      "foreignReleaseCount": 2,
+      "sourceActors": [
+        "smbServer"
+      ],
+      "foreignOwners": [
+        "smbClient"
+      ]
+    },
+    {
+      "key": "lab-wprot01/running-kerberos/default",
+      "foreignReleaseCount": 21,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslIso",
+        "wslMachine",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot01/disabled-comparison/default",
+      "foreignReleaseCount": 18,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslMachine",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot01/configured-not-running/default",
+      "foreignReleaseCount": 18,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslMachine",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot01/service-ticket-custody/default",
+      "foreignReleaseCount": 21,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslIso",
+        "wslMachine",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot01/authority-still-usable/default",
+      "foreignReleaseCount": 13,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslIso",
+        "wslMachine"
+      ]
+    },
+    {
+      "key": "lab-wprot01/credssp-default-unavailable/default",
+      "foreignReleaseCount": 1,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslProcess"
+      ]
+    },
+    {
+      "key": "lab-wprot01/explicit-prompted-input/default",
+      "foreignReleaseCount": 4,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslNetwork",
+        "wslProcess",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot01/ntlmv2-operation/default",
+      "foreignReleaseCount": 4,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslIso",
+        "wslNetwork",
+        "wslProcess"
+      ]
+    },
+    {
+      "key": "lab-wprot01/unconstrained-unavailable/default",
+      "foreignReleaseCount": 20,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslIso",
+        "wslMachine",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot01/constrained-continuation/WPROT01/constrained-continuation/kcd",
+      "foreignReleaseCount": 52,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotBackend",
+        "wslDC",
+        "wslIso",
+        "wslMachine",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot01/constrained-continuation/WPROT01/constrained-continuation/rbcd",
+      "foreignReleaseCount": 52,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotBackend",
+        "wslDC",
+        "wslIso",
+        "wslMachine",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot02/audit-plugin/default",
+      "foreignReleaseCount": 8,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot02/compatible-plugin/default",
+      "foreignReleaseCount": 8,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot02/unaffected-authentication/default",
+      "foreignReleaseCount": 8,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot03/aes-kerberos/default",
+      "foreignReleaseCount": 8,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot03/ntlm-denied/default",
+      "foreignReleaseCount": 4,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslFile",
+        "wslNetwork"
+      ]
+    },
+    {
+      "key": "lab-wprot03/rc4-preauth-denied/default",
+      "foreignReleaseCount": 2,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslProcess"
+      ]
+    },
+    {
+      "key": "lab-wprot03/des-preauth-denied/default",
+      "foreignReleaseCount": 2,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslProcess"
+      ]
+    },
+    {
+      "key": "lab-wprot03/unconstrained-denied/default",
+      "foreignReleaseCount": 8,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot03/constrained-denied/default",
+      "foreignReleaseCount": 29,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslIso",
+        "wslMachine",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot03/lifetime-expired/WPROT03/lifetime-expired/renewal",
+      "foreignReleaseCount": 8,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot03/fresh-authentication/WPROT03/fresh-authentication/fresh-lineage",
+      "foreignReleaseCount": 8,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot03/membership-next-signin/WPROT03/membership-next-signin/new-signin",
+      "foreignReleaseCount": 8,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot04/policy-lifetime/default",
+      "foreignReleaseCount": 8,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot05/allowed-service/default",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/target-rule-audit/default",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/target-rule-enforce/default",
+      "foreignReleaseCount": 20,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/ticket-then-acl-denial/default",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/required-context-missing/default",
+      "foreignReleaseCount": 20,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/no-target-policy/default",
+      "foreignReleaseCount": 19,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/assigned-only/default",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/member-only/default",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/silo-over-direct/default",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/account-type-selection/WPROT05/account-type-selection/computer",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/account-type-selection/WPROT05/account-type-selection/user",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/account-type-selection/WPROT05/account-type-selection/managed-service",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    },
+    {
+      "key": "lab-wprot05/domain-rid500-exception/default",
+      "foreignReleaseCount": 27,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wslDC",
+        "wslFile",
+        "wslIso",
+        "wslPackage",
+        "wslUI"
+      ]
+    },
+    {
+      "key": "lab-wprot05/silo-audit-state/default",
+      "foreignReleaseCount": 34,
+      "sourceActors": [
+        "wslLSA"
+      ],
+      "foreignOwners": [
+        "wprotComputer",
+        "wslDC",
+        "wslFile",
+        "wslIso"
+      ]
+    }
+  ]
+}</code></pre>
+</details>
+<p>Reviewer tooling limitations and corrections are recorded
+transparently: the broad Node log parser initially expected TAP markers
+while this runtime emitted spec markers; counts were corrected from
+unchanged raw logs. Development-time schema/DOM-selector assumptions in
+the audits were corrected without candidate edits or waived product
+failures. Such reviewer mistakes are not additional product
+findings.</p>
+<p>Nothing was committed, pushed or deployed during this review.</p>
+<p class="source-note">Independent review · 26 October 2026 · Exact candidate-02 · No candidate edits, publication or release waiver.</p></main></body>
+</html>

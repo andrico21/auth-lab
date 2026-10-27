@@ -1,0 +1,92 @@
+[MS-SFU]: S4U2proxy | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+1.3.2 S4U2proxy
+Feedback
+Summarize this article for me
+In this article
+The Service for User to Proxy
+(S4U2proxy) extension provides a service that obtains
+a service
+ticket to another service on behalf of a user. This feature is known
+as constrained
+delegation. The Kerberos ticket-granting service (TGS)
+exchange request and response messages, KRB_TGS_REQ and KRB_TGS_REP,
+are used along with the new CNAME-IN-ADDL-TKT
+and S4U_DELEGATION_INFO
+data structures. The second service is typically a proxy performing some work
+on behalf of the first service, and the proxy is doing that work under the authorization
+context of the user.
+The S4U2proxy extension requires that the service ticket to
+the first service has the forwardable flag set
+(see Service 1 in the figure specifying Kerberos delegation with forwarded TGT,
+section 1.3.3). This ticket
+can be obtained through an S4U2self protocol
+exchange.
+This feature differs from the Kerberos forwarded-TGT
+delegation mechanism and the proxy-service-ticket delegation mechanism ([RFC4120]
+section 2.5) in the following ways:
+The service does not require the user to forward either the
+user's ticket-granting ticket (TGT) or the proxy ticket and the associated session
+key.
+The user does not need to authenticate through Kerberos (the
+S4U2self extension can be used instead, but this is not a requirement). In
+other words, the user does not need to have a TGT or a proxy service ticket.
+Local policy can be used to limit the services that can be
+delegated. This is contradictory to the forwarding-TGT delegation mechanism, as
+specified in [RFC4120] section 2.6, where a service can delegate to any other
+service. This is similar to the proxy ticket delegation, as specified in
+[RFC4120] section 2.5, except the client is not involved in making the
+delegation decision.
+The client has no control over whether a service can delegate on
+behalf of the user. The client does not request delegation, nor does it pass a
+forwardable TGT to the service. The client cannot detect that delegation will
+be, or has been, performed. If local policy allows the service to perform
+S4U2proxy delegation, this delegation is performed solely at the discretion of
+the service.
+When using the S4U2proxy delegation and forwarded-TGT
+delegation mechanisms, the delegation is invoked when the server impersonates
+the client and performs operations on a remote server (such as ldap_bind() or
+RPC_bind()). The Kerberos Security Support Provider (SSP) will first detect
+whether the forwarded-TGT delegation mechanism is available (by checking
+whether there is a forwarded TGT in the local ticket cache); if no forwarded
+TGT is available, the Kerberos SSP will then try to perform the S4U2proxy
+delegation.
+Additional resources
+Last updated on
+2025-08-11
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

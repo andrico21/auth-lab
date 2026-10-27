@@ -1,0 +1,149 @@
+import {PAM_CONFIGURATIONS} from './pam-configurations.js';
+import {PAM_API_PHASES,pamEvaluate,pamApiBoundary} from './pam-stack-evaluator.js';
+
+export const PAM_EXPLAIN_LINK={id:'lab-pam01',title:'Explain this PAM decision',summary:'Linux-PAM configuration and dispatch comparison; opens its own fixture without transferring state.'};
+export const PAM_UNIX_STATE_PATHS=Object.freeze({evaluation:'workstation.pamEvaluation',results:'workstation.pamResults'});
+export const PAM_SSH_STATE_PATHS=Object.freeze({evaluation:'pam.lastEvaluation',results:'pam.results'});
+const pamExistingOperations={
+ 'lab-llog01':{'pam-auth':[{phase:'authenticate'}],account:[{phase:'account'}],setcred:[{phase:'setcred'}],'open-session':[{phase:'open'}],'close-session':[{phase:'close'}],'delete-credentials':[{phase:'setcred',delete:true}],'session-deny':[{phase:'setcred',delete:true}]},
+ 'lab-llog02':{'provider-unavailable':[{phase:'authenticate'}],'provider-auth':[{phase:'authenticate'}],'host-access':[{phase:'account'}],setcred:[{phase:'setcred'}],'session-open':[{phase:'open'}]},
+ 'lab-llog03':{'cache-deny':[{phase:'authenticate'}],'cached-verify':[{phase:'authenticate'}],'cached-account':[{phase:'account'}],'offline-session':[{phase:'open'}]},
+ 'lab-llog04':{'old-auth':[{phase:'authenticate'}],'account-expired':[{phase:'account'}],'account-token-expired':[{phase:'account'}],'password-preliminary':[{phase:'prelim'}],'password-policy-deny':[{phase:'update'}],'authority-unavailable':[{phase:'update'}],'password-authority-result':[{phase:'update'}],'post-change-account':[{phase:'account'}],setcred:[{phase:'setcred'}],'session-open':[{phase:'open'}]},
+ 'lab-lelev01':{'pam-auth':[{phase:'authenticate'}],'pam-account':[{phase:'account'}],'pam-session':[{phase:'setcred'},{phase:'open'}],'command-exit':[{phase:'close'}]},
+ 'lab-lelev02':{rootok:[{phase:'authenticate'}],'su-auth':[{phase:'authenticate'}],'su-account':[{phase:'account'}],'target-process':[{phase:'open'}],'su-return':[{phase:'close'}]}
+};
+const pamExistingBoundaries={
+ 'lab-llog01':{'pam-start':{phase:'start'},conversation:{phase:'conversation'},'auth-deny':{phase:'authenticate',returnOf:'authenticate'},'account-deny':{phase:'account',returnOf:'account'},'pam-end':{phase:'end'}},
+ 'lab-llog02':{'pam-request':{phase:'authenticate'},'pam-secret-cleanup':{phase:'conversation'},'host-denied':{phase:'account',returnOf:'account'}},
+ 'lab-llog03':{'offline-secret':{phase:'conversation'},'cached-deny':{phase:'authenticate',returnOf:'authenticate'}},
+ 'lab-llog04':{'old-secret':{phase:'conversation'},'new-secret':{phase:'conversation'},'new-secret-cleanup':{phase:'conversation'},'secret-cleanup':{phase:'conversation'},'unsupported-change':{phase:'password-change'}},
+ 'lab-lelev01':{'pam-conversation':{phase:'conversation'},'password-deny':{phase:'authenticate',returnOf:'authenticate'},'account-deny':{phase:'account',returnOf:'account'},'pam-result':{phase:'account',returnOf:'account'}},
+ 'lab-lelev02':{'su-conversation':{phase:'conversation'},'su-auth-deny':{phase:'authenticate',returnOf:'authenticate'},'su-account-deny':{phase:'account',returnOf:'account'}}
+};
+export function pamAttachExistingUnix(w,id,f){
+  if(!pamExistingOperations[id])return;
+  const service=id==='lab-llog01'?(f.blankAllowed?'afs-existing-local-nullok':f.logind?'afs-existing-local':'afs-existing-local-no-logind'):id==='lab-llog02'||id==='lab-llog03'||id==='lab-llog04'&&f.authority==='directory'?'afs-existing-sssd':id==='lab-lelev01'?'sudo':id==='lab-lelev02'?(f.loginShell?(f.rootok?'su-login':'su-login-no-rootok'):(f.rootok?'su':'su-no-rootok')):'afs-existing-local-no-logind';
+  const configuration={service:PAM_CONFIGURATIONS[service].service||service,configurationId:service,revision:'584ef2275254016ee68126f90dab6df3604124b9',files:[PAM_CONFIGURATIONS[service]],includeTree:[],assumption:'Authored selected application profile, not installed distribution defaults; existing identity/provider/authority fixture retained.'};
+  const configOwner={'lab-llog01':'llogPAM','lab-llog02':'llogSSSD','lab-llog03':'llogCache','lab-llog04':'pamChange','lab-lelev01':'lelevPAM','lab-lelev02':'suPAM'}[id];
+  const callerOwner={'lab-llog01':'llogLogin','lab-llog02':'llogApp','lab-llog03':'llogOfflineApp','lab-llog04':'pamChangeApp','lab-lelev01':'lelevSudo','lab-lelev02':'suPAM'}[id];
+  const config=w.object('pam-configuration','Selected host-local PAM physical configuration','configuration',configOwner,JSON.stringify(configuration),[configOwner],{seed:true,store:'selected service configuration'});
+  const event=w.event,completedResults={};let cacheAuth={},cacheSession={},completedRootAuth=null,rootAuthenticationPending=false;
+  function getStatus(key,puts){
+    if(key==='account-token-expired')return 'PAM_NEW_AUTHTOK_REQD';
+    if(key==='account-expired')return 'PAM_ACCT_EXPIRED';
+    if(key==='cache-deny'||key==='provider-unavailable'||key==='authority-unavailable')return 'PAM_AUTHINFO_UNAVAIL';
+    if(key==='password-policy-deny')return 'PAM_AUTHTOK_ERR';
+    if(key==='password-authority-result')return f.writeOk?'PAM_SUCCESS':'PAM_AUTHTOK_ERR';
+    if(key==='open-session')return f.sessionReady?'PAM_SUCCESS':'PAM_SESSION_ERR';
+    if(key==='rootok')return f.realUid===0?'PAM_SUCCESS':'PAM_AUTH_ERR';
+    if(Object.hasOwn(puts,'authenticated'))return puts.authenticated?'PAM_SUCCESS':'PAM_AUTH_ERR';
+    if(Object.hasOwn(puts,'admitted'))return puts.admitted?'PAM_SUCCESS':id==='lab-llog01'||id==='lab-llog04'&&f.authority!=='directory'?'PAM_ACCT_EXPIRED':'PAM_PERM_DENIED';
+    return 'PAM_SUCCESS';
+  }
+  function callerFlags(phase){return id==='lab-llog04'&&['password','prelim','update'].includes(phase)?'PAM_CHANGE_EXPIRED_AUTHTOK':0;}
+  function apiBoundary(operation,reason,status){
+    const boundary=pamApiBoundary(service,operation.phase,reason,{callerFlags:callerFlags(operation.phase)});
+    return {...boundary,...(operation.delete?{flags:PAM_API_PHASES[operation.phase].cleanupFlags}:{}),...(status===undefined?{}:{aggregateReturn:status})};
+  }
+  function annotatePreparation(start,operation){
+    for(let index=start;index<w.steps.length;index++)if(!w.steps[index].pamEvaluation){const boundary=apiBoundary(operation,'Sender-local API argument/return preparation; no module hook');w.steps[index].pamConfiguration=configuration;w.steps[index].pamEvaluation=boundary;w.steps[index].protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:boundary});}
+  }
+  w.event=function(key,title,from,to,objects=[],options={}){
+    const operations=key==='rootok'&&!f.rootok?[]:pamExistingOperations[id][key]||[];
+    if(!operations.length){
+      const step=event(key,title,from,to,objects,options);step.pamConfiguration=configuration;
+      const declared=pamExistingBoundaries[id]?.[key],phase=declared?.phase||'caller',status=declared?.returnOf?completedResults[declared.returnOf]:undefined;
+      step.pamEvaluation=apiBoundary({phase},declared?.returnOf?'Observed completed API return; no new module invocation':declared?'API/callback boundary; no module return is authored here':'Not a PAM module evaluation; preserve actual provider/API boundary',status);
+      step.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:step.pamEvaluation});
+      if(status!==undefined)step.pamAggregate=status;
+      return step;
+    }
+    const bookkeeping=operations.length>1||['session-deny','delete-credentials','command-exit','su-return'].includes(key);
+    const sourceReturn=!bookkeeping&&from===configOwner&&to===callerOwner&&from!==to;
+    const callerAfter=!bookkeeping&&(sourceReturn||['setcred','open'].includes(operations[0].phase));
+    const localModule=!bookkeeping&&!callerAfter&&from===configOwner&&from===to;
+    const acceptedKeys=['authenticated','authenticatedIdentity','admitted','session','operation','executionTarget'];
+    const accepted=Object.fromEntries(Object.entries(options.puts||{}).filter(([path])=>acceptedKeys.includes(path)));
+    const backend=Object.fromEntries(Object.entries(options.puts||{}).filter(([path])=>!acceptedKeys.includes(path)));
+    const aggregateMilestone=localModule&&Object.keys(accepted).length>0;
+    let step=bookkeeping?event(key,title,from,to,objects,options):null;
+    if(step){
+      step.pamConfiguration=configuration;step.pamEvaluation=apiBoundary({phase:'caller'},'Caller/process bookkeeping precedes its configured PAM API operations');
+      step.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:step.pamEvaluation});
+    }
+    for(const [operationIndex,operation] of operations.entries()){
+      const phase=operation.phase,resultKey=phase+(operation.delete?'-delete':''),status=getStatus(key,options.puts||{}),inputs={};
+      const consumeRoot=key==='su-auth'&&completedRootAuth!==null,continueRoot=key==='su-auth'&&rootAuthenticationPending;
+      if(!consumeRoot&&!continueRoot){
+        const boundary={...apiBoundary(operation,'Begin configured API call; module execution and aggregate return are pending'),apiPending:true},start=w.steps.length;
+        const call=event('pam-call-'+key+'-'+operationIndex,'Begin configured '+PAM_API_PHASES[phase].api+' call',callerOwner,configOwner,callerOwner===configOwner?[config]:[],{...(callerOwner===configOwner?{}:{control:{label:'Configured PAM API arguments',value:JSON.stringify({api:boundary.api,flags:boundary.flags,transaction:'opaque selected transaction reference'})}}),puts:{pamEvaluation:boundary}});
+        call.pamConfiguration=configuration;call.pamEvaluation=boundary;annotatePreparation(start,operation);
+      }
+      if(!step&&!localModule&&!callerAfter){
+        step=event(key,title,from,to,objects,options);step.pamConfiguration=configuration;
+        step.pamEvaluation={...apiBoundary(operation,'Selected backend operation precedes its module completion'),apiPending:true};
+        step.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:step.pamEvaluation});
+      }
+      for(const name of ['pam_unix.so','pam_sss.so','pam_rootok.so','pam_systemd.so','pam_access.so'])inputs[name+':'+phase]=name==='pam_rootok.so'?(f.realUid===0?'PAM_SUCCESS':'PAM_AUTH_ERR'):(id==='lab-lelev01'||id==='lab-lelev02')&&phase==='account'&&name==='pam_unix.so'?'PAM_SUCCESS':status;
+      const evaluation=consumeRoot?{...completedRootAuth,trace:[]}:pamEvaluate(service,phase,{inputs,cache:phase==='setcred'?cacheAuth:phase==='close'?cacheSession:{},callerFlags:callerFlags(phase)});
+      let complete=true;
+      if(key==='rootok'){
+        const root=evaluation.trace.find(row=>row.module==='pam_rootok.so'&&row.executed);
+        complete=root?.mappedAction==='done'&&root.accumulatorAfter.impression==='positive'&&evaluation.status==='PAM_SUCCESS';
+        if(complete)completedRootAuth=evaluation;
+        else{evaluation.trace=evaluation.trace.filter(row=>row.module==='pam_rootok.so');evaluation.cache=Object.fromEntries(evaluation.trace.map(row=>[row.configurationId+':'+row.line,row.rawReturn]));evaluation.status=null;}
+        rootAuthenticationPending=!complete;
+      }
+      if(key==='su-auth')rootAuthenticationPending=false;
+      if(phase==='authenticate')cacheAuth=evaluation.cache;if(phase==='open')cacheSession=evaluation.cache;
+      if(complete)completedResults[resultKey]=evaluation.status;
+      if(key==='su-auth'&&!consumeRoot)evaluation.trace=evaluation.trace.filter(row=>row.module==='pam_unix.so'&&row.executed);
+      const flags=apiBoundary(operation,'Selected invocation flags').flags;
+      for(const row of evaluation.trace){row.flags=flags;row.apiPending=true;}
+      const selected=key==='su-account'||key==='pam-account'?evaluation.trace.find(row=>row.module==='pam_access.so'&&row.executed):evaluation.trace.find(row=>row.executed);
+      for(const [index,row] of evaluation.trace.entries()){
+        const record=w.object('pam-evaluation-'+key+'-'+operationIndex+'-'+index,'Configuration-derived PAM execution record','pam-return',configOwner,JSON.stringify(row),[configOwner]);
+        let recorded;
+        if(localModule&&operationIndex===0&&row===selected){
+          recorded=event(aggregateMilestone?'pam-record-'+key+'-'+operationIndex+'-'+index:key,title,from,to,[...objects,config],{...options,made:[...(options.made||[]),record],puts:{...backend,pamEvaluation:row}});
+          if(!aggregateMilestone)step=recorded;
+        }else recorded=event('pam-record-'+key+'-'+operationIndex+'-'+index,'Record '+row.file+':'+row.line+' '+row.module+' '+phase,configOwner,configOwner,[config],{made:[record],puts:{pamEvaluation:row}});
+        recorded.pamConfiguration=configuration;recorded.pamEvaluation=row;
+      }
+      if(complete&&!consumeRoot){
+        const boundary=apiBoundary(operation,'Completed API aggregate, distinct from module return',evaluation.status);
+        const result=w.object('pam-return-'+key+'-'+operationIndex,'Completed '+PAM_API_PHASES[phase].api+' aggregate','pam-aggregate',configOwner,JSON.stringify({api:boundary.api,apiPhase:phase,flags,status:evaluation.status,configurationId:service,configurationHash:PAM_CONFIGURATIONS[service].sha256}),[configOwner,callerOwner]),start=w.steps.length;
+        const puts={...(localModule?accepted:{}),pamEvaluation:boundary,['pamResults.'+resultKey]:evaluation.status};
+        let returned;
+        if(sourceReturn){
+          step=returned=event(key,title,from,to,[...objects,result],{...options,made:[...(options.made||[]),result],puts:{...options.puts,...puts}});
+        }else if(aggregateMilestone){
+          step=returned=event(key,'Apply completed '+boundary.api+' aggregate '+evaluation.status+' to checked local evidence; no repeated verifier check',configOwner,configOwner,[...(options.checks||[]).map(check=>check.object),result],{made:[result],puts});
+          const delivered=event('pam-return-'+key+'-'+operationIndex,'Deliver already-completed '+boundary.api+' status',configOwner,callerOwner,[result]);
+          delivered.pamConfiguration=configuration;delivered.pamEvaluation=apiBoundary({phase:'caller'},'Deliver completed API result; no new module hook or verifier check');
+          delivered.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:delivered.pamEvaluation});
+        }else returned=event('pam-return-'+key+'-'+operationIndex,'Record '+boundary.api+' aggregate '+evaluation.status,configOwner,callerOwner,[result],{made:[result],puts});
+        returned.pamConfiguration=configuration;returned.pamEvaluation=boundary;returned.pamAggregate=evaluation.status;annotatePreparation(start,operation);
+      }
+    }
+    if(!step){
+      step=event(key,title,from,to,objects,options);step.pamConfiguration=configuration;
+      step.pamEvaluation=apiBoundary({phase:completedRootAuth&&key==='su-auth'?'authenticate':'caller'},completedRootAuth&&key==='su-auth'?'Consume the completed rootok API result without another invocation':'Caller applies completed PAM API results; no module hook',completedRootAuth&&key==='su-auth'?completedRootAuth.status:undefined);
+      step.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:step.pamEvaluation});
+    }
+    step.pamOperationPhases=operations.map(operation=>({apiPhase:operation.phase,flags:apiBoundary(operation,'Configured API phase').flags}));
+    step.pamRelatedLesson=PAM_EXPLAIN_LINK;
+    return step;
+  };
+  const finish=w.finish;w.finish=()=>{const model=finish();return {...model,pamConfiguration:configuration,pamStatePaths:PAM_UNIX_STATE_PATHS,relatedLessons:[...(model.relatedLessons||[]),PAM_EXPLAIN_LINK]};};
+}
+export function pamExistingCatalogKeys(id){return pamExistingOperations[id]?['pam-configuration',...Object.entries(pamExistingOperations[id]).flatMap(([key,operations])=>operations.flatMap((operation,index)=>['pam-call-'+key+'-'+index+'-control','pam-return-'+key+'-'+index,...[0,1,2].map(row=>'pam-evaluation-'+key+'-'+index+'-'+row)]))]:[];}
+
+export function pamExistingSshStep(step,{phase='account',status='PAM_SUCCESS',publickey=false}={}){
+  const service=publickey?'sshd-publickey':'sshd',configuration={service:PAM_CONFIGURATIONS[service].service||service,configurationId:service,revision:'584ef2275254016ee68126f90dab6df3604124b9',files:[PAM_CONFIGURATIONS[service]],includeTree:[],settings:{UsePAM:true,authenticationMethod:publickey?'publickey':'keyboard-interactive:pam',pamAuthenticateConfiguredForMethod:!publickey},assumption:publickey?'Selected Linux sshd UsePAM-enabled account/session comparison. SSH public-key proof does not call pam_authenticate; this is not a universal SSH default.':'Selected Linux sshd keyboard-interactive PAM profile; pam_sss delegates to the separately modeled SSSD responder/provider and remote authority. Configured phases are not invocation claims before their source steps.'};
+  if(phase===null){step.pamConfiguration=configuration;step.pamEvaluation=pamApiBoundary(service,'caller','Nonmodule SSH operation; no invented PAM password authentication');return step;}
+  const inputs={[publickey?'pam_unix.so:'+phase:'pam_sss.so:'+phase]:status};
+  if(publickey&&phase==='account'){inputs['pam_unix.so:account']='PAM_SUCCESS';inputs['pam_access.so:account']=status;}
+  const result=pamEvaluate(service,phase,{inputs});
+  step.pamConfiguration=configuration;step.pamEvaluation=(publickey&&phase==='account'?result.trace.find(row=>row.module==='pam_access.so'):result.trace.find(row=>row.executed))||pamApiBoundary(service,phase,'No configured hook for selected API');step.pamEvaluations=result.trace;step.pamAggregate=result.status;step.pamRelatedLesson=PAM_EXPLAIN_LINK;return step;
+}

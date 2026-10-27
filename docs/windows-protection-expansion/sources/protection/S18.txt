@@ -1,0 +1,64 @@
+[MS-KILE]: Determining Authentication Policy Silo Membership | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+3.3.5.4 Determining Authentication Policy Silo Membership
+Feedback
+Summarize this article for me
+In this article
+If domainControllerFunctionality returns a value <
+6 ([MS-ADTS]
+section 3.1.1.3.2.25),
+the KDC SHOULD<52> set BelongsToSilo to
+FALSE. See section 3.3.1.1 for the
+following KDC pseudo variable definitions.
+Note  The BelongsToSilo variable is
+a Boolean variable that is used for illustrative purposes in the processing
+rules of this section and section 3.3.5.5. The value
+of BelongsToSilo is not persisted across client requests.
+If domainControllerFunctionality returns a value >=
+6, the KDC checks whether
+the account is a member of an Authentication Policy Silo:
+If the AssignedSilo (section 3.3.1.1) is NULL, the KDC
+sets BelongsToSilo to FALSE.
+If the AssignedSilo is not NULL and AssignedSilo.msDS-AuthNPolicySiloMembers
+does not contain the account, the KDC sets BelongsToSilo to FALSE.
+If the AssignedSilo is not NULL and AssignedSilo.msDS-AuthNPolicySiloMembers
+contains the account, the KDC sets BelongsToSilo to TRUE.
+Additional resources
+Last updated on
+2026-04-27
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

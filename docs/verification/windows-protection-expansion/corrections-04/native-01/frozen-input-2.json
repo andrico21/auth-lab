@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "authority": {"plan": "inputs/worker-plan.html", "sha256": "8e66f18b60f352b4d3020af11369b829828cb473cbc8edcccacbe104abc8fc8d", "sections": ["1", "2", "3", "4", "8.2", "9", "10", "11", "12"]},
+  "authorship": "Source-only expectations authored before routing implementation; no production evaluator or generated expected answers.",
+  "comparisonSource": {"id": "S25", "url": "https://learn.microsoft.com/en-us/windows/security/identity-protection/remote-credential-guard", "finalUrl": "https://learn.microsoft.com/en-us/windows/security/identity-protection/remote-credential-guard", "title": "Remote Credential Guard | Microsoft Learn", "revision": "b09bc74df9e0b5c34659a509c06b64b7596adf4a", "updatedAt": "2026-10-08T11:38:00Z", "retrievedAt": "2026-10-25T09:48:42.731637+00:00", "sha256": "5b6c7bbb75e35b35c14b507876ddd299d7c88126765192b906b7368d76e3c298", "snapshot": "sources/routes/remote-credential-guard.snapshot.txt", "sections": ["Compare Remote Credential Guard with other connection options", "Remote Credential Guard requirements", "Remote Desktop connections and helpdesk support scenarios"], "claims": ["ordinary RDP delegates credentials", "Restricted Admin second-hop host identity", "RCG client-backed user operations", "RCG requires Kerberos and rejects NTLM fallback", "remote session can exercise permitted user authority"], "cases": ["lab-win-rdp-normal", "lab-win-rdp-restricted-admin", "lab-win-rdp-remote-credential-guard", "lab-win-rdp-rcg-kerberos-unavailable", "lab-win-rdp-required-mode-unsupported"], "limits": "Documented symbolic comparison only; no Windows native observation. Other mechanism claims and destinations follow the plan and their model owners' primary-source ledgers."},
+  "familyDefaults": [
+    {"workspace": "windows", "family": "windows-remote-administration", "routeSegment": "remote-administration", "scenarioId": "lab-wra01"},
+    {"workspace": "windows", "family": "windows-protection", "routeSegment": "protection", "scenarioId": "lab-wprot01"},
+    {"workspace": "workstations", "family": "linux-logon", "routeSegment": "linux-logon", "additionalScenarioId": "lab-pam01", "scenarioId": "lab-llog01"}
+  ],
+  "serialization": {
+    "oldTwoArgumentRoutes": "unchanged",
+    "defaultAlias": "omit case query; new-model runtime default aliases first canonical named case",
+    "explicitCanonicalCase": "append ?case= plus encodeURIComponent of registered ID, including explicit first named case",
+    "allowedData": ["stable scenario ID", "registered case ID"],
+    "forbiddenData": ["credentials", "runtime environment", "cached session", "prior demonstration state"],
+    "modelEvaluationDuringValidation": false
+  },
+  "parsing": {
+    "oldNoCaseShape": ["workspace", "scenarioId", "valid"],
+    "validCaseShape": ["workspace", "scenarioId", "valid", "variantId"],
+    "invalidCaseShape": ["workspace", "scenarioId", "valid", "reason"],
+    "caseFallback": "valid=false, no variantId; restart valid base destination at its default without evaluating rejected input",
+    "unknownBaseFallback": {"workspace": "web", "scenarioId": "basic-keycloak", "valid": false},
+    "encodedCanonicalValue": "strict percent decode once, validate actual model allowlist; serialize back to plain canonical spelling",
+    "encodedCaseKey": "decode once; duplicate decoded case keys are rejected",
+    "defaultQueryAlias": "resolve actual defaultVariantId, or existing registered default, without constructing a model",
+    "rejectionReasons": ["duplicate-case", "invalid-case", "unknown-case", "invalid-query", "unsupported-query"],
+    "reject": ["unknown cases", "duplicate cases even when identical", "empty cases", "malformed percent escapes", "unsafe characters", "double-encoded cases", "unknown query parameters", "case on core/preset without registered variants"],
+    "familyAndWorkspaceRoots": "case applies to resolved default scenario using the same allowlist"
+  },
+  "comparison": {
+    "addsModels": 0,
+    "mechanismCount": 7,
+    "rows": [
+      {"mechanism": "Classic local elevation", "targets": ["lab-welev01", "lab-welev02", "lab-welev03"], "boundary": "new local process context after consent or credentials"},
+      {"mechanism": "Remote token filtering", "targets": ["lab-wra01", "lab-wra02", "lab-wra03", "lab-wra04"], "boundary": "target network-logon authorization context"},
+      {"mechanism": "Administrator Protection", "targets": ["lab-welev06", "lab-wra05"], "boundary": "separate local elevation architecture and build-specific remote policy"},
+      {"mechanism": "Credential Guard", "targets": ["lab-wprot01", "lab-wlog02"], "boundary": "isolated credential custody and allowed operations"},
+      {"mechanism": "LSA protection", "targets": ["lab-wprot02"], "boundary": "process access and plugin loading"},
+      {"mechanism": "Protected Users / policies", "targets": ["lab-wprot03", "lab-wprot04", "lab-wprot05"], "boundary": "client restrictions and DC issuance decisions"},
+      {"mechanism": "Ordinary RDP / Restricted Admin / RCG", "targets": ["lab-win-rdp-normal", "lab-win-rdp-restricted-admin", "lab-win-rdp-remote-credential-guard"], "boundary": "credential destination, redirected operations and second-hop principal"}
+    ],
+    "requiredRelatedCase": {"id": "lab-wlog04", "variantId": "protected-user"},
+    "requiredRelatedDestinations": ["lab-welev04", "lab-welev05", "lab-wlog05", "lab-wlog06", "lab-wlog08", "lab-win-winrm-second-hop-denied", "lab-win-rdp-rcg-kerberos-unavailable", "lab-win-rdp-required-mode-unsupported"],
+    "rdpSemantics": {"normal": "delegated credentials support downstream user operations", "restrictedAdmin": "downstream host identity, not delegated user credentials", "remoteCredentialGuard": "client-backed user operations; required Kerberos and no NTLM fallback; not equivalent to client Credential Guard"},
+    "navigation": "explicit static real-model destinations only; no cloning or credential/session transfer"
+  },
+  "verificationStatus": "Authored expectations and tests; execution deferred to integrated parent verification. No native platform claim."
+}

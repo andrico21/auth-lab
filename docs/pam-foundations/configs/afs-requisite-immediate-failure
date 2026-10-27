@@ -1,0 +1,7 @@
+# deterministic simulated module results for learning control flow
+auth requisite pam_debug.so auth=auth_err
+auth sufficient pam_debug.so auth=success
+auth required pam_debug.so auth=success
+account required pam_permit.so
+password required pam_debug.so prechauthtok=success chauthtok=success
+session required pam_permit.so

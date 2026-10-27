@@ -17,10 +17,13 @@ import { CARD_BOUNDS } from './layout.js';
 import { placeStepOverlay } from './step-overlay-layout.js';
 import { LAB_ATTRIBUTES, LAB_SOURCES, LAB_SCENARIOS, LAB_MODELS, LAB_CATEGORIES, LAB_TOPICS, labAttributeScenarios } from './lab-catalog.js';
 import { ScenarioPicker, filterScenarioOptions } from './scenario-picker.js';
+import { createScenarioSearchMetadata } from './scenario-search-metadata.js';
+import { WINDOWS_SECURITY_COMPARISONS, windowsSecurityRelatedLessons } from './windows-security-comparisons.js';
+import { PAM_API_PHASES } from './pam-stack-evaluator.js';
 import { captureFocusTarget, resolveFocusTarget, isVisibleFocusTarget } from './focus-target.js';
 import { LEARNING_PRESETS, PROVIDER_PROFILES, getLearningPreset, getProviderProfile, getPresetConfiguration, applyProviderProfile } from './learning-presets.js';
 import { RuntimeEnvironment, RUNTIME_ENVIRONMENT_FIELDS, RUNTIME_PROVIDER_FIELDS } from './runtime-environment.js';
-import { STUDIO_WORKSPACES, STUDIO_FAMILIES, workspaceOf, studioRoute, parseStudioRoute, visibleActorId, scenarioActorIds, scenarioPositions, studioWorkspaceOptions } from './workspaces.js';
+import { STUDIO_WORKSPACES, STUDIO_FAMILIES, workspaceOf, studioRoute, studioVariantId, parseStudioRoute, visibleActorId, scenarioActorIds, scenarioPositions, studioWorkspaceOptions } from './workspaces.js';
 import { scenarioContextRows, projectScenarioContext, scenarioBindingValue } from './scenario-context.js';
 import { buildProtocolInstances } from './protocol-state.js';
 import { HeldObjectView } from './held-object-view.js';
@@ -28,6 +31,7 @@ import { HeldObjectView } from './held-object-view.js';
 Object.assign(ATTRIBUTES,VARIANT_ATTRIBUTES,FIDO_ATTRIBUTES);
 Object.assign(ATTRIBUTES,SAML_ATTRIBUTES,JWE_ATTRIBUTES);
 Object.assign(ATTRIBUTES,SERVICE_ATTRIBUTES,DEVICE_ATTRIBUTES,CIBA_ATTRIBUTES,EXCHANGE_ATTRIBUTES);
+const studioCoreSearchAttributeIds=Object.keys(ATTRIBUTES);
 Object.assign(ATTRIBUTES,LAB_ATTRIBUTES);
 Object.assign(ATTRIBUTE_TOPICS,LAB_TOPICS);
 const labCanonicalName=name=>String(name).replace(/\s*\([^)]*\)/g,'').trim();
@@ -77,7 +81,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.initialized=true;
     Object.assign(this,getPresetConfiguration('basic-keycloak'));this.index=0;
     this.labScenarioId='basic-keycloak';this.catalogQuery='';this.customLayouts={};this.moveParticipants=false;this.dragState=null;
-    this.workspace='web';this.family='ad-ds';this.showInternals=false;this.learningDetail='journey';this.lessonVariant='default';
+    this.workspace='web';this.family='ad-ds';this.showInternals=false;this.learningDetail='journey';this.lessonVariant='default';this.lessonSubfixture=null;
     this.runtimeEnvironment=new RuntimeEnvironment();this.scenarioMemo=new Map();
     this.attributeSelection=null;this.attributeQuery='';this.traceQueue=[];this.traceIndex=0;this.activeSteps=null;
     this.inspection={type:'step'}; this.visited=new Set(); this.packetIdentity='';
@@ -91,16 +95,18 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs['show-step-attributes'].checked=this.showStepAttributes;
     this.heldView=new HeldObjectView(this);
     const presetIds=new Set(LEARNING_PRESETS.map(preset=>preset.id));
+    const coreSearchOption={id:'core',title:'Core lab · configurable sign-in, SAML, FIDO and grants',category:'Custom configuration',summary:'Explore your own combination using Advanced configuration.',protocol:'OAuth / OIDC / SAML / WebAuthn',ids:studioCoreSearchAttributeIds};
     const pickerOptions=[
-      ...LEARNING_PRESETS.map(preset=>({id:preset.id,title:preset.title,category:preset.category,summary:preset.summary,searchText:[preset.title,preset.summary,preset.id,preset.config.applicationProtocol,preset.config.oidcFlow,...(LAB_MODELS[preset.modelId]?.ids||[]).map(id=>[ATTRIBUTES[id]?.name,ATTRIBUTES[id]?.standard].join(' ')),LAB_MODELS[preset.modelId]?.category||'',LAB_MODELS[preset.modelId]?.status||'',preset.id==='basic-keycloak'?'ordinary standard default oauth logon login pkce':preset.id==='corporate-external'?'entra microsoft okta amazon cognito aws federation corporate':'' ].join(' ')})),
-      {id:'core',title:'Core lab · configurable sign-in, SAML, FIDO and grants',category:'Custom configuration',summary:'Explore your own combination using Advanced configuration.',searchText:'core configurable sign-in login keycloak native localhost web oidc oauth saml fido webauthn passkey yubikey windows hello password totp mfa authorization code pkce service account device ciba token exchange'},
+      ...LEARNING_PRESETS.map(preset=>({id:preset.id,title:preset.title,category:preset.category,summary:preset.summary,...createScenarioSearchMetadata({...preset,ids:LAB_MODELS[preset.modelId]?.catalogAttributeIds||LAB_MODELS[preset.modelId]?.ids||studioCoreSearchAttributeIds},ATTRIBUTES)})),
+      {...coreSearchOption,...createScenarioSearchMetadata(coreSearchOption,ATTRIBUTES)},
       ...LAB_SCENARIOS.filter(model=>!presetIds.has(model.id)).map(model=>({
-        id:model.id,title:model.title,category:model.category,summary:model.summary,
+        id:model.id,title:model.title,category:model.category,summary:model.summary,status:model.status,
         profileLabel:model.profile?[model.profile.name,model.profile.publicationStatus,model.profile.supportStatus].filter(Boolean).join(' · '):'',
-        searchText:[model.id,model.title,model.summary,model.category,model.status,model.protocol||'oidc',model.workspace,model.family,model.keywords,model.lesson,model.evidenceLabel,model.learningObjective,...(model.prerequisites||[]),...(model.variantChoices||[]).flatMap(choice=>[choice.id,choice.label,choice.description]),model.profile?formatProtocolValue(model.profile,true):'',...(model.catalogAttributeIds||model.ids).map(id=>[ATTRIBUTES[id]?.name,ATTRIBUTES[id]?.standard].join(' '))].join(' '),
+        ...createScenarioSearchMetadata(model,ATTRIBUTES),
       })),
     ];
-    this.scenarioPicker=new ScenarioPicker(this.querySelector('#lab-scenario-picker'),pickerOptions,id=>this.selectLabScenario(id),this);
+    this.scenarioOptionsById=new Map(pickerOptions.map(option=>[option.id,option]));
+    this.scenarioPicker=new ScenarioPicker(this.querySelector('#lab-scenario-picker'),pickerOptions,(id,result)=>this.selectSearchResult(id,result),this);
     this.workspaceOptions=studioWorkspaceOptions(LAB_MODELS);
     this.workspacePicker=new ScenarioPicker(this.querySelector('#workspace-navigation'),this.workspaceOptions,id=>{const target=this.workspaceOptions.find(option=>option.id===id);if(target)this.selectLabScenario(target.scenarioId);},this,{prefix:'workspace',optionPrefix:'workspace-option',optionAttribute:'data-workspace-option',singular:'learning destination',plural:'learning destinations',emptyMessage:'No matching workspace or family. Try a protocol, platform or access task.'});
     this.bind(); this.renderAll();this.openRoute();
@@ -111,9 +117,10 @@ export class AuthFlowStudio extends HTMLElement {
   get labModel() {
     const base=this.baseLabModel;
     if(!base||(!base.contextualize&&!base.withVariant)||!this.runtimeEnvironment)return base;
-    const variant=this.lessonVariant||'default',key=JSON.stringify([base.id,variant,this.runtimeEnvironment.revision]);
+    const variant=this.lessonVariant||'default',subfixture=this.lessonSubfixture||null,key=JSON.stringify([base.id,variant,subfixture,this.runtimeEnvironment.revision]);
     if(this.contextModelMemo?.key!==key){
-      const selected=variant==='default'?base:base.withVariant(variant);
+      let selected=variant==='default'||variant===base.defaultVariantId?base:base.withVariant(variant);
+      if(subfixture)selected=selected.withSubfixture(subfixture);
       this.contextModelMemo={key,model:selected.contextualize?selected.contextualize(this.runtimeEnvironment.applied,{revision:this.runtimeEnvironment.revision}):selected};
     }
     return this.contextModelMemo.model;
@@ -138,7 +145,7 @@ export class AuthFlowStudio extends HTMLElement {
   }
   scenarioSnapshot(mode=this.mode,overrides={}) {
     const config={...this.protocolConfig(mode),...overrides};
-    const signature=JSON.stringify([this.labScenarioId,this.lessonVariant,config,this.oidcFlow,this.tokenProtection,this.runtimeEnvironment.revision]);
+    const signature=JSON.stringify([this.labScenarioId,this.lessonVariant,this.lessonSubfixture,config,this.oidcFlow,this.tokenProtection,this.runtimeEnvironment.revision]);
     if(this.scenarioMemo.has(signature))return this.scenarioMemo.get(signature);
     const raw=this.baseJourneyFor(mode,overrides);
     const saml=config.applicationProtocol==='saml'||config.upstream!=='single'&&config.brokerProtocol==='saml';
@@ -211,7 +218,7 @@ export class AuthFlowStudio extends HTMLElement {
     return this.runtimeEnvironment.projectActor(a,this.environmentOptions);
   }
   definition(id) {
-    const signature=JSON.stringify([this.mode,this.authenticator,this.architecture,this.upstream,this.applicationProtocol,this.brokerProtocol,this.samlBinding,this.samlInitiation,this.tokenProtection,this.assertionProtection,this.oidcFlow,this.labScenarioId,this.lessonVariant,this.providerProfileId,this.providerManaged,this.runtimeEnvironment.revision]);
+    const signature=JSON.stringify([this.mode,this.authenticator,this.architecture,this.upstream,this.applicationProtocol,this.brokerProtocol,this.samlBinding,this.samlInitiation,this.tokenProtection,this.assertionProtection,this.oidcFlow,this.labScenarioId,this.lessonVariant,this.lessonSubfixture,this.providerProfileId,this.providerManaged,this.runtimeEnvironment.revision]);
     if(this.definitionMemo?.signature!==signature){
       const overrides={...(this.isDirectFido?getFidoAttributeOverrides(this.mode):getAttributeOverrides(this.architecture,this.upstream)),...(this.isUsingSaml?getSamlAttributeOverrides(this.protocolConfig()):{}),...(this.isAdvancedFlow?this.advancedFlow.definitions(this.protocolConfig()):{}),...(!this.isDirectFido?getJweAttributeOverrides({protection:this.tokenProtection,steps:this.steps}):{}),...this.scenarioSnapshot().attributeOverrides};
       this.definitionMemo={signature,overrides,values:new Map()};
@@ -236,6 +243,9 @@ export class AuthFlowStudio extends HTMLElement {
       <section class="lab-navigation"><div class="select-field scenario-picker" id="lab-scenario-picker"><label for="lab-scenario-search">Universal lab scenario</label><div class="scenario-picker-control"><span class="scenario-picker-icon" aria-hidden="true">${uiIcon('search')}</span><input id="lab-scenario-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="lab-scenario-results" aria-describedby="lab-scenario-hint" autocomplete="off" spellcheck="false" placeholder="Search scenarios, protocols or attributes…"><button type="button" id="lab-scenario-clear" aria-label="Clear scenario search" hidden>×</button><button type="button" id="lab-scenario-toggle" tabindex="-1" aria-label="Show scenario choices" aria-expanded="false" aria-controls="lab-scenario-results">${uiIcon('next')}</button></div><span class="scenario-picker-hint" id="lab-scenario-hint">Type to search · Start with Basic Keycloak sign-in</span><div class="scenario-picker-menu" id="lab-scenario-menu" hidden><div class="scenario-picker-menu-heading"><span id="lab-scenario-search-status" role="status" aria-live="polite"></span><span>↑ ↓ to navigate · Enter to choose</span></div><div class="scenario-picker-results" id="lab-scenario-results" role="listbox" aria-label="Lab scenarios"></div></div></div></section>
       </div>
       <section class="journey-introduction" aria-label="Learning question and starting context"><h1 id="learning-question"></h1><p id="learning-start"></p><div id="learning-boundary"></div></section>
+      <section class="search-case-choice" id="search-case-choice" role="dialog" aria-modal="false" aria-labelledby="search-case-choice-title" hidden></section>
+      <div class="journey-link-controls"><span id="current-lesson-case" class="current-lesson-case" hidden></span><button class="button quiet" id="copy-lesson-link">Copy lesson link</button><label id="lesson-link-manual" hidden>Copy the named lesson/case link (comparison controls use defaults)<input id="lesson-link-value" type="text" readonly aria-label="Named lesson and case link"></label></div>
+      <section class="lesson-inputs" id="lesson-inputs" aria-label="Selected lesson profile and case" hidden></section>
       <div class="workspace">
         <div class="diagram-column"><div class="map-controls" id="map-controls" role="group" aria-label="Animation controls">
         <div class="playback-controls"><button class="button primary" id="play">${uiIcon('play',true)}<span>Play demo</span></button><button class="icon-button" id="reset" aria-label="Reset demo">${uiIcon('reset')}</button></div>
@@ -264,6 +274,8 @@ export class AuthFlowStudio extends HTMLElement {
           <section id="step-attributes-external" class="step-attributes-external" aria-label="Attribute names in the active step" hidden></section>
           <div id="held-active-message" class="held-active-message" aria-label="Active message" hidden></div>
           <section class="lesson-decisions" id="lesson-decisions" aria-label="Current identity, trust and access decisions" hidden></section>
+          <section class="windows-remote-evidence" id="windows-remote-evidence" aria-label="Target policy and before-after authorization context" hidden></section>
+          <section class="pam-configuration-panel" id="pam-configuration-panel" aria-label="PAM configuration and current evaluation" hidden></section>
           <section class="lifetime-strip" id="lifetime-strip" aria-label="Four independent credential and session lifetimes" hidden></section>
           <p class="map-description" id="scenario-description"></p>
           <div class="scenario-environment" id="scenario-environment" hidden></div>
@@ -278,13 +290,13 @@ export class AuthFlowStudio extends HTMLElement {
       <section id="held-inspector" class="held-inspector" aria-label="Exact held object inspector" hidden></section>
       <section class="timeline-panel" aria-label="Ordered journey steps"><div class="timeline-head"><div><span class="eyebrow">THE JOURNEY</span><h2>One exchange at a time</h2></div><div class="timeline-controls"><button class="icon-button" id="previous" aria-label="Previous step">${uiIcon('previous')}</button><button class="icon-button" id="next" aria-label="Next step">${uiIcon('next')}</button></div></div><div class="timeline-strip" id="timeline"></div></section>
       <details class="protocol-state-panel" id="protocol-state-panel" hidden><summary><strong>Current protocol state and object history</strong><span id="protocol-state-summary"></span></summary><p class="environment-note">Current state uses the same authored cursor as held objects. The cumulative field-instance ledger below is history, not current possession. Playback speed and card movement do not change protocol time. Values are symbolic examples; private keys and opaque ciphertext are not decrypted by this lab.</p><h3>Field-instance history</h3><div id="protocol-instance-list"></div><h3>Current protocol state</h3><pre id="protocol-state-value"></pre></details>
+      <details class="windows-security-comparison" id="windows-security-comparison" hidden><summary>Compare Windows security boundaries</summary><p>Each link opens its own configured lesson. No credential, token or session is transferred.</p><div id="windows-security-comparison-rows"></div></details>
       <details class="ready-journeys" id="ready-journeys"><summary>More ready-made journeys and the full library</summary>
       <button class="button quiet" id="lab-open">Browse the full scenario library</button>
       <section class="workspace-presets" id="workspace-presets" aria-label="Ready-made workspace scenarios" hidden></section>
       <section class="quick-start" id="quick-start" aria-label="Ready-made corporate scenarios"><div class="quick-start-heading"><h2>Choose a ready-made scenario</h2><p>Choose a scenario, then press Play. The settings are already selected.</p></div><div class="quick-start-grid">${[...LEARNING_PRESETS.filter(p=>['basic-keycloak','basic-saml'].includes(p.id)),...LEARNING_PRESETS.filter(p=>p.common&&!['basic-keycloak','basic-saml'].includes(p.id))].map(p=>`<button class="quick-preset" data-learning-preset="${p.id}" aria-pressed="${p.id===this.labScenarioId}"><strong>${escapeHtml(p.title)}</strong><span>${escapeHtml(p.summary)}</span></button>`).join('')}</div></section>
       <details class="lab-catalog" id="lab-catalog"><summary><strong>Scenario library</strong><span>Applications · token lifecycle · protections · protocol variants · failure paths</span></summary><label class="sr-only" for="lab-search">Find a scenario</label><input id="lab-search" class="glossary-search" type="search" placeholder="Search SPA, refresh, DPoP, logout, Artifact, consent…"><div class="lab-cards" id="lab-cards"></div></details>
-      </details><details class="lesson-reference" id="lesson-reference" hidden><summary>Cases, profile, primary sources and related journeys</summary>
-      <section class="lesson-inputs" id="lesson-inputs" aria-label="Selected lesson profile and case" hidden></section>
+      </details><details class="lesson-reference" id="lesson-reference" hidden><summary>Profile, primary sources and related journeys</summary>
       <div class="lab-support" id="lab-support" hidden></div>
       <section class="learning-profile" id="learning-profile" aria-label="Selected teaching profile and completion boundary" hidden><div id="learning-profile-content"></div><div class="learning-detail-controls" role="group" aria-label="Lesson detail"><button class="button quiet" id="learning-detail-journey" data-learning-detail="journey" aria-pressed="true">Journey</button><button class="button quiet" id="learning-detail-fields" data-learning-detail="fields" aria-pressed="false">Fields</button><button class="button quiet" id="learning-detail-crypto" data-learning-detail="crypto" aria-pressed="false">Cryptographic detail</button></div><div id="learning-profile-crypto" hidden></div><div class="related-journeys" id="related-journeys" aria-label="Compare related journeys" hidden></div></section>
       </details>
@@ -320,6 +332,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.querySelector('#lesson-inputs').addEventListener('change',event=>{
       const control=event.target,returnTarget=captureFocusTarget(this,control);
       if(control.id==='lesson-case')this.selectLessonVariant(control.value);
+      else if(control.id==='lesson-subfixture')this.selectLessonSubfixture(control.value);
       else if(control.dataset.profileControl){
         const profile=this.labModel?.profileControls?.find(item=>item.id===control.dataset.profileControl),option=profile?.options.find(item=>item.value===control.value);
         if(option)this.selectLabScenario(option.scenarioId||this.labScenarioId,{variant:option.variantId||'default'});
@@ -333,10 +346,10 @@ export class AuthFlowStudio extends HTMLElement {
       const index=this.steps.findIndex(step=>step.id===chapter.stepIds[0]);if(index>=0)this.selectStep(index,false);
     });
     this.querySelector('#learning-profile').addEventListener('click',event=>{
-      const detail=event.target.closest('[data-learning-detail]'),related=event.target.closest('[data-compare-scenario]');
+      const detail=event.target.closest('[data-learning-detail]');
       if(detail&&['journey','fields','crypto'].includes(detail.dataset.learningDetail)){
         this.learningDetail=detail.dataset.learningDetail;this.renderLearningProfile();this.updateStep();this.renderInspector();
-      }else if(related&&LAB_MODELS[related.dataset.compareScenario])this.selectJourneyFromControl(related,related.dataset.compareScenario);
+      }
     });
     this.querySelector('#show-internals').addEventListener('change',()=>{
       this.hidePopups();this.showInternals=this.querySelector('#show-internals').checked;this.renderAll();this.renderPacket(this.player.snapshot());
@@ -352,7 +365,15 @@ export class AuthFlowStudio extends HTMLElement {
     window.addEventListener('pagehide',this.environmentPageHide);window.addEventListener('pageshow',this.environmentPageShow);
     this.querySelector('#lab-open').addEventListener('click',()=>{this.querySelector('#ready-journeys').open=true;this.refs['lab-catalog'].open=!this.refs['lab-catalog'].open;if(this.refs['lab-catalog'].open)this.refs['lab-search'].focus();});
     this.refs['lab-search'].addEventListener('input',()=>{this.catalogQuery=this.refs['lab-search'].value;this.renderCatalog();});
-    this.refs['lab-cards'].addEventListener('click',event=>{const card=event.target.closest('[data-lab-scenario]');if(card)this.selectLabScenario(card.dataset.labScenario);});
+    this.refs['lab-cards'].addEventListener('click',event=>{const card=event.target.closest('[data-lab-scenario]');if(card)this.selectSearchResult(card.dataset.labScenario,this.catalogResultsById?.get(card.dataset.labScenario),card);});
+    this.querySelector('#copy-lesson-link').addEventListener('click',()=>this.copyLessonLink());
+    this.querySelector('#search-case-choice').addEventListener('click',event=>{
+      const target=event.target.closest('[data-search-case]');
+      if(target&&this.searchCaseChoice){const id=this.searchCaseChoice.id,variant=target.dataset.searchCase;this.closeSearchCaseChoice();this.selectLabScenario(id,{variant});this.querySelector('#play')?.focus();this.showToast('Selected case: '+(this.baseLabModel?.variantChoices?.find(choice=>choice.id===this.lessonVariant)?.label||this.lessonVariant));}
+      else if(event.target.closest('[data-cancel-search-case]'))this.closeSearchCaseChoice(true);
+    });
+    this.querySelector('#search-case-choice').addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();this.closeSearchCaseChoice(true);}});
+    this.addEventListener('click',event=>{const target=event.target.closest('[data-compare-scenario]');if(target&&LAB_MODELS[target.dataset.compareScenario])this.selectJourneyFromControl(target,target.dataset.compareScenario,{variant:target.dataset.compareVariant||'default'});});
     this.refs['move-participants'].addEventListener('change',()=>{this.moveParticipants=!!this.refs['move-participants'].checked;this.refs.graph.classList.toggle('is-move-mode',this.moveParticipants);this.heldView.configureGeometry();this.renderActors();this.renderConnections();this.renderPacket(this.player.snapshot());});
     this.querySelector('#layout-reset').addEventListener('click',()=>{delete this.customLayouts[this.layoutKey];this.renderAll();this.renderPacket(this.player.snapshot());this.renderStepAttributes(this.player.snapshot(),true);});
     ['mode','authenticator','architecture','upstream'].forEach(key=>this.refs[key].addEventListener('change',()=>{const wasDirect=this.isDirectFido;this.labScenarioId='core';this[key]=this.refs[key].value;if(key==='mode'&&(this.isDirectFido||modeMetadata[this.mode]?.enrollment))this.oidcFlow='authorization-code';if(key==='mode'&&this.isDirectFido&&!wasDirect){this.authenticator='yubikey';this.refs.authenticator.value='yubikey';}this.refreshConfiguration();}));
@@ -454,20 +475,48 @@ export class AuthFlowStudio extends HTMLElement {
     window.addEventListener('resize',this.windowResizeListener);
     window.addEventListener('blur',this.windowBlurListener);
   }
-  selectJourneyFromControl(button,id){
+  selectJourneyFromControl(button,id,{variant='default'}={}){
     const returnTarget=button.contains(document.activeElement)?captureFocusTarget(this,document.activeElement):null;
-    this.selectLabScenario(id);
+    this.selectLabScenario(id,{variant});
     // These surfaces replace their buttons on selection. Return keyboard focus
     // to the chosen starter when available, otherwise to the persistent Play.
-    if(returnTarget)this.restoreTargetFocus({...returnTarget,scenarioId:id,region:'workspace-presets'},{fallbackSelector:'#play',preventScroll:false});
+    if(returnTarget)this.restoreTargetFocus({...returnTarget,scenarioId:id,region:returnTarget.region||'workspace-presets'},{fallbackSelector:'#play',preventScroll:false});
+  }
+  selectSearchResult(id,result,button=null){
+    const model=LAB_MODELS[getLearningPreset(id)?.modelId||id],variants=result?.matchingCases||result?.matchingVariantIds?.map(variantId=>(model?.variantChoices||[]).find(choice=>choice.id===variantId)).filter(Boolean)||[];
+    if(!result?.variantId&&variants.length>1){
+      this.player.pause();this.searchCaseChoice={id,returnTarget:captureFocusTarget(this,button||this.querySelector('#lab-scenario-search'))};
+      const panel=this.querySelector('#search-case-choice');panel.hidden=false;
+      panel.innerHTML='<h2 id="search-case-choice-title">Choose a matching case</h2><p>'+escapeHtml(model?.title||id)+' has several relevant cases. The current demonstration has not been replaced.</p><div class="search-case-buttons">'+variants.map(choice=>'<button class="button quiet" data-search-case="'+escapeHtml(choice.id)+'">'+escapeHtml(choice.label||choice.id)+'</button>').join('')+'</div><button class="button quiet" data-cancel-search-case>Cancel</button>';
+      panel.querySelector('[data-search-case]')?.focus();return false;
+    }
+    this.closeSearchCaseChoice();
+    const variant=result?.variantId||'default';
+    if(button)this.selectJourneyFromControl(button,id,{variant});else this.selectLabScenario(id,{variant});
+    if(result?.variantId){this.refs.play.focus();this.showToast('Selected case: '+(result.caseLabel||result.variantId));}
+  }
+  closeSearchCaseChoice(restore=false){
+    const target=this.searchCaseChoice?.returnTarget;this.searchCaseChoice=null;
+    this.querySelector('#search-case-choice').hidden=true;
+    if(restore&&target)this.restoreTargetFocus(target,{fallbackSelector:'#lab-scenario-search'});
+  }
+  async copyLessonLink(){
+    const route=studioRoute(this.labScenarioId,LAB_MODELS,this.lessonVariant||'default'),url=String(window.location?.href||'').split(/[?#]/)[0]+route;
+    const manual=this.querySelector('#lesson-link-manual'),input=this.querySelector('#lesson-link-value');input.value=url;
+    if(globalThis.navigator?.clipboard?.writeText){
+      try{await globalThis.navigator.clipboard.writeText(url);manual.hidden=true;this.showToast('Named lesson/case link copied. Comparison controls reopen at defaults.');return;}catch{/* Browser permission can require manual copying; never report a failed copy as success. */}
+    }
+    manual.hidden=false;input.focus();input.select?.();this.showToast('Clipboard unavailable. Select and copy the lesson link shown.');
   }
   selectLabScenario(id,{navigate=true,variant='default'}={}) {
     const preset=getLearningPreset(id),base=LAB_MODELS[preset?.modelId||id];
     if(id!=='core'&&!preset&&!base)return;
-    if(variant!=='default'&&!base?.variantChoices?.some(choice=>choice.id===variant))return;
+    variant=studioVariantId(base?.id||id,LAB_MODELS,variant);
     const keys=['mode','authenticator','architecture','upstream','applicationProtocol','brokerProtocol','samlBinding','samlInitiation','tokenProtection','assertionProtection','oidcFlow','providerProfileId','providerManaged'];
     if(this.labScenarioId==='core')this.coreConfiguration=Object.fromEntries(keys.map(key=>[key,this[key]]));
-    this.labScenarioId=id;this.lessonVariant=variant;
+    this.labScenarioId=id;this.lessonVariant=variant;this.lessonSubfixture=null;
+    this.closeSearchCaseChoice();
+    this.querySelector('#lesson-link-manual').hidden=true;
     this.workspace=workspaceOf(LAB_MODELS[preset?.modelId||id]);this.family=this.labModel?.family||'ad-ds';this.showInternals=false;this.learningDetail='journey';
     if(preset){const profile=preset.providerSelectable?(this.providerProfileId==='generic'?'entra':this.providerProfileId):'generic';Object.assign(this,getPresetConfiguration(id,profile));this.labScenarioId=id;}
     if(id==='core'&&this.coreConfiguration)Object.assign(this,this.coreConfiguration);
@@ -478,9 +527,17 @@ export class AuthFlowStudio extends HTMLElement {
   }
   selectLessonVariant(id){
     const base=this.baseLabModel;
-    if(!base?.withVariant||!base.variantChoices?.some(choice=>choice.id===id))return;
-    this.lessonVariant=id;this.attributeSelection=null;this.objectTraceSelection=null;this.definitionMemo=null;
-    this.refreshConfiguration();
+    if(!base?.withVariant)throw new RangeError('This lesson has no selectable cases.');
+    this.lessonVariant=studioVariantId(base.id,LAB_MODELS,id);this.lessonSubfixture=null;this.attributeSelection=null;this.objectTraceSelection=null;this.definitionMemo=null;
+    this.querySelector('#lesson-link-manual').hidden=true;
+    this.refreshConfiguration();this.writeRoute();
+    this.showToast('Selected case: '+(base.variantChoices.find(choice=>choice.id===this.lessonVariant)?.label||this.lessonVariant));
+  }
+  selectLessonSubfixture(id){
+    const model=this.labModel,choice=model?.subfixtureChoices?.find(member=>member.id===id);
+    if(!model?.withSubfixture||!choice)throw new RangeError('Unknown comparison profile: '+id);
+    this.lessonSubfixture=id;this.attributeSelection=null;this.objectTraceSelection=null;this.definitionMemo=null;
+    this.refreshConfiguration();this.showToast('Comparison profile: '+choice.label+'. A copied link reopens the named case at its defaults.');
   }
   selectWorkspace(id){
     const workspace=STUDIO_WORKSPACES.find(item=>item.id===id);if(!workspace)return;
@@ -490,11 +547,12 @@ export class AuthFlowStudio extends HTMLElement {
   openRoute(){
     if(!window.location)return;const hash=window.location.hash||'';
     const route=parseStudioRoute(hash,LAB_MODELS,LEARNING_PRESETS.map(preset=>preset.id));
-    if(route.scenarioId!==this.labScenarioId)this.selectLabScenario(route.scenarioId,{navigate:false});
-    if(!route.valid&&window.history?.replaceState)window.history.replaceState(null,'',studioRoute('basic-keycloak',LAB_MODELS));
+    const variant=studioVariantId(route.scenarioId,LAB_MODELS,route.variantId||'default');
+    if(!route.valid||route.scenarioId!==this.labScenarioId||variant!==this.lessonVariant||this.lessonSubfixture)this.selectLabScenario(route.scenarioId,{navigate:false,variant});
+    if(!route.valid){if(window.history?.replaceState)window.history.replaceState(null,'',studioRoute(route.scenarioId,LAB_MODELS));this.showToast('The lesson link has an unsupported selection ('+(route.reason||'unknown route')+'). Showing its safe default.');}
   }
   writeRoute(){
-    const route=studioRoute(this.labScenarioId,LAB_MODELS);if(window.location&&window.location.hash!==route&&window.history?.pushState)window.history.pushState(null,'',route);
+    const route=studioRoute(this.labScenarioId,LAB_MODELS,this.lessonVariant||'default');if(window.location&&window.location.hash!==route&&window.history?.pushState)window.history.pushState(null,'',route);
   }
   renderWorkspace(){
     this.workspace=workspaceOf(this.labModel);
@@ -525,9 +583,10 @@ export class AuthFlowStudio extends HTMLElement {
   }
   renderCatalog() {
     const returnTarget=this.refs['lab-cards'].contains(document.activeElement)?captureFocusTarget(this,document.activeElement):null;
-    const matches=new Set(filterScenarioOptions(this.scenarioPicker.options,this.catalogQuery).map(option=>option.id));
-    const grouped=STUDIO_FAMILIES.some(family=>family.workspace===this.workspace);
-    this.refs['lab-cards'].innerHTML=LAB_SCENARIOS.filter(model=>matches.has(model.id)&&(this.catalogQuery.trim()||workspaceOf(model)===this.workspace&&(!grouped||model.family===this.family))).map(model=>`<button class="lab-card ${model.id===(this.labModel?.id||this.labScenarioId)?'is-selected':''}" data-lab-scenario="${model.id}" aria-pressed="${model.id===(this.labModel?.id||this.labScenarioId)}"><span class="lab-card-category">${escapeHtml(model.category)}</span><strong>${escapeHtml(model.title)}</strong><p>${escapeHtml(model.summary)}</p>${model.profile?`<span class="lab-card-profile">${escapeHtml(model.profile.name)} · ${escapeHtml(model.profile.publicationStatus)}</span>`:''}<span class="lab-card-status">${escapeHtml(model.status)} · ${model.steps(this.protocolConfig()).length} steps</span></button>`).join('')||'<p class="empty-state">No matching scenarios.</p>';
+    const grouped=STUDIO_FAMILIES.some(family=>family.workspace===this.workspace),query=this.catalogQuery.trim();
+    const rows=query?filterScenarioOptions(this.scenarioPicker.options,query):LAB_SCENARIOS.filter(model=>workspaceOf(model)===this.workspace&&(!grouped||model.family===this.family)).map(model=>this.scenarioOptionsById.get(model.id)).filter(Boolean);
+    this.catalogResultsById=new Map(rows.map(row=>[row.id,row]));
+    this.refs['lab-cards'].innerHTML=rows.map(row=>`<button class="lab-card ${row.id===this.labScenarioId?'is-selected':''}" data-lab-scenario="${escapeHtml(row.id)}" aria-pressed="${row.id===this.labScenarioId}"><span class="lab-card-category">${escapeHtml(row.category)}</span><strong>${escapeHtml(row.title)}</strong><p>${escapeHtml(row.summary)}</p>${row.profileLabel?`<span class="lab-card-profile">${escapeHtml(row.profileLabel)}</span>`:''}${row.caseLabel?`<span class="lab-card-case">${escapeHtml(row.caseLabel)}</span>`:''}<span class="lab-card-status">${escapeHtml(row.status||'Configured lesson')}</span></button>`).join('')||'<p class="empty-state">No matching scenarios.</p>';
     if(returnTarget)this.restoreTargetFocus(returnTarget,{fallbackSelector:'#lab-scenario-search'});
   }
   renderLabSupport() {
@@ -546,6 +605,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.querySelector('#learning-boundary').innerHTML=(profile?`<span class="profile-pin">${escapeHtml(profile.name===model.title?model.protocol||profile.name:profile.name)} · ${escapeHtml(profile.version)}</span>`:'')+`<p><strong>Finish:</strong> ${escapeHtml(profile?.completion||this.steps.at(-1)?.summary||'Follow the authored outcome and its acceptance boundary.')}</p>`;
     this.renderLessonInputs();
     panel.hidden=!profile;
+    this.renderWindowsSecurityComparison();
     if(!profile)return;
     const assumptions=[...new Set([...(model.prerequisites||[]),...(profile.assumptions||[])])];
     this.querySelector('#learning-profile-content').innerHTML=`<div class="profile-badges"><span>${escapeHtml(profile.name)} · ${escapeHtml(profile.version)}</span><span>${escapeHtml(profile.publicationStatus)}</span><span>${escapeHtml(profile.supportStatus)}</span></div><h2>${escapeHtml(model.learningObjective)}</h2><p>${escapeHtml(profile.implementation)}</p><dl class="profile-boundaries"><dt>Starting credentials and trust</dt><dd><ul>${assumptions.map(item=>`<li>${escapeHtml(item)}</li>`).join('')}</ul></dd><dt>Completion means</dt><dd>${escapeHtml(profile.completion)}</dd><dt>Transport profile</dt><dd>${(profile.transports||[]).map(escapeHtml).join(' · ')}</dd></dl>${model.threatExplanation?`<p class="profile-threat">${escapeHtml(model.threatExplanation)}</p>`:''}`;
@@ -553,17 +613,91 @@ export class AuthFlowStudio extends HTMLElement {
     const crypto=this.querySelector('#learning-profile-crypto');crypto.hidden=this.learningDetail!=='crypto';
     const cryptoDetail=profile.cryptoDetail!==null&&typeof profile.cryptoDetail==='object'?`<pre>${escapeHtml(formatProtocolValue(profile.cryptoDetail))}</pre>`:`<p>${escapeHtml(formatProtocolValue(profile.cryptoDetail))}</p>`;
     crypto.innerHTML=`<h3>Exact parameters and source boundary</h3>${cryptoDetail}<pre>${escapeHtml(formatProtocolValue(profile.algorithms))}</pre><ul class="profile-sources">${(profile.sources||[]).map(source=>`<li><a href="${escapeHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.standard)} · ${escapeHtml(source.section)}</a><span>Revision ${escapeHtml(source.revision)} · retrieved ${escapeHtml(source.retrieved)}</span><span>${escapeHtml(source.errata)}</span></li>`).join('')}</ul>`;
-    const related=this.querySelector('#related-journeys'),lessons=(model.relatedLessons||[]).filter(lesson=>LAB_MODELS[lesson.id]);related.hidden=!lessons.length;
-    related.innerHTML=lessons.map(lesson=>`<button class="related-journey" data-compare-scenario="${escapeHtml(lesson.id)}"><strong>${escapeHtml(lesson.title)}</strong><span>${escapeHtml(lesson.summary)}</span></button>`).join('');
+    const linuxComparison=['macos-logon','macos-elevation'].includes(model.family)?[{id:'lab-pam01',title:'Linux-PAM comparison, not a macOS stack',summary:'Open the separately authored Linux service configuration. This does not claim macOS uses these modules, files or controls.'}]:[];
+    const related=this.querySelector('#related-journeys'),seen=new Set(),lessons=[...(model.relatedLessons||[]),...windowsSecurityRelatedLessons(model.id),...linuxComparison].filter(lesson=>{
+      if(!LAB_MODELS[lesson?.id])return false;
+      try{studioVariantId(lesson.id,LAB_MODELS,lesson.variantId||'default');}catch{return false;}
+      const key=lesson.id+'|'+(lesson.variantId||'default');if(seen.has(key))return false;seen.add(key);return true;
+    });related.hidden=!lessons.length;
+    related.innerHTML=lessons.map(lesson=>`<button class="related-journey" data-compare-scenario="${escapeHtml(lesson.id)}"${lesson.variantId?' data-compare-variant="'+escapeHtml(lesson.variantId)+'"':''}><strong>${escapeHtml(lesson.title)}</strong><span>${escapeHtml(lesson.summary)}</span></button>`).join('');
+  }
+  renderWindowsSecurityComparison(){
+    const panel=this.querySelector('#windows-security-comparison'),model=this.labModel;
+    panel.hidden=!(model&&(workspaceOf(model)==='windows'||['windows-logon','windows-elevation'].includes(model.family)));
+    if(panel.hidden)return;
+    const key=model.id;if(this.windowsComparisonKey===key)return;this.windowsComparisonKey=key;
+    this.querySelector('#windows-security-comparison-rows').innerHTML=WINDOWS_SECURITY_COMPARISONS.map(row=>'<section class="security-comparison-row"><h3>'+escapeHtml(row.mechanism)+'</h3><p>'+escapeHtml(row.boundary)+'</p><div>'+row.targets.filter(target=>{if(!LAB_MODELS[target.id])return false;try{studioVariantId(target.id,LAB_MODELS,target.variantId||'default');return true;}catch{return false;}}).map(target=>'<button class="button quiet" data-compare-scenario="'+escapeHtml(target.id)+'"'+(target.variantId?' data-compare-variant="'+escapeHtml(target.variantId)+'"':'')+'>'+escapeHtml(target.title)+'</button>').join('')+'</div></section>').join('');
+  }
+  renderPamConfiguration(){
+    const model=this.labModel,configuration=model?.pamConfiguration,panel=this.querySelector('#pam-configuration-panel');
+    panel.hidden=!configuration;
+    if(!configuration){this.pamRenderKey=null;panel.innerHTML='';return;}
+    const snapshot=this.protocolSnapshot(),step=this.currentStep,cursor=snapshot?.cursor;
+    const key=JSON.stringify([this.heldView.contextId,cursor,step?.id]);
+    if(this.pamRenderKey===key)return;this.pamRenderKey=key;
+    const sourceId=step?.sourceStepId||step?.id,sourceIndex=this.steps.findIndex(row=>row.id===sourceId),sourceStep=this.steps[sourceIndex],declared=sourceStep?.pamEvaluation;
+    const explanation=model.id!=='lab-pam01'&&(sourceStep?.pamRelatedLesson||(model.relatedLessons||[]).find(lesson=>lesson.id==='lab-pam01'));
+    const completed=sourceIndex>=0&&cursor&&(cursor.eventIndex>sourceIndex||cursor.eventIndex===sourceIndex&&cursor.milestone==='complete');
+    const readState=path=>path?.split('.').reduce((current,key)=>current&&Object.hasOwn(current,key)?current[key]:undefined,snapshot?.state);
+    const canonical=readState(model.pamStatePaths?.evaluation);
+    const evaluation=completed&&canonical&&declared&&canonical.configurationId===declared.configurationId&&canonical.line===declared.line&&canonical.apiPhase===declared.apiPhase&&canonical.flags===declared.flags?canonical:declared;
+    const files=configuration.files||[],activeFile=files.find(file=>file.id===evaluation?.configurationId||file.file===evaluation?.file)||files[0],scope=configuration.assumption||model.fixture?.evidence;
+    const phaseDescriptor=PAM_API_PHASES[evaluation?.apiPhase],phase=evaluation?.type||phaseDescriptor?.type;
+    const rows=(activeFile?.text||'').split('\n').map((text,index)=>({text,line:index+1})).filter(row=>{
+      if(!phase)return row.line===evaluation?.line;
+      const tokens=row.text.trim().split(/\s+/),type=tokens[0]===configuration.service?tokens[1]:tokens[0];
+      return type?.replace(/^-/,'')===phase||row.line===evaluation?.line;
+    });
+    const value=(item,inapplicable='Not applicable at this boundary')=>item===null||item===undefined?inapplicable:formatProtocolValue(item,true);
+    const returned=item=>completed?value(item):'Pending at the current source prefix';
+    const accumulator=item=>item===null||item===undefined?item:(item.impression==='undefined'?'Undecided (undefined)':item.impression)+' / '+item.status;
+    const next=evaluation?.nextRow,nextLabel=next?'Line '+next.line+(next.configurationId===evaluation.configurationId?'':' in '+next.configurationId):null;
+    const apiLabel=[evaluation?.api||phaseDescriptor?.api||phaseDescriptor?.label||evaluation?.apiPhase,evaluation?.flags!==null&&evaluation?.flags!==undefined?formatProtocolValue(evaluation.flags,true):''].filter(Boolean).join(' / ');
+    const evaluationRows=evaluation?[
+      [phaseDescriptor?.internal?'Internal module dispatch / flags':'API call / flags',value(apiLabel)],['PAM phase',value(phaseDescriptor?.label||phase)],['Module hook',value(evaluation.moduleHook)],
+      ['Hook called',completed?value(evaluation.hookCalled):'Not returned at this prefix'],
+      ['Raw hook or loader return',returned(evaluation.rawReturn)],['Control status',returned(evaluation.controlStatus)],
+      ['Mapped control action',returned(evaluation.mappedAction)],['Accumulator before',value(accumulator(evaluation.accumulatorBefore))],
+      ['Accumulator after',returned(accumulator(evaluation.accumulatorAfter))],['Substack depth',value(evaluation.depth)],
+      ['Next row',returned(nextLabel)],['Skip / stop reason',returned(evaluation.skipStopReason)],
+      ...(evaluation.apiPending?[['API aggregate return','Pending: current API call has not completed']]:Object.hasOwn(evaluation,'aggregateReturn')?[['API aggregate return',returned(evaluation.aggregateReturn)]]:[]),
+    ]:[];
+    const expanded=new Set([...panel.querySelectorAll('details[open]')].map(details=>details.dataset.pamDisclosure));
+    const focused=panel.contains(document.activeElement)?document.activeElement.closest('[data-pam-disclosure]')?.dataset.pamDisclosure:null;
+    const results=readState(model.pamStatePaths?.results),resultGroups={public:{},internal:{},pending:{}};
+    for(const [resultPhase,status] of Object.entries(results||{})){
+      const group=status==='not evaluated'?'pending':PAM_API_PHASES[resultPhase]?.internal?'internal':'public';
+      resultGroups[group][resultPhase]=status;
+    }
+    panel.innerHTML='<h3>PAM configuration → current evaluation</h3><p>Service: <strong>'+escapeHtml(configuration.service)+'</strong> · '+escapeHtml(configuration.revision||'Pinned Linux-PAM learning profile')+'</p>'+
+      (scope?'<p class="environment-note">'+escapeHtml(scope)+'</p>':'')+
+      (configuration.settings?'<p class="pam-boundary-note">Selected caller settings: '+Object.entries(configuration.settings).map(([name,item])=>'<code>'+escapeHtml(name)+'</code> = '+escapeHtml(value(item))).join('; ')+'</p>':'')+
+      (evaluation?'<p class="pam-active-location">'+(evaluation.line?'Physical line '+escapeHtml(evaluation.line)+' in <code>'+escapeHtml(evaluation.file||activeFile?.file)+'</code>':'Caller/API boundary: no module line')+' · '+escapeHtml(apiLabel||'No module API phase')+'</p>':'<p>This step is not a PAM module evaluation. No module hook or stack result is implied.</p>')+
+      (evaluation?.inapplicable?'<p class="pam-boundary-note">'+escapeHtml(evaluation.inapplicable)+'</p>':'')+
+      (rows.length?'<ol class="pam-source-lines" aria-label="Current PAM phase configuration">'+rows.map(row=>'<li value="'+row.line+'" data-pam-line="'+row.line+'"'+(row.line===evaluation?.line?' aria-current="step"':'')+'><span>'+(row.line===evaluation?.line?'Current line '+row.line+': ':'Line '+row.line+': ')+'</span><code>'+escapeHtml(row.text)+'</code></li>').join('')+'</ol>':'')+
+      (declared?.resourceConfiguration?'<section class="pam-resource-configuration" aria-label="Resource limits, separate from PAM control"><h4>Soft / hard resource limits - not PAM control</h4><p><code>'+escapeHtml(declared.resourceConfiguration.file)+'</code></p><ol class="pam-source-lines">'+declared.resourceConfiguration.rows.map(row=>'<li value="'+row.line+'" data-pam-resource-line="'+row.line+'"><span>Resource line '+row.line+': </span><code>'+escapeHtml(row.text)+'</code></li>').join('')+'</ol><p>Application result: '+escapeHtml(completed?declared.resourceConfiguration.applicationResult:'Pending at the current source prefix')+'</p></section>':'')+
+      (evaluationRows.length?'<dl class="pam-evaluation">'+evaluationRows.map(([label,item])=>'<div><dt>'+escapeHtml(label)+'</dt><dd>'+escapeHtml(item)+'</dd></div>').join('')+'</dl>':'')+
+      (configuration.comparison?'<details data-pam-disclosure="comparison"'+(expanded.has('comparison')?' open':'')+'><summary>Compare the changed PAM control line</summary><pre>'+escapeHtml(formatProtocolValue(configuration.comparison))+'</pre></details>':'')+
+      (explanation&&LAB_MODELS[explanation.id]?'<button class="button quiet" data-compare-scenario="'+escapeHtml(explanation.id)+'"'+(explanation.variantId?' data-compare-variant="'+escapeHtml(explanation.variantId)+'"':'')+'>'+escapeHtml(explanation.title)+'</button>':'')+
+      '<p class="pam-boundary-note">A module return, the PAM aggregate, and application admission are separate decisions. The identity and admission decisions above use the current canonical source prefix.</p>'+
+      (results?[['aggregates','Completed API aggregate results','public'],['password-dispatch','Internal password dispatch results','internal'],['pending-results','Pending / not-started results','pending']].map(([id,label,group])=>
+        '<details data-pam-disclosure="'+id+'"'+(expanded.has(id)?' open':'')+'><summary>'+label+'</summary>'+
+        (group==='internal'?'<p>prelim and update are internal passes inside the enclosing pam_chauthtok call, not separate application calls.</p>':'')+
+        '<pre>'+escapeHtml(formatProtocolValue(resultGroups[group]))+'</pre></details>').join(''):'')+
+      '<details data-pam-disclosure="configuration"'+(expanded.has('configuration')?' open':'')+'><summary>Complete configuration files and include tree</summary>'+files.map(file=>'<section><h4>'+escapeHtml(file.file||file.id)+'</h4><p class="pam-file-hash">SHA-256 <code>'+escapeHtml(file.sha256)+'</code></p><pre>'+escapeHtml(file.text)+'</pre></section>').join('')+'<h4>Include / substack tree</h4><pre>'+escapeHtml(formatProtocolValue(configuration.includeTree))+'</pre></details>';
+    if(focused)[...panel.querySelectorAll('[data-pam-disclosure]')].find(details=>details.dataset.pamDisclosure===focused)?.querySelector('summary')?.focus({preventScroll:true});
   }
   renderLessonInputs(){
-    const model=this.labModel,panel=this.querySelector('#lesson-inputs'),cases=model?.variantChoices||[],controls=model?.profileControls||[];
-    panel.hidden=cases.length<2&&!controls.length;
+    const model=this.labModel,panel=this.querySelector('#lesson-inputs'),cases=model?.variantChoices||[],controls=model?.profileControls||[],members=model?.subfixtureChoices||[];
+    const selected=cases.find(choice=>choice.id===(this.lessonVariant||'default')),member=members.find(choice=>choice.id===(this.lessonSubfixture||model.subfixtureId||model.defaultSubfixtureId||members[0]?.id)),caseLabel=this.querySelector('#current-lesson-case');
+    caseLabel.hidden=!(cases.length>1&&selected);caseLabel.textContent=selected?'Case: '+selected.label+' ('+selected.id+')'+(members.length>1&&member?' · '+member.label:''):'';
+    panel.hidden=cases.length<2&&!controls.length&&members.length<2;
     if(panel.hidden){panel.innerHTML='';return;}
-    const selected=cases.find(choice=>choice.id===(this.lessonVariant||'default'));
     const profiles=controls.map(control=>`<label class="select-field" for="lesson-profile-${escapeHtml(control.id)}"><span>${escapeHtml(control.label)}</span><select id="lesson-profile-${escapeHtml(control.id)}" data-profile-control="${escapeHtml(control.id)}">${control.options.map(option=>`<option value="${escapeHtml(option.value)}" ${option.value===control.value?'selected':''}>${escapeHtml(option.label)}</option>`).join('')}</select></label>`).join('');
     const caseControl=cases.length>1?`<label class="select-field" for="lesson-case"><span>Compare a case</span><select id="lesson-case">${cases.map(choice=>`<option value="${escapeHtml(choice.id)}" ${choice.id===(this.lessonVariant||'default')?'selected':''}>${escapeHtml(choice.label)}</option>`).join('')}</select></label>`:'';
-    panel.innerHTML=`<div id="lesson-input-controls" class="lesson-profile-controls"><h3>Case / supported profile${selected?' - '+escapeHtml(selected.id):''}</h3><div class="lesson-profile-control-list">${caseControl}${profiles}</div></div>`;
+    const comparison=members.length>1?'<label class="select-field" for="lesson-subfixture"><span>Comparison profile</span><select id="lesson-subfixture">'+members.map(choice=>'<option value="'+escapeHtml(choice.id)+'"'+(choice.id===member?.id?' selected':'')+'>'+escapeHtml(choice.label)+'</option>').join('')+'</select></label><p class="environment-note">These comparison inputs stay local. Lesson/case links reopen this named case at its default profile.</p>':'';
+    const ordinaryShare=model?.id==='lab-wra01'&&selected?.id==='default-filtered'?'<button class="button quiet" data-compare-scenario="lab-wra01" data-compare-variant="ordinary-share-allowed" title="Start the ordinary-share case at its default profile">Compare an ordinary share instead</button>':'';
+    panel.innerHTML=`<div id="lesson-input-controls" class="lesson-profile-controls"><h3>Case / supported profile${selected?' - '+escapeHtml(selected.id):''}</h3><div class="lesson-profile-control-list">${caseControl}${ordinaryShare}${profiles}${comparison}</div></div>`;
   }
   environmentFields(model=this.labModel) {
     if(model?.workspace){const wanted=new Set((model.runtimeBindings||[]).map(binding=>binding.field));return RUNTIME_ENVIRONMENT_FIELDS.filter(field=>wanted.has(field.key)).map(field=>({...field,path:field.key}));}
@@ -734,7 +868,7 @@ export class AuthFlowStudio extends HTMLElement {
       const isAlternative=(a.id==='hello'||a.id==='yubikey')&&a.id!==this.authenticator;
       const context=this.actorContextHtml(a.id,true);
       const role=this.labModel?a.role:this.isAdvancedFlow?{user:'The person approving',app:this.oidcFlow==='device'?(this.architecture==='web'?'Confidential device client':'Public device client'):this.oidcFlow==='ciba'?'Confidential CIBA client':this.oidcFlow==='token-exchange'?'Confidential token requester':'Confidential service client',browser:this.oidcFlow==='ciba'?'Separate authentication device':'Separate verification device',realmA:this.oidcFlow==='ciba'?'OIDC CIBA provider':'OAuth authorization server',realmB:'Authentication channel',hello:'Platform authenticator',yubikey:'FIDO2 security key',totp:'Authenticator app'}[a.id]:{user:'The person signing in',app:this.isDirectFido?'WebAuthn relying party':this.applicationProtocol==='saml'?'SAML service provider':this.architecture==='web'?'Confidential OIDC backend':'Native OIDC client',browser:'System browser',realmA:this.isSingleRealm?'Keycloak · '+this.applicationProtocol.toUpperCase()+' provider':'IdP 1 · '+this.brokerProtocol.toUpperCase()+' broker',realmB:this.upstream==='external'?'Independent '+this.brokerProtocol.toUpperCase()+' provider':'IdP 2 · Checks identity',hello:'Platform authenticator',yubikey:'FIDO2 security key',totp:'Authenticator app'}[a.id]||a.plainRole;
-      return `<button class="actor-card ${context?'has-context':''} ${this.isAdvancedFlow?'is-advanced':''} ${activeActors.has(a.id)?'':'is-muted'}" data-actor="${a.id}" aria-haspopup="dialog" aria-controls="actor-popup" aria-keyshortcuts="F2" ${context?`aria-describedby="actor-context-${a.id}"`:''} ${!this.labModel&&this.isSingleRealm&&a.id==='realmB'&&this.oidcFlow!=='ciba'?'hidden':''} aria-label="Inspect ${escapeHtml(a.name)}"><span class="actor-status">${!this.labModel&&isAlternative?'OPTION':activeActors.has(a.id)?'':this.isDirectFido||this.isSingleRealm?'NOT USED':'OPTION'}</span><span class="actor-art">${this.illustration(a.id)}</span><span class="actor-name">${escapeHtml(a.name)}</span><span class="actor-role">${escapeHtml(role)}</span>${context}<span class="actor-trace-action" hidden></span></button>`;
+      return `<button class="actor-card ${context?'has-context':''} ${this.isAdvancedFlow?'is-advanced':''} ${activeActors.has(a.id)?'':'is-muted'}" data-actor="${a.id}" aria-haspopup="dialog" aria-controls="actor-popup" aria-keyshortcuts="F2" ${context?`aria-describedby="actor-context-${a.id}"`:''} ${!this.labModel&&this.isSingleRealm&&a.id==='realmB'&&this.oidcFlow!=='ciba'?'hidden':''} aria-label="Inspect ${escapeHtml(a.name)}"><span class="actor-status">${!this.labModel&&isAlternative?'OPTION':activeActors.has(a.id)?'':this.isDirectFido||this.isSingleRealm?'NOT USED':'OPTION'}</span><span class="actor-art">${this.illustration(a.id)}</span><span class="actor-name">${escapeHtml(a.cardName||a.name)}</span><span class="actor-role">${escapeHtml(role)}</span>${context}<span class="actor-trace-action" hidden></span></button>`;
     }).join('');
     // Assign individual CSSOM properties after insertion; HTML style attributes
     // are intentionally forbidden by the standalone page's CSP.
@@ -746,9 +880,28 @@ export class AuthFlowStudio extends HTMLElement {
     const panel=this.querySelector('#scenario-environment');panel.hidden=!this.labModel?.workspace;
     const zones=this.querySelector('#trust-zones');zones.innerHTML='';
     if(panel.hidden){panel.innerHTML='';return;}
-    const actors=Object.values(this.scenarioOwnedActors).filter(actor=>this.positions[this.nodeId(actor.id)]);
+    const positions=this.positions,owned=this.scenarioOwnedActors,actors=Object.values(owned).filter(actor=>positions[this.nodeId(actor.id)]);
     panel.innerHTML=actors.map(actor=>{const rows=this.actorContextRows(actor.id);return rows.length?`<div class="scenario-context-item"><strong>${escapeHtml(actor.name)}</strong>${rows.map(row=>`<span>${escapeHtml(row.label)} <code>${escapeHtml(row.value)}</code></span>`).join('')}</div>`:'';}).join('');
     panel.hidden=!panel.innerHTML;
+    if(this.labModel.physicalHostBoundaries){
+      const roots=new Map(),hostIds=new Set(),groups=new Map();
+      for(const actor of Object.values(owned)){
+        let host=actor;while(host.parentId&&owned[host.parentId])host=owned[host.parentId];
+        roots.set(actor.id,host);if(actor.parentId)hostIds.add(host.id);
+      }
+      for(const [id,p]of Object.entries(positions)){
+        if(this.nodeId(id)!==id)continue;
+        const host=roots.get(id);if(!host||!hostIds.has(host.id)&&!['idp','service','host','ca','kdc'].includes(host.kind))continue;
+        const b=this.heldGeometry?.bounds[id]||{left:p.x-CARD_BOUNDS.width/2,right:p.x+CARD_BOUNDS.width/2,top:p.y-CARD_BOUNDS.height/2,bottom:p.y+CARD_BOUNDS.height/2},group=groups.get(host.id);
+        if(group){group.left=Math.min(group.left,b.left);group.right=Math.max(group.right,b.right);group.top=Math.min(group.top,b.top);group.bottom=Math.max(group.bottom,b.bottom);}
+        else groups.set(host.id,{title:host.name,...b});
+      }
+      zones.innerHTML=[...groups].map(([id,group])=>`<div class="trust-zone" data-zone-host="${escapeHtml(id)}"><span>${escapeHtml(group.title)}</span></div>`).join('');
+      zones.querySelectorAll('[data-zone-host]').forEach(zone=>{
+        const b=groups.get(zone.dataset.zoneHost);zone.style.left=(b.left-10)/GRAPH_WIDTH*100+'%';zone.style.top=(b.top-10)/GRAPH_HEIGHT*100+'%';zone.style.width=(b.right-b.left+20)/GRAPH_WIDTH*100+'%';zone.style.height=(b.bottom-b.top+20)/GRAPH_HEIGHT*100+'%';zone.style.transform='none';
+      });
+      return;
+    }
     const declared=this.labModel.trustZones||Object.values(this.scenarioOwnedActors).filter(actor=>this.positions[actor.id]&&['idp','service','host','ca','kdc'].includes(actor.kind)).map(actor=>({id:actor.id,title:actor.parentId?this.scenarioOwnedActors[actor.parentId]?.name||actor.name:actor.name,actors:[actor.id]}));
     zones.innerHTML=declared.flatMap(zone=>(zone.actors||[]).map(actorId=>{const id=this.nodeId(actorId);return this.positions[id]?`<div class="trust-zone" data-zone-actor="${id}"><span>${escapeHtml(zone.title)}</span></div>`:'';})).join('');
     zones.querySelectorAll('[data-zone-actor]').forEach(zone=>{const p=this.positions[zone.dataset.zoneActor];zone.style.left=p.x/GRAPH_WIDTH*100+'%';zone.style.top=p.y/GRAPH_HEIGHT*100+'%';});
@@ -793,10 +946,11 @@ export class AuthFlowStudio extends HTMLElement {
     details.dataset.protocolHistoryKey=this.protocolRenderKey;
   }
   renderLessonDecisions(snapshot){
-    const panel=this.querySelector('#lesson-decisions'),bindings=this.labModel?.decisionBindings||[],dnssec=snapshot.state.dnssec;
+    const panel=this.querySelector('#lesson-decisions'),remote=this.labModel?.family==='windows-remote-administration',bindings=(this.labModel?.decisionBindings||[]).filter(binding=>!remote||!['workstation.tokenComparison','workstation.policyComparison','workstation.verdictExplanation','workstation.localComparisonQualification'].includes(binding.path)),dnssec=snapshot.state.dnssec;
     const isDnssec=this.labModel?.workspace==='dnssec',compareHops=isDnssec&&['lab-dnssec05','lab-dnssec06'].includes(this.labModel.id);
     panel.setAttribute('aria-label',this.labModel?.decisionPanelLabel||'Current identity, trust and access decisions');
     panel.hidden=!bindings.length;
+    this.renderWindowsRemoteEvidence(snapshot);
     const raw=[],rows=bindings.map(binding=>{
       const value=binding.path.split('.').reduce((current,key)=>current&&Object.hasOwn(current,key)?current[key]:undefined,snapshot.state);
       const display=binding.values&&Object.hasOwn(binding.values,String(value))?binding.values[String(value)]:value===undefined?'Not declared':value===null?'Not reached':value===true?'Yes':value===false?'No':isDnssec?this.dnssecDecisionDisplay(binding.path,value,snapshot.state.dnssec):formatProtocolValue(value,true);
@@ -829,6 +983,41 @@ export class AuthFlowStudio extends HTMLElement {
     const comparison=controls.querySelector('#chapter-token-comparison'),tokens=this.labModel?.chapterComparison||[];
     const holdings=tokens.length?this.heldView.snapshot().holdings:null;
     if(comparison)comparison.innerHTML=tokens.length?'<div class="instance-table-scroll"><table class="instance-table"><thead><tr><th>Separate credential</th><th>Issuer</th><th>Resource</th><th>Current prefix</th></tr></thead><tbody>'+tokens.map(token=>`<tr><td>${escapeHtml(token.label)}<br><code>${escapeHtml(token.artifactId)}</code></td><td>${escapeHtml(token.issuer)}</td><td>${escapeHtml(token.resource)}</td><td>${holdings.some(holding=>holding.artifactId===token.artifactId)?'A representation is held; this alone is not validation or permission.':'Not held in this source prefix.'}</td></tr>`).join('')+'</tbody></table></div>':'';
+  }
+  renderWindowsRemoteEvidence(snapshot){
+    const panel=this.querySelector('#windows-remote-evidence');
+    if(this.labModel?.family!=='windows-remote-administration'){panel.hidden=true;if(this.remoteEvidenceKey!==null){panel.innerHTML='';this.remoteEvidenceKey=null;}return;}
+    const state=snapshot.state.workstation,policy=state.policyComparison,comparison=state.tokenComparison,key=JSON.stringify([this.heldView.contextId,snapshot.cursor]);
+    panel.hidden=!(policy||comparison||state.verdictExplanation||state.localComparisonQualification);
+    if(this.remoteEvidenceKey===key)return;this.remoteEvidenceKey=key;
+    const value=item=>item===null||item===undefined?'Not applied':formatProtocolValue(item,true);
+    const policyRows=policy?[
+      [policy.label,policy.configured.restrictionsDisplay,policy.applied?.restrictionsDisplay],
+      [policy.registryValueName+' (raw; effective)',[policy.configured.rawLATFP===null?'absent':policy.configured.latfpDisplay,policy.configured.effectiveLATFP].join('; '),policy.applied?[policy.applied.rawLATFP===null?'absent':policy.applied.latfpDisplay,policy.applied.effectiveLATFP].join('; '):null],
+      ['EnableLUA',policy.configured.EnableLUA,policy.applied?.EnableLUA],
+      ['FilterAdministratorToken',policy.configured.FilterAdministratorToken,policy.applied?.FilterAdministratorToken],
+      ['Administrator Protection',policy.configured.administratorProtection,policy.applied?.administratorProtection],
+    ]:[];
+    if(state.configuredPolicy?.administratorProtection){
+      policyRows.push([state.configuredPolicy.apBroadPolicyLabel,state.configuredPolicy.apBroad,state.appliedPolicy?.apBroad]);
+      policyRows.push([state.configuredPolicy.apListPolicyLabel,state.configuredPolicy.apSIDList.join(', ')||'Empty SID list',state.appliedPolicy?state.appliedPolicy.apSIDList.join(', ')||'Empty SID list':null]);
+    }
+    const table=(caption,headings,rows)=>'<div class="instance-table-scroll" tabindex="0" aria-label="'+escapeHtml(caption)+'"><table class="instance-table"><caption>'+escapeHtml(caption)+'</caption><thead><tr>'+headings.map(heading=>'<th scope="col">'+escapeHtml(heading)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(([label,...cells])=>'<tr><th scope="row">'+escapeHtml(label)+'</th>'+cells.map(cell=>'<td>'+escapeHtml(value(cell))+'</td>').join('')+'</tr>').join('')+'</tbody></table></div>';
+    const open=panel.querySelector('[data-remote-comparison]')?.hasAttribute('open'),focused=document.activeElement===panel.querySelector('[data-remote-comparison] > summary');
+    const tokenRows=comparison?[
+      ['Context role',comparison.before.label,comparison.after.type+' / '+comparison.after.mode],
+      ['Logical owner',this.actor(comparison.before.owner).name,this.actor(comparison.after.owner).name],
+      ['Account',comparison.before.account,comparison.after.account],
+      ['Account SID',comparison.before.userSid,comparison.after.userSid],
+      ...comparison.groups.map(group=>['SID '+group.sid,group.beforeAttributes.join(', ')||'Not present',group.afterAttributes.join(', ')||'Not present']),
+      ...comparison.privileges.map(privilege=>[privilege.name,privilege.before.state,privilege.after.state]),
+      ['Native integrity / elevation type',comparison.before.integrity+' / '+comparison.before.elevationType,comparison.after.integrity+' / '+comparison.after.elevationType],
+    ]:[];
+    panel.innerHTML=(state.verdictExplanation?'<p class="windows-verdict" data-windows-verdict>'+escapeHtml(state.verdictExplanation)+'</p>':'')+
+      (state.localComparisonQualification?'<p class="environment-note" data-local-comparison-qualification>'+escapeHtml(state.localComparisonQualification)+'</p>':'')+
+      (policy?'<h3>Configured policy versus the current target context</h3><p>'+escapeHtml(policy.policyLabel)+' · '+escapeHtml(policy.polarity)+'</p>'+table('Remote policy snapshots',['Control','Configured reference','Applied at context creation'],policyRows)+'<p>'+escapeHtml(policy.appliedStatus)+' '+escapeHtml(policy.scope)+' Selecting a case resets this demonstration; it does not change a production policy.</p>':'')+
+      (comparison?'<details data-remote-comparison'+(open?' open':'')+'><summary>Compare target-side filter input and applied context</summary><p>'+escapeHtml(comparison.before.scope)+'. '+escapeHtml(comparison.evidenceLevel)+'. Directory membership and SID attributes are separate; a removed privilege is not a disabled privilege.</p>'+table('Before / after target authorization context',['Field','Before: modeled target input','After: current target context'],tokenRows)+'</details>':'');
+    if(focused)panel.querySelector('[data-remote-comparison] > summary')?.focus({preventScroll:true});
   }
   dnssecDecisionDisplay(path,value,state){
     if(path==='dnssec.validationOwner'||path==='dnssec.firstDetector')return this.actor(value).name;
@@ -992,6 +1181,7 @@ export class AuthFlowStudio extends HTMLElement {
   updateStep() {
     this.refreshChapterProjection();
     this.renderProtocolState();
+    this.renderPamConfiguration();
     this.heldView?.render();
     const s=this.currentStep;
     if(!s){this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>{n.classList.remove('is-source','is-target','is-trace-participant');n.classList.add('is-outside-trace');n.querySelector('.actor-trace-action').hidden=true;});this.refs.connections.querySelectorAll('[data-pair]').forEach(g=>{g.classList.remove('is-active');delete g.dataset.presentation;g.querySelector('.connection-line').removeAttribute('marker-end');});this.refs.story.innerHTML='<p class="empty-state">This field has no replayable operation in this journey. Choose one of the available journeys in the inspector.</p>';this.refs.progress.style.width='0%';this.refs.progress.parentElement.setAttribute('aria-valuenow','0');return;}
@@ -1019,6 +1209,7 @@ export class AuthFlowStudio extends HTMLElement {
   onPlayer(event) {
     this.heldView?.event(event);
     if(['frame','stepcomplete','complete','state'].includes(event.type))this.renderProtocolState();
+    if(['stepcomplete','state'].includes(event.type))this.renderPamConfiguration();
     if(event.type==='step'&&event.step){
       const index=this.steps.findIndex(s=>s.id===(event.step.sourceStepId||event.step.id));if(index>=0)this.index=index;
       if(this.hasTrace){const traceIndex=this.traceQueue.findIndex(s=>s.id===event.step.id);if(traceIndex>=0)this.traceIndex=traceIndex;}

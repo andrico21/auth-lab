@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2026-10-26">
+  <title>Windows protection corrections — independent recheck</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"CORRECTIONS RECHECK";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+
+  pre{max-width:100%;max-height:480px;overflow:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}
+  pre code{padding:0;background:none;white-space:pre;font-size:12px}
+  details{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:8px}
+  summary{cursor:pointer;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+  summary:focus-visible,pre:focus-visible,.table-scroll:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}
+  @media print{pre{max-height:none;white-space:pre-wrap}pre code{white-space:pre-wrap}nav#TOC{display:none}}
+  </style>
+
+  <style>details{margin:1rem 0;border:1px solid #cbd5e1;border-radius:8px;padding:12px}summary{cursor:pointer;font-weight:700;overflow-wrap:anywhere}details pre{max-height:34rem;overflow:auto}code{overflow-wrap:anywhere}.table-scroll{max-width:100%;overflow-x:auto}main{min-width:0}a{overflow-wrap:anywhere}@media print{details pre{max-height:none}}</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Windows protection corrections — independent
+recheck</h1>
+<p class="subtitle">Candidate-04 · Six closures · WP-R06 remains
+open</p>
+<p class="date">26 October 2026</p>
+<div class="plan-stats"><span>6 findings closed</span><span>WP-R06 remains open</span><span>2 bounded P2 corrections</span><span>Release conditions open</span></div></header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Recheck and remaining corrections</h2>
+<ul>
+<li><a href="#decision-and-worker-handoff" id="toc-decision-and-worker-handoff">Decision and worker
+handoff</a></li>
+<li><a href="#exact-candidate" id="toc-exact-candidate">Exact
+candidate</a></li>
+<li><a href="#wp-r06-a-p2-sudo-aggregate-uses-a-password-already-released" id="toc-wp-r06-a-p2-sudo-aggregate-uses-a-password-already-released">WP-R06-A
+— P2: sudo aggregate uses a password already released</a></li>
+<li><a href="#wp-r06-b-p2-two-internal-password-passes-became-two-public-calls" id="toc-wp-r06-b-p2-two-internal-password-passes-became-two-public-calls">WP-R06-B
+— P2: two internal password passes became two public calls</a></li>
+<li><a href="#what-is-now-verified" id="toc-what-is-now-verified">What
+is now verified</a></li>
+<li><a href="#independent-checks-and-retained-evidence" id="toc-independent-checks-and-retained-evidence">Independent checks and
+retained evidence</a></li>
+<li><a href="#test-isolation-performance-and-release-boundaries" id="toc-test-isolation-performance-and-release-boundaries">Test
+isolation, performance and release boundaries</a></li>
+<li><a href="#worker-correction-and-return-requirements" id="toc-worker-correction-and-return-requirements">Worker correction and
+return requirements</a></li>
+<li><a href="#source-authority-and-reproducible-probes" id="toc-source-authority-and-reproducible-probes">Source authority and
+reproducible probes</a></li>
+</ul>
+</nav>
+<main id="independent-recheck"><h2 id="decision-and-worker-handoff">Decision and worker handoff</h2>
+<p><strong>Close WP-R01, WP-R02, WP-R03, WP-R04, WP-R05 and WP-R07 for
+this exact candidate. Keep WP-R06 open.</strong> Its original
+account-line ordering is corrected, but two material integration issues
+remain: an aggregate reuses a released sudo password, and internal
+password-change phases are represented as separate public API calls.
+Both are reproduced in source and the uploaded standalone.</p>
+<p><strong>Worker: this file is the next correction assignment.</strong>
+Retain the six scoped closures and address <strong>WP-R06-A and
+WP-R06-B</strong>, both P2, as the two remaining parts of WP-R06. They
+are not new lessons or a request for an unrelated protocol sweep. The
+previous version 3 plan and earlier preservation requirements remain
+authoritative.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Recheck table 1"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Finding</th>
+<th scope="col">Independent disposition</th>
+<th scope="col">Evidence for the disposition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WP-R01 — audit-only lifetime</td>
+<td><strong>Closed</strong></td>
+<td>Configured 120 remains visible; audit issuance uses the ordinary
+480-minute baseline. Enforced 120/90 controls remain correct.</td>
+</tr>
+<tr class="even">
+<td>WP-R02 — fresh credential epoch</td>
+<td><strong>Closed</strong></td>
+<td>Fresh issue/start 241, duration 240, end/renew 481; the old 0/240
+lineage stays expired and the local session remains.</td>
+</tr>
+<tr class="odd">
+<td>WP-R03 — cleanup owner</td>
+<td><strong>Closed</strong></td>
+<td>All 128 executions checked; 346 cleanup events and 4,338 releases
+belong to the actual owners.</td>
+</tr>
+<tr class="even">
+<td>WP-R04 — decoded representation</td>
+<td><strong>Closed</strong></td>
+<td>Six decoded-object lifecycles show receiver-local acquisition before
+decoded verification, correct opacity and owner-local release.</td>
+</tr>
+<tr class="odd">
+<td>WP-R05 — internal password flags</td>
+<td><strong>Closed in its original scope</strong></td>
+<td>PAM01 preserves caller flags in internal passes and keeps public
+flags separate. The existing LLOG04 regression below is part of
+WP-R06.</td>
+</tr>
+<tr class="even">
+<td>WP-R06 — existing PAM execution</td>
+<td><strong>Open: A and B below</strong></td>
+<td>Account ordering, rootok boundaries and the specific LLOG01 fix
+pass; shared integration still has two causal errors.</td>
+</tr>
+<tr class="odd">
+<td>WP-R07 — NTLM MIC description</td>
+<td><strong>Closed</strong></td>
+<td>The equation names ServerChallenge and separates the AV MIC-presence
+flag from AUTHENTICATE_MESSAGE.MIC.</td>
+</tr>
+</tbody>
+</table>
+</div><p>This is not overall release acceptance. Human G01, performance-owner
+acceptance and the disclosed native/interoperability limits remain open.
+No candidate code was changed by the reviewer; nothing was committed,
+pushed or deployed.</p>
+<h2 id="exact-candidate">Exact candidate</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Recheck table 2"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Item</th>
+<th scope="col">Identity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Upload</td>
+<td><code>auth-flow-studio-windows-protection-source-and-review(1).zip</code>,
+<code>auth-flow-studio-windows-protection(1).html</code>,
+<code>START-HERE(8).md</code></td>
+</tr>
+<tr class="even">
+<td>Candidate</td>
+<td><strong>04</strong>, local/uncommitted; published parent
+<code>ae9dffe2da2bca33c01daee1eaacfcbedfc95aa0</code></td>
+</tr>
+<tr class="odd">
+<td>Application/test inputs</td>
+<td><strong>254 files</strong>, SHA-256
+<code>4530cbea258fa64e5ce5b484f89430526dd68b8f5709fe21647d7bd5528995a5</code></td>
+</tr>
+<tr class="even">
+<td>Supplied standalone</td>
+<td><strong>5,581,415 bytes</strong>, SHA-256
+<code>4499baf31b276c7d97226c6f534beda0f86209c0e45f5337227570bb472c4f05</code></td>
+</tr>
+<tr class="odd">
+<td>Original reviewed candidate-02</td>
+<td>Source
+<code>14ce8c3ec6ab5754150a3e38a839e2859f202001eb37f02968cb4856b6009ed5</code>;
+standalone
+<code>2d0470879948309a1571aed0a8c13b14dd573778c4685b026c4fb7ceaceb5dc3</code></td>
+</tr>
+<tr class="even">
+<td>Review being resolved</td>
+<td>SHA-256
+<code>d7b53d23a597f58ba63f4431b5857f56acb6a2417088170b8f4f0885a13f0673</code></td>
+</tr>
+<tr class="odd">
+<td>Plan</td>
+<td>Document version 3; SHA-256
+<code>8e66f18b60f352b4d3020af11369b829828cb473cbc8edcccacbe104abc8fc8d</code></td>
+</tr>
+</tbody>
+</table>
+</div><p>All <strong>1,312</strong> delivered checksum entries match. The
+254-file source identity was independently recomputed. A fresh
+source-version build equals the supplied HTML byte for byte. Scope
+remains 11 new models / 110 canonical cases / 128 unique executions,
+with SEARCH01 counted separately. The delta from candidate-02 is 13
+changed/added canonical paths; 241 original canonical files remain
+unchanged.</p>
+<h2 id="wp-r06-a-p2-sudo-aggregate-uses-a-password-already-released">WP-R06-A
+— P2: sudo aggregate uses a password already released</h2>
+<p><strong>Locations:</strong>
+<code>src/pam-existing-integration.js:121</code>; the sudo input/check
+is authored at <code>src/linux-elevation-lab.js:44</code>.</p>
+<p>The candidate-04 follow-up changes aggregate dependencies from all
+original objects to <code>options.checks[].object</code>. That fixes
+LLOG01 because its checked object is a retained verifier. In sudo, the
+checked object is the transient raw password. A checked input is not
+automatically a reusable verification result.</p>
+<p>Select <code>lab-lelev01</code>, case <code>default</code>, then
+inspect the password’s field and exact-object history:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Recheck table 3"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source index</th>
+<th scope="col">Event</th>
+<th scope="col">Actual behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>8</td>
+<td><code>lab-lelev01:pam-record-pam-auth-0-0</code></td>
+<td>The physical module uses/verifies <code>lab-lelev01:secret</code>,
+then releases caller and PAM holdings.</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td><code>lab-lelev01:pam-auth</code></td>
+<td>The completed aggregate emits another <code>use</code> by
+<code>lelevPAM</code> of that raw secret, although no current secret
+holding exists.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Both source and the actual supplied IIFE include the aggregate in
+ordinary field history and exact held-object history. The title’s “no
+repeated verifier check” wording does not remove this second use. This
+is an authored state/history contradiction, not a native memory-safety
+claim.</p>
+<p>The bounded 55-variant existing-consumer sweep finds it in eight sudo
+variants: <strong>default, wrong-password, expired-timestamp,
+different-terminal, rootpw, targetpw, runaspw and
+account-denied</strong>. The LLOG01 control passes: one entered-secret
+use at its physical module, no aggregate in either secret history, and
+its verifier stays at <code>llogPAM</code>.</p>
+<p><strong>Required correction:</strong> choose aggregate evidence by
+its actual role. Consume an already-created module result or explicit
+verification-result artifact; retain genuine non-secret evidence only
+where needed. Preserve the accepted-state milestone and verifier
+provenance. Do not prolong or recreate password custody to satisfy an
+artificial aggregate dependency, and do not hide the offending history
+row while leaving the source operation intact.</p>
+<p><strong>Acceptance:</strong></p>
+<ul>
+<li>Every raw-password use in the six existing consumers / 55 variants
+has owner custody at the actual consuming boundary. A use-and-release at
+one physical module boundary is valid; a later use after that release is
+not.</li>
+<li>Each of the eight fresh-password sudo variants has exactly the real
+module/backend password use. Its aggregate is absent from both password
+histories.</li>
+<li>Reused/exempt/no-prompt controls do not acquire a fabricated
+password input. Wrong-password denial and later account denial keep
+their original outcomes.</li>
+<li>Full, field and exact-object views agree immediately before the
+physical operation, after release, at aggregate completion, and after
+rewind. Preserve the corrected LLOG01 behavior.</li>
+</ul>
+<h2 id="wp-r06-b-p2-two-internal-password-passes-became-two-public-calls">WP-R06-B
+— P2: two internal password passes became two public calls</h2>
+<p><strong>Location:</strong>
+<code>src/pam-existing-integration.js:74–80</code> and
+<code>113–126</code>. The generic wrapper creates public call/return
+events for the internal <code>prelim</code> and <code>update</code>
+phases.</p>
+<p>Select <code>lab-llog04</code>, case <code>default</code>. Both
+source and supplied-IIFE observations show:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Recheck table 4"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source index</th>
+<th scope="col">Actual boundary</th>
+<th scope="col">Authored argument / result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>13</td>
+<td><code>pamChangeApp → pamChange</code>,
+<code>pam-call-password-preliminary-0</code></td>
+<td><code>pam_chauthtok</code> with
+<code>PAM_CHANGE_EXPIRED_AUTHTOK \| PAM_PRELIM_CHECK</code></td>
+</tr>
+<tr class="even">
+<td>16</td>
+<td><code>pamChange → pamChangeApp</code>,
+<code>pam-return-password-preliminary-0</code></td>
+<td>Completed public API aggregate for preliminary pass</td>
+</tr>
+<tr class="odd">
+<td>24</td>
+<td><code>pamChangeApp → pamChange</code>,
+<code>pam-call-password-authority-result-0</code></td>
+<td>A second <code>pam_chauthtok</code> with
+<code>PAM_CHANGE_EXPIRED_AUTHTOK \| PAM_UPDATE_AUTHTOK</code></td>
+</tr>
+<tr class="even">
+<td>29</td>
+<td><code>pamChange → pamChangeApp</code>,
+<code>pam-return-password-authority-result-0</code></td>
+<td>A second completed public API aggregate</td>
+</tr>
+</tbody>
+</table>
+</div><p>The application creates and sends both argument artifacts. The
+held-object projection delivers the preliminary return to the
+application before the second call and ultimately gives it both
+phase-return artifacts. The rendered panel marks each aggregate
+completed. Therefore this is more than an imprecise step title.</p>
+<p>The inventory identifies <strong>12 malformed public controls across
+six variants</strong>: default, new-policy-denied, update-failed,
+directory-unreachable, directory-online and post-change-account-denied.
+Four reached-change variants were also exercised in the source and
+actual emitted UI, together with the no-change consumer control.</p>
+<p>The pinned Linux-PAM <code>pam_password.c</code> rejects
+application-supplied internal phase bits. A valid public call receives
+only the caller flags; libpam combines them with its own
+preliminary/update flag during internal dispatch. Preliminary success
+leads to update within that same call. The function then returns one
+public result. The actual retained implementation was inspected, and the
+official upstream indexed file corroborates this behavior.</p>
+<p><strong>Required correction:</strong> represent one public
+<code>pam_chauthtok(PAM_CHANGE_EXPIRED_AUTHTOK)</code> lifetime. Inside
+it, show the preliminary dispatch, required conversation/backend work
+and update dispatch, followed by one public aggregate. Keep full
+combined flags on internal module records. They must not become
+caller-created arguments or separately delivered public completions. Use
+the corrected PAM01 lifecycle as a reference.</p>
+<p>Preserve authority writes, secret collection before validation,
+failure outcomes and post-change account checks. Do not change the
+intended valid demonstration into a <code>PAM_SYSTEM_ERR</code> scenario
+to accommodate the malformed calls. The correction is to the invocation
+model.</p>
+<p><strong>Acceptance:</strong></p>
+<ul>
+<li>Each reached-change variant has one public call and one public
+return, with caller-only public flags and the correct combined internal
+flags.</li>
+<li>No preliminary public-return artifact is delivered to the
+application, and no second public call starts the update pass.</li>
+<li>Preliminary failure prevents update; update/backend failure yields
+the correct single final result; a caller that does not support the
+change has no invented password-change call. Reuse existing controls or
+narrow regression fixtures without increasing the canonical lesson
+inventory.</li>
+<li>The current public API remains pending until its actual completion.
+Internal phase results remain distinguishable from the public aggregate
+and subsequent caller admission.</li>
+<li>Source and supplied-IIFE full/field/exact history, held custody and
+rewind agree. Preserve the corrected account-line order and rootok
+behavior.</li>
+</ul>
+<h2 id="what-is-now-verified">What is now verified</h2>
+<p>The original sudo/su account trace is corrected:
+<code>pam_unix</code> precedes <code>pam_access</code>, each physical
+completion appears once, the accumulator does not reset, and the current
+call is pending until the aggregate. Admission waits for that aggregate.
+The real-UID0 branch has the sufficient rootok hook, one completed
+success and no password check. The non-root branch continues the same
+pending call through its ignored rootok result. The disclosed
+rootok-test migrations correctly move aggregate assertions to the actual
+return boundary.</p>
+<p>The Windows corrections are independently verified in canonical state
+and actual rendered inspectors. Audit policy preserves configured versus
+effective lifetime. Fresh and expired credential lineages remain
+separate. Owner-local cleanup and decoded representations agree in full,
+field and exact replay, including rewind and denial controls that retain
+independently accepted authority. All 88 legacy WLOG/WELEV model initial
+states, steps and inventories remain identical to candidate-02; the
+shared compiler/adapter files were not weakened.</p>
+<p>The NTLM correction is verified across all 28 applicable proof
+records and local-SAM/domain success/failure inspector controls. All 44
+WRA executions retain their complete final workstation state. The
+previous search closure remains preserved: ranking, metadata, routing
+and CSS files are unchanged, and bounded discovery/selection checks
+pass. The new current-call/previously-completed labels render
+consistently with canonical state; the remaining errors originate in the
+integration model described above.</p>
+<h2 id="independent-checks-and-retained-evidence">Independent checks and
+retained evidence</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Recheck table 5"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Check</th>
+<th scope="col">Result and scope</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Integrity/build</td>
+<td>1,312 matching checksums; exact 254-file identity; rebuilt
+standalone equals upload.</td>
+</tr>
+<tr class="even">
+<td>Fresh focused regression execution</td>
+<td><strong>115 tests passed across 11 files</strong>, zero
+failures/skips/cancellations, Node 24.22.1, 51.83 seconds. New
+correction tests and affected Windows/Unix/held regressions; not a fresh
+full Bun run.</td>
+</tr>
+<tr class="odd">
+<td>WP-R01/R02</td>
+<td><strong>112 source / 106 supplied-IIFE checks passed</strong>,
+including actual inspector JSON and replay. Six extra source checks
+exercise the nonselectable zero-lifetime expression, not additional
+named cases.</td>
+</tr>
+<tr class="even">
+<td>WP-R03/R04</td>
+<td><strong>18,365 source assertions</strong> across all 128 executions;
+<strong>330 source + 330 supplied-IIFE</strong> application assertions,
+equal observations. Six decoded objects, eight representative
+owner-local cleanup events and three denial controls.</td>
+</tr>
+<tr class="odd">
+<td>WP-R05/R06</td>
+<td><strong>2,943 source / 2,945 emitted supporting assertions pass; 17
+explicit contract assertions fail per mode</strong>, grouped into the
+two open subitems. Existing source sweep: 55 executions / 1,355 prefixes
+including initial; 140 actual DOM/history positions per mode. Repeated
+source comparisons are not extra unique scenarios.</td>
+</tr>
+<tr class="even">
+<td>WP-R07</td>
+<td><strong>413 source assertions</strong> for 38 cases / 44 executions;
+visible source/standalone inspector checks <strong>52 / 54</strong>,
+equal observations across four controls.</td>
+</tr>
+<tr class="odd">
+<td>Bounded UI/consumer review</td>
+<td><strong>295 checks per mode</strong>, equal observations across 53
+positions; <strong>35 contract-audit checks</strong> pass. No new UI
+finding.</td>
+</tr>
+<tr class="even">
+<td>Provenance audit</td>
+<td><strong>8,414 checks passed</strong>, including actual frozen bytes,
+raw logs, current/retained identity boundaries and targeted browser
+scope.</td>
+</tr>
+<tr class="odd">
+<td>Retained worker full suite</td>
+<td><strong>2,299 pass / 0 fail across 133 files</strong>, Bun 1.4.2,
+disclosed exclusive boot then four workers. Not independently rerun in
+full by this reviewer.</td>
+</tr>
+<tr class="even">
+<td>Retained current browser collection</td>
+<td><strong>309/309 cells</strong>; 69 complete fixture records cover
+<strong>23 selected executions × three modes</strong>, with
+<strong>2,652 completed-prefix observations</strong>. This is not a
+current browser run of all 128 executions.</td>
+</tr>
+</tbody>
+</table>
+</div><p>The PAM probe writes its failed contracts explicitly; successful
+script execution does not mean the candidate satisfies them. Seventeen
+repeated assertions identify two causes, not seventeen separate defects.
+Passing existing outcome tests does not establish correct invocation
+boundaries or secret-use history.</p>
+<p>The 309-cell browser denominator is 276 new-fixture stage cells, 27
+existing-Unix controls and six setup/error cells. Current runtime rows
+correctly leave 105 other new-fixture executions as not reperformed.
+Original 306-key preservation was checked by recovering the exact
+previous producer from the retained patch and reconstructing its plan;
+the omitted old raw observations were not directly compared. The old
+1,815-cell matrix remains candidate-02 evidence.</p>
+<p>All <strong>253 frozen authority/configuration/oracle/review
+inputs</strong> are supplied and verified; 252 also directly match the
+prior extraction. The original 992 literal outcome fields, PAM
+expectations and Unix worksheet are unchanged. Historical DNSSEC
+coverage remains separately qualified: 42 of 435 authority files are
+supplied, 393 have explicit omission bindings; the 138 retained
+verification producers are present.</p>
+<h2 id="test-isolation-performance-and-release-boundaries">Test
+isolation, performance and release boundaries</h2>
+<p>The moved standalone test body is byte-identical to the original,
+SHA-256
+<code>17d9a218a2fe9e5573d4482fe907d56aaea1b778e875ce80f7ecaefc4f7fcb6b</code>.
+Its 5,000 ms VM, 900,000 ms test and 1,800,000 ms per-file budgets are
+unchanged. The bound runner awaits the exclusive standalone phase before
+launching its four-worker queue; all files and failures remain
+included.</p>
+<p>The earlier complete <strong>2,298 pass / 1 fail</strong> run remains
+failed, with all 133 logs. The later <strong>2,299 / 0</strong> is a
+fresh complete run under the disclosed schedule, not a composite.
+Concurrency exposing the wall-clock cap remains an inference; neither
+the diagnostic nor scheduling change supplies startup performance
+acceptance. No timestamp-based proof of all external process non-overlap
+is claimed.</p>
+<p><strong>Candidate-04 performance is unmeasured.</strong>
+Candidate-02’s two material standalone startup flags and one
+baseline-only variation condition retain their original identities,
+samples and unaccepted dispositions. The six P6 conditions, five DNSSEC
+material conditions, older-key/P0 history, prior scoped closures,
+optional deferrals and disclosed sibling-origin/live/cross-engine limits
+remain preserved.</p>
+<p>Human <strong>G01 remains open</strong>. Native Windows/DC remains
+unperformed for the 88 cases. The Linux-PAM
+164-match/one-distribution-divergence record is retained historical
+evidence, not a new native run. No fresh native browser, Windows/PAM or
+performance sweep was performed for this recheck. Compiled-IIFE DOM
+checks do not establish screen-reader speech or native OS behavior.</p>
+<h2 id="worker-correction-and-return-requirements">Worker correction and
+return requirements</h2>
+<ol type="1">
+<li>Record the six scoped closures against this report and the exact
+candidate identities. Keep <strong>WP-R06 open</strong>, with separate
+A/B response rows and no release acceptance.</li>
+<li>Correct aggregate evidence consumption for sudo and public/internal
+password-call lifetime for LLOG04. Preserve the passing account-order,
+rootok, PAM01 flags and LLOG01 password-history fixes. Avoid shared
+changes that disturb the closed Windows behaviors.</li>
+<li>Add literal positive contracts for both subitems before refreshing
+projections: zero post-release raw-password uses and correct
+single-call/single-return password-change boundaries. Cover all affected
+variants and the named controls; do not merely assert the same generated
+narrative in a second location.</li>
+<li>Preserve historical source/expected files, test migrations, failed
+attempts and timing records. Explain any intentional observable-contract
+change additively. Do not weaken the held compiler, conceal rows in the
+renderer, retain secrets unnecessarily, or repin old outcomes to force
+agreement.</li>
+<li>Rebuild and test affected source, actual emitted values/history and
+relevant shared integrations. Complete the project’s normal regression
+checks under its pinned runtime. Keep the disclosed schedule and
+budgets, and retain failures if any occur. Use targeted real-browser
+coverage for changed call/result/history surfaces; no unrelated
+native/performance sweep is requested.</li>
+<li>Return the standalone, source/review archive and a clear entrypoint
+with exact current identities, per-subitem before/after evidence,
+current affected checks, unchanged gate states and truthful
+retained-versus-rerun labels. Do not prefill independent WP-R06
+closure.</li>
+</ol>
+<h2 id="source-authority-and-reproducible-probes">Source authority and
+reproducible probes</h2>
+<p>The PAM call rule is grounded in the retained immutable <a href="https://github.com/linux-pam/linux-pam/blob/584ef2275254016ee68126f90dab6df3604124b9/libpam/pam_password.c">Linux-PAM
+<code>pam_password.c</code></a>, especially its public-flag check and
+internal dispatch. Its current official <a href="https://github.com/linux-pam/linux-pam/blob/master/libpam/pam_password.c">upstream
+file</a> independently corroborated that distinction. WP-R06-A follows
+the version 3 plan’s exact ownership, lifecycle and history contract and
+the observed source/held state. The closed lifetime and MIC findings
+retain their original <a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/a076994a-47a9-4d16-af77-d4abb523afe4">MS-KILE</a>,
+<a href="https://datatracker.ietf.org/doc/html/rfc4120">RFC 4120</a> and
+<a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-nlmp/5e550938-91d4-459f-b67d-75d70009e3f3">MS-NLMP</a>
+authorities; this recheck does not claim blanket conformance.</p>
+<p>Save each inert code block under <code>independent-validation/</code>
+beside current <code>source/</code>. Keep the supplied HTML at the
+packet root as <code>auth-flow-studio-windows-protection.html</code>.
+Preserve the actual earlier extraction at sibling
+<code>windows-protection-02/source</code>; comparison probes
+intentionally use that predecessor rather than regenerated old
+projections.</p>
+<pre class="sh" tabindex="0" role="region" aria-label="Reproduction source 1"><code>node independent-validation/pam-recheck-probe.mjs source
+node independent-validation/pam-recheck-probe.mjs emitted
+node independent-validation/protection-recheck.mjs source
+node independent-validation/protection-recheck.mjs emitted
+node independent-validation/state-recheck-probe.mjs
+node independent-validation/state-recheck-ui.mjs source
+node independent-validation/state-recheck-ui.mjs emitted
+node independent-validation/remote-recheck.mjs
+node independent-validation/remote-ui-recheck.mjs
+node independent-validation/remote-ui-recheck.mjs --emitted
+node independent-validation/ui-recheck-probe.mjs source
+node independent-validation/ui-recheck-probe.mjs emitted
+python3 independent-validation/ui-contract-audit.py
+python3 independent-validation/provenance-recheck.py</code></pre>
+<details>
+<summary>
+pam-recheck-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 2"><code>import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {createPamFoundationsCase} from '../source/src/pam-foundations-lab.js';
+import {LINUXLOGONLAB_SCENARIOS} from '../source/src/linux-logon-lab.js';
+import {LINUXELEVLAB_SCENARIOS} from '../source/src/linux-elevation-lab.js';
+import {LINUXLOGONLAB_SCENARIOS as OLD_LOGON} from '../../windows-protection-02/source/src/linux-logon-lab.js';
+import {LINUXELEVLAB_SCENARIOS as OLD_ELEV} from '../../windows-protection-02/source/src/linux-elevation-lab.js';
+import {reconstructProtocolState} from '../source/src/protocol-state.js';
+import {reconstructProtocolState as oldState} from '../../windows-protection-02/source/src/protocol-state.js';
+import {pamEvaluate,pamApiBoundary} from '../source/src/pam-stack-evaluator.js';
+import {buildUnixWorkstationHeldObjects} from '../source/src/held-object-unix-workstation.js';
+import {compileHeldObjects,projectHeldObjects,heldObjectTrace} from '../source/src/held-object-state.js';
+import {installHarness,HarnessEvent} from '../source/tests/dom-harness.mjs';
+
+const mode=process.argv[2]||'source',json=x=&gt;x===undefined?undefined:JSON.parse(JSON.stringify(x));
+let checks=0,positions=0;const contracts=[],observations=[];
+function eq(a,b,label){assert.deepEqual(json(a),json(b),label);checks++;}
+function ok(v,label){assert.ok(v,label);checks++;}
+function contract(id,label,actual,expected){contracts.push({id,label,actual,expected,passed:JSON.stringify(actual)===JSON.stringify(expected)});}
+const current=[...LINUXLOGONLAB_SCENARIOS,...LINUXELEVLAB_SCENARIOS],old=[...OLD_LOGON,...OLD_ELEV];
+const select=(id,variant='default')=&gt;current.find(m=&gt;m.id===id).withVariant(variant);
+const core=state=&gt;{const value=json(state.workstation);delete value.pamEvaluation;delete value.pamResults;return value;};
+const end=m=&gt;reconstructProtocolState(m,m.steps().length-1);
+const existing=[],danglingSecretUses=[],invalidPublicCalls=[];
+let prefixes=0;
+for(const base of current.filter(m=&gt;/^lab-(llog0[1-4]|lelev0[12])$/.test(m.id)))for(const choice of base.variantChoices){
+ const m=base.withVariant(choice.id),previous=old.find(x=&gt;x.id===m.id).withVariant(choice.id),steps=m.steps();
+ eq(core(end(m)),core(oldState(previous,previous.steps().length-1)),m.id+'/'+choice.id+' final core unchanged');
+ const plan=compileHeldObjects(buildUnixWorkstationHeldObjects({model:m,steps,actors:m.actors(),choiceId:m.id,contextId:'independent:'+m.id+':'+choice.id}),{model:m,steps});
+ const secrets=new Set(m.workstationInventory.artifacts.filter(x=&gt;x.type==='secret').map(x=&gt;x.artifactId));
+ let prior=projectHeldObjects(plan,{eventIndex:-1,milestone:'initial'});prefixes++;
+ for(let i=0;i&lt;steps.length;i++){
+  const step=steps[i];
+  for(const op of step.attributeOperations||[])if(op.kind==='use'&amp;&amp;secrets.has(op.instanceId)){
+   const available=prior.holdings.some(h=&gt;h.artifactId===op.instanceId&amp;&amp;h.actorId===op.actorId)||step.attributeOperations.some(o=&gt;o.instanceId===op.instanceId&amp;&amp;o.actorId===op.actorId&amp;&amp;o.kind==='create');
+   if(!available)danglingSecretUses.push({scenario:m.id,variant:choice.id,index:i,step:step.id,secret:op.instanceId,actor:op.actorId});
+  }
+  prior=projectHeldObjects(plan,{eventIndex:i,milestone:'complete'});prefixes++;eq(prior.state,reconstructProtocolState(m,i),'Held/state canonical prefix');
+  eq(prior.state.workstation.unrelatedSession,'other-user-session-retained','Unrelated session retained');
+ }
+ for(const artifact of m.workstationInventory.artifacts){
+  if(artifact.type!=='local-api-input'||artifact.creator!=='pamChangeApp')continue;
+  let value;try{value=JSON.parse(artifact.value);}catch{continue;}
+  if(value.api==='pam_chauthtok'&amp;&amp;/PAM_PRELIM_CHECK|PAM_UPDATE_AUTHTOK/.test(String(value.flags)))invalidPublicCalls.push({scenario:m.id,variant:choice.id,id:artifact.artifactId,flags:value.flags});
+ }
+ // Exact artifact type is not needed for the actual application-created control contract.
+ for(const artifact of m.workstationInventory.artifacts.filter(a=&gt;a.creator==='pamChangeApp'&amp;&amp;a.artifactId.includes('pam-call-'))){
+  let value;try{value=JSON.parse(artifact.value);}catch{continue;}
+  if(value.api==='pam_chauthtok'&amp;&amp;/PAM_PRELIM_CHECK|PAM_UPDATE_AUTHTOK/.test(String(value.flags))&amp;&amp;!invalidPublicCalls.some(x=&gt;x.variant===choice.id&amp;&amp;x.id===artifact.artifactId))invalidPublicCalls.push({scenario:m.id,variant:choice.id,id:artifact.artifactId,flags:value.flags});
+ }
+ existing.push({scenario:m.id,variant:choice.id,steps:steps.length});
+}
+eq(existing.length,55,'All six existing consumers / 55 controls');
+contract('WP-R06-A','No raw password use after release across all 55 existing consumers',danglingSecretUses,[]);
+contract('WP-R06-B','Public pam_chauthtok calls never carry internal phase bits',invalidPublicCalls,[]);
+
+const flagMembers=[['change-success',['prelim','update'],'PAM_SUCCESS',2],['change-prelim-failure',['prelim'],'PAM_AUTHTOK_ERR',1],['change-update-failure',['prelim','update'],'PAM_AUTHTOK_ERR',1],['change-unsupported',[],null,1]];
+for(const [member,phases,status,generation] of flagMembers){
+ const m=createPamFoundationsCase('password-change-required',member);
+ for(const phase of phases){
+  const flags='PAM_CHANGE_EXPIRED_AUTHTOK | '+(phase==='prelim'?'PAM_PRELIM_CHECK':'PAM_UPDATE_AUTHTOK');
+  eq(m.pamEvaluations[phase].flags,flags,'Full caller/internal flags '+member+'/'+phase);
+  for(const row of m.pamEvaluations[phase].trace)eq(row.flags,flags,'Every module record has complete flags');
+ }
+ eq(m.steps().filter(s=&gt;s.pamEvaluation?.executed&amp;&amp;['prelim','update'].includes(s.pamEvaluation.apiPhase)).map(s=&gt;s.pamEvaluation.apiPhase),phases,'Exact reached internal passes');
+ for(const artifact of m.workstationInventory.artifacts.filter(a=&gt;a.creator==='pamCaller'&amp;&amp;a.artifactId.includes('call-password-')))eq(JSON.parse(artifact.value).flags,'PAM_CHANGE_EXPIRED_AUTHTOK','Public foundation invocation has caller flags only');
+ eq(end(m).workstation.authorityGeneration,generation,'No failed update advances authority');
+ if(status)eq(end(m).workstation.pamResults.password,status,'Public password API outcome');
+ else eq(m.steps().filter(s=&gt;['password','prelim','update'].includes(s.pamEvaluation?.apiPhase)).length,0,'Unsupported caller dispatches nothing');
+}
+for(const phase of ['prelim','update']){
+ const flags=phase==='prelim'?'PAM_PRELIM_CHECK':'PAM_UPDATE_AUTHTOK';
+ eq(pamEvaluate('afs-login',phase,{callerFlags:0,inputs:{['pam_unix.so:'+phase]:'PAM_SUCCESS'}}).flags,flags,'Zero-caller flag control');
+ eq(pamApiBoundary('afs-login',phase,'control',{callerFlags:0}).flags,flags,'Zero-caller boundary');
+}
+eq(pamApiBoundary('afs-login','password','control').flags,0,'Public API does not globally inherit expired-only bit');
+
+const sandbox=mode==='emitted'?{structuredClone}:globalThis;
+const harness=installHarness(sandbox);let Studio;
+if(mode==='emitted'){
+ const bytes=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url));
+ eq(createHash('sha256').update(bytes).digest('hex'),'4499baf31b276c7d97226c6f534beda0f86209c0e45f5337227570bb472c4f05','Exact supplied candidate04');
+ const scripts=[...bytes.toString().matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];eq(scripts.length,1,'One actual IIFE');
+ new vm.Script(scripts[0][1]).runInContext(vm.createContext(sandbox));Studio=harness.registry.get('auth-flow-studio');
+}else ({AuthFlowStudio:Studio}=await import('../source/src/app.js'));
+const app=new Studio();harness.document.body.appendChild(app);app.connectedCallback();
+const text=node=&gt;node?.textContent.replace(/\s+/g,' ').trim();
+function cell(label){const dl=app.querySelector('#pam-configuration-panel .pam-evaluation');return text([...dl.children].find(row=&gt;text(row.querySelector('dt'))===label)?.querySelector('dd'));}
+function position(index){app.selectStep(index,false);positions++;const snapshot=app.heldView.snapshot(),m=app.labModel.id==='lab-pam01'?createPamFoundationsCase(app.labModel.variantId,app.labModel.subfixtureId):select(app.labModel.id,app.labModel.variantId||'default');eq(snapshot.state,reconstructProtocolState(m,snapshot.cursor.eventIndex),'Rendered current prefix equals independently constructed source model prefix');return snapshot;}
+function reset(){app.clearAttribute();app.reset();eq(app.heldView.snapshot().cursor,{eventIndex:-1,milestone:'initial'},'Reset rewinds');eq(app.heldView.selection,null,'Reset clears object selection');}
+function history(artifactId,index){
+ app.clearAttribute();position(index);
+ const artifact=app.labModel.workstationInventory.artifacts.find(a=&gt;a.artifactId===artifactId);ok(artifact,'History target exists');
+ app.selectAttribute(artifact.attributeId,false);
+ const field=app.traceQueue.map(s=&gt;s.sourceStepId||s.id);
+ for(let n=0;n&lt;app.visibleSteps.length;n++)position(n);
+ for(let n=app.visibleSteps.length-1;n&gt;=0;n--)position(n);
+ app.clearAttribute();position(index);app.heldView.trace(artifactId);
+ const exact=app.traceQueue.map(s=&gt;s.sourceStepId||s.id);
+ for(let n=0;n&lt;app.visibleSteps.length;n++)position(n);
+ for(let n=app.visibleSteps.length-1;n&gt;=0;n--)position(n);
+ app.clearAttribute();return {field,exact};
+}
+try{
+ for(const [member,phases] of flagMembers){
+  app.selectLabScenario('lab-pam01',{variant:'password-change-required'});const control=app.querySelector('#lesson-subfixture');control.value=member;control.dispatchEvent(new HarnessEvent('change'));
+  for(const phase of phases){
+   const index=app.steps.findIndex(s=&gt;s.pamEvaluation?.executed&amp;&amp;s.pamEvaluation.apiPhase===phase);position(index);
+   const flags='PAM_CHANGE_EXPIRED_AUTHTOK | '+(phase==='prelim'?'PAM_PRELIM_CHECK':'PAM_UPDATE_AUTHTOK');eq(cell('Internal module dispatch / flags'),'pam_chauthtok / '+flags,'Visible complete internal flags');
+   const artifact=app.labModel.workstationInventory.artifacts.find(a=&gt;a.type==='pam-return'&amp;&amp;JSON.parse(a.value).apiPhase===phase);
+   const trace=history(artifact.artifactId,index);ok(trace.exact.includes(app.steps[index].id),'Exact record history includes real module completion');
+  }
+  reset();
+ }
+ for(const [id,variant,lines,allowed] of [['lab-lelev01','default',[3,4],true],['lab-lelev01','account-denied',[3,4],false],['lab-lelev02','default',[4,5],true],['lab-lelev02','access-denied',[4,5],false]]){
+  app.selectLabScenario(id,{variant});const modules=app.steps.map((step,index)=&gt;({step,index})).filter(x=&gt;x.step.pamEvaluation?.apiPhase==='account'&amp;&amp;x.step.pamEvaluation.executed),returned=app.steps.findIndex(s=&gt;s.pamEvaluation?.apiPhase==='account'&amp;&amp;s.pamEvaluation.aggregateReturn!==undefined);
+  eq(modules.map(x=&gt;x.step.pamEvaluation.line),lines,'Ordered account physical rows once');ok(returned&gt;modules.at(-1).index,'Aggregate after every module');
+  for(const {step,index} of modules){const s=position(index);eq(s.state.workstation.pamResults?.account,undefined,'No future aggregate');eq(s.state.workstation.admitted,false,'No admission before aggregate');eq(cell('API aggregate return'),'Pending: current API call has not completed','Visible pending aggregate');eq(cell('Accumulator after'),step.pamEvaluation.accumulatorAfter.impression+' / '+step.pamEvaluation.accumulatorAfter.status,'Visible ordered accumulator');}
+  const s=position(returned);eq(s.state.workstation.admitted,allowed,'Actual account decision');eq(cell('API aggregate return'),allowed?'PAM_SUCCESS':'PAM_PERM_DENIED','Visible completed aggregate');
+  const artifact=app.labModel.workstationInventory.artifacts.find(a=&gt;a.type==='pam-return'&amp;&amp;JSON.parse(a.value).apiPhase==='account'&amp;&amp;JSON.parse(a.value).line===lines[1]);history(artifact.artifactId,modules.at(-1).index);reset();
+ }
+ for(const [variant,expected] of [['setuid-not-real-root',['pam_rootok.so','pam_unix.so']],['real-root-bypass',['pam_rootok.so']]]){
+  app.selectLabScenario('lab-lelev02',{variant});const modules=app.steps.map((step,index)=&gt;({step,index})).filter(x=&gt;x.step.pamEvaluation?.apiPhase==='authenticate'&amp;&amp;x.step.pamEvaluation.executed),ret=app.steps.findIndex(s=&gt;s.pamEvaluation?.apiPhase==='authenticate'&amp;&amp;s.pamEvaluation.aggregateReturn!==undefined);
+  eq(modules.map(x=&gt;x.step.pamEvaluation.module),expected,'Rootok exact dispatch chain');
+  eq(app.steps.filter(s=&gt;s.pamEvaluation?.apiPhase==='authenticate'&amp;&amp;s.pamEvaluation.apiPending&amp;&amp;s.pamEvaluation.line===null&amp;&amp;!s.id.endsWith('-prepare')).length,1,'One authenticate begin, not second API');
+  for(const {index} of modules){const snap=position(index);eq(snap.state.workstation.pamResults?.authenticate,undefined,'No rootok premature aggregate');}
+  ok(ret&gt;modules.at(-1).index,'Rootok returns after module');position(ret);eq(cell('API aggregate return'),variant==='real-root-bypass'?'PAM_SUCCESS':'PAM_AUTH_ERR','Rootok actual returned aggregate');reset();
+ }
+ for(const [id,secret,owner] of [['lab-llog01','entered-secret','llogPAM'],['lab-lelev01','secret','lelevPAM']]){
+  app.selectLabScenario(id);const artifactId=id+':'+secret,modules=app.steps.map((step,index)=&gt;({step,index})).filter(x=&gt;x.step.pamEvaluation?.apiPhase==='authenticate'&amp;&amp;x.step.pamEvaluation.executed),ret=app.steps.findIndex(s=&gt;s.pamEvaluation?.apiPhase==='authenticate'&amp;&amp;s.pamEvaluation.aggregateReturn!==undefined),snap=position(ret);
+  eq(modules.length,1,'One actual password-auth module');
+  const uses=app.steps.flatMap(s=&gt;s.attributeOperations.filter(o=&gt;o.instanceId===artifactId&amp;&amp;o.kind==='use'&amp;&amp;o.actorId===owner).map(()=&gt;s.id));
+  const trace=history(artifactId,modules[0].index),observation={scenario:id,module:modules[0].step.id,aggregate:app.steps[ret].id,uses,field:trace.field,exact:trace.exact,heldAtAggregate:snap.holdings.filter(h=&gt;h.artifactId===artifactId).map(h=&gt;h.actorId)};observations.push(observation);
+  contract('WP-R06-A',mode+' '+id+' raw password used only by physical module',uses,[modules[0].step.id]);
+  contract('WP-R06-A',mode+' '+id+' exact history excludes aggregate',trace.exact.includes(app.steps[ret].id),false);
+  contract('WP-R06-A',mode+' '+id+' field history excludes aggregate',trace.field.includes(app.steps[ret].id),false);
+  if(id==='lab-llog01')eq(snap.holdings.filter(h=&gt;h.artifactId===id+':verifier').map(h=&gt;h.actorId),['llogPAM'],'Verifier remains owner-local');reset();
+ }
+ for(const variant of ['default','directory-online','directory-unreachable','new-policy-denied','consumer-no-change']){
+  app.selectLabScenario('lab-llog04',{variant});
+  const calls=app.steps.map((step,index)=&gt;({step,index})).filter(({step})=&gt;step.from==='pamChangeApp'&amp;&amp;step.to==='pamChange'&amp;&amp;step.pamEvaluation?.api==='pam_chauthtok');
+  const returned=app.steps.map((step,index)=&gt;({step,index})).filter(({step})=&gt;step.from==='pamChange'&amp;&amp;step.to==='pamChangeApp'&amp;&amp;step.pamEvaluation?.api==='pam_chauthtok'&amp;&amp;step.pamEvaluation.aggregateReturn!==undefined);
+  const expectedCalls=variant==='consumer-no-change'?0:1;
+  contract('WP-R06-B',mode+' LLOG04/'+variant+' one public password-change invocation',calls.length,expectedCalls);
+  contract('WP-R06-B',mode+' LLOG04/'+variant+' public calls contain caller flags only',calls.map(({step})=&gt;step.pamEvaluation.flags),Array(expectedCalls).fill('PAM_CHANGE_EXPIRED_AUTHTOK'));
+  contract('WP-R06-B',mode+' LLOG04/'+variant+' one public password-change return',returned.length,expectedCalls);
+  const samples=[];
+  for(const {step,index} of [...calls,...returned]){const snap=position(index);samples.push({index,id:step.id,from:step.from,to:step.to,phase:step.pamEvaluation.apiPhase,flags:step.pamEvaluation.flags,aggregate:step.pamEvaluation.aggregateReturn??null,renderedPhase:cell('Internal module dispatch / flags'),renderedAggregate:cell('API aggregate return'),callerHoldsPhaseReturn:snap.holdings.filter(h=&gt;h.actorId==='pamChangeApp'&amp;&amp;h.artifactId.includes('pam-return-password')).map(h=&gt;h.artifactId)});}
+  observations.push({scenario:'lab-llog04',variant,samples});reset();
+ }
+}finally{app.disconnectedCallback();harness.document.body.removeChild(app);harness.clock.frames.clear();harness.clock.timers.clear();}
+
+const result={mode,checks,positions,existingExecutions:existing.length,existingPrefixes:prefixes,existing,contracts,contractFailures:contracts.filter(x=&gt;!x.passed),danglingSecretUses,invalidPublicCalls,observations,scope:'Independent source/emitted DOM, source-prefix and held-history review. No native PAM/browser execution or timing collection.'};
+fs.writeFileSync(new URL('./pam-recheck-'+mode+'.json',import.meta.url),JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify({mode,checks,positions,existingExecutions:existing.length,existingPrefixes:prefixes,contractFailures:result.contractFailures.length,danglingSecretUses:danglingSecretUses.length,invalidPublicCalls:invalidPublicCalls.length},null,2));</code></pre>
+</details>
+<details>
+<summary>
+protection-recheck.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 3"><code>import fs from 'node:fs';
+import vm from 'node:vm';
+import {createHash} from 'node:crypto';
+import {isDeepStrictEqual} from 'node:util';
+import {installHarness} from '../source/tests/dom-harness.mjs';
+import {reconstructProtocolState} from '../source/src/protocol-state.js';
+const mode=process.argv[2]||'source';
+const checks=[],observations=[];
+function check(name,condition,actual,expected){checks.push({name,passed:!!condition,...(condition?{}:{actual,expected})});}
+const equal=(name,a,b)=&gt;check(name,isDeepStrictEqual(a,b),a,b);
+const hash=b=&gt;createHash('sha256').update(b).digest('hex');
+const harness=installHarness();let app;
+const html=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url),'utf8');
+if(mode==='emitted'){
+ const scripts=[...html.matchAll(/&lt;script&gt;([\s\S]*?)&lt;\/script&gt;/g)].map(m=&gt;m[1]);
+ if(scripts.length!==1)throw Error('Expected actual single supplied IIFE');
+ new vm.Script(scripts[0],{filename:'candidate04-uploaded.js'}).runInThisContext();
+ const Klass=harness.registry.get('auth-flow-studio');app=new Klass();
+}else{const {AuthFlowStudio}=await import('../source/src/app.js');app=new AuthFlowStudio();}
+harness.document.body.appendChild(app);app.connectedCallback();
+const end=m=&gt;reconstructProtocolState(m,m.steps().length-1).workstation;
+const object=(m,key)=&gt;{const x=m.workstationInventory.artifacts.find(o=&gt;o.key===key||o.artifactId===m.id+':'+key);if(!x)throw Error('Missing object '+key);return x;};
+const select=(id,variant)=&gt;{app.selectLabScenario(id,{variant});return app.labModel;};
+const at=stage=&gt;{const i=app.steps.findIndex(s=&gt;s.workstationStage===stage);if(i&lt;0)throw Error('Missing stage '+stage);app.selectStep(i,false);return i;};
+function inspect(artifactId,actor){
+ const frame=app.heldView.snapshot(),holding=frame.holdings.find(h=&gt;h.artifactId===artifactId&amp;&amp;h.actorId===actor&amp;&amp;h.representationId==='plain');
+ if(!holding)throw Error('Missing inspection holding '+artifactId+' '+actor);
+ app.heldView.select(holding);
+ const pre=app.querySelector('#held-inspector pre');if(!pre)throw Error('Missing actual rendered JSON');
+ return JSON.parse(pre.textContent);
+}
+function modes(id,variant,stage,key,actor,expected){
+ const m=select(id,variant),artifact=object(m,key),index=at(stage),step=app.steps[index],full=app.heldView.snapshot();
+ equal(variant+' full rendered object',inspect(artifact.artifactId,actor),expected);
+ const field=step.attributeOperations.find(op=&gt;op.instanceId===artifact.artifactId)?.attributeId;
+ if(!field)throw Error('Missing real field at target step');
+ app.selectAttribute(field,false);
+ let row=app.traceQueue.findIndex(r=&gt;r.sourceStepId===step.id);check(variant+' field history contains real source event',row&gt;=0,row,'&gt;=0');
+ app.selectStep(row,false);equal(variant+' field holdings',app.heldView.snapshot().holdings,full.holdings);equal(variant+' field state',app.heldView.snapshot().state,full.state);equal(variant+' field rendered object',inspect(artifact.artifactId,actor),expected);
+ app.clearAttribute();at(stage);app.heldView.trace(artifact.artifactId);
+ row=app.traceQueue.findIndex(r=&gt;r.sourceStepId===step.id);check(variant+' exact history contains real source event',row&gt;=0,row,'&gt;=0');
+ app.selectStep(row,false);equal(variant+' exact holdings',app.heldView.snapshot().holdings,full.holdings);equal(variant+' exact state',app.heldView.snapshot().state,full.state);equal(variant+' exact rendered object',inspect(artifact.artifactId,actor),expected);
+ app.clearAttribute();app.selectStep(index-1,false);const before=app.heldView.snapshot();app.selectStep(index,false);equal(variant+' forward restores full state',app.heldView.snapshot().state,full.state);equal(variant+' forward restores holdings',app.heldView.snapshot().holdings,full.holdings);app.selectStep(index-1,false);equal(variant+' rewind restores prior snapshot',app.heldView.snapshot(),before);
+ return {index,prior:before,full,artifact};
+}
+try{
+ for(const [variant,configured,duration,enforced,wouldDeny,result] of [['device-denied-audit',120,480,false,true,'audit'],['allowed-device',120,120,true,false,'success'],['policy-lifetime',90,90,true,false,'success']]){
+  const m=select('lab-wprot04',variant),s=end(m),policy=object(m,'account-policy').value,decision=object(m,'as-policy').value,caller=object(m,'policy-as-result').value;
+  equal(variant+' configured lifetime',policy.lifetimeMinutes,configured);equal(variant+' enforcement',policy.enforced,enforced);
+  equal(variant+' baseline remains independent',decision.baselineLifetimeMinutes,480);equal(variant+' configured decision value',decision.configuredLifetimeMinutes,configured);equal(variant+' effective duration',decision.lifetimeMinutes,duration);
+  equal(variant+' final times',[s.ticketIssuedMinutes,s.ticketStartMinutes,s.ticketDurationMinutes,s.ticketEndMinutes,s.ticketRenewMinutes],[0,0,duration,duration,duration]);
+  equal(variant+' admission and audit result',[s.policyAllowed,s.policyWouldDeny,s.tgtAccepted,s.resultCode,s.clientKnowsResult],[true,wouldDeny,true,result,true]);
+  equal(variant+' client result separates configured/applied',[caller.configuredLifetimeMinutes,caller.lifetimeMinutes],[configured,duration]);
+  const ticket=m.workstationInventory.artifacts.find(x=&gt;x.key==='tgt'||x.artifactId.endsWith(':issued-ticket:1'));
+  const ticketText=ticket.representations.flatMap(r=&gt;r.fields).map(f=&gt;f.value).join('\n');
+  check(variant+' issued ticket uses effective times',ticketText.includes('issued=0min; duration='+duration+'min; endtime='+duration+'min; renew-till='+duration+'min'),ticketText,'effective times');
+  if(variant==='policy-lifetime')equal(variant+' plain AS reply times',object(m,'as-client-reply').value.lifetime,{issuedMinutes:0,startMinutes:0,durationMinutes:90,endMinutes:90,renewMinutes:90});
+  else{
+   const replyFields=m.workstationInventory.artifacts.flatMap(o=&gt;o.representations.flatMap(r=&gt;r.fields)).filter(f=&gt;f.attributeId?.endsWith('ReplyEncPart'));
+   check(variant+' imported FAST reply carries effective times',replyFields.some(f=&gt;String(f.value).includes('duration='+duration+'min; endtime='+duration+'min; renew-till='+duration+'min')),replyFields,'effective reply times');
+  }
+  const replay=modes('lab-wprot04',variant,'as-policy','as-policy','wslDC',decision);
+  equal(variant+' rewind before policy has no issued lifetime',replay.prior.state.workstation.ticketDurationMinutes,undefined);
+  observations.push({variant,configured,enforced,duration,result});
+ }
+ const fresh=select('lab-wprot03','fresh-authentication'),freshState=end(fresh),freshTicket=object(fresh,'tgt'),oldTicket=object(fresh,'old-ticket-lineage'),reply=object(fresh,'as-client-reply');
+ const times={issuedMinutes:241,startMinutes:241,durationMinutes:240,endMinutes:481,renewMinutes:481};
+ equal('fresh attempt clock',fresh.fixtureInputs.nowMinutes,241);equal('fresh reply exact times',reply.value.lifetime,times);equal('fresh ticket exact times',freshTicket.lifetime,times);
+ equal('fresh canonical times',[freshState.ticketIssuedMinutes,freshState.ticketStartMinutes,freshState.ticketDurationMinutes,freshState.ticketEndMinutes,freshState.ticketRenewMinutes],[241,241,240,481,481]);
+ equal('fresh result retains old session',[freshState.newCredentialLineage,freshState.tgtAccepted,freshState.localSessionRetained,freshState.oldSessionPurged,freshState.resultCode],[true,true,true,false,'success']);
+ equal('old lineage remains expired',oldTicket.value,{lineage:'PU-original-0',issuedMinutes:0,endMinutes:240,renewTillMinutes:240,expired:true});
+ check('fresh artifact does not replace old object',freshTicket.artifactId!==oldTicket.artifactId,{fresh:freshTicket.artifactId,old:oldTicket.artifactId},'distinct objects');
+ check('fresh validity spans240 from current epoch',times.endMinutes-times.startMinutes===240&amp;&amp;times.endMinutes&gt;fresh.fixtureInputs.nowMinutes,times,'241 -&gt;481');
+ const replay=modes('lab-wprot03','fresh-authentication','as-accept','as-client-reply','wslLSA',reply.value);
+ const current=app.labModel,steps=app.steps;
+ for(const i of [-1,0,replay.index-1,replay.index,steps.length-1,replay.index-1]){
+  // Select source positions explicitly; initial state is projected separately.
+  if(i&lt;0){equal('fresh initial prior object is unchanged',object(current,'old-ticket-lineage').value,oldTicket.value);continue;}
+  app.selectStep(i,false);const frame=app.heldView.snapshot();
+  equal('fresh prefix'+i+' old lineage remains readable/expired',inspect(oldTicket.artifactId,'wslLSA'),oldTicket.value);
+  check('fresh prefix'+i+' old local session retained',frame.holdings.some(h=&gt;h.artifactId===current.id+':existing-local-session'&amp;&amp;h.actorId==='wslProcess'),frame.holdings.map(h=&gt;h.artifactId),'existing-local-session');
+ }
+ const defaultMember=current.defaultSubfixtureId;equal('fresh named case retains fresh-lineage default member',defaultMember,'WPROT03/fresh-authentication/fresh-lineage');
+ const zero=select('lab-wprot03','aes-kerberos');equal('ordinary PU time0 control',object(zero,'as-client-reply').value.lifetime,{issuedMinutes:0,startMinutes:0,durationMinutes:240,endMinutes:240,renewMinutes:240});
+ const expired=select('lab-wprot03','lifetime-expired'),expiredState=end(expired);
+ equal('original renewal still denied',[expiredState.resultCode,expiredState.newCredentialLineage,expiredState.localSessionRetained,expiredState.tgtAccepted],['renewal-denied',false,true,false]);
+ equal('original expiry metadata preserved',object(expired,'old-ticket-lineage').value,oldTicket.value);
+ check('expired renewal has no fresh AS acceptance',!expired.steps().some(s=&gt;s.workstationStage==='as-accept'),expired.steps().map(s=&gt;s.workstationStage),'no as-accept');
+ const deny=select('lab-wprot04','device-denied-enforce'),denyState=end(deny);
+ equal('enforced denied device keeps machine evidence without new user credential',[denyState.machineAccepted,denyState.tgtAccepted,denyState.clientPolicyErrorAccepted,denyState.resultCode],[true,false,true,'KDC_ERR_POLICY']);
+ observations.push({variant:'fresh-authentication',times,old:oldTicket.value},{variant:'aes-kerberos',times:object(zero,'as-client-reply').value.lifetime},{variant:'lifetime-expired',result:expiredState.resultCode});
+ // Zero is not an authored selectable scenario. Exercise the exact unchanged
+ // source selection expression separately, without patching a model or bundle.
+ if(mode==='source'){
+  const bytes=fs.readFileSync(new URL('../source/src/windows-protection-lab.js',import.meta.url),'utf8');
+  const expression=bytes.match(/ const baselineLifetime=f\.protectedUser\?240:480,configuredLifetime=policy\?\.value\.lifetimeMinutes\?\?null;\n const lifetime=[^\n]+;/)?.[0];
+  if(!expression)throw Error('Lifetime selector changed; review it before adapting probe');
+  const evaluate=new Function('f','policy',expression+'return {baselineLifetime,configuredLifetime,lifetime};');
+  for(const [protectedUser,enforced,configured,expected] of [[false,true,0,480],[false,false,0,480],[true,true,0,240],[true,false,0,240],[false,false,120,480],[false,true,120,120]]){
+   const actual=evaluate({protectedUser},{value:{enforced,lifetimeMinutes:configured}});
+   equal('private lifetime selector '+JSON.stringify({protectedUser,enforced,configured}),actual.lifetime,expected);
+  }
+  observations.push({zeroControl:'Source expression only; no new selectable model or native assertion',expressionSHA256:hash(expression)});
+ }
+}finally{app.disconnectedCallback();harness.document.body.removeChild(app);harness.clock.frames.clear();harness.clock.timers.clear();}
+const failed=checks.filter(c=&gt;!c.passed),report={kind:'independent-WP-R01-R02-recheck',mode,nativeBrowser:false,standaloneSHA256:hash(html),checks:checks.length,passed:checks.length-failed.length,failed,observations,scope:'Seven authored nearby cases; full/field/exact rendered inspection for four affected controls; source-only nonselectable zero-expression checks; no broad sweep'};
+fs.writeFileSync(new URL('./protection-recheck-'+mode+'.json',import.meta.url),JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({mode,checks:report.checks,passed:report.passed,failed:failed.length,details:failed},null,2));
+if(failed.length)process.exitCode=1;</code></pre>
+</details>
+<details>
+<summary>
+state-recheck-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 4"><code>import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {LAB_SCENARIOS} from '../source/src/lab-catalog.js';
+import {LAB_SCENARIOS as oldCatalog} from '../../windows-protection-02/source/src/lab-catalog.js';
+
+let assertions=0;const failures=[];
+function check(condition,label){assertions++;if(!condition)failures.push(label);}
+const hash=x=&gt;createHash('sha256').update(x).digest('hex');
+const report={scope:'Independent current inventory/lifecycle and unchanged legacy-boundary checks, not native Windows or browser observations.',executions:[],legacy:[],compiler:[]};
+for(const name of ['src/held-object-state.js','src/held-object-authoring.js','src/held-object-windows-protection.js']){
+ const now=fs.readFileSync(new URL('../source/'+name,import.meta.url)),old=fs.readFileSync(new URL('../../windows-protection-02/source/'+name,import.meta.url));
+ check(now.equals(old),'unchanged shared compiler/adapter '+name);report.compiler.push({path:name,unchanged:now.equals(old),sha256:hash(now)});
+}
+const seen=new Set();
+for(const base of LAB_SCENARIOS.filter(m=&gt;/^lab-(?:wra0[1-5]|wprot0[1-5]|pam01)$/.test(m.id)))for(const variant of base.variantChoices){
+ const primary=base.withVariant(variant.id);
+ for(const model of [primary,...(primary.subfixtureChoices||[]).map(s=&gt;primary.withSubfixture(s.id))]){
+  const key=[model.id,model.variantId,model.subfixtureId||'default'].join('/');if(seen.has(key))continue;seen.add(key);
+  const live=new Map(),inv=model.workstationInventory,steps=model.steps();let localCleanupEvents=0,cleanupReleases=0;
+  const apply=e=&gt;{if(e.op==='acquire')live.set(e.holdingId,e);else if(e.op==='release')live.delete(e.holdingId);else if(e.op==='move'&amp;&amp;live.has(e.holdingId))live.set(e.holdingId,{...live.get(e.holdingId),...e});};inv.initial.forEach(apply);
+  for(const step of steps){
+   const cleanup=/cleanup/.test(step.workstationStage||step.id),local=step.from===step.to;
+   if(cleanup){localCleanupEvents++;check(local,key+' local cleanup '+step.id);check((step.layers||[]).length===0,key+' no cleanup wire '+step.id);}
+   for(const milestone of inv.events[step.id].milestones)for(const e of milestone.effects){
+    if(e.op==='release'&amp;&amp;cleanup){cleanupReleases++;const h=live.get(e.holdingId);check(!!h,key+' exact released live holding '+e.holdingId);if(h){check(h.actorId===step.from,key+' own cleanup '+step.id+'/'+e.holdingId);check(h.retention==='temporary',key+' only temporary cleanup '+e.holdingId);}}
+    apply(e);
+   }
+   if(cleanup)for(const op of step.attributeOperations||[])if(op.kind==='evict')check(op.actorId===step.from,key+' matching eviction occurrence '+step.id);
+  }
+  check(![...live.values()].some(h=&gt;h.retention==='temporary'),key+' no terminal scratch');
+  report.executions.push({key,localCleanupEvents,cleanupReleases,terminalHoldings:live.size});
+ }
+}
+check(report.executions.length===128,'all128 unique executions');
+for(const old of oldCatalog.filter(m=&gt;/^lab-(?:wlog|welev)\d+/.test(m.id))){
+ const current=LAB_SCENARIOS.find(m=&gt;m.id===old.id);check(!!current,'legacy model retained '+old.id);
+ for(const variant of old.variantChoices||[{id:old.defaultVariantId||'default'}]){
+  const a=old.withVariant?old.withVariant(variant.id):old,b=current.withVariant?current.withVariant(variant.id):current;
+  const pack=m=&gt;JSON.stringify({initialState:m.initialState,steps:m.steps(),inventory:m.workstationInventory});
+  const before=pack(a),after=pack(b),same=before===after;
+  check(same,'unchanged legacy canonical state/events/inventory '+old.id+'/'+variant.id);
+  report.legacy.push({key:old.id+'/'+variant.id,unchanged:same,beforeSha256:hash(before),afterSha256:hash(after)});
+ }
+}
+report.assertions=assertions;report.failures=failures;report.passed=failures.length===0;
+fs.writeFileSync(new URL('state-recheck-probe.json',import.meta.url),JSON.stringify(report,null,2));
+console.log(JSON.stringify({passed:report.passed,assertions,executions:report.executions.length,legacy:report.legacy.length,cleanupEvents:report.executions.reduce((a,x)=&gt;a+x.localCleanupEvents,0),cleanupReleases:report.executions.reduce((a,x)=&gt;a+x.cleanupReleases,0),failures},null,2));
+if(!report.passed)process.exitCode=1;</code></pre>
+</details>
+<details>
+<summary>
+state-recheck-ui.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 5"><code>import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {installHarness} from '../source/tests/dom-harness.mjs';
+const mode=process.argv[2]||'source',sandbox=mode==='emitted'?{structuredClone}:globalThis;
+const h=installHarness(sandbox);let Klass,htmlHash=null;
+if(mode==='emitted'){
+ const html=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url),'utf8');htmlHash=createHash('sha256').update(html).digest('hex');
+ const scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];assert.equal(scripts.length,1);
+ new vm.Script(scripts[0][1],{filename:'actual-uploaded-candidate04.html'}).runInContext(vm.createContext(sandbox));Klass=h.registry.get('auth-flow-studio');
+}else ({AuthFlowStudio:Klass}=await import('../source/src/app.js'));
+let assertions=0;const failures=[];
+const check=(condition,label)=&gt;{assertions++;if(!condition)throw Error(label);};
+const report={mode,htmlHash,nativeBrowser:false,method:'Actual app handlers and inspector in deterministic DOM harness; unmodified uploaded IIFE for emitted mode.',objects:[],cleanup:[],controls:[]};
+function mount(id,variant){const app=new Klass();h.document.body.appendChild(app);app.connectedCallback();app.selectLabScenario(id);if(variant)app.selectLessonVariant(variant);return app;}
+function unmount(app){app.disconnectedCallback();h.document.body.removeChild(app);h.clock.frames.clear();h.clock.timers.clear();}
+const norm=f=&gt;JSON.stringify({state:f.state,clock:f.protocolClock,holdings:f.holdings.map(x=&gt;[x.actorId,x.artifactId,x.representationId,x.store,x.retention,x.acquiredAt]),observations:f.observations.map(o=&gt;[o.artifactId,o.actorId,o.kind,o.result,o.representationId,o.cursor])});
+const owned=(f,id,rep)=&gt;f.holdings.find(x=&gt;x.actorId==='wslDC'&amp;&amp;x.artifactId===id&amp;&amp;x.representationId===rep);
+const specs=[
+ ['lab-wprot01','constrained-continuation','s4u-service-tgt','s4u-ticket-decode','s4u-proof-check','kdc-krbtgt-key'],
+ ['lab-wprot01','constrained-continuation','s4u-authenticator','s4u-authenticator-decode','s4u-proof-check','s4u-service-tgt-key'],
+ ['lab-wprot05','allowed-service','preexisting-user-tgt','host-tgt-decode','host-tgs-verify','kdc-krbtgt-key'],
+ ['lab-wprot05','allowed-service','computer-armor-ticket','compound-ticket-decode','compound-kdc-armor','kdc-krbtgt-key'],
+ ['lab-wprot05','allowed-service','computer-armor-proof','compound-proof-decode','compound-kdc-armor','computer-armor-ticket-key'],
+ ['lab-wprot05','allowed-service','compound-fast-request','compound-request-decode','compound-kdc-armor','compound-armor-key']
+];
+for(const [id,variant,key,decodeStage,verifyStage,keyUse] of specs){
+ const app=mount(id,variant);
+ try{
+  const m=app.labModel,steps=app.steps,inv=m.workstationInventory,object=inv.artifacts.find(a=&gt;a.key===key),decode=steps.findIndex(s=&gt;s.workstationStage===decodeStage),verify=steps.findIndex(s=&gt;s.workstationStage===verifyStage);
+  check(decode&gt;=0&amp;&amp;verify&gt;decode,key+' distinct ordered decode/verification');
+  const full=index=&gt;{app.selectStep(index,false);const frame=app.heldView.snapshot();check(frame.cursor.eventIndex===index,key+' actual source prefix '+index);return frame;};
+  const before=full(decode-1),wire=owned(before,object.artifactId,'wire');check(!!wire,key+' exact received wire');check(!owned(before,object.artifactId,'plain'),key+' no early plaintext');
+  check(before.holdings.some(x=&gt;x.actorId==='wslDC'&amp;&amp;x.artifactId===id+':'+keyUse),key+' existing local key before decode');
+  check(steps[decode].attributeOperations.some(o=&gt;o.kind==='use'&amp;&amp;o.instanceId===id+':'+keyUse),key+' decode uses actual existing authority');
+  app.heldView.select(wire);check(app.querySelector('#held-inspector').textContent.includes('Not readable by this holder'),key+' incoming wire remains unreadable');
+  const receipt=steps.findIndex(s=&gt;inv.events[s.id].milestones.some(ms=&gt;ms.effects.some(e=&gt;e.op==='acquire'&amp;&amp;e.actorId==='wslDC'&amp;&amp;e.artifactId===object.artifactId&amp;&amp;e.representationId==='wire')));
+  check(receipt&gt;=0&amp;&amp;receipt&lt;decode,key+' receipt precedes decode');const preReceipt=full(receipt-1);check(!owned(preReceipt,object.artifactId,'wire')&amp;&amp;!owned(preReceipt,object.artifactId,'plain'),key+' no pre-receipt KDC representation');
+  const decoded=full(decode),plain=owned(decoded,object.artifactId,'plain');check(!!plain,key+' decoded exact artifact installed');check(plain.retention==='temporary',key+' decoded buffer temporary');check(JSON.stringify(owned(decoded,object.artifactId,'wire'))===JSON.stringify(wire),key+' exact wire custody preserved');
+  app.heldView.select(plain);const rendered=app.querySelector('#held-inspector');check(!rendered.textContent.includes('Not readable by this holder'),key+' current plaintext readable in actual inspector');
+  const pre=rendered.querySelector('pre'),shown=pre?.textContent;check(!!pre,key+' rendered exact field');
+  check(shown===(typeof object.value==='string'?object.value:JSON.stringify(object.value,null,2)),key+' rendered exact decoded value');
+  const verified=full(verify);check(!!owned(verified,object.artifactId,'plain'),key+' verification retains actual decoded representation');
+  check(steps[verify].attributeOperations.some(o=&gt;o.instanceId===object.artifactId&amp;&amp;o.kind==='verify'&amp;&amp;o.representation==='plain'),key+' truthful plain verification occurrence');
+  const cleanup=steps.findIndex(s=&gt;inv.events[s.id].milestones.some(ms=&gt;ms.effects.some(e=&gt;e.op==='release'&amp;&amp;e.holdingId===plain.holdingId)));
+  check(cleanup&gt;verify,key+' cleanup follows validation');check(steps[cleanup].from==='wslDC'&amp;&amp;steps[cleanup].to==='wslDC',key+' KDC-local cleanup');
+  const preCleanup=full(cleanup-1);check(!!owned(preCleanup,object.artifactId,'plain'),key+' live until local release');const cleaned=full(cleanup);check(!owned(cleaned,object.artifactId,'plain'),key+' released decoded view');
+  check(norm(full(decode-1))===norm(before),key+' full rewind before decode');check(norm(full(decode))===norm(decoded),key+' full replay decode');
+  const expected=new Map([[decode,norm(decoded)],[verify,norm(verified)],[cleanup,norm(cleaned)]]);
+  app.selectAttribute(object.attributeId,false);let fieldRows=0;
+  for(const [sourceIndex,frame] of expected){const indices=app.traceQueue.map((r,i)=&gt;r.sourceStepId===steps[sourceIndex].id?i:-1).filter(i=&gt;i&gt;=0);check(indices.length&gt;0,key+' field occurrence '+sourceIndex);for(const i of indices){app.selectStep(i,false);check(norm(app.heldView.snapshot())===frame,key+' field equal-prefix '+sourceIndex);fieldRows++;}}
+  app.clearAttribute();full(decode);app.heldView.select(owned(app.heldView.snapshot(),object.artifactId,'plain'));app.heldView.trace(object.artifactId);let exactRows=0;
+  for(const [sourceIndex,frame] of [...expected].reverse()){const i=app.traceQueue.findIndex(r=&gt;r.sourceStepId===steps[sourceIndex].id);check(i&gt;=0,key+' exact occurrence '+sourceIndex);app.selectStep(i,false);check(norm(app.heldView.snapshot())===frame,key+' exact equal-prefix reverse '+sourceIndex);exactRows++;}
+  report.objects.push({caseId:id+'/'+variant,key,receipt,decode,verify,cleanup,fieldRows,exactRows,wireStillOpaque:true,decodedValue:object.value});
+ }catch(e){failures.push({spec:[id,variant,key],error:e.stack});}finally{unmount(app);}
+}
+for(const [id,variant] of [['lab-wra01','default-filtered'],['lab-wprot05','allowed-service']]){
+ const app=mount(id,variant);
+ try{
+  const steps=app.steps,inv=app.labModel.workstationInventory,events=[];
+  for(const [index,step] of steps.entries())if((step.workstationStage||step.id).includes('attempt-cleanup')){
+   app.clearAttribute();app.selectStep(index-1,false);const before=app.heldView.snapshot(),release=inv.events[step.id].milestones.flatMap(m=&gt;m.effects).filter(e=&gt;e.op==='release');
+   check(release.length&gt;0,'nonempty cleanup '+step.id);const exact=before.holdings.find(x=&gt;x.holdingId===release[0].holdingId);check(exact?.actorId===step.from,'actual app owner-local cleanup '+step.id);
+   app.selectStep(index,false);const after=app.heldView.snapshot();check(release.every(e=&gt;!after.holdings.some(x=&gt;x.holdingId===e.holdingId)),'all exact intended holdings released '+step.id);
+   const foreignBefore=before.holdings.filter(x=&gt;x.actorId!==step.from),foreignAfter=after.holdings.filter(x=&gt;x.actorId!==step.from);check(JSON.stringify(foreignBefore)===JSON.stringify(foreignAfter),'other owners unchanged '+step.id);
+   app.selectStep(index-1,false);check(norm(app.heldView.snapshot())===norm(before),'cleanup rewind '+step.id);
+   app.heldView.select(exact);app.heldView.trace(exact.artifactId);const q=app.traceQueue.findIndex(r=&gt;r.sourceStepId===step.id);check(q&gt;=0,'exact cleanup row '+step.id);check(app.traceQueue[q].from===step.from&amp;&amp;app.traceQueue[q].to===step.to,'full/exact cleanup actor agreement '+step.id);app.selectStep(q,false);check(norm(app.heldView.snapshot())===norm(after),'exact cleanup canonical prefix '+step.id);
+   events.push({event:step.id,owner:step.from,releases:release.length});
+  }
+  report.cleanup.push({caseId:id+'/'+variant,events});
+ }catch(e){failures.push({spec:[id,variant,'cleanup'],error:e.stack});}finally{unmount(app);}
+}
+for(const [id,variant] of [['lab-wprot05','ticket-then-acl-denial'],['lab-wprot05','target-rule-enforce'],['lab-wprot04','forged-device-label']]){
+ const app=mount(id,variant);
+ try{
+  app.selectStep(app.steps.length-1,false);const f=app.heldView.snapshot(),state=f.state.workstation;
+  check(!f.holdings.some(x=&gt;x.retention==='temporary'),'denial terminal scratch '+variant);
+  if(variant==='ticket-then-acl-denial'){check(state.hostTicketAccepted===true&amp;&amp;state.resourceAllowed===false,'later ACL denial separate from accepted service credential');check(f.holdings.some(x=&gt;x.actorId==='wslLSA'&amp;&amp;x.artifactId===id+':host-session-key'),'retain accepted client service key after ACL denial');}
+  if(variant==='target-rule-enforce'){check(state.hostTicketAccepted===false,'policy denial installs no new service credential');check(f.holdings.some(x=&gt;x.artifactId===id+':preexisting-user-tgt-key'&amp;&amp;x.actorId==='wslIso'),'retain independent prior user TGT authority');}
+  if(variant==='forged-device-label')check(state.tgtAccepted===false,'failed armor evidence installs no TGT');
+  report.controls.push({caseId:id+'/'+variant,resultCode:state.resultCode,hostTicketAccepted:state.hostTicketAccepted,tgtAccepted:state.tgtAccepted,resourceAllowed:state.resourceAllowed});
+ }catch(e){failures.push({spec:[id,variant,'controls'],error:e.stack});}finally{unmount(app);}
+}
+report.assertions=assertions;report.failures=failures;report.passed=failures.length===0;
+fs.writeFileSync(new URL('state-recheck-ui-'+mode+'.json',import.meta.url),JSON.stringify(report,null,2));
+console.log(JSON.stringify({mode,htmlHash,assertions,passed:report.passed,objects:report.objects.length,cleanupCases:report.cleanup.length,controls:report.controls.length,failures},null,2));
+if(!report.passed)process.exitCode=1;</code></pre>
+</details>
+<details>
+<summary>
+remote-recheck.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 6"><code>import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {buildWindowsRemoteAdministrationFixture as build,WINDOWSREMOTELAB_SCENARIOS as scenarios} from '../source/src/windows-remote-administration-lab.js';
+import {buildWindowsRemoteAdministrationFixture as previousBuild} from '../../windows-protection-02/source/src/windows-remote-administration-lab.js';
+import {reconstructProtocolState} from '../source/src/protocol-state.js';
+import {reconstructProtocolState as previousState} from '../../windows-protection-02/source/src/protocol-state.js';
+// The table below is the prior independent review's handwritten expected outcome table.
+const expected={
+WRA01:{'default-filtered':['filtered','STATUS_ACCESS_DENIED'],'explicit-zero':['filtered','STATUS_ACCESS_DENIED'],'filter-disabled':['full','STATUS_SUCCESS'],'full-token-acl-denied':['full','STATUS_ACCESS_DENIED'],'ordinary-share-allowed':['filtered','STATUS_SUCCESS'],'bad-password':[null,'STATUS_LOGON_FAILURE'],'local-standard-user':['standard','STATUS_ACCESS_DENIED'],'reused-session':['filtered','STATUS_ACCESS_DENIED'],'ntlm-unavailable':[null,'STATUS_NOT_SUPPORTED']},
+WRA02:{'rid500-aam-off':['full','STATUS_SUCCESS'],'renamed-rid500':['full','STATUS_SUCCESS'],'rid500-aam-on':['filtered','STATUS_ACCESS_DENIED'],'rid500-filter-disabled':['full','STATUS_SUCCESS'],'name-is-not-rid':['filtered','STATUS_ACCESS_DENIED'],'account-disabled':[null,'STATUS_ACCOUNT_DISABLED']},
+WRA03:{'domain-admin-joined':['full','STATUS_SUCCESS'],'domain-admin-nonjoined':['full','STATUS_SUCCESS'],'domain-ntlm-explicit':['full','STATUS_SUCCESS'],'domain-user-read':['standard','STATUS_SUCCESS'],'domain-user-admin-denied':['standard','STATUS_ACCESS_DENIED'],'same-name-different-authority':['filtered','STATUS_ACCESS_DENIED'],'domain-proof-failed':[null,'STATUS_LOGON_FAILURE']},
+WRA04:{'network-logon-denied':[null,'STATUS_LOGON_TYPE_NOT_GRANTED'],'share-denied':['full','STATUS_ACCESS_DENIED'],'file-denied':['full','STATUS_ACCESS_DENIED'],'deny-only-sid':['filtered','STATUS_ACCESS_DENIED'],'client-elevated':['filtered','STATUS_ACCESS_DENIED'],'management-endpoint-denied':['full','WSMan.AccessDenied'],'signed-denial':['full','STATUS_ACCESS_DENIED'],'encrypted-denial':['full','STATUS_ACCESS_DENIED']},
+WRA05:{'default-non-elevated':['non-elevated','STATUS_ACCESS_DENIED'],'broad-allow':['full','STATUS_SUCCESS'],'user-sid-match':['full','STATUS_SUCCESS'],'group-sid-match':['full','STATUS_SUCCESS'],'no-list-match':['non-elevated','STATUS_ACCESS_DENIED'],'broad-overrides-list':['full','STATUS_SUCCESS'],'nonadmin-listed':[null,'needs-evidence'],'unavailable-profile':[null,'unavailable-profile']}
+};
+
+let assertions=0;const observations=[];
+function eq(a,b,message){assert.deepEqual(a,b,message);assertions++;}
+function ok(value,message){assert.ok(value,message);assertions++;}
+const state=m=&gt;reconstructProtocolState(m,m.steps().length-1).workstation;
+for(const descriptor of scenarios)for(const choice of descriptor.variantChoices){
+ const canonical=build(descriptor.id,choice.id);
+ for(const member of canonical.subfixtureChoices){
+  const model=canonical.withSubfixture(member.id),old=previousBuild(descriptor.id,choice.id,member.id),end=state(model),before=previousState(old,old.steps().length-1).workstation,key=model.planId+'/'+model.variantId+'/'+member.id;
+  let expectation=expected[model.planId][choice.id];
+  if(member.id==='domain')expectation=['full','STATUS_SUCCESS'];
+  if(model.planId==='WRA01'&amp;&amp;choice.id==='reused-session'&amp;&amp;member.id==='fresh')expectation=['full','STATUS_SUCCESS'];
+  if(member.id==='later-proof-denial')expectation=[null,'STATUS_LOGON_FAILURE'];
+  eq(end.token?.mode??null,expectation[0],key+' token');eq(end.returnedResult,expectation[1],key+' result');
+  eq(end.localAccount,'WORKGROUPPC\\bob',key+' desktop');eq(end.remotePrompt,false,key+' prompt');
+  eq(end,before,key+' complete final workstation state preserved');
+  const proof=model.workstationInventory.artifacts.find(a=&gt;a.key==='ntlm-proof'),auth=model.workstationInventory.artifacts.find(a=&gt;a.key==='ntlm-authenticate');
+  if(proof){
+   ok(proof.value.includes('HMAC-MD5(ResponseKeyNT, ServerChallenge || NTLMv2_CLIENT_CHALLENGE)'),key+' exact formula');
+   ok(proof.value.includes('8-byte ServerChallenge field'),key+' exact field');
+   ok(proof.value.includes('MsvAvFlags MIC-presence bit'),key+' presence flag');
+   ok(proof.value.includes('AUTHENTICATE_MESSAGE.MIC is a separate transcript MIC, not client-challenge bytes'),key+' separate MIC');
+   eq(proof.value.includes('target-AV,MIC,terminators'),false,key+' bad old formula absent');
+   eq(auth.value,old.workstationInventory.artifacts.find(a=&gt;a.key==='ntlm-authenticate').value,key+' unchanged AUTHENTICATE MIC formula');
+   const ntlmStage=model.steps().find(s=&gt;s.workstationStage==='ntlm-accept');
+   if(ntlmStage)ok(ntlmStage.description?.includes('MIC')||ntlmStage.detail?.includes('MIC')||JSON.stringify(ntlmStage).includes('MIC'),key+' retained MIC verification');
+  }
+  observations.push({key,token:end.token?.mode??null,result:end.returnedResult,completeFinalStateEqual:true,ntlmProofCorrected:!!proof});
+ }
+}
+const result={scope:'WP-R07 equation/unchanged WRA outcomes only',assertions,executions:observations.length,canonicalCases:Object.values(expected).reduce((n,v)=&gt;n+Object.keys(v).length,0),correctedNtlmProofs:observations.filter(o=&gt;o.ntlmProofCorrected).length,passed:true,observations};
+fs.writeFileSync(new URL('./remote-recheck.json',import.meta.url),JSON.stringify(result,null,2));console.log(JSON.stringify({...result,observations:undefined},null,2));</code></pre>
+</details>
+<details>
+<summary>
+remote-ui-recheck.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 7"><code>import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {createHash} from 'node:crypto';
+import {installHarness} from '../source/tests/dom-harness.mjs';
+const emitted=process.argv.includes('--emitted'),sandbox=emitted?{structuredClone}:globalThis;
+const {document,clock,registry}=installHarness(sandbox);
+let Constructor,htmlSha256=null,assertions=0;
+function eq(a,b,message){assert.deepEqual(a,b,message);assertions++;}
+function ok(value,message){assert.ok(value,message);assertions++;}
+if(emitted){const html=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url),'utf8');htmlSha256=createHash('sha256').update(html).digest('hex');eq(htmlSha256,'4499baf31b276c7d97226c6f534beda0f86209c0e45f5337227570bb472c4f05');const scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];eq(scripts.length,1);new vm.Script(scripts[0][1],{filename:'supplied-candidate04-standalone'}).runInContext(vm.createContext(sandbox));Constructor=registry.get('auth-flow-studio');}
+else ({AuthFlowStudio:Constructor}=await import('../source/src/app.js'));
+const observations=[];
+for(const [id,variant,result] of [['lab-wra01','default-filtered','STATUS_ACCESS_DENIED'],['lab-wra01','bad-password','STATUS_LOGON_FAILURE'],['lab-wra03','domain-ntlm-explicit','STATUS_SUCCESS'],['lab-wra03','domain-proof-failed','STATUS_LOGON_FAILURE']]){
+ const app=new Constructor();document.body.appendChild(app);app.connectedCallback();
+ try{app.selectLabScenario(id);app.selectLessonVariant(variant);
+  const index=app.steps.findIndex(s=&gt;s.workstationStage==='ntlm-derive');ok(index&gt;=0);app.selectStep(index,false);
+  const proof=app.labModel.workstationInventory.artifacts.find(a=&gt;a.key==='ntlm-proof'),auth=app.labModel.workstationInventory.artifacts.find(a=&gt;a.key==='ntlm-authenticate');
+  const inspected=[];
+  for(const artifact of [proof,auth]){
+   const held=app.heldView.snapshot().holdings.find(h=&gt;h.artifactId===artifact.artifactId&amp;&amp;h.actorId==='smbClient'&amp;&amp;h.representationId==='plain');ok(held);app.heldView.select(held);
+   const inspector=app.querySelector('#held-inspector');eq(inspector.hidden,false);ok(inspector.textContent.includes(artifact.value));inspected.push({artifactId:artifact.artifactId,value:artifact.value,visibleInspector:true});
+  }
+  ok(proof.value.includes('HMAC-MD5(ResponseKeyNT, ServerChallenge || NTLMv2_CLIENT_CHALLENGE)'));ok(proof.value.includes('MsvAvFlags MIC-presence bit'));ok(proof.value.includes('AUTHENTICATE_MESSAGE.MIC is a separate transcript MIC, not client-challenge bytes'));eq(proof.value.includes('target-AV,MIC,terminators'),false);
+  ok(auth.value.includes('MIC=HMAC-MD5(ExportedSessionKey, negotiate||challenge||authenticate-with-zero-MIC)'));
+  app.selectStep(app.visibleSteps.length-1,false);eq(app.protocolSnapshot().state.workstation.returnedResult,result);
+  observations.push({id,variant,index,inspected,returnedResult:result});
+ }finally{app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();}
+}
+const output={mode:emitted?'supplied-standalone':'source',htmlSha256,assertions,passed:true,observations};fs.writeFileSync(new URL('./remote-ui-recheck-'+(emitted?'emitted':'source')+'.json',import.meta.url),JSON.stringify(output,null,2));console.log(JSON.stringify({...output,observations:undefined},null,2));</code></pre>
+</details>
+<details>
+<summary>
+ui-recheck-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 8"><code>import fs from 'node:fs';import vm from 'node:vm';import assert from 'node:assert/strict';
+import {installHarness,HarnessEvent} from '../source/tests/dom-harness.mjs';
+const mode=process.argv[2]||'source',target=mode==='emitted'?{structuredClone}:globalThis;
+const{document,window,clock,registry}=installHarness(target);let Component;
+if(mode==='emitted'){const html=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url),'utf8'),scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];assert.equal(scripts.length,1);new vm.Script(scripts[0][1],{filename:'supplied-current-IIFE'}).runInContext(vm.createContext(target));Component=registry.get('auth-flow-studio');}else({AuthFlowStudio:Component}=await import('../source/src/app.js'));
+window.location={hash:'',href:'https://example.invalid/studio.html'};window.history={pushState(_a,_b,hash){window.location.hash=hash;},replaceState(_a,_b,hash){window.location.hash=hash;}};
+const app=new Component();document.body.appendChild(app);document.activeElement=document.body;app.connectedCallback();app.addEventListener('focusin',e=&gt;{document.activeElement=e.target;});
+let checks=0;const observations=[];const check=(v,message)=&gt;{checks++;assert.ok(v,message);};const eq=(a,b,message)=&gt;{checks++;assert.equal(JSON.stringify(a),JSON.stringify(b),message);};
+const text=n=&gt;n?.textContent.replace(/\s+/g,' ').trim()||'';
+const values=()=&gt;Object.fromEntries(Array.from(app.querySelector('#pam-configuration-panel .pam-evaluation')?.children||[],n=&gt;[text(n.querySelector('dt')),text(n.querySelector('dd'))]));
+const inputs=[['lab-lelev01','default','account'],['lab-lelev01','account-denied','account'],['lab-lelev02','default','account'],['lab-lelev02','access-denied','account'],['lab-lelev02','setuid-not-real-root','authenticate'],['lab-lelev02','real-root-bypass','authenticate'],['lab-llog01','default','authenticate'],['lab-llog04','default','account'],['lab-llog04','directory-unreachable','authenticate']];
+try{
+ for(const[id,variant,phase]of inputs){
+  app.selectLabScenario(id,{variant});const steps=app.steps,rows=steps.map((s,index)=&gt;({s,index,e:s.pamEvaluation})).filter(({e})=&gt;e?.apiPhase===phase),pending=rows.filter(({e})=&gt;e.apiPending),returned=rows.find(({e})=&gt;Object.hasOwn(e,'aggregateReturn'));
+  check(pending.length&gt;0,`${id}/${variant}/${phase} pending rows`);check(returned,`${id}/${variant}/${phase} aggregate row`);
+  const capture=({s,index,e},isPending)=&gt;{
+   app.selectStep(index,false);const rendered=values();eq(rendered['API aggregate return'],isPending?'Pending: current API call has not completed':e.aggregateReturn,'current API aggregate label');
+   if(e.executed){const row=app.querySelector('#pam-configuration-panel [aria-current="step"]');eq(Number(row.dataset.pamLine),e.line,'active physical row');eq(row.querySelector('code').textContent,e.text,'literal configuration row');eq(rendered['Raw hook or loader return'],e.rawReturn,'raw hook output');}
+   const summary=app.querySelector('#pam-configuration-panel [data-pam-disclosure="aggregates"] summary');if(summary)eq(text(summary),'Completed API aggregate results','completed history is distinct from active call');
+   const state=app.protocolSnapshot().state.workstation,prior=rows.filter(row=&gt;row.index&lt;index&amp;&amp;Object.hasOwn(row.e,'aggregateReturn')).at(-1);eq(state.pamResults?.[phase],isPending?prior?.e.aggregateReturn:e.aggregateReturn,'current pending call is distinct from any completed prior aggregate');
+   observations.push({id,variant,phase,step:s.id,pending:isPending,rendered});
+  };
+  for(const row of pending)capture(row,true);capture(returned,false);capture(pending.at(-1),true);capture(returned,false);
+  app.querySelector('#reset').click();check(!app.protocolSnapshot().state.workstation.authenticated,'reset removes accepted authentication');check(!text(app.querySelector('#pam-configuration-panel')).includes('API aggregate return PAM_SUCCESS'),'reset does not retain successful aggregate surface');
+ }
+ for(const id of ['lab-wprot01','lab-wprot02','lab-wprot03','lab-wprot04','lab-wprot05']){app.selectLabScenario(id);check(typeof app.baseLabModel.examples==='function',id+' lazy examples function');const examples=app.baseLabModel.examples();check(examples&amp;&amp;typeof examples==='object',id+' examples object');check(Object.keys(examples).length&gt;0,id+' nonempty examples');app.selectAttribute(app.labModel.ids[0],false);check(app.traceQueue.length&gt;0,id+' actual field consumer');app.clearAttribute();}
+ app.selectLabScenario('lab-wra01');app.selectStep(app.steps.length-1,false);const before=app.scenarioSnapshot(),context=app.heldView.contextId,input=app.querySelector('#lab-scenario-search');
+ for(const[query,wanted]of [['filtering','lab-wra01'],['lsa','lab-wprot02'],['pam','lab-pam01'],['requisite','lab-pam01'],['protected users offline','lab-wprot03']]){input.value=query;input.dispatchEvent(new HarnessEvent('input'));const rows=app.scenarioPicker.results;check(rows.some(r=&gt;r.id===wanted),'search '+query);eq(app.scenarioSnapshot(),before,'typing preserves state');eq(app.heldView.contextId,context,'typing preserves context');eq(app.querySelector('#lab-scenario-results').querySelectorAll('[data-scenario-option]').map(r=&gt;r.dataset.scenarioOption),Array.from(rows,r=&gt;r.id),'DOM search order');}
+ input.value='requisite';input.dispatchEvent(new HarnessEvent('input'));app.scenarioPicker.choose('lab-pam01');eq(app.lessonVariant,'requisite-immediate-failure','unique case selection');eq(document.activeElement.id,'play','selection focus');check(window.location.hash.endsWith('?case=requisite-immediate-failure'),'exact named case route');
+ window.location.hash='#/workstations/linux-logon/lab-pam01?case=unknown';app.openRoute();eq(app.lessonVariant,'local-login-success','invalid named route safe default');eq(window.location.hash,'#/workstations/linux-logon/lab-pam01','invalid query removed');
+ const result={mode,passed:true,checks,fixturePhaseSelections:inputs.length,observedPositions:observations.length,observations,scope:'Independent actual source and supplied-IIFE DOM consumer checks; no native browser/OS/screen-reader/performance claim.'};fs.writeFileSync(new URL(`ui-recheck-probe-${mode}.json`,import.meta.url),JSON.stringify(result,null,2));console.log(JSON.stringify({mode,passed:true,checks,fixturePhaseSelections:inputs.length,observedPositions:observations.length}));
+}finally{app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();}</code></pre>
+</details>
+<details>
+<summary>
+ui-contract-audit.py
+</summary>
+<pre class="python" tabindex="0" role="region" aria-label="Reproduction source 9"><code>from pathlib import Path
+import json,hashlib,re
+root=Path(__file__).resolve().parent.parent;src=root/'source';old=root.parent/'windows-protection-02/source'
+checks=[]
+def check(value,label):
+ checks.append({'name':label,'passed':bool(value)})
+ if not value:raise AssertionError(label)
+def sha(b):return hashlib.sha256(b).hexdigest()
+def body(b):
+ start=b.index(b"test('the built standalone HTML has no external runtime assets and its inline bundle boots'")
+ return b[start:].rstrip()
+ledger=json.loads((src/'docs/windows-protection-expansion/corrections/response-ledger.json').read_text());r06=next(r for r in ledger['responses'] if r['id']=='WP-R06');move=r06['standaloneContractMigration']
+previous=(old/'tests/dom-runtime.test.mjs').read_bytes();retained=(src/move['originalExactInput']['path']).read_bytes();current=(src/'tests/standalone-runtime.test.mjs').read_bytes()
+check(previous==retained,'original retained standalone-containing file equals actual reviewed candidate02')
+check(sha(retained)==move['originalExactInput']['sha256'],'retained original hash')
+check(body(previous)==body(current),'exact standalone test statement/body unchanged')
+check(sha(body(previous))==move['originalBodySha256'],'exact original body hash')
+check(sha(body(current))==move['newBodySha256'],'exact new body hash')
+for text,label in [(previous.decode(),'old'),(current.decode(),'new')]:
+ check('{timeout:5000}' in text,label+' VM 5000 ms')
+ for helper in ['select','configureCore']:
+  line=next(x for x in text.splitlines() if x.startswith('function '+helper+'('))
+  check(line in (src/'tests/standalone-runtime.test.mjs').read_text(),label+' same '+helper+' helper')
+check("test('the built standalone HTML" not in (src/'tests/dom-runtime.test.mjs').read_text(),'removed exact old placement only')
+check(previous.decode().replace("import fs from 'node:fs';\n",'').replace("import vm from 'node:vm';\n",'').replace("import {execFileSync} from 'node:child_process';\n",'').split("test('the built standalone HTML")[0].rstrip()==(src/'tests/dom-runtime.test.mjs').read_text().rstrip(),'all remaining dom-runtime statements unchanged')
+for name in ['src/scenario-picker.js','src/scenario-search-metadata.js','src/workspaces.js','src/styles.css']:
+ check((src/name).read_bytes()==(old/name).read_bytes(),name+' unchanged')
+runner=(src/'tools/verification/run-windows-protection-regressions.mjs').read_text()
+check("const exclusiveFiles=files.filter(name=&gt;name==='standalone-runtime.test.mjs'),parallelFiles=files.filter(name=&gt;name!=='standalone-runtime.test.mjs');" in runner,'exclusive and parallel queues exactly partition files')
+check('await worker(exclusiveFiles);\nnext=0;\nawait Promise.all(Array.from({length:report.workers},()=&gt;worker(parallelFiles)));' in runner,'exclusive worker awaited before four-worker launch')
+check("'--isolate','--timeout=900000','./tests/'+file" in runner,'exact selectors and 900000 ms test budget')
+check('timeout:1800000' in runner,'1800000 ms per-file budget')
+check('report.complete=report.files.length===files.length&amp;&amp;!report.interruptions.length;' in runner,'complete requires all files')
+check('report.passed=report.complete&amp;&amp;report.identityUnchanged&amp;&amp;report.files.every(file=&gt;file.passed);' in runner,'all file failures retained in result')
+check('report.unperformedFiles=files.filter(name=&gt;!report.files.some(file=&gt;file.file===name));' in runner,'unperformed files explicitly recorded')
+files=sorted(p.name for p in (src/'tests').glob('*.test.mjs'));check(len(files)==133,'current 133 file inventory');check(files.count('standalone-runtime.test.mjs')==1,'one exclusive standalone test file')
+loader=(src/'src/windows-protection-lab.js').read_text();check('descriptor.examples=()=&gt;get().examples();' in loader,'lazy descriptor forwards examples contract')
+entry=(src/'docs/windows-protection-expansion/START-HERE.md').read_text()
+for phrase in ['2,298 pass / 1 fail','five-second VM cap expired','four-worker pool','single unloaded diagnostic','[INFERENCE]','not a composite','No product source, consumer assertion','Current correction performance remains unmeasured']:
+ check(phrase in entry,'disclosed '+phrase)
+result={'passed':True,'checks':len(checks),'standaloneBodySha256':sha(body(current)),'scope':'Exact local source/body and runner control-flow audit; not a fresh full-suite execution or timestamp proof of no overlap.','details':checks};(root/'independent-validation/ui-contract-audit.json').write_text(json.dumps(result,indent=2));print(json.dumps({k:v for k,v in result.items()if k!='details'}))</code></pre>
+</details>
+<details>
+<summary>
+provenance-recheck.py
+</summary>
+<pre class="python" tabindex="0" role="region" aria-label="Reproduction source 10"><code>#!/usr/bin/env python3
+"""Read-only candidate04 evidence recheck. No suite/browser/performance execution."""
+from pathlib import Path
+import json, hashlib, re, collections
+ROOT=Path(__file__).resolve().parent.parent; S=ROOT/'source'; OLD=ROOT.parent/'windows-protection-02'/'source'; OUT=ROOT/'independent-validation'
+checks=[]; omitted=[]; seen=set()
+def check(n,ok,d=None):
+ row={'name':n,'passed':bool(ok)}
+ if not ok:row['detail']=d
+ checks.append(row)
+def eq(n,a,b):check(n,a==b,{'actual':a,'expected':b})
+def rd(p,base=S):return json.loads((base/p).read_text())
+def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+INV=rd('CONTENTS.json',ROOT);OM={(x['path'],x.get('sha256')):x for x in INV['omitted']}
+M=rd('docs/windows-protection-expansion/manifest.json');C=M['candidate']['sourceIdentity'];H=M['candidate']['standalone']['sha256'];V=M['verification']
+def ref(x,n,allow_omitted=False):
+ if not isinstance(x,dict) or not isinstance(x.get('path'),str) or not isinstance(x.get('sha256'),str) or x['path'].startswith('/'):return
+ k=(x['path'],x['sha256'],x.get('bytes'))
+ if k in seen:return
+ seen.add(k);p=S/x['path']
+ if x['path']=='dist/auth-flow-studio.html':
+  if x['sha256']!=H:return # historical identity: checked against explicit retained authority below
+  p=ROOT/'auth-flow-studio-windows-protection.html'
+ if not p.is_file() and allow_omitted and k[:2] in OM:
+  o=OM[k[:2]];check(n+'/omission-reason',bool(o.get('reason')))
+  if 'bytes'in x:eq(n+'/omitted-size',o['bytes'],x['bytes'])
+  omitted.append(x['path']);return
+ check(n+'/exists',p.is_file(),str(p))
+ if not p.is_file():return
+ eq(n+'/sha',sha(p),x['sha256'])
+ if 'bytes'in x:eq(n+'/bytes',p.stat().st_size,x['bytes'])
+def refs(x,n,allow_omitted=False):
+ if isinstance(x,dict):
+  if 'path'in x and 'sha256'in x:ref(x,n,allow_omitted)
+  for k,v in x.items():refs(v,n+'/'+k,allow_omitted)
+ elif isinstance(x,list):
+  for i,v in enumerate(x):refs(v,n+'/'+str(i),allow_omitted)
+def ptr(d,p):
+ for k in p.strip('/').split('/'):
+  k=k.replace('~1','/').replace('~0','~');d=d[int(k)] if isinstance(d,list) else d[k]
+ return d
+for k in ['plan','independentReview','response','reviewEntrypoint','inputs','verification','performance','preservedReleaseConditions','postHandoffVerificationFailure']:refs(M[k],'manifest/'+k,True)
+eq('canonical-file-count',len(C['files']),254)
+for p,h in C['files'].items():eq('current-source/'+p,sha(S/p),h)
+h=hashlib.sha256()
+for p in sorted(C['files']):h.update(p.encode()+b'\0'+(S/p).read_bytes()+b'\0')
+eq('canonical-identity',h.hexdigest(),C['sha256']);eq('html-identity',sha(ROOT/'auth-flow-studio-windows-protection.html'),H)
+O=rd('docs/windows-protection-expansion/manifest.json',OLD)['candidate']['canonicalSource'];D=rd('docs/windows-protection-expansion/corrections/changed-file-index.json')
+actual_delta={p for p in set(C['files'])|set(O['files']) if C['files'].get(p)!=O['files'].get(p)}
+eq('delta-paths',actual_delta,{x['path'] for x in D['changesFromReviewed']});eq('unchanged-from02',sum(C['files'].get(p)==h for p,h in O['files'].items()),241)
+for x in D['changesFromReviewed']:eq('delta-before/'+x['path'],x.get('beforeSha256'),O['files'].get(x['path']));eq('delta-after/'+x['path'],x['afterSha256'],C['files'][x['path']])
+P=rd(M['inputs']['originalAuthorityPreservation']['path']);eq('frozen-count',len(P['frozenChecks']),253)
+for x in P['frozenChecks']:
+ ref(x,'frozen/'+x['path']);eq('frozen-expected/'+x['path'],x['sha256'],x['expectedSha256']);eq('frozen-declared/'+x['path'],x['unchanged'],True)
+ if (OLD/x['path']).is_file():eq('frozen-prior02/'+x['path'],sha(OLD/x['path']),x['sha256'])
+eq('protected-count',len(P['checks']),573)
+for x in P['checks']:ref(x,'protected/'+x['path'],True);eq('protected-binding/'+x['path'],x['sha256'],x['expectedSha256'])
+for p in ['docs/windows-protection-expansion/independent-inputs-current.json','docs/windows-protection-expansion/remote-cases.json','docs/windows-protection-expansion/protection-cases.json','docs/pam-foundations/expectations.json','docs/pam-foundations/dispatch-expectations.json','docs/pam-foundations/lifecycle-expectations.json','docs/windows-protection-expansion/search-fixtures.json','docs/windows-protection-expansion/preserved-release-conditions.json']:
+ eq('unchanged-prior02-authority/'+p,(S/p).read_bytes(),(OLD/p).read_bytes())
+B=rd(V['currentEvidenceFileBindings']['path']);eq('current-bindings-count',len(B['rows']),77)
+for x in B['rows']:ref(x,'current-ref/'+x['pointer'])
+Q=rd(V['source']['canonical']['path']);F={x['executionId']:x for x in Q['fixtures']}
+eq('source-cases',len(Q['canonicalCases']),110);eq('source-executions',len(F),128);eq('source-prefixes',sum(len(x['prefixes']) for x in F.values()),4660)
+eq('source-current-map',Q['identities']['sourceFiles'],C['files']);eq('source-current-html',Q['identities']['standaloneSha256'],H);eq('source-stable',Q['identities'],Q['afterIdentities']);eq('source-failures',Q['failures'],[])
+L=rd(V['source']['literalOutcomes']['path']);eq('literal-executions',len(L['executions']),128);eq('literal-predicate-count',sum(len(x['expected']) for x in L['executions']),992)
+for x in L['executions']:eq('literal-outcome/'+x['executionId'],x['expected'],x['observed'])
+OLDL=rd('docs/verification/windows-protection-expansion/source-outcomes-08.json',OLD);OLDEX={x['executionId']:x['expected'] for x in OLDL['executions']}
+for x in L['executions']:eq('unchanged992-literal-fields/'+x['executionId'],x['expected'],OLDEX[x['executionId']])
+UX=rd(V['existingUnixSource']['report']['path']);eq('existing-source-map',UX['inputIdentity']['files'],C['files']);eq('existing-source-hash',UX['inputIdentity']['sha256'],C['sha256']);eq('existing-source-stable',UX['inputIdentity'],UX['afterIdentity']);eq('existing-source-records',len(UX['records']),55);eq('existing-source-models',len({x['modelId'] for x in UX['records']}),6);eq('existing-source-prefixes',sum(len(x['prefixes']) for x in UX['records']),1355);eq('existing-source-failures',UX['failures'],[])
+NS=rd(V['targetedBrowser']['summary']['path']);refs(NS,'native-summary',True);N=rd(NS['report']['path']);NM={x['key']:x for x in N['matrix']}
+eq('native-current-map',N['before']['sourceFiles'],C['files']);eq('native-current-html',N['before']['standalone']['sha256'],H);eq('native-stable',N['before'],N['after']);eq('native309',len(NM),309);eq('native309-unique',len(N['matrix']),309);eq('native-failures',N['failures'],[]);eq('native-unperformed',N['unperformed'],[])
+for k,x in NM.items():eq('native-pass/'+k,x['status'],'passed')
+NB=Path(NS['report']['path']).parent;records=[json.loads(x) for x in (S/NB/'canonical-prefixes.jsonl').read_text().splitlines()]
+eq('browser-fixture-records',len(records),69);eq('browser-prefix-observations',sum(len(x['prefixes']) for x in records),2652)
+for x in records:
+ f=F[x['executionId']];n='browser-equality/'+x['mode']+'/'+x['executionId'];eq(n+'/prefixes',x['prefixes'],f['prefixes']);eq(n+'/initial',x['initial'],f['initial']);eq(n+'/final',x['terminal'],f['final']);eq(n+'/mismatches',x['mismatches'],[])
+# Reverse only the exact native-producer section of the supplied bounded patch.
+patch=(S/D['boundedFollowupPatch']['path']).read_text();section=patch.split('--- candidate03/tools/verification/run-windows-protection-native.mjs\n',1)[1].split('\n--- a/',1)[0]
+current=(S/'tools/verification/run-windows-protection-native.mjs').read_text();before=current
+for hunk in re.split(r'^@@.*@@.*\n',section,flags=re.M)[1:]:
+ old=[];new=[]
+ for line in hunk.splitlines(keepends=True):
+  if line.startswith(' '):old.append(line[1:]);new.append(line[1:])
+  elif line.startswith('-'):old.append(line[1:])
+  elif line.startswith('+'):new.append(line[1:])
+ a=''.join(new);b=''.join(old);check('native-patch-hunk-unique',before.count(a)==1)
+ before=before.replace(a,b,1)
+eq('reconstructed-candidate03-native-producer',hashlib.sha256(before.encode()).hexdigest(),D['qaProducer']['beforeCandidate03'])
+def existing_keys(text):
+ block=re.search(r'const correctionPam=\[(.*?)\n\];',text,re.S).group(1)
+ return [a+'/'+b for a,b in re.findall(r"\{id:'([^']+)',variant:'([^']+)'\}",block)]
+old_controls=existing_keys(before);new_controls=existing_keys(current);eq('old-existing-control-count',len(old_controls),8);eq('current-existing-control-count',len(new_controls),9)
+priorNS=rd(M['retainedCandidate03']['browser']['path']);ref(M['retainedCandidate03']['browser'],'candidate03-native-summary')
+selected=[x['executionId'] for x in priorNS['selectedExecutions']];eq('selected-executions-preserved',selected,[x['executionId'] for x in N['selectedFixtures']]);eq('selected-count',len(selected),23)
+modes=['source-http','emitted-http','offline-file'];stages=['canonical','geometry-compact','geometry-expanded','evidence']
+def keys(controls):return {m+'/'+e+'/'+stage for m in modes for e in selected for stage in stages}|{m+'/existing-pam/'+e for m in modes for e in controls}|{m+'/'+e for m in modes for e in ['setup','browser-errors']}
+oldkeys=keys(old_controls);newkeys=keys(new_controls);eq('prior306-derived-keys',len(oldkeys),306);eq('current309-derived-keys',set(NM),newkeys);eq('oldkeys-preserved',oldkeys&lt;=set(NM),True);eq('three-added-keys',set(NM)-oldkeys,set(NS['addedPasswordHistoryCells']))
+# Validate every current runtime/source pointer and explicit unperformed member.
+for category,dirpath,total,execs,selectedcount in [('windows','docs/windows-protection-expansion',88,99,19),('pam','docs/pam-foundations',22,29,4)]:
+ source=rd(dirpath+'/results-source.json');runtime=rd(dirpath+'/results-runtime.json');eq(category+'/case-count',len(runtime['cases']),total);eq(category+'/source-id',source['candidateCanonicalIdentity'],C['sha256']);eq(category+'/runtime-id',runtime['candidateCanonicalIdentity'],C['sha256']);allx=[e for c in runtime['cases'] for e in c['executions']];eq(category+'/execution-count',len(allx),execs);chosen=set()
+ for e in allx:
+  f=F[e['executionId']];sr=ptr(source,e['sourceOutcome']['reference']['pointer']);eq(category+'/'+e['executionId']+'/source-execution-id',sr['executionId'],e['executionId']);eq(category+'/'+e['executionId']+'/source-terminal',e['sourceOutcome']['terminalSha256'],f['terminalSha256']);eq(category+'/'+e['executionId']+'/three-dispositions',len(e['currentRuntime']),3)
+  for mode in e['currentRuntime']:
+   tag=category+'/'+mode['mode']+'/'+e['executionId']
+   if mode['status']=='passed-targeted-current':
+    chosen.add(e['executionId']);eq(tag+'/stage-set',set(mode['stages']),set(stages))
+    for stage,row in mode['stages'].items():
+     raw=ptr(N,row['report']['pointer']);eq(tag+'/'+stage+'/key',raw['key'],row['key']);eq(tag+'/'+stage+'/case',raw['caseId'],e['caseId']);eq(tag+'/'+stage+'/status',raw['status'],'passed')
+     if stage=='canonical':eq(tag+'/prefixes',row['completedPrefixes'],len(f['prefixes']));eq(tag+'/terminal',row['actualTerminalSha256'],f['terminalSha256'])
+   else:eq(tag+'/unperformed-status',mode['status'],'not-reperformed-at-current-identity');eq(tag+'/no-current-stages',mode['stages'],{})
+ eq(category+'/selected-count',len(chosen),selectedcount)
+for run,expectedpass,expectedfail in [('current',2299,0),('failed',2298,1)]:
+ summary=rd(V['repositorySuite']['report']['path'] if run=='current' else V['repositorySuite']['priorCompleteFailure']['path']);refs(summary,'suite-'+run,True);raw=rd(summary['report']['path']);eq(run+'/source-map',summary['source'],C);eq(run+'/source-html',summary['standalone']['sha256'],H);eq(run+'/raw-source-map',raw['inputIdentity']['sourceFiles'],C['files']);eq(run+'/raw-html',raw['inputIdentity']['standaloneSha256'],H);eq(run+'/identities-stable',raw['inputIdentity'],raw['afterIdentity']);eq(run+'/file-count',len(raw['files']),133);eq(run+'/file-set',{x['file'] for x in raw['files']},{p.name for p in (S/'tests').glob('*.test.mjs')});eq(run+'/passed-total',sum(x['testsPassed'] for x in raw['files']),expectedpass);eq(run+'/failed-total',sum(x['testsFailed'] for x in raw['files']),expectedfail)
+ rows={x['file']:x for x in raw['files']}
+ for x in summary['logs']:
+  ref(x,run+'/rawlog/'+x['file']);text=(S/x['path']).read_text();row=rows[x['file']];eq(run+'/raw-pass/'+x['file'],int(re.search(r'(\d+) pass',text).group(1)),row['testsPassed']);eq(run+'/raw-fail/'+x['file'],int(re.search(r'(\d+) fail',text).group(1)),row['testsFailed']);eq(run+'/row-hash/'+x['file'],row['logSha256'],x['sha256'])
+ eq(run+'/status-preserved',raw['passed'],run=='current')
+ if run=='failed':eq('failed-only-standalone',[x['file'] for x in raw['files'] if not x['passed']],['standalone-runtime.test.mjs'])
+ else:
+  eq('suite-exclusive-file',raw['scheduling']['exclusiveFiles'],['standalone-runtime.test.mjs']);eq('suite-parallel-file-count',len(raw['scheduling']['parallelFiles']),132);eq('suite-runner-hash',raw['runnerSha256'],sha(S/'tools/verification/run-windows-protection-regressions.mjs'));eq('suite-no-unperformed',raw['unperformedFiles'],[])
+PS=rd('docs/windows-protection-expansion/performance-results.json');eq('performance-current-id',PS['candidateCanonicalIdentity'],C['sha256']);eq('performance-current-html',PS['standalone']['sha256'],H);eq('performance-not-remeasured',PS['currentCollection']['status'],'not-reperformed-for-corrections');eq('performance-unaccepted',PS['currentCollection']['accepted'],False);eq('performance-unwaived',PS['currentCollection']['waived'],False)
+RET=PS['retainedCandidate02'];ref(RET['originalIndex'],'original-performance-index');eq('old-performance-byte-exact',(S/RET['originalIndex']['path']).read_bytes(),(OLD/'docs/windows-protection-expansion/performance-results.json').read_bytes());eq('old-performance-source',RET['source'],O['sha256']);eq('old-performance-html',RET['standalone']['sha256'],rd('docs/windows-protection-expansion/manifest.json',OLD)['candidate']['standalone']['sha256'])
+for x in RET['raw']:ref(x,'retained-timing/'+x['path'],True);eq('retained-raw-byte-identity/'+x['path'],sha(S/x['path']),sha(OLD/x['path']))
+for row in RET['flagDispositions']:eq('retained-flag-unaccepted/'+row['id'],row['accepted'],False);eq('retained-flag-unwaived/'+row['id'],row['waived'],False)
+eq('retained-three-conditions',len(RET['flagDispositions']),3)
+for k,v in M['authorization'].items():eq('current-authorization/'+k,v,False)
+result={'kind':'candidate04-independent-retained-evidence-audit','checks':len(checks),'passed':all(x['passed'] for x in checks),'failed':[x for x in checks if not x['passed']],'omittedReferences':sorted(set(omitted)),'sourceSha256':C['sha256'],'standaloneSha256':H,'details':checks,'scope':'Read-only current and historical byte bindings, raw test-log totals, current source/runtime pointers, native prefix equality, reconstructed prior306-key plan and preserved performance/gates. Not a new native/browser/full-suite/timing execution. Candidate03 old raw306report is omitted; key preservation is derived from exact reconstructed original producer and retained selection metadata.'}
+(OUT/'provenance-recheck.json').write_text(json.dumps(result,indent=2,default=lambda x:sorted(x) if isinstance(x,set) else str(x)))
+print(json.dumps({'checks':len(checks),'passed':result['passed'],'failures':[{'name':x['name'],'detail':str(x.get('detail'))[:280]} for x in result['failed']]},indent=2))</code></pre>
+</details>
+<p>Reviewer probe development corrected two harness assumptions
+concerning <code>undefined</code> serialization and cross-realm objects;
+those were reviewer errors, not candidate changes or waived findings.
+The final PAM probe records the two failed product contracts
+explicitly.</p>
+<p class="source-note">Independent focused recheck · 26 October 2026 · Exact candidate-04 · No candidate edits, publication or release waiver.</p></main></body>
+</html>

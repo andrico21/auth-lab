@@ -1,0 +1,1538 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-case-source-dispositions",
+  "recordedAt": "2026-10-25T18:36:59.320Z",
+  "scope": "Source semantics and compiled-held source projection only. This record does not claim emitted-browser, native Windows/DC, human accessibility, performance or release acceptance.",
+  "parentCommit": "ae9dffe2da2bca33c01daee1eaacfcbedfc95aa0",
+  "candidateCanonicalIdentity": "14ce8c3ec6ab5754150a3e38a839e2859f202001eb37f02968cb4856b6009ed5",
+  "standalone": {
+    "path": "dist/auth-flow-studio.html",
+    "sha256": "2d0470879948309a1571aed0a8c13b14dd573778c4685b026c4fb7ceaceb5dc3",
+    "bytes": 5571843
+  },
+  "sourceReference": {
+    "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+    "sha256": "b195bced908d963e5abc582e6cf229fbea62554ca9376efcf9bcf035b38ef1f9",
+    "bytes": 6820601
+  },
+  "independentOutcomeIndex": {
+    "path": "docs/verification/windows-protection-expansion/source-outcomes-08.json",
+    "sha256": "0e389f30137181c6842f23eac9e291f46e941302c9cf22969b3098e788718112",
+    "bytes": 194940
+  },
+  "originalAndCurrentOracleBindings": {
+    "path": "docs/windows-protection-expansion/independent-inputs-current.json",
+    "sha256": "b918cf5f9a9e16e77670e89cdb33e05b9ffdb82ed5f34bce8e0acee3d742d81e",
+    "bytes": 12619
+  },
+  "counts": {
+    "canonicalCases": 22,
+    "requiredNamedComparisonMembers": 11,
+    "uniqueExecutions": 29,
+    "originalUnixModels": 17,
+    "predicates": 261,
+    "failures": 0
+  },
+  "cases": [
+    {
+      "caseId": "PAM01/local-login-success",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/local-login-success",
+          "modelId": "lab-pam01",
+          "variantId": "local-login-success",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/local-login-success/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/local-login-success",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/99"
+          },
+          "sourcePrefixes": 53,
+          "terminalSha256": "d1f13c6ea0b6c1ed0ffb3a15434a4ca7be1d89c54e3430482771b4c84749464c",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/required-deferred-failure",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/required-deferred-failure",
+          "modelId": "lab-pam01",
+          "variantId": "required-deferred-failure",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/required-deferred-failure/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/required-deferred-failure",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/100"
+          },
+          "sourcePrefixes": 19,
+          "terminalSha256": "6e91129b12d33a84514d30b8248a84555701533195ad4bc92b0b14f520717028",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/requisite-immediate-failure",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/requisite-immediate-failure",
+          "modelId": "lab-pam01",
+          "variantId": "requisite-immediate-failure",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/requisite-immediate-failure/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/requisite-immediate-failure",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/101"
+          },
+          "sourcePrefixes": 21,
+          "terminalSha256": "7f0db38cfdb4b45cca9a617d8117aeb140f6facd37db0bd62b5bc9291e9cf3c8",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/sufficient-early-success",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/sufficient-early-success",
+          "modelId": "lab-pam01",
+          "variantId": "sufficient-early-success",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/sufficient-early-success/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/sufficient-early-success",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/102"
+          },
+          "sourcePrefixes": 52,
+          "terminalSha256": "6fc481edcf9877adc97861560588089667b61c306e75022fcd7053dfbda4f644",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/sufficient-after-failure",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/sufficient-after-failure",
+          "modelId": "lab-pam01",
+          "variantId": "sufficient-after-failure",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/sufficient-after-failure/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/sufficient-after-failure",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/103"
+          },
+          "sourcePrefixes": 20,
+          "terminalSha256": "477bb04f315035e84ec444764b4c466dba4f9dc320abf5118486ac15e69d6fe6",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/sufficient-failure-fallback",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/sufficient-failure-fallback",
+          "modelId": "lab-pam01",
+          "variantId": "sufficient-failure-fallback",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/sufficient-failure-fallback/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/sufficient-failure-fallback",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/104"
+          },
+          "sourcePrefixes": 52,
+          "terminalSha256": "51d88a34264fda8b0ada1c6100f81d969291f1601f091901d19cb82e20b64fac",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/optional-nondecisive",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/optional-nondecisive",
+          "modelId": "lab-pam01",
+          "variantId": "optional-nondecisive",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/optional-nondecisive/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/optional-nondecisive",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/105"
+          },
+          "sourcePrefixes": 52,
+          "terminalSha256": "1f9de72767dff44b53cda7ea03ea4eea709b64a04a6ad197acffd7688b7c2971",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/optional-only-success",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/optional-only-success",
+          "modelId": "lab-pam01",
+          "variantId": "optional-only-success",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/optional-only-success/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/optional-only-success",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/106"
+          },
+          "sourcePrefixes": 49,
+          "terminalSha256": "ebb97e2fe4e2a5ac3ea3e1b6676118e5e588e27fc8a56b68ac5700ce0db46f30",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/optional-only-failure",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/optional-only-failure",
+          "modelId": "lab-pam01",
+          "variantId": "optional-only-failure",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/optional-only-failure/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/optional-only-failure",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_PERM_DENIED",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_PERM_DENIED",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/107"
+          },
+          "sourcePrefixes": 18,
+          "terminalSha256": "b8fdded1b8bc106eb2240b14995ea7587b1b68c8d04cc2972ba46516e5d395dc",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/bracket-success-jump",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/bracket-success-jump",
+          "modelId": "lab-pam01",
+          "variantId": "bracket-success-jump",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/bracket-success-jump/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/bracket-success-jump",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/108"
+          },
+          "sourcePrefixes": 55,
+          "terminalSha256": "7965413c66bb45770bc4558bce1c62da526c3b7fb4e08f18b3ae41abf0091746",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/bracket-default-denial",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/bracket-default-denial",
+          "modelId": "lab-pam01",
+          "variantId": "bracket-default-denial",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/bracket-default-denial/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/bracket-default-denial",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/109"
+          },
+          "sourcePrefixes": 20,
+          "terminalSha256": "3c98cf4bc2a367978f69359bf5ee2a6537b4807de975e031760f6cadc82b5255",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/include-termination",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/include-termination",
+          "modelId": "lab-pam01",
+          "variantId": "include-termination",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/include-termination/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/include-termination",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/110"
+          },
+          "sourcePrefixes": 52,
+          "terminalSha256": "266eba85ea62ec914f40cdc35c052e8d8a8a0a2d6ad4daa71c12155ea4ab5f71",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/substack-termination",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/substack-termination",
+          "modelId": "lab-pam01",
+          "variantId": "substack-termination",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/substack-termination/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/substack-termination",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/111"
+          },
+          "sourcePrefixes": 19,
+          "terminalSha256": "be1cf5cd2950c3cf46dee9c1871e30dfe5303ee0b5083b4d6e23c9fe56d38ed7",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/substack-failure",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/substack-failure",
+          "modelId": "lab-pam01",
+          "variantId": "substack-failure",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/substack-failure/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/substack-failure",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/112"
+          },
+          "sourcePrefixes": 20,
+          "terminalSha256": "19dd90d023c80a373e6a3fb42a4bb433a92a9e6330a9dd1cc4a4e8f77aa8cff1",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/substack-jump-boundary",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/substack-jump-boundary",
+          "modelId": "lab-pam01",
+          "variantId": "substack-jump-boundary",
+          "subfixtureId": "parent-jump",
+          "executionId": "lab-pam01/substack-jump-boundary/parent-jump",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/substack-jump-boundary",
+            "memberId": "parent-jump"
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/113"
+          },
+          "sourcePrefixes": 58,
+          "terminalSha256": "c75577ad2420d5081940fbe18e9dadc252680b4ebd647c25a176cc1294fdd7b0",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        },
+        {
+          "caseId": "PAM01/substack-jump-boundary",
+          "modelId": "lab-pam01",
+          "variantId": "substack-jump-boundary",
+          "subfixtureId": "child-in-range",
+          "executionId": "lab-pam01/substack-jump-boundary/child-in-range",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/substack-jump-boundary",
+            "memberId": "child-in-range"
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/121"
+          },
+          "sourcePrefixes": 58,
+          "terminalSha256": "789c6f9c10d5b1dbf17b6c4bd6ad92771b70333ed30c9b8041ded2d792c681da",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        },
+        {
+          "caseId": "PAM01/substack-jump-boundary",
+          "modelId": "lab-pam01",
+          "variantId": "substack-jump-boundary",
+          "subfixtureId": "child-overrun",
+          "executionId": "lab-pam01/substack-jump-boundary/child-overrun",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/substack-jump-boundary",
+            "memberId": "child-overrun"
+          },
+          "expected": {
+            "auth": "PAM_PERM_DENIED",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_PERM_DENIED",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/122"
+          },
+          "sourcePrefixes": 20,
+          "terminalSha256": "d726aab04626c447cc58f7f6c7a73d14ef177a23d9e10ae9a8b472c0e402a202",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/account-denied",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/account-denied",
+          "modelId": "lab-pam01",
+          "variantId": "account-denied",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/account-denied/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/account-denied",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/114"
+          },
+          "sourcePrefixes": 24,
+          "terminalSha256": "1017ee5f84ab55a4fcfd04b342758bd9fe5de6223787aa0baa11744899c03938",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/password-change-required",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/password-change-required",
+          "modelId": "lab-pam01",
+          "variantId": "password-change-required",
+          "subfixtureId": "change-success",
+          "executionId": "lab-pam01/password-change-required/change-success",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/password-change-required",
+            "memberId": "change-success"
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/115"
+          },
+          "sourcePrefixes": 66,
+          "terminalSha256": "ad6b5ceb31a7dee3d779d33baac71036627d8d8af26d1a278c9e47c3b917ffcc",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        },
+        {
+          "caseId": "PAM01/password-change-required",
+          "modelId": "lab-pam01",
+          "variantId": "password-change-required",
+          "subfixtureId": "change-unsupported",
+          "executionId": "lab-pam01/password-change-required/change-unsupported",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/password-change-required",
+            "memberId": "change-unsupported"
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/123"
+          },
+          "sourcePrefixes": 25,
+          "terminalSha256": "2e71873cdc60eb600406b4d2e693a13c8753211f8f4ebd4eb388091917136e94",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        },
+        {
+          "caseId": "PAM01/password-change-required",
+          "modelId": "lab-pam01",
+          "variantId": "password-change-required",
+          "subfixtureId": "change-prelim-failure",
+          "executionId": "lab-pam01/password-change-required/change-prelim-failure",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/password-change-required",
+            "memberId": "change-prelim-failure"
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/124"
+          },
+          "sourcePrefixes": 31,
+          "terminalSha256": "1cd8d27f7373391e39fef7ae57b67f2b5d35090e4c468fe2673385aab3389307",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        },
+        {
+          "caseId": "PAM01/password-change-required",
+          "modelId": "lab-pam01",
+          "variantId": "password-change-required",
+          "subfixtureId": "change-update-failure",
+          "executionId": "lab-pam01/password-change-required/change-update-failure",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/password-change-required",
+            "memberId": "change-update-failure"
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/125"
+          },
+          "sourcePrefixes": 36,
+          "terminalSha256": "857a252a25f88a65cae9b4f6f534454af2b4af09a6add78efa0686b05d3c2dd2",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/session-failure",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/session-failure",
+          "modelId": "lab-pam01",
+          "variantId": "session-failure",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/session-failure/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/session-failure",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/116"
+          },
+          "sourcePrefixes": 52,
+          "terminalSha256": "5806c12cb806c186de9ef695040f91726cdd2df15b6da6d1bc38af570d7cc74d",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/module-unavailable",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/module-unavailable",
+          "modelId": "lab-pam01",
+          "variantId": "module-unavailable",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/module-unavailable/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/module-unavailable",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_MODULE_UNKNOWN",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_MODULE_UNKNOWN",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/117"
+          },
+          "sourcePrefixes": 18,
+          "terminalSha256": "88c60270086cd3b8a6754958b904a1b265c13e66f1eea6071f0e2b1f0420eaa0",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/conversation-failure",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/conversation-failure",
+          "modelId": "lab-pam01",
+          "variantId": "conversation-failure",
+          "subfixtureId": null,
+          "executionId": "lab-pam01/conversation-failure/default",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/conversation-failure",
+            "memberId": null
+          },
+          "expected": {
+            "auth": "PAM_AUTHTOK_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_AUTHTOK_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/118"
+          },
+          "sourcePrefixes": 19,
+          "terminalSha256": "a07da7d81f19653148bad35c5b1acc6a647b799fdd2dac50f212557c20557a42",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/soft-hard-limits",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/soft-hard-limits",
+          "modelId": "lab-pam01",
+          "variantId": "soft-hard-limits",
+          "subfixtureId": "limits-success",
+          "executionId": "lab-pam01/soft-hard-limits/limits-success",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/soft-hard-limits",
+            "memberId": "limits-success"
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/119"
+          },
+          "sourcePrefixes": 53,
+          "terminalSha256": "d1f13c6ea0b6c1ed0ffb3a15434a4ca7be1d89c54e3430482771b4c84749464c",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        },
+        {
+          "caseId": "PAM01/soft-hard-limits",
+          "modelId": "lab-pam01",
+          "variantId": "soft-hard-limits",
+          "subfixtureId": "limits-application-error",
+          "executionId": "lab-pam01/soft-hard-limits/limits-application-error",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/soft-hard-limits",
+            "memberId": "limits-application-error"
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/126"
+          },
+          "sourcePrefixes": 52,
+          "terminalSha256": "5806c12cb806c186de9ef695040f91726cdd2df15b6da6d1bc38af570d7cc74d",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    },
+    {
+      "caseId": "PAM01/service-selection",
+      "modelId": "lab-pam01",
+      "status": "source-verified",
+      "expectedCaseManifest": "docs/pam-foundations/expectations.json",
+      "executions": [
+        {
+          "caseId": "PAM01/service-selection",
+          "modelId": "lab-pam01",
+          "variantId": "service-selection",
+          "subfixtureId": "service-login",
+          "executionId": "lab-pam01/service-selection/service-login",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/service-selection",
+            "memberId": "service-login"
+          },
+          "expected": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_SUCCESS",
+            "admitted": true,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/120"
+          },
+          "sourcePrefixes": 53,
+          "terminalSha256": "d1f13c6ea0b6c1ed0ffb3a15434a4ca7be1d89c54e3430482771b4c84749464c",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        },
+        {
+          "caseId": "PAM01/service-selection",
+          "modelId": "lab-pam01",
+          "variantId": "service-selection",
+          "subfixtureId": "service-deny",
+          "executionId": "lab-pam01/service-selection/service-deny",
+          "profileId": "afs-linux-pam-pinned",
+          "oracle": {
+            "path": "docs/pam-foundations/expectations.json",
+            "caseId": "PAM01/service-selection",
+            "memberId": "service-deny"
+          },
+          "expected": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "observed": {
+            "auth": "PAM_AUTH_ERR",
+            "admitted": false,
+            "tgt": false,
+            "unrelatedSessionRetained": true,
+            "transactionEnded": true,
+            "moduleCredentials": false,
+            "partialSessionResources": false,
+            "processActive": false,
+            "session": false
+          },
+          "passed": true,
+          "failures": [],
+          "canonicalReference": {
+            "path": "docs/verification/windows-protection-expansion/canonical-source-10.json",
+            "pointer": "/fixtures/127"
+          },
+          "sourcePrefixes": 18,
+          "terminalSha256": "dac6bb7f82b4b53697f4fcfa58edfbed68b561ffd439bf655f7fe729044c6908",
+          "oracleScope": "Selected independent canonical/member contract plus stated shared cleanup invariants"
+        }
+      ]
+    }
+  ],
+  "parentCorrectionVerification": {
+    "findings": 5,
+    "sourceStatus": "verified",
+    "originalWorkerReceipt": "docs/pam-foundations/review-corrections.json",
+    "originalWorkerReceiptQualification": "Its parent-verification-pending statuses describe the historical worker handoff. The parent observations below are additive verification, not a rewrite of that frozen receipt.",
+    "portableInternalReview": {
+      "path": "docs/pam-foundations/inputs/internal-dispatch-review.txt",
+      "sha256": "43d6dee1ea24ae070b68d7441c47354883556bd3ee101767cd0622fa27e869c4",
+      "bytes": 6379
+    },
+    "before": {
+      "path": "docs/verification/windows-protection-expansion/pam-review-before-01.json",
+      "sha256": "15a2de5828d7c553a950df07e08b9ce34d5544e76da1c422ad24196137f7adbb",
+      "bytes": 3402
+    },
+    "after": {
+      "path": "docs/verification/windows-protection-expansion/pam-review-after-01.json",
+      "sha256": "3d21f07a74ded3888a1772ac673621051e9e553f85d6b5841da2a03e3cb88d7d",
+      "bytes": 3406
+    },
+    "focused": {
+      "path": "docs/verification/windows-protection-expansion/pam-focused-02.json",
+      "sha256": "72d08eedfbaa30e95a84a9d8777a8c6e78730bc5fa9e8f3c7123ccb1b6b5eaa0",
+      "bytes": 5488
+    },
+    "observed": {
+      "beforeMismatches": 7,
+      "afterMatched": 7,
+      "afterMismatches": 0,
+      "focusedTestsPassed": 71,
+      "focusedTestsFailed": 0
+    },
+    "independentAstraAcceptance": false
+  },
+  "installedNativeComparison": {
+    "evidence": {
+      "path": "docs/verification/windows-protection-expansion/pam-native-01.json",
+      "sha256": "107b1d38e8edadc4d759b760aee88f957abbe3b4ff007c14909a581032e5c60a",
+      "bytes": 55040
+    },
+    "disposition": {
+      "path": "docs/pam-foundations/native-distribution-divergence.json",
+      "sha256": "83cced909938a92c045f5b46ed7253b390a07d25c33ee318de786cbac944651c",
+      "bytes": 6052
+    },
+    "status": "164 matches and1 explained distribution-patch divergence, not a full pass; immutable source-pin expected14 retained"
+  },
+  "existingOperationCoverage": "docs/pam-foundations/existing-operation-coverage.json"
+}

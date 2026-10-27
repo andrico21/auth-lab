@@ -1,0 +1,113 @@
+{
+  "scope": "Existing named operations, not additional named lesson cases",
+  "operations": [
+    {
+      "modelId": "lab-llog01",
+      "operation": "session-deny",
+      "classification": "actual credential cleanup after prior open failure",
+      "dispatch": [
+        {
+          "phase": "setcred",
+          "flags": "PAM_DELETE_CRED",
+          "moduleHook": "pam_sm_setcred",
+          "resultKey": "setcred-delete",
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "reason": "Original source explicitly deletes established credentials while dropping its process-credential bookkeeping. Add DELETE_CRED dispatch; do not invent a close hook when the authored failure path has no registered session. Preserve open=PAM_SESSION_ERR and authenticated/account facts.",
+      "sourceEvent": "src/linux-logon-lab.js:204"
+    },
+    {
+      "modelId": "lab-llog01",
+      "operation": "delete-credentials",
+      "classification": "actual normal credential cleanup",
+      "dispatch": [
+        {
+          "phase": "setcred",
+          "flags": "PAM_DELETE_CRED",
+          "moduleHook": "pam_sm_setcred",
+          "resultKey": "setcred-delete",
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "reason": "Credential teardown is separate from establishment. Establish result remains pamResults.setcred.",
+      "sourceEvent": "src/linux-logon-lab.js:209"
+    },
+    {
+      "modelId": "lab-lelev01",
+      "operation": "pam-session",
+      "classification": "two actual APIs in selected order",
+      "dispatch": [
+        {
+          "phase": "setcred",
+          "flags": "PAM_ESTABLISH_CRED",
+          "moduleHook": "pam_sm_setcred",
+          "resultKey": "setcred",
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "phase": "open",
+          "flags": 0,
+          "moduleHook": "pam_sm_open_session",
+          "resultKey": "open",
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "reason": "Original control arguments explicitly name both functions. Emit separate configured call/row/return boundaries; do not attach the open aggregate to a setcred row.",
+      "sourceEvent": "src/linux-elevation-lab.js:57"
+    },
+    {
+      "modelId": "lab-lelev01",
+      "operation": "command-exit",
+      "classification": "actual close_session plus process bookkeeping",
+      "dispatch": [
+        {
+          "phase": "close",
+          "flags": 0,
+          "moduleHook": "pam_sm_close_session",
+          "resultKey": "close",
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "reason": "Original source explicitly closes the PAM command session and discards only the target process. PAM stack owns hook records; sudo controller receives return, not exited target. No additional DELETE_CRED is invented here.",
+      "sourceEvent": "src/linux-elevation-lab.js:63"
+    },
+    {
+      "modelId": "lab-lelev02",
+      "operation": "su-return",
+      "classification": "actual close_session plus target shell bookkeeping",
+      "dispatch": [
+        {
+          "phase": "close",
+          "flags": 0,
+          "moduleHook": "pam_sm_close_session",
+          "resultKey": "close",
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "reason": "Original source explicitly closes PAM session when the target shell exits. su/PAM owner performs teardown; original invoking session remains. No extra credential API is invented.",
+      "sourceEvent": "src/linux-elevation-lab.js:82"
+    }
+  ],
+  "otherBoundaries": "Actual named pam_start/pam_end, callbacks and forwarding return steps carry their canonical API/callback descriptor. Only already-computed returns receive aggregateReturn; no unprovided pam_end return status is fabricated. Other backend/NSS/OS work remains explicitly nonmodule.",
+  "partialRootok": "Non-root sufficient pam_rootok failure is ignored progress, with no API aggregate property/effect. Real-UID0 sufficient success completes authenticate at rootok; later caller consumption has no second module invocation.",
+  "ownership": {
+    "libraryOwners": {
+      "lab-llog01": "llogPAM",
+      "lab-llog02": "llogSSSD",
+      "lab-llog03": "llogCache",
+      "lab-llog04": "pamChange",
+      "lab-lelev01": "lelevPAM",
+      "lab-lelev02": "suPAM"
+    },
+    "callerOwners": {
+      "lab-llog01": "llogLogin",
+      "lab-llog02": "llogApp",
+      "lab-llog03": "llogOfflineApp",
+      "lab-llog04": "pamChangeApp",
+      "lab-lelev01": "lelevSudo",
+      "lab-lelev02": "suPAM"
+    }
+  },
+  "evidence": "Source-grounded authored coverage and tests; integrated verification remains parent-owned"
+}

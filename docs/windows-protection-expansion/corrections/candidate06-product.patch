@@ -1,0 +1,171 @@
+--- a/src/app.js
++++ b/src/app.js
+@@ -664,7 +664,11 @@
+     ]:[];
+     const expanded=new Set([...panel.querySelectorAll('details[open]')].map(details=>details.dataset.pamDisclosure));
+     const focused=panel.contains(document.activeElement)?document.activeElement.closest('[data-pam-disclosure]')?.dataset.pamDisclosure:null;
+-    const aggregates=readState(model.pamStatePaths?.results);
++    const results=readState(model.pamStatePaths?.results),resultGroups={public:{},internal:{},pending:{}};
++    for(const [resultPhase,status] of Object.entries(results||{})){
++      const group=status==='not evaluated'?'pending':PAM_API_PHASES[resultPhase]?.internal?'internal':'public';
++      resultGroups[group][resultPhase]=status;
++    }
+     panel.innerHTML='<h3>PAM configuration → current evaluation</h3><p>Service: <strong>'+escapeHtml(configuration.service)+'</strong> · '+escapeHtml(configuration.revision||'Pinned Linux-PAM learning profile')+'</p>'+
+       (scope?'<p class="environment-note">'+escapeHtml(scope)+'</p>':'')+
+       (configuration.settings?'<p class="pam-boundary-note">Selected caller settings: '+Object.entries(configuration.settings).map(([name,item])=>'<code>'+escapeHtml(name)+'</code> = '+escapeHtml(value(item))).join('; ')+'</p>':'')+
+@@ -676,7 +680,10 @@
+       (configuration.comparison?'<details data-pam-disclosure="comparison"'+(expanded.has('comparison')?' open':'')+'><summary>Compare the changed PAM control line</summary><pre>'+escapeHtml(formatProtocolValue(configuration.comparison))+'</pre></details>':'')+
+       (explanation&&LAB_MODELS[explanation.id]?'<button class="button quiet" data-compare-scenario="'+escapeHtml(explanation.id)+'"'+(explanation.variantId?' data-compare-variant="'+escapeHtml(explanation.variantId)+'"':'')+'>'+escapeHtml(explanation.title)+'</button>':'')+
+       '<p class="pam-boundary-note">A module return, the PAM aggregate, and application admission are separate decisions. The identity and admission decisions above use the current canonical source prefix.</p>'+
+-      (aggregates?'<details data-pam-disclosure="aggregates"'+(expanded.has('aggregates')?' open':'')+'><summary>Completed API aggregate results</summary><pre>'+escapeHtml(formatProtocolValue(aggregates))+'</pre></details>':'')+
++      (results?[['aggregates','Completed API aggregate results','public'],['password-dispatch','Internal password dispatch results','internal'],['pending-results','Pending / not-started results','pending']].map(([id,label,group])=>
++        '<details data-pam-disclosure="'+id+'"'+(expanded.has(id)?' open':'')+'><summary>'+label+'</summary>'+
++        (group==='internal'?'<p>prelim and update are internal passes inside the enclosing pam_chauthtok call, not separate application calls.</p>':'')+
++        '<pre>'+escapeHtml(formatProtocolValue(resultGroups[group]))+'</pre></details>').join(''):'')+
+       '<details data-pam-disclosure="configuration"'+(expanded.has('configuration')?' open':'')+'><summary>Complete configuration files and include tree</summary>'+files.map(file=>'<section><h4>'+escapeHtml(file.file||file.id)+'</h4><p class="pam-file-hash">SHA-256 <code>'+escapeHtml(file.sha256)+'</code></p><pre>'+escapeHtml(file.text)+'</pre></section>').join('')+'<h4>Include / substack tree</h4><pre>'+escapeHtml(formatProtocolValue(configuration.includeTree))+'</pre></details>';
+     if(focused)[...panel.querySelectorAll('[data-pam-disclosure]')].find(details=>details.dataset.pamDisclosure===focused)?.querySelector('summary')?.focus({preventScroll:true});
+   }
+--- /dev/null
++++ b/tests/pam-result-disclosure.test.mjs
+@@ -0,0 +1,141 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {installHarness} from './dom-harness.mjs';
++import {LINUXLOGONLAB_SCENARIOS,createLinuxPasswordChangeCase} from '../src/linux-logon-lab.js';
++
++const harness=installHarness();
++const {AuthFlowStudio}=await import('../src/app.js');
++const reached=[['default','PAM_SUCCESS'],['new-policy-denied','PAM_AUTHTOK_ERR'],['update-failed','PAM_AUTHTOK_ERR'],['directory-unreachable','PAM_AUTHINFO_UNAVAIL'],['directory-online','PAM_SUCCESS'],['post-change-account-denied','PAM_SUCCESS']];
++const categories=[['public','aggregates','Completed API aggregate results'],['internal','password-dispatch','Internal password dispatch results'],['pending','pending-results','Pending / not-started results']];
++const clone=value=>JSON.parse(JSON.stringify(value));
++
++function withApp(run,{fixture}={}){
++  const {document,window,clock}=harness,saved={location:window.location,history:window.history};
++  window.location={hash:''};window.history={pushState(_state,_title,hash){window.location.hash=hash;},replaceState(_state,_title,hash){window.location.hash=hash;}};
++  const app=new AuthFlowStudio();document.body.appendChild(app);document.activeElement=document.body;app.connectedCallback();
++  // Match the existing logical-focus fixtures; native Tab/CSS/AT behavior is separate.
++  app.addEventListener('focusin',event=>{document.activeElement=event.target;});
++  try{
++    if(fixture)Object.defineProperty(app,'labModel',{configurable:true,value:fixture});
++    return run(app);
++  }finally{
++    app.disconnectedCallback();document.body.removeChild(app);document.activeElement=document.body;clock.frames.clear();clock.timers.clear();window.location=saved.location;window.history=saved.history;
++  }
++}
++function currentResultMap(app){
++  return app.labModel.pamStatePaths.results.split('.').reduce((value,key)=>value?.[key],app.protocolSnapshot().state);
++}
++function assertCategories(app){
++  const canonical=currentResultMap(app),expected={public:{},internal:{},pending:{}},actual={};
++  for(const [phase,status] of Object.entries(canonical||{})){
++    const group=status==='not evaluated'?'pending':phase==='prelim'||phase==='update'?'internal':'public';
++    expected[group][phase]=status;
++  }
++  for(const [group,key,summary] of categories){
++    const disclosure=app.querySelector('#pam-configuration-panel [data-pam-disclosure="'+key+'"]');
++    if(!disclosure){
++      assert.deepEqual(expected[group],{},'Missing non-empty '+group+' result disclosure');
++      actual[group]={};continue;
++    }
++    assert.equal(disclosure.querySelector('summary').textContent,summary);
++    actual[group]=JSON.parse(disclosure.querySelector('pre').textContent);
++    assert.deepEqual(actual[group],expected[group],summary+' at '+app.currentStep?.id);
++    if(group==='internal'){
++      const explanation=disclosure.querySelector('p')?.textContent||'';
++      assert.match(explanation,/prelim/);assert.match(explanation,/update/);assert.match(explanation,/pam_chauthtok/);
++      assert.match(explanation,/passes.*inside|inside.*passes/i);assert.match(explanation,/not separate application calls/i);
++    }
++  }
++  assert.equal(Object.hasOwn(actual.public,'prelim'),false);assert.equal(Object.hasOwn(actual.public,'update'),false);
++  assert.equal(Object.values(actual.public).includes('not evaluated'),false);
++  return actual;
++}
++function publicPasswordBounds(app){
++  const call=app.steps.findIndex(step=>step.from==='pamChangeApp'&&step.to==='pamChange'&&step.pamEvaluation?.api==='pam_chauthtok');
++  const returned=app.steps.findIndex(step=>step.from==='pamChange'&&step.to==='pamChangeApp'&&step.pamEvaluation?.api==='pam_chauthtok'&&step.pamEvaluation.aggregateReturn!==undefined);
++  return {call,returned};
++}
++function currentAggregate(app){
++  return [...(app.querySelector('#pam-configuration-panel .pam-evaluation')?.children||[])].find(row=>row.querySelector('dt')?.textContent==='API aggregate return')?.querySelector('dd')?.textContent;
++}
++
++for(const [variant,status] of reached)test('WP-R06-B separates actual public/internal disclosures through every LLOG04 prefix: '+variant,()=>withApp(app=>{
++  app.selectLabScenario('lab-llog04',{variant});
++  const {call,returned}=publicPasswordBounds(app);assert.ok(call>0&&returned>call);
++  const observed=[];
++  for(let index=0;index<app.steps.length;index++){
++    app.selectStep(index,false);const groups=assertCategories(app);
++    if(index<call){assert.equal(Object.hasOwn(groups.public,'password'),false);assert.deepEqual(groups.internal,{});}
++    if(index>=call&&index<returned){assert.equal(Object.hasOwn(groups.public,'password'),false);assert.equal(currentAggregate(app),'Pending: current API call has not completed');}
++    if(index===returned)assert.equal(groups.public.password,status);
++    observed.push({groups:clone(groups),snapshot:clone(app.heldView.snapshot())});
++  }
++  for(const index of [returned,call-1,returned-1,call,app.steps.length-1,call-1,returned]){
++    app.selectStep(index,false);assert.deepEqual(assertCategories(app),observed[index].groups);assert.deepEqual(app.heldView.snapshot(),observed[index].snapshot);
++  }
++}));
++
++for(const variant of ['consumer-no-change','account-expired','wrong-current-password'])test('WP-R06-B denied/unsupported consumers do not invent password evidence: '+variant,()=>withApp(app=>{
++  app.selectLabScenario('lab-llog04',{variant});
++  assert.deepEqual(publicPasswordBounds(app),{call:-1,returned:-1});
++  for(let index=0;index<app.steps.length;index++){
++    app.selectStep(index,false);const groups=assertCategories(app);
++    assert.equal(Object.hasOwn(groups.public,'password'),false);assert.deepEqual(groups.internal,{});
++  }
++}));
++
++const pamReferences=[['change-success',{prelim:'PAM_SUCCESS',update:'PAM_SUCCESS'},'PAM_SUCCESS'],['change-prelim-failure',{prelim:'PAM_AUTHTOK_ERR'},'PAM_AUTHTOK_ERR'],['change-update-failure',{prelim:'PAM_SUCCESS',update:'PAM_AUTHTOK_ERR'},'PAM_AUTHTOK_ERR'],['change-unsupported',{},null]];
++for(const [member,internal,status] of pamReferences)test('WP-R06-B PAM01 public/internal/not-started disclosures retain canonical timing: '+member,()=>withApp(app=>{
++  app.selectLabScenario('lab-pam01',{variant:'password-change-required'});app.selectLessonSubfixture(member);
++  const observed=[];
++  for(let index=0;index<app.steps.length;index++){
++    app.selectStep(index,false);observed.push(clone(assertCategories(app)));
++  }
++  const final=observed.at(-1);assert.deepEqual(final.internal,internal);
++  if(status)assert.equal(final.public.password,status);
++  else{assert.equal(Object.hasOwn(final.public,'password'),false);assert.equal(final.pending.password,'not evaluated');}
++  const preliminary=app.steps.findIndex(step=>(step.protocolEffects||[]).some(effect=>effect.path==='workstation.pamResults.prelim'));
++  if(preliminary>=0){
++    app.selectStep(preliminary,false);const groups=assertCategories(app);
++    assert.equal(groups.internal.prelim,internal.prelim);assert.equal(Object.hasOwn(groups.public,'password'),false);
++    assert.equal(groups.pending.password,'not evaluated');
++    assert.equal(groups.pending.setcred,'not evaluated');assert.equal(groups.pending.open,'not evaluated');
++    assert.equal(groups.pending.close,'not evaluated');assert.equal(groups.pending['setcred-delete'],'not evaluated');assert.equal(groups.pending.end,'not evaluated');
++    app.selectStep(app.steps.length-1,false);assert.deepEqual(assertCategories(app),final);
++    app.selectStep(preliminary,false);assert.deepEqual(assertCategories(app),observed[preliminary]);
++  }
++}));
++
++test('WP-R06-B additive preliminary failure is internally labelled and never collects or updates a candidate',()=>{
++  const fixture=createLinuxPasswordChangeCase({...LINUXLOGONLAB_SCENARIOS.find(model=>model.id==='lab-llog04').fixture,prelimOk:false});
++  withApp(app=>{
++    app.selectLabScenario('lab-llog04');const {call,returned}=publicPasswordBounds(app);assert.ok(call>=0&&returned>call);
++    for(let index=0;index<app.steps.length;index++){app.selectStep(index,false);assertCategories(app);}
++    app.selectStep(returned,false);const groups=assertCategories(app);
++    assert.deepEqual(groups.internal,{prelim:'PAM_AUTHTOK_ERR'});assert.equal(groups.public.password,'PAM_AUTHTOK_ERR');
++    assert.equal(app.labModel.workstationInventory.artifacts.some(artifact=>artifact.artifactId==='lab-llog04:new-secret'),false);
++    assert.equal(app.steps.some(step=>step.pamEvaluation?.apiPhase==='update'),false);
++    assert.equal(app.protocolSnapshot().state.workstation.authorityGeneration,1);
++    app.selectStep(call,false);assert.deepEqual(assertCategories(app).internal,{});
++    app.selectStep(returned,false);assert.deepEqual(assertCategories(app),groups);
++  },{fixture});
++});
++
++for(const [,key,summary] of categories)test('WP-R06-B disclosure focus and expanded state survive result arrival and rewind: '+key,()=>withApp(app=>{
++  app.selectLabScenario('lab-pam01',{variant:'password-change-required'});app.selectLessonSubfixture('change-success');
++  const preliminary=app.steps.findIndex(step=>(step.protocolEffects||[]).some(effect=>effect.path==='workstation.pamResults.prelim'));
++  app.selectStep(preliminary,false);
++  const selector='#pam-configuration-panel [data-pam-disclosure="'+key+'"]';
++  let disclosure=app.querySelector(selector);assert.ok(disclosure);disclosure.setAttribute('open','');disclosure.querySelector('summary').focus();
++  for(const index of [app.steps.length-1,preliminary-1,preliminary,app.steps.length-1]){
++    app.selectStep(index,false);assertCategories(app);disclosure=app.querySelector(selector);
++    assert.equal(disclosure.querySelector('summary').textContent,summary);assert.equal(disclosure.hasAttribute('open'),true);
++    assert.equal(harness.document.activeElement,disclosure.querySelector('summary'));
++  }
++}));
++
++test('WP-R06-B public credential teardown results remain public, not internal or pending',()=>withApp(app=>{
++  app.selectLabScenario('lab-llog01');app.selectStep(app.steps.length-1,false);const groups=assertCategories(app);
++  assert.equal(groups.public['setcred-delete'],'PAM_SUCCESS');assert.deepEqual(groups.internal,{});
++  assert.equal(Object.hasOwn(groups.pending,'setcred-delete'),false);
++}));

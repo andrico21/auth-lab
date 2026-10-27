@@ -1,0 +1,1328 @@
+[
+  {
+    "caseId": "PAM01/local-login-success",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "local-login-success",
+      "selectedService": "afs-login",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-login:2",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-login:2"
+  },
+  {
+    "caseId": "PAM01/required-deferred-failure",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "required-deferred-failure",
+      "selectedService": "afs-required-deferred-failure",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_AUTH_ERR"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "libpam",
+      "step": "afs-required-deferred-failure:2",
+      "reason": "bad remembers AUTH_ERR"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-required-deferred-failure:2"
+  },
+  {
+    "caseId": "PAM01/requisite-immediate-failure",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "requisite-immediate-failure",
+      "selectedService": "afs-requisite-immediate-failure",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_AUTH_ERR"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "libpam",
+      "step": "afs-requisite-immediate-failure:2",
+      "reason": "die stops current scope"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-requisite-immediate-failure:2"
+  },
+  {
+    "caseId": "PAM01/sufficient-early-success",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "sufficient-early-success",
+      "selectedService": "afs-sufficient-early-success",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-sufficient-early-success:2",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-sufficient-early-success:2"
+  },
+  {
+    "caseId": "PAM01/sufficient-after-failure",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "sufficient-after-failure",
+      "selectedService": "afs-sufficient-after-failure",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_AUTH_ERR"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "libpam",
+      "step": "afs-sufficient-after-failure:2",
+      "reason": "first required AUTH_ERR retained"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-sufficient-after-failure:2"
+  },
+  {
+    "caseId": "PAM01/sufficient-failure-fallback",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "sufficient-failure-fallback",
+      "selectedService": "afs-sufficient-failure-fallback",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-sufficient-failure-fallback:3",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-sufficient-failure-fallback:3"
+  },
+  {
+    "caseId": "PAM01/optional-nondecisive",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "optional-nondecisive",
+      "selectedService": "afs-optional-nondecisive",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-optional-nondecisive:2",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-optional-nondecisive:2"
+  },
+  {
+    "caseId": "PAM01/optional-only-success",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "optional-only-success",
+      "selectedService": "afs-optional-only-success",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-optional-only-success:2",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-optional-only-success:2"
+  },
+  {
+    "caseId": "PAM01/optional-only-failure",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "optional-only-failure",
+      "selectedService": "afs-optional-only-failure",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_PERM_DENIED"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "libpam",
+      "step": "pam_authenticate aggregate return",
+      "reason": "no positive impression; PERM_DENIED"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "pam_authenticate aggregate return"
+  },
+  {
+    "caseId": "PAM01/bracket-success-jump",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "bracket-success-jump",
+      "selectedService": "afs-bracket-success-jump",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-bracket-success-jump:4",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-bracket-success-jump:4"
+  },
+  {
+    "caseId": "PAM01/bracket-default-denial",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "bracket-default-denial",
+      "selectedService": "afs-bracket-default-denial",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "pam_deny then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_AUTH_ERR"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "pam_deny then libpam",
+      "step": "afs-bracket-default-denial:3",
+      "reason": "first ignored raw error is not decisive; requisite denial is"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-bracket-default-denial:3"
+  },
+  {
+    "caseId": "PAM01/include-termination",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "include-termination",
+      "selectedService": "afs-include-termination",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-child:2",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-child:2"
+  },
+  {
+    "caseId": "PAM01/substack-termination",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "substack-termination",
+      "selectedService": "afs-substack-termination",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_AUTH_ERR"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "libpam",
+      "step": "afs-substack-termination:3",
+      "reason": "parent required denial after child success"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-substack-termination:3"
+  },
+  {
+    "caseId": "PAM01/substack-failure",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "substack-failure",
+      "selectedService": "afs-substack-failure",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_AUTH_ERR"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "libpam",
+      "step": "afs-child-fail:2",
+      "reason": "child requisite fails; parent resumes retaining AUTH_ERR"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-child-fail:2"
+  },
+  {
+    "caseId": "PAM01/substack-jump-boundary",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "substack-jump-boundary",
+      "selectedService": "afs-substack-jump-boundary",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-substack-jump-boundary:4",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-substack-jump-boundary:4"
+  },
+  {
+    "caseId": "PAM01/account-denied",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "account-denied",
+      "selectedService": "afs-login",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "pam_unix then caller",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_ACCT_EXPIRED"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "pam_unix then caller",
+      "step": "afs-login:3 account",
+      "reason": "ACCT_EXPIRED does not erase auth success"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-login:3 account"
+  },
+  {
+    "caseId": "PAM01/password-change-required",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "password-change-required",
+      "selectedService": "afs-login",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "pam_unix account hook then caller",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_NEW_AUTHTOK_REQD"
+      ],
+      [
+        "prelim",
+        "PAM_SUCCESS"
+      ],
+      [
+        "update",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "pam_unix account hook then caller",
+      "step": "afs-login:3",
+      "reason": "NEW_AUTHTOK_REQD requires supported token change before service"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 2,
+    "firstDetectingStep": "afs-login:3"
+  },
+  {
+    "caseId": "PAM01/session-failure",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "session-failure",
+      "selectedService": "afs-login",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "pam_limits then caller",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_PERM_DENIED"
+      ],
+      [
+        "close",
+        "PAM_PERM_DENIED"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "pam_limits then caller",
+      "step": "afs-login:6 open",
+      "reason": "setrlimit application error PERM_DENIED; cleanup no launch"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-login:6 open"
+  },
+  {
+    "caseId": "PAM01/module-unavailable",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "module-unavailable",
+      "selectedService": "afs-module-unavailable",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "libpam loader/dispatcher",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_MODULE_UNKNOWN"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "libpam loader/dispatcher",
+      "step": "afs-module-unavailable:2",
+      "reason": "no module function; MODULE_UNKNOWN"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-module-unavailable:2"
+  },
+  {
+    "caseId": "PAM01/conversation-failure",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "conversation-failure",
+      "selectedService": "afs-login",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "caller callback, pam_get_authtok normalization, pam_unix and libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups",
+      "service launch",
+      "session creation"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "pam_get_authtok.c176-187 normalizes unsuccessful password prompt to PAM_AUTHTOK_ERR",
+      "pam_unix_auth.c152-166 propagates pam_get_authtok result; username already supplied to pam_start",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_AUTHTOK_ERR"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "caller callback, pam_get_authtok normalization, pam_unix and libpam",
+      "step": "conversation-response callback, pam_get_authtok, then afs-login:2",
+      "reason": "Password callback returns PAM_CONV_ERR; pam_get_authtok converts the failed prompt to PAM_AUTHTOK_ERR, which pam_unix and required-control aggregate return without a password comparison"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "conversation-response callback, pam_get_authtok, then afs-login:2",
+    "conversationCallbackStatus": "PAM_CONV_ERR",
+    "moduleStatus": "PAM_AUTHTOK_ERR",
+    "aggregateStatus": "PAM_AUTHTOK_ERR"
+  },
+  {
+    "caseId": "PAM01/soft-hard-limits",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "soft-hard-limits",
+      "selectedService": "afs-login",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-login:2",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-login:2"
+  },
+  {
+    "caseId": "PAM01/service-selection",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "case": "service-selection",
+      "selectedService": "afs-login",
+      "moduleResults": "Literal physical pam_debug arguments, or explicitly selected local backend statuses from profiles.json"
+    },
+    "firstDetectingActor": "selected module then libpam",
+    "expectedAcceptedFacts": [
+      "local identity",
+      "unrelated session",
+      "valid authentication",
+      "account admitted",
+      "session created then closed"
+    ],
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM installs UID/GID/default groups"
+    ],
+    "returnedResultDomain": "PAM local API aggregate, then caller launch decision",
+    "cleanupRetainedState": [
+      "unrelated-session",
+      "local-account"
+    ],
+    "sourceClauses": [
+      "S27 simple/extended actions and scope",
+      "S28 dispatch lines163-318; phases354-375",
+      "S29 application lifecycle",
+      "S30 hook separation",
+      "S35 resource setup1437-1438",
+      "S36 authentication not admission"
+    ],
+    "evidenceLevel": "documentation-backed symbolic fixture, native not performed",
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "firstDetection": {
+      "actor": "selected module then libpam",
+      "step": "afs-login:2",
+      "reason": "Successful selected stack establishes its granting result; no failed check in this fixture"
+    },
+    "initialAuthorityGeneration": 1,
+    "expectedAuthorityGeneration": 1,
+    "firstDetectingStep": "afs-login:2"
+  }
+]

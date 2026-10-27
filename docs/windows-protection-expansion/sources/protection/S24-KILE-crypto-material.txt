@@ -1,0 +1,72 @@
+[MS-KILE]: Cryptographic Material | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+3.1.1.2 Cryptographic Material
+Feedback
+Summarize this article for me
+In this article
+Kerberos V5 establishes a secret key that is
+shared by a principal and the KDC and a session
+key that forms the basis for privacy or integrity in the
+communication channel between client and server. When KILE creates an AES128 key,
+the password MUST be converted from a Unicode (UTF16) string to a UTF8 string ([UNICODE],
+chapter 3.9). KILE concatenates the following information to use as the key
+salt for principals:
+User accounts: < DNS of the realm, converted to
+uppercase> | <user name>
+Computer accounts: < DNS name of the realm, converted to
+uppercase > | "host" | < computer name, converted to lower case
+with trailing "$" stripped off > | "." | < DNS name
+of the realm, converted to lower case >
+Using KILE, application clients (for example, CIFS/SMB
+clients) can use the negotiated key directly. When an application client uses
+the session key, the application protocol MUST document the explicit use of the
+key in its protocol specification. The key can be exported as an attribute of
+the completed security context in the SSPI API.
+The subkey in the EncAPRepPart of the KRB_AP_REP
+message (defined in [RFC4120]
+section 5.5.2) is used as the session key when MutualAuthentication is
+requested. When DES and RC4 are used, the implementation is as defined in [RFC1964].
+With DES and RC4, the subkey in the KRB_AP_REQ message can be used as
+the session key, as it is the same as the subkey in KRB_AP_REP message.
+However, when AES is used (see [RFC4121]), the
+subkeys are different and the subkey in the KRB_AP_REP message is used.
+(The KRB_AP_REQ message is defined in [RFC4120] section 5.5.1).
+Additional resources
+Last updated on
+2025-08-11
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

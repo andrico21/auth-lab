@@ -1,0 +1,28 @@
+bun test v1.4.2 (744846f84)
+
+tests/next-expansion-replay.test.mjs:
+22 |       const {model,steps,compiled}=compiledCases.get(key),index=steps.findIndex(step=>step.id===fixture.at.stepId);
+23 |       assert.ok(index>=0,'The independently named source boundary exists');
+24 |       const expected=projectHeldObjects(compiled,{eventIndex:index,milestone:fixture.at.milestone});
+25 |       assert.ok(expected.holdings.some(h=>h.actorId===fixture.holding.actorId&&h.artifactId===fixture.holding.artifactId&&h.representationId===fixture.holding.representation),'The exact selected representation is held at the boundary');
+26 |       const exact=heldObjectTrace(compiled,fixture.holding.artifactId).findLast(step=>step.sourceStepId===fixture.at.stepId);
+27 |       assert.ok(exact,'Exact history must include the actual local use/check or protected receipt');
+                  ^
+AssertionError: Exact history must include the actual local use/check or protected receipt
+ generatedMessage: false,
+     actual: undefined,
+   expected: true,
+   operator: "==",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/andrico/auth-lab-held-objects/tests/next-expansion-replay.test.mjs:27:14
+      at run (node:async_hooks:144:29)
+      at node:test:1445:26
+      at executeTestNode (node:test:1448:45)
+      at node:test:1591:20
+(fail) lab-llog01 local field and exact-object history retain the declared boundary lab-llog01:pam-auth [57.79ms]
+
+ 44 pass
+ 1 fail
+Ran 45 tests across 1 file. [6.05s]

@@ -1,0 +1,146 @@
+{
+  "id": "afs-linux-pam-pinned",
+  "revision": "584ef2275254016ee68126f90dab6df3604124b9",
+  "platform": "Linux-PAM only; not macOS/OpenPAM",
+  "account": "labuser local uid1000 gid1000",
+  "backend": "selected symbolic local pam_unix; pam_debug results are simulated",
+  "configSource": "/etc/pam.d selected service; not installed distro defaults",
+  "moduleBuild": "supported fixture; unavailable module explicitly returns PAM_MODULE_UNKNOWN",
+  "limits": {
+    "soft": 1024,
+    "hard": 4096,
+    "initialHard": 4096,
+    "applicationError": "setrlimit failure -> PAM_PERM_DENIED"
+  },
+  "applicationSequence": [
+    "pam_start(service,user,callback) returns opaque handle",
+    "pam_authenticate; selected credential module may invoke caller conversation inside this call",
+    "pam_acct_mgmt; NEW_AUTHTOK_REQD is distinct from authentication denial",
+    "if supported required change: one pam_chauthtok call, internal PRELIM_CHECK, collect new candidate, internal UPDATE_AUTHTOK, caller receives aggregate",
+    "caller prepares default groups independently",
+    "pam_setcred ESTABLISH_CRED using cached auth chain; selected hooks may create no credentials",
+    "pam_open_session; permitted limits fixture or explicit application error",
+    "caller installs process GID/UID and launches service only after all required returns",
+    "pam_close_session using cached open-session chain",
+    "pam_setcred DELETE_CRED for established lifecycle",
+    "pam_end then caller/transaction conversation cleanup; unrelated sessions retained"
+  ],
+  "configHashes": {
+    "afs-bracket-action-bad": "8beb46f849ca4c0fee81db15c79bc31251f86cf5d9186edb70cd5acb5e657243",
+    "afs-bracket-action-die": "fc2740b29a862c5fea538310176760a03a4eae7ea2a0b9204721a18603ed289b",
+    "afs-bracket-action-done": "fbfe9020773a7fcc3a071892b97e55fdc3b8ad52b5c1d5a9c53cb93b28a5940e",
+    "afs-bracket-action-ignore": "2741e52963f088c90b46ccbeaa14b14c93d424a009b5fec3bc6a40e5edd5fa02",
+    "afs-bracket-action-ok": "bcd34ca6dcc885805f766ffa1898866cb9b28c82a291e1d30e1d96b94faafd1a",
+    "afs-bracket-default-denial": "689218ff8c4e7ef1456600a3f0da4bdab042cb319a820a2e37f3d20a9044337d",
+    "afs-bracket-success-jump": "dc2796995d9731e4ad00cd30b9486d28397f506ca53e26c2872bec5229b6fe57",
+    "afs-child": "c2ec7d52f9732ed332b176a7ae1f6b3f954b3f0816e734b73281d9f68eaf9684",
+    "afs-child-fail": "9d0b1ae4a5163f9d3d7fcfbcfde5acd35919b2ae6521a72a28344bc1de7c8338",
+    "afs-child-in-range": "6972f11def590d6dcfd1b86ec91c85440028be31585e0280518e52f72d9dd9ba",
+    "afs-child-overrun": "f7f575fa4ab677ac2a8d8c17a80dd0eb337fb2915882b320c562f4d25549d6fd",
+    "afs-child-range": "1f95965ce3378d0c847273a04c537fa8938722e909c437f0cdc5b6ce1d4bacbb",
+    "afs-close-session-jump": "3e6ab220578483a19bb839b8790d5df99a4da691246dfe613981adb1c049c166",
+    "afs-deny": "27fdb5030a7b30d94af41e977e413b6dc22ea8f5cc558efbaf007db30e295879",
+    "afs-existing-local": "0283d64d50a0f1c7ca1fbc6d9332433ad9e3715c74588d2b5914d3f06bdc1a02",
+    "afs-existing-local-no-logind": "c071fb4b1e0d202b3dbdf5e64b925454c69b8e011b57c79c5b9ad6c25fc7c8ab",
+    "afs-existing-local-nullok": "dbb7082688c9e7545e2b82db9549ca79698bebc493948c384d804656dffadc3d",
+    "afs-existing-sssd": "f9e78103c490ddbe2895c96578a48aaa4b70de89388e365efb1dd16513ecae39",
+    "afs-include-termination": "9f8c053076daca98117e88029d783ece0e8dd8bac85c12441c12ffd88c1008b9",
+    "afs-login": "d2c86e58deb3051da5b585386f960769b420138aae48e67047421055515e0ba9",
+    "afs-module-unavailable": "566abce4e35856dc245dfabf3b620fb6fde4fd79f20916498e1b180c56041125",
+    "afs-optional-nondecisive": "e8e23b88fd4566ddff28e3f587013ca019b527ddee4f09ee2d919c05336251e7",
+    "afs-optional-only-failure": "49f8efb436b0d99f1f32f6e09a8c2e67690ef0b0fdeca2fba0cc266949a52beb",
+    "afs-optional-only-success": "401eac51ddeeea6251ef6c3ae7f8a639e45864f3c805d14cc3ae3ddd8669c2a6",
+    "afs-parent-child-overrun": "5625a76f2a2525010ffddf5dcc3bd561285e6287e98a3392ae8b30309b764d9a",
+    "afs-required-deferred-failure": "808965358e0b2e547b60f9e62bac8f2be7b7d30b66e3c51d578f32f3bdcf18d2",
+    "afs-requisite-immediate-failure": "5194583991aaa6f6c683eecf2496279b0a29e2a25a35d142e2e1980496c99c8d",
+    "afs-substack-failure": "2e14475f57c631152b8726808b991e26711689ee88bc8e6eb279eb7b0f51e3c1",
+    "afs-substack-jump-boundary": "383ede09e2c36f85a41f56618d286062111ce729cb85d4c0d95610d965ee64af",
+    "afs-substack-termination": "b80069ae15165e08904c03626f378a75d7a14454d219ad5a62965f5626229cd6",
+    "afs-sufficient-after-failure": "e3a29186a899d255a51fdc4e2ef8a90e7edbf82a77f2e208b6caf9cfce4aad22",
+    "afs-sufficient-early-success": "1c32d7a3edb960b3f88478535d9d1780db186c2a32cc92bed41dbd01c43e2461",
+    "afs-sufficient-failure-fallback": "d211ff2689583aacaf3627feedd798a3cce9372077bd6fd469e503c85a14d44e",
+    "limits.conf": "b946749db2c8497120bb8760b09ce6264b5ce445ef81944f1893e45c0741c9bc",
+    "sshd": "57421fba3e34c40cc1f115c3820d6b8509c0b1ef1bd86fca8ff4934fa764c1ad",
+    "sshd-publickey": "e8b65859542f2af10f6cfda82434b9c75ddb6221268aee180cb8c97b0cec9311",
+    "su": "149324464b639c652de857a6d72610c38863c894cdd5f35b44955e8a5bfae123",
+    "su-login": "149324464b639c652de857a6d72610c38863c894cdd5f35b44955e8a5bfae123",
+    "su-login-no-rootok": "5a66f82eaed47d90bbeb70afd8a1deab6dbc376d2ab1afcb4f8884a4f6084d35",
+    "su-no-rootok": "5a66f82eaed47d90bbeb70afd8a1deab6dbc376d2ab1afcb4f8884a4f6084d35",
+    "sudo": "5a66f82eaed47d90bbeb70afd8a1deab6dbc376d2ab1afcb4f8884a4f6084d35"
+  },
+  "subfixtures": {
+    "substack-jump-boundary": [
+      "parent-jump",
+      "child-in-range",
+      "child-overrun"
+    ],
+    "password-change-required": [
+      "change-success",
+      "change-unsupported",
+      "change-prelim-failure",
+      "change-update-failure"
+    ],
+    "soft-hard-limits": [
+      "limits-success",
+      "limits-application-error"
+    ],
+    "service-selection": [
+      "service-login",
+      "service-deny"
+    ]
+  },
+  "moduleOutcomes": "All selected pam_unix and pam_limits hook statuses are explicit source-owned symbolic backend inputs; only pam_permit, pam_deny and pam_debug results derive directly from their deterministic module contracts. No real password crypto or installed distro stack is claimed.",
+  "passwordAPI": "Application invokes pam_chauthtok; libpam supplies PAM_PRELIM_CHECK and PAM_UPDATE_AUTHTOK internally. Application must not pass those flags itself.",
+  "serviceSelection": "Configuration IDs distinguish authored alternatives for a single physical service. Existing afs-login alternatives retain /etc/pam.d/afs-login; su --login selects su-l and non-login selects su; publickey SSH selects only account/session lines in /etc/pam.d/sshd.",
+  "baselineBackendHookInputs": {
+    "pam_unix.so": {
+      "authenticate": "PAM_SUCCESS",
+      "account": "PAM_SUCCESS",
+      "prelim": "PAM_SUCCESS",
+      "update": "PAM_SUCCESS",
+      "setcred": "PAM_SUCCESS",
+      "open": "PAM_SUCCESS",
+      "close": "PAM_SUCCESS"
+    },
+    "pam_limits.so": {
+      "open": "PAM_SUCCESS",
+      "close": "PAM_SUCCESS"
+    }
+  },
+  "changedBackendInputs": {
+    "account-denied": {
+      "pam_unix.so:account": "PAM_ACCT_EXPIRED"
+    },
+    "password-change-required": {
+      "pam_unix.so:account": "PAM_NEW_AUTHTOK_REQD"
+    },
+    "session-failure": {
+      "pam_limits.so:open": "PAM_PERM_DENIED"
+    },
+    "conversation-failure": {
+      "pam_unix.so:authenticate": "PAM_AUTHTOK_ERR"
+    },
+    "change-prelim-failure": {
+      "pam_unix.so:prelim": "PAM_AUTHTOK_ERR"
+    },
+    "change-update-failure": {
+      "pam_unix.so:update": "PAM_AUTHTOK_ERR"
+    },
+    "limits-application-error": {
+      "pam_limits.so:open": "PAM_PERM_DENIED"
+    }
+  },
+  "bookkeeping": "Successful setcred and partial-session records are explicit pedagogical transaction lifecycle records, not invented native credentials/resource handles. Selected pam_unix/debug/permit hooks may create no credentials. Real UID/GID/groups are caller-owned; no TGT is created.",
+  "conversation": "Only selected pam_unix credential hooks request credential input in PAM01; control-only fixtures require no credential prompt. pam_debug can emit informational pam_info callbacks; these are not credential proof. Native helper handles information/error styles with libc-allocated empty response arrays and refuses credential prompts.",
+  "passwordGeneration": "PRELIM failure collects no new token. UPDATE processing follows collection. Only successful selected local update commits verifier authority generation2; unsuccessful/unsupported paths retain generation1 and authenticated history without service.",
+  "publickeySshSettings": {
+    "UsePAM": true,
+    "authenticationMethod": "publickey",
+    "pamAuthenticateConfiguredForMethod": false,
+    "illustratedPAMPhases": [
+      "account",
+      "session"
+    ],
+    "claim": "Selected profile only, not a universal SSH default. Configured phase metadata is not proof it ran before its source event."
+  }
+}

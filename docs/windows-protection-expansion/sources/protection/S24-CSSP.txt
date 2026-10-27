@@ -1,0 +1,188 @@
+[MS-CSSP]: Processing Events and Sequencing Rules | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+3.1.5 Processing Events and Sequencing Rules
+Feedback
+Summarize this article for me
+In this article
+The CredSSP Protocol is carried out in the following
+sequence and is subject to the protocol rules that are described in the
+following steps:
+The CredSSP client and CredSSP server first
+complete the TLS
+handshake, as specified in [RFC2246]. After the
+handshake is complete, all subsequent CredSSP Protocol messages are encrypted
+by the TLS channel. The CredSSP Protocol does not extend the TLS wire protocol.
+TLS session resumption is not supported. As part of the TLS handshake, the
+CredSSP server does not request the client's X.509 certificate (thus far, the
+client is anonymous). Also, the CredSSP Protocol does not require the client to
+have a commonly trusted certification authority
+root with the CredSSP server. Thus, the CredSSP server SHOULD<24> use an X.509 certificate that
+is either based on a commonly trusted certificate authority (CA) root or on a
+self-signed X.509 certificate.
+Over the
+encrypted TLS channel, the SPNEGO,
+Kerberos, or NTLM handshake between the
+client and server completes authentication and establishes an encryption key
+that is used by the SPNEGO confidentiality services, as specified in [RFC4178]. All SPNEGO
+tokens or Kerberos/NTLM messages as well as the underlying encryption
+algorithms are opaque to the calling application (the CredSSP client and
+CredSSP server). The wire protocol for SPNEGO, Kerberos, and NTLM is specified
+in [MS-SPNG],
+[MS-KILE],
+and [MS-NLMP],
+respectively.
+The SPNEGO tokens or Kerberos/NTLM
+messages exchanged between the client and the server are encapsulated in the negoTokens
+field of the TSRequest
+structure (section 2.2.1). Both the client and the server use this structure as
+many times as necessary to complete the authentication exchange. The Kerberos
+or NTLM authentication package is negotiated by SPNEGO. Therefore, the
+encryption key that is established under SPNEGO is either a Kerberos subsession
+key or an NTLM session key that is shared by both sides upon completion of the
+SPNEGO exchange.
+Note  During this
+phase of the protocol, the OPTIONAL authInfo field is omitted from the
+TSRequest structure by the client and server; the OPTIONAL pubKeyAuth
+field is omitted by the client unless the client is sending the last SPNEGO
+token or Kerberos/NTLM message. If the client is sending the last SPNEGO token
+or Kerberos/NTLM message, the TSRequest structure MUST have both the negoTokens
+and the pubKeyAuth fields filled in.
+Note  If the
+SPNEGO handshake fails on the server side and the client sent a version of 3 or
+greater, the server SHOULD send a TSRequest structure back to the client for
+which the errorCode field is populated with an unsuccessful NTSTATUS
+code ([MS-ERREF]
+section 2.3).
+The NTSTATUS code indicates the reason for the failure to the client. If the
+client receives a TSRequest message with the errorCode present, it MUST
+immediately fail with the provided status code and cease all further
+processing.
+This step is
+version-dependent as follows:
+Version 5 or 6
+The client SHOULD<25> generate a cryptographically
+random 32-byte value and set the nonce field of the TSRequest structure to this
+value. It then computes a SHA256 hash of the ASN.1 encoded SubjectPublicKey
+concatenated with the bytes of the well-known string “CredSSP Client-To-Server
+Binding Hash” and the generated nonce. The hash is then encrypted using the
+confidentiality support of the authentication protocol.
+The process is defined as:
+Set ClientServerHashMagic to "CredSSP Client-To-Server Binding Hash"
+Set ClientServerHash to SHA256(ClientServerHashMagic, Nonce, SubjectPublicKey)
+Set TSRequest.pubKeyAuth to Encrypt(ClientServerHash)
+Note  The hash MUST include the null terminator (\0)
+of the string.
+Version 2, 3, 4:
+The client encrypts the
+public key it received from the server (contained in the X.509 certificate) in
+the TLS handshake from step 1, by using the confidentiality support of the
+authentication protocol. The public key that is encrypted is the ASN.1-encoded
+SubjectPublicKey sub-field of SubjectPublicKeyInfo from the X.509 certificate,
+as specified in [RFC3280]
+section 4.1.
+All Versions:
+The encrypted key is encapsulated
+in the pubKeyAuth field of the TSRequest structure and is sent over the
+TLS channel to the server.
+Note  During this
+phase of the protocol, the OPTIONAL authInfo field is omitted from the
+TSRequest structure; the client MUST send its last SPNEGO token or
+Kerberos/NTLM message to the server in the negoTokens field (see step 2)
+along with the encrypted public key in the pubKeyAuth field.
+This step is
+version-dependent as follows:
+Version 5 and 6
+After the server receives the TSRequest
+structure from step 3, it verifies the hash by computing the hash using the Nonce
+field from the request and the ASN.1-encoded public key used as part of the TLS
+handshake in step 1. If the hash matches, the server generates its own SHA256
+hash of the SubjectPublicKey concatenated with the bytes of the
+well-known string "CredSSP Server-To-Client Binding Hash" and the
+provided nonce, and encrypts the binary result using the authentication
+protocol's encryption services.
+The process is defined as:
+Set ServerClientHashMagic to "CredSSP Server-To-Client Binding Hash"
+Set ServerClientHash to SHA256(ServerClientHashMagic, Nonce, SubjectPublicKey)
+Set TSRequest.pubKeyAuth to Encrypt(ServerClientHash)
+Note  The hash MUST include
+the null terminator (\0) of the string.
+Version 2, 3, and 4
+After the server receives the
+public key in step 3, it first verifies that it has the same public key that it
+used as part of the TLS handshake in step 1. The server then adds 1 to the
+first byte representing the public key (the ASN.1 structure corresponding to
+the SubjectPublicKey field, as described in step 3) and encrypts the
+binary result by using the authentication protocol's encryption services. Due
+to the addition of 1 to the binary data, and encryption of the data as a binary
+structure, the resulting value might not be valid ASN.1-encoded values. The addition
+of 1 to the first byte of the public key is performed so that the
+client-generated pubKeyAuth message cannot be replayed back to the
+client by an attacker.
+All versions:
+The encrypted binary data is
+encapsulated in the pubKeyAuth field of the TSRequest structure and is
+sent over the encrypted TLS channel to the client.
+Note The server SHOULD set
+the errorCode to STATUS_NOT_SUPPORTED if the server does not support the
+requested version.
+Note  During this
+phase of the protocol, the OPTIONAL authInfo and negoTokens
+fields are omitted from the TSRequest structure.
+The client
+validates the server authenticity by generating and comparing the server hash
+if using version 5, or higher. Otherwise, it performs a binary comparison of
+the data from step 4 to that of the data representing the public key from the
+server's X.509 certificate (as specified in [RFC3280], section 4.1). Once it
+successfully validates the server authenticity, it encrypts the user's credentials (either
+password or smart card PIN) by using the authentication protocol's encryption
+services. The resulting value is encapsulated in the authInfo field of
+the TSRequest structure and sent over the encrypted TLS channel to the server.
+The TSCredentials structure
+within the authInfo field of the TSRequest structure MUST NOT contain
+more than one of the following structures: TSPasswordCreds, TSSmartCardCreds, or TSRemoteGuardCreds
+structures.
+Note  During this
+phase of the protocol, the OPTIONAL pubKeyAuth and negoTokens
+fields are omitted from the TSRequest structure.
+Note  If the
+credentials were of type TSRemoteGuardCreds, the TLS channel continues to be
+used for redirected authentication requests, as specified in [MS-RDPEAR].
+Additional resources
+Last updated on
+2021-08-11
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

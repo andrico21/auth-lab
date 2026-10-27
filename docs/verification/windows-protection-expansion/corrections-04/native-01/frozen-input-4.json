@@ -1,0 +1,95 @@
+{
+  "exports": [
+    "PAM_API_PHASES",
+    "PAM_UNIX_STATE_PATHS",
+    "PAM_SSH_STATE_PATHS",
+    "PAMFOUNDATIONSLAB_ATTRIBUTES",
+    "PAMFOUNDATIONSLAB_SOURCES",
+    "PAMFOUNDATIONSLAB_SCENARIOS",
+    "PAM_SUBFIXTURES",
+    "createPamFoundationsCase(caseId,subfixtureId=null)",
+    "pamParseConfiguration(configurationId,phase)",
+    "pamEvaluate(configurationId,phase,{inputs,cache})",
+    "pamApiBoundary(configurationId,apiPhase,reason)"
+  ],
+  "defaultCase": "local-login-success",
+  "defaultAlias": "default aliases the first canonical case; not an extra case",
+  "unknown": "Unknown case/subfixture/configuration or unsupported dispatch phase throws",
+  "model": [
+    "variantId",
+    "canonicalCaseId",
+    "profileId",
+    "fixture",
+    "variantChoices",
+    "withVariant",
+    "subfixtureId",
+    "subfixtureChoices",
+    "withSubfixture",
+    "pamConfiguration",
+    "pamEvaluations",
+    "pamOutcome",
+    "pamStatePaths",
+    "workstationInventory"
+  ],
+  "phaseDescriptors": "PAM_API_PHASES maps phase keys to {type,api,hook,flags,label,dispatch?,internal?,useCachedChain?,debugArgument?,cleanupFlags?}. api is the C identifier without parentheses. Nonmodule rows always have moduleHook/rawReturn/action/accumulators null, even when their descriptor names an API.",
+  "configuration": "{service,revision,files:[{id,service?,file,sha256,text}],includeTree,comparison?,settings?,assumption?}; SSH UsePAM/method settings describe configured profile, not completed invocations",
+  "step": "pamEvaluation={configurationId,configurationHash,service,file,line,text?,type,apiPhase,api,flags,moduleHook,hookCalled,rawReturn,controlStatus?,mappedAction,accumulatorBefore,accumulatorAfter,depth,nextRow,skipStopReason,executed,inapplicable?,aggregateReturn?,resourceConfiguration?}; API rawReturn is never fabricated from aggregateReturn",
+  "resourceConfiguration": "{configurationId,configurationHash,file,rows:[{line,text}],applicationResult}; show resource lines separately from the required PAM control",
+  "canonicalPathsScope": "PAM01 workstation fields. Existing Linux keeps its workstation namespace; SSH keeps pam.lastEvaluation/pam.results as declared by model.pamStatePaths. Aggregate state is a library result, not a fabricated caller admission decision.",
+  "canonicalPaths": [
+    "workstation.pamEvaluation",
+    "workstation.pamResults.<phase>",
+    "workstation.conversationStatus",
+    "workstation.authenticated",
+    "workstation.authenticatedIdentity",
+    "workstation.admitted",
+    "workstation.session",
+    "workstation.callerDecision",
+    "workstation.moduleCredentials",
+    "workstation.partialSessionResources",
+    "workstation.processActive",
+    "workstation.authorityGeneration",
+    "workstation.transactionEnded",
+    "workstation.unrelatedSession",
+    "workstation.pamResults.password",
+    "workstation.pamResults.end"
+  ],
+  "history": "Source-owned config, opaque transaction handle, caller API arguments, callback inputs, local aggregate returns and receipt, module/action/accumulator records, caller decision, authority generations, process/session lifecycle and cleanup. Prepare/source rows are explicitly nonmodule, never copies of later hook completion.",
+  "bookkeeping": "moduleCredentials and partialSessionResources track selected credential/setup lifecycle bookkeeping, not invented native credentials or handles.",
+  "buildOrder": [
+    "src/pam-existing-configurations.js",
+    "src/pam-control-configurations.js",
+    "src/pam-configurations.js",
+    "src/pam-stack-evaluator.js",
+    "src/pam-existing-integration.js",
+    "src/linux-logon-lab.js",
+    "src/linux-elevation-lab.js",
+    "src/ssh-access-lab.js",
+    "src/pam-foundations-lab.js"
+  ],
+  "heldAdapter": "Existing explicit Unix adapter consumes unixWorkstation/workstationInventory unchanged; parent owns top-level dispatch registration.",
+  "nativeHelper": "tools/verification/compare-pam-native.py; independent docs/pam-foundations/native-expectations.json; never /etc or real account modules",
+  "integrationUI": "Parent owns active-phase config panel, canonical case/default alias, named subfixture picker, comparison diff and related variant links. Selected subfixture profile is not an added URL grammar.",
+  "unsupportedActions": [
+    "reset",
+    "arbitrary pasted configuration outside authored fixed registry"
+  ],
+  "callerReturns": "API aggregateReturn/pamAggregate are separate from rawReturn and become caller-owned only on local return receipt. Render output fields only at completed canonical source prefix. Prepare rows stay explicitly nonmodule.",
+  "statePathDeclaration": {
+    "property": "model.pamStatePaths",
+    "unixAndPAM01": {
+      "evaluation": "workstation.pamEvaluation",
+      "results": "workstation.pamResults"
+    },
+    "ssh": {
+      "evaluation": "pam.lastEvaluation",
+      "results": "pam.results"
+    },
+    "exports": [
+      "PAM_UNIX_STATE_PATHS",
+      "PAM_SSH_STATE_PATHS"
+    ],
+    "semantics": "No mirrored namespaces. Missing results mean a not-reached/not-completed API, never a null aggregate. API-only return rows have aggregateReturn and null module fields."
+  },
+  "existingOperationReplay": "Combined sudo setup and named cleanup triggers carry pending API metadata, followed by real-library-owner module records and completed API-return records delivered to the calling controller. Partial rootok has no return; sufficient root success is completed without requiring a later continuation."
+}

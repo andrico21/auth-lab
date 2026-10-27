@@ -1,0 +1,270 @@
+--- a/src/linux-logon-lab.js
++++ b/src/linux-logon-lab.js
+@@ -351,7 +351,9 @@
+   if(f.accountExpired){w.event('account-expired','Account itself is expired: token change cannot repair account admission',P,P,[],{puts:{failure:'PAM_ACCT_EXPIRED'}});clean();return w.finish();}
+   w.event('account-token-expired','pam_acct_mgmt returns PAM_NEW_AUTHTOK_REQD, not account expiry',P,A,[],{control:{label:'PAM expired authentication-token status',value:'SYM(pam_acct_mgmt; PAM_NEW_AUTHTOK_REQD)'},puts:{passwordChangeRequired:true}});
+   if(!f.changeSupported){w.event('unsupported-change','Consumer cannot handle token change; no login continuation',A,A,[],{puts:{failure:'consumer lacks token-change support'}});clean();return w.finish();}
+-  w.event('password-preliminary','pam_chauthtok preliminary verifies old credential and password-change readiness, not the uncollected candidate',P,P,[old,secret],{puts:{passwordChangeReady:true}});
++  const preliminaryReady=f.prelimOk!==false;
++  w.event('password-preliminary','pam_chauthtok preliminary verifies old credential and password-change readiness, not the uncollected candidate',P,P,[old,secret],{puts:{passwordChangeReady:preliminaryReady,...(!preliminaryReady?{failure:'password preliminary check failed'}:{})}});
++  if(!preliminaryReady){clean();return w.finish();}
+   const nextSecret=w.object('new-secret','Transient new password','secret',A,'SYM(new local conversation password)',[A,P,D]);w.event('new-secret','Conversation sends new password to configured password module',A,P,[nextSecret],{made:[nextSecret]});
+   const cleanNew=(contacted=false)=>w.event('new-secret-cleanup','Discard candidate at prompt, password module and any contacted credential backend',P,P,[],{drop:[{object:nextSecret,actor:A},{object:nextSecret,actor:P,store:'local IPC inbox'},...(contacted?[{object:nextSecret,actor:D,store:'local IPC inbox'}]:[])]});
+   w.event('password-policy','Evaluate the collected new authentication token against the selected password policy',P,P,[nextSecret],{checks:[{object:nextSecret,result:f.newPolicy?'candidate accepted by configured new-password policy':'candidate rejected by configured new-password policy'}],puts:{newPasswordPolicyAccepted:f.newPolicy}});
+
+--- a/src/pam-existing-integration.js
++++ b/src/pam-existing-integration.js
+@@ -27,8 +27,9 @@
+   const configOwner={'lab-llog01':'llogPAM','lab-llog02':'llogSSSD','lab-llog03':'llogCache','lab-llog04':'pamChange','lab-lelev01':'lelevPAM','lab-lelev02':'suPAM'}[id];
+   const callerOwner={'lab-llog01':'llogLogin','lab-llog02':'llogApp','lab-llog03':'llogOfflineApp','lab-llog04':'pamChangeApp','lab-lelev01':'lelevSudo','lab-lelev02':'suPAM'}[id];
+   const config=w.object('pam-configuration','Selected host-local PAM physical configuration','configuration',configOwner,JSON.stringify(configuration),[configOwner],{seed:true,store:'selected service configuration'});
+-  const event=w.event,completedResults={};let cacheAuth={},cacheSession={},completedRootAuth=null,rootAuthenticationPending=false;
++  const event=w.event,completedResults={};let cacheAuth={},cacheSession={},completedRootAuth=null,rootAuthenticationPending=false,passwordChangePending=false,passwordEvidence=[];
+   function getStatus(key,puts){
++    if(key==='password-preliminary')return f.prelimOk===false?'PAM_AUTHTOK_ERR':'PAM_SUCCESS';
+     if(key==='account-token-expired')return 'PAM_NEW_AUTHTOK_REQD';
+     if(key==='account-expired')return 'PAM_ACCT_EXPIRED';
+     if(key==='cache-deny'||key==='provider-unavailable'||key==='authority-unavailable')return 'PAM_AUTHINFO_UNAVAIL';
+@@ -46,15 +47,16 @@
+     return {...boundary,...(operation.delete?{flags:PAM_API_PHASES[operation.phase].cleanupFlags}:{}),...(status===undefined?{}:{aggregateReturn:status})};
+   }
+   function annotatePreparation(start,operation){
+-    for(let index=start;index<w.steps.length;index++)if(!w.steps[index].pamEvaluation){const boundary=apiBoundary(operation,'Sender-local API argument/return preparation; no module hook');w.steps[index].pamConfiguration=configuration;w.steps[index].pamEvaluation=boundary;w.steps[index].protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:boundary});}
++    for(let index=start;index<w.steps.length;index++)if(!w.steps[index].pamEvaluation){const boundary={...apiBoundary(operation,'Sender-local API argument/return preparation; no module hook'),...(passwordChangePending?{apiPending:true}:{})};w.steps[index].pamConfiguration=configuration;w.steps[index].pamEvaluation=boundary;w.steps[index].protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:boundary});}
+   }
+   w.event=function(key,title,from,to,objects=[],options={}){
+     const operations=key==='rootok'&&!f.rootok?[]:pamExistingOperations[id][key]||[];
+     if(!operations.length){
+-      const step=event(key,title,from,to,objects,options);step.pamConfiguration=configuration;
++      const start=w.steps.length,step=event(key,title,from,to,objects,options);step.pamConfiguration=configuration;
+       const declared=pamExistingBoundaries[id]?.[key],phase=declared?.phase||'caller',status=declared?.returnOf?completedResults[declared.returnOf]:undefined;
+-      step.pamEvaluation=apiBoundary({phase},declared?.returnOf?'Observed completed API return; no new module invocation':declared?'API/callback boundary; no module return is authored here':'Not a PAM module evaluation; preserve actual provider/API boundary',status);
++      step.pamEvaluation={...apiBoundary({phase},declared?.returnOf?'Observed completed API return; no new module invocation':declared?'API/callback boundary; no module return is authored here':'Not a PAM module evaluation; preserve actual provider/API boundary',status),...(passwordChangePending?{apiPending:true}:{})};
+       step.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:step.pamEvaluation});
++      if(passwordChangePending)annotatePreparation(start,{phase});
+       if(status!==undefined)step.pamAggregate=status;
+       return step;
+     }
+@@ -72,17 +74,21 @@
+       step.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:step.pamEvaluation});
+     }
+     for(const [operationIndex,operation] of operations.entries()){
+-      const phase=operation.phase,resultKey=phase+(operation.delete?'-delete':''),status=getStatus(key,options.puts||{}),inputs={};
++      const phase=operation.phase,internalPassword=id==='lab-llog04'&&PAM_API_PHASES[phase].internal,publicOperation=internalPassword?{phase:'password'}:operation;
++      const resultKey=publicOperation.phase+(operation.delete?'-delete':''),status=getStatus(key,options.puts||{}),inputs={},moduleEvidence=[];
+       const consumeRoot=key==='su-auth'&&completedRootAuth!==null,continueRoot=key==='su-auth'&&rootAuthenticationPending;
+-      if(!consumeRoot&&!continueRoot){
+-        const boundary={...apiBoundary(operation,'Begin configured API call; module execution and aggregate return are pending'),apiPending:true},start=w.steps.length;
+-        const call=event('pam-call-'+key+'-'+operationIndex,'Begin configured '+PAM_API_PHASES[phase].api+' call',callerOwner,configOwner,callerOwner===configOwner?[config]:[],{...(callerOwner===configOwner?{}:{control:{label:'Configured PAM API arguments',value:JSON.stringify({api:boundary.api,flags:boundary.flags,transaction:'opaque selected transaction reference'})}}),puts:{pamEvaluation:boundary}});
+-        call.pamConfiguration=configuration;call.pamEvaluation=boundary;annotatePreparation(start,operation);
++      if(!consumeRoot&&!continueRoot&&!(internalPassword&&passwordChangePending)){
++        const boundary={...apiBoundary(publicOperation,'Begin configured API call; module execution and aggregate return are pending'),apiPending:true},start=w.steps.length;
++        const call=event('pam-call-'+key+'-'+operationIndex,'Begin configured '+boundary.api+' call',callerOwner,configOwner,callerOwner===configOwner?[config]:[],{...(callerOwner===configOwner?{}:{control:{label:'Configured PAM API arguments',value:JSON.stringify({api:boundary.api,flags:boundary.flags,transaction:'opaque selected transaction reference'})}}),puts:{pamEvaluation:boundary}});
++        call.pamConfiguration=configuration;call.pamEvaluation=boundary;annotatePreparation(start,publicOperation);
++        if(internalPassword){passwordChangePending=true;passwordEvidence=[];}
+       }
+       if(!step&&!localModule&&!callerAfter){
++        const start=w.steps.length;
+         step=event(key,title,from,to,objects,options);step.pamConfiguration=configuration;
+         step.pamEvaluation={...apiBoundary(operation,'Selected backend operation precedes its module completion'),apiPending:true};
+         step.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:step.pamEvaluation});
++        if(internalPassword)annotatePreparation(start,{phase:'caller'});
+       }
+       for(const name of ['pam_unix.so','pam_sss.so','pam_rootok.so','pam_systemd.so','pam_access.so'])inputs[name+':'+phase]=name==='pam_rootok.so'?(f.realUid===0?'PAM_SUCCESS':'PAM_AUTH_ERR'):(id==='lab-lelev01'||id==='lab-lelev02')&&phase==='account'&&name==='pam_unix.so'?'PAM_SUCCESS':status;
+       const evaluation=consumeRoot?{...completedRootAuth,trace:[]}:pamEvaluate(service,phase,{inputs,cache:phase==='setcred'?cacheAuth:phase==='close'?cacheSession:{},callerFlags:callerFlags(phase)});
+@@ -96,13 +102,15 @@
+       }
+       if(key==='su-auth')rootAuthenticationPending=false;
+       if(phase==='authenticate')cacheAuth=evaluation.cache;if(phase==='open')cacheSession=evaluation.cache;
+-      if(complete)completedResults[resultKey]=evaluation.status;
++      const apiComplete=complete&&(!internalPassword||phase==='update'||evaluation.status!=='PAM_SUCCESS');
++      if(apiComplete)completedResults[resultKey]=evaluation.status;
+       if(key==='su-auth'&&!consumeRoot)evaluation.trace=evaluation.trace.filter(row=>row.module==='pam_unix.so'&&row.executed);
+       const flags=apiBoundary(operation,'Selected invocation flags').flags;
+       for(const row of evaluation.trace){row.flags=flags;row.apiPending=true;}
+       const selected=key==='su-account'||key==='pam-account'?evaluation.trace.find(row=>row.module==='pam_access.so'&&row.executed):evaluation.trace.find(row=>row.executed);
+       for(const [index,row] of evaluation.trace.entries()){
+         const record=w.object('pam-evaluation-'+key+'-'+operationIndex+'-'+index,'Configuration-derived PAM execution record','pam-return',configOwner,JSON.stringify(row),[configOwner]);
++        moduleEvidence.push(record);
+         let recorded;
+         if(localModule&&operationIndex===0&&row===selected){
+           recorded=event(aggregateMilestone?'pam-record-'+key+'-'+operationIndex+'-'+index:key,title,from,to,[...objects,config],{...options,made:[...(options.made||[]),record],puts:{...backend,pamEvaluation:row}});
+@@ -110,20 +118,26 @@
+         }else recorded=event('pam-record-'+key+'-'+operationIndex+'-'+index,'Record '+row.file+':'+row.line+' '+row.module+' '+phase,configOwner,configOwner,[config],{made:[record],puts:{pamEvaluation:row}});
+         recorded.pamConfiguration=configuration;recorded.pamEvaluation=row;
+       }
+-      if(complete&&!consumeRoot){
+-        const boundary=apiBoundary(operation,'Completed API aggregate, distinct from module return',evaluation.status);
+-        const result=w.object('pam-return-'+key+'-'+operationIndex,'Completed '+PAM_API_PHASES[phase].api+' aggregate','pam-aggregate',configOwner,JSON.stringify({api:boundary.api,apiPhase:phase,flags,status:evaluation.status,configurationId:service,configurationHash:PAM_CONFIGURATIONS[service].sha256}),[configOwner,callerOwner]),start=w.steps.length;
++      if(internalPassword){
++        passwordEvidence.push(...moduleEvidence);
++        w.steps.at(-1).protocolEffects.push({op:'put',path:'workstation.pamResults.'+phase,value:evaluation.status});
++      }
++      if(apiComplete&&!consumeRoot){
++        const boundary=apiBoundary(publicOperation,'Completed API aggregate, distinct from module return',evaluation.status);
++        const result=w.object('pam-return-'+key+'-'+operationIndex,'Completed '+boundary.api+' aggregate','pam-aggregate',configOwner,JSON.stringify({api:boundary.api,apiPhase:publicOperation.phase,flags:boundary.flags,status:evaluation.status,configurationId:service,configurationHash:PAM_CONFIGURATIONS[service].sha256}),[configOwner,callerOwner]),start=w.steps.length;
+         const puts={...(localModule?accepted:{}),pamEvaluation:boundary,['pamResults.'+resultKey]:evaluation.status};
++        const resultEvidence=internalPassword?passwordEvidence.map(object=>({object,actor:configOwner})):[];
+         let returned;
+         if(sourceReturn){
+-          step=returned=event(key,title,from,to,[...objects,result],{...options,made:[...(options.made||[]),result],puts:{...options.puts,...puts}});
++          step=returned=event(key,title,from,to,[...objects,result],{...options,made:[...(options.made||[]),result],use:[...(options.use||[]),...resultEvidence],puts:{...options.puts,...puts}});
+         }else if(aggregateMilestone){
+-          step=returned=event(key,'Apply completed '+boundary.api+' aggregate '+evaluation.status+' to checked local evidence; no repeated verifier check',configOwner,configOwner,[...(options.checks||[]).map(check=>check.object),result],{made:[result],puts});
++          step=returned=event(key,'Apply completed '+boundary.api+' aggregate '+evaluation.status+' from module evidence',configOwner,configOwner,[...moduleEvidence,...(options.checks||[]).filter(check=>check.object.type!=='secret').map(check=>check.object),result],{made:[result],puts});
+           const delivered=event('pam-return-'+key+'-'+operationIndex,'Deliver already-completed '+boundary.api+' status',configOwner,callerOwner,[result]);
+           delivered.pamConfiguration=configuration;delivered.pamEvaluation=apiBoundary({phase:'caller'},'Deliver completed API result; no new module hook or verifier check');
+           delivered.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:delivered.pamEvaluation});
+-        }else returned=event('pam-return-'+key+'-'+operationIndex,'Record '+boundary.api+' aggregate '+evaluation.status,configOwner,callerOwner,[result],{made:[result],puts});
+-        returned.pamConfiguration=configuration;returned.pamEvaluation=boundary;returned.pamAggregate=evaluation.status;annotatePreparation(start,operation);
++        }else returned=event('pam-return-'+key+'-'+operationIndex,'Record '+boundary.api+' aggregate '+evaluation.status,configOwner,callerOwner,[result],{made:[result],use:resultEvidence,puts});
++        returned.pamConfiguration=configuration;returned.pamEvaluation=boundary;returned.pamAggregate=evaluation.status;annotatePreparation(start,publicOperation);
++        if(internalPassword)passwordChangePending=false;
+       }
+     }
+     if(!step){
+
+--- a/tests/pam-existing-lifetime-recheck.test.mjs
++++ b/tests/pam-existing-lifetime-recheck.test.mjs
+@@ -0,0 +1,140 @@
++import test from 'node:test';
++import assert from 'node:assert/strict';
++import {LINUXLOGONLAB_SCENARIOS,createLinuxPasswordChangeCase} from '../src/linux-logon-lab.js';
++import {LINUXELEVLAB_SCENARIOS} from '../src/linux-elevation-lab.js';
++import {reconstructProtocolState} from '../src/protocol-state.js';
++import {buildUnixWorkstationHeldObjects} from '../src/held-object-unix-workstation.js';
++import {compileHeldObjects,projectHeldObjects,heldObjectTrace} from '../src/held-object-state.js';
++import {installHarness} from './dom-harness.mjs';
++
++const existing=[...LINUXLOGONLAB_SCENARIOS,...LINUXELEVLAB_SCENARIOS].filter(m=>/^lab-(llog0[1-4]|lelev0[12])$/.test(m.id));
++const select=(id,variant='default')=>existing.find(m=>m.id===id).withVariant(variant);
++function replay(model){
++  const steps=model.steps(),plan=compileHeldObjects(buildUnixWorkstationHeldObjects({model,steps,actors:model.actors(),choiceId:model.id,contextId:model.id+':lifetime-contract'}),{model,steps});
++  return {steps,plan,at:index=>projectHeldObjects(plan,{eventIndex:index,milestone:index<0?'initial':'complete'})};
++}
++const state=(model,index)=>reconstructProtocolState(model,index).workstation;
++
++for(const base of existing)for(const choice of base.variantChoices)test('WP-R06-A password consumption requires current owner custody: '+base.id+'/'+choice.id,()=>{
++  const model=base.withVariant(choice.id),{steps,at}=replay(model),secrets=new Set(model.workstationInventory.artifacts.filter(a=>a.type==='secret').map(a=>a.artifactId));
++  let before=at(-1);
++  for(let index=0;index<steps.length;index++){
++    const step=steps[index];
++    for(const op of step.attributeOperations.filter(op=>secrets.has(op.instanceId)&&['use','verify'].includes(op.kind))){
++      const held=before.holdings.some(h=>h.artifactId===op.instanceId&&h.actorId===op.actorId);
++      const createdHere=step.attributeOperations.some(other=>other.instanceId===op.instanceId&&other.actorId===op.actorId&&other.kind==='create');
++      assert.ok(held||createdHere,step.id+' '+op.actorId+' consumes released '+op.instanceId);
++    }
++    before=at(index);
++    assert.deepEqual(before.state,reconstructProtocolState(model,index));
++    assert.equal(before.state.workstation.unrelatedSession,'other-user-session-retained');
++  }
++});
++
++const freshSudo=['default','wrong-password','expired-timestamp','different-terminal','rootpw','targetpw','runaspw','account-denied'];
++for(const variant of freshSudo)test('WP-R06-A sudo password ends at the real physical check: '+variant,()=>{
++  const model=select('lab-lelev01',variant),{steps,plan,at}=replay(model),secret=model.workstationInventory.artifacts.find(a=>a.artifactId==='lab-lelev01:secret');
++  const module=steps.findIndex(s=>s.pamEvaluation?.apiPhase==='authenticate'&&s.pamEvaluation.executed===true);
++  const aggregate=steps.findIndex(s=>s.pamEvaluation?.apiPhase==='authenticate'&&s.pamEvaluation.aggregateReturn!==undefined);
++  assert.ok(module>=0&&aggregate>module);
++  assert.deepEqual(steps.filter(s=>s.attributeOperations.some(o=>o.instanceId===secret.artifactId&&o.kind==='use'&&o.actorId==='lelevPAM')).map(s=>s.id),[steps[module].id]);
++  assert.equal(at(module-1).holdings.some(h=>h.artifactId===secret.artifactId&&h.actorId==='lelevPAM'),true);
++  for(const index of [module,aggregate])assert.deepEqual(at(index).holdings.filter(h=>h.artifactId===secret.artifactId),[]);
++  const field=steps.filter(s=>s.attributeOperations.some(o=>o.attributeId===secret.attributeId)).map(s=>s.id),exact=heldObjectTrace(plan,secret.artifactId).map(s=>s.sourceStepId);
++  assert.ok(field.includes(steps[module].id));assert.ok(exact.includes(steps[module].id));
++  assert.equal(field.includes(steps[aggregate].id),false);assert.equal(exact.includes(steps[aggregate].id),false);
++  const completed=at(aggregate);at(module-1);assert.deepEqual(at(aggregate),completed);
++  const result=state(model,steps.length-1);
++  assert.equal(result.authenticated,variant!=='wrong-password');
++  assert.equal(result.operation,!['wrong-password','account-denied'].includes(variant));
++});
++
++test('WP-R06-A reused, exempt and rejected-before-prompt sudo controls never create a password',()=>{
++  for(const variant of ['command-denied','runas-denied','cached-policy-denied','noninteractive','nopasswd','root-caller','timestamp-reuse']){
++    const model=select('lab-lelev01',variant),{steps,at}=replay(model);
++    assert.equal(model.workstationInventory.artifacts.some(a=>a.type==='secret'),false,variant);
++    assert.equal(steps.some(s=>s.pamEvaluation?.apiPhase==='authenticate'&&s.pamEvaluation.executed===true),false,variant);
++    assert.equal(at(steps.length-1).holdings.some(h=>h.artifactId==='lab-lelev01:secret'),false,variant);
++  }
++});
++
++const changes=[
++  ['default','PAM_SUCCESS',true],
++  ['new-policy-denied','PAM_AUTHTOK_ERR',false],
++  ['update-failed','PAM_AUTHTOK_ERR',false],
++  ['directory-unreachable','PAM_AUTHINFO_UNAVAIL',false],
++  ['directory-online','PAM_SUCCESS',true],
++  ['post-change-account-denied','PAM_SUCCESS',false],
++];
++function assertPasswordLifetime(model,status,phases){
++  const {steps,at}=replay(model);
++  const calls=steps.map((step,index)=>({step,index})).filter(({step})=>step.from==='pamChangeApp'&&step.to==='pamChange'&&step.pamEvaluation?.api==='pam_chauthtok');
++  const returns=steps.map((step,index)=>({step,index})).filter(({step})=>step.from==='pamChange'&&step.to==='pamChangeApp'&&step.pamEvaluation?.api==='pam_chauthtok'&&step.pamEvaluation.aggregateReturn!==undefined);
++  assert.equal(calls.length,1);assert.equal(returns.length,1);
++  const call=calls[0],returned=returns[0];
++  assert.equal(call.step.pamEvaluation.apiPhase,'password');assert.equal(call.step.pamEvaluation.flags,'PAM_CHANGE_EXPIRED_AUTHTOK');
++  assert.equal(returned.step.pamEvaluation.apiPhase,'password');assert.equal(returned.step.pamEvaluation.flags,'PAM_CHANGE_EXPIRED_AUTHTOK');
++  assert.equal(returned.step.pamEvaluation.aggregateReturn,status);
++  const publicInputs=model.workstationInventory.artifacts.filter(a=>a.creator==='pamChangeApp'&&a.type==='local-call-control').map(a=>{try{return JSON.parse(a.value);}catch{return null;}}).filter(a=>a?.api==='pam_chauthtok');
++  assert.deepEqual(publicInputs.map(a=>a.flags),['PAM_CHANGE_EXPIRED_AUTHTOK']);
++  const publicResults=model.workstationInventory.artifacts.filter(a=>a.type==='pam-aggregate').map(a=>JSON.parse(a.value)).filter(a=>a.api==='pam_chauthtok');
++  assert.deepEqual(publicResults.map(a=>[a.apiPhase,a.flags,a.status]),[['password','PAM_CHANGE_EXPIRED_AUTHTOK',status]]);
++  const modules=steps.map((step,index)=>({step,index})).filter(({step})=>step.pamEvaluation?.executed===true&&['prelim','update'].includes(step.pamEvaluation.apiPhase));
++  assert.deepEqual(modules.map(({step})=>step.pamEvaluation.apiPhase),phases);
++  assert.ok(call.index<modules[0].index&&modules.at(-1).index<returned.index);
++  for(const {step} of modules)assert.equal(step.pamEvaluation.flags,'PAM_CHANGE_EXPIRED_AUTHTOK | '+(step.pamEvaluation.apiPhase==='prelim'?'PAM_PRELIM_CHECK':'PAM_UPDATE_AUTHTOK'));
++  for(let index=call.index;index<returned.index;index++){
++    const snapshot=at(index);assert.equal(snapshot.state.workstation.pamResults?.password,undefined);
++    assert.equal(snapshot.state.workstation.pamEvaluation.apiPending,true,steps[index].id+' completes public API prematurely');
++    assert.equal(snapshot.holdings.some(h=>h.actorId==='pamChangeApp'&&model.workstationInventory.artifacts.some(a=>a.artifactId===h.artifactId&&a.type==='pam-aggregate'&&['prelim','update'].includes(JSON.parse(a.value).apiPhase))),false);
++  }
++  const final=at(returned.index);assert.equal(final.state.workstation.pamResults.password,status);
++  at(call.index);assert.deepEqual(at(returned.index),final);
++  return {steps,at,returned};
++}
++for(const [variant,status,session] of changes)test('WP-R06-B one public call contains both internal password phases: '+variant,()=>{
++  const model=select('lab-llog04',variant),{steps,at}=assertPasswordLifetime(model,status,['prelim','update']);
++  const final=at(steps.length-1);assert.equal(final.state.workstation.session,session);
++  const backendG2=final.holdings.some(h=>h.artifactId==='lab-llog04:backend-generation-g2'&&h.actorId==='pamPasswordAuthority');
++  assert.equal(backendG2,status==='PAM_SUCCESS');
++  if(variant==='post-change-account-denied'){assert.equal(final.state.workstation.postChangeAccountChecked,true);assert.equal(final.state.workstation.admitted,false);}
++});
++
++test('WP-R06-B unsupported, expired-account and rejected-authentication consumers make no password-change call',()=>{
++  for(const variant of ['consumer-no-change','account-expired','wrong-current-password']){
++    const model=select('lab-llog04',variant);
++    assert.equal(model.steps().some(s=>s.pamEvaluation?.api==='pam_chauthtok'),false,variant);
++    assert.equal(model.workstationInventory.artifacts.some(a=>a.type==='pam-aggregate'&&JSON.parse(a.value).api==='pam_chauthtok'),false,variant);
++  }
++});
++
++test('WP-R06-B a failed preliminary phase returns once without collecting a candidate or dispatching update',()=>{
++  const model=createLinuxPasswordChangeCase({...select('lab-llog04').fixture,prelimOk:false});
++  const {steps,at}=assertPasswordLifetime(model,'PAM_AUTHTOK_ERR',['prelim']);
++  assert.equal(model.workstationInventory.artifacts.some(a=>a.artifactId==='lab-llog04:new-secret'),false);
++  assert.equal(at(steps.length-1).holdings.some(h=>h.artifactId==='lab-llog04:backend-generation-g2'),false);
++  assert.equal(at(steps.length-1).state.workstation.session,false);
++});
++
++const lifetimeHarness=installHarness();
++const {AuthFlowStudio}=await import('../src/app.js');
++for(const [variant,status] of changes)test('WP-R06-B rendered public result stays pending across conversation/backend preparation: '+variant,()=>{
++  const {document,clock,window}=lifetimeHarness,saved={location:window.location,history:window.history};
++  const app=new AuthFlowStudio();document.body.appendChild(app);app.connectedCallback();
++  try{
++    app.selectLabScenario('lab-llog04',{variant});
++    const call=app.steps.findIndex(s=>s.from==='pamChangeApp'&&s.to==='pamChange'&&s.pamEvaluation?.api==='pam_chauthtok');
++    const returned=app.steps.findIndex(s=>s.from==='pamChange'&&s.to==='pamChangeApp'&&s.pamEvaluation?.api==='pam_chauthtok'&&s.pamEvaluation.aggregateReturn!==undefined);
++    const aggregate=()=>[...(app.querySelector('#pam-configuration-panel .pam-evaluation')?.children||[])].find(row=>row.querySelector('dt')?.textContent==='API aggregate return')?.querySelector('dd')?.textContent;
++    assert.ok(call>=0&&returned>call);
++    for(let index=call;index<returned;index++){
++      app.selectStep(index,false);
++      assert.equal(aggregate(),'Pending: current API call has not completed',app.steps[index].id);
++    }
++    app.selectStep(returned,false);assert.equal(aggregate(),status);
++    app.selectStep(call,false);assert.equal(aggregate(),'Pending: current API call has not completed');
++    app.selectStep(returned,false);assert.equal(aggregate(),status);
++  }finally{
++    app.disconnectedCallback();document.body.removeChild(app);clock.frames.clear();clock.timers.clear();window.location=saved.location;window.history=saved.history;
++  }
++});
+

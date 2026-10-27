@@ -1,0 +1,44 @@
+{
+  "kind": "verification-only-exclusive-boot-scheduling",
+  "actualSource": "4530cbea258fa64e5ce5b484f89430526dd68b8f5709fe21647d7bd5528995a5",
+  "standalone": {
+    "path": "dist/auth-flow-studio.html",
+    "sha256": "4499baf31b276c7d97226c6f534beda0f86209c0e45f5337227570bb472c4f05",
+    "bytes": 5581415
+  },
+  "priorCompleteFailure": {
+    "path": "docs/verification/windows-protection-expansion/corrections-02/full-suite-failed-01-summary.json",
+    "sha256": "166f4e4c165c41e84dab09bb237c58224947edb565e9f5a2757bb545ca2351c0",
+    "bytes": 69494
+  },
+  "diagnostic": {
+    "path": "docs/verification/windows-protection-expansion/corrections-02/boot-diagnostic-01.json",
+    "sha256": "b58193fe63838fa4dd4b00b505cfc7f7f75350b4b8046eba14125acdd91c5884",
+    "bytes": 41533
+  },
+  "observed": {
+    "unloadedInstrumentedBootWallMs": 3780.81529,
+    "unloadedCpuMs": 3880.45,
+    "completedModules": 112,
+    "timeoutMs": 5000
+  },
+  "causeQualification": "[INFERENCE] CPU contention in the four-worker run exposes the unchanged five-second VM wall-clock cap; the preserved failed run did not record per-module CPU time. No application defect or unique causal attribution is claimed.",
+  "decision": "Run the existing standalone test exclusively before launching four workers for the other132files, eliminating concurrent test-process overlap for its wall-clock boot check. No retries, timeout increases, test changes or assertion suppression.",
+  "beforeProducer": {
+    "path": "docs/verification/windows-protection-expansion/corrections-02/reviewed-inputs/regression-runner-before-exclusive-boot.mjs.input.txt",
+    "sha256": "9c364b622c1fc9063525e47e7e9d41a1b61df2f6aaf9f4ffe23ca955318d47b5",
+    "bytes": 4687
+  },
+  "afterProducer": {
+    "path": "tools/verification/run-windows-protection-regressions.mjs",
+    "sha256": "59ea080e99e2a03777435c6c1c88fa2dbef98a445e0e0346db8a831297dd1771",
+    "bytes": 5219
+  },
+  "applicationAndTestBytesUnchanged": true,
+  "originalStandaloneBodyByteIdentical": true,
+  "vmBudgetMs": 5000,
+  "testBudgetMs": 900000,
+  "fileBudgetMs": 1800000,
+  "oldFailureRemainsFailed": true,
+  "performanceAcceptance": false
+}

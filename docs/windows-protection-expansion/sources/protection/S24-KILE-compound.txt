@@ -1,0 +1,108 @@
+[MS-KILE]: Compound Identity | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+3.3.5.7.4 Compound Identity
+Feedback
+Summarize this article for me
+In this article
+If a compound identity TGS-REQ
+(FAST
+TGS-REQ explicitly armored with the computer's TGT is received and
+a Compound-Identity-supported bit is set in the application server's service
+account’s KerbSupportedEncryptionTypes, the KDC SHOULD<74> add to the PAC
+a PAC_DEVICE_INFO structure ([MS-PAC]
+section 2.12)
+and PAC_DEVICE_CLAIMS_INFO structure ([MS-PAC] section 2.13)
+with the group membership and claims for the
+computer.
+The armor key for an
+explicitly armored TGT is generated as follows:
+explicit_armor_key = KRB-FX-CF2(armor_subkey, ticket_session_key, "subkeyarmor", "ticketarmor" )
+The armor_subkey is the ap-req subkey in the armor ticket.
+Then the explicit armor key is used to create the armor key, which is used per [RFC6113].
+armor_key = KRB-FX-CF2( explicit_armor_key, subkey, " explicitarmor", " tgsarmor" )
+The KDC adds the COMPOUNDED_AUTHENTICATION SID
+([MS-DTYP]
+section 2.4.2.4)
+to KERB_VALIDATION_INFO.ExtraSids and increment SidCount.
+The KDC populates the following PAC_DEVICE_INFO
+structure ([MS-PAC] section 2.12) fields by using the following fields from the
+KERB_VALIDATION_INFO structure from the computer’s TGT:
+UserId: from the UserId field
+PrimaryGroupId: from the PrimaryGroupId field
+AccountDomainId: from the LogonDomainId field
+AccountGroupCount: from the GroupCount field
+AccountGroupIds: from the GroupIds field
+The non-account domain fields MUST
+be initialized as follows:
+SidCount field set to zero
+ExtraSids field is NULL
+DomainGroupCount field set to zero
+DomainGroup field is NULL
+The KDC MUST call IDL_DRSGetMemberships ([MS-DRSR]
+section 4.1.8)
+to obtain the Domain Local Group Membership as defined in section 3.3.5.7.3
+using the computer TGT. If ExtraSids.Sid in the Domain Local Group
+Membership (section 3.3.5.7.3) is the only SID from a domain, then ExtraSids
+is used:
+Add one to the SidCount field.
+The ExtraSids field is populated with the value of the ExtraSids
+field in the Domain Local Group Membership (section 3.3.5.7.3), using the
+computer principal.
+For the rest of the ExtraSids.Sid, DomainGroup
+is used:
+The DomainGroupCount field contains the number of domains
+with DomainGroup populated.
+The DomainGroup field is populated for each DOMAIN_GROUP_MEMBERSHIP
+structure ([MS-PAC] section 2.2.3)
+domain where:
+The
+DomainId field contains the SID for the domain.
+The
+GroupCount field contains the number of groups in GroupIds field.
+For
+each ExtraSids.Sid in the DomainId domain, the GroupIds field is
+populated with the value of the ResourceGroupIds field in the Domain
+Local Group Membership (section 3.3.5.7.3) using the computer principal.
+The KDC populates the following PAC_DEVICE_CLAIMS_INFO
+structure ([MS-PAC] section 2.13) fields using the following fields from the PAC_CLIENT_CLAIMS_INFO
+structure from the computer's TGT:
+Claims: Claims field.
+Additional resources
+Last updated on
+2025-08-11
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

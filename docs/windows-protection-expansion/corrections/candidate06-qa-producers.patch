@@ -1,0 +1,222 @@
+--- a/tools/verification/run-windows-protection-native.mjs
++++ b/tools/verification/run-windows-protection-native.mjs
+@@ -834,6 +834,81 @@
+       ok('real visible inspector '+o.artifactId,!a.querySelector('#held-inspector').hidden&&text.length>0);
+       boundaries.push({index,stepId:steps[index].id,artifactId:o.artifactId,cursor:s.cursor,text,values:values()});
+     };
++    const classificationChecks=[],classificationObservations=[];
++    const classifiedSame=(name,actual,expected)=>{
++      const passed=JSON.stringify(actual)===JSON.stringify(expected);
++      classificationChecks.push({name,passed,actual,expected});
++      if(!passed)throw Error(name+': '+JSON.stringify({actual,expected}));
++    };
++    const classification=(label)=>{
++      const snapshot=a.heldView.snapshot();
++      const canonical=(m.pamStatePaths?.results||'').split('.').reduce((value,key)=>value?.[key],snapshot.state);
++      if(!canonical)return;
++      // Independent literal oracle: do not import or call the renderer partition.
++      const expected={aggregates:{},'password-dispatch':{},'pending-results':{}};
++      for(const [phase,status]of Object.entries(canonical)){
++        const category=status==='not evaluated'?'pending-results':['prelim','update'].includes(phase)?'password-dispatch':'aggregates';
++        expected[category][phase]=status;
++      }
++      const summaries={aggregates:'Completed API aggregate results','password-dispatch':'Internal password dispatch results','pending-results':'Pending / not-started results'};
++      const observed={};
++      for(const [category,summary]of Object.entries(summaries)){
++        const disclosures=a.querySelectorAll('#pam-configuration-panel details[data-pam-disclosure="'+category+'"]');
++        classifiedSame(label+' one '+category+' disclosure',disclosures.length,1);
++        const disclosure=disclosures[0];
++        classifiedSame(label+' literal '+category+' summary',disclosure.querySelector('summary').textContent,summary);
++        const contents=JSON.parse(disclosure.querySelector('pre').textContent);
++        classifiedSame(label+' canonical '+category+' contents',contents,expected[category]);
++        observed[category]=contents;
++      }
++      classifiedSame(label+' public has no internal keys',Object.keys(observed.aggregates).some(key=>['prelim','update'].includes(key)),false);
++      classifiedSame(label+' public has no placeholders',Object.values(observed.aggregates).includes('not evaluated'),false);
++      classifiedSame(label+' internal only completed passes',Object.entries(observed['password-dispatch']).every(([key,status])=>['prelim','update'].includes(key)&&status!=='not evaluated'),true);
++      classifiedSame(label+' pending only placeholders',Object.values(observed['pending-results']).every(status=>status==='not evaluated'),true);
++      const explanation=a.querySelector('#pam-configuration-panel [data-pam-disclosure="password-dispatch"]').textContent;
++      classifiedSame(label+' enclosing-call explanation',explanation.includes('pam_chauthtok')&&explanation.includes('prelim')&&explanation.includes('update')&&/passes.*inside|inside.*passes/i.test(explanation)&&/not separate application calls/i.test(explanation),true);
++      classificationObservations.push({label,cursor:snapshot.cursor,canonical,observed});
++    };
++    if(['lab-llog04','lab-pam01'].includes(m.id)){
++      // Every actual prefix, including intermediate conversation/backend and
++      // sender-local preparation, is checked without adding matrix cells.
++      for(let index=-1;index<steps.length;index++){
++        full(index);classification('full '+index);
++        const publicPasswordReturn=steps.findIndex(step=>step.pamEvaluation?.apiPhase==='password'&&Object.hasOwn(step.pamEvaluation,'aggregateReturn'));
++        if(publicPasswordReturn<0||index<publicPasswordReturn){
++          const publicResults=a.querySelector('#pam-configuration-panel [data-pam-disclosure="aggregates"] pre');
++          if(publicResults)classifiedSame('no public password completion before return '+index,Object.hasOwn(JSON.parse(publicResults.textContent),'password'),false);
++        }
++      }
++      for(let index=steps.length-1;index>=-1;index--){
++        full(index);classification('rewind '+index);
++      }
++      const representative=steps.map((step,index)=>({step,index})).filter(({step})=>step.pamEvaluation&&['prelim','update','password'].includes(step.pamEvaluation.apiPhase));
++      for(const {step,index}of representative){
++        const artifact=objects.find(o=>step.attributeOperations.some(op=>op.instanceId===o.artifactId&&op.kind==='create'));
++        if(!artifact)continue;
++        for(const kind of ['exact','field']){
++          full(index);
++          if(kind==='exact')a.heldView.trace(artifact.artifactId);else a.selectAttribute(artifact.attributeId,false);
++          const cursor=a.traceQueue.findIndex(row=>row.sourceStepId===step.id);
++          classifiedSame(kind+' classification boundary exists '+step.id,cursor>=0,true);
++          a.selectStep(cursor,false);classification(kind+' '+step.id);
++          if(cursor>0){a.selectStep(cursor-1,false);classification(kind+' rewind '+step.id);a.selectStep(cursor,false);classification(kind+' forward '+step.id);}
++        }
++        full(index);
++        for(const category of ['aggregates','password-dispatch','pending-results']){
++          const disclosure=a.querySelector('#pam-configuration-panel [data-pam-disclosure="'+category+'"]');
++          if(!disclosure)continue;
++          disclosure.open=true;disclosure.querySelector('summary').focus();
++          full(index-1);
++          const restored=a.querySelector('#pam-configuration-panel [data-pam-disclosure="'+category+'"]');
++          classifiedSame('rewind keeps '+category+' expanded '+step.id,restored?.open,true);
++          classifiedSame('rewind keeps '+category+' focus '+step.id,document.activeElement===restored?.querySelector('summary'),true);
++          classification('focused rewind '+category+' '+step.id);
++          full(index);classification('focused forward '+category+' '+step.id);
++        }
++      }
++    }
+     const secrets=new Set(objects.filter(o=>o.type==='secret').map(o=>o.artifactId));
+     for(let index=0;index<steps.length;index++){
+       const before=full(index-1),step=steps[index];
+@@ -923,7 +998,7 @@
+         }
+       }else same('no password API invented for unsupported/rejected consumer',steps.some(s=>s.pamEvaluation?.api==='pam_chauthtok'),false);
+     }
+-    return {modelId:m.id,variant:m.variantId,subfixture:m.subfixtureId??null,checks,boundaries,captures};
++    return {modelId:m.id,variant:m.variantId,subfixture:m.subfixtureId??null,checks,boundaries,captures,classificationChecks,classificationCheckCount:classificationChecks.length,classificationObservations};
+   });
+   log('pam-lifetime-evidence.jsonl',{mode:active.mode,mechanism:'real Chromium DOM and existing full/field/exact history controllers; per-boundary controller checks, not native OS claims',...result});
+   if(active.mode==='source-http')for(const capture of result.captures){
+--- /dev/null
++++ b/tools/verification/pam-result-disclosure-smoke.mjs
+@@ -0,0 +1,126 @@
++#!/usr/bin/env bun
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import path from 'node:path';
++import vm from 'node:vm';
++import {createHash} from 'node:crypto';
++import {fileURLToPath,pathToFileURL} from 'node:url';
++import {captureReviewInputs} from './review-input-identity.mjs';
++
++const mode=process.argv[2],root=path.resolve(process.argv[3]||path.join(path.dirname(fileURLToPath(import.meta.url)),'../..')),out=path.resolve(process.argv[4]||path.join(root,'docs/verification/pam-result-disclosure-'+mode+'.json'));
++assert.ok(['source','emitted'].includes(mode),'Usage: bun tools/verification/pam-result-disclosure-smoke.mjs <source|emitted> [project-root] [output-json]');
++const producer=fileURLToPath(import.meta.url),hash=bytes=>createHash('sha256').update(bytes).digest('hex'),copy=value=>value===undefined?undefined:JSON.parse(JSON.stringify(value));
++const before=captureReviewInputs(root,producer),canonical=createHash('sha256');
++for(const name of Object.keys(before.sourceFiles).sort())canonical.update(name).update('\0').update(fs.readFileSync(path.join(root,name))).update('\0');
++const sourceIdentity=canonical.digest('hex'),html=fs.readFileSync(path.join(root,'dist/auth-flow-studio.html'));
++const {installHarness}=await import(pathToFileURL(path.join(root,'tests/dom-harness.mjs')).href);
++const {LINUXLOGONLAB_SCENARIOS,createLinuxPasswordChangeCase}=await import(pathToFileURL(path.join(root,'src/linux-logon-lab.js')).href);
++const {createPamFoundationsCase}=await import(pathToFileURL(path.join(root,'src/pam-foundations-lab.js')).href);
++const {reconstructProtocolState}=await import(pathToFileURL(path.join(root,'src/protocol-state.js')).href);
++const sandbox=mode==='emitted'?{structuredClone}:globalThis,harness=installHarness(sandbox),report={kind:'actual-PAM-result-disclosure-classification-smoke',mode,startedAt:new Date().toISOString(),runtime:{bun:process.versions.bun,executable:process.execPath},argv:[process.execPath,...process.argv.slice(1)],producerSha256:hash(fs.readFileSync(producer)),sourceIdentity,htmlSha256:hash(html),inputIdentity:before,checks:0,failures:[],observations:[],scenarios:[],complete:false,nativeBrowser:false};
++const definitions=[['public','aggregates','Completed API aggregate results'],['internal','password-dispatch','Internal password dispatch results'],['pending','pending-results','Pending / not-started results']];
++function eq(actual,expected,label){report.checks++;try{assert.deepEqual(copy(actual),copy(expected));}catch{report.failures.push({label,actual:copy(actual),expected:copy(expected)});}}
++const ok=(condition,label)=>eq(Boolean(condition),true,label);
++let app,independentModel,scope;
++function groups(){
++  const snapshot=app.protocolSnapshot(),results=app.labModel.pamStatePaths.results.split('.').reduce((value,key)=>value?.[key],snapshot.state),expected={public:{},internal:{},pending:{}},actual={};
++  for(const [key,status] of Object.entries(results||{}))expected[status==='not evaluated'?'pending':key==='prelim'||key==='update'?'internal':'public'][key]=status;
++  for(const [group,key,summary] of definitions){
++    const disclosure=app.querySelector('#pam-configuration-panel [data-pam-disclosure="'+key+'"]');
++    if(results===undefined){eq(Boolean(disclosure),false,scope+' no result disclosure before any result map: '+group);actual[group]={};continue;}
++    ok(disclosure,scope+' explicit '+group+' disclosure exists');
++    if(!disclosure){actual[group]=undefined;continue;}
++    eq(disclosure.querySelector('summary')?.textContent,summary,scope+' literal '+group+' summary');
++    try{actual[group]=JSON.parse(disclosure.querySelector('pre')?.textContent);}catch(error){report.failures.push({label:scope+' valid '+group+' result JSON',error:String(error)});actual[group]=undefined;}
++    eq(actual[group],expected[group],scope+' actual '+group+' classification');
++    if(group==='internal'){
++      const explanation=disclosure.querySelector('p')?.textContent||'';
++      ok(/prelim/.test(explanation)&&/update/.test(explanation)&&/pam_chauthtok/.test(explanation)&&/passes.*inside|inside.*passes/i.test(explanation)&&/not separate application calls/i.test(explanation),scope+' internal passes explained inside enclosing public call');
++    }
++  }
++  if(results!==undefined){eq(Object.hasOwn(actual.public||{},'prelim'),false,scope+' no completed public preliminary API');eq(Object.hasOwn(actual.public||{},'update'),false,scope+' no completed public update API');eq(Object.values(actual.public||{}).includes('not evaluated'),false,scope+' no completed not-evaluated placeholders');}
++  const index=snapshot.cursor.eventIndex;
++  eq(snapshot.state,reconstructProtocolState(independentModel,index),scope+' real rendered canonical state');
++  const observation={scope,index,cursor:copy(snapshot.cursor),groups:copy(actual),canonicalResults:copy(results),step:app.currentStep?.sourceStepId||app.currentStep?.id};report.observations.push(observation);
++  return observation;
++}
++function select(index,label='full'){
++  app.selectStep(index,false);const observed=groups(),sourceIndex=app.protocolSnapshot().cursor.eventIndex,steps=app.steps;
++  if(app.labScenarioId==='lab-llog04'){
++    const call=steps.findIndex(step=>step.from==='pamChangeApp'&&step.to==='pamChange'&&step.pamEvaluation?.api==='pam_chauthtok'),returned=steps.findIndex(step=>step.from==='pamChange'&&step.to==='pamChangeApp'&&step.pamEvaluation?.api==='pam_chauthtok'&&step.pamEvaluation.aggregateReturn!==undefined);
++    if(call>=0&&sourceIndex>=call&&sourceIndex<returned){
++      const value=[...(app.querySelector('#pam-configuration-panel .pam-evaluation')?.children||[])].find(row=>row.querySelector('dt')?.textContent==='API aggregate return')?.querySelector('dd')?.textContent;
++      eq(value,'Pending: current API call has not completed',scope+' '+label+' pending actual evaluation');eq(observed.groups.public?.password,undefined,scope+' '+label+' no premature public password result');
++    }
++  }
++  return observed;
++}
++function choose(variant='default'){
++  app.selectLabScenario('lab-llog04',{variant});independentModel=LINUXLOGONLAB_SCENARIOS.find(model=>model.id==='lab-llog04').withVariant(variant);scope='LLOG04/'+variant;
++}
++function fullAndRewind(){
++  const observed=[];for(let index=0;index<app.steps.length;index++)observed.push(select(index));
++  for(let index=app.steps.length-1;index>=0;index--){const after=select(index,'rewind');eq(after.groups,observed[index].groups,scope+' rewind restores classification');eq(after.canonicalResults,observed[index].canonicalResults,scope+' rewind restores canonical results');}
++  return observed;
++}
++function traceViews(artifactId){
++  const artifact=app.labModel.workstationInventory.artifacts.find(item=>item.artifactId===artifactId);assert.ok(artifact,'Real trace artifact');const views={};
++  for(const kind of ['field','exact']){
++    app.clearAttribute();if(kind==='field')app.selectAttribute(artifact.attributeId,false);else app.heldView.trace(artifactId);
++    const observed=[];for(let index=0;index<app.visibleSteps.length;index++)observed.push(select(index,kind));
++    for(let index=app.visibleSteps.length-1;index>=0;index--){const after=select(index,kind+'-rewind');eq(after.groups,observed[index].groups,scope+' '+kind+' rewind restores same canonical-prefix classification');}
++    views[kind]=observed.map(row=>({index:row.index,groups:row.groups}));
++  }
++  app.clearAttribute();return views;
++}
++let parseInComponent;
++function componentFixture(fixture){
++  if(!parseInComponent)return fixture;
++  // Only the nonregistered factory fixture crosses realms; keep its data and outcomes unchanged.
++  const bridged=parseInComponent(JSON.stringify(fixture));
++  for(const [key,method] of Object.entries(fixture))if(typeof method==='function')bridged[key]=(...args)=>{
++    const result=method.apply(fixture,args);return result===undefined?undefined:parseInComponent(JSON.stringify(result));
++  };
++  return bridged;
++}
++try{
++  let Component;
++  if(mode==='emitted'){
++    const scripts=[...html.toString().matchAll(/<script>([\s\S]*?)<\/script>/g)];assert.equal(scripts.length,1);
++    const context=vm.createContext(sandbox);parseInComponent=vm.runInContext('JSON.parse',context);
++    new vm.Script(scripts[0][1],{filename:'actual-auth-flow-studio.emitted.js'}).runInContext(context,{timeout:5000});Component=harness.registry.get('auth-flow-studio');
++  }else ({AuthFlowStudio:Component}=await import(pathToFileURL(path.join(root,'src/app.js')).href));
++  app=new Component();harness.document.body.appendChild(app);app.connectedCallback();
++  for(const [variant,status] of [['default','PAM_SUCCESS'],['new-policy-denied','PAM_AUTHTOK_ERR'],['update-failed','PAM_AUTHTOK_ERR'],['directory-unreachable','PAM_AUTHINFO_UNAVAIL'],['directory-online','PAM_SUCCESS'],['post-change-account-denied','PAM_SUCCESS']]){
++    choose(variant);const observed=fullAndRewind();app.selectStep(app.steps.length-1,false);eq(groups().groups.public?.password,status,scope+' final public password outcome');
++    const entry={scenario:'lab-llog04',variant,fullPrefixes:observed.length};
++    if(['default','update-failed'].includes(variant)){
++      const result=app.labModel.workstationInventory.artifacts.find(item=>item.type==='pam-aggregate'&&JSON.parse(item.value).api==='pam_chauthtok');
++      entry.traceViews={secret:traceViews('lab-llog04:new-secret'),publicResult:traceViews(result.artifactId)};
++    }
++    report.scenarios.push(entry);
++  }
++  for(const variant of ['consumer-no-change','account-expired','wrong-current-password']){
++    choose(variant);const observed=fullAndRewind();eq(app.steps.filter(step=>step.pamEvaluation?.api==='pam_chauthtok').length,0,scope+' no invented call');
++    for(const row of observed){eq(row.groups.public?.password,undefined,scope+' no invented public password result');eq(row.groups.internal,{},scope+' no invented internal phase result');}
++    report.scenarios.push({scenario:'lab-llog04',variant,fullPrefixes:observed.length});
++  }
++  for(const [member,internal,status] of [['change-success',{prelim:'PAM_SUCCESS',update:'PAM_SUCCESS'},'PAM_SUCCESS'],['change-prelim-failure',{prelim:'PAM_AUTHTOK_ERR'},'PAM_AUTHTOK_ERR'],['change-update-failure',{prelim:'PAM_SUCCESS',update:'PAM_AUTHTOK_ERR'},'PAM_AUTHTOK_ERR'],['change-unsupported',{},undefined]]){
++    app.selectLabScenario('lab-pam01',{variant:'password-change-required'});app.selectLessonSubfixture(member);independentModel=createPamFoundationsCase('password-change-required',member);scope='PAM01/'+member;
++    const observed=fullAndRewind();app.selectStep(app.steps.length-1,false);const final=groups();eq(final.groups.internal,internal,scope+' final internal evidence');eq(final.groups.public?.password,status,scope+' final public result only if evaluated');
++    report.scenarios.push({scenario:'lab-pam01',variant:'password-change-required',member,fullPrefixes:observed.length});
++  }
++  const fixture=createLinuxPasswordChangeCase({...LINUXLOGONLAB_SCENARIOS.find(model=>model.id==='lab-llog04').fixture,prelimOk:false});
++  Object.defineProperty(app,'labModel',{configurable:true,value:componentFixture(fixture)});app.scenarioMemo.clear();app.selectLabScenario('lab-llog04');independentModel=fixture;scope='LLOG04/additive-prelim-failure';
++  const observed=fullAndRewind();app.selectStep(app.steps.length-1,false);const final=groups();eq(final.groups.internal,{prelim:'PAM_AUTHTOK_ERR'},scope+' preliminary failure remains internal');eq(final.groups.public?.password,'PAM_AUTHTOK_ERR',scope+' one public failure');eq(fixture.workstationInventory.artifacts.some(item=>item.artifactId==='lab-llog04:new-secret'),false,scope+' no candidate collection');eq(app.steps.some(step=>step.pamEvaluation?.apiPhase==='update'),false,scope+' no update dispatch');
++  report.scenarios.push({scenario:'lab-llog04',variant:'additive-nonregistered-prelimOk:false',fullPrefixes:observed.length,fixtureClass:'Real source factory injected into actual component without registering a lesson; emitted mode bridges unchanged fixture data/method outputs into its VM realm and tests the actual emitted renderer, not an independently executed emitted factory.'});
++  report.complete=true;
++}catch(error){report.error=String(error.stack||error);}
++finally{
++  if(app){app.disconnectedCallback();harness.document.body.removeChild(app);}harness.clock.frames.clear();harness.clock.timers.clear();
++  try{assert.deepEqual(captureReviewInputs(root,producer),before);report.inputIdentityUnchanged=true;}catch(error){report.inputIdentityUnchanged=false;report.identityError=String(error.stack||error);}
++  report.finishedAt=new Date().toISOString();report.positions=report.observations.length;report.passed=report.complete&&report.failures.length===0&&report.inputIdentityUnchanged;report.status=report.passed?'passed':'failed';
++  report.scope='Actual source or exact unmodified emitted IIFE in existing DOM harness, literal disclosure contents and summaries, canonical-prefix equality, full/field/exact and rewind. Not native browser, screen-reader, OS, interoperability, startup-performance or release acceptance.';
++  fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(report,null,2)+'\n');
++  console.log(JSON.stringify({mode,passed:report.passed,complete:report.complete,checks:report.checks,positions:report.positions,failures:report.failures.length,error:report.error,sourceIdentity,htmlSha256:report.htmlSha256}));if(!report.passed)process.exitCode=1;
++}

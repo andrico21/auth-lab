@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "windows-protection-compact-review-package",
+  "status": "failed-not-reviewable",
+  "actualArgv": [
+    "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+    "/home/andrico/auth-lab-held-objects/tools/verification/package-windows-protection-review.mjs",
+    "--root=/home/andrico/auth-lab-held-objects",
+    "--manifest=docs/verification/windows-protection-expansion/review-package-inputs-08.json",
+    "--entrypoint=docs/windows-protection-expansion/START-HERE.md",
+    "--out=/mnt/c/TempPersistent/oauth-lab/auth-flow-studio-windows-protection-review/candidate-05-compact"
+  ],
+  "commands": [],
+  "checksums": {},
+  "checks": {},
+  "openConditions": [
+    {
+      "id": "Astra-review",
+      "status": "changes-required-until-WP-R06-A-B-independently-closed",
+      "scope": "Six actual candidate04closures preserved; only remaining P2subitems WP-R06-A/B are submitted for independent closure against this new candidate05.",
+      "closed": [
+        "WP-R01",
+        "WP-R02",
+        "WP-R03",
+        "WP-R04",
+        "WP-R05",
+        "WP-R07"
+      ],
+      "review": "cbd25ac0a25a6c68d5912c1418f1af0a0f04c8d9de2100c4e4d6c8d9c4124aa9"
+    },
+    {
+      "id": "G01",
+      "status": "open-unperformed",
+      "owner": "andrico21"
+    },
+    {
+      "id": "native-Windows",
+      "status": "unperformed",
+      "canonicalCases": 88
+    },
+    {
+      "id": "native-PAM",
+      "status": "qualified-distribution-divergence",
+      "calls": 165,
+      "matched": 164,
+      "divergent": 1,
+      "upstreamExpected": "PAM_SESSION_ERR14",
+      "installedObserved": "PAM_SUCCESS0",
+      "scope": "Historical distribution-qualified installedPAMcomparison only, not current candidate05nativecollection."
+    },
+    {
+      "id": "retained-reviewed-candidate02-performance",
+      "status": "open-owner-review-required",
+      "owner": "andrico21",
+      "materialFlags": 2,
+      "baselineVariationFlags": 1,
+      "candidateVariationFlags": 0,
+      "flaggedCells": 3,
+      "scope": "Original14ce8c/2d047samples only; not a measurement of any later correction build. Two material startup flags and one baseline-only variation flag remain open.",
+      "priorCandidate01SevenFlagsNotReproduced": 7,
+      "accepted": false,
+      "waived": false
+    },
+    {
+      "id": "inherited-release-gates",
+      "status": "preserved-not-waived",
+      "ledger": "source/docs/windows-protection-expansion/preserved-release-conditions.json",
+      "p6CurrentConditions": 6,
+      "dnssecCurrentMaterialConditions": 5
+    },
+    {
+      "id": "publication",
+      "status": "no-commit-push-deployment-or-release-authorization",
+      "parentCommit": "ae9dffe2da2bca33c01daee1eaacfcbedfc95aa0"
+    },
+    {
+      "id": "current-correction-performance",
+      "status": "not-reperformed",
+      "source": "0031e25c8f64de6dd986370c3b3176b71c2fd93a774ec066f0926d17c16cabb0",
+      "standalone": "ca9fbb47b3de9a565911f44fc29ba319076e85feace235ba82cf6c20bb3a88cb",
+      "accepted": false,
+      "waived": false,
+      "scope": "Final0031/ca9 performance not measured; old14ce/2d047 timing samples and all flags remain retained, open and unwaived."
+    },
+    {
+      "id": "exact-CI-command",
+      "status": "unproven-open-publication-time-risk",
+      "command": "bun run test",
+      "expanded": "bun test --isolate --timeout=900000 tests/*.test.mjs",
+      "observedPassing": false,
+      "localExclusiveFirstScheduleAppliedInCI": false,
+      "vmBudgetMs": 5000,
+      "scope": "Current complete134-file2377/0 local scheduled run does not fix/prove the unchanged load-sensitive five-second standalone VM cap in CI."
+    }
+  ],
+  "publication": "No new acceptance, independent review, release, commit, push or deployment claims.",
+  "runtime": {
+    "bun": "1.4.2",
+    "executable": "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+    "executableSha256": "a83d263767d839e4d2649ca8e35d07159c7afc99afdc96d731ced29e056dda0c",
+    "platform": "linux",
+    "arch": "x64"
+  },
+  "manifest": {
+    "path": "docs/verification/windows-protection-expansion/review-package-inputs-08.json",
+    "sha256": "fbaa0ec0f0bcdaf3a074414909277514ec36cb8362e77703fbb77e5b2fc1bafd",
+    "bytes": 1585976
+  },
+  "entrypoint": {
+    "path": "docs/windows-protection-expansion/START-HERE.md",
+    "sha256": "31a91371d7908d797446e386cb3d6c378dc6e7d117a85f06a43308dca4251d7a",
+    "bytes": 12354
+  },
+  "error": "Error: Incomplete/stale canonical source identity\n    at assert (/home/andrico/auth-lab-held-objects/tools/verification/package-windows-protection-review.mjs:33:54)\n    at main (/home/andrico/auth-lab-held-objects/tools/verification/package-windows-protection-review.mjs:128:5)\n    at /home/andrico/auth-lab-held-objects/tools/verification/package-windows-protection-review.mjs:225:7"
+}

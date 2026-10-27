@@ -165,3 +165,122 @@ test('repeated folded search reflects changes to the actual option metadata',()=
   assert.deepEqual(ids('mac platform'),['mutable']);
   assert.deepEqual(ids('web pkce'),[]);
 });
+
+test('SEARCH01 ranks exact phrases, tokens, boundary prefixes and incidental context without tag-count boosting',()=>{
+  const options=[
+    {id:'context',title:'Other lesson',category:'A',summary:'A remote token filtering explanation'},
+    {id:'prefix',title:'Token filterings',category:'B'},
+    {id:'tokens',title:'Filtering local token',category:'A'},
+    {id:'phrase',title:'Remote administration',category:'B',searchTags:['token filtering']},
+    {id:'tie',title:'Another lesson',category:'A',searchTags:['token filtering','token filtering','token filtering']},
+  ];
+  assert.deepEqual(filterScenarioOptions(options,'token filtering').map(row=>row.id),['phrase','tie','tokens','prefix','context']);
+  assert.deepEqual(filterScenarioOptions(options,'').map(row=>row.id),options.map(row=>row.id));
+  assert.deepEqual(filterScenarioOptions([...options,options[3]],'token filtering').map(row=>row.id),['phrase','tie','tokens','prefix','context']);
+});
+
+test('SEARCH01 preserves identifiers and significant plus while excluding acronym interiors and short prefixes',()=>{
+  const options=[
+    {id:'lab-punctuation',title:'Café EAP-TLS',searchIdentifiers:['CODE_VERIFIER'],searchTags:['SPAKE2+']},
+    {id:'balanced',title:'SPAKE2'},
+    {id:'unrelated',title:'TLS alert',summary:'tlsalert is not an LSA lesson'},
+    {id:'isolated',title:'Local authority',searchTags:['lsa','lsass','RunAsPPL']},
+  ];
+  assert.deepEqual(filterScenarioOptions(options,' CAFE__eap-tls ').map(row=>row.id),['lab-punctuation']);
+  assert.deepEqual(filterScenarioOptions(options,'CODE_VERIFIER').map(row=>row.id),['lab-punctuation']);
+  assert.deepEqual(filterScenarioOptions(options,'LAB-PUNCTUATION').map(row=>row.id),['lab-punctuation']);
+  assert.deepEqual(filterScenarioOptions(options,'SPAKE2+').map(row=>row.id),['lab-punctuation']);
+  assert.deepEqual(filterScenarioOptions(options,'SPAKE2').map(row=>row.id),['balanced']);
+  // Context explicitly says LSA above, so remove that actual token before testing interiors.
+  options[2].summary='tlsalert';
+  assert.deepEqual(filterScenarioOptions(options,'lsa').map(row=>row.id),['isolated']);
+  assert.deepEqual(filterScenarioOptions(options,'ru').map(row=>row.id),[]);
+  assert.deepEqual(filterScenarioOptions(options,'run').map(row=>row.id),['isolated']);
+});
+
+test('SEARCH01 keeps all query terms in one case and invalidates nested mutable metadata',()=>{
+  const option={id:'case-model',title:'Sign-in',searchTags:['pam'],searchVariants:[
+    {id:'offline',label:'Offline denial',searchTags:['cached logon']},
+    {id:'protected',label:'Protected user',searchTags:['protected users']},
+  ]};
+  assert.deepEqual(filterScenarioOptions([option],'offline protected'),[]);
+  const [offline]=filterScenarioOptions([option],'offline');
+  assert.equal(offline.variantId,'offline');assert.equal(offline.caseLabel,'Offline denial');
+  assert.equal(option.variantId,undefined);
+  option.searchVariants[0].searchTags.push('protected users');
+  assert.deepEqual(filterScenarioOptions([option],'protected users')[0].matchingVariantIds,['offline','protected']);
+  option.searchVariants[0].searchTags.splice(0);
+  assert.equal(filterScenarioOptions([option],'protected users')[0].variantId,'protected');
+  option.searchTags[0]='renamed';
+  assert.deepEqual(filterScenarioOptions([option],'pam'),[]);
+});
+
+test('SEARCH01 combines shared model terms with only the selected case terms at their original rank',()=>{
+  const option={id:'shared',title:'Kernel',searchContext:['fallback'],searchVariants:[
+    {id:'direct',label:'Direct',searchTags:['handoff']},
+    {id:'cached',label:'Cached',searchContext:['deferred']},
+  ]},context={id:'incidental',title:'Other lesson',searchContext:['kernel handoff']},options=[context,option];
+  const direct=filterScenarioOptions(options,'kernel handoff');
+  assert.deepEqual(direct.map(row=>row.id),['shared','incidental']);
+  assert.equal(direct[0].variantId,'direct');
+  assert.equal(filterScenarioOptions(options,'kernel deferred')[0].variantId,'cached');
+  assert.equal(filterScenarioOptions(options,'fallback handoff')[0].variantId,'direct');
+  assert.deepEqual(filterScenarioOptions(options,'handoff deferred'),[]);
+  option.searchContext[0]='updated';
+  assert.deepEqual(filterScenarioOptions(options,'fallback handoff'),[]);
+  assert.equal(filterScenarioOptions(options,'updated handoff')[0].variantId,'direct');
+  option.searchVariants[0].searchTags[0]='replacement';
+  assert.deepEqual(filterScenarioOptions(options,'updated handoff'),[]);
+  assert.equal(filterScenarioOptions(options,'updated replacement')[0].variantId,'direct');
+});
+
+test('uncategorized lessons stay selectable without an invented category group',()=>{
+  const app=pickerMount();try{
+    const picker=app.scenarioPicker,selected=[];
+    picker.options=[
+      {id:'uncategorized',title:'First proof',summary:'An existing lesson without an optional category'},
+      {id:'known',title:'Other proof',summary:'A categorized lesson',category:'Protocol group'},
+    ];
+    picker.onSelect=id=>selected.push(id);
+    pickerOpen(app);
+    const groupNames=()=>[...picker.list.querySelectorAll('[role="group"]')].map(row=>row.getAttribute('aria-label'));
+    assert.deepEqual(groupNames(),['Protocol group']);
+    pickerType(app,'proof');assert.deepEqual(pickerIds(app),['uncategorized','known']);
+    pickerKey(app,'Home');pickerKey(app,'Enter');assert.deepEqual(selected,['uncategorized']);
+    picker.options[0].category='Additional group';
+    pickerOpen(app);assert.deepEqual(groupNames(),['Additional group','Protocol group']);
+  }finally{pickerUnmount(app);}
+});
+
+test('SEARCH01 visible nonempty order equals keyboard order and selecting passes the case row',()=>{
+  const app=pickerMount();try{
+    const picker=app.scenarioPicker,selected=[];
+    picker.options=[
+      {id:'incidental',title:'Incidental',category:'First category',summary:'filtering'},
+      {id:'exact',title:'Exact',category:'Second category',searchTags:['filtering'],searchVariants:[{id:'case-one',label:'Unique offline case',searchTags:['offline']}]},
+      {id:'whole',title:'Filtering lesson',category:'First category'},
+    ];
+    picker.onSelect=(id,result)=>selected.push({id,result});
+    pickerOpen(app);pickerType(app,'filtering');
+    assert.deepEqual(pickerIds(app),['exact','whole','incidental']);
+    assert.deepEqual(pickerIds(app),picker.results.map(row=>row.id));
+    pickerKey(app,'ArrowDown');assert.equal(pickerActive(app).dataset.scenarioOption,'whole');
+    pickerKey(app,'Enter');assert.equal(selected[0].id,'whole');
+    pickerType(app,'offline');
+    assert.equal(pickerRows(app)[0].querySelector('.scenario-picker-case').textContent,'Unique offline case');
+    pickerKey(app,'Enter');assert.equal(selected[1].id,'exact');assert.equal(selected[1].result.variantId,'case-one');
+  }finally{pickerUnmount(app);}
+});
+
+test('SEARCH01 leaves IME and modified navigation to the editable native input',()=>{
+  const app=pickerMount();try{
+    pickerOpen(app);pickerType(app,'pkinit');
+    const before=pickerInput(app).getAttribute('aria-activedescendant');
+    for(const init of [{key:'Enter',isComposing:true},{key:'ArrowDown',ctrlKey:true},{key:'Home',shiftKey:true}]){
+      const event=new HarnessEvent('keydown',init);pickerInput(app).dispatchEvent(event);
+      assert.equal(event.defaultPrevented,false);
+      assert.equal(pickerInput(app).getAttribute('aria-activedescendant'),before);
+      assert.equal(app.labScenarioId,'basic-keycloak');
+    }
+  }finally{pickerUnmount(app);}
+});

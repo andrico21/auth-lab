@@ -1,0 +1,747 @@
+{
+  "authorship": "Independent literal statuses derived from captured Linux-PAM dispatcher/module source; never executes/imports production JS evaluator.",
+  "referencePin": "584ef2275254016ee68126f90dab6df3604124b9",
+  "evidenceScope": "Dispatcher probes continue after failure intentionally to inspect cached chains. No application service is launched. Not an application lifecycle acceptance test.",
+  "statusABI": {
+    "PAM_SUCCESS": 0,
+    "PAM_PERM_DENIED": 6,
+    "PAM_AUTH_ERR": 7,
+    "PAM_SESSION_ERR": 14,
+    "PAM_CRED_ERR": 17
+  },
+  "vectors": [
+    {
+      "service": "afs-required-deferred-failure",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_AUTH_ERR"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_PERM_DENIED"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-requisite-immediate-failure",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_AUTH_ERR"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_PERM_DENIED"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-sufficient-early-success",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-sufficient-after-failure",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_AUTH_ERR"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_PERM_DENIED"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-sufficient-failure-fallback",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-optional-nondecisive",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-optional-only-success",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-optional-only-failure",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_PERM_DENIED"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-bracket-success-jump",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-bracket-default-denial",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_AUTH_ERR"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_CRED_ERR"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_CRED_ERR"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-include-termination",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-substack-termination",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_AUTH_ERR"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_CRED_ERR"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_CRED_ERR"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-substack-failure",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_AUTH_ERR"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_PERM_DENIED"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-substack-jump-boundary",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-child-in-range",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-parent-child-overrun",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_PERM_DENIED"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-deny",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_AUTH_ERR"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_CRED_ERR"
+        },
+        {
+          "api": "pam_acct_mgmt",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_CRED_ERR"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-bracket-action-ok",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-bracket-action-bad",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_AUTH_ERR"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_PERM_DENIED"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-bracket-action-done",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-bracket-action-die",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_AUTH_ERR"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_PERM_DENIED"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_PERM_DENIED"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-bracket-action-ignore",
+      "calls": [
+        {
+          "api": "pam_authenticate",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 2,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_setcred",
+          "flags": 4,
+          "expected": "PAM_SUCCESS"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    },
+    {
+      "service": "afs-close-session-jump",
+      "calls": [
+        {
+          "api": "pam_open_session",
+          "flags": 0,
+          "expected": "PAM_SUCCESS"
+        },
+        {
+          "api": "pam_close_session",
+          "flags": 0,
+          "expected": "PAM_SESSION_ERR"
+        }
+      ],
+      "expectedEnd": "PAM_SUCCESS"
+    }
+  ]
+}

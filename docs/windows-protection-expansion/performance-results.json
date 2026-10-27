@@ -1,0 +1,968 @@
+{
+  "schemaVersion": 3,
+  "kind": "windows-protection-correction-performance-disposition",
+  "recordedAt": "2026-10-26T06:53:35.793Z",
+  "candidateCanonicalIdentity": "b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825",
+  "standalone": {
+    "path": "dist/auth-flow-studio.html",
+    "sha256": "9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694",
+    "bytes": 5583631
+  },
+  "currentCollection": {
+    "status": "not-reperformed",
+    "source": "b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825",
+    "standalone": {
+      "path": "dist/auth-flow-studio.html",
+      "sha256": "9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694",
+      "bytes": 5583631
+    },
+    "accepted": false,
+    "waived": false,
+    "reason": "Bounded classification review requests functional/source/emitted/browser/shared regressions, not an unrelated performance sweep. Functional checks and local scheduling do not confer startup-performance acceptance."
+  },
+  "retainedCandidate02": {
+    "source": "14ce8c3ec6ab5754150a3e38a839e2859f202001eb37f02968cb4856b6009ed5",
+    "standalone": {
+      "path": "dist/auth-flow-studio.html",
+      "sha256": "2d0470879948309a1571aed0a8c13b14dd573778c4685b026c4fb7ceaceb5dc3",
+      "bytes": 5571843
+    },
+    "originalIndex": {
+      "path": "docs/verification/windows-protection-expansion/corrections-01/reviewed-inputs/performance-results.json.input.txt",
+      "sha256": "3a9e7b85aff4c1557d006158c929d22d1f44ca71cdc54b3208f6fc69e64dbf57",
+      "bytes": 191555
+    },
+    "raw": [
+      {
+        "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+        "sha256": "ff2393318f62ed8b7d03ee1d20e31c9ad6445cdd4f13b81a1061f782635dc503",
+        "bytes": 600537,
+        "original": "/home/andrico/.cache/auth-lab-held-qa/windows-protection-performance-shared-02/next-performance-status.json"
+      },
+      {
+        "path": "docs/verification/windows-protection-expansion/performance-shared-02/report-schema.json",
+        "sha256": "cf07a36c0bd8deae6f16b1edce9376df821d75c6507507bbe1f00a0580a8e946",
+        "bytes": 10489,
+        "original": "/home/andrico/.cache/auth-lab-held-qa/windows-protection-performance-shared-02/report-schema.json"
+      },
+      {
+        "path": "docs/verification/windows-protection-expansion/performance-supplement-02/windows-protection-performance-status.json",
+        "sha256": "64b37a2fce25764fcc81444cc4f88aa2529b045158a953bff6538c4daab5c85c",
+        "bytes": 3660003,
+        "original": "/home/andrico/.cache/auth-lab-held-qa/windows-protection-performance-supplement-02/windows-protection-performance-status.json"
+      }
+    ],
+    "sharedMethod": {
+      "startup": "goto start to DOMContentLoaded, real custom-element heldView/player/steps/picker readiness, visible Play and search controls, then two rAF. Always normal default; index state recorded before any control action. Repeated for both post-startup index controls, yielding 2*N default-startup samples per variant/mode.",
+      "actions": "Real fill/click, required visible matching result or selected journey/positive playback progress, then two rAF. Index state changed ONLY via #index-open or #attribute-index-toggle outside timed actions, reasserted after selection. Filtering cannot replace journey or reset/change playback mode/status.",
+      "caches": "Fresh isolated serial contexts; no warmup discarded; empty context HTTP cache/storage, no claim of cold OS filesystem or process/JIT caches. One shared serial browser. Routing is equal in both variants and disables browser HTTP cache.",
+      "ordering": "Alternate baseline/candidate starting order on sample parity plus loading-mode/index-control parity; no concurrent contexts or acceptance workers.",
+      "comparison": "No CDP session, tracing, init scripts or performance observers in compare mode. All observed latency values are retained; no instrumented profile duration enters comparisons.",
+      "profiling": "Separate run with CDP Performance counters, 1 ms CPU samples and streamed traces. Startup begin marker is injected at document creation, not navigation start; diagnostic startup excludes navigation before document creation. Other markers bound actual UI actions. Trace X events clipped to marker window on same renderer thread; inclusive rows overlap and must not be summed.",
+      "bounds": "At most 200 entries per console/request/CSP log; truncation is unresolved. At most 64 MiB per raw artifact and 512 MiB total, including partial traces; exceeding a cap fails collection rather than silently losing attribution. No heap snapshots or screenshots.",
+      "materialRule": {
+        "relativeIncreaseGreaterThan": 0.25,
+        "startupAbsoluteIncreaseGreaterThanMs": 100,
+        "interactionAbsoluteIncreaseGreaterThanMs": 50
+      },
+      "variationRule": "Unresolved when (max-min)/median > 0.25 AND range > corresponding absolute material threshold on either variant. Descriptive instability heuristic, not statistical significance. Add samples and inspect raw distribution."
+    },
+    "supplementCounts": {
+      "contexts": {
+        "expected": 36,
+        "attempted": 36,
+        "completed": 36
+      },
+      "actions": {
+        "expected": 342,
+        "attempted": 342,
+        "completed": 342
+      },
+      "finiteCells": 102,
+      "comparableCells": 12,
+      "candidateOnlyCells": 90,
+      "flaggedComparableCells": 1,
+      "errors": 0,
+      "unperformed": 0
+    },
+    "flagDispositions": [
+      {
+        "id": "standalone-http/default/startup",
+        "kind": "material-regression",
+        "loadingMode": "standalone-http",
+        "indexControl": "default",
+        "action": "startup",
+        "baseline": {
+          "values": [
+            3767.9184280000045,
+            3800.766537000003,
+            3862.307268999997,
+            3894.557642999993,
+            4196.077099000002,
+            3963.5332629999903
+          ],
+          "min": 3767.9184280000045,
+          "median": 3878.432455999995,
+          "max": 4196.077099000002,
+          "rangeMs": 428.1586709999974,
+          "rangeOverMedian": 0.11039477310933424,
+          "mad": 81.38336299999355
+        },
+        "candidate": {
+          "values": [
+            4990.241301000002,
+            4935.9244749999925,
+            4886.907754,
+            5018.350989999992,
+            5007.084017000001,
+            4918.030744999996
+          ],
+          "min": 4886.907754,
+          "median": 4963.082887999997,
+          "max": 5018.350989999992,
+          "rangeMs": 131.44323599999188,
+          "rangeOverMedian": 0.0264841911703313,
+          "mad": 44.52663600000233
+        },
+        "deltaMs": 1084.6504320000022,
+        "ratio": 1.2796620656167497,
+        "materialRegression": true,
+        "variationUnresolved": false,
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+          "pointer": "/comparisons/9"
+        },
+        "owner": "andrico21",
+        "status": "open-owner-review-required",
+        "accepted": false,
+        "waived": false
+      },
+      {
+        "id": "standalone-file/default/startup",
+        "kind": "material-regression",
+        "loadingMode": "standalone-file",
+        "indexControl": "default",
+        "action": "startup",
+        "baseline": {
+          "values": [
+            3822.7367510000186,
+            4069.248089999979,
+            3850.0859730000084,
+            3682.3408969999873,
+            3752.883334000013,
+            3816.1087729999854
+          ],
+          "min": 3682.3408969999873,
+          "median": 3819.422762000002,
+          "max": 4069.248089999979,
+          "rangeMs": 386.9071929999918,
+          "rangeOverMedian": 0.10129991286887335,
+          "mad": 48.60131949999777
+        },
+        "candidate": {
+          "values": [
+            4975.140833999991,
+            4964.0782450000115,
+            4902.899541999999,
+            4890.621411,
+            4961.46532800002,
+            4817.439060000004
+          ],
+          "min": 4817.439060000004,
+          "median": 4932.18243500001,
+          "max": 4975.140833999991,
+          "rangeMs": 157.70177399998647,
+          "rangeOverMedian": 0.031974035039923694,
+          "mad": 36.72841700000572
+        },
+        "deltaMs": 1112.7596730000078,
+        "ratio": 1.2913423682947636,
+        "materialRegression": true,
+        "variationUnresolved": false,
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+          "pointer": "/comparisons/18"
+        },
+        "owner": "andrico21",
+        "status": "open-owner-review-required",
+        "accepted": false,
+        "waived": false
+      },
+      {
+        "id": "standalone-http/index-closed/ssh-pam-account-row",
+        "kind": "baseline-variation-not-candidate-regression",
+        "loadingMode": "standalone-http",
+        "indexControl": "index-closed",
+        "action": "ssh-pam-account-row",
+        "baseline": {
+          "values": [
+            185.7166970000253,
+            235.64929400000256,
+            184.94236400001682
+          ],
+          "min": 184.94236400001682,
+          "median": 185.7166970000253,
+          "max": 235.64929400000256,
+          "rangeMs": 50.70692999998573,
+          "rangeOverMedian": 0.27303377035603227,
+          "mad": 0.7743330000084825
+        },
+        "candidate": {
+          "values": [
+            157.739666999958,
+            150.65291200001957,
+            180.28742199996486
+          ],
+          "min": 150.65291200001957,
+          "median": 157.739666999958,
+          "max": 180.28742199996486,
+          "rangeMs": 29.634509999945294,
+          "rangeOverMedian": 0.1878697385607717,
+          "mad": 7.086754999938421
+        },
+        "deltaMs": -27.977030000067316,
+        "relativeIncrease": -0.1506435902209886,
+        "materialRegression": false,
+        "baselineVariable": true,
+        "candidateVariable": false,
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-supplement-02/windows-protection-performance-status.json",
+          "pointer": "/comparisons/7"
+        },
+        "owner": "andrico21",
+        "status": "open-variation-review-required",
+        "accepted": false,
+        "waived": false
+      }
+    ],
+    "acceptance": "review-required-not-passed-or-waived",
+    "scope": "Exact original sample values/order and dispositions retained, not rerun or restamped as current. Two material startup conditions and one baseline-only variation condition remain open.",
+    "applicability": {
+      "runtime": "All current250canonical application/test files and standalone2d047 remain unchanged across the complete functional and both timing collections.",
+      "finalDocumentation": "Result disposition, implementation response, entrypoint, final manifest and packaging metadata are finalized after timing. Raw run identities/source-document snapshots are retained, not restamped to those later metadata bytes.",
+      "procedure": "One finite current shared collection followed by one finite current supplement collection, serially alone after all test/browser/build/vector jobs completed. Same exact parent, samples3, methods and thresholds. No warmup, sample or outlier discarded; no unchanged-source repeats to seek green.",
+      "limits": "Three-sample descriptive distributions, one Chromium build, no cold-OS-cache or statistical-significance claim, no native Windows, G01, independent-review, release or publication acceptance."
+    },
+    "applicabilityQualification": "The original current250/2d047 wording below applies only to reviewedcandidate02at14ce8c/2d047, not to candidate03or any later correction build. Original timing/raw/source identities are retained unchanged."
+  },
+  "priorCandidate01": {
+    "index": {
+      "path": "docs/verification/windows-protection-expansion/candidate-01-inputs/performance-results.json",
+      "sha256": "eb62b5c9788ebdca1feb5fa38f53973d1836b4bda9112fc627dc9797ee004a61",
+      "bytes": 74667
+    },
+    "raw": [
+      {
+        "path": "docs/verification/windows-protection-expansion/performance-shared-01/next-performance-status.json",
+        "sha256": "4334131e2f21c6a17795c5ef97fbfd80629af8c3746cf9b944fd4fdbf7da6037",
+        "bytes": 602048,
+        "original": "/home/andrico/.cache/auth-lab-held-qa/windows-protection-performance-shared-01/next-performance-status.json"
+      },
+      {
+        "path": "docs/verification/windows-protection-expansion/performance-shared-01/report-schema.json",
+        "sha256": "cf07a36c0bd8deae6f16b1edce9376df821d75c6507507bbe1f00a0580a8e946",
+        "bytes": 10489,
+        "original": "/home/andrico/.cache/auth-lab-held-qa/windows-protection-performance-shared-01/report-schema.json"
+      },
+      {
+        "path": "docs/verification/windows-protection-expansion/performance-supplement-01/windows-protection-performance-status.json",
+        "sha256": "085986c22c618da691f1a6087f36664256df65632fcd39e04be5b208fc9350cb",
+        "bytes": 3659276,
+        "original": "/home/andrico/.cache/auth-lab-held-qa/windows-protection-performance-supplement-01/windows-protection-performance-status.json"
+      }
+    ],
+    "flagDispositions": [
+      {
+        "key": "source-http/open/idle-filter",
+        "original": {
+          "key": "source-http/open/idle-filter",
+          "loadingMode": "source-http",
+          "indexControl": "open",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              153.4489079999994,
+              143.9624240000012,
+              133.94046000000162
+            ],
+            "min": 133.94046000000162,
+            "median": 143.9624240000012,
+            "max": 153.4489079999994,
+            "rangeMs": 19.50844799999777,
+            "rangeOverMedian": 0.13551069409610392,
+            "mad": 9.4864839999982
+          },
+          "candidate": {
+            "values": [
+              1009.2466049999985,
+              956.9204599999975,
+              1056.6548309999998
+            ],
+            "min": 956.9204599999975,
+            "median": 1009.2466049999985,
+            "max": 1056.6548309999998,
+            "rangeMs": 99.73437100000228,
+            "rangeOverMedian": 0.09882061579984451,
+            "mad": 47.40822600000138
+          },
+          "deltaMs": 865.2841809999973,
+          "ratio": 7.010486326626385,
+          "materialRegression": true,
+          "variationUnresolved": false,
+          "raw": {
+            "path": "docs/verification/windows-protection-expansion/performance-shared-01/next-performance-status.json",
+            "pointer": "/comparisons/1"
+          },
+          "disposition": "open-owner-review-required",
+          "owner": "andrico21",
+          "accepted": false,
+          "waived": false,
+          "scope": "Current107ac artifact versus exact ae9dffe parent, not an inherited P6/DNSSEC result. One cell carries both a material and a variation flag."
+        },
+        "current": {
+          "loadingMode": "source-http",
+          "indexControl": "open",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              139.62726600000042,
+              115.4166750000004,
+              128.49696299999778
+            ],
+            "min": 115.4166750000004,
+            "median": 128.49696299999778,
+            "max": 139.62726600000042,
+            "rangeMs": 24.210591000000022,
+            "rangeOverMedian": 0.18841372149784147,
+            "mad": 11.130303000002641
+          },
+          "candidate": {
+            "values": [
+              146.0907049999987,
+              153.1481590000003,
+              182.1725360000055
+            ],
+            "min": 146.0907049999987,
+            "median": 153.1481590000003,
+            "max": 182.1725360000055,
+            "rangeMs": 36.08183100000679,
+            "rangeOverMedian": 0.23560081450281564,
+            "mad": 7.057454000001599
+          },
+          "deltaMs": 24.65119600000253,
+          "ratio": 1.19184263522246,
+          "materialRegression": false,
+          "variationUnresolved": false
+        },
+        "disposition": "not-reproduced-after-measured-code-correction",
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+          "pointer": "/comparisons/1"
+        },
+        "qualification": "Exact original observations retained. This is local fix/new-source measurement, not independent closure, owner acceptance or waiver; no unchanged-source rerun to seek green."
+      },
+      {
+        "key": "source-http/closed/idle-filter",
+        "original": {
+          "key": "source-http/closed/idle-filter",
+          "loadingMode": "source-http",
+          "indexControl": "closed",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              136.57152499999938,
+              142.92568000000028,
+              151.55365899999742
+            ],
+            "min": 136.57152499999938,
+            "median": 142.92568000000028,
+            "max": 151.55365899999742,
+            "rangeMs": 14.982133999998041,
+            "rangeOverMedian": 0.10482464732718438,
+            "mad": 6.354155000000901
+          },
+          "candidate": {
+            "values": [
+              996.490939999996,
+              986.5673509999979,
+              968.1859300000069
+            ],
+            "min": 968.1859300000069,
+            "median": 986.5673509999979,
+            "max": 996.490939999996,
+            "rangeMs": 28.305009999989124,
+            "rangeOverMedian": 0.028690398046619714,
+            "mad": 9.923588999998174
+          },
+          "deltaMs": 843.6416709999976,
+          "ratio": 6.902659836916612,
+          "materialRegression": true,
+          "variationUnresolved": false,
+          "raw": {
+            "path": "docs/verification/windows-protection-expansion/performance-shared-01/next-performance-status.json",
+            "pointer": "/comparisons/2"
+          },
+          "disposition": "open-owner-review-required",
+          "owner": "andrico21",
+          "accepted": false,
+          "waived": false,
+          "scope": "Current107ac artifact versus exact ae9dffe parent, not an inherited P6/DNSSEC result. One cell carries both a material and a variation flag."
+        },
+        "current": {
+          "loadingMode": "source-http",
+          "indexControl": "closed",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              153.04376900000352,
+              137.9661150000029,
+              152.43651300000784
+            ],
+            "min": 137.9661150000029,
+            "median": 152.43651300000784,
+            "max": 153.04376900000352,
+            "rangeMs": 15.07765400000062,
+            "rangeOverMedian": 0.09891103977168414,
+            "mad": 0.6072559999956866
+          },
+          "candidate": {
+            "values": [
+              174.03093200000148,
+              166.0299989999985,
+              162.1098540000021
+            ],
+            "min": 162.1098540000021,
+            "median": 166.0299989999985,
+            "max": 174.03093200000148,
+            "rangeMs": 11.921077999999397,
+            "rangeOverMedian": 0.07180074728543187,
+            "mad": 3.9201449999964098
+          },
+          "deltaMs": 13.593485999990662,
+          "ratio": 1.0891747372887621,
+          "materialRegression": false,
+          "variationUnresolved": false
+        },
+        "disposition": "not-reproduced-after-measured-code-correction",
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+          "pointer": "/comparisons/2"
+        },
+        "qualification": "Exact original observations retained. This is local fix/new-source measurement, not independent closure, owner acceptance or waiver; no unchanged-source rerun to seek green."
+      },
+      {
+        "key": "standalone-http/open/idle-filter",
+        "original": {
+          "key": "standalone-http/open/idle-filter",
+          "loadingMode": "standalone-http",
+          "indexControl": "open",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              126.22342900000513,
+              138.23697299999185,
+              117.80322500001057
+            ],
+            "min": 117.80322500001057,
+            "median": 126.22342900000513,
+            "max": 138.23697299999185,
+            "rangeMs": 20.43374799998128,
+            "rangeOverMedian": 0.16188554028254493,
+            "mad": 8.420203999994555
+          },
+          "candidate": {
+            "values": [
+              971.1847969999944,
+              1006.026601000005,
+              910.5218310000055
+            ],
+            "min": 910.5218310000055,
+            "median": 971.1847969999944,
+            "max": 1006.026601000005,
+            "rangeMs": 95.50476999999955,
+            "rangeOverMedian": 0.09833841128384148,
+            "mad": 34.8418040000106
+          },
+          "deltaMs": 844.9613679999893,
+          "ratio": 7.694172188904447,
+          "materialRegression": true,
+          "variationUnresolved": false,
+          "raw": {
+            "path": "docs/verification/windows-protection-expansion/performance-shared-01/next-performance-status.json",
+            "pointer": "/comparisons/10"
+          },
+          "disposition": "open-owner-review-required",
+          "owner": "andrico21",
+          "accepted": false,
+          "waived": false,
+          "scope": "Current107ac artifact versus exact ae9dffe parent, not an inherited P6/DNSSEC result. One cell carries both a material and a variation flag."
+        },
+        "current": {
+          "loadingMode": "standalone-http",
+          "indexControl": "open",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              159.69425500000943,
+              136.20882800000254,
+              132.4192059999914
+            ],
+            "min": 132.4192059999914,
+            "median": 136.20882800000254,
+            "max": 159.69425500000943,
+            "rangeMs": 27.275049000018043,
+            "rangeOverMedian": 0.20024435567434393,
+            "mad": 3.78962200001115
+          },
+          "candidate": {
+            "values": [
+              160.14985299999535,
+              140.1239690000075,
+              159.48094199999468
+            ],
+            "min": 140.1239690000075,
+            "median": 159.48094199999468,
+            "max": 160.14985299999535,
+            "rangeMs": 20.025883999987855,
+            "rangeOverMedian": 0.12556913540169912,
+            "mad": 0.6689110000006622
+          },
+          "deltaMs": 23.272113999992143,
+          "ratio": 1.170856135697693,
+          "materialRegression": false,
+          "variationUnresolved": false
+        },
+        "disposition": "not-reproduced-after-measured-code-correction",
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+          "pointer": "/comparisons/10"
+        },
+        "qualification": "Exact original observations retained. This is local fix/new-source measurement, not independent closure, owner acceptance or waiver; no unchanged-source rerun to seek green."
+      },
+      {
+        "key": "standalone-http/closed/idle-filter",
+        "original": {
+          "key": "standalone-http/closed/idle-filter",
+          "loadingMode": "standalone-http",
+          "indexControl": "closed",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              151.92281099999673,
+              169.5638779999863,
+              136.5864339999971
+            ],
+            "min": 136.5864339999971,
+            "median": 151.92281099999673,
+            "max": 169.5638779999863,
+            "rangeMs": 32.97744399998919,
+            "rangeOverMedian": 0.21706709994978898,
+            "mad": 15.33637699999963
+          },
+          "candidate": {
+            "values": [
+              983.1459929999983,
+              1340.5909230000107,
+              1017.9816010000068
+            ],
+            "min": 983.1459929999983,
+            "median": 1017.9816010000068,
+            "max": 1340.5909230000107,
+            "rangeMs": 357.4449300000124,
+            "rangeOverMedian": 0.35113103188591915,
+            "mad": 34.835608000008506
+          },
+          "deltaMs": 866.05879000001,
+          "ratio": 6.7006501150115545,
+          "materialRegression": true,
+          "variationUnresolved": true,
+          "raw": {
+            "path": "docs/verification/windows-protection-expansion/performance-shared-01/next-performance-status.json",
+            "pointer": "/comparisons/11"
+          },
+          "disposition": "open-owner-review-required",
+          "owner": "andrico21",
+          "accepted": false,
+          "waived": false,
+          "scope": "Current107ac artifact versus exact ae9dffe parent, not an inherited P6/DNSSEC result. One cell carries both a material and a variation flag."
+        },
+        "current": {
+          "loadingMode": "standalone-http",
+          "indexControl": "closed",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              132.306865999999,
+              138.36775200000557,
+              138.3875260000059
+            ],
+            "min": 132.306865999999,
+            "median": 138.36775200000557,
+            "max": 138.3875260000059,
+            "rangeMs": 6.080660000006901,
+            "rangeOverMedian": 0.04394564421344835,
+            "mad": 0.01977400000032503
+          },
+          "candidate": {
+            "values": [
+              166.7667369999981,
+              149.53708900000493,
+              151.65531100000953
+            ],
+            "min": 149.53708900000493,
+            "median": 151.65531100000953,
+            "max": 166.7667369999981,
+            "rangeMs": 17.229647999993176,
+            "rangeOverMedian": 0.11361058103657243,
+            "mad": 2.1182220000046073
+          },
+          "deltaMs": 13.287559000003967,
+          "ratio": 1.0960307499973219,
+          "materialRegression": false,
+          "variationUnresolved": false
+        },
+        "disposition": "not-reproduced-after-measured-code-correction",
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+          "pointer": "/comparisons/11"
+        },
+        "qualification": "Exact original observations retained. This is local fix/new-source measurement, not independent closure, owner acceptance or waiver; no unchanged-source rerun to seek green."
+      },
+      {
+        "key": "standalone-http/open/selection",
+        "original": {
+          "key": "standalone-http/open/selection",
+          "loadingMode": "standalone-http",
+          "indexControl": "open",
+          "action": "selection",
+          "baseline": {
+            "values": [
+              838.1167229999992,
+              756.4907530000055,
+              774.5607080000045
+            ],
+            "min": 756.4907530000055,
+            "median": 774.5607080000045,
+            "max": 838.1167229999992,
+            "rangeMs": 81.62596999999369,
+            "rangeOverMedian": 0.1053835666551694,
+            "mad": 18.069954999999027
+          },
+          "candidate": {
+            "values": [
+              979.9227479999972,
+              853.6081990000093,
+              972.590612999993
+            ],
+            "min": 853.6081990000093,
+            "median": 972.590612999993,
+            "max": 979.9227479999972,
+            "rangeMs": 126.31454899998789,
+            "rangeOverMedian": 0.12987432462499904,
+            "mad": 7.3321350000042
+          },
+          "deltaMs": 198.0299049999885,
+          "ratio": 1.2556673775917735,
+          "materialRegression": true,
+          "variationUnresolved": false,
+          "raw": {
+            "path": "docs/verification/windows-protection-expansion/performance-shared-01/next-performance-status.json",
+            "pointer": "/comparisons/12"
+          },
+          "disposition": "open-owner-review-required",
+          "owner": "andrico21",
+          "accepted": false,
+          "waived": false,
+          "scope": "Current107ac artifact versus exact ae9dffe parent, not an inherited P6/DNSSEC result. One cell carries both a material and a variation flag."
+        },
+        "current": {
+          "loadingMode": "standalone-http",
+          "indexControl": "open",
+          "action": "selection",
+          "baseline": {
+            "values": [
+              896.3678629999922,
+              836.6739039999957,
+              738.6017270000011
+            ],
+            "min": 738.6017270000011,
+            "median": 836.6739039999957,
+            "max": 896.3678629999922,
+            "rangeMs": 157.7661359999911,
+            "rangeOverMedian": 0.1885634716772425,
+            "mad": 59.69395899999654
+          },
+          "candidate": {
+            "values": [
+              917.8549840000051,
+              934.7082190000074,
+              853.7788460000011
+            ],
+            "min": 853.7788460000011,
+            "median": 917.8549840000051,
+            "max": 934.7082190000074,
+            "rangeMs": 80.92937300000631,
+            "rangeOverMedian": 0.08817228691978847,
+            "mad": 16.853235000002314
+          },
+          "deltaMs": 81.18108000000939,
+          "ratio": 1.097028339968411,
+          "materialRegression": false,
+          "variationUnresolved": false
+        },
+        "disposition": "not-reproduced-after-measured-code-correction",
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+          "pointer": "/comparisons/12"
+        },
+        "qualification": "Exact original observations retained. This is local fix/new-source measurement, not independent closure, owner acceptance or waiver; no unchanged-source rerun to seek green."
+      },
+      {
+        "key": "standalone-file/open/idle-filter",
+        "original": {
+          "key": "standalone-file/open/idle-filter",
+          "loadingMode": "standalone-file",
+          "indexControl": "open",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              141.87261500000022,
+              138.1037789999973,
+              119.02298999999766
+            ],
+            "min": 119.02298999999766,
+            "median": 138.1037789999973,
+            "max": 141.87261500000022,
+            "rangeMs": 22.84962500000256,
+            "rangeOverMedian": 0.16545256882509354,
+            "mad": 3.7688360000029206
+          },
+          "candidate": {
+            "values": [
+              1025.7384929999826,
+              926.6521979999961,
+              975.7554499999969
+            ],
+            "min": 926.6521979999961,
+            "median": 975.7554499999969,
+            "max": 1025.7384929999826,
+            "rangeMs": 99.08629499998642,
+            "rangeOverMedian": 0.10154828753453207,
+            "mad": 49.10325200000079
+          },
+          "deltaMs": 837.6516709999996,
+          "ratio": 7.065378348553489,
+          "materialRegression": true,
+          "variationUnresolved": false,
+          "raw": {
+            "path": "docs/verification/windows-protection-expansion/performance-shared-01/next-performance-status.json",
+            "pointer": "/comparisons/19"
+          },
+          "disposition": "open-owner-review-required",
+          "owner": "andrico21",
+          "accepted": false,
+          "waived": false,
+          "scope": "Current107ac artifact versus exact ae9dffe parent, not an inherited P6/DNSSEC result. One cell carries both a material and a variation flag."
+        },
+        "current": {
+          "loadingMode": "standalone-file",
+          "indexControl": "open",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              148.904744999978,
+              136.51168299998972,
+              130.84182099997997
+            ],
+            "min": 130.84182099997997,
+            "median": 136.51168299998972,
+            "max": 148.904744999978,
+            "rangeMs": 18.06292399999802,
+            "rangeOverMedian": 0.1323177885075183,
+            "mad": 5.6698620000097435
+          },
+          "candidate": {
+            "values": [
+              157.8765779999958,
+              154.02431499998784,
+              147.16305299999658
+            ],
+            "min": 147.16305299999658,
+            "median": 154.02431499998784,
+            "max": 157.8765779999958,
+            "rangeMs": 10.713524999999208,
+            "rangeOverMedian": 0.06955736177109474,
+            "mad": 3.8522630000079516
+          },
+          "deltaMs": 17.51263199999812,
+          "ratio": 1.128286690304737,
+          "materialRegression": false,
+          "variationUnresolved": false
+        },
+        "disposition": "not-reproduced-after-measured-code-correction",
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+          "pointer": "/comparisons/19"
+        },
+        "qualification": "Exact original observations retained. This is local fix/new-source measurement, not independent closure, owner acceptance or waiver; no unchanged-source rerun to seek green."
+      },
+      {
+        "key": "standalone-file/closed/idle-filter",
+        "original": {
+          "key": "standalone-file/closed/idle-filter",
+          "loadingMode": "standalone-file",
+          "indexControl": "closed",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              150.05827700000373,
+              137.89037800001097,
+              135.87524100000155
+            ],
+            "min": 135.87524100000155,
+            "median": 137.89037800001097,
+            "max": 150.05827700000373,
+            "rangeMs": 14.183036000002176,
+            "rangeOverMedian": 0.10285732917492653,
+            "mad": 2.0151370000094175
+          },
+          "candidate": {
+            "values": [
+              939.5855420000153,
+              979.4160629999824,
+              933.713265999977
+            ],
+            "min": 933.713265999977,
+            "median": 939.5855420000153,
+            "max": 979.4160629999824,
+            "rangeMs": 45.702797000005376,
+            "rangeOverMedian": 0.04864144344188369,
+            "mad": 5.872276000038255
+          },
+          "deltaMs": 801.6951640000043,
+          "ratio": 6.814003671814871,
+          "materialRegression": true,
+          "variationUnresolved": false,
+          "raw": {
+            "path": "docs/verification/windows-protection-expansion/performance-shared-01/next-performance-status.json",
+            "pointer": "/comparisons/20"
+          },
+          "disposition": "open-owner-review-required",
+          "owner": "andrico21",
+          "accepted": false,
+          "waived": false,
+          "scope": "Current107ac artifact versus exact ae9dffe parent, not an inherited P6/DNSSEC result. One cell carries both a material and a variation flag."
+        },
+        "current": {
+          "loadingMode": "standalone-file",
+          "indexControl": "closed",
+          "action": "idle-filter",
+          "baseline": {
+            "values": [
+              138.4200359999959,
+              153.72114900001907,
+              122.0549839999876
+            ],
+            "min": 122.0549839999876,
+            "median": 138.4200359999959,
+            "max": 153.72114900001907,
+            "rangeMs": 31.66616500003147,
+            "rangeOverMedian": 0.22876865167144161,
+            "mad": 15.301113000023179
+          },
+          "candidate": {
+            "values": [
+              151.82394699999713,
+              168.354118999996,
+              165.5264090000128
+            ],
+            "min": 151.82394699999713,
+            "median": 165.5264090000128,
+            "max": 168.354118999996,
+            "rangeMs": 16.530171999998856,
+            "rangeOverMedian": 0.09986425791426176,
+            "mad": 2.827709999983199
+          },
+          "deltaMs": 27.1063730000169,
+          "ratio": 1.1958269466135503,
+          "materialRegression": false,
+          "variationUnresolved": false
+        },
+        "disposition": "not-reproduced-after-measured-code-correction",
+        "raw": {
+          "path": "docs/verification/windows-protection-expansion/performance-shared-02/next-performance-status.json",
+          "pointer": "/comparisons/20"
+        },
+        "qualification": "Exact original observations retained. This is local fix/new-source measurement, not independent closure, owner acceptance or waiver; no unchanged-source rerun to seek green."
+      }
+    ]
+  },
+  "inheritedConditions": {
+    "path": "docs/windows-protection-expansion/preserved-release-conditions.json",
+    "sha256": "5c053624fec826a7e0e762f5b1a65314de3934b1f98fff010df7aeb1d38ccca7",
+    "bytes": 48076
+  },
+  "publication": "No owner acceptance, independent closure, release/performance waiver or publication authorization.",
+  "currentApplicability": {
+    "source": "b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825",
+    "canonicalFiles": 256,
+    "standalone": {
+      "path": "dist/auth-flow-studio.html",
+      "sha256": "9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694",
+      "bytes": 5583631
+    },
+    "runtimeChange": "Shared inspector renderer now separates public/internal/pending result disclosures; canonical models unchanged.",
+    "timingsMeasureThisBuild": false,
+    "scope": "Historical14ce/2d047 and shared timing samples retain original source/baseline/flags; none measures this renderer correction."
+  },
+  "retainedCandidate04Applicability": {
+    "descriptor": {
+      "source": "4530cbea258fa64e5ce5b484f89430526dd68b8f5709fe21647d7bd5528995a5",
+      "canonicalFiles": 254,
+      "standalone": "4499baf31b276c7d97226c6f534beda0f86209c0e45f5337227570bb472c4f05",
+      "runtimeUnchangedSinceReviewedCandidate02": false,
+      "performanceCollection": "not-reperformed",
+      "sourceAndFunctionalCollections": "Current receipts are separately regenerated; original14ce8c/2d047timing applicability is nested only under retainedCandidate02.",
+      "accepted": false,
+      "waived": false
+    },
+    "source": "4530cbea258fa64e5ce5b484f89430526dd68b8f5709fe21647d7bd5528995a5",
+    "standalone": {
+      "path": "dist/auth-flow-studio.html",
+      "sha256": "4499baf31b276c7d97226c6f534beda0f86209c0e45f5337227570bb472c4f05",
+      "bytes": 5581415
+    },
+    "scope": "Originalcandidate04applicabilitydescriptoronly; completeoriginalmetadataissuppliedinreviewed-inputs/performance-results.json.candidate04.input.txt."
+  },
+  "retainedCandidate05Applicability": {
+    "currentApplicability": {
+      "source": "0031e25c8f64de6dd986370c3b3176b71c2fd93a774ec066f0926d17c16cabb0",
+      "canonicalFiles": 255,
+      "standalone": {
+        "path": "dist/auth-flow-studio.html",
+        "sha256": "ca9fbb47b3de9a565911f44fc29ba319076e85feace235ba82cf6c20bb3a88cb",
+        "bytes": 5582983
+      },
+      "comparedToReviewedCandidate02": "changed-runtime-bytes-not-remeasured",
+      "scope": "Candidate05PAMlifetime/public-result/sourcepreparationchanged; old14ce8c/2d047timings do notmeasure thisbuild or anylatercorrection. No timingrerunrequested by recheck; alloldrawvaluesandflagsretained."
+    },
+    "currentCollection": {
+      "status": "not-reperformed",
+      "source": "0031e25c8f64de6dd986370c3b3176b71c2fd93a774ec066f0926d17c16cabb0",
+      "standalone": {
+        "path": "dist/auth-flow-studio.html",
+        "sha256": "ca9fbb47b3de9a565911f44fc29ba319076e85feace235ba82cf6c20bb3a88cb",
+        "bytes": 5582983
+      },
+      "accepted": false,
+      "waived": false,
+      "reason": "Boundedrecheckrequestsfunctional/source/emitted/browserchecks,notunrelatednative/performance sweep. NormalVMbudget/scheduleandcompiled/browserpassesare not performance acceptance."
+    },
+    "beforeCopy": {
+      "path": "docs/verification/windows-protection-expansion/corrections-04/reviewed-inputs/docs_windows-protection-expansion_performance-results.json.candidate05.input.txt",
+      "sha256": "8a703090c1a3e251a90fe1e9389295048399eaaedaa0a8e71b0a82412347fd00",
+      "bytes": 39002
+    },
+    "scope": "Exact prior candidate05metadata preserved, not a current candidate06measurement."
+  }
+}

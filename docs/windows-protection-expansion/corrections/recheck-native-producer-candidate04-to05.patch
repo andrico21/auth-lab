@@ -1,0 +1,300 @@
+--- a/tools/verification/run-windows-protection-native.mjs
++++ b/tools/verification/run-windows-protection-native.mjs
+@@ -14,7 +14,7 @@
+   --root CHECKOUT --out NEW_DIRECTORY --reference canonical-report.json
+   --playwright /external/playwright-core/index.mjs --chrome /external/chrome
+   --xvfb /external/Xvfb --xdotool /external/xdotool --scrot /external/scrot
+-  --private-tmp-ack yes [--scope all|smoke|devices|zoom|search|corrections] [--timeout-ms 14400000]
++  --private-tmp-ack yes [--scope all|smoke|devices|zoom|search|corrections|pam-lifetime] [--timeout-ms 14400000]
+ Run inside an OS-created private /tmp mount namespace (for example bwrap with
+ --bind / / --dev-bind /dev /dev --proc /proc --tmpfs /tmp). If checkout or output
+ is under /tmp, explicitly bind its parent back after --tmpfs /tmp. Inherit the
+@@ -38,6 +38,8 @@
+ existing sudo/su/password integrations in three modes. It checks literal review
+ semantics, rendered values, full/field/exact histories and rewind, not a new full
+ 1815-cell collection or performance/native-platform acceptance.
++Pam-lifetime repeats only the existing PAM password custody/public-call corrections
++and preserved account/rootok/PAM01 references in all three loading modes.
+ `;
+ if(process.argv.includes('--help')){console.log(help);process.exit(0);}
+ const options={};
+@@ -49,7 +51,7 @@
+ }
+ for(const key of ['root','out','reference','playwright','chrome','xvfb','xdotool','scrot']){assert.ok(options[key],'Required --'+key);options[key]=path.resolve(options[key]);}
+ assert.equal(options['private-tmp-ack'],'yes','Explicit isolated private /tmp launch acknowledgment required');
+-options.scope??='all';assert.ok(['all','smoke','devices','zoom','search','corrections'].includes(options.scope),'Scope all, smoke, devices, zoom, search or corrections');
++options.scope??='all';assert.ok(['all','smoke','devices','zoom','search','corrections','pam-lifetime'].includes(options.scope),'Scope all, smoke, devices, zoom, search, corrections or pam-lifetime');
+ const deadline=Number(options['timeout-ms']??14400000);assert.ok(Number.isSafeInteger(deadline)&&deadline>=60000&&deadline<=86400000,'Finite timeout 60000..86400000ms');
+ const root=fs.realpathSync(options.root),out=options.out,runner=fileURLToPath(import.meta.url),started=performance.now();
+ fs.mkdirSync(out,{recursive:false});
+@@ -62,6 +64,7 @@
+ const surfaceOnly=['devices','zoom'].includes(options.scope);
+ const searchOnly=options.scope==='search';
+ const correctionsOnly=options.scope==='corrections';
++const lifetimeOnly=options.scope==='pam-lifetime';
+ const report={schemaVersion:2,kind:'windows-protection-real-chromium',startedAt:new Date().toISOString(),argv:process.argv,options,root,out,passed:false,complete:false,sourceUnchanged:false,status:'running',matrix:[],sessions:[],screenshots:[],failures:[],subprocesses:[],runtime:{bun:process.versions.bun??null,node:process.version,platform:process.platform,arch:process.arch,executable:process.execPath,LD_LIBRARY_PATH:process.env.LD_LIBRARY_PATH??null},notEstablished:['Native Windows, domain controller, PAM host or live protocol conformance','Human screen-reader speech/comprehension or G01 acceptance','Performance acceptance, inherited-condition waiver, Astra review, release or publication approval']};
+ report.runtime.kernelRelease=kernelRelease();report.runtime.IMLIB2_LOADER_PATH=process.env.IMLIB2_LOADER_PATH??null;
+ report.runtime.pngLoader=process.env.IMLIB2_LOADER_PATH?{path:path.join(process.env.IMLIB2_LOADER_PATH,'png.so'),...digest(path.join(process.env.IMLIB2_LOADER_PATH,'png.so'))}:null;
+@@ -75,7 +78,7 @@
+   'docs/pam-foundations/dispatch-expectations.json',
+   'docs/pam-foundations/interface.json',
+ ];
+-if(correctionsOnly)inputNames.push('docs/windows-protection-expansion/corrections/expectations-01.json');
++if(correctionsOnly||lifetimeOnly)inputNames.push('docs/windows-protection-expansion/corrections/expectations-01.json');
+ function identity(){
+   const expected=json(options.reference),canonicalInputs=expected.inputs||[];
+   for(const input of canonicalInputs)assert.ok(typeof input.path==='string'&&!path.isAbsolute(input.path)&&!input.path.split('/').includes('..'),'Safe canonical input path');
+@@ -623,7 +626,13 @@
+   {id:'lab-llog04',variant:'default'},{id:'lab-llog04',variant:'directory-unreachable'},
+   {id:'lab-llog01',variant:'default'},
+ ];
+-const selectedExistingPam=correctionsOnly?correctionPam:existingPam;
++const lifetimePam=[
++  ...['default','wrong-password','expired-timestamp','different-terminal','rootpw','targetpw','runaspw','account-denied','command-denied','runas-denied','cached-policy-denied','noninteractive','nopasswd','root-caller','timestamp-reuse'].map(variant=>({id:'lab-lelev01',variant})),
++  ...['default','new-policy-denied','update-failed','directory-unreachable','directory-online','post-change-account-denied','consumer-no-change','account-expired','wrong-current-password'].map(variant=>({id:'lab-llog04',variant})),
++  {id:'lab-llog01',variant:'default'},
++  ...['default','access-denied','setuid-not-real-root','real-root-bypass'].map(variant=>({id:'lab-lelev02',variant})),
++];
++const selectedExistingPam=lifetimeOnly?lifetimePam:correctionsOnly?correctionPam:existingPam;
+ async function browserErrors(){
+   assert.deepEqual(active.errors,[],'No uncaught pageerrors');
+   assert.deepEqual(active.consoleErrors,[],'No browser console/CSP errors');
+@@ -782,6 +791,153 @@
+   return result;
+ }
+ 
++async function lifetimeEvidence(page){
++  // Keep the previous correction assertions intact, including physical account
++  // order, rootok and the PAM01 flags/status references.
++  const preserved=await correctionEvidence(page);
++  const result=await page.evaluate(()=>{
++    const a=document.querySelector('auth-flow-studio'),m=a.labModel,steps=m.steps(),objects=m.workstationInventory.artifacts,checks=[],boundaries=[];
++    const same=(name,actual,expected)=>{const passed=JSON.stringify(actual)===JSON.stringify(expected),bounded=v=>typeof v==='string'&&v.length>4096?{characters:v.length,completePrefixRecordsInCanonicalReference:true}:v;checks.push({name,passed,actual:passed?bounded(actual):actual,expected:passed?bounded(expected):expected});if(!passed)throw Error(name+': '+JSON.stringify({actual,expected}));};
++    const ok=(name,actual)=>same(name,!!actual,true);
++    const full=index=>{if(a.hasTrace)a.clearAttribute();if(index<0)a.reset();else a.selectStep(index,false);return a.heldView.snapshot();};
++    const stable=s=>JSON.stringify({clock:s.protocolClock,state:s.state,holdings:s.holdings,observations:s.observations});
++    const values=()=>Object.fromEntries([...a.querySelectorAll('#pam-configuration-panel .pam-evaluation > div')].map(e=>[e.querySelector('dt').textContent,e.querySelector('dd').textContent]));
++    const object=key=>objects.find(o=>o.artifactId===m.id+':'+key||o.key===key);
++    const histories=o=>{
++      a.heldView.trace(o.artifactId);const exact=a.traceQueue.map(s=>s.sourceStepId);a.clearAttribute();
++      a.selectAttribute(o.attributeId,false);const field=a.traceQueue.map(s=>s.sourceStepId);a.clearAttribute();
++      return {exact,field};
++    };
++    const agreement=(index,o)=>{
++      const expectedSnapshot=full(index),expected=stable(expectedSnapshot),before=stable(full(index-1)),traces=histories(o);
++      for(const kind of ['exact','field']){
++        full(index);if(kind==='exact')a.heldView.trace(o.artifactId);else a.selectAttribute(o.attributeId,false);
++        const i=a.traceQueue.findIndex(s=>s.sourceStepId===steps[index].id);
++        if(i>=0){
++          a.selectStep(i,false);same(kind+' complete snapshot agrees '+steps[index].id,stable(a.heldView.snapshot()),expected);
++        }else{
++          // Histories deliberately omit unrelated API/control events. Compare
++          // exact custody at those boundaries, not unrelated protocol state.
++          const preceding=a.traceQueue.findLastIndex(s=>steps.findIndex(row=>row.id===s.sourceStepId)<=index);
++          ok(kind+' preceding custody event '+steps[index].id,preceding>=0);a.selectStep(preceding,false);
++          same(kind+' unchanged object custody agrees '+steps[index].id,a.heldView.snapshot().holdings.filter(h=>h.artifactId===o.artifactId),expectedSnapshot.holdings.filter(h=>h.artifactId===o.artifactId));
++        }
++      }
++      same('rewind prefix '+steps[index].id,stable(full(index-1)),before);
++      same('forward prefix '+steps[index].id,stable(full(index)),expected);
++      return traces;
++    };
++    const inspect=(index,o)=>{
++      const s=full(index),h=s.holdings.find(h=>h.artifactId===o.artifactId);
++      ok('inspector current holding '+o.artifactId,!!h);a.heldView.select(h);
++      const text=a.querySelector('#held-inspector').textContent;
++      ok('real visible inspector '+o.artifactId,!a.querySelector('#held-inspector').hidden&&text.length>0);
++      boundaries.push({index,stepId:steps[index].id,artifactId:o.artifactId,cursor:s.cursor,text,values:values()});
++    };
++    const secrets=new Set(objects.filter(o=>o.type==='secret').map(o=>o.artifactId));
++    for(let index=0;index<steps.length;index++){
++      const before=full(index-1),step=steps[index];
++      for(const op of step.attributeOperations.filter(op=>secrets.has(op.instanceId)&&['use','verify'].includes(op.kind))){
++        ok('no post-release password use '+step.id+' '+op.instanceId,before.holdings.some(h=>h.artifactId===op.instanceId&&h.actorId===op.actorId)||step.attributeOperations.some(o=>o.kind==='create'&&o.instanceId===op.instanceId&&o.actorId===op.actorId));
++      }
++    }
++    const captures=[];
++    if(m.id==='lab-lelev01'){
++      const fresh=['default','wrong-password','expired-timestamp','different-terminal','rootpw','targetpw','runaspw','account-denied'].includes(m.variantId);
++      const modules=steps.map((s,index)=>({s,index})).filter(({s})=>s.pamEvaluation?.apiPhase==='authenticate'&&s.pamEvaluation.executed===true),secret=object('secret');
++      if(fresh){
++        same('one physical sudo password check',modules.length,1);
++        const module=modules[0].index,aggregate=steps.findIndex(s=>s.pamEvaluation?.apiPhase==='authenticate'&&Object.hasOwn(s.pamEvaluation,'aggregateReturn'));
++        ok('aggregate follows physical check',aggregate>module);
++        same('only physical module consumes sudo password',steps.filter(s=>s.attributeOperations.some(o=>o.instanceId===secret.artifactId&&o.kind==='use'&&o.actorId==='lelevPAM')).map(s=>s.id),[steps[module].id]);
++        same('live PAM custody immediately before module',full(module-1).holdings.some(h=>h.artifactId===secret.artifactId&&h.actorId==='lelevPAM'),true);
++        inspect(module-1,secret);agreement(module-1,secret);
++        for(const index of [module,aggregate])same('password absent after release '+steps[index].id,full(index).holdings.filter(h=>h.artifactId===secret.artifactId),[]);
++        const traces=agreement(module,secret);
++        for(const kind of ['exact','field']){
++          same(kind+' password includes physical module',traces[kind].includes(steps[module].id),true);
++          same(kind+' password excludes aggregate',traces[kind].includes(steps[aggregate].id),false);
++        }
++        agreement(aggregate,secret);
++        const record=objects.find(o=>steps[aggregate].attributeOperations.some(op=>op.instanceId===o.artifactId&&op.kind==='create'));
++        ok('aggregate evidence object exists',record);agreement(aggregate,record);inspect(aggregate,record);
++        if(m.variantId==='default')captures.push({index:aggregate,artifactId:record.artifactId,label:'sudo-aggregate'});
++        const end=full(steps.length-1).state.workstation;
++        same('sudo authentication outcome',end.authenticated,m.variantId!=='wrong-password');
++        same('sudo admission outcome',end.operation,!['wrong-password','account-denied'].includes(m.variantId));
++      }else{
++        same('no fabricated sudo password',objects.some(o=>o.type==='secret'),false);
++        same('no fabricated sudo password module',modules.length,0);
++      }
++    }
++    if(m.id==='lab-llog04'){
++      const expected={default:['PAM_SUCCESS',true],'new-policy-denied':['PAM_AUTHTOK_ERR',false],'update-failed':['PAM_AUTHTOK_ERR',false],'directory-unreachable':['PAM_AUTHINFO_UNAVAIL',false],'directory-online':['PAM_SUCCESS',true],'post-change-account-denied':['PAM_SUCCESS',false]}[m.variantId];
++      const calls=steps.map((s,index)=>({s,index})).filter(({s})=>s.from==='pamChangeApp'&&s.to==='pamChange'&&s.pamEvaluation?.api==='pam_chauthtok');
++      const returns=steps.map((s,index)=>({s,index})).filter(({s})=>s.from==='pamChange'&&s.to==='pamChangeApp'&&s.pamEvaluation?.api==='pam_chauthtok'&&Object.hasOwn(s.pamEvaluation,'aggregateReturn'));
++      same('public password call count',calls.length,expected?1:0);same('public password return count',returns.length,expected?1:0);
++      if(expected){
++        const call=calls[0],returned=returns[0],modules=steps.map((s,index)=>({s,index})).filter(({s})=>s.pamEvaluation?.executed===true&&['prelim','update'].includes(s.pamEvaluation.apiPhase));
++        same('both internal phases within single call',modules.map(({s})=>s.pamEvaluation.apiPhase),['prelim','update']);
++        ok('public call encloses internal modules',call.index<modules[0].index&&modules.at(-1).index<returned.index);
++        for(const {s,index}of [call,returned]){
++          same('public API phase '+s.id,s.pamEvaluation.apiPhase,'password');
++          same('caller-only public flags '+s.id,s.pamEvaluation.flags,'PAM_CHANGE_EXPIRED_AUTHTOK');
++          full(index);same('rendered caller flags '+s.id,values()['API call / flags'],'pam_chauthtok / PAM_CHANGE_EXPIRED_AUTHTOK');
++        }
++        for(const {s,index}of modules){
++          const flags='PAM_CHANGE_EXPIRED_AUTHTOK | '+(s.pamEvaluation.apiPhase==='prelim'?'PAM_PRELIM_CHECK':'PAM_UPDATE_AUTHTOK');
++          same('combined internal flags '+s.id,s.pamEvaluation.flags,flags);
++          full(index);same('rendered combined flags '+s.id,values()['Internal module dispatch / flags'],'pam_chauthtok / '+flags);
++        }
++        const args=objects.filter(o=>o.creator==='pamChangeApp'&&o.type==='local-call-control').map(o=>({o,v:JSON.parse(o.value)})).filter(({v})=>v.api==='pam_chauthtok');
++        const results=objects.filter(o=>o.type==='pam-aggregate').map(o=>({o,v:JSON.parse(o.value)})).filter(({v})=>v.api==='pam_chauthtok');
++        same('one caller-created password argument',args.map(({v})=>v.flags),['PAM_CHANGE_EXPIRED_AUTHTOK']);
++        same('one public result, no preliminary completion',results.map(({v})=>[v.apiPhase,v.flags,v.status]),[['password','PAM_CHANGE_EXPIRED_AUTHTOK',expected[0]]]);
++        for(let index=call.index;index<returned.index;index++){
++          const snap=full(index),w=snap.state.workstation;
++          same('password pending '+steps[index].id,w.pamResults?.password??null,null);
++          same('public invocation remains pending '+steps[index].id,w.pamEvaluation.apiPending,true);
++          same('DOM aggregate remains pending '+steps[index].id,values()['API aggregate return'],'Pending: current API call has not completed');
++          same('no preliminary public result delivered '+steps[index].id,snap.holdings.some(h=>h.actorId==='pamChangeApp'&&objects.some(o=>o.artifactId===h.artifactId&&o.type==='pam-aggregate'&&['prelim','update'].includes(JSON.parse(o.value).apiPhase))),false);
++        }
++        for(const {index,s}of [call,...modules,returned]){
++          const record=index===call.index?args[0].o:index===returned.index?results[0].o:objects.find(o=>s.attributeOperations.some(op=>op.instanceId===o.artifactId&&op.kind==='create'));
++          ok('boundary object '+s.id,record);agreement(index,record);inspect(index,record);
++        }
++        const aggregate=results[0].o;
++        same('final result physically sent and received at public return',returned.s.attributeOperations.filter(op=>op.instanceId===aggregate.artifactId&&['send','receive'].includes(op.kind)).map(op=>[op.kind,op.actorId]),[['send','pamChange'],['receive','pamChangeApp']]);
++        const completed=full(returned.index);
++        same('caller holds the actual final public result',completed.holdings.some(h=>h.artifactId===aggregate.artifactId&&h.actorId==='pamChangeApp'),true);
++        agreement(returned.index,aggregate);
++        full(returned.index);same('completed public password result',values()['API aggregate return'],expected[0]);
++        const end=full(steps.length-1);
++        same('session admission outcome',end.state.workstation.session,expected[1]);
++        same('generation G2 only on authority success',end.holdings.some(h=>h.artifactId==='lab-llog04:backend-generation-g2'&&h.actorId==='pamPasswordAuthority'),expected[0]==='PAM_SUCCESS');
++        if(m.variantId==='post-change-account-denied'){
++          same('post-change account performed',end.state.workstation.postChangeAccountChecked,true);
++          same('post-change account denial retained',end.state.workstation.admitted,false);
++        }
++        if(m.variantId==='default'){
++          const pendingRecord=objects.find(o=>o.type==='pam-return'&&modules[0].s.attributeOperations.some(op=>op.instanceId===o.artifactId&&op.kind==='create'));
++          captures.push({index:modules[0].index,artifactId:pendingRecord.artifactId,label:'password-pending'},{index:returned.index,artifactId:aggregate.artifactId,label:'password-complete'});
++        }
++      }else same('no password API invented for unsupported/rejected consumer',steps.some(s=>s.pamEvaluation?.api==='pam_chauthtok'),false);
++    }
++    return {modelId:m.id,variant:m.variantId,subfixture:m.subfixtureId??null,checks,boundaries,captures};
++  });
++  log('pam-lifetime-evidence.jsonl',{mode:active.mode,mechanism:'real Chromium DOM and existing full/field/exact history controllers; per-boundary controller checks, not native OS claims',...result});
++  if(active.mode==='source-http')for(const capture of result.captures){
++    await page.evaluate(({index,artifactId})=>{
++      const a=document.querySelector('auth-flow-studio');if(a.hasTrace)a.clearAttribute();a.selectStep(index,false);
++      const h=a.heldView.snapshot().holdings.find(h=>h.artifactId===artifactId);assertHolding(h);
++      function assertHolding(value){if(!value)throw Error('Screenshot current holding missing');}
++      a.heldView.select(h);a.querySelector('#held-inspector').scrollIntoView({block:'center'});
++    },capture);
++    await settle(page);capture.screenshot=await screenshot(page,capture.label);
++  }
++  return {preserved,...result};
++}
++
+ async function decisionEvidence(page){
+   const observed=await page.evaluate(()=>{
+     const a=document.querySelector('auth-flow-studio'),s=a.protocolSnapshot(),panel=a.querySelector('#lesson-decisions');
+@@ -829,7 +985,7 @@
+   report.before=identity();reference=json(options.reference);
+   search=json(path.join(root,inputNames[0]));routing=json(path.join(root,inputNames[2]));
+   pamDispatch=json(path.join(root,inputNames[3]));
+-  if(correctionsOnly)corrections=json(path.join(root,inputNames.at(-1)));
++  if(correctionsOnly||lifetimeOnly)corrections=json(path.join(root,inputNames.at(-1)));
+   assert.equal(reference.schemaVersion,2);assert.equal(reference.kind,'windows-protection-source-held-prefix-check');
+   for(const field of ['passed','complete','sourceUnchanged'])assert.equal(reference[field],true,'Accepted canonical reference '+field);
+   assert.deepEqual(reference.failures,[],'No source reference failures');
+@@ -858,6 +1014,13 @@
+     fixtures=fixtures.filter(f=>cases.has(f.caseId));assert.equal(new Set(fixtures.map(f=>f.caseId)).size,cases.size,'Every targeted correction case selected');
+     report.notEstablished.push('Complete current1815-cell/browser/performance collection: this correction run is deliberately targeted. Earlier broad receipts remain bound to candidate02.');
+   }
++  if(lifetimeOnly){
++    const members=new Set(['change-prelim-failure','change-unsupported','change-update-failure','change-success']);
++    fixtures=fixtures.filter(f=>f.modelId==='lab-pam01'&&f.variantId==='password-change-required'&&members.has(f.subfixtureId));
++    assert.equal(fixtures.length,4,'All four existing PAM01 password lifecycle references');
++    report.notEstablished.push('Only PAM lifetime correction cells are rerun; closed Windows findings and prior broad browser/performance receipts are not rerun or promoted.');
++    report.lifetimeDenominators={existingConsumerVariants:lifetimePam.length,sudoFreshPasswordVariants:8,sudoNoPromptControls:7,reachedPasswordChangeVariants:6,noPasswordChangeControls:3,localLoginControls:1,suAccountRootokControls:4,pam01References:4,loadingModes:3};
++  }
+   if(surfaceOnly){fixtures=[];report.notEstablished.push('Complete canonical/query/control matrix: this affected/broadened collection repeats only its declared three-mode device surfaces.');}
+   if(searchOnly){fixtures=[];report.notEstablished.push('Complete canonical/PAM/device matrix: this affected picker collection repeats only 29 queries, playback preservation, route/copy and comparison activation in three modes. Prior complete case/device observations retain their original artifact identity.');}
+   report.selectedFixtures=fixtures.map(f=>({caseId:f.caseId,executionId:f.executionId}));
+@@ -874,12 +1037,12 @@
+       planned(mode+'/setup');
+       for(const f of fixtures)for(const stage of ['canonical','geometry-compact','geometry-expanded','evidence'])
+         planned(mode+'/'+f.executionId+'/'+stage,{modelId:f.modelId,caseId:f.caseId,variantId:f.variantId,subfixtureId:f.subfixtureId??null});
+-      for(const s of correctionsOnly?[]:search.fixtures)planned(mode+'/search/'+s.query);
+-      for(const name of correctionsOnly?['browser-errors']:searchOnly?['running-search','routes','comparisons','browser-errors']:['running-search','routes','comparisons','stale-context','browser-errors'])planned(mode+'/'+name);
++      for(const s of correctionsOnly||lifetimeOnly?[]:search.fixtures)planned(mode+'/search/'+s.query);
++      for(const name of correctionsOnly||lifetimeOnly?['browser-errors']:searchOnly?['running-search','routes','comparisons','browser-errors']:['running-search','routes','comparisons','stale-context','browser-errors'])planned(mode+'/'+name);
+       for(const row of searchOnly?[]:selectedExistingPam)planned(mode+'/existing-pam/'+pamKey(row));
+-      for(const id of searchOnly||correctionsOnly?[]:legacySurfaces)for(const shape of ['compact','expanded'])planned(mode+'/desktop/'+id+'/'+shape);
++      for(const id of searchOnly||correctionsOnly||lifetimeOnly?[]:legacySurfaces)for(const shape of ['compact','expanded'])planned(mode+'/desktop/'+id+'/'+shape);
+     }
+-    for(const device of searchOnly||correctionsOnly?[]:options.scope==='zoom'?['zoom200']:devices){
++    for(const device of searchOnly||correctionsOnly||lifetimeOnly?[]:options.scope==='zoom'?['zoom200']:devices){
+       planned(mode+'/'+device+'/setup');planned(mode+'/'+device+'/browser-errors');
+       for(const id of deviceSurfaces)for(const shape of ['compact','expanded'])planned(mode+'/'+device+'/'+id+'/'+shape);
+     }
+@@ -913,6 +1076,7 @@
+         for(const value of [false,true])await cell(mode+'/'+f.executionId+'/geometry-'+(value?'expanded':'compact'),()=>shape(page,f.modelId,value,f));
+         await cell(mode+'/'+f.executionId+'/evidence',async()=>{
+           await activateFixture(page,f);
++          if(lifetimeOnly)return lifetimeEvidence(page);
+           if(correctionsOnly)return correctionEvidence(page);
+           if(f.modelId==='lab-pam01'){
+             await page.locator('#speed').focus();await key(page,'End');return pamTraversal(page);
+@@ -933,8 +1097,8 @@
+           return {initial,terminal,ordinaryShareComparison};
+         });
+       }
+-      for(const s of correctionsOnly?[]:search.fixtures)await cell(mode+'/search/'+s.query,()=>searchQuery(page,s));
+-      if(!correctionsOnly){
++      for(const s of correctionsOnly||lifetimeOnly?[]:search.fixtures)await cell(mode+'/search/'+s.query,()=>searchQuery(page,s));
++      if(!correctionsOnly&&!lifetimeOnly){
+         await cell(mode+'/running-search',()=>runningSearch(page));
+         await cell(mode+'/routes',()=>routes(page,mode));
+         await cell(mode+'/comparisons',()=>comparisons(page));
+@@ -942,6 +1106,7 @@
+       }
+       for(const row of searchOnly?[]:selectedExistingPam)await cell(mode+'/existing-pam/'+pamKey(row),async()=>{
+         await choose(page,row.id,row.variant);await page.locator('#speed').focus();await key(page,'End');
++        if(lifetimeOnly)return lifetimeEvidence(page);
+         if(correctionsOnly)return correctionEvidence(page);
+         const result=await pamTraversal(page),observations=result.observations.map(r=>r.observation).filter(Boolean);
+         if(row.unavailable)assert.ok(observations.some(o=>[o.raw,o.aggregate].includes('PAM_AUTHINFO_UNAVAIL')),'Actual unavailable PAM result rendered');
+@@ -955,7 +1120,7 @@
+         assert.equal(destination.variant,variant||'local-login-success','Explanation opens its explicit named case/default, not stale PAM context');
+         return {...row,...result};
+       });
+-      for(const id of searchOnly||correctionsOnly?[]:legacySurfaces)for(const value of [false,true])await cell(mode+'/desktop/'+id+'/'+(value?'expanded':'compact'),async()=>{
++      for(const id of searchOnly||correctionsOnly||lifetimeOnly?[]:legacySurfaces)for(const value of [false,true])await cell(mode+'/desktop/'+id+'/'+(value?'expanded':'compact'),async()=>{
+         const result=await shape(page,id,value);
+         if(mode==='source-http'&&!value)result.screenshot=await screenshot(page,mode+'-desktop-'+id);
+         return result;
+@@ -963,7 +1128,7 @@
+       await cell(mode+'/browser-errors',browserErrors);
+     }
+     await active?.context.close().catch(()=>{});active=null;
+-    for(const device of searchOnly||correctionsOnly?[]:options.scope==='zoom'?['zoom200']:devices){
++    for(const device of searchOnly||correctionsOnly||lifetimeOnly?[]:options.scope==='zoom'?['zoom200']:devices){
+       if(aborted)break;
+       let devicePage;
+       const ok=await cell(mode+'/'+device+'/setup',async()=>{

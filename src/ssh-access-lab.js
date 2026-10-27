@@ -1,4 +1,6 @@
 import { labAttribute, labP, labStep, labScenario } from './lab-common.js';
+import {pamExistingSshStep,PAM_EXPLAIN_LINK,PAM_SSH_STATE_PATHS} from './pam-existing-integration.js';
+import {pamApiBoundary} from './pam-stack-evaluator.js';
 
 // These are deterministic teaching fixtures, not live credentials or a trace
 // captured from a particular product release. No cryptography or network I/O is
@@ -86,6 +88,7 @@ const sshHostActor = sshActor('Remote host · sshd','SSH server / account policy
 
 function sshBuilder(meta,actors,initialState={}) {
   const definitions={},steps=[],values={},bindings={};
+  let pamConfigurationRecorded=false;
   const prefix='ssh'+meta.id.replace(/^lab-ssh-/,'').replace(/[^a-zA-Z0-9]/g,'_')+'_';
   const add=(key,name,meaning,origin,purpose,example,standard='RFC 4252',source=sshAuth,options={})=>{
     const id=prefix+key;
@@ -113,6 +116,36 @@ function sshBuilder(meta,actors,initialState={}) {
     const interactionType=from===to?'local-operation':from==='user'||to==='user'?'human':(['sshAgent','pam','sssd'].includes(from)&&['sshCli','sshHost','pam','sssd'].includes(to))||(['sshAgent','pam','sssd'].includes(to)&&['sshCli','sshHost','pam','sssd'].includes(from))?'local-ipc':'network';
     const step=labStep(eventId,title,from,to,'ssh',interactionType==='local-operation'?'internal':interactionType==='local-ipc'?'local-ipc':'backchannel',summary,detail,[...new Set(enriched.map(o=>o.attributeId))],packet,checks,enriched);
     step.sshStage=key;step.interactionType=interactionType;
+    if(!meta.id.startsWith('lab-ssh-gss-')){
+      const sssd=meta.id.startsWith('lab-ssh-sssd-'),publickey=!sssd;
+      const declaredPamStatus=sssd?operations.find(operation=>typeof operation.value==='string'&&/^PAM_[A-Z_]+$/.test(operation.value))?.value:undefined;
+      const phase=sssd&&['sssd-pam-result','lookup-pam-failure'].includes(key)?'authenticate':key==='account-policy'||publickey&&key==='host-policy'?'account':key==='channel'?'open':null;
+      const failure=effects.find(effect=>effect.path==='failure')?.value?.reason;
+      const status=declaredPamStatus||(sssd&&key==='lookup-pam-failure'?'PAM_AUTHINFO_UNAVAIL':phase==='authenticate'&&['lab-ssh-sssd-bob','lab-ssh-sssd-domain'].includes(meta.id)?'PAM_AUTH_ERR':phase==='account'&&(meta.id.endsWith('-account')||failure==='account_access_denied')?'PAM_PERM_DENIED':'PAM_SUCCESS');
+      const evaluatedPhase=publickey&&phase==='account'&&failure&&failure!=='account_access_denied'?null:phase;
+      pamExistingSshStep(step,{phase:evaluatedPhase,status,publickey});
+      if(evaluatedPhase){
+        const owner=sssd?'pam':'sshHost';
+        const records=[];
+        if(!pamConfigurationRecorded){records.push(['pamConfigRecord','Selected sshd PAM configuration',step.pamConfiguration,'pam-configuration']);pamConfigurationRecorded=true;}
+        records.push(['pamDecisionRecord_'+key,'Configured PAM '+evaluatedPhase+' execution',step.pamEvaluations,'pam-evaluation-'+key]);
+        for(const [field,label,value,instance] of records){
+          const fieldId=add(field,label,'Local configuration/dispatch record; never an SSH packet field.','Selected sshd Linux-PAM profile','Separate module return, aggregate and caller decision.',JSON.stringify(value),'Pinned Linux-PAM fixture','https://github.com/linux-pam/linux-pam/tree/584ef2275254016ee68126f90dab6df3604124b9',{creator:owner,holders:[owner],instance});
+          const operation=ops('create',owner,[fieldId],'Record local PAM configuration and phase execution.')[0],exactValueRef=eventId+':'+field;
+          values[exactValueRef]=operation.value;step.attributeOperations.push({...operation,sourceEventId:eventId,exactValueRef});step.fields.push(fieldId);
+        }
+        effects.push(sshPut(PAM_SSH_STATE_PATHS.evaluation,step.pamEvaluation),sshPut(PAM_SSH_STATE_PATHS.results+'.'+evaluatedPhase,step.pamAggregate));
+      }
+      if(sssd&&['pam-sshd-result','lookup-sshd-failure','account-result'].includes(key)){
+        const returnedPhase=key==='account-result'?'account':'authenticate';
+        step.pamEvaluation={...pamApiBoundary(step.pamConfiguration.configurationId,returnedPhase,'Completed PAM aggregate returned to sshd; no new module invocation'),aggregateReturn:status};
+        step.pamEvaluations=[];step.pamAggregate=status;
+        effects.push(sshPut(PAM_SSH_STATE_PATHS.evaluation,step.pamEvaluation),sshPut(PAM_SSH_STATE_PATHS.results+'.'+returnedPhase,status));
+      }
+      meta.pamConfiguration=step.pamConfiguration||meta.pamConfiguration;
+      meta.pamStatePaths=PAM_SSH_STATE_PATHS;
+      meta.relatedLessons=[...(meta.relatedLessons||[]).filter(link=>link.id!=='lab-pam01'),PAM_EXPLAIN_LINK];
+    }
     step.protocolEffects=effects;steps.push(step);return step;
   };
   const local=(key,title,actor,summary,detail,operations,effects=[],checks=[])=>stage(key,title,actor,actor,summary,detail,operations,[],effects,checks);

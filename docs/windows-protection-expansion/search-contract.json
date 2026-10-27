@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "authority": "worker-plan.html section 8.1 (tables 18-19); local WP0 catalog inventory from published ae9dffe2da2bca33c01daee1eaacfcbedfc95aa0",
+  "expectationProvenance": "search-fixtures.json was authored from plan-required operator queries and frozen catalog identities before production ranking implementation; expected answers do not import or call production evaluators",
+  "metadataApi": {
+    "module": "src/scenario-search-metadata.js",
+    "export": "createScenarioSearchMetadata(modelOrPreset, attributes={})",
+    "input": "Actual model or preset descriptor; optional ids/catalogAttributeIds and keyed attribute definitions. Core must supply its own actual attribute IDs. No steps(), withVariant(), field histories or trace parser is invoked.",
+    "output": {
+      "searchTags": "Canonical deduplicated base aliases, taught title clauses and legacy keywords through adaptScenarioSearchTags exactly once",
+      "searchIdentifiers": "Stable row ID and actual attribute IDs/names; separately indexed exact values",
+      "searchContext": "Only base summary/category/status/real protocol/workspace/family/objective/prerequisites, primitive profile strings and attribute names/standards",
+      "searchVariants": "Validated descriptors {id,label,searchTags,searchIdentifiers,searchContext}; labels/descriptions remain case-specific"
+    },
+    "validation": "validateScenarioSearchMetadata(entries) requires exact registry/catalog identity coverage, nonblank/nonduplicate authored tags and valid curated variant targets; unknown rows and duplicate case IDs throw",
+    "legacyAdapter": "adaptScenarioSearchTags(searchTags=[],keywords=[]) is the sole legacy keyword adapter; downstream consumers never flatten keywords again",
+    "registryTotals": {"baselineScenarios":306,"baselinePresets":12,"overlappingScenarioPresetIdentities":2,"core":1,"newModels":11,"uniqueDestinations":328,"authoredBaseTags":652,"baselineVariantDescriptors":768,"newCanonicalCases":110,"curatedVariantAliasDestinations":15}
+  },
+  "ranking": {
+    "export": "filterScenarioOptions(options,query)",
+    "tier0": "Exact normalized identifier, title or curated tag phrase",
+    "tier1": "All terms are whole tokens in the same destination title/tags/identifiers; input token order does not matter",
+    "tier2": "At least one boundary prefix in strong fields, with every term otherwise matched; minimum prefix length is three characters",
+    "tier3": "At least one whole-token or boundary-prefix incidental summary/profile/category/attribute-context match; all terms still must match the same destination",
+    "ties": "Stable original options order; duplicate query terms/tags/context and oversized lists do not add score",
+    "normalization": "NFKD accent folding, lowercase, whitespace collapse, punctuation/separator folding except significant plus. CODE_VERIFIER, EAP-TLS and full IDs remain exact indexed inputs. SPAKE2 does not prefix-match SPAKE2+, while spake finds both; compact RunAsPPL/run as ppl aliases are explicit.",
+    "acronyms": "No arbitrary interior substring search; lsa cannot match tlsalert or TLS alert. Prefixes begin at token boundaries only.",
+    "cache": "WeakMap per option; content signature includes ID/title/category/summary/searchText/tags/identifiers/context/variant descriptors. In-place nested metadata edits invalidate. Only lightweight descriptors are serialized; no evaluator work per keystroke.",
+    "emptyQuery": "Original identity order, one row per identity; existing category browsing groups are retained",
+    "sameDestination": "Base fields may combine with one case's fields; terms from separate cases can never satisfy one result"
+  },
+  "resultApi": {
+    "identity": "Original row id, once per scenario/preset identity",
+    "baseMatch": "Original option object (no running-demo mutation)",
+    "uniqueCase": "Shallow result row adds variantId and caseLabel",
+    "multipleCases": "Shallow result row adds matchingVariantIds, matchingCases:[{id,label}], and caseLabel='N matching cases'; no variantId/default is silently selected",
+    "caseRelevance": "If base matches, only stronger case-specific matches can redirect to a case; otherwise base browsing selection stays unchanged. All independently matching stronger cases remain choices, not merely the best-ranked case.",
+    "pickerCallback": "onSelect(id,result): first argument is backward-compatible; second is the exact currently displayed result captured before close()",
+    "visibleOrder": "Nonempty picker DOM is a flat ranked list with category labels; DOM order equals this.results and Arrow/Enter order exactly. Empty-query category headings are unchanged.",
+    "privacy": "Tags are data only, never hidden DOM prose or a tag cloud; visible labels are original titles, summaries, categories, profiles and concise actual case labels"
+  },
+  "integration": [
+    "Import createScenarioSearchMetadata into app.js. Merge its return into every preset, Core and scenario option; remove old flattened searchText, including variant labels and model.protocol || oidc fallback. Provide actual attributes for presets and Core.",
+    "Library nonempty queries render the same filterScenarioOptions ordered option rows directly, including Core and presets; never convert matches to a Set and re-filter catalog order.",
+    "Callback receives (id,result). A unique result.variantId navigates to that exact validated case; result.matchingCases opens an explicit matching-case choice UI. No match silently becomes normal success/default.",
+    "Search typing/clearing/highlighting does not select or reset a running demonstration. Preserve selected title restoration, no-result Enter, focus/status/counts, IME composition and modified native navigation.",
+    "Add scenario-search-metadata.js before app.js in standalone flattening order. The new module has no imports, dependencies, filesystem access, runtime fetches or global platform API requirements. scenario-picker.js remains independently importable."
+  ],
+  "allowedAdditionalRelevantDestinations": {
+    "filtering": ["lab-welev01","lab-ad-forest-sid-filtering"],
+    "token filtering": ["lab-wra02","lab-welev01"],
+    "remote uac": ["lab-wra02"],
+    "LocalAccountTokenFilterPolicy": ["lab-wra02"],
+    "lsa/LSA/lsass": ["lab-wlog02"],
+    "credguard": ["lab-win-rdp-remote-credential-guard","lab-wlog02"],
+    "remote credguard": ["lab-win-rdp-rcg-kerberos-unavailable"],
+    "protected users offline": ["lab-wlog04/protected-user","lab-wprot03/offline-unavailable"],
+    "workgroup share": ["lab-smb-nonjoined-ntlm","lab-smb-nonjoined-kerberos","lab-wlog08","lab-wra03","other SMB nonjoined denial/comparison cases teaching that share workflow"],
+    "sudo": ["lab-melev02"],
+    "run as admin": ["lab-welev02","lab-welev03","lab-welev04"],
+    "pam/pam.d": ["lab-llog01","lab-llog02","lab-llog03","lab-llog04","lab-lelev01","lab-lelev02","lab-ssh-sssd-success","lab-ssh-sssd-account"],
+    "sufficient": ["lab-pam01/sufficient-early-success","lab-pam01/sufficient-after-failure","lab-pam01/sufficient-failure-fallback"],
+    "substack": ["lab-pam01/substack-termination","lab-pam01/substack-failure","lab-pam01/substack-jump-boundary"],
+    "role binding": ["lab-k8s05","lab-k8s07","lab-k8s10","lab-k8s15"],
+    "dnssec forwarder": ["lab-dnssec22"],
+    "pkinit": ["lab-ad-pkinit-binding","lab-ad-pkinit-trust","lab-ad-pkinit-kdc-trust","lab-wlog05"],
+    "spake": ["all frozen lab-krb-spake-* and lab-pake-spake2-* / lab-pake-spake2plus-* mechanism lessons, with distinct visible names"]
+  },
+  "testsAuthored": ["tests/scenario-picker.test.mjs: normalization, tier ranking, dedup/ties, nested mutation invalidation, case isolation, significant punctuation, DOM/keyboard order, callback case result, IME/native modified keys plus preserved existing interaction checks","tests/scenario-search-metadata.test.mjs: exact catalog coverage, independent operator-query ranks/cases, no evaluator construction, target validation, title/ID/attribute preservation"],
+  "sourceCaptureBoundary": "Search makes discovery claims from the immutable plan and existing accepted catalog titles/descriptors/attribute names only. It does not introduce or recapture platform/protocol behavior claims; those sources and new case evaluations belong to the Windows/PAM slices.",
+  "verificationStatus": "Authored only: no build, test, formatter, browser or performance run by this slice. Parent owns integrated source/standalone/keyboard and performance checks.",
+  "preservedGates": "Human G01 and six inherited performance conditions remain open; automated search checks cannot waive them. No commit or push authorized."
+}

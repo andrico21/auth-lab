@@ -1,0 +1,31 @@
+{
+  "evidence": "Source-backed symbolic Linux-PAM model; dispatch has no RFC and the fixture is not a distribution default",
+  "pin": "584ef2275254016ee68126f90dab6df3604124b9",
+  "sourceSnapshots": 23,
+  "manualRevision": "Raw source/manual/header snapshots at exact chosen commit; generated release placeholders preserved",
+  "discrepancies": [
+    {
+      "issue": "Historical dispatcher comment mentions second chauthtok cached chain",
+      "resolution": "Actual pinned switch enables cached chains only for setcred and close-session. pam_password.c performs PRELIM then UPDATE dispatches; implementation follows executable source."
+    },
+    {
+      "issue": "Plan S35 initially cited a different historical snapshot",
+      "resolution": "limits.conf and pam_limits implementation recaptured at selected common pin; no latest/default claim."
+    },
+    {
+      "issue": "Installed PAM differs from reference source pin",
+      "resolution": "Observed Ubuntu package1.7.0-5ubuntu3.2 and actual artifact hashes recorded. Native ctypes helper is not executed by worker and makes no pin-build/default-stack claim."
+    }
+  ],
+  "native": "Unperformed by worker; parent runs isolated helper once after integration",
+  "preserved": [
+    "Original17 Unix ledger unchanged",
+    "Offline cache stale knowledge and no fresh TGT",
+    "su realUID rootok",
+    "sudoers/timestamp/NOPASSWD and selected authentication identity",
+    "SSSD identity/provider/remote authority",
+    "SSH publickey account/session without PAM password authentication",
+    "Mac Linux comparison links only"
+  ],
+  "forbidden": "No /etc/pam.d or host login/sudo/sshd changes, no real password authentication or resource mutation. Temporary directory holds pure deterministic native comparison configs only."
+}

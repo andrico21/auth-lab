@@ -1,0 +1,1841 @@
+ <!DOCTYPE html>
+		<html
+			class="layout layout-holy-grail   show-table-of-contents conceptual show-breadcrumb default-focus"
+			lang="en-us"
+			dir="ltr"
+			data-authenticated="false"
+			data-auth-status-determined="false"
+			data-target="docs"
+			x-ms-format-detection="none"
+		>
+			
+		<head>
+			<title>How to Configure Protected Accounts | Microsoft Learn</title>
+			<meta charset="utf-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+			<meta name="color-scheme" content="light dark" />
+
+			<meta name="description" content="Learn more about: How to Configure Protected Accounts" />
+			<link rel="canonical" href="https://learn.microsoft.com/en-us/windows-server/security/windows-authentication/how-to-configure-protected-accounts" /> 
+
+			<!-- Non-customizable open graph and sharing-related metadata -->
+			<meta name="twitter:card" content="summary_large_image" />
+			<meta name="twitter:site" content="@MicrosoftLearn" />
+			<meta property="og:type" content="website" />
+			<meta property="og:image:alt" content="Microsoft Learn" />
+			<meta property="og:image" content="https://learn.microsoft.com/en-us/media/open-graph-image.png" />
+			<!-- Page specific open graph and sharing-related metadata -->
+			<meta property="og:title" content="How to Configure Protected Accounts" />
+			<meta property="og:url" content="https://learn.microsoft.com/en-us/windows-server/security/windows-authentication/how-to-configure-protected-accounts" />
+			<meta property="og:description" content="Learn more about: How to Configure Protected Accounts" />
+			<meta name="platform_id" content="1a9122f3-0de5-9705-134e-7f87a961efad" /> 
+			<meta name="locale" content="en-us" />
+			 
+			<meta name="uhfHeaderId" content="MSDocsHeader-WindowsServer" />
+
+			<meta name="page_type" content="conceptual" />
+
+			<!--page specific meta tags-->
+			
+
+			<!-- custom meta tags -->
+			
+		<meta name="breadcrumb_path" content="/windows-server/breadcrumbs/toc.json" />
+	
+		<meta name="feedback_system" content="Standard" />
+	
+		<meta name="recommendations" content="true" />
+	
+		<meta name="ms.service" content="windows-server" />
+	
+		<meta name="ms.subservice" content="security" />
+	
+		<meta name="ms.update-cycle" content="1095-days" />
+	
+		<meta name="ms.topic" content="how-to" />
+	
+		<meta name="ms.author" content="roharwoo" />
+	
+		<meta name="author" content="robinharwood" />
+	
+		<meta name="ms.date" content="2016-10-12T00:00:00Z" />
+	
+		<meta name="ms.custom" content="sfi-image-nochange" />
+	
+		<meta name="document_id" content="03b835af-4b6c-ebdd-7691-5abb647d2794" />
+	
+		<meta name="document_version_independent_id" content="1c129a52-0bc8-246a-bc59-95a0036badcf" />
+	
+		<meta name="updated_at" content="2026-02-16T18:34:00Z" />
+	
+		<meta name="original_content_git_url" content="https://github.com/MicrosoftDocs/windowsserverdocs-pr/blob/live/WindowsServerDocs/security/windows-authentication/how-to-configure-protected-accounts.md" />
+	
+		<meta name="gitcommit" content="https://github.com/MicrosoftDocs/windowsserverdocs-pr/blob/a67a8c2abcdc729692a24f904778f0b5e8f67773/WindowsServerDocs/security/windows-authentication/how-to-configure-protected-accounts.md" />
+	
+		<meta name="git_commit_id" content="a67a8c2abcdc729692a24f904778f0b5e8f67773" />
+	
+		<meta name="site_name" content="Docs" />
+	
+		<meta name="depot_name" content="MSDN.WindowsServerDocs-pr" />
+	
+		<meta name="schema" content="Conceptual" />
+	
+		<meta name="toc_rel" content="../toc.json" />
+	
+		<meta name="pdf_url_template" content="https://learn.microsoft.com/pdfstore/en-us/MSDN.WindowsServerDocs-pr/{branchName}{pdfName}" />
+	
+		<meta name="feedback_product_url" content="" />
+	
+		<meta name="feedback_help_link_type" content="" />
+	
+		<meta name="feedback_help_link_url" content="" />
+	
+		<meta name="word_count" content="3686" />
+	
+		<meta name="asset_id" content="security/windows-authentication/how-to-configure-protected-accounts" />
+	
+		<meta name="moniker_range_name" content="" />
+	
+		<meta name="item_type" content="Content" />
+	
+		<meta name="source_path" content="WindowsServerDocs/security/windows-authentication/how-to-configure-protected-accounts.md" />
+	
+		<meta name="previous_tlsh_hash" content="E530C1B2B72D4661FFD16A4BEC5AD992E1E0A54869F0F7C422B7A992541B2F375B6CA87AC65363C8637347E303A3BB4F57D6E336B0BC32E545A4189CDA1820C142CC3FB5C6" />
+	
+		<meta name="github_feedback_content_git_url" content="https://github.com/MicrosoftDocs/windowsserverdocs/blob/main/WindowsServerDocs/security/windows-authentication/how-to-configure-protected-accounts.md" />
+	
+		<meta name="markdown_url" content="https://learn.microsoft.com/en-us/windows-server/security/windows-authentication/how-to-configure-protected-accounts?accept=text/markdown" />
+	 
+		<meta name="cmProducts" content="https://microsoft-devrel.poolparty.biz/DevRelOfferingOntology/fc3f72c2-fb6f-4cea-95ee-b444e52254ee" data-source="generated" />
+	
+		<meta name="cmProducts" content="https://authoring-docs-microsoft.poolparty.biz/devrel/bcbcbad5-4208-4783-8035-8481272c98b8" data-source="generated" />
+	
+		<meta name="cmProducts" content="https://authoring-docs-microsoft.poolparty.biz/devrel/b1cfdec6-b0c3-4209-818c-736879856e0e" data-source="generated" />
+	
+		<meta name="spProducts" content="https://microsoft-devrel.poolparty.biz/DevRelOfferingOntology/f12cf087-582d-48ac-a085-0c19adf1e391" data-source="generated" />
+	
+		<meta name="spProducts" content="https://authoring-docs-microsoft.poolparty.biz/devrel/43b2e5aa-8a6d-4de2-a252-692232e5edc8" data-source="generated" />
+	
+		<meta name="spProducts" content="https://authoring-docs-microsoft.poolparty.biz/devrel/2d0723c1-cf38-4c30-ab3d-5df787b33270" data-source="generated" />
+	
+
+			<!-- Apply persisted/system theme before first paint to prevent wrong-theme flash when scripts are deferred. -->
+			<script id="theme-preference">
+				(function () {
+			try {
+				var stored = localStorage.getItem('theme');
+				var theme = /^(light|dark|high-contrast)$/.test(stored)
+					? stored
+					: matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.classList.add('theme-' + theme);
+			} catch (e) {}
+		})();;
+			</script>
+
+			<script id="atlas-layout-preferences">
+				(function () {
+			try {
+				var state = JSON.parse(localStorage.getItem('atlas-layout-preferences') || '{}');
+				var view = state["docs-layout-persistence"] || {};
+				var excludesKey = "";
+				var blocked = {};
+				if (excludesKey) {
+					var exclusions = JSON.parse(localStorage.getItem('atlas-layout-exclusions') || '{}');
+					if (Object.prototype.hasOwnProperty.call(exclusions, excludesKey)) {
+						var scoped = exclusions[excludesKey];
+						if (scoped) {
+							if (typeof scoped === 'object') blocked = scoped;
+						}
+					}
+				}
+				var html = document.documentElement;
+				for (var c in view) {
+					if (Object.prototype.hasOwnProperty.call(blocked, c)) continue;
+					if (view[c]) html.classList.add(c);
+					else html.classList.remove(c);
+				}
+			} catch (e) {}
+		})();;
+			</script>
+
+			<!-- assets and js globals -->
+			
+			<link rel="stylesheet" href="/static/assets/0.4.03574.8308-9505b1c8/styles/site.css" />
+			
+			<script src="https://wcpstatic.microsoft.com/mscc/lib/v2/wcp-consent.js"></script>
+			<!-- Keep this URL in sync with oneDSScriptSelector in instrumentation/one-ds.ts. -->
+			<script async src="https://js.monitor.azure.com/scripts/c/ms.jsll-4.min.js"></script>
+			
+
+			<!-- msdocs global object -->
+			<script id="msdocs-script">
+		var msDocs = {
+  "environment": {
+    "accessLevel": "online",
+    "azurePortalHostname": "portal.azure.com",
+    "reviewFeatures": false,
+    "supportLevel": "production",
+    "systemContent": true,
+    "siteName": "learn",
+    "legacyHosting": false
+  },
+  "data": {
+    "contentLocale": "en-us",
+    "contentDir": "ltr",
+    "userLocale": "en-us",
+    "userDir": "ltr",
+    "pageTemplate": "Conceptual",
+    "layoutStateStorageKey": "docs-layout-persistence",
+    "brand": "",
+    "context": {},
+    "standardFeedback": true,
+    "showFeedbackReport": false,
+    "feedbackHelpLinkType": "",
+    "feedbackHelpLinkUrl": "",
+    "feedbackSystem": "Standard",
+    "feedbackGitHubRepo": "",
+    "feedbackProductUrl": "",
+    "extendBreadcrumb": false,
+    "isEditDisplayable": true,
+    "isPrivateUnauthorized": false,
+    "hideViewSource": false,
+    "isPermissioned": false,
+    "hasRecommendations": true
+  },
+  "functions": {}
+};;
+	</script>
+
+			<!-- base scripts, msdocs global should be before this -->
+			<script
+				src="/static/assets/0.4.03574.8308-9505b1c8/scripts/en-us/index-docs.js"
+				async
+			></script>
+			
+
+			<!-- json-ld -->
+			
+		<script >bazadebezolkohpepadr="1182004339"</script><script type="text/javascript" src="https://learn.microsoft.com/akam/13/4673f7a7"  defer></script></head>
+	
+			<body
+				id="body"
+				data-bi-name="body"
+				class="layout-body "
+				lang="en-us"
+				dir="ltr"
+			>
+				<header class="layout-body-header background-color-body-medium">
+		<div class="header-holder has-default-focus">
+			
+		<a
+			href="#main"
+			
+			style="z-index: 1070"
+			class="outline-color-text visually-hidden-until-focused position-fixed inner-focus focus-visible top-0 left-0 right-0 padding-xs text-align-center background-color-body"
+			
+		>
+			Skip to main content
+		</a>
+	
+		<a
+			href="#"
+			data-skip-to-ask-learn
+			style="z-index: 1070"
+			class="outline-color-text visually-hidden-until-focused position-fixed inner-focus focus-visible top-0 left-0 right-0 padding-xs text-align-center background-color-body"
+			hidden
+		>
+			Skip to Ask Learn chat experience
+		</a>
+	
+
+			<div hidden id="cookie-consent-holder" data-test-id="cookie-consent-container"></div>
+			<!-- Unsupported browser warning -->
+			<div
+				id="unsupported-browser"
+				style="background-color: white; color: black; padding: 16px; border-bottom: 1px solid grey;"
+				hidden
+			>
+				<div style="max-width: 800px; margin: 0 auto;">
+					<p style="font-size: 24px">This browser is no longer supported.</p>
+					<p style="font-size: 16px; margin-top: 16px;">
+						Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+					</p>
+					<div style="margin-top: 12px;">
+						<a
+							href="https://go.microsoft.com/fwlink/p/?LinkID=2092881 "
+							style="background-color: #0078d4; border: 1px solid #0078d4; color: white; padding: 6px 12px; border-radius: 2px; display: inline-block;"
+						>
+							Download Microsoft Edge
+						</a>
+						<a
+							href="https://learn.microsoft.com/en-us/lifecycle/faq/internet-explorer-microsoft-edge"
+							style="background-color: white; padding: 6px 12px; border: 1px solid #505050; color: #171717; border-radius: 2px; display: inline-block;"
+						>
+							More info about Internet Explorer and Microsoft Edge
+						</a>
+					</div>
+				</div>
+			</div>
+			<!-- site header -->
+			<div
+				id="ms--site-header"
+				data-test-id="site-header-wrapper"
+				itemscope="itemscope"
+				itemtype="http://schema.org/Organization"
+			>
+				<div
+					id="ms--mobile-nav"
+					class="site-header display-none-tablet padding-inline-none gap-none"
+					data-bi-name="mobile-header"
+					data-test-id="mobile-header"
+				></div>
+				<div
+					id="ms--primary-nav"
+					class="site-header display-none display-flex-tablet"
+					data-bi-name="L1-header"
+					data-test-id="primary-header"
+				></div>
+				<div
+					id="ms--secondary-nav"
+					class="site-header display-none display-flex-tablet"
+					data-bi-name="L2-header"
+					data-test-id="secondary-header"
+					
+				></div>
+			</div>
+			
+		<!-- banner -->
+		<div data-banner>
+			<div id="disclaimer-holder"></div>
+			
+		</div>
+		<!-- banner end -->
+	
+		</div>
+	</header>
+				 <section
+					id="layout-body-menu"
+					class="layout-body-menu border-right display-flex background-color-body-medium"
+					data-bi-name="menu"
+			  >
+					
+		<div
+			id="left-container"
+			class="left-container display-none padding-none display-block-tablet width-full display-none-until-layout-restored"
+			data-toc-container="true"
+		>
+			<div
+				id="ms--toc-content"
+				class="padding-left-sm padding-right-none padding-bottom-sm height-full"
+			>
+				<nav
+					id="affixed-left-container"
+					class="margin-top-xxs-tablet position-sticky display-flex flex-direction-column width-full"
+					aria-label="Primary"
+					data-bi-name="left-toc"
+					role="navigation"
+				>
+					<div
+						id="ms--collapsible-toc-header"
+						class="display-flex flex-direction-row-reverse justify-content-center align-items-center margin-bottom-xxs margin-right-xxs"
+					>
+						<button
+							type="button"
+							class="button button-clear button-sm inner-focus"
+							data-collapsible-toc-toggle
+							aria-expanded="true"
+							hidden
+							aria-controls="ms--toc-content"
+							aria-label="Table of contents"
+						>
+							<span class="icon icon-mirrored-rtl" aria-hidden="true">
+								<span
+									class="docon docon-panel-left-contract display-none-layout-menu-collapsed"
+								></span>
+								<span
+									class="docon docon-panel-left-expand display-none display-inline-layout-menu-collapsed"
+								></span>
+							</span>
+						</button>
+						<div
+							id="ms--collapsible-toc-moniker-slot"
+							class="flex-grow-1 display-none-layout-menu-collapsed"
+						></div>
+					</div>
+				</nav>
+			</div>
+		</div>
+	
+			  </section>
+
+				<main
+					id="main"
+					role="main"
+					class="layout-body-main "
+					data-bi-name="content"
+					lang="en-us"
+					dir="ltr"
+				>
+					
+			<div
+		id="ms--content-header"
+		class="content-header default-focus border-bottom-none"
+		data-bi-name="content-header"
+	>
+		<div class="content-header-controls margin-xxs margin-inline-sm-tablet">
+			<button
+				type="button"
+				class="contents-button button button-sm margin-right-xxs"
+				data-bi-name="contents-expand"
+				aria-haspopup="true"
+				data-contents-button
+			>
+				<span class="icon" aria-hidden="true"><span class="docon docon-menu"></span></span>
+				<span class="contents-expand-title"> Table of contents </span>
+			</button>
+			<button
+				type="button"
+				class="ap-collapse-behavior ap-expanded button button-sm"
+				data-bi-name="ap-collapse"
+				aria-controls="action-panel"
+			>
+				<span class="icon" aria-hidden="true"><span class="docon docon-exit-mode"></span></span>
+				<span>Exit editor mode</span>
+			</button>
+		</div>
+	</div> 
+		<div
+			id="action-panel"
+			role="region"
+			aria-label="Action Panel"
+			class="action-panel"
+			tabindex="-1"
+		></div>
+	
+			<div
+				data-main-column
+				class="reading-width margin-inline-auto layout-padding padding-top-none padding-top-sm-tablet padding-bottom-sm"
+			>
+				<div>
+					
+		<div id="article-header" class="background-color-body margin-bottom-xs display-none-print">
+			<div class="display-flex align-items-center justify-content-space-between">
+				
+		<details
+			id="article-header-breadcrumbs-overflow-popover"
+			class="popover popover-left"
+			data-for="article-header-breadcrumbs"
+		>
+			<summary
+				class="button button-clear button-primary button-sm inner-focus"
+				aria-label="All breadcrumbs"
+			>
+				<span class="icon" aria-hidden="true">
+					<span class="docon docon-more"></span>
+				</span>
+			</summary>
+			<div id="article-header-breadcrumbs-overflow" class="popover-content"></div>
+		</details>
+
+		<bread-crumbs
+			id="article-header-breadcrumbs"
+			role="group"
+			aria-label="Breadcrumbs"
+			data-test-id="article-header-breadcrumbs"
+			class="overflow-hidden flex-grow-1 margin-right-sm margin-right-md-tablet margin-right-lg-desktop margin-left-negative-xxs padding-left-xxs"
+		></bread-crumbs>
+	 
+		<div
+			id="article-header-page-actions"
+			class="opacity-none margin-left-auto display-flex flex-wrap-no-wrap align-items-stretch"
+		>
+			
+		<button
+			class="button button-sm border-none inner-focus display-none-tablet flex-shrink-0 "
+			data-bi-name="ask-learn-assistant-entry"
+			data-test-id="ask-learn-assistant-modal-entry-mobile"
+			data-ask-learn-modal-entry
+			
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-label="Ask Learn"
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+		</button>
+		<button
+			class="button button-sm display-none display-inline-flex-tablet display-none-desktop flex-shrink-0 margin-right-xxs border-color-ask-learn "
+			data-bi-name="ask-learn-assistant-entry"
+			
+			data-test-id="ask-learn-assistant-modal-entry-tablet"
+			data-ask-learn-modal-entry
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+		<button
+			class="button button-sm display-none flex-shrink-0 display-inline-flex-desktop margin-right-xxs border-color-ask-learn "
+			data-bi-name="ask-learn-assistant-entry"
+			
+			data-test-id="ask-learn-assistant-flyout-entry"
+			data-ask-learn-flyout-entry
+			data-flyout-button="toggle"
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-controls="ask-learn-flyout"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+	 
+
+			<details class="popover popover-right" id="article-header-page-actions-overflow">
+				<summary
+					class="justify-content-flex-start button button-clear button-sm button-primary inner-focus"
+					aria-label="More actions"
+					aria-expanded="false"
+					title="More actions"
+				>
+					<span class="icon" aria-hidden="true">
+						<span class="docon docon-more-vertical"></span>
+					</span>
+				</summary>
+				<div class="popover-content">
+					
+		<button
+			type="button"
+			id="ms--focus-mode-button"
+			data-focus-mode
+			data-bi-name="focus-mode-entry"
+			data-page-action-item="overflow-all"
+			data-popover-close
+			class="button button-clear button-sm button-block justify-content-flex-start text-align-left inner-focus display-none display-inline-flex-tablet"
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-glasses"></span>
+			</span>
+			<span>Reading mode</span>
+		</button>
+	 
+		<button
+			data-page-action-item="overflow-mobile"
+			type="button"
+			class="display-block-layout-menu-collapsed button-block button-sm inner-focus button button-clear display-none-tablet justify-content-flex-start text-align-left"
+			data-bi-name="contents-expand"
+			data-contents-button
+			data-popover-close
+		>
+			<span class="icon" aria-hidden="true"
+				><span class="docon docon-editor-list-bullet"></span
+			></span>
+			<span class="contents-expand-title">Table of contents</span>
+		</button>
+	 
+		<a
+			id="lang-link-overflow"
+			class="button-sm inner-focus button button-clear button-block justify-content-flex-start text-align-left"
+			data-bi-name="language-toggle"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			data-read-in-link
+			href="#"
+			hidden
+		>
+			<span class="icon" aria-hidden="true" data-read-in-link-icon>
+				<span class="docon docon-locale-globe"></span>
+			</span>
+			<span data-read-in-link-text>Read in English</span>
+		</a>
+	
+					
+		<button
+			type="button"
+			class="collection button button-clear button-sm button-block justify-content-flex-start text-align-left inner-focus"
+			data-list-type="collection"
+			data-bi-name="collection"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			data-popover-close
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-circle-addition"></span>
+			</span>
+			<span class="collection-status">Add</span>
+		</button>
+	 
+		<button
+			type="button"
+			class="collection button button-block button-clear button-sm justify-content-flex-start text-align-left inner-focus"
+			data-list-type="plan"
+			data-bi-name="plan"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			data-popover-close
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-circle-addition"></span>
+			</span>
+			<span class="plan-status">Add to Plans</span>
+		</button>
+	 
+					
+		<a
+			data-contenteditbtn
+			class="button button-clear button-block button-sm inner-focus justify-content-flex-start text-align-left text-decoration-none"
+			data-bi-name="edit"
+			data-page-action-item="overflow-all"
+			data-check-hidden="true"
+			
+			href="https://github.com/MicrosoftDocs/windowsserverdocs/blob/main/WindowsServerDocs/security/windows-authentication/how-to-configure-protected-accounts.md"
+			data-original_content_git_url="https://github.com/MicrosoftDocs/windowsserverdocs-pr/blob/live/WindowsServerDocs/security/windows-authentication/how-to-configure-protected-accounts.md"
+			data-original_content_git_url_template="{repo}/blob/{branch}/WindowsServerDocs/security/windows-authentication/how-to-configure-protected-accounts.md"
+			data-pr_repo=""
+			data-pr_branch=""
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-edit-outline"></span>
+			</span>
+			<span>Edit</span>
+		</a>
+	  
+		<hr class="margin-block-xxs" />
+		
+				<button
+					class="button button-block button-clear button-sm justify-content-flex-start text-align-left inner-focus"
+					type="button"
+					data-bi-name="copy-markdown"
+					data-page-action-item="overflow-all"
+					data-copy-markdown
+					data-copy-state="idle"
+					data-check-hidden="true"
+				>
+					<span class="icon color-primary" aria-hidden="true">
+						<span data-show-when="idle" class="docon docon-code-lang"></span>
+						<span data-show-when="loading" class="loader" hidden></span>
+						<span data-show-when="success" class="docon docon-check-mark" hidden></span>
+					</span>
+					<span>Copy Markdown</span>
+				</button>
+		   
+				<button
+					class="button button-block button-clear button-sm justify-content-flex-start text-align-left inner-focus"
+					type="button"
+					data-bi-name="print"
+					data-page-action-item="overflow-all"
+					data-popover-close
+					data-print-page
+					data-check-hidden="true"
+				>
+					<span class="icon color-primary" aria-hidden="true">
+						<span class="docon docon-print"></span>
+					</span>
+					<span>Print</span>
+				</button>
+		  
+	
+				</div>
+			</details>
+		</div>
+	
+			</div>
+		</div>
+	  
+		<!-- privateUnauthorizedTemplate is hidden by default -->
+		<div unauthorized-private-section data-bi-name="permission-content-unauthorized-private" hidden>
+			<hr class="hr margin-top-xs margin-bottom-sm" />
+			<div class="notification notification-info">
+				<div class="notification-content">
+					<p class="margin-top-none notification-title">
+						<span class="icon" aria-hidden="true"
+							><span class="docon docon-exclamation-circle-solid"></span
+						></span>
+						<span>Note</span>
+					</p>
+					<p class="margin-top-none authentication-determined not-authenticated">
+						Access to this page requires authorization. You can try <a class="docs-sign-in" href="#" data-bi-name="permission-content-sign-in">signing in</a> or <a  class="docs-change-directory" data-bi-name="permisson-content-change-directory">changing directories</a>.
+					</p>
+					<p class="margin-top-none authentication-determined authenticated">
+						Access to this page requires authorization. You can try <a class="docs-change-directory" data-bi-name="permisson-content-change-directory">changing directories</a>.
+					</p>
+				</div>
+			</div>
+		</div>
+	
+					<div class="content"><h1 id="how-to-configure-protected-accounts">How to Configure Protected Accounts</h1></div>
+					
+		<div
+			id="article-metadata"
+			data-bi-name="article-metadata"
+			data-test-id="article-metadata"
+			class="page-metadata-container display-flex gap-xxs justify-content-space-between align-items-center flex-wrap-wrap"
+		>
+			
+		<div class="margin-block-xxs">
+			<ul class="metadata page-metadata" data-bi-name="page info" lang="en-us" dir="ltr">
+				 <li class="display-inline">Applies to: ✅&nbsp;<a href="https://learn.microsoft.com/windows-server/get-started/windows-server-release-info" target="_blank">Windows Server 2025</a>, ✅&nbsp;<a href="https://learn.microsoft.com/windows-server/get-started/windows-server-release-info" target="_blank">Windows Server 2022</a>, ✅&nbsp;<a href="https://learn.microsoft.com/windows-server/get-started/windows-server-release-info" target="_blank">Windows Server 2019</a>, ✅&nbsp;<a href="https://learn.microsoft.com/windows-server/get-started/windows-server-release-info" target="_blank">Windows Server 2016</a></li>
+			</ul>
+		</div>
+	 
+				<div
+					id="user-feedback"
+					class="margin-block-xxs display-none display-none-print"
+					hidden
+					data-hide-on-archived
+				>
+					
+		<button
+			id="user-feedback-button"
+			data-test-id="conceptual-feedback-button"
+			class="button button-sm button-clear button-primary display-none"
+			type="button"
+			data-bi-name="user-feedback-button"
+			data-user-feedback-button
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-like"></span>
+			</span>
+			<span>Feedback</span>
+		</button>
+	
+				</div>
+		  
+		</div>
+	 
+		<div data-id="ai-summary" class="display-none-print">
+			<div id="ms--ai-summary-cta" class="margin-top-xs display-flex align-items-center">
+				<span class="icon" aria-hidden="true">
+					<span class="docon docon-sparkle-fill gradient-text-vivid"></span>
+				</span>
+				<button
+					id="ms--ai-summary"
+					type="button"
+					class="tag tag-sm tag-suggestion margin-left-xxs"
+					data-test-id="ai-summary-cta"
+					data-bi-name="ai-summary-cta"
+					data-an="ai-summary"
+				>
+					<span class="ai-summary-cta-text">
+						Summarize this article for me
+					</span>
+				</button>
+			</div>
+			<!-- Slot where the client will render the summary card after the user clicks the CTA -->
+			<div id="ms--ai-summary-header" class="margin-top-xs"></div>
+		</div>
+	 
+		<nav
+			id="center-doc-outline"
+			class="doc-outline display-none-desktop display-none-print margin-bottom-sm"
+			data-bi-name="intopic toc"
+			aria-label="In this article"
+		>
+			<h2 id="ms--in-this-article" class="title is-6 margin-block-xs">
+				In this article
+			</h2>
+		</nav>
+	 <div class="content"><p>Through Pass-the-hash (PtH) attacks, an attacker can authenticate to a remote server or service by using the underlying NTLM hash of a user's password (or other credential derivatives). Microsoft has previously <a href="https://www.microsoft.com/download/details.aspx?id=36036" data-linktype="external">published guidance</a> to mitigate pass-the-hash attacks.  Windows Server 2012 R2  includes new features to help mitigate such attacks further. For more information about other security features that help protect against credential theft, see <a href="/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn408190(v=ws.11)" data-linktype="absolute-path">Credentials Protection and Management</a>. This topic explains how to configure the following new features:</p>
+<ul>
+<li><p><a href="#protected-users" data-linktype="self-bookmark">Protected Users</a></p>
+</li>
+<li><p><a href="#authentication-policies" data-linktype="self-bookmark">Authentication policies</a></p>
+</li>
+<li><p><a href="#authentication-policy-silos" data-linktype="self-bookmark">Authentication policy silos</a></p>
+</li>
+</ul>
+<p>There are additional mitigations built in to Windows 8.1 and Windows Server 2012 R2 to help protect against credential theft, which are covered in the following topic:</p>
+<ul>
+<li><a href="/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn408187(v=ws.11)" data-linktype="absolute-path">LSA Protection</a></li>
+</ul>
+<h2 id="protected-users">Protected Users</h2>
+<p>Protected Users is a new global security group to which you can add new or existing users. Windows 8.1 devices and  Windows Server 2012 R2  hosts have special behavior with members of this group to provide better protection against credential theft. For a member of the group, a Windows 8.1 device or a  Windows Server 2012 R2  host does not cache credentials that are not supported for Protected Users. Members of this group have no additional protection if they are logged on to a device that runs a version of Windows earlier than Windows 8.1.</p>
+<p>Members of the Protected Users group who are signed-on to Windows 8.1 devices and  Windows Server 2012 R2  hosts can <em>no longer</em> use:</p>
+<ul>
+<li><p>Default credential delegation (CredSSP) - plaintext credentials are not cached even when the <strong>Allow delegating default credentials</strong> policy is enabled</p>
+</li>
+<li><p>Windows Digest - plaintext credentials are not cached even when they are enabled</p>
+</li>
+<li><p>NTLM - NTOWF is not cached</p>
+</li>
+<li><p>Kerberos long term keys - Kerberos ticket-granting ticket (TGT) is acquired at logon and cannot be re-acquired automatically</p>
+</li>
+<li><p>Sign-on offline - the cached logon verifier is not created</p>
+</li>
+</ul>
+<p>If the domain functional level is  Windows Server 2012 R2 , members of the group can no longer:</p>
+<ul>
+<li><p>Authenticate by using NTLM authentication</p>
+</li>
+<li><p>Use Data Encryption Standard (DES) or RC4 cipher suites in Kerberos pre-authentication</p>
+</li>
+<li><p>Be delegated by using unconstrained or constrained delegation</p>
+</li>
+<li><p>Renew user tickets (TGTs) beyond the initial 4-hour lifetime</p>
+</li>
+</ul>
+<p>To add users to the group, you can use <a href="/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc753515(v=ws.11)" data-linktype="absolute-path">UI tools</a> such as Active Directory Administrative Center (ADAC) or Active Directory Users and Computers, or a command-line tool such as <a href="/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/cc732423(v=ws.11)" data-linktype="absolute-path">Dsmod group</a>, or the Windows PowerShell <a href="/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/ee617210(v=technet.10)" data-linktype="absolute-path">Add-ADGroupMember</a> cmdlet. Accounts for services and computers <em>should not</em> be members of the Protected Users group. Membership for those accounts provides no local protections because the password or certificate is always available on the host.</p>
+<div class="WARNING">
+<p>Warning</p>
+<p>The authentication restrictions have no workaround, which means that members of highly privileged groups such as the Enterprise Admins group or the Domain Admins group are subject to the same restrictions as other members of the Protected Users group. If all members of such groups are added to the Protected Users group, it is possible for all of those accounts to be locked out. You should never add all highly privileged accounts to the Protected Users group until you have thoroughly tested the potential impact.</p>
+</div>
+<p>Members of the Protected Users group must be able to authenticate by using Kerberos with Advanced Encryption Standards (AES). This method requires AES keys for the account in Active Directory. The built-in Administrator does not have an AES key unless the password was changed on a domain controller that runs  Windows Server 2008  or later. Additionally, any account, which has a password that was changed at a domain controller that runs an earlier version of Windows Server, is locked out. Therefore, follow these best practices:</p>
+<ul>
+<li><p>Do not test in domains unless <strong>all domain controllers run  Windows Server 2008  or later</strong>.</p>
+</li>
+<li><p><strong>Change password</strong> for all domain accounts that were created <em>before</em> the domain was created. Otherwise, these accounts cannot be authenticated.</p>
+</li>
+<li><p><strong>Change password</strong> for each user before adding the account to the Protected Users group or ensure that the password was changed recently on a domain controller that runs  Windows Server 2008  or later.</p>
+</li>
+</ul>
+<h3 id="requirements-for-using-protected-accounts">Requirements for using protected accounts</h3>
+<p>Protected accounts have the following deployment requirements:</p>
+<ul>
+<li><p>To provide client-side restrictions for Protected Users, hosts must run Windows 8.1 or  Windows Server 2012 R2 . A user only has to sign-on with an account that is a member of a Protected Users group. In this case, the Protected Users group can be created by <a href="/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc816944(v=ws.10)" data-linktype="absolute-path">transferring the primary domain controller (PDC) emulator role</a> to a domain controller that runs  Windows Server 2012 R2 . After that group object is replicated to other domain controllers, the PDC emulator role can be hosted on a domain controller that runs an earlier version of Windows Server.</p>
+</li>
+<li><p>To provide domain controller-side restrictions for Protected Users, that is to restrict usage of NTLM authentication, and other restrictions, the domain functional level must be  Windows Server 2012 R2 . For more information about functional levels, see <a href="../../identity/ad-ds/active-directory-functional-levels" data-linktype="relative-path">Understanding Active Directory Domain Services (AD DS) Functional Levels</a>.</p>
+</li>
+</ul>
+<h3 id="troubleshoot-events-related-to-protected-users">Troubleshoot events related to Protected Users</h3>
+<p>This section covers new logs to help troubleshoot events that are related to Protected Users and how Protected Users can impact changes to troubleshoot either ticket-granting tickets (TGT) expiration or delegation issues.</p>
+<h4 id="new-logs-for-protected-users">New logs for Protected Users</h4>
+<p>Two new operational administrative logs are available to help troubleshoot events that are related to Protected Users: Protected User - Client Log and Protected User Failures - Domain Controller Log. These new logs are located in Event Viewer and are disabled by default. To enable a log, click <strong>Applications and Services Logs</strong>, click <strong>Microsoft</strong>, click <strong>Windows</strong>, click <strong>Authentication</strong>, and then click the name of the log and click <strong>Action</strong> (or right-click the log) and click <strong>Enable Log</strong>.</p>
+<p>For more information about events in these logs, see <a href="/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn486813(v=ws.11)" data-linktype="absolute-path">Authentication Policies and Authentication Policy Silos</a>.</p>
+<h4 id="troubleshoot-tgt-expiration">Troubleshoot TGT expiration</h4>
+<p>Normally, the domain controller sets the TGT lifetime and renewal based on the domain policy as shown in the following Group Policy Management Editor window.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_tgtexpiration.png" alt="Screenshot of the Group Policy Management Editor window showing how the domain controller sets the TGT lifetime and renewal based on the domain policy" data-linktype="relative-path"></p>
+<p>For <strong>Protected Users</strong>, the following settings are hard-coded:</p>
+<ul>
+<li><p>Maximum lifetime for user ticket: 240 minutes</p>
+</li>
+<li><p>Maximum lifetime for user ticket renewal: 240 minutes</p>
+</li>
+</ul>
+<h4 id="troubleshoot-delegation-issues">Troubleshoot delegation issues</h4>
+<p>Previously, if a technology that uses Kerberos delegation was failing, the client account was checked to see if <strong>Account is sensitive and cannot be delegated</strong> was set. However, if the account is a member of <strong>Protected Users</strong>, it might not have this setting configured in Active Directory Administrative Center (ADAC). As a result, check the setting and group membership when you troubleshoot delegation issues.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_tshootdelegation.gif" alt="Screenshot showing where to check Account is sensitive and cannot be delegated UI element" data-linktype="relative-path"></p>
+<h3 id="audit-authentication-attempts">Audit authentication attempts</h3>
+<p>To audit authentication attempts explicitly for the members of the <strong>Protected Users</strong> group, you can continue to collect security log audit events or collect the data in the new operational administrative logs. For more information about these events, see <a href="/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn486813(v=ws.11)" data-linktype="absolute-path">Authentication Policies and Authentication Policy Silos</a>.</p>
+<h3 id="provide-dc-side-protections-for-services-and-computers">Provide DC-side protections for services and computers</h3>
+<p>Accounts for services and computers cannot be members of <strong>Protected Users</strong>. This section explains which domain controller-based protections can be offered for these accounts:</p>
+<ul>
+<li><p>Reject NTLM authentication: Only configurable via <a href="/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/jj865674(v=ws.10)" data-linktype="absolute-path">NTLM block policies</a>.</p>
+</li>
+<li><p>Reject Data Encryption Standard (DES) in Kerberos pre-authentication:  Windows Server 2012 R2  domain controllers do not accept DES for computer accounts unless they are configured for DES only because every version of Windows released with Kerberos also supports RC4.</p>
+</li>
+<li><p>Reject RC4 in Kerberos pre-authentication: not configurable.</p>
+<div class="NOTE">
+<p>Note</p>
+<p>Although it is possible to <a href="https://blogs.msdn.com/b/openspecification/archive/20../windows-configurations-for-kerberos-supported-encryption-type.aspx" data-linktype="external">change the configuration of supported encryption types</a>, it is not recommended to change those settings for computer accounts without testing in the target environment.</p>
+</div>
+</li>
+<li><p>Restrict user tickets (TGTs) to an initial 4-hour lifetime: Use Authentication Policies.</p>
+</li>
+<li><p>Deny delegation with unconstrained or constrained delegation: To restrict an account, open Active Directory Administrative Center (ADAC) and select the <strong>Account is sensitive and cannot be delegated</strong> check box.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_tshootdelegation.gif" alt="Screenshot showing where to restrict an account" data-linktype="relative-path"></p>
+</li>
+</ul>
+<h2 id="authentication-policies">Authentication policies</h2>
+<p>Authentication Policies is a new container in AD DS that contains authentication policy objects. Authentication policies can specify settings that help mitigate exposure to credential theft, such as restricting TGT lifetime for accounts or adding other claims-related conditions.</p>
+<p>In  Windows Server 2012 , Dynamic Access Control introduced an Active Directory forest-scope object class called Central Access Policy to provide an easy way to configure file servers across an organization. In  Windows Server 2012 R2 , a new object class called Authentication Policy (objectClass msDS-AuthNPolicies) can be used to apply authentication configuration to account classes in  Windows Server 2012 R2  domains. Active Directory account classes are:</p>
+<ul>
+<li><p>User</p>
+</li>
+<li><p>Computer</p>
+</li>
+<li><p>Managed Service Account and group Managed Service Account (GMSA)</p>
+</li>
+</ul>
+<h3 id="quick-kerberos-refresher">Quick Kerberos refresher</h3>
+<p>The Kerberos authentication protocol consists of three types of exchanges, also known as subprotocols:</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_kerbrefresher.gif" alt="Screenshot showing the three types of Kerberos authentication protocol exchanges, also known as subprotocols" data-linktype="relative-path"></p>
+<ul>
+<li><p>The Authentication Service (AS) Exchange (KRB_AS_*)</p>
+</li>
+<li><p>The Ticket-Granting Service (TGS) Exchange (KRB_TGS_*)</p>
+</li>
+<li><p>The Client/Server (AP) Exchange (KRB_AP_*)</p>
+</li>
+</ul>
+<p>The AS exchange is where the client uses the account's password or private key to create a pre-authenticator to request a ticket-granting ticket (TGT). This happens at user sign-on or the first time a service ticket is needed.</p>
+<p>The TGS exchange is where the account's TGT is used to create an authenticator to request a service ticket. This happens when an authenticated connection is needed.</p>
+<p>The AP exchange occurs as typically as data inside the application protocol and is not impacted by authentication policies.</p>
+<p>For more detailed information, see <a href="/en-us/previous-versions/windows/it-pro/windows-server-2003/cc772815(v=ws.10)" data-linktype="absolute-path">How the Kerberos Version 5 Authentication Protocol Works</a>.</p>
+<h3 id="overview">Overview</h3>
+<p>Authentication policies complement Protected Users by providing a way to apply configurable restrictions to accounts and by providing restrictions for accounts for services and computers. Authentication policies are enforced during either the AS exchange or the TGS exchange.</p>
+<p>You can restrict initial authentication or the AS exchange by configuring:</p>
+<ul>
+<li><p>A TGT lifetime</p>
+</li>
+<li><p>Access control conditions to restrict user sign-on, which must be met by devices from which the AS exchange is coming</p>
+</li>
+</ul>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_restrictas.gif" alt="Screenshot showing how to restrict initial authentication by configuring a TGT lifetime and access control conditions to restrict user sign-on" data-linktype="relative-path"></p>
+<p>You can restrict service ticket requests through a ticket-granting service (TGS) exchange by configuring:</p>
+<ul>
+<li>Access control conditions which must be met by the client (user, service, computer) or device from which the TGS exchange is coming</li>
+</ul>
+<h3 id="requirements-for-using-authentication-policies">Requirements for using authentication policies</h3>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>Requirements</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Provide custom TGT lifetimes</td>
+<td>Windows Server 2012 R2  domain functional level account domains</td>
+</tr>
+<tr>
+<td>Restrict user sign-on</td>
+<td>-    Windows Server 2012 R2  domain functional level account domains with Dynamic Access Control support<br>-   Windows 8, Windows 8.1, Windows Server 2012 or  Windows Server 2012 R2  devices with Dynamic Access Control support</td>
+</tr>
+<tr>
+<td>Restrict service ticket issuance that is based on user account and security groups</td>
+<td>Windows Server 2012 R2  domain functional level resource domains</td>
+</tr>
+<tr>
+<td>Restrict service ticket issuance based on user claims or device account, security groups, or claims</td>
+<td>Windows Server 2012 R2  domain functional level resource domains with Dynamic Access Control support</td>
+</tr>
+</tbody>
+</table>
+<h3 id="restrict-a-user-account-to-specific-devices-and-hosts">Restrict a user account to specific devices and hosts</h3>
+<p>A high-value account with administrative privilege should be a member of the <strong>Protected Users</strong> group. By default, no accounts are members of the <strong>Protected Users</strong> group. Before you add accounts to the group, configure domain controller support and create an audit policy to ensure that there are no blocking issues.</p>
+<h4 id="configure-domain-controller-support">Configure domain controller support</h4>
+<p>The user's account domain must be at  Windows Server 2012 R2  domain functional level (DFL). Ensure all the domain controllers are  Windows Server 2012 R2 , and then use Active Directory Domains and Trusts to <a href="/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc753104(v=ws.11)" data-linktype="absolute-path">raise the DFL</a> to  Windows Server 2012 R2 .</p>
+<p><strong>To configure support for Dynamic Access Control</strong></p>
+<ol>
+<li><p>In the Default Domain Controllers Policy, click <strong>Enabled</strong> to enable <strong>Key Distribution Center (KDC) client support for claims, compound authentication and Kerberos armoring</strong> in Computer Configuration | Administrative Templates | System | KDC.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_enablekdcclaims.gif" alt="In the Default Domain Controllers Policy, click Enabled to enable Key Distribution Center (KDC) client support for claims, compound authentication and Kerberos armoring in Computer Configuration | Administrative Templates | System | KDC" data-linktype="relative-path"></p>
+</li>
+<li><p>Under <strong>Options</strong>, in the drop-down list box, select <strong>Always provide claims</strong>.</p>
+<div class="NOTE">
+<p>Note</p>
+<p><strong>Supported</strong> can also be configured, but because the domain is at  Windows Server 2012 R2  DFL, having the DCs always provide claims will allow user claims-based access checks to occur when using non-claims aware devices and hosts to connect to claims-aware services.</p>
+</div>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_alwaysprovideclaims.png" alt="Under Options, in the drop-down list box, select **Always provide claims" data-linktype="relative-path"></p>
+<div class="WARNING">
+<p>Warning</p>
+<p>Configuring <strong>Fail unarmored authentication requests</strong> will result in authentication failures from any operating system which does not support Kerberos armoring, such as  Windows 7  and previous operating systems, or operating systems beginning with Windows 8, which have not been explicitly configured to support it.</p>
+</div>
+</li>
+</ol>
+<h4 id="create-a-user-account-audit-for-authentication-policy-with-adac">Create a user account audit for authentication policy with ADAC</h4>
+<ol>
+<li><p>Open Active Directory Administrative Center (ADAC).</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_openadac.gif" alt="Screenshot showing Active Directory Administrative Center" data-linktype="relative-path"></p>
+<div class="NOTE">
+<p>Note</p>
+<p>The selected <strong>Authentication</strong> node is visible for domains which are at  Windows Server 2012 R2  DFL. If the node does not appear, then try again by using a domain administrator account from a domain that is at  Windows Server 2012 R2  DFL.</p>
+</div>
+</li>
+<li><p>Click <strong>Authentication Policies</strong>, and then click <strong>New</strong> to create a new policy.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_newauthnpolicy.gif" alt="Authentication Policies" data-linktype="relative-path"></p>
+<p>Authentications Policies must have a display name and are enforced by default.</p>
+</li>
+<li><p>To create an audit-only policy, click <strong>Only audit policy restrictions</strong>.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_newauthnpolicyauditonly.gif" alt="Only audit policy restrictions" data-linktype="relative-path"></p>
+<p>Authentication policies are applied based on the Active Directory account type. A single policy can apply to all three account types by configuring settings for each type. Account types are:</p>
+<ul>
+<li><p>User</p>
+</li>
+<li><p>Computer</p>
+</li>
+<li><p>Managed Service Account and Group Managed Service Account</p>
+</li>
+</ul>
+<p>If you have extended the schema with new principals that can be used by the Key Distribution Center (KDC), then the new account type is classified from the closest derived account type.</p>
+</li>
+<li><p>To configure a TGT lifetime for user accounts, select the <strong>Specify a Ticket-Granting Ticket lifetime for user accounts</strong> check box and enter the time in minutes.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_tgtlifetime.gif" alt="Specify a Ticket-Granting Ticket lifetime for user accounts" data-linktype="relative-path"></p>
+<p>For example, if you want a 10-hour maximum TGT lifetime, enter <strong>600</strong> as shown. If no TGT lifetime is configured, then if the account is a member of the <strong>Protected Users</strong> group, the TGT lifetime and renewal is 4 hours. Otherwise, TGT lifetime and renewal are based on the domain policy as seen in the following Group Policy Management Editor window for a domain with default settings.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_tgtexpiration.png" alt="Group Policy Management Editor window for a domain with default settings" data-linktype="relative-path"></p>
+</li>
+<li><p>To restrict the user account to select devices, click <strong>Edit</strong> to define the conditions that are required for the device.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_editauthnpolicy.gif" alt="To restrict the user account to select devices, click Edit" data-linktype="relative-path"></p>
+</li>
+<li><p>In the <strong>Edit Access Control Conditions</strong> window, click <strong>Add a condition</strong>.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_addcondition.png" alt="Edit Access Control Conditions" data-linktype="relative-path"></p>
+</li>
+</ol>
+<h5 id="add-computer-account-or-group-conditions">Add computer account or group conditions</h5>
+<ol>
+<li><p>To configure computer accounts or groups, in the drop-down list, select the drop-down list box <strong>Member of each</strong> and change to <strong>Member of any</strong>.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_addcompmember.png" alt="Configure computer accounts or groups" data-linktype="relative-path"></p>
+<div class="NOTE">
+<p>Note</p>
+<p>This access control defines the conditions of the device or host from which the user signs on. In access control terminology, the computer account for the device or host is the user, which is why <strong>User</strong> is the only option.</p>
+</div>
+</li>
+<li><p>Click <strong>Add items</strong>.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_addcompadditems.png" alt="Add items" data-linktype="relative-path"></p>
+</li>
+<li><p>To change object types, click <strong>Object Types</strong>.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_changeobjects.gif" alt="Object Types" data-linktype="relative-path"></p>
+</li>
+<li><p>To select computer objects in Active Directory, click <strong>Computers</strong>, and then click <strong>OK</strong>.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_changeobjectscomputers.gif" alt="Computers" data-linktype="relative-path"></p>
+</li>
+<li><p>Type the name of the computers to restrict the user, and then click <strong>Check Names</strong>.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_changeobjectscompname.gif" alt="Click Check Names" data-linktype="relative-path"></p>
+</li>
+<li><p>Click OK and create any other conditions for the computer account.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_addcompaddconditions.png" alt="Click OK and create any other conditions for the computer account" data-linktype="relative-path"></p>
+</li>
+<li><p>When done, then click <strong>OK</strong> and the defined conditions will appear for the computer account.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_addcompdone.png" alt="When done, click OK" data-linktype="relative-path"></p>
+</li>
+</ol>
+<h5 id="add-computer-claim-conditions">Add computer claim conditions</h5>
+<ol>
+<li><p>To configure computer claims, drop-down Group to select the claim.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_compclaim.gif" alt="To configure computer claims, drop-down Group to select the claim" data-linktype="relative-path"></p>
+<p>Claims are only available if they are already provisioned in the forest.</p>
+</li>
+<li><p>Type the name of OU, the user account should be restricted to sign on.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_compclaimouname.gif" alt="Type the name of OU, the user account should be restricted to sign on." data-linktype="relative-path"></p>
+</li>
+<li><p>When done, then click OK and the box will show the conditions defined.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_compclaimcomplete.gif" alt="When done click OK" data-linktype="relative-path"></p>
+</li>
+</ol>
+<h5 id="troubleshoot-missing-computer-claims">Troubleshoot missing computer claims</h5>
+<p>If the claim has been provisioned, but is not available, it might only be configured for <strong>Computer</strong> classes.</p>
+<p>Let's say you wanted to restrict authentication based on the organizational unit (OU) of the computer, which was already configured, but only for <strong>Computer</strong> classes.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_restrictcomputers.gif" alt="Screenshot showing how to restrict authentication based on the organizational unit (OU) of the computer" data-linktype="relative-path"></p>
+<p>For the claim to be available to restrict User sign-on to the device, select the <strong>User</strong> check box.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_restrictuserscomputers.gif" alt="Screenshot showing how to restrict User sign-on to the device by checking the select User check box.  " data-linktype="relative-path"></p>
+<h4 id="provision-a-user-account-with-an-authentication-policy-with-adac">Provision a user account with an authentication policy with ADAC</h4>
+<ol>
+<li><p>From the <strong>User</strong> account, click <strong>Policy</strong>.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_userpolicy.gif" alt="From the User account, click Policy" data-linktype="relative-path"></p>
+</li>
+<li><p>Select the <strong>Assign an authentication policy to this account</strong> check box.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_userpolicyassign.gif" alt="Select the Assign an authentication policy to this account check box" data-linktype="relative-path"></p>
+</li>
+<li><p>Then select the authentication policy to apply to the user.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_userpolicyselect.png" alt="Select the authentication policy to apply to the user" data-linktype="relative-path"></p>
+</li>
+</ol>
+<h4 id="configure-dynamic-access-control-support-on-devices-and-hosts">Configure Dynamic Access Control support on devices and hosts</h4>
+<p>You can configure TGT lifetimes without configuring Dynamic Access Control (DAC). DAC is only needed for checking AllowedToAuthenticateFrom and AllowedToAuthenticateTo.</p>
+<p>Using either Group Policy or Local Group Policy Editor, enable <strong>Kerberos client support for claims, compound authentication and Kerberos armoring</strong> in Computer Configuration | Administrative Templates | System | Kerberos:</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_kerbclientdacsupport.gif" alt="Screenshot showing how to use Group Policy or Local Group Policy Editor to enable Kerberos client support for claims, compound authentication and Kerberos armoring" data-linktype="relative-path"></p>
+<h3 id="troubleshoot-authentication-policies">Troubleshoot Authentication Policies</h3>
+<h4 id="determine-the-accounts-that-are-directly-assigned-an-authentication-policy">Determine the accounts that are directly assigned an Authentication Policy</h4>
+<p>The accounts section in the Authentication Policy shows the accounts that have directly applied the policy.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_accountsassigned.gif" alt="Screenshot of the accounts section in Authentication Policy showing the accounts that have directly applied the policy" data-linktype="relative-path"></p>
+<h4 id="use-the-authentication-policy-failures---domain-controller-administrative-log">Use the Authentication Policy Failures - Domain Controller administrative log</h4>
+<p>A new <strong>Authentication Policy Failures - Domain Controller</strong> administrative log under <strong>Applications and Services Logs</strong> &gt; <strong>Microsoft</strong> &gt; <strong>Windows</strong> &gt; <strong>Authentication</strong> has been created to make it easier to discover failures due to Authentication Policies. The log is disabled by default. To enable it, right-click the log name and click <strong>Enable Log</strong>. The new events are very similar in content to the existing Kerberos TGT and service ticket auditing events. For more information about these events, see <a href="/en-us/previous-versions/windows/it-pro/windows-server-2012-R2-and-2012/dn486813(v=ws.11)" data-linktype="absolute-path">Authentication Policies and Authentication Policy Silos</a>.</p>
+<h3 id="manage-authentication-policies-by-using-windows-powershell">Manage authentication policies by using Windows PowerShell</h3>
+<p>This command creates an authentication policy named <strong>TestAuthenticationPolicy</strong>. The <strong>UserAllowedToAuthenticateFrom</strong> parameter specifies the devices from which users can authenticate by an SDDL string in the file named someFile.txt.</p>
+<pre><code>PS C:\&gt; New-ADAuthenticationPolicy testAuthenticationPolicy -UserAllowedToAuthenticateFrom (Get-Acl .\someFile.txt).sddl
+</code></pre>
+<p>This command gets all authentication policies that match the filter that the <strong>Filter</strong> parameter specifies.</p>
+<pre><code>PS C:\&gt; Get-ADAuthenticationPolicy -Filter "Name -like 'testADAuthenticationPolicy*'" -Server Server02.Contoso.com
+
+</code></pre>
+<p>This command modifies the description and the <strong>UserTGTLifetimeMins</strong> properties of the specified authentication policy.</p>
+<pre><code>PS C:\&gt; Set-ADAuthenticationPolicy -Identity ADAuthenticationPolicy1 -Description "Description" -UserTGTLifetimeMins 45
+</code></pre>
+<p>This command removes the authentication policy that the <strong>Identity</strong> parameter specifies.</p>
+<pre><code>PS C:\&gt; Remove-ADAuthenticationPolicy -Identity ADAuthenticationPolicy1
+</code></pre>
+<p>This command uses the <strong>Get-ADAuthenticationPolicy</strong> cmdlet with the <strong>Filter</strong> parameter to get all authentication policies that are not enforced. The result set is piped to the <strong>Remove-ADAuthenticationPolicy</strong> cmdlet.</p>
+<pre><code>PS C:\&gt; Get-ADAuthenticationPolicy -Filter 'Enforce -eq $false' | Remove-ADAuthenticationPolicy
+</code></pre>
+<h2 id="authentication-policy-silos">Authentication policy silos</h2>
+<p>Authentication Policy Silos is a new container (objectClass msDS-AuthNPolicySilos) in AD DS for user, computer, and service accounts. They help protect high-value accounts. While all organizations need to protect members of Enterprise Admins, Domain Admins and Schema Admins groups because those accounts could be used by an attacker to access anything in the forest, other accounts may also need protection.</p>
+<p>Some organizations isolate workloads by creating accounts that are unique to them and by applying Group Policy settings to limit local and remote interactive logon and administrative privileges. Authentication policy silos complement this work by creating a way to define a relationship between User, Computer and managed Service accounts. Accounts can only belong to one silo. You can configure authentication policy for each type of account in order to control:</p>
+<ol>
+<li><p>Non-renewable TGT lifetime</p>
+</li>
+<li><p>Access control conditions for returning TGT (Note: cannot apply to systems because Kerberos armoring is required)</p>
+</li>
+<li><p>Access control conditions for returning service ticket</p>
+</li>
+</ol>
+<p>Additionally, accounts in an authentication policy silo have a silo claim, which can be used by claims-aware resources such as file servers to control access.</p>
+<p>A new security descriptor can be configured to control issuing service ticket based on:</p>
+<ul>
+<li><p>User, user's security groups, and/or user's claims</p>
+</li>
+<li><p>Device, device's security group, and/or device's claims</p>
+</li>
+</ul>
+<p>Getting this information to the resource's DCs requires Dynamic Access Control:</p>
+<ul>
+<li><p>User claims:</p>
+<ul>
+<li><p>Windows 8 and later clients supporting Dynamic Access Control</p>
+</li>
+<li><p>Account domain supports Dynamic Access Control and claims</p>
+</li>
+</ul>
+</li>
+<li><p>Device and/or device security group:</p>
+<ul>
+<li><p>Windows 8 and later clients supporting Dynamic Access Control</p>
+</li>
+<li><p>Resource configured for compound authentication</p>
+</li>
+</ul>
+</li>
+<li><p>Device claims:</p>
+<ul>
+<li><p>Windows 8 and later clients supporting Dynamic Access Control</p>
+</li>
+<li><p>Device domain supports Dynamic Access Control and claims</p>
+</li>
+<li><p>Resource configured for compound authentication</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Authentication policies can be applied to all members of an authentication policy silo instead of to individual accounts, or separate authentication policies can be applied to different types of accounts within a silo. For example, one authentication policy can be applied to highly privileged user accounts, and a different policy can be applied to services accounts. At least one authentication policy must be created before an authentication policy silo can be created.</p>
+<div class="NOTE">
+<p>Note</p>
+<p>An authentication policy can be applied to members of an authentication policy silo, or it can be applied independently of silos to restrict specific account scope. For example, to protect a single account or a small set of accounts, a policy can be set on those accounts without adding the accounts to a silo.</p>
+</div>
+<p>You can create an authentication policy silo by using Active Directory Administrative Center or Windows PowerShell. By default, an authentication policy silo only audits silo policies, which is equivalent to specifying the <strong>WhatIf</strong> parameter in Windows PowerShell cmdlets. In this case, policy silo restrictions do not apply, but audits are generated to indicate whether failures occur if the restrictions are applied.</p>
+<h4 id="to-create-an-authentication-policy-silo-by-using-active-directory-administrative-center">To create an authentication policy silo by using Active Directory Administrative Center</h4>
+<ol>
+<li><p>Open <strong>Active Directory Administrative Center</strong>, click <strong>Authentication</strong>, right-click <strong>Authentication Policy Silos</strong>, click <strong>New</strong>, and then click <strong>Authentication Policy Silo</strong>.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_createnewauthnpolicysilo.gif" alt="Open Active Directory Administrative Center, click Authentication, right-click Authentication Policy Silos, click New, and then click Authentication Policy Silo" data-linktype="relative-path"></p>
+</li>
+<li><p>In <strong>Display name</strong>, type a name for the silo. In <strong>Permitted Accounts</strong>, click <strong>Add</strong>, type the names of the accounts, and then click <strong>OK</strong>. You can specify users, computers, or service accounts. Then specify whether to use a single policy for all principals or a separate policy for each type of principal, and the name of the policy or policies.</p>
+<p><img src="../media/how-to-configure-protected-accounts/adds_protectacct_newauthnpolicysilodisplayname.gif" alt="In Display name, type a name for the silo. In Permitted Accounts, click Add, type the names of the accounts, and then click OK" data-linktype="relative-path"></p>
+</li>
+</ol>
+<h3 id="manage-authentication-policy-silos-by-using-windows-powershell">Manage authentication policy silos by using Windows PowerShell</h3>
+<p>This command creates an authentication policy silo object and enforces it.</p>
+<pre><code>PS C:\&gt;New-ADAuthenticationPolicySilo -Name newSilo -Enforce
+</code></pre>
+<p>This command gets all the authentication policy silos that match the filter that is specified by the <strong>Filter</strong> parameter. The output is then passed to the <strong>Format-Table</strong> cmdlet to display the name of the policy and the value for <strong>Enforce</strong> on each policy.</p>
+<pre><code>PS C:\&gt;Get-ADAuthenticationPolicySilo -Filter 'Name -like "*silo*"' | Format-Table Name, Enforce -AutoSize
+
+Name  Enforce
+--  ----
+silo     True
+silos   False
+
+</code></pre>
+<p>This command uses the <strong>Get-ADAuthenticationPolicySilo</strong> cmdlet with the <strong>Filter</strong> parameter to get all authentication policy silos that are not enforced and pipe the result of the filter to the <strong>Remove-ADAuthenticationPolicySilo</strong> cmdlet.</p>
+<pre><code>PS C:\&gt;Get-ADAuthenticationPolicySilo -Filter 'Enforce -eq $False' | Remove-ADAuthenticationPolicySilo
+</code></pre>
+<p>This command grants access to the authentication policy silo named <em>Silo</em> to the user account named <em>User01</em>.</p>
+<pre><code>PS C:\&gt;Grant-ADAuthenticationPolicySiloAccess -Identity Silo -Account User01
+</code></pre>
+<p>This command revokes access to the authentication policy silo named <em>Silo</em> for the user account named <em>User01</em>. Because the <strong>Confirm</strong> parameter is set to <strong>$False</strong>, no confirmation message appears.</p>
+<pre><code>PS C:\&gt;Revoke-ADAuthenticationPolicySiloAccess -Identity Silo -Account User01 -Confirm:$False
+</code></pre>
+<p>This example first uses the <strong>Get-ADComputer</strong> cmdlet to get all computer accounts that match the filter that the <strong>Filter</strong> parameter specifies. The output of this command is passed to <strong>Set-ADAccountAuthenticatinPolicySilo</strong> to assign the authentication policy silo named <em>Silo</em> and the authentication policy named <em>AuthenticationPolicy02</em> to them.</p>
+<pre><code>PS C:\&gt;Get-ADComputer -Filter 'Name -like "newComputer*"' | Set-ADAccountAuthenticationPolicySilo -AuthenticationPolicySilo Silo -AuthenticationPolicy AuthenticationPolicy02
+</code></pre>
+</div>
+					
+		<div
+			id="ms--inline-notifications"
+			class="margin-block-xs"
+			data-bi-name="inline-notification"
+		></div>
+	 
+		<div
+			id="assertive-live-region"
+			role="alert"
+			aria-live="assertive"
+			class="visually-hidden"
+			aria-relevant="additions"
+			aria-atomic="true"
+		></div>
+		<div
+			id="polite-live-region"
+			role="status"
+			aria-live="polite"
+			class="visually-hidden"
+			aria-relevant="additions"
+			aria-atomic="true"
+		></div>
+	
+					
+		<!-- feedback section -->
+		<section
+			id="site-user-feedback-footer"
+			class="font-size-sm margin-top-md display-none-print display-none-desktop"
+			data-test-id="site-user-feedback-footer"
+			data-bi-name="site-feedback-section"
+		>
+			<hr class="hr" />
+			<h2 id="ms--feedback" class="title is-3">Feedback</h2>
+			<div class="display-flex flex-wrap-wrap align-items-center">
+				<p class="font-weight-semibold margin-xxs margin-left-none">
+					Was this page helpful?
+				</p>
+				<div class="buttons">
+					<button
+						class="thumb-rating-button like button button-primary button-sm"
+						data-test-id="footer-rating-yes"
+						data-binary-rating-response="rating-yes"
+						type="button"
+						title="This article is helpful"
+						data-bi-name="button-rating-yes"
+						aria-pressed="false"
+					>
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-like"></span>
+						</span>
+						<span>Yes</span>
+					</button>
+					<button
+						class="thumb-rating-button dislike button button-primary button-sm"
+						id="standard-rating-no-button"
+						hidden
+						data-test-id="footer-rating-no"
+						data-binary-rating-response="rating-no"
+						type="button"
+						title="This article is not helpful"
+						data-bi-name="button-rating-no"
+						aria-pressed="false"
+					>
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-dislike"></span>
+						</span>
+						<span>No</span>
+					</button>
+					<details
+						class="popover popover-top"
+						id="mobile-help-popover"
+						data-test-id="footer-feedback-popover"
+					>
+						<summary
+							class="thumb-rating-button dislike button button-primary button-sm"
+							data-test-id="details-footer-rating-no"
+							data-binary-rating-response="rating-no"
+							title="This article is not helpful"
+							data-bi-name="button-rating-no"
+							aria-pressed="false"
+							data-bi-an="feedback-unhelpful-popover"
+						>
+							<span class="icon" aria-hidden="true">
+								<span class="docon docon-dislike"></span>
+							</span>
+							<span>No</span>
+						</summary>
+						<div
+							class="popover-content width-200 width-300-tablet"
+							role="dialog"
+							aria-labelledby="popover-heading"
+							aria-describedby="popover-description"
+						>
+							<p id="popover-heading" class="font-size-lg margin-bottom-xxs font-weight-semibold">
+								Need help with this topic?
+							</p>
+							<p id="popover-description" class="font-size-sm margin-bottom-xs">
+								Want to try using Ask Learn to clarify or guide you through this topic?
+							</p>
+							
+		<div class="buttons flex-direction-row flex-wrap justify-content-center gap-xxs">
+			<div>
+		<button
+			class="button button-sm border inner-focus display-none margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-test-id="ask-learn-assistant-modal-entry-mobile-feedback"
+			data-ask-learn-modal-entry-feedback
+			data-bi-an=feedback-unhelpful-popover
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-label="Ask Learn"
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+		</button>
+		<button
+			class="button button-sm display-inline-flex display-none-desktop flex-shrink-0 margin-right-xxs border-color-ask-learn margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-bi-an=feedback-unhelpful-popover
+			data-test-id="ask-learn-assistant-modal-entry-tablet-feedback"
+			data-ask-learn-modal-entry-feedback
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+		<button
+			class="button button-sm display-none flex-shrink-0 display-inline-flex-desktop margin-right-xxs border-color-ask-learn margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-bi-an=feedback-unhelpful-popover
+			data-test-id="ask-learn-assistant-flyout-entry-feedback"
+			data-ask-learn-flyout-entry-show-only
+			data-flyout-button="toggle"
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-controls="ask-learn-flyout"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+	</div>
+			<button
+				type="button"
+				class="button button-sm margin-right-xxs"
+				data-help-option="suggest-fix"
+				data-bi-name="feedback-suggest"
+				data-bi-an="feedback-unhelpful-popover"
+				data-test-id="suggest-fix"
+			>
+				<span class="icon" aria-hidden="true">
+					<span class="docon docon-feedback"></span>
+				</span>
+				<span> Suggest a fix? </span>
+			</button>
+		</div>
+	
+						</div>
+					</details>
+				</div>
+			</div>
+		</section>
+		<!-- end feedback section -->
+	
+				</div>
+				
+		<div id="ms--additional-resources-mobile" class="display-none-print">
+			<hr class="hr" hidden />
+			<h2 id="ms--additional-resources-mobile-heading" class="title is-3" hidden>
+				Additional resources
+			</h2>
+			
+		<section
+			id="right-rail-recommendations-mobile"
+			class=""
+			data-bi-name="recommendations"
+			hidden
+		></section>
+	 
+		<section
+			id="right-rail-training-mobile"
+			class=""
+			data-bi-name="learning-resource-card"
+			hidden
+		></section>
+	 
+		<section
+			id="right-rail-events-mobile"
+			class=""
+			data-bi-name="events-card"
+			hidden
+		></section>
+	
+		</div>
+	 
+		<div
+			id="article-metadata-footer"
+			data-bi-name="article-metadata-footer"
+			data-test-id="article-metadata-footer"
+			class="page-metadata-container"
+		>
+			<hr class="hr" />
+			<ul class="metadata page-metadata" data-bi-name="page info" lang="en-us" dir="ltr">
+				<li class="visibility-hidden-visual-diff">
+			<span class="badge badge-sm text-wrap-pretty">
+				<span>Last updated on <local-time format="twoDigitNumeric"
+		datetime="2021-07-29T16:36:00.000Z"
+		data-article-date-source="calculated"
+		class="is-invisible"
+	>
+		2021-07-29
+	</local-time></span>
+			</span>
+		</li>
+			</ul>
+		</div>
+	
+			</div>
+		
+				</main>
+				<aside
+					id="layout-body-aside"
+					class="layout-body-aside  "
+					data-bi-name="aside"
+					aria-label="Additional resources"
+			  >
+					
+		<div
+			id="ms--additional-resources"
+			class="right-container padding-sm display-none display-block-desktop height-full"
+			data-bi-name="pageactions"
+		>
+			<div id="affixed-right-container" data-bi-name="right-column">
+				
+		<nav
+			id="side-doc-outline"
+			class="doc-outline border-bottom padding-bottom-xs margin-bottom-xs scrollbar-width-thin"
+			data-bi-name="intopic toc"
+			aria-label="In this article"
+		>
+			<h3>In this article</h3>
+		</nav>
+	
+				<!-- Feedback -->
+				
+		<section
+			id="ms--site-user-feedback-right-rail"
+			class="font-size-sm display-none-print"
+			data-test-id="site-user-feedback-right-rail"
+			data-bi-name="site-feedback-right-rail"
+		>
+			<div class="display-flex flex-wrap-wrap align-items-center">
+				<p class="font-weight-semibold margin-xxs margin-left-none">
+					Was this page helpful?
+				</p>
+				<div class="display-flex flex-wrap-nowrap">
+					<button
+						class="thumb-rating-button like inner-focus"
+						data-test-id="right-rail-rating-yes"
+						data-binary-rating-response="rating-yes"
+						type="button"
+						title="This article is helpful"
+						aria-label="This article is helpful"
+						data-bi-name="button-rating-yes"
+						aria-pressed="false"
+					>
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-like"></span>
+						</span>
+					</button>
+					<button
+						class="thumb-rating-button dislike inner-focus"
+						id="right-rail-no-button"
+						hidden
+						data-test-id="right-rail-rating-no"
+						data-binary-rating-response="rating-no"
+						type="button"
+						title="This article is not helpful"
+						aria-label="This article is not helpful"
+						data-bi-name="button-rating-no"
+						aria-pressed="false"
+					>
+						<span class="icon" aria-hidden="true">
+							<span class="docon docon-dislike"></span>
+						</span>
+					</button>
+					<details class="popover popover-right" id="help-popover" data-test-id="feedback-popover">
+						<summary
+							tabindex="0"
+							class="thumb-rating-button dislike inner-focus"
+							data-test-id="details-right-rail-rating-no"
+							data-binary-rating-response="rating-no"
+							title="This article is not helpful"
+							aria-label="This article is not helpful"
+							data-bi-name="button-rating-no"
+							aria-pressed="false"
+							data-bi-an="feedback-unhelpful-popover"
+						>
+							<span class="icon" aria-hidden="true">
+								<span class="docon docon-dislike"></span>
+							</span>
+						</summary>
+						<div
+							class="popover-content width-200 width-300-tablet"
+							role="dialog"
+							aria-labelledby="popover-heading-right-rail"
+							aria-describedby="popover-description-right-rail"
+						>
+							<p
+								id="popover-heading-right-rail"
+								class="font-size-lg margin-bottom-xxs font-weight-semibold"
+							>
+								Need help with this topic?
+							</p>
+							<p id="popover-description-right-rail" class="font-size-sm margin-bottom-xs">
+								Want to try using Ask Learn to clarify or guide you through this topic?
+							</p>
+							
+		<div class="buttons flex-direction-row flex-wrap justify-content-center gap-xxs">
+			<div>
+		<button
+			class="button button-sm border inner-focus display-none margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-test-id="ask-learn-assistant-modal-entry-mobile-feedback"
+			data-ask-learn-modal-entry-feedback
+			data-bi-an=feedback-unhelpful-popover
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-label="Ask Learn"
+			hidden
+		>
+			<span class="icon" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+		</button>
+		<button
+			class="button button-sm display-inline-flex display-none-desktop flex-shrink-0 margin-right-xxs border-color-ask-learn margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-bi-an=feedback-unhelpful-popover
+			data-test-id="ask-learn-assistant-modal-entry-tablet-feedback"
+			data-ask-learn-modal-entry-feedback
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+		<button
+			class="button button-sm display-none flex-shrink-0 display-inline-flex-desktop margin-right-xxs border-color-ask-learn margin-right-xxs"
+			data-bi-name="ask-learn-assistant-entry-troubleshoot"
+			data-bi-an=feedback-unhelpful-popover
+			data-test-id="ask-learn-assistant-flyout-entry-feedback"
+			data-ask-learn-flyout-entry-show-only
+			data-flyout-button="toggle"
+			type="button"
+			style="min-width: max-content;"
+			aria-expanded="false"
+			aria-controls="ask-learn-flyout"
+			hidden
+		>
+			<span class="icon font-size-lg" aria-hidden="true">
+				<span class="docon docon-chat-sparkle-fill gradient-ask-learn-logo"></span>
+			</span>
+			<span>Ask Learn</span>
+		</button>
+	</div>
+			<button
+				type="button"
+				class="button button-sm margin-right-xxs"
+				data-help-option="suggest-fix"
+				data-bi-name="feedback-suggest"
+				data-bi-an="feedback-unhelpful-popover"
+				data-test-id="suggest-fix"
+			>
+				<span class="icon" aria-hidden="true">
+					<span class="docon docon-feedback"></span>
+				</span>
+				<span> Suggest a fix? </span>
+			</button>
+		</div>
+	
+						</div>
+					</details>
+				</div>
+			</div>
+		</section>
+	
+			</div>
+		</div>
+	
+			  </aside> <section
+					id="layout-body-flyout"
+					class="layout-body-flyout "
+					data-bi-name="flyout"
+			  >
+					 <div
+	class="height-full border-left background-color-body-medium"
+	id="ask-learn-flyout"
+></div>
+			  </section> <div class="layout-body-footer " data-bi-name="layout-footer">
+		<footer
+			id="footer"
+			data-test-id="footer"
+			data-bi-name="footer"
+			class="footer-layout padding-xs padding-sm-desktop has-default-focus border-top"
+			role="contentinfo"
+		>
+			<div class="display-flex gap-xs flex-wrap-wrap is-full-height padding-right-lg-desktop">
+				
+		<a
+			data-mscc-ic="false"
+			href="#"
+			data-bi-name="select-locale"
+			class="locale-selector-link flex-shrink-0 button button-sm button-clear external-link-indicator"
+			id=""
+			title=""
+			><span class="icon" aria-hidden="true"
+				><span class="docon docon-world"></span></span
+			><span class="local-selector-link-text">en-us</span></a
+		>
+	 <div class="ccpa-privacy-link" data-ccpa-privacy-link hidden>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://aka.ms/yourcaliforniaprivacychoices"
+			data-bi-name="your-privacy-choices"
+			class="button button-sm button-clear flex-shrink-0 external-link-indicator"
+			id=""
+			title=""
+			>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 30 14"
+			xml:space="preserve"
+			height="16"
+			width="43"
+			aria-hidden="true"
+			focusable="false"
+		>
+			<path
+				d="M7.4 12.8h6.8l3.1-11.6H7.4C4.2 1.2 1.6 3.8 1.6 7s2.6 5.8 5.8 5.8z"
+				style="fill-rule:evenodd;clip-rule:evenodd;fill:#fff"
+			></path>
+			<path
+				d="M22.6 0H7.4c-3.9 0-7 3.1-7 7s3.1 7 7 7h15.2c3.9 0 7-3.1 7-7s-3.2-7-7-7zm-21 7c0-3.2 2.6-5.8 5.8-5.8h9.9l-3.1 11.6H7.4c-3.2 0-5.8-2.6-5.8-5.8z"
+				style="fill-rule:evenodd;clip-rule:evenodd;fill:#06f"
+			></path>
+			<path
+				d="M24.6 4c.2.2.2.6 0 .8L22.5 7l2.2 2.2c.2.2.2.6 0 .8-.2.2-.6.2-.8 0l-2.2-2.2-2.2 2.2c-.2.2-.6.2-.8 0-.2-.2-.2-.6 0-.8L20.8 7l-2.2-2.2c-.2-.2-.2-.6 0-.8.2-.2.6-.2.8 0l2.2 2.2L23.8 4c.2-.2.6-.2.8 0z"
+				style="fill:#fff"
+			></path>
+			<path
+				d="M12.7 4.1c.2.2.3.6.1.8L8.6 9.8c-.1.1-.2.2-.3.2-.2.1-.5.1-.7-.1L5.4 7.7c-.2-.2-.2-.6 0-.8.2-.2.6-.2.8 0L8 8.6l3.8-4.5c.2-.2.6-.2.9 0z"
+				style="fill:#06f"
+			></path>
+		</svg>
+	
+			<span>Your Privacy Choices</span></a
+		>
+	
+	</div>
+				<div class="flex-shrink-0">
+		<div class="dropdown has-caret-up">
+			<button
+				data-test-id="theme-selector-button"
+				class="dropdown-trigger button button-clear button-sm inner-focus theme-dropdown-trigger"
+				aria-controls="{{ themeMenuId }}"
+				aria-haspopup="true"
+				aria-expanded="false"
+				data-bi-name="theme"
+			>
+				<span class="icon" aria-hidden="true"><span class="docon docon-sun"></span></span>
+				<span>Theme</span>
+				<span class="icon expanded-indicator" aria-hidden="true">
+					<span class="docon docon-chevron-down-light"></span>
+				</span>
+			</button>
+			<div class="dropdown-menu" id="{{ themeMenuId }}" role="menu">
+				<ul class="theme-selector padding-xxs" data-test-id="theme-dropdown-menu" role="none">
+					<li class="theme display-block" role="none">
+						<button
+							class="button button-clear button-sm theme-control button-block justify-content-flex-start text-align-left"
+							role="menuitemradio"
+							aria-checked="false"
+							data-theme-to="light"
+							tabindex="-1"
+						>
+							<span class="theme-light margin-right-xxs">
+								<span
+									class="theme-selector-icon border display-inline-block has-body-background"
+									aria-hidden="true"
+								>
+									<svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">
+										<rect width="22" height="14" class="has-fill-body-background" />
+										<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+										<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+										<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+										<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+										<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+									</svg>
+								</span>
+							</span>
+							<span> Light </span>
+						</button>
+					</li>
+					<li class="theme display-block" role="none">
+						<button
+							class="button button-clear button-sm theme-control button-block justify-content-flex-start text-align-left"
+							role="menuitemradio"
+							aria-checked="false"
+							data-theme-to="dark"
+							tabindex="-1"
+						>
+							<span class="theme-dark margin-right-xxs">
+								<span
+									class="border theme-selector-icon display-inline-block has-body-background"
+									aria-hidden="true"
+								>
+									<svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">
+										<rect width="22" height="14" class="has-fill-body-background" />
+										<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+										<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+										<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+										<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+										<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+									</svg>
+								</span>
+							</span>
+							<span> Dark </span>
+						</button>
+					</li>
+					<li class="theme display-block" role="none">
+						<button
+							class="button button-clear button-sm theme-control button-block justify-content-flex-start text-align-left"
+							role="menuitemradio"
+							aria-checked="false"
+							data-theme-to="high-contrast"
+							tabindex="-1"
+						>
+							<span class="theme-high-contrast margin-right-xxs">
+								<span
+									class="border theme-selector-icon display-inline-block has-body-background"
+									aria-hidden="true"
+								>
+									<svg class="svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 14">
+										<rect width="22" height="14" class="has-fill-body-background" />
+										<rect x="5" y="5" width="12" height="4" class="has-fill-secondary" />
+										<rect x="5" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="8" y="2" width="2" height="1" class="has-fill-secondary" />
+										<rect x="11" y="2" width="3" height="1" class="has-fill-secondary" />
+										<rect x="1" y="1" width="2" height="2" class="has-fill-secondary" />
+										<rect x="5" y="10" width="7" height="2" rx="0.3" class="has-fill-primary" />
+										<rect x="19" y="1" width="2" height="2" rx="1" class="has-fill-secondary" />
+									</svg>
+								</span>
+							</span>
+							<span> High contrast </span>
+						</button>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+			</div>
+			<ul class="links" data-bi-name="footerlinks">
+				<li class="manage-cookies-holder" hidden=""></li>
+				<li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/en-us/principles-for-ai-generated-content"
+			data-bi-name="aiDisclaimer"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>AI Disclaimer</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/en-us/previous-versions/"
+			data-bi-name="archivelink"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Previous Versions</a
+		>
+	
+	</li> <li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://techcommunity.microsoft.com/t5/microsoft-learn-blog/bg-p/MicrosoftLearnBlog"
+			data-bi-name="bloglink"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Blog</a
+		>
+	
+	</li> <li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/en-us/contribute"
+			data-bi-name="contributorGuide"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Contribute</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://go.microsoft.com/fwlink/?LinkId=521839"
+			data-bi-name="privacy"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Privacy</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://go.microsoft.com/fwlink/?linkid=2259814"
+			data-bi-name="consumer-health-privacy"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Consumer Health Privacy</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://learn.microsoft.com/en-us/legal/termsofuse"
+			data-bi-name="termsofuse"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Terms of Use</a
+		>
+	
+	</li><li>
+		
+		<a
+			data-mscc-ic="false"
+			href="https://www.microsoft.com/legal/intellectualproperty/Trademarks/"
+			data-bi-name="trademarks"
+			class=" external-link-indicator"
+			id=""
+			title=""
+			>Trademarks</a
+		>
+	
+	</li>
+				<li>&copy; Microsoft 2026</li>
+			</ul>
+		</footer>
+	</footer>
+			<noscript><img src="https://learn.microsoft.com/akam/13/pixel_4673f7a7?a=dD00MzIxOTkzMmU3MzIzOTM0ZjM4M2MyYTAwZmJkZTA3N2Q4NWRmNzRlJmpzPW9mZg==" style="visibility: hidden; position: absolute; left: -999px; top: -999px;" /></noscript></body>
+		</html>

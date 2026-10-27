@@ -1,0 +1,74 @@
+[MS-KILE]: TGS Exchange | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+3.2.5.7 TGS Exchange
+Feedback
+Summarize this article for me
+In this article
+When the server name is not Krbtgt, the client sends an
+authorization data field ([RFC4120]
+section 5.2.6) with ad-type KERB_AUTH_DATA_LOOPBACK (142) and ad-data
+containing KERB_AUTH_DATA_LOOPBACK structure (section 2.2.4)
+in an AD-IF-RELEVANT element ([RFC4120] section 5.2.6.1) in the
+enc-authorization-data field.
+The Kerberos client adds a PA-PAC-OPTIONS [167] (section 2.2.10)
+padata type with the Branch Aware bit set to the TGS REQ. If a server principal
+unknown with a substatus of NTSTATUS STATUS_NO_SECRETS message ([MS-ERREF]
+section 2.3.1)
+is returned, the client sends an AS-REQ adding a PA-PAC-OPTIONS [167]
+(section 2.2.10) padata type, with the Forward to Full DC bit set, to a full DC,
+and then send a new KRB_TGS_REQ message using this TGT
+to the full DC.
+If EnableCBACandArmor is TRUE, the Kerberos client
+adds a PA-PAC-OPTIONS [167] (section 2.2.10) padata type with the Claims bit
+(specified in section 2.2.7) set in the
+TGS REQ to notify the KDC that the client
+is claims
+aware.
+If EnableCBACandArmor is TRUE, the Kerberos client
+SHOULD<41> use FAST [RFC6113]
+when the realm supports FAST
+(section 3.2.5.4).
+If EnableCBACandArmor is TRUE and the application
+server's realm TGT's PA-SUPPORTED-ENCTYPES [165] structure (section 2.2.8)
+Compound Identity bit is set, the Kerberos client SHOULD<42> send a compound
+identity TGS-REQ by using FAST with explicit armoring, using the
+computer's TGT.
+Additional resources
+Last updated on
+2026-09-25
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

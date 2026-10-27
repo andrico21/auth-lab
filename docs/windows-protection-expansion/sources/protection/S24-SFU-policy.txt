@@ -1,0 +1,80 @@
+[MS-SFU]: Abstract Data Model | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+3.2.1 Abstract Data Model
+Feedback
+Summarize this article for me
+In this article
+This section describes a conceptual model of possible data
+organization that an implementation maintains to participate in this protocol.
+The described organization is provided to facilitate the explanation of how the
+protocol behaves. This document does not mandate that implementations adhere to
+this model as long as their external behavior is consistent with that described
+in this document.
+To support all functionality of SFU, the account database
+MUST be extended to support the following additional information for each principal:
+DelegationNotAllowed: A Boolean setting to
+prevent PROXIABLE or FORWARDABLE ticket flags ([RFC4120]
+sections 2.5 and 2.6) in tickets for the principal. KILE implementations that
+use an Active Directory for
+the account database SHOULD use the userAccountControl attribute ([MS-ADTS]
+section 2.2.16)
+ND flag. The default is FALSE.
+ServicesAllowedToReceiveForwardedTicketsFrom:
+A SECURITY_DESCRIPTOR ([MS-DTYP]
+section 2.4.6)
+which specifies from which services a service
+will accept forwarded service tickets. SFU
+implementations that use an Active Directory for the configuration database
+SHOULD<19> use the msDS-AllowedToActOnBehalfOfOtherIdentity
+attribute ([MS-ADA2]
+section 2.218).
+ServicesAllowedToSendForwardedTicketsTo: A
+list of services to which a service will be allowed to forward tickets to
+support constrained delegation.
+SFU implementations that use an Active Directory for the configuration database
+SHOULD use the msDS-AllowedToDelegateTo attribute ([MS-ADA2] section 2.219).
+TrustedToAuthenticationForDelegation: A
+Boolean setting to control whether the KDC sets the
+FORWARDABLE ticket flag ([RFC4120] section 2.6) in S4U2self service
+tickets for principals for the service. SFU implementations that use an Active
+Directory for the account database SHOULD use the userAccountControl
+attribute ([MS-ADTS] section 2.2.16) TA flag. The default is FALSE.
+Additional resources
+Last updated on
+2026-01-13
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

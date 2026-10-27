@@ -1,0 +1,2944 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2026-10-23">
+  <title>Windows protection, PAM and scenario discovery</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"WORKER HANDOFF";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="wra"],h3[id^="wprot"],h3[id^="pam"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+  pre{max-width:100%;overflow-x:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}pre code{padding:0;white-space:pre;background:none}pre:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Windows protection, PAM and scenario discovery</h1>
+<p class="subtitle">Detailed worker plan · queued after DNSSEC · version
+3 · Linux-PAM foundations added</p>
+<p class="date">23 October 2026</p>
+<div class="plan-stats"><span>After DNSSEC</span><span>11 new lessons · 110 cases</span><span>PAM configuration and control flow</span><span>Catalog-wide search tags</span><span>Prior release gates preserved</span></div></header>
+<nav id="TOC" role="doc-toc">
+<h2 id="toc-title">Contents</h2>
+<ul>
+<li><a href="#handoff-sequence-and-scope" id="toc-handoff-sequence-and-scope">1. Handoff, sequence and
+scope</a></li>
+<li><a href="#existing-coverage-to-preserve-and-reuse" id="toc-existing-coverage-to-preserve-and-reuse">2. Existing coverage to
+preserve and reuse</a></li>
+<li><a href="#source-and-platform-contract" id="toc-source-and-platform-contract">3. Source and platform
+contract</a></li>
+<li><a href="#common-model-state-and-explanation-requirements" id="toc-common-model-state-and-explanation-requirements">4. Common
+model, state and explanation requirements</a></li>
+<li><a href="#remote-administration-lessons" id="toc-remote-administration-lessons">5. Remote administration
+lessons</a></li>
+<li><a href="#credential-protection-lessons" id="toc-credential-protection-lessons">6. Credential protection
+lessons</a></li>
+<li><a href="#linux-pam-configuration-and-execution" id="toc-linux-pam-configuration-and-execution">7. Linux-PAM
+configuration and execution</a></li>
+<li><a href="#required-comparison-and-usability" id="toc-required-comparison-and-usability">8. Required comparison and
+usability</a></li>
+<li><a href="#integration-instructions-for-the-worker" id="toc-integration-instructions-for-the-worker">9. Integration
+instructions for the worker</a></li>
+<li><a href="#verification-and-evidence" id="toc-verification-and-evidence">10. Verification and
+evidence</a></li>
+<li><a href="#implementation-phases-and-return-packet" id="toc-implementation-phases-and-return-packet">11. Implementation
+phases and return packet</a></li>
+<li><a href="#primary-source-register" id="toc-primary-source-register">12. Primary source register</a></li>
+</ul>
+</nav>
+<main id="worker-plan"><h2 id="handoff-sequence-and-scope">1. Handoff, sequence and scope</h2>
+<p><strong>Finish the current DNSSEC implementation first. Then
+implement this separate expansion on the resulting source and standalone
+artifact.</strong> This document is the complete specification for the
+Windows additions, PAM foundations and scenario-search improvements
+below. It supplements the existing plans; it does not reproduce or
+replace the DNSSEC plan. Extend the specified Linux lessons while
+preserving their accepted behavior and historical review closures.</p>
+<p>The central missing lesson is: <strong>a successful remote
+authentication with an administrator account can yield a filtered
+target-side token, so an administrative operation is denied.</strong>
+Explain the account authority, target policy, resulting authorization
+context and requested resource separately. Add the related
+credential-protection lessons so learners can distinguish protection of
+a secret, use of an identity, elevation and permission to perform an
+operation.</p>
+<p>Deliver <strong>11 new selectable lessons and 110 named
+cases</strong>: the existing Windows plan remains 10 lessons/88 cases;
+PAM adds one lesson/22 cases. Also deliver the comparison linking
+existing RDP/elevation lessons, configuration-line explanations in the
+specified existing Linux flows and catalog-wide search. Each case below
+is required. A bounded unavailable-profile result is an honest case
+outcome, not permission to drop an entire supported flow. New cases need
+executable state transitions and evidence, not captions wrapped around a
+fixed success trace.</p>
+<p><strong>Preserved version 2 addition — SEARCH01:</strong> add curated
+hidden scenario tags and useful ranked search across the entire catalog,
+including existing lessons, the completed DNSSEC additions and the new
+Windows/PAM lessons. An operator must be able to type a concept such as
+<code>filtering</code> or <code>lsa</code> without knowing a lesson
+title. Section 8.1 defines this required work. Search fixtures have a
+separate denominator from the 110 named lesson cases.</p>
+<p><strong>Version 3 addition — PAM01:</strong> explain actual Linux-PAM
+configuration lines and stack decisions, including
+required/requisite/sufficient/optional, includes/substacks, bracket
+controls, separate API phases and actual soft/hard resource limits. Put
+the responsible configuration line into existing PAM-based flows as well
+as the new foundation lesson.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 1"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Workspace / family</th>
+<th scope="col">New lessons</th>
+<th scope="col">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Remote administration ·
+<code>windows-remote-administration</code></td>
+<td>WRA01–WRA05</td>
+<td>Local SAM filtering, RID500, domain/nonjoined identities, separate
+authorization gates, newer Administrator Protection remote policy</td>
+</tr>
+<tr class="even">
+<td>Credential protection · <code>windows-protection</code></td>
+<td>WPROT01–WPROT05</td>
+<td>Credential Guard, LSA protection, Protected Users, authentication
+policies and silos</td>
+</tr>
+<tr class="odd">
+<td>Workstations → Linux sign-in</td>
+<td>PAM01</td>
+<td>Configuration-driven checks, aggregate results, caller admission and
+session lifecycle</td>
+</tr>
+</tbody>
+</table>
+</div><p>Keep the existing Windows access workspace. Add family routes
+<code>remote-administration</code> and <code>protection</code>,
+defaulting to <code>lab-wra01</code> and <code>lab-wprot01</code>.
+Preserve existing lesson IDs and URLs. Add shortcuts from Workstations →
+Windows elevation and Windows sign-in. Register <code>lab-pam01</code>
+under existing Workstations → Linux sign-in, with links from Linux
+elevation and PAM-based SSH lessons. No new top-level workspace is
+required.</p>
+<p><strong>Planning basis:</strong> read-only review of
+<code>implementation-review/p6-resulttype/source</code>, including the
+corrected P6 artifact with SHA-256
+<code>23d6c61d861a37705122915a11923d43d610723664a28caa6df89cfcaae71de6</code>.
+The worker’s current DNSSEC branch was not inspected. Before
+implementation, record its actual completed revision/artifact hash and
+recheck the integration assumptions in section 9.</p>
+<p><strong>Outside this expansion:</strong> new LAPS, JEA,
+WDAC/AppLocker, Windows Hello provisioning, pass-the-hash tooling,
+attack demonstrations, a broad Windows hardening checklist, and a wider
+Linux/macOS protection curriculum beyond the explicit PAM addition.
+Brief related-topic links are acceptable; do not turn them into
+undeclared implementation work. The earlier optional NFS14, WELEV07,
+K8S16 and MCP14 remain deferred. Do not enable SMB1, NTLMv1, DES or RC4
+as recommended paths; obsolete mechanisms appear only as explicitly
+rejected or compatibility comparisons.</p>
+<h2 id="existing-coverage-to-preserve-and-reuse">2. Existing coverage to
+preserve and reuse</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 2"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Existing scenario</th>
+<th scope="col">Required treatment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>lab-welev01</code>, <code>lab-welev02</code>,
+<code>lab-welev03</code></td>
+<td>Link administrator membership/token differences, same-admin consent
+and alternate-admin credential elevation. None establishes remote
+network token filtering.</td>
+</tr>
+<tr class="even">
+<td><code>lab-welev04</code>, <code>lab-welev05</code></td>
+<td>Link ordinary runas and <code>/netonly</code>. Preserve local
+process identity versus independently validated outbound
+credentials.</td>
+</tr>
+<tr class="odd">
+<td><code>lab-welev06</code></td>
+<td>Keep the bounded Administrator Protection architectural lesson.
+WRA05 adds its remote policy comparison; preserve the existing
+build/source applicability caveat.</td>
+</tr>
+<tr class="even">
+<td><code>lab-wlog02</code>, <code>lab-wlog05</code>,
+<code>lab-wlog06</code></td>
+<td>Reuse protected TGT operation/custody, PKINIT and FAST
+continuations. These already model isolated operations; do not reduce
+them to prose.</td>
+</tr>
+<tr class="odd">
+<td><code>lab-wlog04</code> / <code>protected-user</code></td>
+<td>Link the existing offline cache denial. WPROT03 supplies the wider
+protocol and delegation context.</td>
+</tr>
+<tr class="even">
+<td><code>lab-wlog08</code></td>
+<td>Preserve the workgroup PC’s local desktop identity and explicit
+domain network credentials.</td>
+</tr>
+<tr class="odd">
+<td><code>lab-win-rdp-normal</code>,
+<code>lab-win-rdp-restricted-admin</code>,
+<code>lab-win-rdp-remote-credential-guard</code></td>
+<td>Keep canonical RDP implementations and add a comparison entry point,
+not clones.</td>
+</tr>
+<tr class="even">
+<td><code>lab-win-rdp-rcg-kerberos-unavailable</code>,
+<code>lab-win-rdp-required-mode-unsupported</code></td>
+<td>Retain no-fallback failures for required protection modes.</td>
+</tr>
+<tr class="odd">
+<td><code>lab-win-winrm-second-hop-denied</code></td>
+<td>Link first-hop authorization versus second-hop credential
+availability.</td>
+</tr>
+<tr class="even">
+<td><code>lab-smb-nonjoined-kerberos</code>,
+<code>lab-smb-nonjoined-ntlm</code></td>
+<td>Reuse domain SMB machinery with correct provenance. A local SAM case
+requires actual target-local verification; changing
+<code>CORP\\alice</code> text alone is invalid.</td>
+</tr>
+<tr class="odd">
+<td><code>lab-llog01</code>–<code>lab-llog04</code>,
+<code>lab-lelev01</code>, <code>lab-lelev02</code></td>
+<td>Add the actual service/file/line and control explanation at PAM
+steps; preserve login, SSSD, offline/stale-cache, password-change, sudo
+and su semantics. Offline success does not create a fresh TGT.</td>
+</tr>
+<tr class="even">
+<td><code>lab-ssh-sssd-success</code>, <code>lab-ssh-sssd-account</code>
+and other actual PAM-based SSH paths</td>
+<td>Explain each configured PAM phase without inventing PAM password
+authentication for every SSH method.</td>
+</tr>
+</tbody>
+</table>
+</div><h2 id="source-and-platform-contract">3. Source and platform
+contract</h2>
+<h3 id="three-different-kinds-of-correctness">3.1 Three different kinds
+of correctness</h3>
+<p><strong>Platform behavior</strong> comes from Microsoft documentation
+or upstream Linux-PAM manuals/implementation and a declared profile.
+<strong>Wire behavior</strong> comes from the applicable RFCs and
+Microsoft Open Specifications. <strong>Native observation</strong>
+requires a real captured platform run. Passing symbolic tests
+establishes neither native interoperability nor blanket RFC conformance.
+PAM dispatch is a local API/configuration mechanism, not an RFC wire
+protocol.</p>
+<p>Use modern supported OS profiles and SMB 3.1.1. Reuse accepted
+Kerberos, NTLMv2, SMB signing/encryption, CredSSP and RDP
+implementations. Where new wire behavior is required, create a
+clause-to-step-to-test mapping using the applicable RFC updates/errata
+and Open Specification revision. Keep local LSASS/LSAIso, kernel, token
+and policy operations visibly local. Do not invent an RFC for UAC or
+fabricate internal Windows IPC packets. [<a href="#s01">S01</a>, <a href="#s02">S02</a>, <a href="#s03">S03</a>, <a href="#s04">S04</a>, <a href="#s05">S05</a>, <a href="#s06">S06</a>, <a href="#s07">S07</a>, <a href="#s08">S08</a>, <a href="#s09">S09</a>, <a href="#s22">S22</a>, <a href="#s23">S23</a>, <a href="#s24">S24</a>]</p>
+<h3 id="explicit-profile-records">3.2 Explicit profile records</h3>
+<p>Every Windows model/case must select an immutable profile recording
+the fields below. PAM profiles instead pin the Linux-PAM revision,
+modules, application API sequence, service/configuration files and
+account/backend/resource fixture described in section 7; Windows-only
+fields do not apply to them.</p>
+<ul>
+<li>Client and target OS edition, version/build/update where relevant;
+member workstation/server versus domain controller; joined/nonjoined
+state; installation/upgrade assumptions where defaults differ.</li>
+<li>Account authority, user SID, account type, RID where relevant,
+target-local Administrators membership, supplied/default credential
+source, authentication mechanism and selected logon type.</li>
+<li>Effective UAC/AP settings; credential protection configured state
+and effective running state; boot/restart assumptions; policy
+provenance. An unchecked UI toggle is not runtime evidence.</li>
+<li>Domain/DC capability and functional-level prerequisites for
+Protected Users and authentication policies; computer/armor credentials,
+claims and SPN/service-account mapping.</li>
+<li>Requested operation, resource ACL or service admission rule,
+transport protection, fresh versus reused session, and which details are
+symbolic/documented versus natively observed.</li>
+</ul>
+<p>Classic remote-filtering reference: <strong>Administrator Protection
+off, effective <code>EnableLUA=1</code>, fresh target network logon,
+enabled nonblank-password account, explicit network rights and resource
+permissions.</strong> The base target is a member machine, not a DC.
+Explicitly select NTLMv2 for the target-local SAM example and Kerberos
+for domain success. Blocked NTLM environments get a named
+mechanism-unavailable result; never invent a target-local domain
+TGT.</p>
+<h3 id="policy-names-and-polarity">3.3 Policy names and polarity</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 3"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Policy or control</th>
+<th scope="col">Mapping and teaching rule</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Apply UAC restrictions to local accounts on network logons</td>
+<td>MS Security Guide ADMX-backed policy; <code>SecGuide.admx</code>,
+<code>Pol_SecGuide_0201_LATFP</code>; CSP
+<code>MSSecurityGuide/ApplyUACRestrictionsToLocalAccountsOnNetworkLogon</code>.
+Restriction enabled corresponds to filtering.</td>
+</tr>
+<tr class="even">
+<td><code>LocalAccountTokenFilterPolicy</code></td>
+<td><code>HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System</code>;
+absent/0 filters the ordinary local-admin reference; 1 removes that
+filter. Do not reverse the policy’s human label because the registry
+value is 1.</td>
+</tr>
+<tr class="odd">
+<td>Admin Approval Mode for the Built-in Administrator account</td>
+<td>Security Options; <code>FilterAdministratorToken</code>; identify
+the local built-in account by RID500, including when renamed.</td>
+</tr>
+<tr class="even">
+<td>Run all administrators in Admin Approval Mode</td>
+<td>Security Options; <code>EnableLUA</code>. UAC disabled is outside
+the base matrix and must not be recommended as a fix.</td>
+</tr>
+<tr class="odd">
+<td>Elevation prompt behavior</td>
+<td>Interactive consent/credential policy, separate from the network
+filter.</td>
+</tr>
+<tr class="even">
+<td>Network/RDP logon rights</td>
+<td>Network admission and Remote Desktop admission are separate
+controls; neither is the file/share ACL.</td>
+</tr>
+<tr class="odd">
+<td>Credential Guard / LSA protection</td>
+<td>Distinct configuration and effective-state records;
+<code>LsaCfgFlags</code> and <code>RunAsPPL</code> are not
+interchangeable.</td>
+</tr>
+</tbody>
+</table>
+</div><p>The Security Options path is
+<code>Computer Configuration → Windows Settings → Security Settings → Local Policies → Security Options</code>.
+The MS Security Guide template policy belongs under Administrative
+Templates → MS Security Guide. Do not put both controls in the same
+invented GPO location. [<a href="#s01">S01</a>, <a href="#s02">S02</a>,
+<a href="#s03">S03</a>, <a href="#s04">S04</a>, <a href="#s10">S10</a>,
+<a href="#s11">S11</a>, <a href="#s12">S12</a>]</p>
+<h3 id="research-discrepancies-that-must-stay-visible">3.4 Research
+discrepancies that must stay visible</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 4"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Issue</th>
+<th scope="col">Required resolution in the implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>KB951016 retains Windows Vista-era wording</td>
+<td>Corroborate the classic behavior with current Local accounts/UAC
+documentation; do not present the KB as evidence for every modern
+build.</td>
+</tr>
+<tr class="even">
+<td>RID500 combinations</td>
+<td>Implement the bounded cases below. Exact token-field inventories and
+additional policy combinations require source/native evidence; never
+advertise an exhaustive natively verified truth table.</td>
+</tr>
+<tr class="odd">
+<td>Administrator Protection availability</td>
+<td>Overview describes current availability, while remote-policy CSP
+applicability still lists Windows Insider Preview
+<code>[11.0.26100.9278]</code>. Capture both revisions and show a
+build-qualified architectural profile. Do not extend it to Windows
+Server or every Windows 11 installation.</td>
+</tr>
+<tr class="even">
+<td>Protected Users lifetime</td>
+<td>Learn says 240 minutes/nonconfigurable; MS-KILE AS rules allow an
+enforced policy lifetime override. WPROT03 uses Protected Users alone
+with no explicit authentication policy. Combined lifetime precedence is
+out of this first implementation unless separately source-mapped and
+labeled.</td>
+</tr>
+<tr class="odd">
+<td>Credential Manager</td>
+<td>Distinguish domain Windows credentials from generic application
+credentials. Do not copy a broad “all Vault contents are unprotected”
+claim.</td>
+</tr>
+</tbody>
+</table>
+</div><p>For each source capture URL, final URL, title, section,
+revision/update, retrieval time, content SHA-256, local snapshot
+reference, supported claim and affected cases. Preserve disagreements.
+These research URLs are not already immutable worker source captures.
+[<a href="#s01">S01</a>, <a href="#s02">S02</a>, <a href="#s11">S11</a>,
+<a href="#s13">S13</a>, <a href="#s14">S14</a>, <a href="#s15">S15</a>,
+<a href="#s16">S16</a>, <a href="#s20">S20</a>, <a href="#s21">S21</a>]</p>
+<h2 id="common-model-state-and-explanation-requirements">4. Common
+model, state and explanation requirements</h2>
+<h3 id="remote-administration-boundaries">4.1 Remote administration
+boundaries</h3>
+<p>Expose these logical boundaries: account selection → credential
+verification → target logon admission/token policy → target service
+context → requested-operation authorization → returned result. These are
+explanatory checkpoints, not an asserted universal internal LSASS call
+order.</p>
+<p>An internal credential-verification success can precede a denied
+logon. Do not emit a successful SMB session-establishment response for a
+logon that the target rejects. Conversely, a share/file denial after an
+accepted session must preserve that accepted authentication. Separate
+server decision, response transmission, client receipt and client
+knowledge.</p>
+<p>Tokens are local OS authorization objects. Show user SID, applicable
+group attributes, relevant privilege presence/enabled state, primary
+versus impersonation role and associated logon/session context. A
+deny-only SID can match a deny ACE but cannot satisfy an allow ACE.
+Filtering does not delete directory membership or transmit a stripped
+client token. Distinguish a removed privilege from a present disabled
+privilege. Exact integrity/elevation flags require a declared
+API/platform observation; do not invent a universal remote-token layout.
+[<a href="#s05">S05</a>, <a href="#s06">S06</a>, <a href="#s07">S07</a>]</p>
+<p>Windows network logon and remote-interactive logon have different
+semantics; the documented audit categories include type 3 and type 10
+respectively. An RDP connection can involve preliminary authentication
+before interactive admission. Do not flatten the entire RDP exchange
+into one network-logon token. [<a href="#s08">S08</a>]</p>
+<h3 id="required-case-record-and-objects">4.2 Required case record and
+objects</h3>
+<p>The worker’s independent case manifest must include: stable case ID;
+model ID; profile ID; initial holdings; changed inputs; step sequence;
+first detecting actor and step; expected accepted/rejected facts;
+prohibited downstream effects; returned result/error domain; source
+clauses; evidence level; cleanup/retained state. Expected outcomes must
+not be generated by the production evaluator under test. The 110-case
+denominator counts named cases, not every underlying trace: paired,
+account-type and PAM control comparisons require a separately reported
+subfixture for every listed member. Report the Windows 88 and PAM 22
+subtotals explicitly.</p>
+<p>Source-owned objects include policy snapshots, account/SID facts,
+credential handles, verifier outcomes, target logon context, token
+references, requested access masks, relevant ACL/rule input, decisions
+and correlated responses. Protection cases additionally need
+protected-secret references, isolated operation requests/results,
+effective-status evidence, plugin metadata and policy evaluation
+evidence. AD cases need AS/TGS request identity, PAC/device evidence,
+effective policy provenance and issued/denied ticket objects.</p>
+<p>Every edge declares local call, local observation, network request or
+network response. Every transmitted object must be held by its sender
+first; receipt must precede use/acceptance. Opaque isolated handles are
+not raw keys. A related-lesson link starts its own demonstration and
+does not secretly transfer credentials or cached runtime state.</p>
+<h3 id="failure-semantics-and-replay">4.3 Failure semantics and
+replay</h3>
+<p>Reject unknown cases and unsupported profile combinations explicitly.
+A denied proof must not create an authenticated target context; a denied
+policy must not issue the prohibited ticket; a denied object access must
+not erase a previously valid session. Cleanup releases attempt
+scratch/temporary handles while retaining intentionally seeded authority
+and existing-session state.</p>
+<p>Filtering the visible attributes, stepping backward, changing case,
+opening an object history, or navigating via a deep link must reproduce
+the same canonical decisions. A field filter cannot remove the hidden
+prerequisite that justified an outcome. Preserve the closed P6 request
+correlation, reply-key provenance, cleanup and caller-result fixes.</p>
+<h2 id="remote-administration-lessons">5. Remote administration
+lessons</h2>
+<p>Each row below names a required selectable case. Stable model IDs are
+lowercase planning IDs prefixed with <code>lab-</code>. The default case
+is the first row unless explicitly stated otherwise. The application’s
+existing runtime <code>default</code> ID must alias that first canonical
+case; it is not an additional case. Record this mapping explicitly so
+the manifest, selector, replay and evidence agree.</p>
+<h3 id="wra01-local-administrator-authenticates-admin-is-denied">WRA01 —
+Local administrator authenticates, ADMIN$ is denied</h3>
+<p><strong>Model:</strong> <code>lab-wra01</code> · <strong>9
+cases</strong> · <strong>Sources:</strong> [<a href="#s01">S01</a>, <a href="#s02">S02</a>, <a href="#s03">S03</a>, <a href="#s04">S04</a>, <a href="#s05">S05</a>, <a href="#s06">S06</a>, <a href="#s07">S07</a>, <a href="#s24">S24</a>].</p>
+<p><strong>Question:</strong> Why can a target-local administrator
+supply correct credentials yet fail to administer the target
+remotely?</p>
+<p><strong>Actors:</strong> source user/application and SSPI; target
+SMB/service; target LSA/SAM and token policy; target resource
+access-check role. Group target internals in the compact view. No DC
+validates the local SAM password.</p>
+<p><strong>Steps:</strong> (1) identify source desktop and supplied
+<code>TARGET\ops</code> account separately; (2) negotiate SMB 3.1.1 and
+the declared NTLMv2 profile; (3) verify against target SAM; (4) apply
+target admission and effective remote-filter policy; (5) bind the
+resulting target security context to the accepted SMB session; (6)
+evaluate the selected administrative share or ordinary resource; (7)
+deliver and inspect the access result and retained session. Existing
+NTLM/SMB operations must retain their actual proof, key and protection
+history.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 5"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WRA01/default-filtered</code></td>
+<td>Ordinary non-RID500 local admin; LATFP absent; ADMIN$</td>
+<td>Valid credentials and accepted session; administrative access denied
+because the effective context lacks the required grant. No remote UAC
+prompt.</td>
+</tr>
+<tr class="even">
+<td><code>WRA01/explicit-zero</code></td>
+<td>Same with LATFP=0</td>
+<td>Same filtering decision, explicit policy provenance.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA01/filter-disabled</code></td>
+<td>LATFP=1; fixed permitted admin-share fixture</td>
+<td>Full-administrator comparison context; requested operation allowed
+by its actual rules.</td>
+</tr>
+<tr class="even">
+<td><code>WRA01/full-token-acl-denied</code></td>
+<td>LATFP=1; explicit resource denial</td>
+<td>Resource denied despite unfiltered context.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA01/ordinary-share-allowed</code></td>
+<td>Filtered context; ordinary share/file grants user read</td>
+<td>Read succeeds without elevation; do not label all filtered access
+denied.</td>
+</tr>
+<tr class="even">
+<td><code>WRA01/bad-password</code></td>
+<td>Wrong target-local password</td>
+<td>SAM proof rejection; no accepted SMB session or resource check.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA01/local-standard-user</code></td>
+<td>Local nonadmin; LATFP=1; ADMIN$</td>
+<td>No administrative rights manufactured.</td>
+</tr>
+<tr class="even">
+<td><code>WRA01/reused-session</code></td>
+<td>Existing filtered session; configured policy subsequently
+changed</td>
+<td>Reused context stays attributable to its original logon; fresh
+attempt explicitly shows new effective policy.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA01/ntlm-unavailable</code></td>
+<td>Selected environment blocks the local-account NTLM path</td>
+<td>Mechanism/policy rejection at the documented boundary; no invented
+Kerberos substitute.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> a learner can identify who
+authenticated, which machine made the token, why the admin operation
+failed, and why changing client elevation alone is irrelevant. The
+LATFP=1 case is a comparison, not an “always fix access denied this way”
+instruction.</p>
+<h3 id="wra02-built-in-administrator-and-rid500-policy">WRA02 — Built-in
+Administrator and RID500 policy</h3>
+<p><strong>Model:</strong> <code>lab-wra02</code> · <strong>6
+cases</strong> · <strong>Sources:</strong> [<a href="#s02">S02</a>, <a href="#s03">S03</a>, <a href="#s04">S04</a>, <a href="#s05">S05</a>, <a href="#s06">S06</a>].</p>
+<p><strong>Question:</strong> Why is the built-in Administrator not
+interchangeable with any account named Administrator?</p>
+<p><strong>Steps:</strong> resolve target SID/account state → identify
+local RID500 → select effective built-in Admin Approval Mode plus LATFP
+→ execute fresh network authentication/admission → show policy-specific
+context → evaluate the same fixed admin operation. Reuse WRA01
+transport/authentication construction, preserving separate
+scenario/case/object identities.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 6"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WRA02/rid500-aam-off</code></td>
+<td>Enabled local RID500, FilterAdministratorToken=0, LATFP=0</td>
+<td>Documented built-in exception/full-context reference; label exact
+token-field evidence level.</td>
+</tr>
+<tr class="even">
+<td><code>WRA02/renamed-rid500</code></td>
+<td>Rename the same account</td>
+<td>Same SID-based policy classification.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA02/rid500-aam-on</code></td>
+<td>FilterAdministratorToken=1, LATFP=0</td>
+<td>Built-in account now participates in the selected filtered
+reference; administrative operation denied.</td>
+</tr>
+<tr class="even">
+<td><code>WRA02/rid500-filter-disabled</code></td>
+<td>FilterAdministratorToken=1, LATFP=1</td>
+<td>Explicit filter-disabled comparison, still subject to resource
+rules.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA02/name-is-not-rid</code></td>
+<td>Ordinary non-RID500 local admin named Administrator</td>
+<td>Ordinary account filtering; name cannot select the RID500
+exception.</td>
+</tr>
+<tr class="even">
+<td><code>WRA02/account-disabled</code></td>
+<td>RID500 account disabled</td>
+<td>Account/logon rejection before usable service context; not a
+filtering failure.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> account SID, policy inputs and resulting
+grant eligibility are visible together. During WP0, source-map the
+supported outcome for each selected combination, especially
+FilterAdministratorToken=1 with LATFP=1, before assigning exact token
+fields. Preserve unresolved applicability explicitly. Additional
+<code>EnableLUA=0</code> combinations remain unavailable unless
+researched; UI cannot extrapolate them from these six cases. The domain
+Administrator’s RID500 and its authentication-policy exception belong to
+WPROT05, not this local UAC rule.</p>
+<h3 id="wra03-domain-account-from-joined-or-nonjoined-pc">WRA03 — Domain
+account from joined or nonjoined PC</h3>
+<p><strong>Model:</strong> <code>lab-wra03</code> · <strong>7
+cases</strong> · <strong>Sources:</strong> [<a href="#s01">S01</a>, <a href="#s02">S02</a>, <a href="#s05">S05</a>, <a href="#s23">S23</a>, <a href="#s24">S24</a>].</p>
+<p><strong>Question:</strong> Does a non-domain workstation make the
+remote identity a local account?</p>
+<p><strong>Steps:</strong> show source join state/local desktop SID →
+choose fully qualified outbound account → authenticate through the
+actual domain mechanism → resolve target-local membership and classic
+UAC profile → construct target service context → independently evaluate
+share/file access. The nonjoined Kerberos case must declare its working
+KDC discovery, SPN, name resolution and credential prerequisites. Link
+<code>lab-wlog08</code> and <code>lab-welev05</code> without replacing
+the local desktop identity.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 7"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WRA03/domain-admin-joined</code></td>
+<td>Domain user in target Administrators; classic UAC</td>
+<td>Traditional administrator network context, followed by the fixture’s
+allowed operation.</td>
+</tr>
+<tr class="even">
+<td><code>WRA03/domain-admin-nonjoined</code></td>
+<td>Same supplied domain identity; workgroup source; Kerberos
+prerequisites satisfied</td>
+<td>Equivalent target identity/policy result; source local desktop
+remains unchanged.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA03/domain-ntlm-explicit</code></td>
+<td>Explicit permitted NTLMv2 domain compatibility profile</td>
+<td>Domain validation through its actual authority; do not convert to
+target SAM.</td>
+</tr>
+<tr class="even">
+<td><code>WRA03/domain-user-read</code></td>
+<td>Domain user outside target Administrators; explicit ordinary-read
+grant</td>
+<td>Ordinary access allowed, no admin context.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA03/domain-user-admin-denied</code></td>
+<td>Same user requests ADMIN$</td>
+<td>Resource denied; LATFP=1 cannot create membership.</td>
+</tr>
+<tr class="even">
+<td><code>WRA03/same-name-different-authority</code></td>
+<td>Compare <code>TARGET\ops</code> and <code>CORP\ops</code>, distinct
+SIDs</td>
+<td>Local versus domain policy is selected from authority/SID, not
+display name or client join state.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA03/domain-proof-failed</code></td>
+<td>Wrong domain credentials</td>
+<td>Domain verifier rejects; local desktop survives and no target
+authorization success appears.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> avoid “domain admins always get a full
+token.” Every traditional result states the classic profile and links
+the newer WRA05 comparison.</p>
+<h3 id="wra04-locate-the-denial-logon-endpoint-share-or-file">WRA04 —
+Locate the denial: logon, endpoint, share or file</h3>
+<p><strong>Model:</strong> <code>lab-wra04</code> · <strong>8
+cases</strong> · <strong>Sources:</strong> [<a href="#s05">S05</a>, <a href="#s06">S06</a>, <a href="#s07">S07</a>, <a href="#s08">S08</a>, <a href="#s09">S09</a>, <a href="#s24">S24</a>].</p>
+<p><strong>Question:</strong> At which boundary did “access denied”
+actually arise?</p>
+<p><strong>Steps:</strong> select a named fixture and fixed operation →
+perform its accepted authentication/admission flow → inspect the actual
+target context → evaluate only the applicable endpoint/share/file rule →
+protect and return the response → retain separate outcomes. Include the
+relevant access mask/ACE or endpoint rule as an input to the decision; a
+hardcoded deny flag alone is insufficient.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 8"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WRA04/network-logon-denied</code></td>
+<td>Valid proof; applicable deny-network-logon right</td>
+<td>Admission rejected. No successful SMB session or file authorization;
+any internal proof success remains internal.</td>
+</tr>
+<tr class="even">
+<td><code>WRA04/share-denied</code></td>
+<td>Accepted session; share rule denies</td>
+<td>Session accepted, tree/share admission denied; no file operation
+success.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA04/file-denied</code></td>
+<td>Share admitted; file ACL denies requested read</td>
+<td>Preserve session/tree acceptance; deny file operation.</td>
+</tr>
+<tr class="even">
+<td><code>WRA04/deny-only-sid</code></td>
+<td>Admin SID deny-only; contrasting allow/deny ACE input</td>
+<td>It cannot satisfy the allow ACE but remains relevant to denial.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA04/client-elevated</code></td>
+<td>Same network credential, client process elevated</td>
+<td>Target filtering/resource result unchanged by client elevation
+alone.</td>
+</tr>
+<tr class="even">
+<td><code>WRA04/management-endpoint-denied</code></td>
+<td>Accepted first-hop identity; fixed WinRM endpoint rule denies</td>
+<td>Denial belongs to endpoint authorization, not an invented failed
+password or guaranteed administrator requirement for every management
+task.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA04/signed-denial</code></td>
+<td>SMB signing active; share denied</td>
+<td>Correct protected denial using the established session SigningKey
+and negotiated signing algorithm; signing does not grant access.</td>
+</tr>
+<tr class="even">
+<td><code>WRA04/encrypted-denial</code></td>
+<td>SMB encryption active; file denied</td>
+<td>Correct protected error using the established server-to-client
+encryption key; encryption does not change the ACL.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> show independent status labels for
+proof, admission, target context and operation. Add a related RDP link
+explaining remote-interactive admission/elevation, and a scoped WMI
+source note separating DCOM, namespace and object rights. Do not
+introduce WMIC as the default modern interface or silently expand this
+into a WMI protocol implementation.</p>
+<h3 id="wra05-administrator-protection-remote-domain-elevation-policy">WRA05
+— Administrator Protection: remote domain elevation policy</h3>
+<p><strong>Model:</strong> <code>lab-wra05</code> · <strong>8
+cases</strong> · <strong>Sources:</strong> [<a href="#s20">S20</a>, <a href="#s21">S21</a>].</p>
+<p><strong>Question:</strong> How does the newer Administrator
+Protection profile change the classic remote-domain comparison?</p>
+<p><strong>Steps:</strong> check declared feature/build applicability →
+authenticate the selected domain principal → resolve target membership →
+evaluate the broad remote policy and optional SID list → show the
+resulting context → perform a fixed authorization check. Link local
+elevation architecture to WELEV06; do not infer that its hidden
+elevation identity is necessarily the network token identity.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 9"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WRA05/default-non-elevated</code></td>
+<td>Feature effective; domain target-admin; broad policy disabled; no
+list match</td>
+<td>Non-elevated remote context in this documented profile.</td>
+</tr>
+<tr class="even">
+<td><code>WRA05/broad-allow</code></td>
+<td>Broad remote-elevation policy enabled</td>
+<td>Eligible domain target-admin receives elevated comparison
+context.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA05/user-sid-match</code></td>
+<td>Broad disabled; eligible user’s SID listed</td>
+<td>Selected user exception applies.</td>
+</tr>
+<tr class="even">
+<td><code>WRA05/group-sid-match</code></td>
+<td>Broad disabled; eligible matching group SID</td>
+<td>Group-based exception, with group evidence.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA05/no-list-match</code></td>
+<td>Broad disabled; eligible admin excluded from list</td>
+<td>Non-elevated context.</td>
+</tr>
+<tr class="even">
+<td><code>WRA05/broad-overrides-list</code></td>
+<td>Broad enabled; eligible admin not on list</td>
+<td>Broad policy still permits elevated behavior.</td>
+</tr>
+<tr class="odd">
+<td><code>WRA05/nonadmin-listed</code></td>
+<td>Listed domain user is outside the documented target-admin comparison
+fixture</td>
+<td>Applicability unresolved: return a bounded
+unavailable/needs-evidence result. Infer neither membership grant nor
+definite denial/elevation.</td>
+</tr>
+<tr class="even">
+<td><code>WRA05/unavailable-profile</code></td>
+<td>Feature/build or effective configuration unsupported</td>
+<td>Explain unavailable comparison; no silent classic-mode
+substitution.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> show exact policy labels in an
+expandable source panel. The general administrator-members control and
+the specified-users/groups control are distinct. Preserve the
+overview/CSP applicability discrepancy and source capture date; no
+universal modern-Windows default claim.</p>
+<h2 id="credential-protection-lessons">6. Credential protection
+lessons</h2>
+<h3 id="wprot01-credential-guard-custody-operations-and-limits">WPROT01
+— Credential Guard: custody, operations and limits</h3>
+<p><strong>Model:</strong> <code>lab-wprot01</code> · <strong>12
+cases</strong> · <strong>Sources:</strong> [<a href="#s10">S10</a>, <a href="#s11">S11</a>, <a href="#s13">S13</a>].</p>
+<p><strong>Question:</strong> Which secret is isolated, and what can the
+signed-in session still do?</p>
+<p><strong>Actors:</strong> application; normal-OS LSASS; isolated LSA
+role; KDC/service; optional credential-input role.
+<strong>Steps:</strong> load configured/effective status → establish the
+declared domain sign-in state → show the secret’s protected
+representation → request an authorized authentication operation → return
+the operation result without exporting its protected input → accept the
+resulting service credential at its actual holder → perform an
+independently authorized operation. Reuse WLOG02’s corrected protected
+TGT operations; do not move all LSASS functionality into the isolated
+actor.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 10"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WPROT01/running-kerberos</code></td>
+<td>CG effective; selected domain sign-in</td>
+<td>Isolated operation succeeds; protected input remains isolated.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT01/disabled-comparison</code></td>
+<td>Explicit CG-off profile</td>
+<td>Distinct normal-OS credential custody; no automatic file permission
+gain.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT01/configured-not-running</code></td>
+<td>Configuration present, effective status negative</td>
+<td>No active-isolation claim; explain missing runtime evidence.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT01/local-account</code></td>
+<td>Local SAM identity</td>
+<td>Outside this domain-credential isolation guarantee.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT01/service-ticket-custody</code></td>
+<td>Successful service-ticket acquisition</td>
+<td>Expose the service credential’s normal-OS holding separately from
+the protected TGT operation.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT01/authority-still-usable</code></td>
+<td>Authorized request made through the live session</td>
+<td>Protection does not itself revoke the session’s allowed
+operations.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT01/credssp-default-unavailable</code></td>
+<td>Ordinary CredSSP asks for signed-in/saved reusable credentials</td>
+<td>Selected source unavailable; no fabricated export from
+isolation.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT01/explicit-prompted-input</code></td>
+<td>User explicitly supplies credentials for permitted NTLMv2
+authentication</td>
+<td>Separate input/holder/custody; supplied NTLM credentials are not
+relabeled as protected sign-in secrets.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT01/ntlmv2-operation</code></td>
+<td>Supported domain NTLMv2 operation</td>
+<td>Demonstrate that CG is not an all-NTLM ban.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT01/unconstrained-unavailable</code></td>
+<td>Operation requires unconstrained delegation</td>
+<td>No delegated reusable TGT produced; preserve any independently
+successful authentication.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT01/constrained-continuation</code></td>
+<td>Source-backed KCD/RBCD continuation prerequisites met</td>
+<td>Protection alone does not prohibit this mode; independent delegation
+and resource rules still decide.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT01/credential-manager-types</code></td>
+<td>Domain Windows credential versus generic application credential</td>
+<td>Separate source-owned types and protection/availability; no blanket
+Vault claim.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> display configured, running and observed
+as distinct states.
+<code>Win32_DeviceGuard.SecurityServicesRunning</code> is a collection;
+do not compare it as one universal scalar. A Task Manager process name
+alone is insufficient evidence. Reboot/UEFI-lock context must not
+animate as an instantaneous live toggle. [<a href="#s10">S10</a>]</p>
+<p>The limits panel must distinguish cached offline verifiers, input
+capture, application-owned secrets and already available authority. It
+must not promise protection against a privileged VM host or all service
+credentials. Existing RADIUS/EAP and RDP lessons can be linked for
+compatibility context; no new NTLMv1/MS-CHAPv2 success curriculum is
+required. [<a href="#s11">S11</a>, <a href="#s13">S13</a>]</p>
+<h3 id="wprot02-lsa-protection-runasppl-is-a-different-boundary">WPROT02
+— LSA protection / RunAsPPL is a different boundary</h3>
+<p><strong>Model:</strong> <code>lab-wprot02</code> · <strong>8
+cases</strong> · <strong>Sources:</strong> [<a href="#s12">S12</a>].</p>
+<p><strong>Question:</strong> What is protected when LSASS runs as a
+protected process, and how does that differ from Credential Guard?</p>
+<p><strong>Steps:</strong> select effective process-protection/audit
+profile → evaluate a synthetic process-access request or declared plugin
+compatibility input → record permit/block/audit decision → show impact
+on the selected component → separately run the relevant authentication
+path if still available. Plugin fixtures must represent the applicable
+Microsoft signing-level and shared-section requirements; a generic
+<code>isSigned</code> flag is insufficient. No executable
+memory-reading/injection demonstration is requested.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 11"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WPROT02/protected-access-blocked</code></td>
+<td>Nonprotected requester, prohibited process access</td>
+<td>Protection boundary denies the request.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT02/protection-absent</code></td>
+<td>PPL absent</td>
+<td>That protection boundary is absent; other access controls still
+apply. Do not claim universal successful secret extraction.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT02/audit-plugin</code></td>
+<td>Incompatible plugin, selected audit-only profile</td>
+<td>Warning/evidence; plugin not blocked by that audit policy.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT02/enforce-plugin</code></td>
+<td>Same plugin under enforcement</td>
+<td>Plugin load blocked; identify its actual affected function.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT02/compatible-plugin</code></td>
+<td>Matching requirements</td>
+<td>Plugin admitted; later authentication still independently
+evaluated.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT02/ppl-and-cg</code></td>
+<td>Both effective</td>
+<td>Separate process-access and isolated-secret boundaries remain
+inspectable.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT02/configured-not-effective</code></td>
+<td>Requested setting not yet effective</td>
+<td>Do not show protected runtime solely from registry/configuration
+input.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT02/unaffected-authentication</code></td>
+<td>Blocked optional plugin, independent supported package</td>
+<td>Relevant independent authentication can proceed; no blanket network
+outage inference.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> label synthetic decisions versus
+observed events. Diagnostic references may include WinInit 12, audit
+3065/3066 and block 3033/3063 with their documented prerequisites;
+absent events do not prove compatibility. Version-bound
+<code>RunAsPPL=2</code>, conditional defaults and boot/firmware lock
+state must stay scoped. Keep this lesson about boundary decisions; it is
+not a guide to disabling protection.</p>
+<h3 id="wprot03-protected-users-client-and-dc-restrictions">WPROT03 —
+Protected Users: client and DC restrictions</h3>
+<p><strong>Model:</strong> <code>lab-wprot03</code> · <strong>10
+cases</strong> · <strong>Sources:</strong> [<a href="#s14">S14</a>, <a href="#s15">S15</a>, <a href="#s16">S16</a>, <a href="#s23">S23</a>].</p>
+<p><strong>Question:</strong> Why can an account work with one
+authentication method but fail with another?</p>
+<p><strong>Profile:</strong> supported client/DC and eligible domain
+functional level; human domain user; Protected Users membership
+effective at the relevant new sign-in; no explicit authentication
+policy. <strong>Steps:</strong> show account protection/membership
+evidence → distinguish client credential availability from DC
+enforcement → attempt the selected AS/NTLM/delegation operation → apply
+the actual restriction → return scoped result → show retained
+session/ticket/cache state. Reuse AD and offline-logon
+implementations.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 12"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WPROT03/aes-kerberos</code></td>
+<td>Eligible AES-based Kerberos sign-in</td>
+<td>Successful reference with declared account keys.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT03/ntlm-denied</code></td>
+<td>NTLM attempt reaches the DC</td>
+<td>DC restriction denies it; not merely a client CG availability
+problem.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT03/rc4-preauth-denied</code></td>
+<td>RC4 preauthentication</td>
+<td>KDC rejection, no accepted TGT.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT03/des-preauth-denied</code></td>
+<td>DES preauthentication</td>
+<td>Rejected legacy comparison; no fallback to it.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT03/unconstrained-denied</code></td>
+<td>Delegation would require prohibited export</td>
+<td>No delegated user credential.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT03/constrained-denied</code></td>
+<td>Attempted constrained delegation for protected user</td>
+<td>Policy restriction preserved; do not borrow CG’s KCD compatibility
+result.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT03/offline-unavailable</code></td>
+<td>No cached verifier under the selected protected sign-in</td>
+<td>Link/compose the existing WLOG04 protected-user denial with actual
+cache evidence.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT03/lifetime-expired</code></td>
+<td>PU-only reference reaches its four-hour renewal boundary</td>
+<td>No indefinite renewal; fresh authentication is a separate attempt.
+Existing local session is not silently logged off.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT03/fresh-authentication</code></td>
+<td>Fresh allowed authentication after expiry</td>
+<td>New credential lineage; do not revive the expired ticket.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT03/membership-next-signin</code></td>
+<td>Membership changes while an older session exists</td>
+<td>Explain effective client sign-in state and subsequent attempt; no
+invented retroactive purge of every credential.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> mark whether the client or DC detected
+each limitation. Do not put service/computer accounts into this
+human-user lesson as normal usage. Do not conflate Protected Users,
+Credential Guard, “account sensitive and cannot be delegated,” and
+authentication-policy membership.</p>
+<h3 id="wprot04-authentication-policy-allowed-device-and-as-issuance">WPROT04
+— Authentication policy: allowed device and AS issuance</h3>
+<p><strong>Model:</strong> <code>lab-wprot04</code> · <strong>8
+cases</strong> · <strong>Sources:</strong> [<a href="#s15">S15</a>, <a href="#s16">S16</a>, <a href="#s17">S17</a>, <a href="#s18">S18</a>, <a href="#s19">S19</a>, <a href="#s22">S22</a>, <a href="#s23">S23</a>, <a href="#s26">S26</a>].</p>
+<p><strong>Question:</strong> How can valid user credentials fail
+because this device is not an allowed sign-in origin?</p>
+<p><strong>Steps for a device restriction:</strong> establish eligible
+computer/armor credential → resolve the user’s effective directly
+assigned policy → construct/validate the actual armored AS exchange →
+evaluate allowed-from evidence from the armor ticket’s PAC → distinguish
+audit from enforcement → issue or withhold TGT → verify/accept any
+returned result → show configured lifetime on the issued credential.
+Client-supplied workstation text cannot stand in for validated device
+evidence. Reuse accepted FAST derivations and response checks. A
+lifetime-only policy does not itself require this device/armor path;
+that comparison uses an eligible ordinary AS exchange without an
+allowed-from condition. [<a href="#s26">S26</a>]</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 13"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WPROT04/allowed-device</code></td>
+<td>Valid proof and permitted armor-device evidence</td>
+<td>TGT issuance and client acceptance under the effective policy.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT04/device-denied-audit</code></td>
+<td>Disallowed device, audit-only policy</td>
+<td>Record would-deny evidence while allowing otherwise-valid
+issuance.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT04/device-denied-enforce</code></td>
+<td>Same input, enforced policy</td>
+<td>KDC policy denial; no new usable user TGT is issued; intentionally
+pre-existing credentials retain their own state.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT04/required-armor-missing</code></td>
+<td>Required validated device context unavailable</td>
+<td>No implicit unarmored success; source-map exact rejection
+behavior.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT04/forged-device-label</code></td>
+<td>Allowed name text, untrusted/mismatching device evidence</td>
+<td>Label cannot satisfy the rule; stop at actual failed evidence
+check.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT04/direct-policy</code></td>
+<td>Direct assignment without valid silo membership</td>
+<td>Select direct policy with provenance; no fictional silo.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT04/policy-lifetime</code></td>
+<td>Enforced nonzero lifetime only, no allowed-from rule;
+non-Protected-Users account; eligible unarmored AS</td>
+<td>Apply the lifetime/renewal fields without inventing a
+device-condition/FAST requirement; separate from PU-only reference.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT04/ineligible-domain</code></td>
+<td>Prerequisite DC/capability profile unavailable</td>
+<td>Explain unsupported enforcement; never label an ordinary TGT as
+proof the rule was enforced.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> no new wire-level error number is
+guessed from the UI caption. Where a precise missing-context behavior is
+unresolved, keep its architectural result bounded and record the
+unresolved native claim. A server-side policy deny must preserve
+successfully validated computer armor without granting user
+authentication success.</p>
+<h3 id="wprot05-silos-effective-policy-and-service-ticket-admission">WPROT05
+— Silos, effective policy and service-ticket admission</h3>
+<p><strong>Model:</strong> <code>lab-wprot05</code> · <strong>12
+cases</strong> · <strong>Sources:</strong> [<a href="#s14">S14</a>, <a href="#s15">S15</a>, <a href="#s17">S17</a>, <a href="#s18">S18</a>, <a href="#s19">S19</a>, <a href="#s22">S22</a>, <a href="#s23">S23</a>].</p>
+<p><strong>Question:</strong> Which policy actually applies, and does
+permission to obtain a service ticket grant file access?</p>
+<p><strong>Steps:</strong> resolve account type and effective silo
+membership → select direct or silo policy with enforcement provenance →
+resolve requested SPN to the target service account → obtain that
+target’s applicable policy → validate TGS/user/device evidence →
+evaluate target allowed-to rule → issue or deny service ticket → on
+success perform independent service authentication and resource
+authorization. For each case, show which account’s policy is being
+selected.</p>
+<p>The TGS restriction is a policy of the target service/server account.
+Its “AllowedToAuthenticateTo” rule tests the requesting user/device
+context; it is not a destinations list attached to the client. Keep
+source-owned PAC evidence and armoring prerequisites. The first
+implementation is same-domain, writable-DC, distinct client/service
+accounts; do not claim RODC, loopback or cross-forest policy
+interoperability. Existing forest lessons remain intact. [<a href="#s17">S17</a>]</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 14"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>WPROT05/allowed-service</code></td>
+<td>Valid actual silo membership and allowed user/device</td>
+<td>Effective target policy permits issuance; resource fixture permits
+operation.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT05/target-rule-audit</code></td>
+<td>Target would deny; audit-only</td>
+<td>Would-deny evidence; otherwise-valid ticket issuance proceeds.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT05/target-rule-enforce</code></td>
+<td>Same target rule enforced</td>
+<td>KDC policy denial; no new service ticket.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT05/ticket-then-acl-denial</code></td>
+<td>Ticket issued/accepted; resource denies</td>
+<td>Keep ticket and authentication success, deny resource access
+independently.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT05/required-context-missing</code></td>
+<td>Required user/device claim evidence absent</td>
+<td>Do not synthesize claims or silently grant; stop at documented
+evidence/policy boundary.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT05/no-target-policy</code></td>
+<td>No applicable target policy</td>
+<td>Absence of this restriction; ordinary Kerberos and resource checks
+still apply.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT05/assigned-only</code></td>
+<td>Account points to silo but is absent from members</td>
+<td>No effective silo membership; apply documented direct-policy
+fallback.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT05/member-only</code></td>
+<td>Listed as member but no assigned silo</td>
+<td>Same membership requirement; no inferred silo policy.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT05/silo-over-direct</code></td>
+<td>Both assignment and membership valid; direct policy differs</td>
+<td>Effective silo policy wins under the documented selection rule; show
+enforcement source.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT05/account-type-selection</code></td>
+<td>User, managed service and computer policy comparison</td>
+<td>Correct policy slot per actual account type; no human Protected
+Users assumption.</td>
+</tr>
+<tr class="odd">
+<td><code>WPROT05/domain-rid500-exception</code></td>
+<td>Policy assigned to built-in domain Administrator’s own AS
+admission/lifetime fixture; no restrictive target policy</td>
+<td>Show the documented account-policy exception. Do not infer exemption
+from another service account’s TGS policy, a resource ACL, local UAC, or
+every Protected Users restriction.</td>
+</tr>
+<tr class="even">
+<td><code>WPROT05/silo-audit-state</code></td>
+<td>Silo selected with audit/nonenforced state</td>
+<td>Correct enforcement source; direct-policy flag cannot silently
+override silo selection.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance:</strong> membership requires assignment and
+member-list inclusion. Do not treat a silo claim as resource
+authorization. If expanding FAST into a previously unmodeled TGS path,
+research RFC6113/MS-KILE TGS-specific armor, key and response handling
+before implementation; never transplant AS-only derivations
+unchanged.</p>
+<h2 id="linux-pam-configuration-and-execution">7. Linux-PAM
+configuration and execution</h2>
+<h3 id="pam01-read-the-configuration-and-follow-the-decision">PAM01 —
+Read the configuration and follow the decision</h3>
+<p><strong>Model:</strong> <code>lab-pam01</code> · <strong>22
+cases</strong> · <strong>Location:</strong> Workstations → Linux sign-in
+· <strong>Sources:</strong> [<a href="#s27">S27</a>, <a href="#s28">S28</a>, <a href="#s29">S29</a>, <a href="#s30">S30</a>, <a href="#s31">S31</a>, <a href="#s32">S32</a>, <a href="#s33">S33</a>, <a href="#s34">S34</a>, <a href="#s35">S35</a>, <a href="#s36">S36</a>].</p>
+<p><strong>User requirement:</strong> a flow that invokes PAM must
+explain what PAM does, including the configuration line responsible for
+each check. The informal “soft/hard checks” idea should lead to the
+actual control keywords and their consequences, rather than become an
+invented PAM terminology.</p>
+<p><strong>Current gap:</strong> LLOG01 already shows initialization,
+conversation, authentication, account admission and session handling,
+but evaluates one hardcoded <code>pam_unix</code> result. LELEV02 has a
+specific <code>pam_rootok</code> branch. Neither teaches an ordered
+configuration stack, remembered failures, control-action mapping,
+includes or jumps. Add this focused foundation lesson and embed its
+configuration-line view in the existing Linux flows; a glossary or
+related link alone is insufficient.</p>
+<p><strong>Scope:</strong> one new model with fixed researched
+configurations and case variants. Keep Windows at 10 models/88 cases and
+PAM at one model/22 cases: <strong>11 new models/110 named cases in this
+plan</strong>, with search fixtures counted separately. Preserve the
+original 17 Unix-model ledger and existing lesson IDs. This is Linux-PAM
+semantics; do not apply its extended controls to macOS/OpenPAM without
+separate sourcing.</p>
+<p><strong>Explain the actors and phases.</strong> The application
+chooses a PAM service and supplies a conversation callback. Libpam
+selects and dispatches configured modules; modules perform their backend
+operations and return status; the application acts on the aggregate
+return. PAM calls are local; only a module’s actual remote backend
+introduces network messages. NSS identity lookup, a PAM result and
+subsequent resource/LSM authorization remain distinct. [<a href="#s29">S29</a>, <a href="#s36">S36</a>]</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 15"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Phase</th>
+<th scope="col">Concrete explanation in the flow</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Start / conversation</td>
+<td><code>pam_start(service, user, &amp;conversation, &amp;pamh)</code>
+creates transaction context. Prompting is mediated by the application
+callback; a module need not prompt at all.</td>
+</tr>
+<tr class="even">
+<td><code>auth</code></td>
+<td><code>pam_authenticate()</code> dispatches authentication hooks and
+returns the stack’s result. It is not the final decision to launch a
+session.</td>
+</tr>
+<tr class="odd">
+<td><code>account</code></td>
+<td><code>pam_acct_mgmt()</code> checks account/service admission;
+successful authentication can still be followed by expiry or access
+denial.</td>
+</tr>
+<tr class="even">
+<td><code>password</code></td>
+<td><code>pam_chauthtok()</code> changes an authentication token. This
+type is not the ordinary password-verification stage of every
+login.</td>
+</tr>
+<tr class="odd">
+<td>Credentials / session</td>
+<td><code>pam_setcred()</code> dispatches the <code>auth</code> rows
+through <code>pam_sm_setcred</code>; there is no separate credentials
+configuration type. <code>pam_open_session()</code> /
+<code>pam_close_session()</code> dispatch <code>session</code> rows
+through separate hooks. UID/GID and default group setup belong to the
+application, not a magical effect of <code>pam_setcred</code>.</td>
+</tr>
+<tr class="even">
+<td>End</td>
+<td>Show applicable session/credential teardown followed by
+<code>pam_end()</code> and conversation cleanup. <code>pam_end()</code>
+alone is not a substitute for all preceding lifecycle calls.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Pin the calling application’s sequence and failure handling; do not
+teach one API order as universal to login, sudo, su and sshd.
+<code>PAM_NEW_AUTHTOK_REQD</code> requires a supported change path
+before service, or denial if the caller cannot provide one. The change
+path distinguishes preliminary and update processing and preserves the
+existing collect-before-validate fix. [<a href="#s29">S29</a>, <a href="#s32">S32</a>, <a href="#s33">S33</a>, <a href="#s34">S34</a>]</p>
+<p><strong>Concrete configuration panel.</strong> Show file name,
+selected service and line numbers beside the animated flow. In
+<code>/etc/pam.d/afs-login</code>, the fields are type, control, module
+and arguments; in <code>/etc/pam.conf</code>, a service field precedes
+them. Declare the chosen configuration source and Linux-PAM revision;
+distro-generated include chains and vendor directories are not universal
+defaults. [<a href="#s27">S27</a>]</p>
+<p>Use this authored teaching profile for local phase explanation, with
+ordinary local user <code>labuser</code>, a supported module build and
+the permitted resource-limit fixture below:</p>
+<pre class="text" tabindex="0" role="region" aria-label="PAM configuration example 1"><code># /etc/pam.d/afs-login — teaching profile
+auth      required   pam_unix.so
+account   required   pam_unix.so
+password  required   pam_unix.so
+session   required   pam_unix.so
+session   required   pam_limits.so</code></pre>
+<p>Explain each row’s fields and the selected module’s job. For example,
+highlight <code>auth required pam_unix.so</code> when its authentication
+hook checks the entered credential; highlight
+<code>account required pam_unix.so</code> for its separate
+account-policy result. Neither the whole file nor its
+<code>password</code> rows run simply because
+<code>pam_authenticate()</code> was called. The existing optional logind
+comparison retains its explicitly selected <code>pam_systemd</code> line
+rather than silently inheriting this profile. [<a href="#s30">S30</a>]</p>
+<p><strong>Control semantics.</strong> The learner must see both whether
+processing continues and what result has been remembered:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 16"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Control</th>
+<th scope="col">Explanation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>required</code></td>
+<td>A nonignored failure remains decisive while later checks
+continue.</td>
+</tr>
+<tr class="even">
+<td><code>requisite</code></td>
+<td>Failure stops the current stack evaluation immediately, with its
+scope shown.</td>
+</tr>
+<tr class="odd">
+<td><code>sufficient</code></td>
+<td>Success can finish the current stack when no earlier decisive
+failure exists; failure is ignored.</td>
+</tr>
+<tr class="even">
+<td><code>optional</code></td>
+<td>Does not override decisive checks; it is not synonymous with “never
+matters.” Show an optional-only comparison.</td>
+</tr>
+<tr class="odd">
+<td>Extended controls</td>
+<td>Map the exact module return to <code>ok</code>, <code>bad</code>,
+<code>done</code>, <code>die</code>, <code>ignore</code> or a numeric
+jump. Control action and module status are separate fields.</td>
+</tr>
+</tbody>
+</table>
+</div><p>For <code>include</code>, expand the requested type in the
+surrounding stack. For <code>substack</code>, retain a nested boundary:
+termination and jumps are scoped, and a parent jump counts the child as
+one item. Pin exact aggregate statuses and unsupported syntax to the
+implementation profile. The first version need not accept arbitrary
+pasted PAM configuration; unsupported actions/configurations must be
+explicit. [<a href="#s27">S27</a>, <a href="#s28">S28</a>]</p>
+<p><strong>Worked control-flow example.</strong> Use upstream
+<code>pam_debug</code> to make module outcomes deterministic, clearly
+labeled “simulated module results for learning control flow.” These
+lines are an isolated demonstration, not a production authentication
+configuration: [<a href="#s31">S31</a>]</p>
+<pre class="text" tabindex="0" role="region" aria-label="PAM configuration example 2"><code># /etc/pam.d/afs-control-demo
+auth required   pam_debug.so auth=auth_err
+auth sufficient pam_debug.so auth=success
+auth required   pam_debug.so auth=success</code></pre>
+<p>The authored trace executes all three rows. The first records
+failure; the second cannot rescue it or skip the third; the final result
+remains <code>PAM_AUTH_ERR</code>. Changing only the first control to
+<code>requisite</code> makes rows two and three skipped. Show this as an
+explicit case change with a configuration diff. For
+sole-optional-failure, the inspected dispatcher produces
+<code>PAM_PERM_DENIED</code> because no granting result was accumulated;
+retain the pinned revision rather than falsely echo the module’s raw
+<code>PAM_AUTH_ERR</code>. [<a href="#s28">S28</a>]</p>
+<p>Also include a three-row jump example:</p>
+<pre class="text" tabindex="0" role="region" aria-label="PAM configuration example 3"><code>auth [success=1 default=ignore] pam_debug.so auth=success
+auth requisite                 pam_deny.so
+auth required                  pam_permit.so</code></pre>
+<p>Show the jump destination and skipped row. Under
+<code>pam_authenticate</code>, that numeric action does not itself
+establish a positive aggregate; the later permitting row matters. A
+failed first module takes <code>default=ignore</code> and reaches the
+denial row. Keep this behavior qualified by API phase: credential and
+close-session dispatch can use cached chains/different numeric-action
+effects. Do not copy the authentication evaluator unchanged into those
+calls. [<a href="#s27">S27</a>, <a href="#s28">S28</a>]</p>
+<p><strong>Include/substack comparison fixture:</strong> parent
+configuration contains <code>auth include afs-child</code>, followed by
+<code>auth required pam_deny.so</code>; child contains
+<code>auth sufficient pam_debug.so auth=success</code>. Compare with the
+parent’s first control changed to <code>substack</code>. In the include
+case, successful short-circuiting can skip the parent’s later denial. In
+the substack case, the child completes, then the parent denial executes.
+Display both physical files and the expanded execution path; an include
+boundary cannot be reduced to a prose note.</p>
+<p><strong>Actual soft/hard limits, shown separately.</strong> In the
+<code>pam_limits</code> case, highlight the session line above and these
+two selected <code>/etc/security/limits.conf</code> rows:</p>
+<pre class="text" tabindex="0" role="region" aria-label="PAM configuration example 4"><code>labuser soft nofile 1024
+labuser hard nofile 4096</code></pre>
+<p>Show the resulting current soft limit and hard ceiling for this
+declared session/process fixture. Soft is an enforced resource limit
+that can be adjusted within the permitted hard ceiling; it is not a
+nonblocking authentication check. The <code>required</code> word on the
+PAM session line governs the module’s returned failure, independently of
+the limits file’s <code>soft</code>/<code>hard</code> field. Explain a
+limit-application error as a session-setup failure, not a wrong
+password. [<a href="#s35">S35</a>]</p>
+<p><strong>Required named cases:</strong></p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 17"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Case ID</th>
+<th scope="col">Input/comparison</th>
+<th scope="col">Required outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>PAM01/local-login-success</code></td>
+<td>Concrete afs-login file; valid local proof, account and session
+fixture</td>
+<td>Correct phase/line highlighting, independent API results, admitted
+local session and declared teardown.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/required-deferred-failure</code></td>
+<td>Required failure followed by further successful checks</td>
+<td>Later rows execute; original failure remains decisive.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/requisite-immediate-failure</code></td>
+<td>Same first result with requisite control</td>
+<td>Remaining rows in the current scope skipped; no granted
+session.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/sufficient-early-success</code></td>
+<td>Sufficient success before a later failing required row; no earlier
+failure</td>
+<td>Later auth row skipped; account/session stages still independently
+required by the caller.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/sufficient-after-failure</code></td>
+<td>Required failure, then sufficient success, then required
+success</td>
+<td>All three rows execute; no rescue or early success.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/sufficient-failure-fallback</code></td>
+<td>Sufficient failure, then required success</td>
+<td>Failure ignored by its control; the later granting result
+succeeds.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/optional-nondecisive</code></td>
+<td>Required success and optional error</td>
+<td>Optional result shown without overriding the decisive success.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/optional-only-success</code></td>
+<td>Sole optional success</td>
+<td>A positive aggregate is established.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/optional-only-failure</code></td>
+<td>Sole optional error</td>
+<td>No granting result; pinned aggregate denial, distinguished from the
+raw module error.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/bracket-success-jump</code></td>
+<td>Three-row jump fixture above succeeds at row one</td>
+<td>Skip precisely row two; row three grants the aggregate.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/bracket-default-denial</code></td>
+<td>Same fixture, first module returns error</td>
+<td>Ignore mapped error, execute requisite denial, skip final row.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/include-termination</code></td>
+<td>Child sufficient success in include fixture</td>
+<td>Remaining surrounding auth stack skipped; other application phases
+remain separate.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/substack-termination</code></td>
+<td>Same child under substack</td>
+<td>Parent resumes and evaluates its required denial.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/substack-failure</code></td>
+<td>Requisite failure inside child, parent has later row</td>
+<td>Child stops, parent continues, failure is retained.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/substack-jump-boundary</code></td>
+<td>Parent jump over child; in-range child jump; overrun beyond
+remaining child items</td>
+<td>Separate subfixtures verify the child counts as one parent item and
+child jumps cannot escape. Pin the overrun to the dispatcher revision:
+bad jump records PAM_PERM_DENIED; the parent resumes with failure
+retained rather than silently clamping or granting.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/account-denied</code></td>
+<td>Auth success; account hook rejects</td>
+<td>Retain valid proof, deny admission; no password-error
+relabeling.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/password-change-required</code></td>
+<td>Account returns PAM_NEW_AUTHTOK_REQD</td>
+<td>Separate successful-change and unsupported/failed-change
+subfixtures; no service before the required change succeeds.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/session-failure</code></td>
+<td>Auth/account pass; required session hook fails</td>
+<td>No admitted session; clean up applicable partial
+resources/credentials without erasing successful authentication
+history.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/module-unavailable</code></td>
+<td>Required module cannot load in selected fixture</td>
+<td>Source-mapped load/dispatch failure; no fabricated successful hook
+call.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/conversation-failure</code></td>
+<td>Caller conversation cannot provide requested input</td>
+<td>Raw conversation/module/aggregate statuses kept distinct; no
+successful proof or session.</td>
+</tr>
+<tr class="odd">
+<td><code>PAM01/soft-hard-limits</code></td>
+<td>Selected pam_limits line and limits.conf rows</td>
+<td>Resource settings and PAM control shown separately; include a
+source-backed limit-application-error subfixture.</td>
+</tr>
+<tr class="even">
+<td><code>PAM01/service-selection</code></td>
+<td>Same user, two explicitly defined service configurations</td>
+<td>Dispatch follows the selected service and its lines; no global
+one-stack-for-every-application assumption.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Embed the explanation in existing flows.</strong> LLOG01–04,
+LELEV01/02 and the existing PAM-based SSH paths must show their own
+service/file/line reference at the relevant PAM step, with an “Explain
+this PAM decision” link to PAM01. Retain their actual case and profile
+inputs. For SSSD, show the selected <code>pam_sss.so</code> line and
+distinguish libpam, the module, the SSSD responder and remote authority.
+For LLOG03, preserve offline verifier availability, stale cached account
+information and the absence of a fresh TGT; the selected provider’s
+return still passes through the declared PAM control. For su, retain the
+real-UID condition of <code>pam_rootok</code>; for sudo, retain sudoers,
+chosen authentication identity and timestamp/NOPASSWD decisions. Do not
+imply that a public-key SSH login necessarily calls
+<code>pam_authenticate</code>; account/session processing depends on the
+actual sshd profile. Mac lessons get only a clearly labeled Linux
+comparison link.</p>
+<p><strong>Executable UI requirements:</strong> every PAM evaluation
+step carries configuration ID/hash, file/line, API phase, module hook,
+raw return, mapped action, accumulator before/after, stack depth, next
+row and reason for skip/stop. API boundaries and other nonmodule steps
+mark inapplicable fields explicitly; do not invent a module return. The
+configuration shown and the evaluator input must have one source of
+truth. A static highlighted snippet beside unrelated hardcoded booleans
+fails acceptance. Display the raw status, stack result and caller
+admission as separate facts. Configuration, transaction, return records
+and cleanup must appear in canonical histories; credentials remain
+redacted/opaque.</p>
+<p>Start with the real local-login profile and a “Why continue after
+failure?” comparison. Show only the active phase by default, with access
+to the complete file and include tree. Include line numbers in text
+labels, not color alone; keep keyboard/step navigation synchronized and
+prevent step updates from flooding screen-reader announcements. Add
+hidden tags and search fixtures for <code>pam</code>,
+<code>pam.d</code>, <code>required</code>, <code>requisite</code>,
+<code>sufficient</code>, <code>optional</code>, <code>substack</code>,
+<code>soft checks</code>, <code>hard checks</code>,
+<code>pam_limits</code> and <code>limits.conf</code>.
+<code>soft checks</code> should find the control explanation;
+<code>pam limits</code> should select the resource-limit comparison.</p>
+<p><strong>Implementation and verification:</strong> add
+<code>src/pam-foundations-lab.js</code> plus a small bounded stack
+evaluator, or equivalent scoped modules. Register catalog/build/source
+ownership and reuse the explicit Unix held-object adapter where valid.
+<code>unixWsAuthor</code> currently relies on fixed
+source/related-lesson maps and cannot accept an arbitrary new ID
+unchanged; extend narrowly. Preserve all prior Unix fixes and manifests.
+Keep <code>docs/pam-foundations/</code> profiles, exact configuration
+fixtures and independent expectations separate from the Windows and
+historical Unix denominators.</p>
+<p>For every case/subfixture assert executed and skipped rows, first
+decisive failure, exact aggregate under the pinned revision, caller
+action, absence of unintended sessions and cleanup.
+Replaying/rewinding/filtering must reproduce the same line and
+accumulator. Test source and standalone rendering,
+configuration-to-trace consistency and search/case links. When
+available, compare the bounded evaluator with a small isolated
+libpam/pam_debug harness using a temporary test service/configuration,
+without changing host login/sudo/sshd configuration. Pin module/library
+versions; deterministic fixtures are not native distro-default evidence.
+Carry unavailable native validation explicitly. These checks add no
+release waiver and do not reopen DNSSEC work.</p>
+<h2 id="required-comparison-and-usability">8. Required comparison and
+usability</h2>
+<h3 id="search01-hidden-tags-and-useful-scenario-discovery">8.1 SEARCH01
+— Hidden tags and useful scenario discovery</h3>
+<p><strong>Required scope:</strong> all searchable scenarios and
+learning presets, including core configuration, existing
+protocol/platform families, the completed DNSSEC group and
+WRA/WPROT/PAM. This is a catalog-wide metadata and search improvement.
+Keep the current DNSSEC implementation uninterrupted; perform its tag
+backfill after the checkpoint.</p>
+<p><strong>Observed problem:</strong> the reviewed <code>app.js</code>
+already includes <code>model.keywords</code>, variant labels, profiles
+and attribute names in a flattened search string.
+<code>scenario-picker.js</code> matches every query term as an arbitrary
+substring and preserves catalog order. Adding keywords alone will not
+ensure a useful first result. <code>renderCatalog()</code> also converts
+matches back to catalog order, so ranking must survive both discovery
+surfaces.</p>
+<p><strong>Metadata contract:</strong> author one canonical hidden
+<code>searchTags: string[]</code> field per scenario/preset, with
+optional <code>searchTags</code> on existing variant descriptors. Tags
+include directly taught concepts, acronyms and expanded names,
+policy/API spellings, established aliases and concise operator task
+phrases. Normalize legacy <code>keywords</code> through one
+compatibility adapter; do not maintain two divergent taxonomies. A
+separate metadata registry keyed by stable model/preset IDs is
+acceptable if it is validated against the catalog. Do not require
+protocol implementation changes merely to backfill tags.</p>
+<p>Keep tags out of normal lesson titles, cards, diagrams and
+narrated/accessibility descriptions. Store them as data, rather than
+injecting visually hidden keyword paragraphs into the DOM. Existing
+visible titles and summaries remain the result labels. When a result
+points to a specific case, show a short case label so the destination is
+clear; do not display a cloud of internal tags.</p>
+<p>Examples of curated metadata, to be verified against actual
+coverage:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 18"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Destination</th>
+<th scope="col">Hidden tags / aliases to author</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WRA01, WRA02 and relevant WELEV01 content</td>
+<td><code>filtering</code>, <code>token filtering</code>,
+<code>remote uac</code> where actually applicable,
+<code>local administrator</code>,
+<code>LocalAccountTokenFilterPolicy</code>, <code>deny-only</code>,
+<code>RID500</code> on the relevant lesson</td>
+</tr>
+<tr class="even">
+<td>WPROT02</td>
+<td><code>lsa</code>, <code>lsass</code>,
+<code>local security authority</code>, <code>lsa protection</code>,
+<code>protected process</code>, <code>ppl</code>,
+<code>RunAsPPL</code></td>
+</tr>
+<tr class="odd">
+<td>WPROT01 and relevant WLOG02 content</td>
+<td><code>credential guard</code>, <code>credguard</code>,
+<code>lsa</code>, <code>lsass</code>, <code>lsaiso</code>,
+<code>isolated lsa</code>, <code>vbs</code>,
+<code>credential isolation</code></td>
+</tr>
+<tr class="even">
+<td>Existing Remote Credential Guard</td>
+<td><code>remote credential guard</code>, <code>remote credguard</code>,
+<code>rcg</code>, <code>rdp</code>,
+<code>redirected authentication</code>, <code>second hop</code></td>
+</tr>
+<tr class="odd">
+<td>WPROT03 and WLOG04 protected-user case</td>
+<td><code>protected users</code>, <code>offline logon</code>,
+<code>cached logon</code>, <code>cached credentials</code> where the
+case actually explains them</td>
+</tr>
+<tr class="even">
+<td>PAM01 and relevant Linux flows</td>
+<td><code>pam</code>, <code>pam.d</code>, <code>required</code>,
+<code>requisite</code>, <code>sufficient</code>, <code>optional</code>,
+<code>substack</code>, <code>soft checks</code>,
+<code>hard checks</code>; <code>pam_limits</code>,
+<code>pam limits</code>, <code>limits.conf</code>,
+<code>soft limit</code> and <code>hard limit</code> target the
+resource-limit comparison</td>
+</tr>
+<tr class="odd">
+<td>Existing platform, file, Kubernetes and DNSSEC lessons</td>
+<td>Curate task phrases such as <code>sudo</code>,
+<code>run as admin</code>, <code>workgroup share</code>,
+<code>role binding</code>, <code>dnssec forwarder</code> and their
+actual concepts; resolve exact destinations from the finished
+catalog</td>
+</tr>
+</tbody>
+</table>
+</div><p>Avoid tagging every scenario with generic words like
+<code>security</code>, <code>authentication</code> or
+<code>token</code>. Apply <code>lsa</code> only to meaningful LSA
+coverage, not every Windows-related row. A general
+<code>filtering</code> query may legitimately include local token
+filtering and cross-forest SID filtering, but those are distinct
+mechanisms and must retain distinct titles and qualified tags. Do not
+claim a related topic is taught just to make its lesson appear in
+search.</p>
+<p><strong>One shared search contract for the scenario picker and
+Scenario library:</strong></p>
+<ol type="1">
+<li>Normalize case, accents and whitespace consistently; handle
+separators such as spaces/hyphens/underscores. Preserve exact scenario,
+attribute and policy identifiers as separately searchable values. Keep
+significant protocol punctuation: <code>SPAKE2+</code> must not collapse
+into <code>SPAKE2</code>. Preserve searches such as
+<code>CODE_VERIFIER</code>, <code>EAP-TLS</code> and full scenario IDs.
+Curate compact aliases such as <code>runasppl</code> explicitly where
+normalization cannot resolve them safely.</li>
+<li>For a multi-term query, require all terms to match the same
+destination’s indexed fields. Terms can match different fields. An exact
+curated phrase receives a boost; input order need not match the title.
+An empty query retains existing grouping and browsing order.</li>
+<li>Rank deterministically: exact identifier or exact title/tag phrase
+first; whole-token title/tag matches next; token-prefix matches next;
+incidental summary/profile/attribute-context matches last. Break ties by
+a documented stable order. Repeated tags, repeated profile text or an
+oversized tag list must not inflate relevance.</li>
+<li>Match short acronyms as tokens/explicit aliases, not arbitrary
+interior substrings. For example, <code>lsa</code> must not match an
+unrelated TLS-alert phrase merely because its serialized characters
+contain those letters. Prefix matching starts at token boundaries with a
+documented minimum length; three characters is a suitable initial
+choice. Retain full identifier and attribute-name discovery. No external
+search service, embeddings, automatic broad stemming or fuzzy matching
+is required.</li>
+<li>Keep one result per scenario/preset identity. Variant-only matches
+carry a validated variant target and visible case label, using the
+case-aware navigation already required below. If several variants match,
+open the lesson with an explicit choice of matching cases; never
+silently select the normal-success default for an offline-denial query.
+Search changes do not mutate the running demonstration until the user
+chooses a result.</li>
+<li>Preserve ranked order in both rendered results and keyboard
+navigation. For a nonempty query, a flat ranked list with category
+labels is acceptable; do not regroup results so DOM order differs from
+<code>this.results</code>/arrow-key order. In
+<code>renderCatalog()</code>, retain the ordered matches instead of
+turning them into a Set and re-filtering the original catalog. Preserve
+existing empty-query grouping.</li>
+<li>Precompute/cache lightweight normalized metadata; invalidate caches
+correctly if catalog metadata changes. Do not execute
+<code>steps()</code>, instantiate variants, expand object histories or
+parse complete traces on every keystroke. Remove the blanket
+<code>model.protocol || 'oidc'</code> search fallback for non-OIDC
+models; include only real protocol metadata. This changes discovery
+metadata, not protocol behavior.</li>
+</ol>
+<p><strong>Required operator-query fixtures:</strong> record expected
+model/case IDs, allowed additional relevant results and explicit rank
+assertions. Resolve semantic destinations to actual IDs at WP0; DNSSEC
+IDs must come from the worker’s completed implementation, not
+guesses.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 19"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Query</th>
+<th scope="col">Expected discovery / ordering</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>filtering</code></td>
+<td>WRA01 and WRA02 within the first five; remote UAC entry before
+incidental narrative mentions; relevant local/SID-filtering lessons
+remain discoverable</td>
+</tr>
+<tr class="even">
+<td><code>token filtering</code> / <code>remote uac</code></td>
+<td>WRA01 among the first three; token filtering is not confused with
+OAuth token validation</td>
+</tr>
+<tr class="odd">
+<td><code>LocalAccountTokenFilterPolicy</code></td>
+<td>WRA01 first, relevant RID500 comparison discoverable</td>
+</tr>
+<tr class="even">
+<td><code>lsa</code> / <code>LSA</code> / <code>lsass</code></td>
+<td>WPROT02 and WPROT01 within the first five; unrelated substring-only
+matches excluded</td>
+</tr>
+<tr class="odd">
+<td><code>RunAsPPL</code> / <code>run as ppl</code></td>
+<td>WPROT02 first via exact identifier/curated alias</td>
+</tr>
+<tr class="even">
+<td><code>credguard</code></td>
+<td>WPROT01 among the first three; related remote protection remains
+clearly labeled</td>
+</tr>
+<tr class="odd">
+<td><code>remote credguard</code></td>
+<td>Existing Remote Credential Guard lesson before local Credential
+Guard</td>
+</tr>
+<tr class="even">
+<td><code>protected users offline</code></td>
+<td>WLOG04 protected-user case directly selectable, plus relevant
+WPROT03 case; selecting it must not open ordinary cached success</td>
+</tr>
+<tr class="odd">
+<td><code>workgroup share</code></td>
+<td>Existing nonjoined SMB/WLOG08 coverage and WRA03 discoverable</td>
+</tr>
+<tr class="even">
+<td><code>sudo</code> / <code>run as admin</code></td>
+<td>Existing Linux elevation / Windows elevation lessons respectively
+discoverable</td>
+</tr>
+<tr class="odd">
+<td><code>pam</code> / <code>pam.d</code> / <code>soft checks</code> /
+<code>hard checks</code></td>
+<td>PAM01 within the first three; label actual control terminology on
+arrival</td>
+</tr>
+<tr class="even">
+<td><code>requisite</code> / <code>sufficient</code> /
+<code>substack</code></td>
+<td>The corresponding PAM01 case directly selectable; select the named
+case, not the local-login default</td>
+</tr>
+<tr class="odd">
+<td><code>pam limits</code> / <code>pam_limits</code> /
+<code>limits.conf</code></td>
+<td>PAM01 soft-hard-limits case within the first three and directly
+selectable</td>
+</tr>
+<tr class="even">
+<td><code>role binding</code></td>
+<td>Actual Kubernetes RBAC lesson before incidental Kubernetes
+mentions</td>
+</tr>
+<tr class="odd">
+<td><code>dnssec forwarder</code></td>
+<td>Actual DNSSEC forwarding/validation lesson from the completed
+implementation</td>
+</tr>
+<tr class="even">
+<td><code>pkinit</code> / <code>spake</code></td>
+<td>Existing correct mechanism lessons remain discoverable; PA-SPAKE,
+SPAKE2 and SPAKE2+ keep their distinct names</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Acceptance evidence:</strong> add an independent discovery
+fixture file,
+e.g. <code>docs/windows-protection-expansion/search-fixtures.json</code>,
+and metadata coverage report. Every searchable entry must have reviewed
+metadata; duplicate/blank tags, unknown model/case targets and
+accidental keyword-only pseudo-scenarios fail validation. Extend
+<code>tests/scenario-picker.test.mjs</code> and catalog integration
+checks for normalization, multi-term matching, stable ranking, unrelated
+short-acronym exclusions, no-result/clear behavior, variant selection,
+cache invalidation and old title/ID/attribute queries. Verify displayed
+rank, focus/arrow/Enter behavior and counts in both source and emitted
+applications; tags themselves must not be read out as hidden prose. Use
+existing performance thresholds and sample method for search
+input/result rendering, with raw measurements against the post-DNSSEC
+baseline. Search completion does not waive G01 or any existing
+performance condition.</p>
+<h3 id="mechanism-comparison-and-lesson-ergonomics">8.2 Mechanism
+comparison and lesson ergonomics</h3>
+<p>Add a compact comparison entry point linking the canonical Windows
+lessons. This integration does not add another model to the 11-model
+inventory. It must answer “what changed?” across these dimensions:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 20"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Mechanism</th>
+<th scope="col">Boundary to highlight</th>
+<th scope="col">Existing/new destination</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Classic local elevation</td>
+<td>New local process context after consent or credentials</td>
+<td>WELEV01–03</td>
+</tr>
+<tr class="even">
+<td>Remote token filtering</td>
+<td>Target network-logon authorization context</td>
+<td>WRA01–04</td>
+</tr>
+<tr class="odd">
+<td>Administrator Protection</td>
+<td>Separate local elevation architecture; build-specific remote
+policy</td>
+<td>WELEV06 + WRA05</td>
+</tr>
+<tr class="even">
+<td>Credential Guard</td>
+<td>Isolated credential custody and allowed operations</td>
+<td>WPROT01 + WLOG02</td>
+</tr>
+<tr class="odd">
+<td>LSA protection</td>
+<td>Process access and plugin loading</td>
+<td>WPROT02</td>
+</tr>
+<tr class="even">
+<td>Protected Users / policies</td>
+<td>Client credential restrictions and DC issuance decisions</td>
+<td>WPROT03–05</td>
+</tr>
+<tr class="odd">
+<td>Ordinary RDP / Restricted Admin / RCG</td>
+<td>Credential destination, redirected operations and second-hop
+principal</td>
+<td>Existing three RDP modes</td>
+</tr>
+</tbody>
+</table>
+</div><p>The RDP comparison must show ordinary delegated credentials,
+Restricted Admin’s downstream host identity, and RCG’s client-backed
+user operations. Preserve required RCG’s Kerberos/no-NTLM-fallback
+behavior. Credential Guard on a client is distinct from selecting RCG. A
+remote session can still exercise permitted authority; avoid “nothing
+can be abused” guarantees. Cross-links must name the selected mode and
+open the real model. [<a href="#s25">S25</a>]</p>
+<p><strong>Variant-specific navigation is required:</strong> the present
+related-lesson buttons select only a scenario, so linking to WLOG04
+alone opens its normal cached-sign-in case. Extend related-lesson
+entries to carry an optional validated variant ID and select
+<code>protected-user</code> for that link. Add a backward-compatible,
+allowlisted <code>case</code> query parameter inside the scenario hash
+for selected-case links; old scenario URLs keep their default behavior.
+Case selection, copy-link, load and back/forward must round-trip the
+registered variant. Serialize only stable scenario/case identifiers.
+Reject unknown or duplicate case parameters with a clear fallback
+notice; do not feed them into model evaluation. This carries
+demonstration selection, never real credentials or prior session
+state.</p>
+<p>For the new Windows lessons, apply the following presentation
+requirements. Shared accessibility and evidence-labeling requirements
+also apply to PAM; its starting story and configuration view are
+specified in section 7.</p>
+<ul>
+<li>Default the remote-administration family to the concrete “correct
+admin password, ADMIN$ denied” story. Offer an ordinary-share comparison
+next. Keep account authority and client/target labels visible without
+opening an inspector; other models retain their specified default
+cases.</li>
+<li>Show the verdict as separate proof/admission/context/operation
+states with the first failure explained in one sentence. Never collapse
+every red result to “authentication failed.”</li>
+<li>Offer a before/after token comparison with stable field labels,
+effective SID attributes, relevant privileges and ownership. Use color
+plus text; a high-integrity icon alone is insufficient.</li>
+<li>Make policy controls readable: “Apply remote restrictions” and its
+underlying effective value together; show configured versus applied
+state. Selecting a case resets the demonstration, rather than implying a
+production policy was changed.</li>
+<li>Keep normal-OS and isolated roles within one host boundary. Expand
+subactors on demand; label local operations explicitly. Author positions
+so expanded layouts never rely on a nine-actor fallback grid.</li>
+<li>Support keyboard case selection, visible focus, 200% zoom, narrow
+screens, reduced motion and useful screen-reader status text. Reading
+order should be question → profile → steps → evidence → related
+lesson.</li>
+<li>Provide search aliases: token filtering, remote UAC,
+LocalAccountTokenFilterPolicy, RID500, CredGuard, Credential Guard,
+RunAsPPL, Protected Users, authentication silo. Acronym expansions
+belong in concise tooltips or descriptions.</li>
+<li>Tell learners which details are modeled and where source/build
+evidence is incomplete, without placing worker file paths or test
+implementation details in the lesson flow.</li>
+</ul>
+<h2 id="integration-instructions-for-the-worker">9. Integration
+instructions for the worker</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 21"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Area</th>
+<th scope="col">Concrete change and constraint</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>src/workspaces.js</code></td>
+<td>Register the two families and backward-compatible scenario/case
+route round trips. Add related navigation; preserve existing route
+identifiers and DNSSEC additions.</td>
+</tr>
+<tr class="even">
+<td>New modules</td>
+<td>Suggested <code>src/windows-remote-administration-lab.js</code> and
+<code>src/windows-protection-lab.js</code>. Use collision-resistant
+<code>wra</code>/<code>wprot</code> helpers, fields and event IDs.</td>
+</tr>
+<tr class="odd">
+<td>PAM foundations</td>
+<td>Add <code>src/pam-foundations-lab.js</code> and a bounded evaluator;
+register <code>lab-pam01</code> under existing Linux sign-in. Config
+IDs/lines and execution records must derive from the same fixture.</td>
+</tr>
+<tr class="even">
+<td><code>src/lab-catalog.js</code></td>
+<td>Register attributes, sources and models through existing catalog
+machinery. Enumerate every variant’s event/object IDs independently;
+default-only collision checks are insufficient.</td>
+</tr>
+<tr class="odd">
+<td>Held objects</td>
+<td>Add a source-owned inventory adapter,
+e.g. <code>src/held-object-windows-protection.js</code>; register both
+ownership and dispatch in <code>src/held-objects.js</code>. Cover remote
+and protection families explicitly.</td>
+</tr>
+<tr class="even">
+<td>Shared authoring</td>
+<td>Do not reuse <code>wslAuthor</code> unchanged: it hardcodes
+Workstations and Credential Guard-enabled assumptions. Extract a
+narrowly configurable helper or add a scoped author.</td>
+</tr>
+<tr class="odd">
+<td>Unix authoring and existing Linux flows</td>
+<td>Extend <code>unixWsAuthor</code> source/related-lesson maps narrowly
+or use a scoped author; register PAM source ownership with the explicit
+Unix held-object adapter. Embed actual configuration references in the
+specified LLOG/LELEV/SSH flows and preserve
+<code>p6-review-unix.test.mjs</code>.</td>
+</tr>
+<tr class="even">
+<td><code>src/protocol-state.js</code></td>
+<td>Reuse canonical prefix reconstruction. No parallel narrative-only
+state engine.</td>
+</tr>
+<tr class="odd">
+<td><code>src/app.js</code></td>
+<td>Reuse field, decision and object-history interfaces. Add validated
+variant-aware related links and persist selected-case routes; implement
+the bounded comparison without global UI redesign. Build shared search
+metadata for scenarios/presets and preserve ranked library results.</td>
+</tr>
+<tr class="even">
+<td><code>src/scenario-picker.js</code> and catalog metadata</td>
+<td>Implement SEARCH01 normalization/ranking with one shared index; keep
+visual and keyboard order aligned, core/preset coverage, legacy keyword
+adaptation and validated variant targets.</td>
+</tr>
+<tr class="odd">
+<td><code>build.mjs</code></td>
+<td>Register dependency order and emitted adapter. Non-held modules are
+flattened; avoid top-level binding collisions that ESM tests cannot
+detect.</td>
+</tr>
+<tr class="even">
+<td>Performance</td>
+<td>Build variants on selection; no eager policy cross-product or
+repeated source hydration on startup. Profile existing default
+<code>steps()</code> construction cost.</td>
+</tr>
+<tr class="odd">
+<td>Documentation</td>
+<td>Add <code>docs/windows-protection-expansion/</code> and
+<code>docs/pam-foundations/</code> with separate source, profile,
+fixture, case and acceptance manifests. Do not mutate the historical
+81-row ledger, original 17 Unix-model ledger or DNSSEC’s
+22-lesson/159-case denominator.</td>
+</tr>
+</tbody>
+</table>
+</div><p>At the post-DNSSEC checkpoint, inspect the actual architecture before
+editing. Resolve any newly occupied ID or changed API explicitly in the
+manifest. Avoid a speculative refactor of unrelated workspaces. Source
+comments alone do not close an executable-state requirement.</p>
+<h2 id="verification-and-evidence">10. Verification and evidence</h2>
+<h3 id="independent-semantic-checks">10.1 Independent semantic
+checks</h3>
+<p>For all 110 cases and their required subfixtures, assert initial
+holdings, first detector, accepted facts, prohibited effects, response
+ownership and cleanup from independently authored expected manifests.
+Report Windows 88 and PAM 22 separately. Also verify:</p>
+<ol type="1">
+<li>Target-local SAM and domain validation use different authorities;
+client join state and local elevation cannot silently override account
+authority.</li>
+<li>LATFP label/value polarity, SID versus display name, RID500 profile
+qualification and AP applicability cannot drift between UI and
+evaluator.</li>
+<li>Deny-only SID handling, requested access/rule inputs and token-role
+ownership are actual decision inputs. Authentication success is retained
+across later resource denial.</li>
+<li>Protected secrets stay with the proper actor; isolated operation
+results and service credentials have distinct provenance. CG and PPL
+cases change different boundaries.</li>
+<li>Protected Users restrictions differ from CG compatibility; audit
+does not deny; policy/silo precedence and target-policy direction are
+correct.</li>
+<li>Every prefix reconstructs deterministically; source/object
+inspection is not possession; filtered views preserve hidden
+prerequisites; case switching releases attempt state.</li>
+<li>PAM configuration and execution agree: raw status, action,
+remembered result, skipped rows, nesting/jump boundaries and caller
+admission are independently checked. Authentication, account, password
+and session results cannot be collapsed into one Boolean. Validate
+existing Linux configuration-line integration as well as all new
+cases.</li>
+</ol>
+<p>Use existing <code>tests/windows-workstation.test.mjs</code>,
+<code>windows-elevation.test.mjs</code>,
+<code>windows-auth-lab.test.mjs</code>, held-object suites and
+<code>p6-review-windows.test.mjs</code> as conventions. Add focused
+remote-administration, protection and canonical-case tests. Retain
+existing catalog/workspace checks. The historical contracts runner
+hardcodes earlier families: reuse its schema carefully, not its frozen
+denominator.</p>
+<p>Run the applicable full repository suite once on the completed
+change, the build, relevant crypto/vector checks for touched protocol
+paths, and emitted standalone smoke checks. After that, repeat/broaden
+only for new edits or unresolved failures. A test that imports the
+production expected-answer function is not independent verification.</p>
+<h3 id="emitted-artifact-and-ergonomics">10.2 Emitted artifact and
+ergonomics</h3>
+<p>Exercise source HTTP, standalone HTTP and standalone
+<code>file:</code>. Verify parsing, routes, family/default/case
+navigation, exact object history, all new default flows, representative
+denials and profile-unavailable behavior. Specifically test the WLOG04
+protected-user link, runtime default-to-canonical aliases, selected-case
+URL/back/forward restoration, unknown-case handling and old URL
+compatibility. Run existing emitted-app semantic tooling and new-model
+coverage where practical; report exact case coverage rather than claim
+all cases from a few screenshots.</p>
+<p>Check keyboard/focus, narrow/zoomed layout, selected-case
+announcements, status differentiation and comparison readability.
+Automated accessibility/DOM/AX checks do not close human
+speech/comprehension acceptance. Record browser/OS, artifact hash,
+procedure and actual result for every claimed human or native check.</p>
+<h3 id="windows-native-evidence-separate-from-model-correctness">10.3
+Windows-native evidence: separate from model correctness</h3>
+<p>Use isolated lab fixtures when native Windows/DC access exists.
+Record exact builds/updates, effective policies, account
+SIDs/memberships, fresh-session procedure, mechanism, logon type,
+relevant token observations and resource result. Correlate actual logs
+with the attempt; do not generate fake Windows event XML and call it a
+capture.</p>
+<p>Prioritize WRA01 classic local/domain comparison, WRA02 RID500
+combinations, WRA05 supported/unsupported AP profiles, CG effective
+state, PPL audit/enforcement, PU restrictions and policy AS/TGS
+outcomes. Expected model outputs are not native evidence. If the
+environment is unavailable, finish the documented symbolic model and
+mark each native claim unperformed with exact limits; do not silently
+omit the lesson or claim interoperability. Unknown exact token fields
+stay unknown.</p>
+<h3 id="performance-and-preserved-release-gates">10.4 Performance and
+preserved release gates</h3>
+<p>Freeze a <strong>post-DNSSEC/pre-expansion</strong> source/artifact
+baseline before this expansion. Compare the candidate using the existing
+performance method, thresholds, raw samples and environments. Measure
+startup, family/case selection, expanded/filtered views and object
+history for representative new cases, including PAM configuration/stack
+rendering. Keep old measurements tied to their original artifact; the
+values below are not measurements of DNSSEC or this expansion.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 22"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Existing open condition</th>
+<th scope="col">Preserved status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Human G01 speech/comprehension acceptance</td>
+<td>Unperformed; requires actual designated human evidence</td>
+</tr>
+<tr class="even">
+<td><code>source-http/default/startup</code></td>
+<td>+629.24 ms / +31.91% versus its frozen baseline</td>
+</tr>
+<tr class="odd">
+<td><code>standalone-http/default/startup</code></td>
+<td>+627.56 ms / +30.15%</td>
+</tr>
+<tr class="even">
+<td><code>standalone-file/default/startup</code></td>
+<td>+687.23 ms / +34.71%</td>
+</tr>
+<tr class="odd">
+<td><code>source-http/open/idle-filter</code></td>
+<td>Variable cell; explicit disposition remains open</td>
+</tr>
+<tr class="even">
+<td><code>standalone-http/open/idle-filter</code></td>
+<td>Variable cell; explicit disposition remains open</td>
+</tr>
+<tr class="odd">
+<td><code>standalone-http/open/selection</code></td>
+<td>Variable cell; explicit disposition remains open</td>
+</tr>
+</tbody>
+</table>
+</div><p>Preserve all 21 scoped review closures, historical
+performance/frozen-P0 variation, six sibling-origin omissions, five
+unverified source attempts and disclosed live/cross-engine limits. Every
+original performance-key disposition was documented; do not revive the
+obsolete “all old flags undocumented” status. New measurements create
+new evidence, not implicit owner acceptance or waiver of old gates.</p>
+<h2 id="implementation-phases-and-return-packet">11. Implementation
+phases and return packet</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 23"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Phase</th>
+<th scope="col">Work</th>
+<th scope="col">Exit evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>WP0 · after DNSSEC</td>
+<td>Freeze actual baseline; re-audit coverage; capture sources/profiles;
+finalize manifests and applicability disputes; inventory search metadata
+and operator-query targets</td>
+<td>Hashes, source ledger, 11-model/110-case manifest split into Windows
+88/PAM 22, independent expected outcomes and separate search
+fixtures</td>
+</tr>
+<tr class="even">
+<td>WP1 · remote filtering</td>
+<td>WRA01–04 with real authority, token and resource decisions</td>
+<td>Focused semantics/held-object tests; UI comparison; no regressions
+to SMB/WinRM/workstation paths</td>
+</tr>
+<tr class="odd">
+<td>WP2 · local protection</td>
+<td>WPROT01–02 and canonical RDP/elevation comparison</td>
+<td>Custody/effective-state evidence; audit/enforce cases; existing mode
+links verified</td>
+</tr>
+<tr class="even">
+<td>WP3 · domain controls</td>
+<td>WPROT03–05 with eligible domain/FAST profiles</td>
+<td>AS/TGS, policy direction, membership/precedence, lifetime and
+independent ACL checks</td>
+</tr>
+<tr class="odd">
+<td>WP4 · modern AP profile</td>
+<td>WRA05 with exact source applicability and bounded unavailable
+cases</td>
+<td>Eight cases; no guessed nonadmin elevation or universal build
+claim</td>
+</tr>
+<tr class="even">
+<td>WP-PAM · after WP0, before WP5</td>
+<td>PAM01, bounded configuration evaluator and existing Linux line-level
+explanations</td>
+<td>22 cases plus declared subfixtures; exact control traces, lifecycle
+separation, config/trace consistency, Unix regressions and isolated
+native comparison where available</td>
+</tr>
+<tr class="odd">
+<td>WP5 · integration/review packet</td>
+<td>Complete SEARCH01 catalog-wide tag backfill/shared ranking; build,
+applicable regression suite, source/standalone checks, UX and
+performance evidence</td>
+<td>Search coverage/rank/selection checks, reproducible packet and
+explicit open/unperformed items</td>
+</tr>
+</tbody>
+</table>
+</div><p>Do not stop between ordinary implementation phases to request
+approval already supplied by this plan. If a source discrepancy blocks a
+particular claim, complete independent work and preserve a bounded
+outcome rather than invent behavior. This plan authorizes implementation
+preparation and the worker’s normal local verification; no commit, push,
+deployment or release waiver is requested here.</p>
+<p>Return one packet containing:</p>
+<ul>
+<li>Updated self-contained HTML application, source, tests, build
+instructions and SHA-256 inventory, identifying the exact post-DNSSEC
+parent.</li>
+<li><code>docs/windows-protection-expansion/manifest.json</code>,
+source/profile ledgers, case manifest and independent results with all
+88 case dispositions.</li>
+<li><code>docs/pam-foundations/</code> profile/source ledger, exact
+config files, independent 22-case expectations/results, all required
+subfixtures and existing Linux line-explanation coverage; preserve the
+original Unix denominator.</li>
+<li>Hidden-tag coverage report and independent search fixtures/results
+for SEARCH01 across existing, DNSSEC and new Windows/PAM scenarios;
+search tests have their own denominator.</li>
+<li>A concise response table for every WRA/WPROT/PAM lesson and
+integration/acceptance requirement, linking implementation and
+evidence.</li>
+<li>Native evidence separately indexed from symbolic tests; unavailable
+OS/profile observations explicitly listed.</li>
+<li>Raw performance samples/comparison against the actual pre-expansion
+baseline, preserved historical release conditions, accessibility
+evidence and human G01 status.</li>
+</ul>
+<p>Reviewer completion means the declared model scope and evidence have
+been checked. It does not automatically mean release approval. Send this
+plan as
+<strong><code>auth-flow-studio-windows-protection-worker-plan.html</code></strong>
+after the worker’s DNSSEC checkpoint; the earlier DNSSEC plan remains
+its own handoff.</p>
+<h2 id="primary-source-register">12. Primary source register</h2>
+<p>Research checked 23 October 2026. Section-level citations above link
+here. Sources establish the underlying facts; the scenario inventory,
+architecture, sequencing and acceptance criteria are this plan’s design
+decisions.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Reference table 24"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">ID</th>
+<th scope="col">Primary source and scope</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span id="s01">S01</span></td>
+<td><a href="https://learn.microsoft.com/en-us/troubleshoot/windows-server/windows-security/user-account-control-and-remote-restriction">Microsoft
+KB951016 — UAC and remote restrictions</a>. Classic local/domain
+comparison and LATFP; historical wording caveat.</td>
+</tr>
+<tr class="even">
+<td><span id="s02">S02</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/access-control/local-accounts">Microsoft
+— Local accounts</a>. Modern remote restrictions, RID500 identity,
+network rights.</td>
+</tr>
+<tr class="odd">
+<td><span id="s03">S03</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/settings-and-configuration">Microsoft
+— UAC settings and configuration</a>. Security Options, registry/CSP
+relationships and interactive prompt distinctions.</td>
+</tr>
+<tr class="even">
+<td><span id="s04">S04</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-mssecurityguide#applyuacrestrictionstolocalaccountsonnetworklogon">Microsoft
+— MSSecurityGuide CSP</a>. Exact ADMX-backed remote restrictions policy
+and mapping.</td>
+</tr>
+<tr class="odd">
+<td><span id="s05">S05</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/access-tokens">Microsoft
+Win32 — Access tokens</a>. Local security context, token contents,
+primary/impersonation roles.</td>
+</tr>
+<tr class="even">
+<td><span id="s06">S06</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/win32/secauthz/sid-attributes-in-an-access-token">Microsoft
+Win32 — SID attributes</a>. Enabled versus deny-only SIDs and
+access-check behavior.</td>
+</tr>
+<tr class="odd">
+<td><span id="s07">S07</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/win32/api/sspi/nf-sspi-querysecuritycontexttoken">Microsoft
+Win32 — QuerySecurityContextToken</a>. Server security-context token
+handle and lifetime; not an asserted universal SMB internal call
+trace.</td>
+</tr>
+<tr class="even">
+<td><span id="s08">S08</span></td>
+<td><a href="https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4624">Microsoft
+— Event 4624</a>. Versioned logon-type/elevation evidence; captured logs
+required for native claims.</td>
+</tr>
+<tr class="odd">
+<td><span id="s09">S09</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/win32/wmisdk/user-account-control-and-wmi">Microsoft
+Win32 — UAC and WMI</a>. Distinct remote management rights; older
+examples require modern applicability qualification.</td>
+</tr>
+<tr class="even">
+<td><span id="s10">S10</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/configure">Microsoft
+— Configure Credential Guard</a>. Configured/running evidence,
+conditional defaults, reboot and lock context.</td>
+</tr>
+<tr class="odd">
+<td><span id="s11">S11</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/considerations-known-issues">Microsoft
+— Credential Guard considerations</a>. Credential sources, CredSSP,
+delegation and Credential Manager types.</td>
+</tr>
+<tr class="even">
+<td><span id="s12">S12</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows-server/security/credentials-protection-and-management/configuring-additional-lsa-protection">Microsoft
+— Additional LSA protection</a>. Protected process,
+plugin/audit/enforcement, event and build qualifications.</td>
+</tr>
+<tr class="odd">
+<td><span id="s13">S13</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/credential-guard/how-it-works">Microsoft
+— How Credential Guard works</a>. Isolation architecture and
+limitations.</td>
+</tr>
+<tr class="even">
+<td><span id="s14">S14</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows-server/security/credentials-protection-and-management/protected-users-security-group">Microsoft
+— Protected Users</a>. Client/DC restrictions and applicability;
+lifetime wording discrepancy retained.</td>
+</tr>
+<tr class="odd">
+<td><span id="s15">S15</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows-server/security/credentials-protection-and-management/authentication-policies-and-authentication-policy-silos">Microsoft
+— Authentication policies and silos</a>. Administrative model,
+audit/enforcement and applicability; use protocol rules below for exact
+selection.</td>
+</tr>
+<tr class="even">
+<td><span id="s16">S16</span></td>
+<td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/a076994a-47a9-4d16-af77-d4abb523afe4">MS-KILE
+§3.3.5.6 — AS exchange</a>. Protected Users etypes/lifetimes, policy
+lifetime and allowed-from armor PAC checks.</td>
+</tr>
+<tr class="odd">
+<td><span id="s17">S17</span></td>
+<td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/2e5dcf34-4b51-44a0-b45a-277ed616ca39">MS-KILE
+§3.3.5.7 — TGS exchange</a>. Target service policy, user/armor evidence
+and scoped rejection.</td>
+</tr>
+<tr class="even">
+<td><span id="s18">S18</span></td>
+<td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/089c5fed-a29d-472d-8388-8ed04d8010bf">MS-KILE
+§3.3.5.4 — Silo membership</a>. Assigned silo plus member-list
+inclusion.</td>
+</tr>
+<tr class="odd">
+<td><span id="s19">S19</span></td>
+<td><a href="https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/80f6b0ad-18a4-4dad-ae7f-a2b5da0c7e49">MS-KILE
+§3.3.5.5 — Policy selection</a>. Account-type selection, direct/silo
+policy and enforcement provenance.</td>
+</tr>
+<tr class="even">
+<td><span id="s20">S20</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/security/application-security/application-control/administrator-protection/">Microsoft
+— Administrator Protection</a>. Existing local architecture and newer
+remote policy overview; rolling availability claims.</td>
+</tr>
+<tr class="odd">
+<td><span id="s21">S21</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/client-management/mdm/policy-csp-localpoliciessecurityoptions">Microsoft
+— LocalPoliciesSecurityOptions CSP</a>. Exact two remote-elevation
+settings, SID-list override and preview/build applicability.</td>
+</tr>
+<tr class="even">
+<td><span id="s22">S22</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc6113">RFC6113 — Kerberos
+preauthentication framework</a>. FAST, armor and exchange-specific
+processing; worker pins relevant sections and errata.</td>
+</tr>
+<tr class="odd">
+<td><span id="s23">S23</span></td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc4120">RFC4120 — Kerberos
+V5</a>. AS/TGS/AP, ticket acceptance, lifetime and errors with
+applicable updates; not a mandate to restore legacy algorithms.</td>
+</tr>
+<tr class="even">
+<td><span id="s24">S24</span></td>
+<td>Existing accepted repository source ledgers for MS-NLMP, MS-SMB2,
+MS-CSSP, MS-KILE, MS-PAC and RFC4556. Reuse and recapture the exact
+primary revisions/sections for touched steps; this group is a dependency
+on the delivered source ledger, not a new assertion that every clause
+was re-audited here.</td>
+</tr>
+<tr class="odd">
+<td><span id="s25">S25</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows/security/identity-protection/remote-credential-guard">Microsoft
+— Remote Credential Guard</a>. RCG/Restricted Admin comparison,
+second-hop identity and required Kerberos behavior.</td>
+</tr>
+<tr class="even">
+<td><span id="s26">S26</span></td>
+<td><a href="https://learn.microsoft.com/en-us/windows-server/security/windows-authentication/how-to-configure-protected-accounts">Microsoft
+— Configure protected accounts</a>. Dynamic Access
+Control/device-condition prerequisites versus TGT-lifetime-only
+policies.</td>
+</tr>
+<tr class="odd">
+<td><span id="s27">S27</span></td>
+<td><a href="https://github.com/linux-pam/linux-pam/blob/master/doc/man/pam.conf-syntax.xml">Linux-PAM
+— Configuration syntax</a>. Service/type/control/module grammar,
+simple/extended actions, include/substack and API-specific jump
+behavior. Pin an actual revision before implementing;
+<code>master</code> is a rolling research URL.</td>
+</tr>
+<tr class="even">
+<td><span id="s28">S28</span></td>
+<td><a href="https://github.com/linux-pam/linux-pam/blob/master/libpam/pam_dispatch.c">Linux-PAM
+— Dispatcher implementation</a>. Aggregate impressions/statuses,
+remembered failures, termination, nested jumps, cached chains and
+optional-only denial. Capture a commit and map each evaluator rule to
+it.</td>
+</tr>
+<tr class="odd">
+<td><span id="s29">S29</span></td>
+<td><a href="https://github.com/linux-pam/linux-pam/blob/master/doc/adg/Linux-PAM_ADG.xml">Linux-PAM
+— Application developer guide</a>. Application, transaction,
+conversation and lifecycle responsibilities. Historical example
+configurations are not modern production recommendations.</td>
+</tr>
+<tr class="even">
+<td><span id="s30">S30</span></td>
+<td><a href="https://github.com/linux-pam/linux-pam/blob/master/modules/pam_unix/pam_unix.8.xml">Linux-PAM
+— pam_unix manual</a>. Separate auth/account/password/session functions
+and module-specific options. Use the correct API identifier
+<code>PAM_NEW_AUTHTOK_REQD</code>, not the historical typo in some
+module prose.</td>
+</tr>
+<tr class="odd">
+<td><span id="s31">S31</span></td>
+<td><a href="https://github.com/linux-pam/linux-pam/blob/master/modules/pam_debug/pam_debug.8.xml">Linux-PAM
+— pam_debug manual</a>. Deterministic per-hook result fixtures for
+testing dispatch. Clearly label their learning/test purpose.</td>
+</tr>
+<tr class="even">
+<td><span id="s32">S32</span></td>
+<td><a href="https://man7.org/linux/man-pages/man3/pam_acct_mgmt.3.html">Linux-PAM
+— pam_acct_mgmt manual</a>. Upstream-authored manual hosted by man7;
+account admission, expiry and required token-change handling. Record the
+manual/library revision.</td>
+</tr>
+<tr class="odd">
+<td><span id="s33">S33</span></td>
+<td><a href="https://man7.org/linux/man-pages/man3/pam_chauthtok.3.html">Linux-PAM
+— pam_chauthtok manual</a>. Credential changes, expired-token handling
+and error results; source-map preliminary/update hooks for the selected
+implementation.</td>
+</tr>
+<tr class="even">
+<td><span id="s34">S34</span></td>
+<td><a href="https://man7.org/linux/man-pages/man3/pam_setcred.3.html">Linux-PAM
+— pam_setcred manual</a>. Module credentials versus application-owned
+UID/GID/default groups; lifecycle flags and cleanup.</td>
+</tr>
+<tr class="odd">
+<td><span id="s35">S35</span></td>
+<td><a href="https://github.com/linux-pam/linux-pam/blob/cc452910f5424cbddaf69aa862ab28723886214d/modules/pam_limits/limits.conf.5.xml">Linux-PAM
+— limits.conf manual, pinned snapshot</a>, with <a href="https://github.com/linux-pam/linux-pam/blob/master/modules/pam_limits/pam_limits.c">pam_limits
+implementation</a>. Real soft/hard resource limits and session setup.
+The pinned document is not a claim of latest distro defaults; recapture
+the worker’s chosen revision.</td>
+</tr>
+<tr class="even">
+<td><span id="s36">S36</span></td>
+<td><a href="https://github.com/linux-pam/linux-pam/blob/master/doc/man/pam_authenticate.3.xml">Linux-PAM
+— pam_authenticate API</a>. Authentication dispatch/result; success does
+not replace the caller’s later account/session checks.</td>
+</tr>
+</tbody>
+</table>
+</div><p class="source-note">Worker plan only. Product implementation and native verification have not been performed for these additions. DNSSEC remains the current implementation task. Version 3 · 23 October 2026 · Linux-PAM foundations added; Windows scope, hidden tags and ranked scenario discovery preserved.</p></main></body>
+</html>

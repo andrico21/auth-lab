@@ -1,0 +1,31 @@
+{
+  "observed": "2026-10-25",
+  "platform": "Linux WSL2 x64",
+  "compiler": "/usr/bin/cc",
+  "pkgConfig": "/usr/bin/pkg-config",
+  "installedPackages": {
+    "libpam0g": "1.7.0-5ubuntu3.2",
+    "libpam-modules": "1.7.0-5ubuntu3.2",
+    "libpam-runtime": "1.7.0-5ubuntu3.2"
+  },
+  "observedArtifactSHA256": {
+    "/usr/lib/x86_64-linux-gnu/libpam.so.0.85.1": "fe942230acb13b5b645ecb41cfff350004a8b69f18877e1e924e643be21eee64",
+    "/usr/lib/x86_64-linux-gnu/security/pam_debug.so": "886a7bb6056d608d83434506d0db29d46cf7422a7ee1e0380dee9dff204e55a6",
+    "/usr/lib/x86_64-linux-gnu/security/pam_deny.so": "aa4d330fb96df75f45664ced229acac1500d0f039e472adce2eb048c2745ea32",
+    "/usr/lib/x86_64-linux-gnu/security/pam_permit.so": "b647ed825a8ca62189cd500e78e015223c6df82f5ad3235a6ac3bbe21e2fb019",
+    "/usr/lib/x86_64-linux-gnu/security/pam_limits.so": "374c4449dbe2b7be08878f9ecdbf3de0e379efd9df9b6bddca532a0984e3c4f0"
+  },
+  "headers": "libpam0g-dev package absent; /usr/include/security/pam_appl.h not found",
+  "referenceSourcePin": "584ef2275254016ee68126f90dab6df3604124b9",
+  "helper": "tools/verification/compare-pam-native.py",
+  "expectations": "docs/pam-foundations/native-expectations.json",
+  "sourceOnlyVectors": 23,
+  "execution": "NOT EXECUTED by worker. Parent exclusively runs after integration.",
+  "scope": "ctypes pam_start_confdir against exact checksummed pure pam_debug/permit/deny fixtures in owned temporary directory. Records actual installed library/module hashes, package versions, aggregate API calls, informational callbacks, source-only expected comparisons and explicit mismatches/unavailability.",
+  "limits": [
+    "Installed library is not the source-pinned build",
+    "No real-account proof, password hook, SSSD, real-limit mutation, host login/sudo/sshd or /etc modification",
+    "No service launch; failure-following calls are dispatcher probes, not a production caller policy",
+    "Not native conformance of all110 symbolic cases, nor G01/release acceptance"
+  ]
+}

@@ -1,0 +1,108 @@
+--- candidate03/src/pam-existing-integration.js
++++ candidate04/src/pam-existing-integration.js
+@@ -118,7 +118,7 @@
+         if(sourceReturn){
+           step=returned=event(key,title,from,to,[...objects,result],{...options,made:[...(options.made||[]),result],puts:{...options.puts,...puts}});
+         }else if(aggregateMilestone){
+-          step=returned=event(key,'Apply completed '+boundary.api+' aggregate '+evaluation.status+' to local evidence; no repeated verifier check',configOwner,configOwner,[...objects,result],{made:[result],puts});
++          step=returned=event(key,'Apply completed '+boundary.api+' aggregate '+evaluation.status+' to checked local evidence; no repeated verifier check',configOwner,configOwner,[...(options.checks||[]).map(check=>check.object),result],{made:[result],puts});
+           const delivered=event('pam-return-'+key+'-'+operationIndex,'Deliver already-completed '+boundary.api+' status',configOwner,callerOwner,[result]);
+           delivered.pamConfiguration=configuration;delivered.pamEvaluation=apiBoundary({phase:'caller'},'Deliver completed API result; no new module hook or verifier check');
+           delivered.protocolEffects.push({op:'put',path:PAM_UNIX_STATE_PATHS.evaluation,value:delivered.pamEvaluation});
+--- candidate03/tests/pam-existing-order-review.test.mjs
++++ candidate04/tests/pam-existing-order-review.test.mjs
+@@ -4,7 +4,7 @@
+ import {LINUXELEVLAB_SCENARIOS} from '../src/linux-elevation-lab.js';
+ import {reconstructProtocolState} from '../src/protocol-state.js';
+ import {buildUnixWorkstationHeldObjects} from '../src/held-object-unix-workstation.js';
+-import {compileHeldObjects,projectHeldObjects} from '../src/held-object-state.js';
++import {compileHeldObjects,projectHeldObjects,heldObjectTrace} from '../src/held-object-state.js';
+ 
+ const select=(id,variant='default')=>[...LINUXLOGONLAB_SCENARIOS,...LINUXELEVLAB_SCENARIOS].find(model=>model.id===id).withVariant(variant);
+ const state=(model,index)=>reconstructProtocolState(model,index).workstation;
+@@ -90,6 +90,10 @@
+   const verifier='lab-llog01:verifier';
+   const checks=Object.entries(model.workstationInventory.events).filter(([,event])=>event.milestones.some(m=>m.effects.some(effect=>effect.op==='observe'&&effect.kind==='verification'&&effect.artifactId===verifier)));
+   assert.deepEqual(checks.map(([eventId])=>eventId),[modules[0].step.id]);
++  const steps=model.steps(),compiled=compileHeldObjects(buildUnixWorkstationHeldObjects({model,steps,actors:model.actors(),choiceId:model.id,contextId:model.id+':single-secret-use'}),{model,steps});
++  const secretHistory=heldObjectTrace(compiled,'lab-llog01:entered-secret');
++  assert.ok(secretHistory.some(row=>row.sourceStepId===modules[0].step.id));
++  assert.equal(secretHistory.some(row=>row.sourceStepId===result.step.id),false);
+   for(let index=modules[0].index;index<model.steps().length;index++){
+     assert.deepEqual(frame(index).holdings.filter(h=>h.artifactId===verifier).map(h=>h.actorId),['llogPAM']);
+   }
+--- candidate03/tools/verification/run-windows-protection-native.mjs
++++ candidate04/tools/verification/run-windows-protection-native.mjs
+@@ -621,6 +621,7 @@
+   {id:'lab-lelev02',variant:'default'},{id:'lab-lelev02',variant:'access-denied'},
+   {id:'lab-lelev02',variant:'setuid-not-real-root'},{id:'lab-lelev02',variant:'real-root-bypass'},
+   {id:'lab-llog04',variant:'default'},{id:'lab-llog04',variant:'directory-unreachable'},
++  {id:'lab-llog01',variant:'default'},
+ ];
+ const selectedExistingPam=correctionsOnly?correctionPam:existingPam;
+ async function browserErrors(){
+@@ -740,6 +741,23 @@
+       same('no accumulator reset',modules[1].e.accumulatorBefore,modules[0].e.accumulatorAfter);
+       full(returned);same('completed account aggregate',values()['API aggregate return'],account.status);
+     }
++    if(m.id==='lab-llog01'){
++      const modules=steps.map((s,index)=>({s,index})).filter(({s})=>s.pamEvaluation?.apiPhase==='authenticate'&&s.pamEvaluation.executed);
++      same('one physical local authentication completion',modules.length,1);
++      const returned=steps.findIndex(s=>s.pamEvaluation?.apiPhase==='authenticate'&&Object.hasOwn(s.pamEvaluation,'aggregateReturn')),secret=artifact('entered-secret'),verifier=artifact('verifier');
++      ok('local aggregate follows module completion',returned>modules[0].index,returned,modules[0].index);
++      same('aggregate remains owner-local',[steps[returned].from,steps[returned].to],['llogPAM','llogPAM']);
++      same('password use only at physical module',steps.filter(s=>s.attributeOperations.some(op=>op.instanceId===secret.artifactId&&op.kind==='use'&&op.actorId==='llogPAM')).map(s=>s.id),[modules[0].s.id]);
++      same('authentication pending until aggregate',full(modules[0].index).state.workstation.authenticated,false);
++      same('rendered local API aggregate pending',values()['API aggregate return'],'Pending: current API call has not completed');
++      const accepted=full(returned);
++      same('completed local authentication',accepted.state.workstation.pamResults.authenticate,'PAM_SUCCESS');
++      same('verifier never delivered to caller',accepted.holdings.filter(h=>h.artifactId===verifier.artifactId).map(h=>h.actorId),['llogPAM']);
++      history(modules[0].index,secret);
++      a.heldView.trace(secret.artifactId);same('exact password history excludes aggregate',a.traceQueue.some(s=>s.sourceStepId===steps[returned].id),false);
++      full(modules[0].index);a.selectAttribute(secret.attributeId,false);same('field password history excludes aggregate',a.traceQueue.some(s=>s.sourceStepId===steps[returned].id),false);
++      history(returned,verifier);
++    }
+     if(m.id==='lab-lelev02'&&['setuid-not-real-root','real-root-bypass'].includes(m.variantId)){
+       const modules=steps.filter(s=>s.pamEvaluation?.apiPhase==='authenticate'&&s.pamEvaluation.executed).map(s=>s.pamEvaluation);
+       same('rootok dispatch sequence',modules.map(e=>e.module),m.variantId==='real-root-bypass'?['pam_rootok.so']:['pam_rootok.so','pam_unix.so']);
+
+--- a/tools/verification/run-windows-protection-regressions.mjs
++++ b/tools/verification/run-windows-protection-regressions.mjs
+@@ -4,21 +4,23 @@
+ import {createHash} from 'node:crypto';
+ import {fileURLToPath} from 'node:url';
+ import {captureReviewInputs} from './review-input-identity.mjs';
+-if(process.argv.includes('--help')){console.log('Usage: bun tools/verification/run-windows-protection-regressions.mjs [project-directory]\nBuild first. Runs every tests/*.test.mjs file in four isolated Bun workers with exact ./tests/ selectors and unchanged timeouts. Set AUTH_LAB_HELD_EVIDENCE_DIR to a new evidence directory.');process.exit(0);}
++if(process.argv.includes('--help')){console.log('Usage: bun tools/verification/run-windows-protection-regressions.mjs [project-directory]\nBuild first. Runs compiled standalone boot exclusively, then every other tests/*.test.mjs file in four isolated Bun workers with exact ./tests/ selectors and unchanged timeouts. Set AUTH_LAB_HELD_EVIDENCE_DIR to a new evidence directory.');process.exit(0);}
+ const root=path.resolve(process.argv[2]||path.join(path.dirname(fileURLToPath(import.meta.url)),'../..'));
+ const output=path.resolve(process.env.AUTH_LAB_HELD_EVIDENCE_DIR||path.join(root,'docs/verification/windows-protection-expansion/regression-02'));
+ fs.mkdirSync(path.join(output,'regression-logs'),{recursive:true});
+ const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
+ const files=fs.readdirSync(path.join(root,'tests')).filter(name=>name.endsWith('.test.mjs')).sort();
++const exclusiveFiles=files.filter(name=>name==='standalone-runtime.test.mjs'),parallelFiles=files.filter(name=>name!=='standalone-runtime.test.mjs');
+ const report={kind:'windows-protection-full-source-regressions',timestamp:new Date().toISOString(),runtime:{executable:process.execPath,version:process.version,bun:Bun.version},runnerSha256:hash(fs.readFileSync(fileURLToPath(import.meta.url))),regenerationCommand:[process.execPath,...process.argv.slice(1)],workers:4,perTestTimeoutMs:900000,perFileProcessTimeoutMs:1800000,inputIdentity:captureReviewInputs(root,fileURLToPath(import.meta.url)),plannedFiles:files,runningFiles:[],files:[],passed:false,complete:false,interruptions:[]};
++report.scheduling={kind:'exclusive-compiled-boot-then-four-workers',exclusiveFiles,parallelFiles,reason:'The standalone VM has a five-second wall-clock limit; no other test process from this runner overlaps its bootstrap. All files and consumer assertions remain unchanged.'};
+ const statusFile=path.join(output,'regression-status.json');
+ const save=()=>fs.writeFileSync(statusFile,JSON.stringify(report,null,2)+'\n');
+ const children=new Set();let next=0,interrupted=false;
+ for(const signal of ['SIGINT','SIGTERM'])process.once(signal,()=>{interrupted=true;report.interruptions.push({signal,at:new Date().toISOString()});save();for(const child of children)child.kill('SIGTERM');});
+ save();
+-async function worker(){
++async function worker(queue){
+   while(!interrupted){
+-    const file=files[next++];if(!file)return;
++    const file=queue[next++];if(!file)return;
+     const command=[process.execPath,'test','--isolate','--timeout=900000','./tests/'+file],start=performance.now();
+     const log='regression-logs/'+file+'.log',absolute=path.join(output,log),fd=fs.openSync(absolute,'wx');
+     report.runningFiles.push(file);save();
+@@ -32,7 +34,9 @@
+     report.runningFiles=report.runningFiles.filter(name=>name!==file);report.files.push(result);save();console.log(JSON.stringify(result));
+   }
+ }
+-await Promise.all(Array.from({length:report.workers},()=>worker()));
++await worker(exclusiveFiles);
++next=0;
++await Promise.all(Array.from({length:report.workers},()=>worker(parallelFiles)));
+ report.files.sort((a,b)=>a.file.localeCompare(b.file));
+ report.afterIdentity=captureReviewInputs(root,fileURLToPath(import.meta.url));
+ report.identityUnchanged=JSON.stringify(report.afterIdentity)===JSON.stringify(report.inputIdentity);

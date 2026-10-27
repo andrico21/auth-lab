@@ -1,0 +1,67 @@
+[MS-APDS]: NTLM Pass-Through Authentication | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+4.1 NTLM Pass-Through Authentication
+Feedback
+Summarize this article for me
+In this article
+Figure 2: NTLM pass-through authentication
+The user logs on
+to the computer desktop (labeled Client) by typing in the user name and
+password. Client sends an NTLM
+NEGOTIATE_MESSAGE
+([MS-NLMP]
+section 2.2.1.1) to request authentication to the server.
+The server sends
+an NTLM CHALLENGE_MESSAGE
+([MS-NLMP] section 2.2.1.2) to the client.
+The client
+responds to the challenge by signing it with its key and sending the response
+in an NTLM AUTHENTICATE_MESSAGE
+([MS-NLMP] section 2.2.1.3) to the server.
+The server
+forwards the client's response to the domain controller in a
+NETLOGON_NETWORK_INFO message.
+The domain
+controller verifies the signature on the response, and returns the result to
+the server in a NETLOGON_VALIDATION_SAM_INFO4 message. If the verification is
+successful, the message contains the user's PAC with the authorization
+data. If the verification is unsuccessful, logon is denied.
+Additional resources
+Last updated on
+2024-04-09
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

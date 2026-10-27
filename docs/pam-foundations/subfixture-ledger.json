@@ -1,0 +1,738 @@
+[
+  {
+    "id": "parent-jump",
+    "caseId": "PAM01/substack-jump-boundary",
+    "configurationId": "afs-substack-jump-boundary",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "parent-jump",
+      "service": "afs-substack-jump-boundary"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "libpam",
+    "firstDetectingStep": "afs-substack-jump-boundary:2",
+    "reason": "Parent numeric action skips whole child as one item; parent permitting row grants",
+    "auth": "PAM_SUCCESS",
+    "admitted": true,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": false,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "child-in-range",
+    "caseId": "PAM01/substack-jump-boundary",
+    "configurationId": "afs-child-in-range",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "child-in-range",
+      "service": "afs-child-in-range"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "libpam",
+    "firstDetectingStep": "afs-child-range:2",
+    "reason": "In-range child jump skips denial; no escape to parent",
+    "auth": "PAM_SUCCESS",
+    "admitted": true,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": false,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "child-overrun",
+    "caseId": "PAM01/substack-jump-boundary",
+    "configurationId": "afs-parent-child-overrun",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "child-overrun",
+      "service": "afs-parent-child-overrun"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "libpam",
+    "firstDetectingStep": "afs-child-overrun:2",
+    "reason": "Overrun records PERM_DENIED; parent resumes without rescue",
+    "auth": "PAM_PERM_DENIED",
+    "admitted": false,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_PERM_DENIED"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": false,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups",
+      "service launch",
+      "admitted session"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "change-success",
+    "caseId": "PAM01/password-change-required",
+    "configurationId": "afs-login",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "change-success",
+      "service": "afs-login"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "pam_unix then caller",
+    "firstDetectingStep": "afs-login:3",
+    "reason": "Token change needed; collected UPDATE succeeds and authority becomes generation2",
+    "auth": "PAM_SUCCESS",
+    "admitted": true,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_NEW_AUTHTOK_REQD"
+      ],
+      [
+        "prelim",
+        "PAM_SUCCESS"
+      ],
+      [
+        "update",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "authorityGeneration": 2,
+    "collectNewToken": true,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "change-unsupported",
+    "caseId": "PAM01/password-change-required",
+    "configurationId": "afs-login",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "change-unsupported",
+      "service": "afs-login"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "caller",
+    "firstDetectingStep": "account aggregate receipt",
+    "reason": "Caller cannot service required change and denies launch",
+    "auth": "PAM_SUCCESS",
+    "admitted": false,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_NEW_AUTHTOK_REQD"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": false,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups",
+      "service launch",
+      "admitted session"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "change-prelim-failure",
+    "caseId": "PAM01/password-change-required",
+    "configurationId": "afs-login",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "change-prelim-failure",
+      "service": "afs-login"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "pam_unix then libpam",
+    "firstDetectingStep": "afs-login:4 PRELIM_CHECK",
+    "reason": "Preliminary failure; no new candidate or update pass",
+    "auth": "PAM_SUCCESS",
+    "admitted": false,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_NEW_AUTHTOK_REQD"
+      ],
+      [
+        "prelim",
+        "PAM_AUTHTOK_ERR"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": false,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups",
+      "service launch",
+      "admitted session"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "change-update-failure",
+    "caseId": "PAM01/password-change-required",
+    "configurationId": "afs-login",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "change-update-failure",
+      "service": "afs-login"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "pam_unix then libpam",
+    "firstDetectingStep": "afs-login:4 UPDATE_AUTHTOK",
+    "reason": "Collected candidate update fails; generation1 retained",
+    "auth": "PAM_SUCCESS",
+    "admitted": false,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_NEW_AUTHTOK_REQD"
+      ],
+      [
+        "prelim",
+        "PAM_SUCCESS"
+      ],
+      [
+        "update",
+        "PAM_AUTHTOK_ERR"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": true,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups",
+      "service launch",
+      "admitted session"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "limits-success",
+    "caseId": "PAM01/soft-hard-limits",
+    "configurationId": "afs-login",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "limits-success",
+      "service": "afs-login"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "pam_limits",
+    "firstDetectingStep": "afs-login:6 open_session",
+    "reason": "Selected two resource rows apply soft1024/hard4096",
+    "auth": "PAM_SUCCESS",
+    "admitted": true,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": false,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "limits-application-error",
+    "caseId": "PAM01/soft-hard-limits",
+    "configurationId": "afs-login",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "limits-application-error",
+      "service": "afs-login"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "pam_limits then caller",
+    "firstDetectingStep": "afs-login:6 open_session",
+    "reason": "Limit application error PERM_DENIED; valid auth retained, no session",
+    "auth": "PAM_SUCCESS",
+    "admitted": false,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_PERM_DENIED"
+      ],
+      [
+        "close",
+        "PAM_PERM_DENIED"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": false,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups",
+      "service launch",
+      "admitted session"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "service-login",
+    "caseId": "PAM01/service-selection",
+    "configurationId": "afs-login",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "service-login",
+      "service": "afs-login"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "pam_unix then libpam",
+    "firstDetectingStep": "afs-login:2",
+    "reason": "Selected local service grants authentication then separate account/session",
+    "auth": "PAM_SUCCESS",
+    "admitted": true,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_SUCCESS"
+      ],
+      [
+        "account",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred",
+        "PAM_SUCCESS"
+      ],
+      [
+        "open",
+        "PAM_SUCCESS"
+      ],
+      [
+        "close",
+        "PAM_SUCCESS"
+      ],
+      [
+        "setcred-delete",
+        "PAM_SUCCESS"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": false,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  },
+  {
+    "id": "service-deny",
+    "caseId": "PAM01/service-selection",
+    "configurationId": "afs-deny",
+    "profileId": "afs-linux-pam-pinned",
+    "changedInputs": {
+      "member": "service-deny",
+      "service": "afs-deny"
+    },
+    "initialHoldings": [
+      "selected physical configuration",
+      "local authority generation1",
+      "unrelated existing session"
+    ],
+    "firstDetectingActor": "pam_deny then libpam",
+    "firstDetectingStep": "afs-deny:2",
+    "reason": "Different service selects required denial; no global default stack",
+    "auth": "PAM_AUTH_ERR",
+    "admitted": false,
+    "expectedAPISequence": [
+      [
+        "authenticate",
+        "PAM_AUTH_ERR"
+      ]
+    ],
+    "authorityGeneration": 1,
+    "collectNewToken": false,
+    "prohibitedEffects": [
+      "fresh TGT",
+      "PAM sets UID/GID/groups",
+      "service launch",
+      "admitted session"
+    ],
+    "cleanup": [
+      "applicable close_session",
+      "DELETE_CRED after successful credential phase",
+      "pam_end",
+      "clear collected conversation secrets"
+    ],
+    "retained": [
+      "unrelated session",
+      "successful authentication if auth was accepted"
+    ],
+    "sourceClauses": [
+      "S27",
+      "S28",
+      "S29",
+      "S32",
+      "S33",
+      "S34",
+      "S35"
+    ],
+    "evidenceLevel": "source-backed symbolic fixture, native not performed"
+  }
+]

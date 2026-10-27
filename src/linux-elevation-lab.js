@@ -1,4 +1,5 @@
 import {unixWsAuthor,unixWsVariants,unixWsDeclareCatalog} from './linux-logon-lab.js';
+import {pamAttachExistingUnix} from './pam-existing-integration.js';
 
 export const LINUXELEVLAB_ATTRIBUTES={};
 export const LINUXELEVLAB_SOURCES=[
@@ -18,6 +19,7 @@ export const LINUXELEVLAB_SOURCES=[
 export function createLinuxSudoCase(f){
   const C='lelevCaller',P='lelevSudo',A='lelevPAM',T='lelevTarget';
   const w=unixWsAuthor({id:'lab-lelev01',title:'sudo policy, authentication identity and target credentials',family:'linux-elevation',topic:'sudo',startingSummary:[f.caller+' (uid'+(f.caller==='root'?0:1000)+') requests /usr/bin/id as '+f.target+'; the invoking shell is unchanged.','Declared sudoers command/Runas rule; tty timestamp5minutes, absent baseline.','Authentication identity can differ from requester and execution target.'],profileName:'L-SUDO pinned upstream0e2c376; explicit tty timestamp and non-root Runas',prerequisites:['alice ALL=(backup:backup) /usr/bin/id; root ALL=(ALL:ALL) ALL. tty timestamp5min, runas_default=operator. Explicit policy alternatives only.','PAM-enabled composed sudo build; auth then account/setcred/session configured. Requester shell is never converted into target process.']},LINUXELEVLAB_ATTRIBUTES,LINUXELEVLAB_SOURCES,{[C]:'Caller shell / requesting identity',[P]:'sudo policy and timestamp owner',[A]:'Configured PAM authentication/account stack',[T]:'Target command process'},{session:true,localIdentity:'uid'+(f.caller==='root'?0:1000),executionTarget:null,passwordCompared:false});
+  pamAttachExistingUnix(w,'lab-lelev01',f);
   const caller=w.object('caller','Existing caller session','session',C,'HANDLE('+f.caller+' uid'+(f.caller==='root'?0:1000)+' invoking shell)',[C],{seed:true});
   const policy=w.object('policy','sudoers exact command and Runas policy','policy',P,'/usr/bin/id as '+f.target+'; auth='+f.authMode+'; NOPASSWD='+f.nopasswd,[P],{seed:true});
   // Explicit fixture identities/session and monotonic seconds, not host defaults.
@@ -64,6 +66,7 @@ export function createLinuxSudoCase(f){
 export function createLinuxSuCase(f){
   const C='suCaller',P='suPAM',D='suTarget',T='suShell';
   const w=unixWsAuthor({id:'lab-lelev02',title:'su target authentication and real-root bypass',family:'linux-elevation',topic:'su',startingSummary:['Caller '+(f.realUid===0?'root':'alice')+' real UID'+f.realUid+'; su effective UID'+f.effectiveUid+(f.realUid===0?' satisfies configured pam_rootok.':' does not satisfy rootok.'),'Target backup is a separate account with its own password.','Configured account/access gates apply after the chosen authentication branch.'],profileName:'L-SU util-linux; explicit pam_rootok real-UID stack',prerequisites:['su-l stack: auth sufficient pam_rootok; auth required pam_unix; account required pam_unix + pam_access; session required pam_unix.','--login environment baseline; real UID tested by pam_rootok, not su effective setuid UID. runuser is a comparison for already privileged automation.']},LINUXELEVLAB_ATTRIBUTES,LINUXELEVLAB_SOURCES,{[C]:'Original caller process',[P]:'util-linux su / configured PAM',[D]:'Target account authority',[T]:'Target login shell'},{session:true,localIdentity:'uid'+f.realUid,passwordCompared:false});
+  pamAttachExistingUnix(w,'lab-lelev02',f);
   w.object('caller','Original unchanged caller session','session',C,'HANDLE(real uid'+f.realUid+' effective uid'+f.effectiveUid+')',[C],{seed:true});
   const target=w.object('target','Target account record','identity',D,'backup; uid1100; groups1100; /srv/backup; /bin/sh',[D,P],{seed:true});
   w.event('target-lookup','Resolve target account before substitute-user authentication',P,D,[],{control:{label:'su target account lookup arguments',value:'SYM(getpwnam; name=backup; UID/groups/home/shell)'},puts:{identityResolved:f.targetExists}});

@@ -1,0 +1,121 @@
+[
+  {
+    "rule": "configuration-types-and-simple-controls",
+    "source": "S27",
+    "section": "types/control; required/requisite/sufficient/optional",
+    "claim": "S28 dispatch-handlers lines163-184",
+    "implementationCases": "pamParseConfiguration,pamAction"
+  },
+  {
+    "rule": "status-impression-remembered-failure",
+    "source": "S28",
+    "section": "lines65-74,208-250,309-317",
+    "claim": "negative remembered failure is not rescued by later success",
+    "implementationCases": "pamEvaluate accumulator"
+  },
+  {
+    "rule": "optional-only-failure",
+    "source": "S28",
+    "section": "lines72-73,253-254,309-317",
+    "claim": "PAM_PERM_DENIED initial status remains when all results ignored",
+    "implementationCases": "PAM01/optional-only-failure"
+  },
+  {
+    "rule": "include-versus-substack",
+    "source": "S27",
+    "section": "include/substack paragraphs178-200",
+    "claim": "S28 lines89-93,281-307; dispatch-handlers stack_level",
+    "implementationCases": "PAM01/include-termination,substack-termination,substack-failure"
+  },
+  {
+    "rule": "numeric-auth-jump-no-grant",
+    "source": "S28",
+    "section": "lines260-298",
+    "claim": "auth PLEASE_FREEZE=0; numeric jump does not establish impression",
+    "implementationCases": "PAM01/bracket-success-jump"
+  },
+  {
+    "rule": "parent-jump-counts-child-as-one",
+    "source": "S28",
+    "section": "lines281-287",
+    "claim": "nested child entries consumed before decrement; overrun sets PERM_DENIED",
+    "implementationCases": "PAM01/substack-jump-boundary all three members"
+  },
+  {
+    "rule": "phase-specific-cached-chains",
+    "source": "S28",
+    "section": "lines134-195,262-278,354-375",
+    "claim": "setcred and close_session use prior auth/open status for actions but current hook return for status; update dispatch is not auth copy",
+    "implementationCases": "pamEvaluate setcred/close"
+  },
+  {
+    "rule": "password-preliminary-update",
+    "source": "dispatch-password",
+    "section": "lines25-29,41-47",
+    "claim": "libpam internally dispatches two passes and stops after preliminary failure",
+    "implementationCases": "PAM01/password-change-required all four members"
+  },
+  {
+    "rule": "app-groups-not-setcred",
+    "source": "S34",
+    "section": "description lines34-60",
+    "claim": "application owns UID/GID/default groups; prepare default groups before setcred",
+    "implementationCases": "PAM01 lifecycle"
+  },
+  {
+    "rule": "local-module-hook-separation",
+    "source": "S30",
+    "section": "module types; auth/account/password/session",
+    "claim": "no password rows at ordinary authenticate",
+    "implementationCases": "PAM01 local profile and existing LLOG01/04"
+  },
+  {
+    "rule": "deterministic-debug-arguments",
+    "source": "S31",
+    "section": "auth,cred,acct,prechauthtok,chauthtok,open_session,close_session",
+    "claim": "debug-implementation parse_args per hook",
+    "implementationCases": "control fixtures explicitly simulated"
+  },
+  {
+    "rule": "limits-application-error",
+    "source": "limits-implementation",
+    "section": "lines1195-1199,1435-1438",
+    "claim": "setrlimit failure -> limit error -> PAM_PERM_DENIED; not password rejection",
+    "implementationCases": "soft-hard-limits/limits-application-error and session-failure"
+  },
+  {
+    "rule": "conversation-propagation",
+    "source": "pam-authtok,unix-auth-implementation",
+    "section": "pam_get_authtok.c176-187; pam_unix_auth.c152-166; username supplied at pam_start",
+    "claim": "Password callback PAM_CONV_ERR is normalized to PAM_AUTHTOK_ERR by pam_get_authtok; pam_unix propagates that module status and required control returns the same aggregate. Callback status is not rewritten.",
+    "implementationCases": "PAM01/conversation-failure"
+  },
+  {
+    "rule": "unavailable-function",
+    "source": "S28",
+    "section": "lines95-104",
+    "claim": "missing module function returns PAM_MODULE_UNKNOWN; no hook called",
+    "implementationCases": "PAM01/module-unavailable"
+  },
+  {
+    "rule": "account-and-authentication-boundaries",
+    "source": "S32",
+    "section": "description and NEW_AUTHTOK_REQD return",
+    "claim": "S36 authenticate API; S29 lifecycle",
+    "implementationCases": "PAM01/account-denied,password-change-required"
+  },
+  {
+    "rule": "canonical-phase-descriptors",
+    "source": "S27,S28,S29,S34",
+    "section": "Management groups, separate API hooks and lifecycle flags",
+    "claim": "PAM_API_PHASES is the only type/API/hook/flags descriptor map shared by evaluator, metadata, caller labels and parent renderer",
+    "implementationCases": "All PAM evaluation and API boundary rows"
+  },
+  {
+    "rule": "native-conversation-ABI",
+    "source": "native-types,native-api,native-conversation,debug-implementation",
+    "section": "_pam_types.h29-64,108-111,254-289; pam_appl.h28-30; pam_conv response ownership; pam_debug state()",
+    "claim": "ctypes callback uses Linux pointer-array semantics, calloc response array, PAM-owned free; informational callbacks are not credential prompts",
+    "implementationCases": "23 isolated native source-only vectors; not executed by worker"
+  }
+]

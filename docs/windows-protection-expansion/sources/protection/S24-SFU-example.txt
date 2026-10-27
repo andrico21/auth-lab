@@ -1,0 +1,70 @@
+[MS-SFU]: S4U2proxy Example | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+4.3 S4U2proxy Example
+Feedback
+Summarize this article for me
+In this article
+The following figure depicts a service obtaining a service
+ticket on behalf of a client to another service, a proxy service. The ticket-granting
+service (TGS) is the TGS for both the service and the proxy
+service. It is also assumed that service has already authenticated to the Key
+Distribution Center (KDC) and has obtained a ticket-granting
+ticket (TGT) to the TGS.
+Figure 6: S4U2proxy Example
+In step 1, Service 1 is attempting to obtain a service
+ticket to Service 2 on behalf of the user. Service 1 sends the KRB_TGS_REQ
+message with the user's service ticket for Service 1 as an additional ticket in
+the request. Service 1 also sets the CNAME-IN-ADDL-TKT
+flag in the kdc-options in the request.
+The TGS makes sure the forwardable flag is set in the
+additional-ticket and uses its local policy to determine if Service 1 is
+allowed to obtain a service ticket on behalf of a user to Service 2. If these
+conditions are met, the TGS crafts the KRB_TGS_REP message to
+return a service ticket. This response will contain the cname field of
+the user that is taken from the additional-ticket, instead of using the cname
+of Service 1. The forwardable flag will be set in the service ticket. The
+authorization data in the service ticket will be copied from the service ticket
+passed to the TGS in the additional-tickets field.
+In step 3, Service 1 uses the service ticket from step 2 to
+contact Service 2. The service ticket will contain the user's name as the cname
+field. Step 4 shows the KRB_AP_REP message from Service 2 to Service 1
+in response to the KRB_AP_REQ message, as described in step 3.<29>
+Additional resources
+Last updated on
+2025-08-11
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

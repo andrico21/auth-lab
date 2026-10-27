@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "kind": "installed-pam-distribution-source-divergence-disposition",
+  "recordedAt": "2026-10-25T11:18:32.348Z",
+  "dispositionComplete": true,
+  "rawComparisonPassed": false,
+  "status": "Explained source-version/distribution behavior difference; raw mismatch remains preserved, not repinned or suppressed.",
+  "scope": "Installed Linux-PAM deterministic dispatch comparison only; not source-pin build, distro-default, RFC, Windows, macOS, release or G01 conformance.",
+  "originalComparison": {
+    "path": "docs/verification/windows-protection-expansion/pam-native-01.json",
+    "sha256": "107b1d38e8edadc4d759b760aee88f957abbe3b4ff007c14909a581032e5c60a",
+    "bytes": 55040
+  },
+  "originalProcess": {
+    "path": "docs/verification/windows-protection-expansion/pam-native-process-01.json",
+    "sha256": "2e897789a2d5a1ef347972afd9c7d2af6cd3d404532baff7ef0fb53779c1bd09",
+    "bytes": 62559
+  },
+  "summary": {
+    "services": 23,
+    "physicalFixtures": 27,
+    "matchedCalls": 164,
+    "mismatchedCalls": 1,
+    "scope": "Only actual calls above; no inferred native acceptance of symbolic cases"
+  },
+  "packages": {
+    "command": [
+      "dpkg-query",
+      "-W",
+      "-f=${binary:Package}\t${Version}\n",
+      "libpam0g",
+      "libpam-modules",
+      "libpam-runtime"
+    ],
+    "returncode": 0,
+    "stdout": "libpam-modules:amd64\t1.7.0-5ubuntu3.2\nlibpam-runtime\t1.7.0-5ubuntu3.2\nlibpam0g:amd64\t1.7.0-5ubuntu3.2\n",
+    "stderr": ""
+  },
+  "library": {
+    "requestedPath": "/usr/lib/x86_64-linux-gnu/libpam.so.0",
+    "resolvedPath": "/usr/lib/x86_64-linux-gnu/libpam.so.0.85.1",
+    "sha256": "fe942230acb13b5b645ecb41cfff350004a8b69f18877e1e924e643be21eee64",
+    "bytes": 72064
+  },
+  "independentExpectations": {
+    "path": "docs/pam-foundations/native-expectations.json",
+    "sha256": "1065337878481993ba2280529a201a7adb166fcaa51aa0287bd80ce5b235d0f1",
+    "bytes": 16919
+  },
+  "configurationManifest": {
+    "path": "docs/pam-foundations/configurations.json",
+    "sha256": "a5b11e9652ee23a5ed0bf1bde7f60e88dde476d9be259f460c2654a32373d3d2"
+  },
+  "configurationManifestStillMatches": true,
+  "sourcePin": {
+    "revision": "584ef2275254016ee68126f90dab6df3604124b9",
+    "dispatch": {
+      "path": "docs/pam-foundations/sources/S28-pam_dispatch.c",
+      "sha256": "7f3d9720ceda439f73762cd08dd5a0848d169853db7234243ae305e70ac3d521",
+      "bytes": 12670
+    },
+    "rule": "The cached-chain numeric-jump branch treats the current module as required while also skipping the selected next stack rows."
+  },
+  "mismatch": {
+    "service": "afs-close-session-jump",
+    "api": "pam_close_session",
+    "flags": 0,
+    "actual": 0,
+    "actualName": "PAM_SUCCESS",
+    "message": "Success",
+    "expected": "PAM_SESSION_ERR",
+    "matches": false
+  },
+  "fixture": {
+    "path": "docs/pam-foundations/configs/afs-close-session-jump",
+    "sha256": "3e6ab220578483a19bb839b8790d5df99a4da691246dfe613981adb1c049c166",
+    "bytes": 193
+  },
+  "distributionSource": {
+    "package": "pam",
+    "version": "1.7.0-5ubuntu3.2",
+    "sourceArchiveURL": "https://launchpad.net/ubuntu/+archive/primary/+sourcefiles/pam/1.7.0-5ubuntu3.2/pam_1.7.0-5ubuntu3.2.debian.tar.xz",
+    "sourceArchiveSha256": "b73522e3bcf61eaed21f46b8f3bcbfd5657f651f35067933d1ee0d4f5402a05d",
+    "sourceArchiveBytes": 196572,
+    "archiveRetainedInReviewInputs": false,
+    "archiveOmission": "Only the two exact relevant archive members are retained below. The complete distribution packaging archive is not a frozen review-file dependency; its transport hash and primary URL are recorded.",
+    "patch": {
+      "path": "docs/pam-foundations/sources/ubuntu-1.7.0-5ubuntu3.2-045-pam-dispatch-jump-is-ignore.patch",
+      "sha256": "83662f4e2854fbd2d8500c8d471df9624059fe86668c12aef3ec48afc58e9d96",
+      "bytes": 1461,
+      "archiveMember": "debian/patches/045_pam_dispatch_jump_is_ignore",
+      "rule": "Replaces cached-chain numeric-jump required accumulation with ignore-only behavior while preserving the jump."
+    },
+    "series": {
+      "path": "docs/pam-foundations/sources/ubuntu-1.7.0-5ubuntu3.2-patch-series.txt",
+      "sha256": "a9967d8ac79d26da3c1dc990126ef559049fe6b30e4d4ded87abd1ba3a6f7281",
+      "bytes": 1103,
+      "archiveMember": "debian/patches/series",
+      "patchLine": 11
+    },
+    "sourceToInstalledBinaryQualification": "The distribution source package version matches the installed dpkg versions and the actual result is consistent with the applied patch. The installed library was not rebuilt from source for byte-level provenance."
+  },
+  "analysis": [
+    {
+      "stage": "pam_open_session",
+      "fact": "pam_debug returns success; [success=1 default=ignore] skips pam_deny and caches the successful session dispatch choice."
+    },
+    {
+      "stage": "pam_close_session, upstream source pin",
+      "fact": "The cached success choice selects numeric jump1 while the current pam_debug hook returns PAM_SESSION_ERR. Upstream cached-jump required accumulation retains SESSION_ERR14 through the later pam_permit success."
+    },
+    {
+      "stage": "pam_close_session, installed distribution",
+      "fact": "Applied distribution patch makes the same cached numeric jump ignore-only. The deny row is skipped; the later pam_permit establishes PAM_SUCCESS0, matching the preserved actual native result."
+    }
+  ],
+  "preserved": {
+    "nativeGoldenUnchanged": true,
+    "helperWasNotModifiedToForceSuccess": true,
+    "rawExitCode": 1,
+    "matchedCalls": 164,
+    "mismatchedCalls": 1,
+    "realCredentialsOrProductionPamConfigurationChanged": false
+  },
+  "notEstablished": [
+    "Native Windows/DC or live authentication conformance",
+    "Native installed pam_unix/SSSD/password/resource-limit behavior from the synthetic dispatch vectors",
+    "Distribution-default PAM stack equivalence to the authored teaching profiles",
+    "Source-pin-built Linux-PAM native acceptance",
+    "Human G01 acceptance, performance waiver, external review acceptance or publication authorization"
+  ]
+}

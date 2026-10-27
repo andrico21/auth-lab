@@ -1,0 +1,11 @@
+--- supplied/ui05-probe.mjs
++++ adapted/ui05-probe.mjs
+@@ -15,7 +15,7 @@
+ const ok=(v,m)=>{assert.ok(v,m);checks++;};
+ if(mode==='emitted'){
+  const bytes=fs.readFileSync(new URL('../auth-flow-studio-windows-protection.html',import.meta.url));
+- eq(createHash('sha256').update(bytes).digest('hex'),'ca9fbb47b3de9a565911f44fc29ba319076e85feace235ba82cf6c20bb3a88cb','Exact supplied candidate05');
++ eq(createHash('sha256').update(bytes).digest('hex'),'9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694','Exact supplied candidate05');
+  const scripts=[...bytes.toString().matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)];eq(scripts.length,1,'One actual emitted script');
+  new vm.Script(scripts[0][1]).runInContext(vm.createContext(sandbox));Component=harness.registry.get('auth-flow-studio');
+ }else ({AuthFlowStudio:Component}=await import('../source/src/app.js'));

@@ -1,0 +1,84 @@
+import {test,expect} from 'bun:test';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {createPamFoundationsCase} from '../src/pam-foundations-lab.js';
+import {LINUXLOGONLAB_SCENARIOS} from '../src/linux-logon-lab.js';
+import {LINUXELEVLAB_SCENARIOS} from '../src/linux-elevation-lab.js';
+import {SSHLAB_SCENARIOS} from '../src/ssh-access-lab.js';
+import {reconstructProtocolState} from '../src/protocol-state.js';
+import {buildUnixWorkstationHeldObjects} from '../src/held-object-unix-workstation.js';
+import {compileHeldObjects,projectHeldObjects} from '../src/held-object-state.js';
+
+const unix=id=>[...LINUXLOGONLAB_SCENARIOS,...LINUXELEVLAB_SCENARIOS].find(model=>model.id===id);
+const sourceIndex=(model,key)=>model.steps().findIndex(step=>step.id===model.id+':'+key||step.id===model.id+'-'+key);
+const at=(model,index)=>reconstructProtocolState(model,index);
+const end=model=>at(model,model.steps().length-1);
+const path=(value,key)=>key.split('.').reduce((current,part)=>current?.[part],value);
+const findReturn=(model,after,phase,flags)=>model.steps().findIndex((step,index)=>index>after&&step.pamEvaluation?.apiPhase===phase&&step.pamEvaluation.aggregateReturn!==undefined&&(flags===undefined||step.pamEvaluation.flags===flags));
+function expectReturn(row,phase,flags,status){expect(row.apiPhase).toBe(phase);expect(row.flags).toBe(flags);expect(row.aggregateReturn).toBe(status);expect(row.moduleHook).toBeNull();expect(row.rawReturn).toBeNull();expect(row.mappedAction).toBeNull();expect(row.accumulatorBefore).toBeNull();expect(row.accumulatorAfter).toBeNull();}
+
+const frozenHashes={
+ 'expectations.json':'140dd08fa0fcb89eae08d2dcf1ea406b375949423369c028b4f4fbc5888cbcd5',
+ 'dispatch-expectations.json':'3a17fdcd040d04852c21f3fc5cc51d7a9ee10b75b9832d3ff42e413fbfbd61b3',
+ 'lifecycle-expectations.json':'cf8e4cdf6b4baaebca86ce238087128cb23c37a239c94931c6d4987c3b7a09be',
+ 'case-ledger.json':'00582279f0e8db3d5fc325407f118881d4329d8ca6dc0bd70c63d064431af1be'
+};
+test('WP0 expectation bytes remain frozen and native cached-close golden is not repinned',()=>{
+ for(const [name,sha] of Object.entries(frozenHashes)){const bytes=readFileSync(new URL('../docs/pam-foundations/inputs/wp0-original/'+name,import.meta.url));expect(createHash('sha256').update(bytes).digest('hex')).toBe(sha);}
+ const native=readFileSync(new URL('../docs/pam-foundations/native-expectations.json',import.meta.url));expect(createHash('sha256').update(native).digest('hex')).toBe('1065337878481993ba2280529a201a7adb166fcaa51aa0287bd80ce5b235d0f1');
+ expect(JSON.parse(native).vectors.find(vector=>vector.service==='afs-close-session-jump').calls.find(call=>call.api==='pam_close_session').expected).toBe('PAM_SESSION_ERR');
+});
+test('password callback error and pam_unix/module aggregate error have distinct source semantics',()=>{
+ const model=createPamFoundationsCase('conversation-failure'),callback=sourceIndex(model,'conversation-response'),module=model.steps().findIndex(step=>step.pamEvaluation?.executed&&step.pamEvaluation.apiPhase==='authenticate');
+ expect(at(model,callback).workstation.conversationStatus).toBe('PAM_CONV_ERR');expect(at(model,callback).workstation.pamResults.authenticate).toBe('not evaluated');
+ expect(model.steps()[module].pamEvaluation.rawReturn).toBe('PAM_AUTHTOK_ERR');expect(model.steps()[module].pamEvaluation.mappedAction).toBe('bad');
+ expect(at(model,module).workstation.pamEvaluation.accumulatorAfter).toEqual({impression:'negative',status:'PAM_AUTHTOK_ERR'});
+ const result=sourceIndex(model,'return-authenticate-default');expectReturn(model.steps()[result].pamEvaluation,'authenticate',0,'PAM_AUTHTOK_ERR');
+ expect(end(model).workstation.pamResults.authenticate).toBe('PAM_AUTHTOK_ERR');expect(end(model).workstation.authenticated).toBe(false);expect(end(model).workstation.session).toBe(false);expect(end(model).workstation.unrelatedSession).toBe('other-user-session-retained');
+});
+for(const variant of ['default','session-failure'])test('LLOG01 establish/delete results and flags remain separate: '+variant,()=>{
+ const model=unix('lab-llog01').withVariant(variant),trigger=sourceIndex(model,variant==='default'?'delete-credentials':'session-deny'),result=findReturn(model,trigger,'setcred','PAM_DELETE_CRED');
+ expect(trigger).toBeGreaterThanOrEqual(0);expect(result).toBeGreaterThan(trigger);
+ expect(at(model,trigger).workstation.pamResults.setcred).toBe('PAM_SUCCESS');expect(at(model,trigger).workstation.pamResults['setcred-delete']).toBeUndefined();
+ const rows=model.steps().slice(trigger+1,result).filter(step=>step.pamEvaluation?.executed&&step.pamEvaluation.apiPhase==='setcred');expect(rows.length).toBeGreaterThan(0);
+ for(const step of rows){expect(step.pamEvaluation.flags).toBe('PAM_DELETE_CRED');expect(step.pamEvaluation.moduleHook).toBe('pam_sm_setcred');expect(step.pamEvaluation.type).toBe('auth');expect(step.pamEvaluation.rawReturn).toBe('PAM_SUCCESS');expect(step.pamEvaluation.configurationHash).toBe(model.pamConfiguration.files[0].sha256);}
+ expectReturn(model.steps()[result].pamEvaluation,'setcred','PAM_DELETE_CRED','PAM_SUCCESS');
+ const state=end(model).workstation;expect(state.pamResults.setcred).toBe('PAM_SUCCESS');expect(state.pamResults['setcred-delete']).toBe('PAM_SUCCESS');expect(state.authenticated).toBe(true);expect(state.admitted).toBe(true);expect(state.session).toBe(false);
+ if(variant==='session-failure'){expect(state.pamResults.open).toBe('PAM_SESSION_ERR');expect(state.failure).toBe('PAM_SESSION_ERR');}
+});
+for(const variant of ['default','nopasswd','timestamp-reuse','root-caller'])test('sudo separates credential and session API returns without another authentication: '+variant,()=>{
+ const model=unix('lab-lelev01').withVariant(variant),trigger=sourceIndex(model,'pam-session'),cred=findReturn(model,trigger,'setcred','PAM_ESTABLISH_CRED'),open=findReturn(model,cred,'open',0);
+ expect(cred).toBeGreaterThan(trigger);expect(open).toBeGreaterThan(cred);expect(at(model,cred).workstation.pamResults.setcred).toBe('PAM_SUCCESS');expect(at(model,cred).workstation.pamResults.open).toBeUndefined();
+ expectReturn(model.steps()[cred].pamEvaluation,'setcred','PAM_ESTABLISH_CRED','PAM_SUCCESS');expectReturn(model.steps()[open].pamEvaluation,'open',0,'PAM_SUCCESS');
+ expect(at(model,open).workstation.pamResults.setcred).toBe('PAM_SUCCESS');expect(at(model,open).workstation.pamResults.open).toBe('PAM_SUCCESS');
+ expect(model.steps().slice(trigger).some(step=>step.pamEvaluation?.executed&&step.pamEvaluation.moduleHook==='pam_sm_authenticate')).toBe(false);
+ expect(end(model).workstation.operation).toBe(true);expect(end(model).workstation.executionTarget).toBe('backup');
+});
+for(const [id,key,owner] of [['lab-lelev01','command-exit','lelevPAM'],['lab-lelev02','su-return','suPAM']])test('named teardown closes only its configured PAM session: '+id,()=>{
+ const model=unix(id),trigger=sourceIndex(model,key),result=findReturn(model,trigger,'close',0),rows=model.steps().slice(trigger+1,result).filter(step=>step.pamEvaluation?.executed&&step.pamEvaluation.apiPhase==='close');
+ expect(result).toBeGreaterThan(trigger);expect(rows.length).toBeGreaterThan(0);for(const step of rows){expect(step.from).toBe(owner);expect(step.to).toBe(owner);expect(step.pamEvaluation.moduleHook).toBe('pam_sm_close_session');expect(step.pamEvaluation.rawReturn).toBe('PAM_SUCCESS');}
+ expectReturn(model.steps()[result].pamEvaluation,'close',0,'PAM_SUCCESS');expect(end(model).workstation.pamResults.close).toBe('PAM_SUCCESS');expect(end(model).workstation.targetProcessExited).toBe(true);expect(end(model).workstation.session).toBe(true);expect(end(model).workstation.unrelatedSession).toBe('other-user-session-retained');
+ const steps=model.steps(),raw=buildUnixWorkstationHeldObjects({model,steps,actors:model.actors(),choiceId:model.id,contextId:model.id+':review-cleanup'}),plan=compileHeldObjects(raw,{model,steps}),frame=projectHeldObjects(plan,{eventIndex:result,milestone:'complete'});
+ const aggregate=model.workstationInventory.artifacts.find(artifact=>artifact.type==='pam-aggregate'&&JSON.parse(artifact.value).apiPhase==='close');expect(aggregate.creator).toBe(owner);expect(frame.holdings.some(holding=>holding.artifactId===aggregate.artifactId&&holding.actorId===(id==='lab-lelev01'?'lelevSudo':'suPAM'))).toBe(true);
+});
+test('non-root rootok progress has no API aggregate until the completed authenticate return',()=>{
+ const model=unix('lab-lelev02').withVariant('setuid-not-real-root'),index=sourceIndex(model,'rootok'),next=sourceIndex(model,'su-auth'),step=model.steps()[index];
+ expect(step.pamEvaluation.rawReturn).toBe('PAM_AUTH_ERR');expect(step.pamEvaluation.mappedAction).toBe('ignore');expect(Object.hasOwn(step,'pamAggregate')).toBe(false);expect(at(model,index).workstation.pamResults?.authenticate).toBeUndefined();
+ expect(at(model,next-1).workstation.pamResults?.authenticate).toBeUndefined();expect(at(model,next).workstation.pamResults.authenticate).toBe('PAM_AUTH_ERR');expect(end(model).workstation.operation).toBe(false);
+});
+test('real-UID0 sufficient rootok publishes its completed success before caller consumption',()=>{
+ const model=unix('lab-lelev02').withVariant('real-root-bypass'),index=sourceIndex(model,'rootok'),consume=sourceIndex(model,'su-auth');
+ expect(model.steps()[index].pamEvaluation.rawReturn).toBe('PAM_SUCCESS');expect(model.steps()[index].pamEvaluation.mappedAction).toBe('done');expect(at(model,index).workstation.pamResults.authenticate).toBe('PAM_SUCCESS');
+ expect(at(model,consume).workstation.pamResults.authenticate).toBe('PAM_SUCCESS');expect(model.steps()[consume].pamEvaluation.moduleHook).toBeNull();expect(end(model).workstation.passwordCompared).toBe(false);
+ expect(model.steps().some(step=>step.pamEvaluation?.executed&&step.pamEvaluation.apiPhase==='authenticate'&&step.pamEvaluation.module==='pam_unix.so')).toBe(false);
+});
+for(const id of ['lab-ssh-sssd-lookup','lab-ssh-sssd-permission'])test('SSSD failed lookup returns the actual configured authentication error: '+id,()=>{
+ const model=SSHLAB_SCENARIOS.find(item=>item.id===id),index=sourceIndex(model,'lookup-pam-failure'),returned=sourceIndex(model,'lookup-sshd-failure'),row=model.steps()[index].pamEvaluation;
+ expect(row.apiPhase).toBe('authenticate');expect(row.module).toBe('pam_sss.so');expect(row.moduleHook).toBe('pam_sm_authenticate');expect(row.rawReturn).toBe('PAM_AUTHINFO_UNAVAIL');expect(row.mappedAction).toBe('bad');expect(row.accumulatorAfter).toEqual({impression:'negative',status:'PAM_AUTHINFO_UNAVAIL'});expect(row.configurationHash).toBe(model.pamConfiguration.files[0].sha256);
+ expect(at(model,index).pam.results.authenticate).toBe('PAM_AUTHINFO_UNAVAIL');expectReturn(model.steps()[returned].pamEvaluation,'authenticate',0,'PAM_AUTHINFO_UNAVAIL');expect(at(model,returned).pam.results.authenticate).toBe('PAM_AUTHINFO_UNAVAIL');expect(end(model).sessions.ssh.authenticated).toBe(false);expect(end(model).credentials.interactiveToken).toBeUndefined();
+});
+test('every annotated model declares producer-backed PAM state paths without mirrored namespaces',()=>{
+ const models=[createPamFoundationsCase(),...LINUXLOGONLAB_SCENARIOS,...LINUXELEVLAB_SCENARIOS,...SSHLAB_SCENARIOS].filter(model=>model.pamConfiguration);
+ for(const model of models){const ssh=model.id.startsWith('lab-ssh-'),expected=ssh?{evaluation:'pam.lastEvaluation',results:'pam.results'}:{evaluation:'workstation.pamEvaluation',results:'workstation.pamResults'};expect(model.pamStatePaths).toEqual(expected);const effects=model.steps().flatMap(step=>step.protocolEffects||[]),reached=effects.some(effect=>effect.path?.startsWith(expected.results+'.'));if(reached){expect(effects.some(effect=>effect.path===expected.evaluation)).toBe(true);expect(path(end(model),expected.results)).toBeDefined();}else{expect(model.steps().some(step=>step.pamEvaluation?.executed||step.pamEvaluation?.aggregateReturn!==undefined)).toBe(false);expect(path(end(model),expected.results)).toBeUndefined();}expect(effects.some(effect=>effect.path?.startsWith(ssh?'workstation.pamResults':'pam.results'))).toBe(false);}
+ const nss=SSHLAB_SCENARIOS.find(model=>model.id==='lab-ssh-sssd-success').steps().find(step=>step.sshStage==='nss-map');expect(nss.pamEvaluation.moduleHook).toBeNull();
+});

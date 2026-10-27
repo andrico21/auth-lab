@@ -1,0 +1,3146 @@
+{
+  "schemaVersion": 1,
+  "canonicalCaseCount": 50,
+  "subfixtureCount": 11,
+  "authoredBeforeProduction": true,
+  "cases": [
+    {
+      "id": "WPROT01/running-kerberos",
+      "modelId": "lab-wprot01",
+      "variantId": "running-kerberos",
+      "profileId": "wprot01-running-kerberos",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "protected TGT session key at wslIso"
+      ],
+      "changedInputs": {},
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "protected-tgt-operation",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslIso",
+        "stage": "protected-tgt-operation"
+      },
+      "expected": {
+        "isolationActive": true,
+        "hostTicketAccepted": true,
+        "resourceAllowed": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "isolationActive",
+        "hostTicketAccepted",
+        "resourceAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/disabled-comparison",
+      "modelId": "lab-wprot01",
+      "variantId": "disabled-comparison",
+      "profileId": "wprot01-disabled-comparison",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "credentialGuard": false,
+        "cgConfigured": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "normal-tgt-operation",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "normal-tgt-operation"
+      },
+      "expected": {
+        "isolationActive": false,
+        "hostTicketAccepted": true,
+        "resourceAllowed": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "isolationActive",
+        "hostTicketAccepted",
+        "resourceAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/configured-not-running",
+      "modelId": "lab-wprot01",
+      "variantId": "configured-not-running",
+      "profileId": "wprot01-configured-not-running",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "credentialGuard": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "normal-tgt-operation",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "normal-tgt-operation"
+      },
+      "expected": {
+        "isolationActive": false,
+        "hostTicketAccepted": true,
+        "resourceAllowed": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "isolationActive",
+        "hostTicketAccepted",
+        "resourceAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/local-account",
+      "modelId": "lab-wprot01",
+      "variantId": "local-account",
+      "profileId": "wprot01-local-account",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "accountAuthority": "SAM",
+        "mechanism": "NTLMv2"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "local-verify",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslSAM",
+        "stage": "local-verify"
+      },
+      "expected": {
+        "isolationActive": false,
+        "credentialVerified": true,
+        "resourceAllowed": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "isolationActive",
+        "credentialVerified",
+        "resourceAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/service-ticket-custody",
+      "modelId": "lab-wprot01",
+      "variantId": "service-ticket-custody",
+      "profileId": "wprot01-service-ticket-custody",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "protected TGT session key at wslIso"
+      ],
+      "changedInputs": {},
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "host-ticket-accept",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "host-ticket-accept"
+      },
+      "expected": {
+        "isolationActive": true,
+        "hostTicketAccepted": true,
+        "serviceCredentialHolder": "wslLSA",
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "isolationActive",
+        "hostTicketAccepted",
+        "serviceCredentialHolder"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/authority-still-usable",
+      "modelId": "lab-wprot01",
+      "variantId": "authority-still-usable",
+      "profileId": "wprot01-authority-still-usable",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "protected TGT session key at wslIso"
+      ],
+      "changedInputs": {},
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "resource-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "resource-check"
+      },
+      "expected": {
+        "isolationActive": true,
+        "resourceAllowed": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "isolationActive",
+        "resourceAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/credssp-default-unavailable",
+      "modelId": "lab-wprot01",
+      "variantId": "credssp-default-unavailable",
+      "profileId": "wprot01-credssp-default-unavailable",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "protected TGT session key at wslIso"
+      ],
+      "changedInputs": {
+        "operation": "CredSSP",
+        "credentialSource": "signed-in"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "credential-source",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "credential-source"
+      },
+      "expected": {
+        "credentialAvailable": false,
+        "delegatedCredential": false,
+        "resultCode": "source-unavailable",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialAvailable",
+        "delegatedCredential"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "source-unavailable"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/explicit-prompted-input",
+      "modelId": "lab-wprot01",
+      "variantId": "explicit-prompted-input",
+      "profileId": "wprot01-explicit-prompted-input",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "protected TGT session key at wslIso"
+      ],
+      "changedInputs": {
+        "credentialSource": "prompted",
+        "mechanism": "NTLMv2"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "ntlm-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "ntlm-policy"
+      },
+      "expected": {
+        "credentialVerified": true,
+        "promptedInputProtected": false,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialVerified",
+        "promptedInputProtected"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/ntlmv2-operation",
+      "modelId": "lab-wprot01",
+      "variantId": "ntlmv2-operation",
+      "profileId": "wprot01-ntlmv2-operation",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "protected TGT session key at wslIso"
+      ],
+      "changedInputs": {
+        "mechanism": "NTLMv2"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "ntlm-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "ntlm-policy"
+      },
+      "expected": {
+        "credentialVerified": true,
+        "isolationActive": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialVerified",
+        "isolationActive"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/unconstrained-unavailable",
+      "modelId": "lab-wprot01",
+      "variantId": "unconstrained-unavailable",
+      "profileId": "wprot01-unconstrained-unavailable",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "protected TGT session key at wslIso"
+      ],
+      "changedInputs": {
+        "delegation": "unconstrained"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "delegation-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "delegation-check"
+      },
+      "expected": {
+        "credentialVerified": true,
+        "delegatedCredential": false,
+        "resultCode": "delegation-unavailable",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialVerified",
+        "delegatedCredential"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "delegation-unavailable"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/constrained-continuation",
+      "modelId": "lab-wprot01",
+      "variantId": "constrained-continuation",
+      "profileId": "wprot01-constrained-continuation",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "protected TGT session key at wslIso"
+      ],
+      "changedInputs": {
+        "delegation": "constrained"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "delegation-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "delegation-check"
+      },
+      "expected": {
+        "credentialVerified": true,
+        "delegatedCredential": false,
+        "delegationAllowed": true,
+        "resourceAllowed": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialVerified",
+        "delegatedCredential",
+        "delegationAllowed",
+        "resourceAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT01/credential-manager-types",
+      "modelId": "lab-wprot01",
+      "variantId": "credential-manager-types",
+      "profileId": "wprot01-credential-manager-types",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "protected TGT session key at wslIso"
+      ],
+      "changedInputs": {
+        "operation": "CredentialManager"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "credential-source",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "credential-source"
+      },
+      "expected": {
+        "domainWindowsCredentialProtected": true,
+        "genericCredentialProtected": false,
+        "resultCode": "typed-availability",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "domainWindowsCredentialProtected",
+        "genericCredentialProtected"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "typed-availability"
+      },
+      "sourceClauses": [
+        "S10",
+        "S11",
+        "S13",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT02/protected-access-blocked",
+      "modelId": "lab-wprot02",
+      "variantId": "protected-access-blocked",
+      "profileId": "wprot02-protected-access-blocked",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "processRequest": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "process-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "process-check"
+      },
+      "expected": {
+        "processAccessAllowed": false,
+        "resultCode": "access-denied",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "processAccessAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "access-denied"
+      },
+      "sourceClauses": [
+        "S12"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT02/protection-absent",
+      "modelId": "lab-wprot02",
+      "variantId": "protection-absent",
+      "profileId": "wprot02-protection-absent",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "pplRunning": false,
+        "pplConfigured": false,
+        "processRequest": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "process-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "process-check"
+      },
+      "expected": {
+        "processAccessAllowed": false,
+        "pplBoundaryApplied": false,
+        "resultCode": "other-controls-apply",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "processAccessAllowed",
+        "pplBoundaryApplied"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "other-controls-apply"
+      },
+      "sourceClauses": [
+        "S12"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT02/audit-plugin",
+      "modelId": "lab-wprot02",
+      "variantId": "audit-plugin",
+      "profileId": "wprot02-audit-plugin",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "pluginMode": "audit",
+        "pluginSigningLevel": "third-party",
+        "sharedSections": true,
+        "pplRunning": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "plugin-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "plugin-check"
+      },
+      "expected": {
+        "pluginLoaded": true,
+        "pluginWouldDeny": true,
+        "credentialVerified": true,
+        "resultCode": "audit",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "pluginLoaded",
+        "pluginWouldDeny",
+        "credentialVerified"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "audit"
+      },
+      "sourceClauses": [
+        "S12"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT02/enforce-plugin",
+      "modelId": "lab-wprot02",
+      "variantId": "enforce-plugin",
+      "profileId": "wprot02-enforce-plugin",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "pluginSigningLevel": "third-party",
+        "sharedSections": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "plugin-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "plugin-check"
+      },
+      "expected": {
+        "pluginLoaded": false,
+        "pluginWouldDeny": true,
+        "resultCode": "plugin-blocked",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "pluginLoaded",
+        "pluginWouldDeny"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "plugin-blocked"
+      },
+      "sourceClauses": [
+        "S12"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT02/compatible-plugin",
+      "modelId": "lab-wprot02",
+      "variantId": "compatible-plugin",
+      "profileId": "wprot02-compatible-plugin",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {},
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "plugin-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "plugin-check"
+      },
+      "expected": {
+        "pluginLoaded": true,
+        "pluginWouldDeny": false,
+        "credentialVerified": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "pluginLoaded",
+        "pluginWouldDeny",
+        "credentialVerified"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S12"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT02/ppl-and-cg",
+      "modelId": "lab-wprot02",
+      "variantId": "ppl-and-cg",
+      "profileId": "wprot02-ppl-and-cg",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "credentialGuard": true,
+        "cgConfigured": true,
+        "processRequest": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "process-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "process-check"
+      },
+      "expected": {
+        "processAccessAllowed": false,
+        "isolationActive": true,
+        "resultCode": "access-denied",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "processAccessAllowed",
+        "isolationActive"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "access-denied"
+      },
+      "sourceClauses": [
+        "S12"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT02/configured-not-effective",
+      "modelId": "lab-wprot02",
+      "variantId": "configured-not-effective",
+      "profileId": "wprot02-configured-not-effective",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "pplRunning": false,
+        "processRequest": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "process-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "process-check"
+      },
+      "expected": {
+        "pplBoundaryApplied": false,
+        "processAccessAllowed": false,
+        "resultCode": "other-controls-apply",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "pplBoundaryApplied",
+        "processAccessAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "other-controls-apply"
+      },
+      "sourceClauses": [
+        "S12"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT02/unaffected-authentication",
+      "modelId": "lab-wprot02",
+      "variantId": "unaffected-authentication",
+      "profileId": "wprot02-unaffected-authentication",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "pluginSigningLevel": "third-party",
+        "sharedSections": true,
+        "pluginOptional": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "plugin-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "plugin-check"
+      },
+      "expected": {
+        "pluginLoaded": false,
+        "credentialVerified": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "pluginLoaded",
+        "credentialVerified"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S12"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/aes-kerberos",
+      "modelId": "lab-wprot03",
+      "variantId": "aes-kerberos",
+      "profileId": "wprot03-aes-kerberos",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {},
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "pu-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "pu-check"
+      },
+      "expected": {
+        "credentialVerified": true,
+        "tgtAccepted": true,
+        "ticketEndMinutes": 240,
+        "ticketRenewMinutes": 240,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialVerified",
+        "tgtAccepted",
+        "ticketEndMinutes",
+        "ticketRenewMinutes"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/ntlm-denied",
+      "modelId": "lab-wprot03",
+      "variantId": "ntlm-denied",
+      "profileId": "wprot03-ntlm-denied",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "mechanism": "NTLMv2"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "ntlm-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "ntlm-policy"
+      },
+      "expected": {
+        "credentialVerified": false,
+        "tgtAccepted": false,
+        "resultCode": "authentication-denied",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialVerified",
+        "tgtAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "authentication-denied"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/rc4-preauth-denied",
+      "modelId": "lab-wprot03",
+      "variantId": "rc4-preauth-denied",
+      "profileId": "wprot03-rc4-preauth-denied",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "etype": "RC4"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "pu-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "pu-check"
+      },
+      "expected": {
+        "tgtAccepted": false,
+        "resultCode": "KDC_ERR_ETYPE_NOTSUPP",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "tgtAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "Kerberos named protocol error",
+        "code": "KDC_ERR_ETYPE_NOTSUPP"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/des-preauth-denied",
+      "modelId": "lab-wprot03",
+      "variantId": "des-preauth-denied",
+      "profileId": "wprot03-des-preauth-denied",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "etype": "DES"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "pu-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "pu-check"
+      },
+      "expected": {
+        "tgtAccepted": false,
+        "resultCode": "KDC_ERR_ETYPE_NOTSUPP",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "tgtAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "Kerberos named protocol error",
+        "code": "KDC_ERR_ETYPE_NOTSUPP"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/unconstrained-denied",
+      "modelId": "lab-wprot03",
+      "variantId": "unconstrained-denied",
+      "profileId": "wprot03-unconstrained-denied",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "delegation": "unconstrained"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "delegation-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "delegation-check"
+      },
+      "expected": {
+        "credentialVerified": true,
+        "delegatedCredential": false,
+        "delegationAllowed": false,
+        "resultCode": "delegation-denied",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialVerified",
+        "delegatedCredential",
+        "delegationAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "delegation-denied"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/constrained-denied",
+      "modelId": "lab-wprot03",
+      "variantId": "constrained-denied",
+      "profileId": "wprot03-constrained-denied",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "delegation": "constrained"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "delegation-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "delegation-check"
+      },
+      "expected": {
+        "credentialVerified": true,
+        "delegatedCredential": false,
+        "delegationAllowed": false,
+        "resultCode": "delegation-denied",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialVerified",
+        "delegatedCredential",
+        "delegationAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "delegation-denied"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/offline-unavailable",
+      "modelId": "lab-wprot03",
+      "variantId": "offline-unavailable",
+      "profileId": "wprot03-offline-unavailable",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "offline": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "cache-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslSAM",
+        "stage": "cache-check"
+      },
+      "expected": {
+        "credentialVerified": false,
+        "cachedVerifierPresent": false,
+        "tgtAccepted": false,
+        "resultCode": "cached-verifier-unavailable",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "credentialVerified",
+        "cachedVerifierPresent",
+        "tgtAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "cached-verifier-unavailable"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/lifetime-expired",
+      "modelId": "lab-wprot03",
+      "variantId": "lifetime-expired",
+      "profileId": "wprot03-lifetime-expired",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "prior local session at wslProcess"
+      ],
+      "changedInputs": {
+        "nowMinutes": 241,
+        "existingCredential": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "renewal-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "renewal-check"
+      },
+      "expected": {
+        "tgtAccepted": false,
+        "localSessionRetained": true,
+        "newCredentialLineage": false,
+        "resultCode": "renewal-denied",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "tgtAccepted",
+        "localSessionRetained",
+        "newCredentialLineage"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "renewal-denied"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/fresh-authentication",
+      "modelId": "lab-wprot03",
+      "variantId": "fresh-authentication",
+      "profileId": "wprot03-fresh-authentication",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "prior local session at wslProcess"
+      ],
+      "changedInputs": {
+        "nowMinutes": 241,
+        "existingCredential": true,
+        "freshAuthentication": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "as",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "as"
+      },
+      "expected": {
+        "tgtAccepted": true,
+        "localSessionRetained": true,
+        "newCredentialLineage": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "tgtAccepted",
+        "localSessionRetained",
+        "newCredentialLineage"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT03/membership-next-signin",
+      "modelId": "lab-wprot03",
+      "variantId": "membership-next-signin",
+      "profileId": "wprot03-membership-next-signin",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA",
+        "prior local session at wslProcess"
+      ],
+      "changedInputs": {
+        "membershipChanged": true,
+        "existingCredential": true
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "membership-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "membership-check"
+      },
+      "expected": {
+        "oldSessionPurged": false,
+        "newSigninProtected": true,
+        "localSessionRetained": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "oldSessionPurged",
+        "newSigninProtected",
+        "localSessionRetained"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S16",
+        "S23",
+        "S24-NLMP"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT04/allowed-device",
+      "modelId": "lab-wprot04",
+      "variantId": "allowed-device",
+      "profileId": "wprot04-allowed-device",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {},
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "as-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "as-policy"
+      },
+      "expected": {
+        "policyAllowed": true,
+        "tgtAccepted": true,
+        "machineAccepted": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "policyAllowed",
+        "tgtAccepted",
+        "machineAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S15",
+        "S16",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S26"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT04/device-denied-audit",
+      "modelId": "lab-wprot04",
+      "variantId": "device-denied-audit",
+      "profileId": "wprot04-device-denied-audit",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "deviceAllowed": false,
+        "enforced": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "as-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "as-policy"
+      },
+      "expected": {
+        "policyAllowed": true,
+        "policyWouldDeny": true,
+        "tgtAccepted": true,
+        "resultCode": "audit",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "policyAllowed",
+        "policyWouldDeny",
+        "tgtAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "audit"
+      },
+      "sourceClauses": [
+        "S15",
+        "S16",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S26"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT04/device-denied-enforce",
+      "modelId": "lab-wprot04",
+      "variantId": "device-denied-enforce",
+      "profileId": "wprot04-device-denied-enforce",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "deviceAllowed": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "as-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "as-policy"
+      },
+      "expected": {
+        "policyAllowed": false,
+        "tgtAccepted": false,
+        "machineAccepted": true,
+        "resultCode": "KDC_ERR_POLICY",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "policyAllowed",
+        "tgtAccepted",
+        "machineAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "Kerberos named protocol error",
+        "code": "KDC_ERR_POLICY"
+      },
+      "sourceClauses": [
+        "S15",
+        "S16",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S26"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT04/required-armor-missing",
+      "modelId": "lab-wprot04",
+      "variantId": "required-armor-missing",
+      "profileId": "wprot04-required-armor-missing",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "machineTgt": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "armor-ready",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "armor-ready"
+      },
+      "expected": {
+        "tgtAccepted": false,
+        "machineAccepted": false,
+        "resultCode": "required-device-context-unavailable",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "tgtAccepted",
+        "machineAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "required-device-context-unavailable"
+      },
+      "sourceClauses": [
+        "S15",
+        "S16",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S26"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT04/forged-device-label",
+      "modelId": "lab-wprot04",
+      "variantId": "forged-device-label",
+      "profileId": "wprot04-forged-device-label",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "armorValid": false,
+        "deviceLabel": "WORKSTATION"
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "device-evidence",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "device-evidence"
+      },
+      "expected": {
+        "tgtAccepted": false,
+        "machineAccepted": false,
+        "resultCode": "untrusted-device-evidence",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "tgtAccepted",
+        "machineAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "untrusted-device-evidence"
+      },
+      "sourceClauses": [
+        "S15",
+        "S16",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S26"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT04/direct-policy",
+      "modelId": "lab-wprot04",
+      "variantId": "direct-policy",
+      "profileId": "wprot04-direct-policy",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "assignedSilo": false,
+        "siloMember": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "policy-selection",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "policy-selection"
+      },
+      "expected": {
+        "effectivePolicySource": "direct",
+        "tgtAccepted": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "effectivePolicySource",
+        "tgtAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S15",
+        "S16",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S26"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT04/policy-lifetime",
+      "modelId": "lab-wprot04",
+      "variantId": "policy-lifetime",
+      "profileId": "wprot04-policy-lifetime",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "allowedFrom": false,
+        "armored": false,
+        "lifetimeMinutes": 90
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "as-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "as-policy"
+      },
+      "expected": {
+        "tgtAccepted": true,
+        "ticketEndMinutes": 90,
+        "ticketRenewMinutes": 90,
+        "machineAccepted": false,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "tgtAccepted",
+        "ticketEndMinutes",
+        "ticketRenewMinutes",
+        "machineAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S15",
+        "S16",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S26"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT04/ineligible-domain",
+      "modelId": "lab-wprot04",
+      "variantId": "ineligible-domain",
+      "profileId": "wprot04-ineligible-domain",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "domainFunctionality": 5
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "capability-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslLSA",
+        "stage": "capability-check"
+      },
+      "expected": {
+        "tgtAccepted": false,
+        "policySupported": false,
+        "resultCode": "unsupported-policy-profile",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "tgtAccepted",
+        "policySupported"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "unsupported-policy-profile"
+      },
+      "sourceClauses": [
+        "S15",
+        "S16",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S26"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/allowed-service",
+      "modelId": "lab-wprot05",
+      "variantId": "allowed-service",
+      "profileId": "wprot05-allowed-service",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {},
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "tgs-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "tgs-policy"
+      },
+      "expected": {
+        "policyAllowed": true,
+        "hostTicketAccepted": true,
+        "resourceAllowed": true,
+        "effectivePolicySource": "silo",
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "policyAllowed",
+        "hostTicketAccepted",
+        "resourceAllowed",
+        "effectivePolicySource"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/target-rule-audit",
+      "modelId": "lab-wprot05",
+      "variantId": "target-rule-audit",
+      "profileId": "wprot05-target-rule-audit",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "targetAllowed": false,
+        "siloEnforced": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "tgs-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "tgs-policy"
+      },
+      "expected": {
+        "policyAllowed": true,
+        "policyWouldDeny": true,
+        "hostTicketAccepted": true,
+        "resultCode": "audit",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "policyAllowed",
+        "policyWouldDeny",
+        "hostTicketAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "audit"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/target-rule-enforce",
+      "modelId": "lab-wprot05",
+      "variantId": "target-rule-enforce",
+      "profileId": "wprot05-target-rule-enforce",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "targetAllowed": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "tgs-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "tgs-policy"
+      },
+      "expected": {
+        "policyAllowed": false,
+        "hostTicketAccepted": false,
+        "resultCode": "KDC_ERR_POLICY",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "policyAllowed",
+        "hostTicketAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "Kerberos named protocol error",
+        "code": "KDC_ERR_POLICY"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/ticket-then-acl-denial",
+      "modelId": "lab-wprot05",
+      "variantId": "ticket-then-acl-denial",
+      "profileId": "wprot05-ticket-then-acl-denial",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "resourceAllows": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "resource-check",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslMachine",
+        "stage": "resource-check"
+      },
+      "expected": {
+        "hostTicketAccepted": true,
+        "networkAuthenticated": true,
+        "resourceAllowed": false,
+        "resultCode": "resource-denied",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "hostTicketAccepted",
+        "networkAuthenticated",
+        "resourceAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "resource-denied"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/required-context-missing",
+      "modelId": "lab-wprot05",
+      "variantId": "required-context-missing",
+      "profileId": "wprot05-required-context-missing",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "deviceClaims": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "tgs-context",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "tgs-context"
+      },
+      "expected": {
+        "hostTicketAccepted": false,
+        "policyAllowed": false,
+        "resultCode": "required-policy-context-unavailable",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "hostTicketAccepted",
+        "policyAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "required-policy-context-unavailable"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/no-target-policy",
+      "modelId": "lab-wprot05",
+      "variantId": "no-target-policy",
+      "profileId": "wprot05-no-target-policy",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "targetPolicy": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "policy-selection",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "policy-selection"
+      },
+      "expected": {
+        "effectivePolicySource": "none",
+        "hostTicketAccepted": true,
+        "resourceAllowed": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "effectivePolicySource",
+        "hostTicketAccepted",
+        "resourceAllowed"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/assigned-only",
+      "modelId": "lab-wprot05",
+      "variantId": "assigned-only",
+      "profileId": "wprot05-assigned-only",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "siloMember": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "policy-selection",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "policy-selection"
+      },
+      "expected": {
+        "belongsToSilo": false,
+        "effectivePolicySource": "direct",
+        "hostTicketAccepted": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "belongsToSilo",
+        "effectivePolicySource",
+        "hostTicketAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/member-only",
+      "modelId": "lab-wprot05",
+      "variantId": "member-only",
+      "profileId": "wprot05-member-only",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "assignedSilo": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "policy-selection",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "policy-selection"
+      },
+      "expected": {
+        "belongsToSilo": false,
+        "effectivePolicySource": "direct",
+        "hostTicketAccepted": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "belongsToSilo",
+        "effectivePolicySource",
+        "hostTicketAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/silo-over-direct",
+      "modelId": "lab-wprot05",
+      "variantId": "silo-over-direct",
+      "profileId": "wprot05-silo-over-direct",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "directEnforced": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "policy-selection",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "policy-selection"
+      },
+      "expected": {
+        "effectivePolicySource": "silo",
+        "effectiveEnforced": true,
+        "hostTicketAccepted": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "effectivePolicySource",
+        "effectiveEnforced",
+        "hostTicketAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/account-type-selection",
+      "modelId": "lab-wprot05",
+      "variantId": "account-type-selection",
+      "profileId": "wprot05-account-type-selection",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {},
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "policy-selection",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "policy-selection"
+      },
+      "expected": {
+        "policySlot": "Computer",
+        "hostTicketAccepted": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "policySlot",
+        "hostTicketAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/domain-rid500-exception",
+      "modelId": "lab-wprot05",
+      "variantId": "domain-rid500-exception",
+      "profileId": "wprot05-domain-rid500-exception",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "domainRid": 500,
+        "ownAccountAS": true,
+        "targetPolicy": false,
+        "lifetimeMinutes": 90
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "as-policy",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "as-policy"
+      },
+      "expected": {
+        "accountPolicyExempt": true,
+        "ticketEndMinutes": 480,
+        "effectivePolicySource": "none",
+        "hostTicketAccepted": true,
+        "resultCode": "success",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "accountPolicyExempt",
+        "ticketEndMinutes",
+        "effectivePolicySource",
+        "hostTicketAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "success"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    },
+    {
+      "id": "WPROT05/silo-audit-state",
+      "modelId": "lab-wprot05",
+      "variantId": "silo-audit-state",
+      "profileId": "wprot05-silo-audit-state",
+      "initialHoldings": [
+        "KDC account database at wslDC",
+        "local policy and effective-status evidence at wslLSA"
+      ],
+      "changedInputs": {
+        "siloEnforced": false,
+        "directEnforced": true,
+        "targetAllowed": false
+      },
+      "stepSequence": [
+        "profile-status",
+        "account-policy",
+        "proof-or-operation",
+        "policy-selection",
+        "decision-response",
+        "client-result",
+        "attempt-cleanup"
+      ],
+      "firstDetector": {
+        "actor": "wslDC",
+        "stage": "policy-selection"
+      },
+      "expected": {
+        "effectivePolicySource": "silo",
+        "effectiveEnforced": false,
+        "policyWouldDeny": true,
+        "hostTicketAccepted": true,
+        "resultCode": "audit",
+        "clientKnowsResult": true
+      },
+      "acceptedFacts": [
+        "effectivePolicySource",
+        "effectiveEnforced",
+        "policyWouldDeny",
+        "hostTicketAccepted"
+      ],
+      "prohibitedEffects": [
+        "protected input export to normal OS/network",
+        "ticket issuance after enforced denial",
+        "authority or session erased by resource denial"
+      ],
+      "returnedResult": {
+        "domain": "symbolic scoped operation",
+        "code": "audit"
+      },
+      "sourceClauses": [
+        "S14",
+        "S17",
+        "S18",
+        "S19",
+        "S22-text",
+        "S23-text",
+        "S24-KILE-client-TGS",
+        "S24-KILE-compound",
+        "S24-PAC"
+      ],
+      "evidenceLevel": "source-only independently authored before evaluator; not OS sandbox isolated",
+      "cleanup": {
+        "temporaryInputsReleased": true,
+        "priorSessionRetained": true,
+        "authoritativeRecordsRetained": true
+      }
+    }
+  ],
+  "subfixtures": [
+    {
+      "id": "WPROT05/account-type-selection/user",
+      "caseId": "WPROT05/account-type-selection",
+      "changes": {
+        "targetAccountType": "User"
+      },
+      "expected": {
+        "policySlot": "User",
+        "targetPolicyName": "silo-user",
+        "hostTicketAccepted": true
+      }
+    },
+    {
+      "id": "WPROT05/account-type-selection/managed-service",
+      "caseId": "WPROT05/account-type-selection",
+      "changes": {
+        "targetAccountType": "ManagedServiceAccount"
+      },
+      "expected": {
+        "policySlot": "ManagedServiceAccount",
+        "targetPolicyName": "silo-service",
+        "hostTicketAccepted": true
+      }
+    },
+    {
+      "id": "WPROT05/account-type-selection/computer",
+      "caseId": "WPROT05/account-type-selection",
+      "changes": {
+        "targetAccountType": "Computer"
+      },
+      "expected": {
+        "policySlot": "Computer",
+        "targetPolicyName": "silo-computer",
+        "hostTicketAccepted": true
+      }
+    },
+    {
+      "id": "WPROT01/credential-manager-types/windows-domain",
+      "caseId": "WPROT01/credential-manager-types",
+      "changes": {
+        "credentialManagerType": "Windows-domain"
+      },
+      "expected": {
+        "selectedCredentialProtected": true,
+        "selectedCredentialExportable": false
+      }
+    },
+    {
+      "id": "WPROT01/credential-manager-types/generic",
+      "caseId": "WPROT01/credential-manager-types",
+      "changes": {
+        "credentialManagerType": "generic"
+      },
+      "expected": {
+        "selectedCredentialProtected": false,
+        "selectedCredentialExportable": true
+      }
+    },
+    {
+      "id": "WPROT03/membership-next-signin/old-session",
+      "caseId": "WPROT03/membership-next-signin",
+      "changes": {
+        "membershipPhase": "old-session"
+      },
+      "expected": {
+        "oldSessionPurged": false,
+        "clientProtectionEffective": false
+      }
+    },
+    {
+      "id": "WPROT03/membership-next-signin/new-signin",
+      "caseId": "WPROT03/membership-next-signin",
+      "changes": {
+        "membershipPhase": "new-signin"
+      },
+      "expected": {
+        "oldSessionPurged": false,
+        "clientProtectionEffective": true
+      }
+    },
+    {
+      "id": "WPROT03/lifetime-expired/renewal",
+      "caseId": "WPROT03/lifetime-expired",
+      "changes": {
+        "lifetimeOperation": "renewal"
+      },
+      "expected": {
+        "newCredentialLineage": false,
+        "localSessionRetained": true,
+        "tgtAccepted": false
+      }
+    },
+    {
+      "id": "WPROT03/fresh-authentication/fresh-lineage",
+      "caseId": "WPROT03/fresh-authentication",
+      "changes": {
+        "lifetimeOperation": "fresh-AS"
+      },
+      "expected": {
+        "newCredentialLineage": true,
+        "localSessionRetained": true,
+        "tgtAccepted": true
+      }
+    },
+    {
+      "id": "WPROT01/constrained-continuation/kcd",
+      "caseId": "WPROT01/constrained-continuation",
+      "changes": {
+        "delegationMode": "KCD"
+      },
+      "expected": {
+        "delegationAllowed": true,
+        "delegatedCredential": false
+      }
+    },
+    {
+      "id": "WPROT01/constrained-continuation/rbcd",
+      "caseId": "WPROT01/constrained-continuation",
+      "changes": {
+        "delegationMode": "RBCD"
+      },
+      "expected": {
+        "delegationAllowed": true,
+        "delegatedCredential": false
+      }
+    }
+  ]
+}

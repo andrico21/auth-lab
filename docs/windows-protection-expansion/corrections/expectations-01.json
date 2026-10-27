@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "kind": "literal-independent-review-correction-expectations",
+  "review": {
+    "path": "docs/windows-protection-expansion/inputs/windows-review-and-worker-comments.html",
+    "sha256": "d7b53d23a597f58ba63f4431b5857f56acb6a2417088170b8f4f0885a13f0673"
+  },
+  "reviewedCanonicalSource": "14ce8c3ec6ab5754150a3e38a839e2859f202001eb37f02968cb4856b6009ed5",
+  "scope": "Additive literal assertions required by WP-R01 through WP-R07. Original case, dispatch, lifecycle, native and earlier closure authorities are unchanged. No new named lesson/case and no independent closure, native acceptance or waiver.",
+  "findings": {
+    "WP-R01": {
+      "authority": "MS-KILE 3.3.5.6: a nonzero authentication-policy TGTLifetime overrides ordinary limits only with effective enforcement.",
+      "source": "https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-kile/a076994a-47a9-4d16-af77-d4abb523afe4",
+      "ordinaryBaselineMinutes": 480,
+      "cases": [
+        {"variant": "device-denied-audit", "configuredMinutes": 120, "enforced": false, "wouldDeny": true, "accepted": true, "issuedMinutes": 0, "durationMinutes": 480, "endMinutes": 480, "renewMinutes": 480},
+        {"variant": "allowed-device", "configuredMinutes": 120, "enforced": true, "wouldDeny": false, "accepted": true, "issuedMinutes": 0, "durationMinutes": 120, "endMinutes": 120, "renewMinutes": 120},
+        {"variant": "policy-lifetime", "configuredMinutes": 90, "enforced": true, "wouldDeny": false, "accepted": true, "issuedMinutes": 0, "durationMinutes": 90, "endMinutes": 90, "renewMinutes": 90}
+      ],
+      "zeroLifetimeRule": "No selectable zero-lifetime case added. The helper treats a zero configured override as no override; the independent baseline remains applicable."
+    },
+    "WP-R02": {
+      "authority": "RFC4120 3.1.3,5.3,5.4.2; explicit reviewed fixture clock and240-minute Protected Users span.",
+      "source": "https://datatracker.ietf.org/doc/html/rfc4120",
+      "fresh": {"issuedMinutes": 241, "startMinutes": 241, "durationMinutes": 240, "endMinutes": 481, "renewMinutes": 481},
+      "old": {"issuedMinutes": 0, "endMinutes": 240, "renewTillMinutes": 240, "expired": true},
+      "timeZero": {"issuedMinutes": 0, "startMinutes": 0, "durationMinutes": 240, "endMinutes": 240, "renewMinutes": 240},
+      "oldRenewalAccepted": false,
+      "localSessionRetained": true
+    },
+    "WP-R03": {
+      "authority": "Worker plan v3 source-owned local operations and exact holding identities; review WP-R03 full/field/object agreement.",
+      "wraExecutions": 44,
+      "protectionExecutions": 55,
+      "foreignLocalCleanupReleases": 0,
+      "missingExactReleasedHoldings": 0,
+      "temporaryHoldingsAfterCompletion": 0,
+      "preserve": ["accepted credentials", "persistent verifier and policy authority", "current results", "unrelated prior sessions"],
+      "importedCleanup": "At an imported release boundary, emit owner-local cleanup immediately after the source operation, with exact imported holding aliases. Do not retain secret scratch until an unrelated later operation or alter the accepted source authority fixtures."
+    },
+    "WP-R04": {
+      "authority": "Worker plan v3 explicit possession and receiver-local decode/validation; review WP-R04 exact representation boundaries.",
+      "receiver": "wslDC",
+      "wireRetained": true,
+      "plainBeforeDecode": false,
+      "plainAfterDecode": true,
+      "objects": [
+        {"modelId": "lab-wprot01", "variant": "constrained-continuation", "key": "s4u-service-tgt", "decode": "s4u-ticket-decode", "verify": "s4u-proof-check", "keyUse": "kdc-krbtgt-key"},
+        {"modelId": "lab-wprot01", "variant": "constrained-continuation", "key": "s4u-authenticator", "decode": "s4u-authenticator-decode", "verify": "s4u-proof-check", "keyUse": "s4u-service-tgt-key"},
+        {"modelId": "lab-wprot05", "variant": "allowed-service", "key": "preexisting-user-tgt", "decode": "host-tgt-decode", "verify": "host-tgs-verify", "keyUse": "kdc-krbtgt-key"},
+        {"modelId": "lab-wprot05", "variant": "allowed-service", "key": "computer-armor-ticket", "decode": "compound-ticket-decode", "verify": "compound-kdc-armor", "keyUse": "kdc-krbtgt-key"},
+        {"modelId": "lab-wprot05", "variant": "allowed-service", "key": "computer-armor-proof", "decode": "compound-proof-decode", "verify": "compound-kdc-armor", "keyUse": "computer-armor-ticket-key"},
+        {"modelId": "lab-wprot05", "variant": "allowed-service", "key": "compound-fast-request", "decode": "compound-request-decode", "verify": "compound-kdc-armor", "keyUse": "compound-armor-key"}
+      ],
+      "failedEvidenceInstallsCredential": false,
+      "resourceDenialRevokesAcceptedCredential": false
+    },
+    "WP-R05": {
+      "authority": "Pinned Linux-PAM584ef227 pam_password.c combines caller flags with PAM_PRELIM_CHECK/PAM_UPDATE_AUTHTOK.",
+      "source": "docs/pam-foundations/sources/dispatch-password-pam_password.c",
+      "publicFlags": "PAM_CHANGE_EXPIRED_AUTHTOK",
+      "prelimFlags": "PAM_CHANGE_EXPIRED_AUTHTOK | PAM_PRELIM_CHECK",
+      "updateFlags": "PAM_CHANGE_EXPIRED_AUTHTOK | PAM_UPDATE_AUTHTOK",
+      "callerZero": {"public": 0, "prelim": "PAM_PRELIM_CHECK", "update": "PAM_UPDATE_AUTHTOK"},
+      "members": [
+        {"id": "change-success", "phases": ["prelim", "update"], "status": "PAM_SUCCESS"},
+        {"id": "change-prelim-failure", "phases": ["prelim"], "status": "PAM_AUTHTOK_ERR"},
+        {"id": "change-update-failure", "phases": ["prelim", "update"], "status": "PAM_AUTHTOK_ERR"},
+        {"id": "change-unsupported", "phases": [], "status": "not evaluated"}
+      ],
+      "callbackError": "PAM_CONV_ERR",
+      "moduleError": "PAM_AUTHTOK_ERR"
+    },
+    "WP-R06": {
+      "authority": "Pinned pam_dispatch.c configured handler order plus review WP-R06 pending/module/aggregate/caller boundaries.",
+      "source": "docs/pam-foundations/sources/S28-pam_dispatch.c",
+      "order": ["pending API", "each physical module completion once in configured order", "completed API aggregate", "caller consequences"],
+      "cases": [
+        {"modelId": "lab-lelev01", "variant": "default", "lines": [3,4], "status": "PAM_SUCCESS"},
+        {"modelId": "lab-lelev01", "variant": "account-denied", "lines": [3,4], "status": "PAM_PERM_DENIED"},
+        {"modelId": "lab-lelev02", "variant": "default", "lines": [4,5], "status": "PAM_SUCCESS"},
+        {"modelId": "lab-lelev02", "variant": "access-denied", "lines": [4,5], "status": "PAM_PERM_DENIED"}
+      ],
+      "modules": ["pam_unix.so", "pam_access.so"],
+      "firstAccumulator": {"impression": "positive", "status": "PAM_SUCCESS"},
+      "nonRootRootok": {"raw": "PAM_AUTH_ERR", "action": "ignore", "sameAuthenticationCallContinues": true},
+      "realUidZeroRootok": {"raw": "PAM_SUCCESS", "action": "done", "passwordHookCalled": false},
+      "futureAggregateBeforeCompletion": false
+    },
+    "WP-R07": {
+      "authority": "MS-NLMP3.3.2,2.2.2.7,2.2.1.3,2.2.2.1; symbolic teaching values, no new numeric crypto implementation.",
+      "equation": "HMAC-MD5(ResponseKeyNT, ServerChallenge || NTLMv2_CLIENT_CHALLENGE)",
+      "serverChallengeBytes": 8,
+      "avFlag": "MsvAvFlags MIC-presence bit",
+      "messageMicField": "AUTHENTICATE_MESSAGE.MIC",
+      "micBytesInsideClientChallenge": false,
+      "controls": ["WRA01/default-filtered", "WRA03/domain-ntlm-explicit"]
+    }
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "id": "PAM-DISPATCH-REVIEW-CORRECTIONS",
+  "referencePin": "584ef2275254016ee68126f90dab6df3604124b9",
+  "authored": "2026-10-25T11:29:49.458374+00:00",
+  "reviewSource": "history://PamDispatchReview:422-449",
+  "beforeEvidence": {
+    "path": "docs/verification/windows-protection-expansion/pam-review-before-01.json",
+    "reportedExitCode": 1,
+    "reportedMismatches": 7,
+    "preserved": true
+  },
+  "frozenOriginals": [
+    {
+      "originalPath": "docs/pam-foundations/expectations.json",
+      "originalSHA256": "140dd08fa0fcb89eae08d2dcf1ea406b375949423369c028b4f4fbc5888cbcd5",
+      "retainedPath": "docs/pam-foundations/inputs/wp0-original/expectations.json",
+      "retainedSHA256": "140dd08fa0fcb89eae08d2dcf1ea406b375949423369c028b4f4fbc5888cbcd5",
+      "correctedSHA256": "25d839db4d66e70389037d079798cb7aba084ed5ef1e4fe644736a08d01a1372"
+    },
+    {
+      "originalPath": "docs/pam-foundations/dispatch-expectations.json",
+      "originalSHA256": "3a17fdcd040d04852c21f3fc5cc51d7a9ee10b75b9832d3ff42e413fbfbd61b3",
+      "retainedPath": "docs/pam-foundations/inputs/wp0-original/dispatch-expectations.json",
+      "retainedSHA256": "3a17fdcd040d04852c21f3fc5cc51d7a9ee10b75b9832d3ff42e413fbfbd61b3",
+      "correctedSHA256": "c5174d908ce9b621f56970a83b4c5d03b693e628027ed3f1851835c0c85086a9"
+    },
+    {
+      "originalPath": "docs/pam-foundations/lifecycle-expectations.json",
+      "originalSHA256": "cf8e4cdf6b4baaebca86ce238087128cb23c37a239c94931c6d4987c3b7a09be",
+      "retainedPath": "docs/pam-foundations/inputs/wp0-original/lifecycle-expectations.json",
+      "retainedSHA256": "cf8e4cdf6b4baaebca86ce238087128cb23c37a239c94931c6d4987c3b7a09be",
+      "correctedSHA256": "641205dd0c812c629200c35cbdc9b5536a0665e8a4ec769e66fd0802c54bd1b2"
+    },
+    {
+      "originalPath": "docs/pam-foundations/case-ledger.json",
+      "originalSHA256": "00582279f0e8db3d5fc325407f118881d4329d8ca6dc0bd70c63d064431af1be",
+      "retainedPath": "docs/pam-foundations/inputs/wp0-original/case-ledger.json",
+      "retainedSHA256": "00582279f0e8db3d5fc325407f118881d4329d8ca6dc0bd70c63d064431af1be",
+      "correctedSHA256": "f2f9ed595cbe64f4a801f09f212142e7d8238898ac13828d7685b90c1c4c0e5e"
+    }
+  ],
+  "sourceReferences": {
+    "S27": {
+      "url": "https://raw.githubusercontent.com/linux-pam/linux-pam/584ef2275254016ee68126f90dab6df3604124b9/doc/man/pam.conf-syntax.xml",
+      "revision": "584ef2275254016ee68126f90dab6df3604124b9",
+      "sha256": "98638ec9ad28a184d71e382d98f1f4f5673f69da46862bfcafaef74f8f3ff201",
+      "snapshot": "docs/pam-foundations/sources/S27-pam.conf-syntax.xml"
+    },
+    "S28": {
+      "url": "https://raw.githubusercontent.com/linux-pam/linux-pam/584ef2275254016ee68126f90dab6df3604124b9/libpam/pam_dispatch.c",
+      "revision": "584ef2275254016ee68126f90dab6df3604124b9",
+      "sha256": "7f3d9720ceda439f73762cd08dd5a0848d169853db7234243ae305e70ac3d521",
+      "snapshot": "docs/pam-foundations/sources/S28-pam_dispatch.c"
+    },
+    "S34": {
+      "url": "https://raw.githubusercontent.com/linux-pam/linux-pam/584ef2275254016ee68126f90dab6df3604124b9/doc/man/pam_setcred.3.xml",
+      "revision": "584ef2275254016ee68126f90dab6df3604124b9",
+      "sha256": "df96fad884635b13acc6e2592a30704ff7645c1b9a85b0ea3a22f27b2cd3b3d4",
+      "snapshot": "docs/pam-foundations/sources/S34-pam_setcred.3.xml"
+    },
+    "unix-auth-implementation": {
+      "url": "https://raw.githubusercontent.com/linux-pam/linux-pam/584ef2275254016ee68126f90dab6df3604124b9/modules/pam_unix/pam_unix_auth.c",
+      "revision": "584ef2275254016ee68126f90dab6df3604124b9",
+      "sha256": "268250bb7bb2a76d81529ae807c5a7b03a9a41ba145a3917454ca6e7650a8007",
+      "snapshot": "docs/pam-foundations/sources/unix-auth-implementation-pam_unix_auth.c"
+    },
+    "pam-authtok": {
+      "url": "https://raw.githubusercontent.com/linux-pam/linux-pam/584ef2275254016ee68126f90dab6df3604124b9/libpam/pam_get_authtok.c",
+      "revision": "584ef2275254016ee68126f90dab6df3604124b9",
+      "sha256": "bb899c9d3c3f8b3b731f6dfa2ed9e964bd6208bf235e74638290994cf2737a2a",
+      "snapshot": "docs/pam-foundations/sources/pam-authtok-pam_get_authtok.c"
+    }
+  },
+  "interpretationCorrection": {
+    "caseId": "PAM01/conversation-failure",
+    "callbackStatusUnchanged": "PAM_CONV_ERR",
+    "oldModuleAndAggregate": "PAM_CONV_ERR",
+    "correctedModuleAndAggregate": "PAM_AUTHTOK_ERR",
+    "chain": [
+      "pam_start already receives labuser; this is not a username-conversation failure",
+      "Password callback returns PAM_CONV_ERR",
+      "pam_get_authtok.c176-187 normalizes a non-success password prompt or absent response to PAM_AUTHTOK_ERR",
+      "pam_unix_auth.c152-166 propagates that helper result",
+      "auth required pam_unix maps PAM_AUTHTOK_ERR to bad and retains it as pam_authenticate aggregate"
+    ],
+    "whyIndependent": "The correction follows the existing immutable source pin and previously captured helper implementation, not observed production-evaluator output. Original literal case/dispatch/lifecycle/first-detector files remain exact frozen inputs, with original and corrected hashes explicitly recorded. No expected answer was imported from an evaluator.",
+    "changedLogicalInputs": [
+      "expectations.json",
+      "dispatch-expectations.json",
+      "lifecycle-expectations.json",
+      "case-ledger.json",
+      "profiles.json",
+      "source-rule-map.json"
+    ]
+  },
+  "corrections": [
+    {
+      "finding": 1,
+      "status": "implemented; parent verification pending",
+      "facts": "Callback19 is distinct from module/required aggregate20; raw callback object and no-proof/no-session behavior retained."
+    },
+    {
+      "finding": 2,
+      "status": "implemented; parent verification pending",
+      "facts": "Actual DELETE_CRED on module rows and API boundaries, separate setcred-delete key, establishment result and old authority outcomes preserved."
+    },
+    {
+      "finding": 3,
+      "status": "implemented; parent verification pending",
+      "facts": "sudo setcred and open have separate configured calls, module rows and API returns. The original combined request is pending metadata, not a mixed module/aggregate result."
+    },
+    {
+      "finding": 4,
+      "status": "implemented; parent verification pending",
+      "facts": "SSSD lookup-pam-failure dispatches configured pam_sss authenticate with AUTHINFO_UNAVAIL; lookup-sshd-failure is a no-new-hook API-return boundary carrying the same aggregate. NSS-only and publickey paths do not gain pam_authenticate."
+    },
+    {
+      "finding": 5,
+      "status": "implemented; parent verification pending",
+      "facts": "No null aggregate is published for partial rootok. Sufficient real-UID0 root success is completed immediately and consumed without another authentication hook."
+    }
+  ],
+  "namedOperationCoverage": "docs/pam-foundations/existing-operation-coverage.json",
+  "statePaths": {
+    "UnixAndPAM01": {
+      "evaluation": "workstation.pamEvaluation",
+      "results": "workstation.pamResults"
+    },
+    "SSH": {
+      "evaluation": "pam.lastEvaluation",
+      "results": "pam.results"
+    },
+    "declaration": "Every PAM-annotated model exposes pamStatePaths. Producers use only their existing namespace, without mirrored state."
+  },
+  "nativeExpectation": {
+    "path": "docs/pam-foundations/native-expectations.json",
+    "unchangedSHA256": "1065337878481993ba2280529a201a7adb166fcaa51aa0287bd80ce5b235d0f1",
+    "sourcePinExpectedClose": "PAM_SESSION_ERR (14)",
+    "parentObservedInstalledClose": "PAM_SUCCESS (0)",
+    "parentReportedReason": "Ubuntu/Debian045_pam_dispatch_jump_is_ignore removes upstream cached numeric-jump accumulation. Parent owns separate native-source disposition.",
+    "originalReport": "docs/verification/windows-protection-expansion/pam-native-01.json",
+    "policy": "Do not repin native expected14, rerun to force green, or claim release/G01/native-wide acceptance."
+  },
+  "regressions": [
+    "tests/pam-foundations.test.mjs",
+    "tests/pam-review-corrections.test.mjs"
+  ],
+  "counts": {
+    "canonicalPAMCases": 22,
+    "namedComparisonMembers": 11,
+    "originalUnixModels": 17,
+    "sourceGroundedFindings": 5,
+    "reportedBeforeMismatches": 7
+  },
+  "verification": "No build, tests, formatters or native comparator executed by this worker during correction. Parent runs integrated checks after ownership release."
+}

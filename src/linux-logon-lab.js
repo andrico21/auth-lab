@@ -1,4 +1,5 @@
 import {labAttribute,labP,labStep,labScenario} from './lab-common.js';
+import {pamAttachExistingUnix,pamExistingCatalogKeys} from './pam-existing-integration.js';
 
 const unixWsStarting={
   'lab-llog01':['alice resolves to local uid1000; identity lookup is not password proof.','files NSS and pam_unix; no directory or KDC dependency.','Account and configured session gates still follow authentication.'],
@@ -17,6 +18,7 @@ const unixWsStarting={
   'lab-melev03':['Existing local uid501 requester; netadmin has no local Mac account.','Shared device keys and explicit IT-Admins mapping enable eligible prompts.','Network authorization cannot supply secure token, ownership or current-user proof.'],
 };
 const unixWsSourceRefs={
+  'lab-pam01':['PAMFOUNDATIONS'],
   'lab-llog01':['UPAM','PAMAPI','PAMUNIX','LOGIND'],
   'lab-llog02':['SSSDAD','SSSDNSS','UPAM','KINITPIN','SSSDCONF'],
   'lab-llog03':['SSSDCONF','SSSDNSS','KINITPIN'],
@@ -99,9 +101,11 @@ const unixWsLearningQuestions=Object.freeze({
 });
 export function unixWsAuthor(meta,attributes,sources,actorLabels,initial={}){
   const id=meta.id,steps=[],definitions={},artifacts=[],initialEffects=[],events={},bindings=[];
+  if(!Object.hasOwn(unixWsSourceRefs,id))throw new RangeError('Unsupported Unix workstation author ID: '+id);
   sources=unixWsSourceRefs[id].map(key=>{const source=sources.find(s=>s.sourceRowId==='next-unix-'+key);if(!source)throw new TypeError('Missing declared Unix source metadata: '+key);return source;});
   meta.sourceRowIds=sources.map(source=>source.sourceRowId);
-  meta.relatedLessons=[...new Set([...(unixWsRelated[id]||[]),...(meta.relatedLessons||[]).map(lesson=>typeof lesson==='string'?lesson:lesson.id)])].map(key=>unixWsLessonLinks[key]);
+  meta.relatedLessons=[...new Set([...(unixWsRelated[id]||[]),...(meta.relatedLessons||[]).map(lesson=>typeof lesson==='string'?lesson:lesson.id)])].map(key=>unixWsLessonLinks[key]||(meta.relatedLessons||[]).find(lesson=>lesson.id===key)).filter(Boolean);
+  if(/^lab-m(log|elev)/.test(id))meta.relatedLessons.push({id:'lab-pam01',title:'Linux-PAM comparison only',summary:'Linux-specific dispatch fixture; not macOS/OpenPAM semantics. Opens independent state.'});
   const actorIds=Object.keys(actorLabels),actors=Object.fromEntries(Object.entries(actorLabels).map(([key,label],index)=>[key,{id:key,name:label,role:label,plainRole:label,kind:index===0?'client':'service',color:['#2563eb','#08916d','#7c3aed','#b45309','#be185d'][index%5],position:{x:[145,560,975][index%3],y:120+245*Math.floor(index/3)},...(index>0?{parentId:actorIds[0]}:{}),notes:['Distinct logical local owner; folding never merges custody.']} ]));
   const state={workstation:{localIdentity:null,networkIdentity:null,identityResolved:false,authenticated:false,authenticatedIdentity:null,admitted:false,session:false,sessionLocked:false,operation:false,tgt:false,tgtWasIssued:false,kdcAuthenticated:false,kdcRejected:false,clientKnowsAuthentication:false,clientKnowsServiceAuthentication:false,clientKnowsFailure:false,resourceDecisionKnown:false,idpSSO:false,administrator:false,executionTarget:null,mandatoryDecision:'not evaluated',failure:null,unrelatedSession:'other-user-session-retained',...initial}};
   const own=(o,actor=o.creator,store=o.store,representationId='plain')=>({op:'acquire',artifactId:o.artifactId,actorId:actor,representationId,store,holdingId:[actor,o.artifactId,representationId,store].join('|'),retention:'retained'});
@@ -166,7 +170,7 @@ export function unixWsAuthor(meta,attributes,sources,actorLabels,initial={}){
 export function unixWsDeclareCatalog(attributes,schema,sources){
   for(const source of sources){source.standard=source.standard||source.name;source.errata=source.errata||'Captured reference/configuration evidence only; installed build and native conformance unverified. See unix-workstation-sources.json for hashes/applicability.';}
   for(const [modelId,declaredKeys] of Object.entries(schema)){
-    const keys=[...declaredKeys,...(unixWsControlSchema[modelId]||[]).map(key=>key+'-control'),...(declaredKeys.includes('tgt')?['tgt-session-key']:[]),...(['lab-llog05','lab-mlog04'].includes(modelId)?unixWsResourceFields:[])];
+    const keys=[...declaredKeys,...pamExistingCatalogKeys(modelId),...(unixWsControlSchema[modelId]||[]).map(key=>key+'-control'),...(declaredKeys.includes('tgt')?['tgt-session-key']:[]),...(['lab-llog05','lab-mlog04'].includes(modelId)?unixWsResourceFields:[])];
     for(const key of keys){
       const attributeId='unixws_'+modelId.replaceAll('-','_')+'_'+key.replaceAll('-','_');
       if(!Object.hasOwn(attributes,attributeId))attributes[attributeId]=labAttribute(key.replaceAll('-',' '),'Declared field schema across explicit fixed variants.','Selected logical owner in source event','Inspect exact selected-case value and custody; static example is not an instance.','SYM(selected fixture instance)',sources[0]?.name||'Unix primary sources',sources[0]?.url||'https://man7.org/linux/man-pages/man3/pam.3.html');
@@ -177,6 +181,7 @@ export function unixWsDeclareCatalog(attributes,schema,sources){
 export function createLinuxLocalLogonCase(f,variantId='default'){
   const A='llogLogin',P='llogPAM',D='llogFiles',S='llogSession';
   const w=unixWsAuthor({id:'lab-llog01',title:'Linux local login through configured PAM',family:'linux-logon',topic:'Local login',profileName:'L-PAM composed Linux-PAM commit584ef227; files NSS; explicit setcred then open_session',prerequisites:['Synthetic afs-login service: auth/account/password required pam_unix; session required pam_unix; optional pam_systemd when selected. No nullok baseline.','Application order is this fixture, not a universal Linux order.']},LINUXLOGONLAB_ATTRIBUTES,LINUXLOGONLAB_SOURCES,{[A]:'Console login application',[P]:'PAM transaction / pam_unix',[D]:'Local files identity / shadow authority',[S]:'Session manager / optional logind'});
+  pamAttachExistingUnix(w,'lab-llog01',f);
   const identity=w.object('identity','UID/GID identity record','identity',D,'alice; uid1000; gid1000; groups1000; /home/alice; /bin/sh',[D,A,P],{seed:true,store:'files NSS database'});
   const verifier=w.object('verifier','Stored password verifier','verifier',P,'HANDLE(shadow-verifier-g1)',[P],{seed:true,store:'privileged pam_unix backend'});
   w.event('lookup','Request local files NSS identity lookup - not authentication',A,D,[],{control:{label:'Local NSS lookup arguments',value:'SYM(getpwnam_r; name=alice; files NSS)'}});
@@ -281,6 +286,7 @@ export function unixWsResourceAccess(w,owner,kdc,resource,credential,f){
 export function createLinuxDirectoryLogonCase(f){
   const A='llogApp',N='llogNSS',P='llogSSSD',D='llogDirectory',S='llogManager';
   const w=unixWsAuthor({id:'lab-llog02',title:'Linux AD identity, Kerberos proof and host admission',family:'linux-logon',topic:'Directory login',profileName:'L-SSSD-AD composed SSSD2.11.1; AD provider; KCM; explicit GPO enforcing',prerequisites:['NSS files sss; id/auth/access_provider=ad; ldap_id_mapping=true; ad_gpo_access_control=enforcing; KCM user cache.','Enrolled machine keytab, modern AES, DNS/time/reachability explicitly provisioned. Auth then account/session is the selected application stack. User TGT retained after host admission denial in this fixture.'],relatedLessons:['lab-ad-first-sign-in','lab-smb-nonjoined-kerberos']},LINUXLOGONLAB_ATTRIBUTES,LINUXLOGONLAB_SOURCES,{[A]:'Login application / PAM client',[N]:'SSSD NSS responder',[P]:'SSSD PAM responder / AD provider',[D]:'AD directory / KDC',[S]:'PAM session manager'});
+  pamAttachExistingUnix(w,'lab-llog02',f);
   w.object('machine-keytab','Separate enrolled machine keytab','machine-credential',P,'HANDLE(LINUXHOST$ machine keytab)',[P],{seed:true,store:'SSSD machine authority'});
   w.remote([D]);
   const identity=w.object('directory-identity','Mapped directory identity','identity',D,'CORP alice; uid200100; gid200100; group mapping',[D,N,A],{seed:true,wire:'SYM(TLS-protected directory identity result)'});
@@ -309,6 +315,7 @@ export function createLinuxDirectoryLogonCase(f){
 export function createLinuxOfflineLogonCase(f){
   const A='llogOfflineApp',C='llogCache',S='llogOfflineSession',D='llogOfflineDirectory';
   const w=unixWsAuthor({id:'lab-llog03',title:'Linux offline cached directory login without a fresh TGT',family:'linux-logon',topic:'Offline directory login',profileName:'L-SSSD-CACHE upstream2.11.1; selected RHEL9-inspired offline assumptions',prerequisites:['SSSD AD provider, cached identity/host admission, cache_credentials=true, offline_credentials_expiration=7 days, failed attempts3/delay5min, cached_auth_timeout=0.','One-day cache populated at prior online password login; krb5_store_password_if_offline=false. RHEL9 vendor page unavailable; these are selected upstream-backed assumptions, not verified distro defaults.']},LINUXLOGONLAB_ATTRIBUTES,LINUXLOGONLAB_SOURCES,{[A]:'Offline PAM login application',[C]:'SSSD offline AD cache/provider',[S]:'Local session manager',[D]:'Unreachable central authority - no result delivered'},{centralKnowledge:'stale',centralPasswordGeneration:f.centralChanged?2:1,centralRevoked:f.centralRevoked,tgt:f.retainedTgt,providerOnline:false,offlineFailures:f.failedAttempts??0});
+  pamAttachExistingUnix(w,'lab-llog03',f);
   w.remote([D]);
   const central=w.object('central-state','Authoritative state not delivered while disconnected','authority-state',D,'HANDLE(password generation='+(f.centralChanged?2:1)+'; revoked='+f.centralRevoked+'; cache snapshot generation1)',[D],{seed:true});
   w.event('central-snapshot','Central password/revocation state is authority-local; no notification reaches offline client',D,D,[central],{inspect:[central]});
@@ -333,6 +340,7 @@ export function createLinuxOfflineLogonCase(f){
 export function createLinuxPasswordChangeCase(f){
   const A='pamChangeApp',P='pamChange',S='pamChangeSession',D='pamPasswordAuthority';
   const w=unixWsAuthor({id:'lab-llog04',title:'Linux expired authentication token and explicit password authority',family:'linux-logon',topic:'Password change',profileName:'L-PAM-CHANGE explicit local/directory password authority',prerequisites:['afs-login consumer supports pam_chauthtok and explicitly resumes remaining PAM account/access policy after token change before credentials/session. This selected continuation is not a universal second pam_acct_mgmt call.','Local pam_unix baseline; selected directory alternative uses pam_sss authority and explicit reachability. Account expiry differs from expired authentication token.']},LINUXLOGONLAB_ATTRIBUTES,LINUXLOGONLAB_SOURCES,{[A]:'PAM login/password-change consumer',[P]:'Selected local PAM password/account stack',[D]:'Selected credential authority',[S]:'Local session manager'},{authorityGeneration:1,credentialAuthority:f.authority,postChangeAccountAllowed:f.postChangeAccountAllowed,postChangeAccountChecked:false});
+  pamAttachExistingUnix(w,'lab-llog04',f);
   const accountPolicy=w.object('post-change-account-policy','Selected consumer remaining account/access policy','policy',P,'afs-login remaining account/access policy after successful token change; allowed='+f.postChangeAccountAllowed,[P],{seed:true});
   const old=w.object('authority','Selected-authority verifier handle generation1','verifier',P,'HANDLE('+f.authority+' authority verifier g1; password expired; backend interface handle, not exported verifier bytes)',[P],{seed:true,generation:1});
   const backend=w.object('backend-generation','Selected credential backend generation1','credential-authority-state',D,'HANDLE('+f.authority+' authority generation1; opaque backend update interface)',[D],{seed:true,generation:1});
@@ -343,7 +351,9 @@ export function createLinuxPasswordChangeCase(f){
   if(f.accountExpired){w.event('account-expired','Account itself is expired: token change cannot repair account admission',P,P,[],{puts:{failure:'PAM_ACCT_EXPIRED'}});clean();return w.finish();}
   w.event('account-token-expired','pam_acct_mgmt returns PAM_NEW_AUTHTOK_REQD, not account expiry',P,A,[],{control:{label:'PAM expired authentication-token status',value:'SYM(pam_acct_mgmt; PAM_NEW_AUTHTOK_REQD)'},puts:{passwordChangeRequired:true}});
   if(!f.changeSupported){w.event('unsupported-change','Consumer cannot handle token change; no login continuation',A,A,[],{puts:{failure:'consumer lacks token-change support'}});clean();return w.finish();}
-  w.event('password-preliminary','pam_chauthtok preliminary verifies old credential and password-change readiness, not the uncollected candidate',P,P,[old,secret],{puts:{passwordChangeReady:true}});
+  const preliminaryReady=f.prelimOk!==false;
+  w.event('password-preliminary','pam_chauthtok preliminary verifies old credential and password-change readiness, not the uncollected candidate',P,P,[old,secret],{puts:{passwordChangeReady:preliminaryReady,...(!preliminaryReady?{failure:'password preliminary check failed'}:{})}});
+  if(!preliminaryReady){clean();return w.finish();}
   const nextSecret=w.object('new-secret','Transient new password','secret',A,'SYM(new local conversation password)',[A,P,D]);w.event('new-secret','Conversation sends new password to configured password module',A,P,[nextSecret],{made:[nextSecret]});
   const cleanNew=(contacted=false)=>w.event('new-secret-cleanup','Discard candidate at prompt, password module and any contacted credential backend',P,P,[],{drop:[{object:nextSecret,actor:A},{object:nextSecret,actor:P,store:'local IPC inbox'},...(contacted?[{object:nextSecret,actor:D,store:'local IPC inbox'}]:[])]});
   w.event('password-policy','Evaluate the collected new authentication token against the selected password policy',P,P,[nextSecret],{checks:[{object:nextSecret,result:f.newPolicy?'candidate accepted by configured new-password policy':'candidate rejected by configured new-password policy'}],puts:{newPasswordPolicyAccepted:f.newPolicy}});

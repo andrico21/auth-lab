@@ -1,0 +1,79 @@
+bun test v1.4.2 (744846f84)
+
+tests/unix-workstation.test.mjs:
+17 | 
+18 | test('Linux files lookup does not authenticate; PAM success cannot bypass account/session gates',()=>{
+19 |   const base=find(LINUXLOGONLAB_SCENARIOS,'lab-llog01');
+20 |   assert.equal(at(base,'identity-result').identityResolved,true);
+21 |   assert.equal(at(base,'identity-result').authenticated,false);
+22 |   assert.equal(at(base,'pam-auth').authenticated,true);
+              ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/andrico/auth-lab-held-objects/tests/unix-workstation.test.mjs:22:10
+      at run (node:async_hooks:144:29)
+      at node:test:1445:26
+      at executeTestNode (node:test:1448:45)
+      at node:test:1591:20
+(fail) Linux files lookup does not authenticate; PAM success cannot bypass account/session gates [14.09ms]
+68 |     for(const c of row.canonicalCases){const m=base.withVariant(c.id),steps=m.steps();
+69 |       assert.ok(steps.some(s=>s.id===c.firstDetector.stepId),row.id+'/'+c.id+' first detector');
+70 |       for(const a of c.assertions.filter(a=>a.target==='state')){
+71 |         const index=a.at.end?steps.length-1:a.at.milestone==='initial'?-1:steps.findIndex(s=>s.id===a.at.stepId);
+72 |         assert.ok(index>=0||a.at.milestone==='initial',row.id+'/'+c.id+'/'+a.at.stepId);
+73 |         assert.deepEqual(unixPath(reconstructProtocolState(m,index),a.path),a.equals,row.id+'/'+c.id+'/'+a.path);
+                    ^
+AssertionError: LLOG04/directory-online/workstation.admitted
+
+false !== true
+
+ generatedMessage: false,
+     actual: false,
+   expected: true,
+   operator: "deepStrictEqual",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/andrico/auth-lab-held-objects/tests/unix-workstation.test.mjs:73:16
+      at run (node:async_hooks:144:29)
+      at node:test:1445:26
+      at executeTestNode (node:test:1448:45)
+      at node:test:1591:20
+(fail) All17 authored rows and every named source-input branch satisfy the independent typed oracle [69.42ms]
+132 |       assert.equal(has(snapshot,'session'),false);
+133 |       assert.equal(has(snapshot,'backend-generation-g2','pamPasswordAuthority'),true);
+134 |     }
+135 |     const admitted=variant!=='post-change-account-denied',decision=frame('post-change-account');
+136 |     assert.equal(decision.state.workstation.postChangeAccountChecked,true);
+137 |     assert.equal(decision.state.workstation.admitted,admitted);
+                 ^
+AssertionError: Expected values to be strictly equal:
+
+false !== true
+
+ generatedMessage: true,
+     actual: false,
+   expected: true,
+   operator: "strictEqual",
+       diff: "simple",
+       code: "ERR_ASSERTION"
+
+      at /home/andrico/auth-lab-held-objects/tests/unix-workstation.test.mjs:137:12
+      at run (node:async_hooks:144:29)
+      at node:test:1445:26
+      at executeTestNode (node:test:1448:45)
+      at node:test:1591:20
+(fail) PAM password commit leaves admission to the selected local account stack and preserves committed state on denial [44.20ms]
+
+ 6 pass
+ 3 fail
+Ran 9 tests across 1 file. [547.00ms]

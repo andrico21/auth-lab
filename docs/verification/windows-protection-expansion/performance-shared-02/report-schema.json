@@ -1,0 +1,456 @@
+{
+  "schemaVersion": 1,
+  "kind": "next-expansion-performance",
+  "fields": {
+    "collection": "status=collecting|complete|failed; exitCode 0|1|2. No top-level pass field.",
+    "identities": "roots baseline/candidate: recursive src/assets plus index/build/package/security-policy input hashes and standalone bytes/hash; runner, runtime, OS, browser executable, Playwright/Core package+entry hashes",
+    "manifest": "Optional explicitly pinned current-candidate manifest; unchanged throughout collection. Historical characterization may omit it and cannot satisfy a current phase manifest binding.",
+    "currentMeasurementStatus": "passed|partial|failed for this comparison only; profile mode is unverified for latency. Never closes historical flags, manual G01 or platform limits.",
+    "samples": "variant, loadingMode, indexControl, sample, order, target, actions[], logs, errors, sourceUnchanged; actions retain before/after state, raw latencyMs ONLY in compare or diagnostic fields ONLY in profile",
+    "comparisons": "compare only: loadingMode, indexControl (default for startup), action, baseline/candidate {values,min,median,max,rangeMs,rangeOverMedian,mad}, deltaMs, ratio, materialRegression, variationUnresolved",
+    "profiles": "profile action diagnostic: wallMsWithProfiling, counters, CPU artifact, sampled self functions, marker-bounded trace inclusive attribution; never latency medians",
+    "files": "relative file, bytes, sha256 for retained CPU/trace artifacts",
+    "unresolved": "material regressions, variation, collection failures and explicitly unclosed historical/manual/platform limits",
+    "methods": "fixed UI fixture, cache/order/settling/startup semantics, attribution and thresholds",
+    "sourceChecks": "before/after hashes each context and final roots/runtime runner unchanged"
+  },
+  "units": {
+    "latency": "ms, includes Playwright action/readiness round trips",
+    "cpu": "sampled self ms",
+    "trace": "inclusive overlapping ms, clipped to same renderer thread markers",
+    "chromeCounters": "native CDP units (durations seconds, heap bytes)"
+  },
+  "materialRule": {
+    "relativeIncreaseGreaterThan": 0.25,
+    "startupAbsoluteIncreaseGreaterThanMs": 100,
+    "interactionAbsoluteIncreaseGreaterThanMs": 50
+  },
+  "variationRule": "Unresolved when (max-min)/median > 0.25 AND range > corresponding absolute material threshold on either variant. Descriptive instability heuristic, not statistical significance. Add samples and inspect raw distribution.",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Auth Flow Studio next expansion performance report",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "kind",
+    "mode",
+    "status",
+    "nativeBrowser",
+    "argv",
+    "runner",
+    "runtime",
+    "environment",
+    "scope",
+    "methods",
+    "identities",
+    "samples",
+    "comparisons",
+    "files",
+    "errors",
+    "sourceChecks",
+    "unresolved"
+  ],
+  "not": {
+    "required": [
+      "passed"
+    ]
+  },
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "kind": {
+      "const": "next-expansion-performance"
+    },
+    "mode": {
+      "enum": [
+        "compare",
+        "profile"
+      ]
+    },
+    "status": {
+      "enum": [
+        "collecting",
+        "complete",
+        "failed"
+      ]
+    },
+    "nativeBrowser": {
+      "const": true
+    },
+    "exitCode": {
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "argv": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "runner": {
+      "type": "object"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "environment": {
+      "type": "object"
+    },
+    "scope": {
+      "type": "object"
+    },
+    "methods": {
+      "type": "object"
+    },
+    "identities": {
+      "type": "object"
+    },
+    "samples": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sample"
+      }
+    },
+    "comparisons": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/comparison"
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/artifact"
+      }
+    },
+    "errors": {
+      "type": "array"
+    },
+    "unresolved": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind"
+        ]
+      }
+    },
+    "sourceChecks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "label",
+          "variant",
+          "unchanged"
+        ]
+      }
+    },
+    "latencyDisposition": {
+      "enum": [
+        "not-measured-in-diagnostic-mode",
+        "incomplete",
+        "review-required",
+        "no-current-material-or-variation-flags"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "profile"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "comparisons": {
+            "maxItems": 0
+          },
+          "samples": {
+            "items": {
+              "properties": {
+                "actions": {
+                  "items": {
+                    "not": {
+                      "required": [
+                        "latencyMs"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": [
+        "file",
+        "bytes",
+        "sha256"
+      ],
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "stats": {
+      "type": "object",
+      "required": [
+        "values",
+        "min",
+        "median",
+        "max",
+        "rangeMs",
+        "rangeOverMedian",
+        "mad"
+      ],
+      "properties": {
+        "values": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "min": {
+          "type": "number"
+        },
+        "median": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "rangeMs": {
+          "type": "number"
+        },
+        "rangeOverMedian": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "mad": {
+          "type": "number"
+        }
+      }
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "name",
+        "ui",
+        "before"
+      ],
+      "properties": {
+        "name": {
+          "enum": [
+            "startup",
+            "idle-filter",
+            "selection",
+            "replay-start",
+            "playing-filter"
+          ]
+        },
+        "ui": {
+          "type": "object"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "before": {
+          "type": [
+            "object",
+            "null"
+          ]
+        },
+        "after": {
+          "type": "object"
+        },
+        "latencyMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "wallMsWithProfiling": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cpuProfile": {
+          "$ref": "#/$defs/artifact"
+        },
+        "nativeTrace": {
+          "type": "object"
+        },
+        "sampledFunctions": {
+          "type": "array"
+        },
+        "error": {
+          "type": "string"
+        },
+        "complete": {
+          "type": "boolean"
+        }
+      }
+    },
+    "sample": {
+      "type": "object",
+      "required": [
+        "variant",
+        "loadingMode",
+        "indexControl",
+        "sample",
+        "order",
+        "target",
+        "actions",
+        "controls",
+        "uiSequence",
+        "logs",
+        "errors"
+      ],
+      "properties": {
+        "variant": {
+          "enum": [
+            "baseline",
+            "candidate"
+          ]
+        },
+        "loadingMode": {
+          "enum": [
+            "source-http",
+            "standalone-http",
+            "standalone-file"
+          ]
+        },
+        "indexControl": {
+          "enum": [
+            "open",
+            "closed"
+          ]
+        },
+        "sample": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "order": {
+          "enum": [
+            0,
+            1
+          ]
+        },
+        "target": {
+          "type": "string"
+        },
+        "actions": {
+          "type": "array",
+          "maxItems": 5,
+          "items": {
+            "$ref": "#/$defs/action"
+          }
+        },
+        "controls": {
+          "type": "array"
+        },
+        "uiSequence": {
+          "type": "array"
+        },
+        "logs": {
+          "type": "object"
+        },
+        "errors": {
+          "type": "array"
+        },
+        "actionCounts": {
+          "type": "object"
+        },
+        "sourceUnchanged": {
+          "type": "boolean"
+        },
+        "complete": {
+          "type": "boolean"
+        }
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "required": [
+        "loadingMode",
+        "indexControl",
+        "action",
+        "baseline",
+        "candidate",
+        "deltaMs",
+        "ratio",
+        "materialRegression",
+        "variationUnresolved"
+      ],
+      "properties": {
+        "loadingMode": {
+          "enum": [
+            "source-http",
+            "standalone-http",
+            "standalone-file"
+          ]
+        },
+        "indexControl": {
+          "enum": [
+            "default",
+            "open",
+            "closed"
+          ]
+        },
+        "action": {
+          "enum": [
+            "startup",
+            "idle-filter",
+            "selection",
+            "replay-start",
+            "playing-filter"
+          ]
+        },
+        "baseline": {
+          "$ref": "#/$defs/stats"
+        },
+        "candidate": {
+          "$ref": "#/$defs/stats"
+        },
+        "deltaMs": {
+          "type": "number"
+        },
+        "ratio": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "materialRegression": {
+          "type": "boolean"
+        },
+        "variationUnresolved": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

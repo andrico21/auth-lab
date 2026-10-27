@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "scope": "WRA01-WRA05: 5 models, 38 named canonical cases, 44 separately exposed named subfixtures",
+  "baseline": "ae9dffe2da2bca33c01daee1eaacfcbedfc95aa0",
+  "publication": "No commit or push authorized or performed by this slice",
+  "independentInputs": {
+    "authorship": "WP0 source-only profile inputs and literal expected facts were written before production remote evaluator. No expected answers were generated from evaluator outputs. This is authorship independence, not OS-enforced isolation.",
+    "planSHA256": "8e66f18b60f352b4d3020af11369b829828cb473cbc8edcccacbe104abc8fc8d",
+    "remoteCasesSHA256": "d945e6020ccf06b844348f690be2dd86ffe5931ec759ed2c11722206de01b301",
+    "profilesSHA256": "927335cfafcdc97914f8269e0a2cf2ceb4ac9326eafd2cdd6579129738b37bda",
+    "stepSequenceInterpretation": "Independent manifest stepSequence names the ordered explanation checkpoints. Execution stops at the declared first detector for rejected proof/admission/applicability, or at the denied resource; prohibitedDownstreamEffects and expected firstDetector specify the truncated path. It does not assert later checkpoints execute after a terminal rejection."
+  },
+  "exports": {
+    "WINDOWSREMOTELAB_ATTRIBUTES": "Cheap frozen static union field metadata; wra_01_ through wra_05_ namespaces",
+    "WINDOWSREMOTELAB_SOURCES": "Primary source references; exact byte/revision/hash/claim records in sources-remote.json",
+    "WINDOWSREMOTELAB_SCENARIOS": "5 lazy model descriptors lab-wra01 through lab-wra05; no all-case construction at import",
+    "buildWindowsRemoteAdministrationFixture": "(modelId, caseId='default', subfixtureId='default') -> complete selected model",
+    "buildWindowsRemoteSmbReference": "(inputOverrides={}) -> raw SMB-shaped local/domain reference for source composition. Noncanonical helper does not add a catalog case. TARGET + Kerberos and EnableLUA0 explicitly reject.",
+    "evaluateWindowsRemoteContext": "Pure account/policy-to-source-owned authorization context operation, never keyed by case ID",
+    "evaluateWindowsRemoteAccess": "Pure requested-mask and ordered allow/deny ACE evaluation; enabled and deny-only SID attributes are decision inputs",
+    "buildSmbAccessReference": "Narrow opt-in carrier export in smb-access-lab.js; existing presets omit remote and retain default identities/mechanisms/decisions"
+  },
+  "modelAPI": {
+    "variantChoices": "Canonical short IDs only, exactly 9+6+7+8+8=38",
+    "defaultVariantId": "First canonical short case ID. withVariant('default') aliases it; default is not an additional selectable case",
+    "withVariant": "Builds only the selected case, rejects unknown case IDs with RangeError",
+    "subfixtureChoices": "Named members for the selected canonical case, not Boolean hidden comparisons",
+    "withSubfixture": "Builds the named member within the current canonical case; unknown member rejects with RangeError",
+    "state": "Canonical initialState.workstation plus step.protocolEffects; no alternate narrative state engine",
+    "inventory": "workstationInventory {artifacts,initial,events,bindings,reuse}; sender preparation, receipt/unwrap/acceptance, response decisions and cleanup are source-owned",
+    "positions": "Explicit compactPositions and expandedPositions for every used actor. Target SAM is a logical child role within target physical host",
+    "decisionBindings": "Proof authority/result, admission, context mode, resource decision, transmission, receipt, client knowledge, first boundary, retained prior session and preserved source desktop"
+  },
+  "tokenComparisonState": {
+    "path": "workstation.tokenComparison; null until the post-admission target-token-comparison operation",
+    "ownership": "target-filter-input authorization-input artifact and token-comparison comparison artifact are created and retained only at smbServer after actual proof and target admission; neither is seeded or sent to the client",
+    "before": "Modeled target-side filter input/reference with usableToken=false, no tokenId, target owner/account/userSid, enabled input group attributes and present-enabled or present-disabled privilege reference rows; not a source-client token or observed native full token",
+    "after": "Applied actual target-context artifactRef, owner/account/userSid/type/mode, group attributes and privilege inventory; no extra token or grant is created",
+    "groups": "Rows {sid,beforeAttributes,afterAttributes,directoryMembershipUnchanged}; keyed by stable SID",
+    "privileges": "Rows {name,before:{present,enabled,state},after:{present,enabled,state}}; state is enabled, disabled or removed, with enabled=null when absent",
+    "policy": "Comparison retains appliedPolicy and policyRef at context creation; separate workstation.configuredPolicy follows later configuration changes while workstation.appliedPolicy remains the original context snapshot",
+    "readablePolicy": "workstation.policyComparison has label, policyLabel, registryValueName, registryPath, polarity, configured and applied records; records expose rawLATFP, effectiveLATFP, latfpDisplay, applyRemoteRestrictions, restrictionsDisplay, EnableLUA, FilterAdministratorToken and administratorProtection; applied remains null before accepted context",
+    "verdict": "workstation.verdictExplanation starts null, is set by the first actual proof/admission/resource/applicability decision, and is retained; successful reads set it only at authenticated client acceptance, never from initial false flags",
+    "bounds": "Exact native integrity/elevation fields remain unknown; AP needs-evidence and unavailable profiles create no new tokenComparison or appliedPolicy",
+    "learnerSources": "Runtime source sections and support note now identify primary clauses and applicability qualifications, not worker/test manifest paths"
+  },
+  "localComparisonResults": {
+    "scope": "WRA05 unavailable-profile/nonadmin-listed and WRA04 management-endpoint-denied produce explicitly qualified local lesson outcomes, not operation wire responses",
+    "ownership": "comparison-result and endpoint-local-result are created at smbClient by the local lesson; only smbClient reads/holds these local outputs. The modeled target endpoint-result remains target-owned and is never acquired by C",
+    "canonicalState": "workstation.localComparisonKnown starts false and becomes true at the actual client-local computation that creates/holds the result; clientKnowsResult, returnedResult and local domain/qualification are set at that same checkpoint. Later learner inspection grants no knowledge.",
+    "compatibility": "clientKnowsResult and returnedResult preserve the original case outcome labels; a WSMan.AccessDenied label here identifies a simulated target-rule outcome, not a received WSMan fault packet",
+    "wireFlags": "Local comparisons never write responseTransmitted or responseReceived and never add transmit/receipt stages or result-message edges; real preceding authentication/session history is retained and actual protected SMB operation responses still use their separate wire flags and SMB/NTSTATUS resultDomain",
+    "stages": "applicability-result -> applicability-accept or endpoint-result-local -> endpoint-result-accept, all client-local with no protocol layers",
+    "bindingLifecycle": "localComparisonKnown is equivalent to the retained client-owned local result holding at every compiler checkpoint. Reused-session priorSession is bound to a retained reused-session-record created atomically with the configured-policy-change state; that record references the already-held original sessionContextRef and tokenRef and does not create another authenticated session.",
+    "immutableInputs": "WP0 case/profile expectations and raw source snapshots remain unchanged; no expectation hashes were repinned"
+  },
+  "namedSubfixtures": {
+    "WRA01/default-filtered": ["local", "domain"],
+    "WRA01/reused-session": ["reused", "fresh", "later-proof-denial"],
+    "WRA03/same-name-different-authority": ["local", "domain"],
+    "WRA04/deny-only-sid": ["allow-ace", "deny-ace"],
+    "WRA04/client-elevated": ["elevated", "standard"],
+    "otherCases": "One default subfixture each; total 44 including all 38 canonical representatives"
+  },
+  "reuseSemantics": {
+    "reused": "Replay includes the original accepted logon/proof/key history under effective LATFP0, then a distinct configured-policy-change snapshot to LATFP1, then the operation on that same already-established session/context. No new authentication occurs after the policy change. Original token and key history remain inspectable.",
+    "fresh": "Separate fresh logon applies LATFP1 and obtains its own full-reference context",
+    "later-proof-denial": "A separately seeded previously accepted filtered session remains held while a later new proof attempt is rejected. New session and resource checks are prohibited; prior session is not erased"
+  },
+  "sourceClauseStepTestMappings": [
+    {"source": "S24-NLMP", "clauses": ["3.3.2 local authoritative verification", "3.3.2 domain pass-through and SessionBaseKey"], "steps": ["sam-request", "sam-verify", "sam-result", "dc-request", "dc-verify", "dc-result", "ntlm-accept"], "tests": ["Local SAM and domain NTLM really use distinct authorities and key paths", "44 independent case/subfixture checks"]},
+    {"source": "S24-APDS", "clauses": ["NTLM pass-through example steps4-5"], "steps": ["dc-request", "dc-verify", "dc-result"], "cases": ["WRA03/domain-ntlm-explicit", "WRA03/domain-proof-failed"]},
+    {"source": "S23 / S24-KILE", "clauses": ["RFC4120 3.1-3.3,5.5", "MS-KILE 3.1.1.2 AES acceptor-subkey export"], "steps": ["as-request", "as-validate", "as-reply", "as-accept", "tgs-request", "tgs-validate", "tgs-reply", "tgs-accept", "kerberos-accept", "client-mechanism"], "tests": ["Domain nonjoined Kerberos has explicit prerequisites and independent ticket/subkey histories"]},
+    {"source": "S24-SMB2-PDF", "revision": "88.0 / 2026-09-28", "clauses": ["2.2.3-2.2.14 framing and errors", "2.2.41 encryption transform", "3.1.4.2 signing/KDF", "3.2.5.3 and 3.3.5.5 session/preauth", "3.3.5.7 share", "3.3.5.9 file"], "steps": ["negotiate-request", "negotiate-response", "server-key-derivation", "session-success", "client-key-derivation", "client-session", "share-check", "tree-denied", "file-check", "create-denied", "create-denied-unwrap"], "tests": ["Signed denial uses established SigningKey/AES-CMAC and separates result boundaries", "Encrypted error uses S2C key and nonce, never C2S or SigningKey as encryption key", "44 sender-before-transfer/cleanup checks"]},
+    {"source": "S01-S04", "clauses": ["Local versus domain account authority", "LATFP absent/0 versus1", "RID500/FAT classification", "SecGuide policy mapping and polarity"], "steps": ["target-inputs", "target-admission", "target-context", "configured-policy-change"], "tests": ["RID500 classification follows SID/RID, not display name, and native fields stay unknown", "Reused session binds original policy while fresh comparison applies changed policy"]},
+    {"source": "S05-S07", "clauses": ["Local token role and privileges", "Enabled versus deny-only SID", "Server context token handle lifetime"], "steps": ["target-context", "share-check", "file-check", "attempt-cleanup"], "tests": ["Deny-only SID matches deny, never allow; masks and privilege presence are actual inputs"]},
+    {"source": "S08-S09", "clauses": ["Network type3 differs from RemoteInteractive type10", "DCOM, WMI namespace and object rights separate"], "steps": ["target-admission", "endpoint-check"], "cases": ["WRA04/management-endpoint-denied"], "scope": "WinRM endpoint rule is a bounded local authorization comparison after accepted SSPI first-hop identity; SMB carries the reused proof/key reference, not invented WinRM packets. Canonical RDP remains a separate linked implementation. No WMI protocol expansion."},
+    {"source": "S20-S21", "clauses": ["AP target-admin applicability", "Exact broad policy and SID-list policy", "Broad policy overrides list", "Desktop-only preview/build label"], "steps": ["applicability", "target-context", "share-check"], "tests": ["AP broad/list exceptions are target-admin qualified and unresolved cases do not fabricate denial"]}
+  ],
+  "verification": {
+    "authored": "tests/windows-remote-administration.test.mjs: 44 independent fixture checks plus 20 focused/compiled-prefix groups (64 test registrations); four regressions exercise buildHeldObjects, assertHeldObjectCoverage and actual compiled snapshots for the affected lifecycle prefixes",
+    "executedBySlice": "None. No tests, builds, linters, formatters or smoke runs mid-flight; parent runs integrated checks",
+    "suggestedParentChecks": ["bun test --isolate ./tests/windows-remote-administration.test.mjs", "existing SMB, Windows auth/workstation/elevation, held-object and P6 Windows suites", "full integrated suite/build and applicable crypto vectors", "source/standalone HTTP/file smoke plus case selection and object history"]
+  },
+  "limits": [
+    "No native Windows/DC access or captured token/event/packet observation. Source-only deterministic semantics do not establish native interoperability or blanket RFC conformance.",
+    "Precise integrity, elevation and native token inventory fields remain unknown, including RID500 FAT1/LATFP1. Supported source-qualified grant comparisons remain available.",
+    "AP overview availability and CSP Windows Insider Preview [11.0.26100.9278] remain visibly different. No Windows Server or universal modern-Windows default claim.",
+    "Listed AP nonadmin returns needs-evidence without membership grant or definite operation denial/elevation. Unsupported AP build returns unavailable-profile without classic fallback.",
+    "All cryptographic objects are accepted symbolic expressions and provenance histories, not computed production cryptographic bytes.",
+    "Inherited human G01, performance owner conditions and historical review limitations are unchanged"
+  ]
+}

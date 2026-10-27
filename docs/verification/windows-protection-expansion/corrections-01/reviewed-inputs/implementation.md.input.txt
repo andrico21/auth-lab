@@ -1,0 +1,118 @@
+# Windows protection, PAM and discovery implementation
+
+The supplied version 3 plan is preserved at [inputs/worker-plan.html](inputs/worker-plan.html), SHA256 `8e66f18b60f352b4d3020af11369b829828cb473cbc8edcccacbe104abc8fc8d`. The published parent is `ae9dffe2da2bca33c01daee1eaacfcbedfc95aa0`. The assignment authorizes implementation and normal local verification, not a commit, push, deployment or release waiver.
+
+## Implemented scope
+
+| Lesson | Canonical cases | Implemented boundary | Implementation and independent evidence |
+|---|---:|---|---|
+| WRA01 | 9 | Target-local remote filtering; administrative denial versus ordinary-share access; fresh versus retained context. | [Remote model](../../src/windows-remote-administration-lab.js), [WRA01 cases](remote-cases.json), [source results](results-source.json). |
+| WRA02 | 6 | RID500 identity, Admin Approval Mode, filtering and disabled-account checks. | [Remote model](../../src/windows-remote-administration-lab.js), [WRA02 cases](remote-cases.json), [source results](results-source.json). |
+| WRA03 | 7 | SAM versus domain authority; Kerberos/NTLM profiles; client join state is not target permission. | [Remote model](../../src/windows-remote-administration-lab.js), [WRA03 cases](remote-cases.json), [source results](results-source.json). |
+| WRA04 | 8 | Network admission, endpoint/share/file rules and deny-only SIDs; authenticated denial remains denial. | [Remote model](../../src/windows-remote-administration-lab.js), [WRA04 cases](remote-cases.json), [source results](results-source.json). |
+| WRA05 | 8 | Pinned remote-elevation policy; broad/SID-specific allowances, administrator membership and unavailable profiles. | [Remote model](../../src/windows-remote-administration-lab.js), [WRA05 cases](remote-cases.json), [source results](results-source.json). |
+| WPROT01 | 12 | Credential Guard effective state, protected custody, isolated operations, prompted input and bounded continuation. | [Protection model](../../src/windows-protection-lab.js), [WPROT01 cases](protection-cases.json), [source results](results-source.json). |
+| WPROT02 | 8 | LSA process access and plug-in audit/enforcement, separate from Credential Guard. | [Protection model](../../src/windows-protection-lab.js), [WPROT02 cases](protection-cases.json), [source results](results-source.json). |
+| WPROT03 | 10 | Protected Users mechanisms, delegation, offline/lifetime limits and old-session versus next-sign-in behavior. | [Protection model](../../src/windows-protection-lab.js), [WPROT03 cases](protection-cases.json), [source results](results-source.json). |
+| WPROT04 | 8 | Typed authentication policy, verified armor/device evidence, direct policy and domain applicability. | [Protection model](../../src/windows-protection-lab.js), [WPROT04 cases](protection-cases.json), [source results](results-source.json). |
+| WPROT05 | 12 | Target service policy, account slots, assignment/membership, silo precedence, audit/enforcement and resource ACL. | [Protection model](../../src/windows-protection-lab.js), [WPROT05 cases](protection-cases.json), [source results](results-source.json). |
+| PAM01 | 22 | Physical configuration, control dispatch, separate API/module/caller results, lifecycle and comparison members. | [PAM model](../../src/pam-foundations-lab.js), [independent cases](../pam-foundations/expectations.json), [source results](../pam-foundations/results-source.json). |
+
+Windows has 88 canonical cases; PAM has 22. Required account, policy and control members produce 128 unique executions: 99 Windows and 29 PAM. Member aliases that coincide with a canonical default are not counted twice. The original 17-model Unix denominator is unchanged. SEARCH01 has its own 29-query denominator and is not counted as protocol cases.
+
+## Production modules and integration
+
+- `src/windows-remote-administration-lab.js` implements WRA01-WRA05 using the existing SMB source where applicable. Target-side modeled filter input is explicitly not a usable client token or a native full-token reconstruction. Applied policy belongs to the actual context creation; changing configured policy does not retroactively replace a reused session/token.
+- `src/windows-protection-lab.js` implements WPROT01-WPROT05 with the existing Windows logon/SMB sources. Credential Guard and PPL are separate. Selected protected long-term/TGT material does not imply every service-ticket session key is isolated. Authentication-policy facts come from checked armor/PAC evidence, not a caller-supplied device label.
+- `src/pam-stack-evaluator.js` and the exact configuration modules implement the pinned Linux-PAM control/phase semantics. `src/pam-foundations-lab.js` supplies PAM01; `src/pam-existing-integration.js` annotates actual existing Linux/SSH operations without mirroring their state namespaces.
+- `src/held-object-windows-protection.js` integrates explicit authored inventories. The strict shared held-object compiler is not relaxed. Exact imported scratch holding identities are released at their actual owners; accepted authority and unrelated sessions are retained.
+- `src/windows-security-comparisons.js` links real existing mechanisms, including ordinary RDP, Restricted Admin, Kerberos-only Remote Credential Guard and the Protected Users comparison. It creates no duplicate models and transfers no credentials between lessons.
+- `src/scenario-search-metadata.js`, the shared picker ranker and `src/app.js` provide hidden discovery metadata and validated case selection. Shared model fields are normalized once, case-only fields retain their own tiers, and prefix checks iterate token Sets without copying them. The static index is prepared before interaction, with its cost included in startup; content signatures still invalidate in-place metadata edits. Matching-case rows reuse DOM nodes by logical scenario ID rather than transient result-object identity. Search metadata does not construct per-keystroke traces or evaluator outcomes.
+- `build.mjs` orders these modules for the standalone IIFE. Favicons, the version 1.0/full-name footer, repository link and source-versus-standalone CSP restrictions remain intact.
+
+Compact and expanded modes select their separately authored physical anchors. Expanded Windows owners retain distinct cells and unobstructed local/IPC ports. Protection views draw one physical host hull from the existing participant-parent relationships, including the reserved inventory footprint; they retain authored expanded anchors instead of repacking owners into a generic dock grid. The target-local SAM stays inside its separate target host. An independent geometry regression checks all 50 protection cases for external participants accidentally enclosed by the workstation. External cards and trust-zone bounds use the same 1120x730 coordinate system as their routes; compact participant roles wrap rather than silently truncate. Concise protection-card names preserve the full logical participant name in accessible labels and the real inspector. Actual standalone visual checks verify both corrected host boundaries without renaming protocol owners or changing holdings.
+
+## Visible state and navigation
+
+Case and required comparison controls are before Play. Switching them creates a fresh context and clears playback, field/object traces and inspection. URLs serialize only an allowlisted named case; comparison members reopen at the case default. Unknown, duplicated, empty, encoded-unsafe or unsupported parameters cannot reach an evaluator and produce the safe-base-case notice. Legacy canonical default aliases, including DNSSEC's `unaware-stub`, normalize through declared metadata without inventing another default URL.
+
+Related/comparison activation restores the current visible logical target or persistent Play. Rebuilt library cards retain their own logical focus region. A unique search case is selected directly; ambiguous matches require an explicit case choice and do not silently choose success. Typing/highlighting does not replace a running journey.
+
+PAM shows the exact service file/hash, physical line, C API/flags including 0, hook, raw result, mapped control action, accumulator, next physical row and separate API aggregate/application admission. Pending prefixes do not display future evaluation results. Internal password preliminary/update dispatch is labelled separately from a public API call. Resource limit rows are not PAM control lines. Existing Linux sign-in/elevation and applicable SSH paths link their current configured operation to a fresh foundation fixture. macOS links are explicitly separate Linux comparisons, not claimed macOS configuration.
+
+## Independent source evidence
+
+[results-source.json](results-source.json) records every Windows canonical/member disposition; [PAM source results](../pam-foundations/results-source.json) records all 22 PAM cases and required members. The current canonical source checker completed 128 executions and 4,354 completed prefixes with source/held state, exact sender custody, object history, filtered prerequisites, rewind and cleanup checks. The independent outcome index recomputed 992 literal outcome predicates with 0 failures. These are source-only statements, not emitted-browser or native Windows claims.
+
+The [original/current input bindings](independent-inputs-current.json) preserve all original sealed inputs. A source-grounded password-conversation correction keeps callback `PAM_CONV_ERR(19)` distinct from the password helper/module/required aggregate `PAM_AUTHTOK_ERR(20)`. Four original PAM files remain exact under `../pam-foundations/inputs/wp0-original/`. The historical worker correction receipt is not rewritten into a new acceptance record; additive parent verification is in the PAM results.
+
+The source capture audit matched 75/75 retained captures and covered S01-S36. Twenty-five captures have no recorded HTTP status; a byte hash is not proof of a successful live retrieval. Source applicability discrepancies and local lesson comparisons stay visibly qualified. New FAST/policy operations are symbolic teaching scope; existing numeric reference-vector checks are not new native Windows or blanket RFC conformance.
+
+## Integration and acceptance response
+
+The lesson table and source receipts above establish implementation and symbolic verification. Runtime, full-suite and timing outcomes retain their own denominators and are indexed separately in the manifest; none is inferred from this table.
+
+| Plan requirement | Implementation and evidence |
+|---|---|
+| Exact parent, plan and no publication authority | [Frozen baseline](baseline.json), [version 3 plan](inputs/worker-plan.html), [preserved conditions](preserved-release-conditions.json). |
+| Source/build applicability and independent expectations | [Remote sources](sources-remote.json), [protection sources](sources-protection.json), corresponding profile ledgers, [PAM sources](../pam-foundations/sources.json), [original/current bindings](independent-inputs-current.json). Captured bytes do not imply observed native builds. |
+| Account authority, SID/policy polarity and real decision inputs | WRA01-WRA05 independent cases and source outcomes retain account source, SID attributes, configured/applied context, network admission and separate requested resource access. |
+| Secret custody, CG/PPL distinction and PU/policy/silo precedence | WPROT01-WPROT05 independent cases and source outcomes retain exact owners, isolated-operation provenance, checked device evidence, account-type policy slots, audit and distinct resource denial. |
+| All-prefix held state, inspection, hidden prerequisites and cleanup | [Canonical producer](../../tools/verification/windows-protection-canonical.mjs), [current canonical receipt](../verification/windows-protection-expansion/canonical-source-10.json), Windows/PAM source result indexes. Inspection never creates possession. |
+| Exact PAM dispatch and public/internal phase separation | [Evaluator](../../src/pam-stack-evaluator.js), exact configuration files, dispatch/extended-action expectations and [PAM source results](../pam-foundations/results-source.json). Module results, aggregate API status and caller admission remain distinct. |
+| Existing Linux/SSH line explanations without changing authority | [Existing integration](../../src/pam-existing-integration.js), [operation coverage](../pam-foundations/existing-operation-coverage.json), configuration-rendering and existing-flow checks. Original Unix inventory remains unchanged. |
+| Canonical Windows/RDP comparisons and shortcuts | [Comparison data](../../src/windows-security-comparisons.js), actual application comparison/related controls; real destinations and selected modes, no cloned model or credential transfer. |
+| Case/member controls and safe selection reset | Application controls precede Play; case/member selection clears attempt/field/object/inspection state. Member profiles are local and are not serialized. |
+| Case URLs, copy/load/history, aliases and invalid fallback | [Route contract](routing-contract.json), [route implementation](../../src/workspaces.js), application copy/manual-fallback controls and route regressions. Only registered stable scenario/case identifiers reach factories. |
+| Catalog-wide hidden metadata and shared ranked order | [Metadata coverage](search-metadata-coverage.json), [search contract](search-contract.json), [independent queries](search-fixtures.json), shared picker ranker. Coverage receipt is an authored declaration; actual query/browser results are separate evidence. |
+| Variant-only/ambiguous selection, keyboard counts and invalidation | Scenario-picker, metadata and case-selection checks; real browser search results record each query, rank/count, focus, explicit ambiguity and unchanged active context during typing. |
+| One physical host, readable ownership and responsive layout | Authored mode-specific positions, one parent-derived host hull, [all-case geometry regression](../../tests/workspaces.test.mjs) and [actual host visuals](../verification/windows-protection-expansion/sdk-physical-host-visual-01.json). Real-browser geometry records actual cards, docks, ports, hulls and external-owner exclusion. |
+| Source HTTP, standalone HTTP/file and accessibility ergonomics | Actual browser matrix indexes defaults, all cases/members, denial/unavailable profiles, history, touch/narrow, reduced motion, genuine X11 browser zoom and focus/status evidence. Automation does not close human G01. |
+| Build, complete suite, emitted smoke and relevant numeric checks | Current-artifact receipts identify the exact Bun producer, per-file raw logs, emitted boot checks and unchanged numeric vector dependencies. Symbolic policy/FAST scope is not new wire or native conformance. |
+| Native Windows/PAM and human limits | [Windows availability](native-availability.json), [separate PAM native disposition](../pam-foundations/native-distribution-divergence.json), human G01 retained open. No synthetic Windows event captures. |
+| Exact baseline timing and historical gate continuity | Frozen ae9dffe source/HTML, unchanged shared method plus new-feature supplement, raw sample order/distributions and explicit flag dispositions. No old condition is implicitly passed or waived. |
+| Portable reviewer packet, footer/version and no publication | Phase packager binds every selected payload and external HTML/entrypoint, inventories omissions, extracts and rebuilds exact bytes. Footer remains version 1.0, Kirill Andrienko and the public repository link. No commit, push, deployment, review approval or release waiver is authorized. |
+
+
+## Runtime and release boundaries
+
+The final [manifest](manifest.json) and response table index actual source HTTP, standalone HTTP/offline-file, keyboard/focus, compact/expanded, narrow/touch, genuine browser zoom, reduced-motion, full-suite and performance observations with their exact producer/runtime/artifact identities. Original failed, incomplete and superseded attempts remain identifiable. Passing source records are not substituted for unperformed runtime checks.
+
+Current local verification: 2,264 passing tests and 0 failures across all 129 exact files under pinned Bun 1.4.2; all 328 emitted-IIFE choices; 31 existing numeric reference vectors; and fresh three-mode DNSSEC default-alias/copy and rebuilt-card focus checks. The 66-test affected search/navigation subset is also retained. All 128 current canonical fixture JSON records exactly equal their candidate-01 counterparts, including 4,354 source prefixes; all 992 independent literal predicates pass. [The current semantic index](../verification/windows-protection-expansion/current-semantic-verification-index-02.json) binds every fresh result. Candidate-01's 2,262-test and previous browser records remain separately scoped, not restamped to the corrected artifact.
+
+[Current browser coverage](../verification/windows-protection-expansion/native-04-artifacts.json) is a fresh single run: all 1,815 required cells passed, with 0 failures or unperformed cells, at the corrected standalone and source bytes. Its 384 canonical fixture records contain 13,062 completed-prefix observations across all three modes. An additional current 102-cell query/control collection and 126-cell narrow/reduced/genuine-zoom collection passed separately; they are not added to the unique full-matrix denominator. The previous 1,804-pass/11-fail collection and 1,773-plus-42 composite remain separately scoped historical evidence, not relabelled current results. Real X11 pointer events reached intended controls at measured trusted client coordinates. Zoom seeking uses measured native keyboard input, not the frozen CDP-drag calibration or a claim of zoom mouse-drag conformance. Exact upstream CDP/Chromium coordinate behavior remains unconfirmed. Geometry/animation records are rendered-DOM measurements, not a claim that every sample was simultaneously visible onscreen; actual search and host screenshots provide separate visual evidence.
+
+### Preserved candidate-01 timing
+
+Candidate-01's two timing collections completed serially without collection errors or input changes against exact ae9dffe source/HTML. [Raw results and every disposition](performance-results.json) retain those observations alongside the separately collected current correction. The prior 107ac shared 27-cell method had seven material flags and one overlapping variation flag. Those seven are not the shared producer's historical seven-predecessor-flags prose, nor the inherited P6/DNSSEC conditions. The measured repeated-normalization cause and current code changes are documented above; initialization work remains included in startup, with unchanged thresholds and no discarded samples.
+
+| Candidate-01 shared cell | Baseline median ms | Candidate-01 median ms | Increase ms | Original disposition |
+|---|---:|---:|---:|---|
+| source-http/open/idle-filter | 143.96 | 1009.25 | 865.28 | Material; unaccepted. |
+| source-http/closed/idle-filter | 142.93 | 986.57 | 843.64 | Material; unaccepted. |
+| standalone-http/open/idle-filter | 126.22 | 971.18 | 844.96 | Material; unaccepted. |
+| standalone-http/closed/idle-filter | 151.92 | 1017.98 | 866.06 | Material and variable; unaccepted. |
+| standalone-http/open/selection | 774.56 | 972.59 | 198.03 | Material; unaccepted. |
+| standalone-file/open/idle-filter | 138.10 | 975.76 | 837.65 | Material; unaccepted. |
+| standalone-file/closed/idle-filter | 137.89 | 939.59 | 801.70 | Material; unaccepted. |
+
+Candidate-01's separate supplement completed all 36 contexts and 342 actions: 12 like-for-like Linux/SSH cells had no threshold flags; 90 candidate-only case/search/history/PAM cells are descriptive, not compared with a fabricated baseline zero. No sample was discarded or repeated to obtain a green result. No material or variation flag, old or new, has owner acceptance or waiver here.
+
+### Current post-correction timing
+
+Both current collections completed serially, with all 27 shared cells and 102 supplemental cells collected, no execution errors, no unperformed actions and unchanged inputs. All six first-search material flags and the earlier selection flag are not reproduced on the corrected source. Current first-search medians are 151.66-166.03 ms, versus 939.59-1017.98 ms in candidate-01. This is new-source measurement with unchanged methods and thresholds, not an unchanged-source retry or discarded warmup.
+
+| Current flagged cell | Baseline median ms | Current median ms | Difference ms | Disposition |
+|---|---:|---:|---:|---|
+| standalone-http/default/startup | 3878.43 | 4963.08 | 1084.65 | Material; open owner review. |
+| standalone-file/default/startup | 3819.42 | 4932.18 | 1112.76 | Material; open owner review. |
+| standalone-http/index-closed/ssh-pam-account-row | 185.72 | 157.74 | -27.98 | Baseline variation, not candidate regression; open review. |
+
+The shared method has two current material flags and no variation flags. The supplement has no material or candidate-variation flags; one of its 12 like-for-like cells has baseline variation (range 50.71 ms, 27.30% of baseline median), despite the faster candidate median. All 90 candidate-only cells remain descriptive. No sample was removed to clear the borderline baseline-variation flag.
+
+Static index preparation is included in startup, not treated as zero work. The startup increases cover the whole expansion and initialization; exact component attribution is not established, so the full increase is not assigned solely to the picker. Current startup/variation conditions and every inherited condition remain unaccepted and unwaived. [The performance index](performance-results.json) binds all original/current values, every key disposition, diagnostics and the frozen input identities.
+
+
+Installed Linux-PAM 1.7.0-5ubuntu3.2 produced 164 matching calls and 1 explained distribution-patch divergence across 165 calls. Debian patch 045 changes cached numeric-jump handling: upstream source-pin expected `PAM_SESSION_ERR(14)` remains unchanged while the installed library returned `PAM_SUCCESS(0)`. See [the separate native disposition](../pam-foundations/native-distribution-divergence.json). No host login, sudo or sshd configuration or real credentials were changed.
+
+All 88 native Windows/DC observations remain explicitly unperformed. Chromium input, screenshots and symbolic models cannot establish native token/SID/event-log/resource behavior. Human G01 speech/comprehension, the six P6 performance conditions, five current DNSSEC corrections 02 material conditions and their earlier-key continuity, historical/P0 variation and prior live/cross-engine limits remain separate. The preserved 21 P6/P6C findings and scoped DNSSEC/WIN-11 closures are not reopened or represented as new acceptance. [Preserved release conditions](preserved-release-conditions.json) retain the exact historical authority and deny any transfer of old publication permission to this candidate.

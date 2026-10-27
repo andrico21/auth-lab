@@ -1,0 +1,120 @@
+[MS-KILE]: Determining Authentication Policy Settings | Microsoft Learn
+Skip to main content
+Skip to Ask Learn chat experience
+This browser is no longer supported.
+Upgrade to Microsoft Edge to take advantage of the latest features, security updates, and technical support.
+Download Microsoft Edge
+More info about Internet Explorer and Microsoft Edge
+Table of contents
+Exit editor mode
+Ask Learn
+Ask Learn
+Reading mode
+Table of contents
+Read in English
+Add
+Add to Plans
+Edit
+Copy Markdown
+Print
+Note
+Access to this page requires authorization. You can try signing in or changing directories.
+Access to this page requires authorization. You can try changing directories.
+3.3.5.5 Determining Authentication Policy Settings
+Feedback
+Summarize this article for me
+In this article
+If domainControllerFunctionality returns a value <
+6 ([MS-ADTS]
+section 3.1.1.3.2.25),
+the KDC
+SHOULD<53> set PolicyName to NULL.
+See section 3.3.1.1 for the
+following KDC pseudo variable definitions.
+If domainControllerFunctionality returns a value
+>= 6, the KDC checks whether the account has an Authentication Policy:
+If BelongsToSilo == TRUE (section 3.3.5.4)
+for the account, the account belongs to a Silo. In this case, when the account
+is of type:
+User
+([MS-ADSC]
+section 2.269):
+the KDC sets:
+PolicyName to AssignedSilo.msDS-UserAuthNPolicy.RDN.
+Enforced to AssignedSilo.msDS-AuthNPolicyEnforced
+TGTLifetime to
+AssignedSilo.msDS-UserAuthNPolicy.msDS-UserTGTLifetime
+AllowedToAuthenticateTo to
+AssignedSilo.msDS-UserAuthNPolicy.msDS-UserAllowedToAuthenticateTo
+AllowedToAuthenticateFrom to
+AssignedSilo.msDS-UserAuthNPolicy.msDS-UserAllowedToAuthenticateFrom
+ManagedServiceAccount
+([MS-ADSC] sections 2.140
+and 2.142):
+the KDC sets:
+PolicyName to AssignedSilo.msDS-ServiceAuthNPolicy.RDN.
+Enforced to AssignedSilo.msDS-AuthNPolicyEnforced
+TGTLifetime to
+AssignedSilo.msDS-ServiceAuthNPolicy.msDS-ServiceTGTLifetime
+AllowedToAuthenticateTo to
+AssignedSilo.msDS-ServiceAuthNPolicy.msDS-ServiceAllowedToAuthenticateTo
+AllowedToAuthenticateFrom to
+AssignedSilo.msDS-ServiceAuthNPolicy.msDS-ServiceAllowedToAuthenticateFrom
+Computer
+([MS-ADSC] section 2.21):
+the KDC sets:
+PolicyName to AssignedSilo.msDS-ComputerAuthNPolicy.RDN.
+Enforced to AssignedSilo.msDS-AuthNPolicyEnforced
+TGTLifetime to
+AssignedSilo.msDS-ComputerAuthNPolicy.msDS-ComputerTGTLifetime
+AllowedToAuthenticateTo to
+AssignedSilo.msDS-ComputerAuthNPolicy.msDS-ComputerAllowedToAuthenticateTo
+AllowedToAuthenticateFrom to NULL
+If the account does not belong to a Silo (BelongsToSilo ==
+FALSE (section 3.3.5.4)) and AssignedPolicy (section 3.3.1.1) is NULL, the KDC
+sets PolicyName to NULL and Enforced to FALSE.
+If the account does not belong to a Silo (BelongsToSilo ==
+FALSE (section 3.3.5.4)) and the AssignedPolicy is not NULL, the KDC sets PolicyName
+to AssignedPolicy.RDN, Enforced to AssignedPolicy.msDS-AuthNPolicyEnforced,
+and when the account is of type:
+User:
+the KDC sets:
+TGTLifetime to
+AssignedPolicy.msDS-UserAuthNPolicy.msDS-UserTGTLifetime
+AllowedToAuthenticateTo to
+AssignedPolicy.msDS-UserAuthNPolicy.msDS-UserAllowedToAuthenticateTo
+AllowedToAuthenticateFrom to AssignedPolicy.msDS-UserAuthNPolicy.msDS-UserAllowedToAuthenticateFrom
+ManagedServiceAccount:
+the KDC sets:
+TGTLifetime to
+AssignedPolicy.msDS-ServiceAuthNPolicy.msDS-ServiceTGTLifetime
+AllowedToAuthenticateTo to
+AssignedPolicy.msDS-ServiceAuthNPolicy.msDS-ServiceAllowedToAuthenticateTo
+AllowedToAuthenticateFrom to
+AssignedPolicy.msDS-ServiceAuthNPolicy.msDS-ServiceAllowedToAuthenticateFrom
+Computer:
+the KDC sets:
+TGTLifetime to
+AssignedPolicy.msDS-ComputerAuthNPolicy.msDS-ComputerTGTLifetime
+AllowedToAuthenticateTo to
+AssignedPolicy.msDS-ComputerAuthNPolicy.msDS-ComputerAllowedToAuthenticateTo
+AllowedToAuthenticateFrom to NULL
+Additional resources
+Last updated on
+2022-12-02
+In this article
+en-us
+Your Privacy Choices
+Theme
+Light
+Dark
+High contrast
+AI Disclaimer
+Previous Versions
+Blog
+Contribute
+Privacy
+Consumer Health Privacy
+Terms of Use
+Trademarks
+© Microsoft 2026

@@ -16,6 +16,7 @@ import {buildJWTHeldObjects} from './held-object-jwt.js';
 import {buildKubernetesHeldObjects} from './held-object-kubernetes.js';
 import {buildMCPHeldObjects} from './held-object-mcp.js';
 import {buildDNSSECHeldObjects} from './held-object-dnssec.js';
+import {buildWindowsProtectionHeldObjects} from './held-object-windows-protection.js';
 import {compileHeldObjects,assertHeldObjectCoverage} from './held-object-state.js';
 import {ADLAB_SCENARIOS} from './kerberos-ad-lab.js';
 import {CRYPTOLAB_SCENARIOS} from './kerberos-crypto-lab.js';
@@ -45,6 +46,9 @@ import {KUBERNETESAUTHLAB_SCENARIOS} from './kubernetes-auth-lab.js';
 import {KUBERNETESRBACLAB_SCENARIOS} from './kubernetes-rbac-lab.js';
 import {MCPLAB_SCENARIOS} from './mcp-auth-lab.js';
 import {DNSSECLAB_SCENARIOS} from './dnssec-lab.js';
+import {WINDOWSREMOTELAB_SCENARIOS} from './windows-remote-administration-lab.js';
+import {WINDOWSPROTECTIONLAB_SCENARIOS} from './windows-protection-lab.js';
+import {PAMFOUNDATIONSLAB_SCENARIOS} from './pam-foundations-lab.js';
 
 const heldObjectSources=new Map([
   [ADLAB_SCENARIOS,'src/kerberos-ad-lab.js'],[CRYPTOLAB_SCENARIOS,'src/kerberos-crypto-lab.js'],
@@ -62,6 +66,9 @@ const heldObjectSources=new Map([
   [KUBERNETESAUTHLAB_SCENARIOS,'src/kubernetes-auth-lab.js'],[KUBERNETESRBACLAB_SCENARIOS,'src/kubernetes-rbac-lab.js'],
   [MCPLAB_SCENARIOS,'src/mcp-auth-lab.js'],
   [DNSSECLAB_SCENARIOS,'src/dnssec-lab.js'],
+  [WINDOWSREMOTELAB_SCENARIOS,'src/windows-remote-administration-lab.js'],
+  [WINDOWSPROTECTIONLAB_SCENARIOS,'src/windows-protection-lab.js'],
+  [PAMFOUNDATIONSLAB_SCENARIOS,'src/pam-foundations-lab.js'],
 ].flatMap(([models,source])=>models.map(model=>[model.id,source])));
 const heldObjectBuilders=new Map([
   ['src/kerberos-ad-lab.js',buildADHeldObjects],['src/kerberos-crypto-lab.js',buildKerberosHeldObjects],
@@ -79,6 +86,9 @@ const heldObjectBuilders=new Map([
   ['src/kubernetes-auth-lab.js',buildKubernetesHeldObjects],['src/kubernetes-rbac-lab.js',buildKubernetesHeldObjects],
   ['src/mcp-auth-lab.js',buildMCPHeldObjects],
   ['src/dnssec-lab.js',buildDNSSECHeldObjects],
+  ['src/windows-remote-administration-lab.js',buildWindowsProtectionHeldObjects],
+  ['src/windows-protection-lab.js',buildWindowsProtectionHeldObjects],
+  ['src/pam-foundations-lab.js',buildUnixWorkstationHeldObjects],
 ]);
 
 /** Build once per immutable scenario/configuration/context revision, not frame. */
