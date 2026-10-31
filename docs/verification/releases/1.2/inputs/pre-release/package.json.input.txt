@@ -1,0 +1,15 @@
+{
+  "name": "auth-flow-studio",
+  "version": "1.1.1",
+  "private": true,
+  "type": "module",
+  "description": "An offline authentication and authorization learning lab with explicit platform profiles, canonical protocol state, exact object histories and one self-contained HTML build.",
+  "scripts": {
+    "build": "bun ./build.mjs",
+    "test": "bun test --isolate --timeout=900000 tests/*.test.mjs",
+    "verify:crypto": "bun tools/verification/expansion-crypto/check-vectors.mjs && bun tools/verification/expansion-crypto/next-jwt-vectors.mjs",
+    "verify:dnssec": "uv run --offline --no-project --python 3.14.4 python tools/verification/dnssec-crypto-current/run.py",
+    "verify:expansion": "bun tools/verification/run-expansion-native.mjs",
+    "start": "python3 -m http.server 8080 --bind 127.0.0.1"
+  }
+}

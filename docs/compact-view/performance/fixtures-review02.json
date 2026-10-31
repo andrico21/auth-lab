@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 1,
+  "kind": "compact-mobile-performance-fixtures",
+  "frozen": true,
+  "scope": "Predeclaredchanged-inputrepeatatthecorrected-02canonical01f4candidate. Preserveeveryreview01-02pairedaccepted07Full/newFullandsamecandidateFull/Compactcontrol,allcandidateactionsincludingactualfieldsendpoints,samples,warmups,classification,orderingand250/500targets. The37b91historicalflagsand60corrected01flagsremainopenintheiroriginalscopes. No physicalphone,human/AT,closure,waiverorpublicationclaim.",
+  "arms": [
+    {
+      "id": "accepted07-full",
+      "root": "baseline",
+      "presentation": "full",
+      "preference": null
+    },
+    {
+      "id": "new-full",
+      "root": "candidate",
+      "presentation": "full",
+      "preference": "full"
+    },
+    {
+      "id": "new-compact",
+      "root": "candidate",
+      "presentation": "compact",
+      "preference": "compact"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "perf-basic-web",
+      "classification": "ordinary",
+      "scenarioId": "basic-keycloak",
+      "startupScenarioId": "basic-keycloak"
+    },
+    {
+      "id": "perf-long-dnssec-history",
+      "classification": "large-history",
+      "scenarioId": "lab-dnssec15",
+      "startupScenarioId": "basic-keycloak",
+      "variantId": "rfc5011-add",
+      "queueBoundary": 24,
+      "queueEdge": "end",
+      "historyArtifactId": "lab-dnssec15:anchor-signature-child-anchor-observation-long-signature",
+      "historyHoldingId": "lab-dnssec15:rfc5011-add:holding:29",
+      "historyOwner": "dnsResolver",
+      "historyRows": 10,
+      "sourceSteps": 25
+    },
+    {
+      "id": "perf-nested-jwt-payload",
+      "classification": "large-payload",
+      "scenarioId": "lab-jwt03",
+      "startupScenarioId": "basic-keycloak",
+      "variantId": "invalid-inner-signature",
+      "queueBoundary": 3,
+      "queueEdge": "end",
+      "sourceSteps": 7,
+      "authoredRowBytes": 7007
+    },
+    {
+      "id": "perf-core-fields",
+      "classification": "ordinary",
+      "scenarioId": "core",
+      "startupScenarioId": "basic-keycloak"
+    },
+    {
+      "id": "perf-mcp09-fields",
+      "classification": "ordinary",
+      "scenarioId": "lab-mcp09",
+      "startupScenarioId": "basic-keycloak"
+    }
+  ],
+  "viewports": [
+    {
+      "id": "phone390",
+      "width": 390,
+      "height": 844,
+      "dpr": 1,
+      "touch": true,
+      "reducedMotion": "no-preference"
+    }
+  ],
+  "loadModes": [
+    "source-http",
+    "emitted-http",
+    "standalone-file"
+  ],
+  "indexStates": [
+    "closed",
+    "open"
+  ],
+  "comparisons": [
+    {
+      "id": "accepted-candidate07-Full-vs-new-Full-phone",
+      "baselineArm": "accepted07-full",
+      "candidateArm": "new-full",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "actions": [
+        "startup",
+        "idle-filter",
+        "selection",
+        "replay-start",
+        "playing-filter"
+      ]
+    },
+    {
+      "id": "new-Full-vs-new-Compact-phone",
+      "baselineArm": "new-full",
+      "candidateArm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "actions": [
+        "startup",
+        "idle-filter",
+        "selection",
+        "replay-start",
+        "playing-filter"
+      ]
+    }
+  ],
+  "candidateActions": [
+    {
+      "id": "ordinary-switch-full",
+      "name": "switch-full",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "selector": "[data-presentation-choice=\"full\"]",
+      "resultSelector": "#graph"
+    },
+    {
+      "id": "ordinary-switch-compact",
+      "name": "switch-compact",
+      "arm": "new-full",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "selector": "[data-presentation-choice=\"compact\"]",
+      "resultSelector": "#compact-current-title"
+    },
+    {
+      "id": "ordinary-next",
+      "name": "next",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "selector": "[data-compact-command=\"next\"]",
+      "resultSelector": "#compact-current-title"
+    },
+    {
+      "id": "ordinary-previous",
+      "name": "previous",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "setup": [
+        {
+          "action": "click",
+          "selector": "[data-compact-command=\"next\"]"
+        },
+        {
+          "action": "click",
+          "selector": "[data-compact-command=\"next\"]"
+        }
+      ],
+      "selector": "[data-compact-command=\"previous\"]",
+      "resultSelector": "#compact-current-title"
+    },
+    {
+      "id": "ordinary-playing-disclosure",
+      "name": "disclosure-open",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "setup": [
+        {
+          "action": "click",
+          "selector": "[data-compact-command=\"play\"]"
+        }
+      ],
+      "selector": "[data-compact-disclosure=\"data\"] > summary",
+      "resultSelector": "#compact-data"
+    },
+    {
+      "id": "large-exact-history",
+      "name": "exact-history",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-long-dnssec-history"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "setup": [
+        {
+          "action": "click",
+          "selector": "[data-compact-disclosure=\"holdings\"] > summary"
+        },
+        {
+          "action": "click",
+          "selector": "[data-compact-owner=\"dnsResolver\"] > summary"
+        },
+        {
+          "action": "click",
+          "selector": "[data-holding-id=\"lab-dnssec15:rfc5011-add:holding:29\"]"
+        }
+      ],
+      "selector": "#held-inspector [data-held-trace=\"lab-dnssec15:anchor-signature-child-anchor-observation-long-signature\"]",
+      "resultSelector": "#compact-current-title"
+    },
+    {
+      "id": "large-nested-payload",
+      "name": "large-payload",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-nested-jwt-payload"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "selector": "[data-compact-disclosure=\"data\"] > summary",
+      "resultSelector": "#compact-data"
+    },
+    {
+      "id": "ordinary-fields-open",
+      "name": "fields-open",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web",
+        "perf-core-fields",
+        "perf-mcp09-fields"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "selector": "[data-compact-disclosure=\"fields\"] > summary",
+      "resultSelector": "#attribute-index",
+      "purpose": "Actual closed-to-open field disclosure,including current-lesson nonempty bounded batch,not index-state setup or a node-count proxy."
+    },
+    {
+      "id": "ordinary-field-definition-open",
+      "name": "field-definition-open",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web",
+        "perf-core-fields",
+        "perf-mcp09-fields"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "setup": [
+        {
+          "action": "click",
+          "selector": "[data-compact-disclosure=\"fields\"] > summary"
+        }
+      ],
+      "selector": "#attribute-index-list [data-index-attribute]:first-child",
+      "resultSelector": "#compact-field-definition",
+      "purpose": "Actual first current-lesson field definition through the real control,including meaningful region focus and in-viewport reading destination. Field-disclosure setup untimed; all measured actions paused/no canonical or queue change."
+    }
+  ],
+  "resource": {
+    "arm": "new-compact",
+    "fixtureIds": [
+      "perf-basic-web"
+    ],
+    "viewportIds": [
+      "phone390"
+    ],
+    "returnViewport": {
+      "width": 430,
+      "height": 844
+    },
+    "fullOnlySelectors": [
+      "#graph",
+      "#timeline",
+      "#packet",
+      "#connections",
+      ".held-dock"
+    ],
+    "fullMethods": [
+      {
+        "owner": "app",
+        "name": "renderActors",
+        "category": "graph"
+      },
+      {
+        "owner": "heldView",
+        "name": "configureGeometry",
+        "category": "geometry"
+      },
+      {
+        "owner": "heldView",
+        "name": "render",
+        "category": "dock"
+      },
+      {
+        "owner": "app",
+        "name": "renderPacket",
+        "category": "packet"
+      },
+      {
+        "owner": "app",
+        "name": "renderTimeline",
+        "category": "timeline"
+      }
+    ],
+    "switchFullSelector": "[data-presentation-choice=\"full\"]",
+    "switchCompactSelector": "[data-presentation-choice=\"compact\"]",
+    "fullReturnSelector": "#graph",
+    "fullPlaySelector": "#play",
+    "resourceBounds": {
+      "listeners": 0,
+      "observers": 0,
+      "timers": 0,
+      "detachedNodes": 0
+    }
+  },
+  "rules": {
+    "samplesPerArm": 7,
+    "separatelyRetainedWarmupsPerArm": 1,
+    "serial": true,
+    "alternatingArms": true,
+    "noInstrumentedLatency": true,
+    "ordinaryMedianTargetMs": 250,
+    "ordinaryMaximumTargetMs": 500,
+    "strictZeroGrowthBounds": "Owned active listener/observer/timer and collected detached-node counts must not grow after stable warmup. Unsupported CDP evidence is explicitly unperformed, never zero.",
+    "fixturesAudit": "The immutable candidate07 compiled fixture resolved the 25-row RFC5011-add journey, exact resolver holding:29 and 10-row artifact history, and the 7-row invalid-inner-signature JWT journey with authored row3=7007 UTF-8 bytes. Classification was fixed in planned-matrix.json before results."
+  },
+  "revision": "compact-corrected02-boundary-repeat-01",
+  "frozenAt": "2026-10-29T21:35:43.314189+00:00",
+  "derivedFrom": {
+    "path": "docs/compact-view/performance/fixtures-review01-02.json",
+    "sha256": "cac53a60bfd3b16daf5eaa7840430256e55ceb9896cf95695ee0a7dd80d6738a",
+    "historicalInputUntouched": true
+  },
+  "reviewAuthoritySha256": "fd47e111f9d12cebb95671784baa33c356a4385b5c265b4a92a1c0201760f2dd",
+  "candidateBinding": {
+    "sourceFileCount": 271,
+    "canonicalSha256": "01f4f40fc980868085d7bcdc941e6cafd3a83de845f94f5c348c549eae6da430",
+    "standalone": {
+      "bytes": 5668235,
+      "sha256": "52479dd292643231ca5945c99fd2df41288d502de530013a07f08a28a93398a5"
+    }
+  },
+  "supersedes": {
+    "scope": "Changedcandidatebindingonly;earliermeasurementsremainhistorical,notsupersededacceptance",
+    "priorCanonicalSha256": "7bac35907183867c4dc60bacf949c44cc006ab473356abf89e54e12968bbb02d",
+    "priorStandaloneSha256": "4a125cf0cba72b2af59704d05285229d6672e6cb8e9ef072504dde2adf4ea9c7",
+    "priorCurrentFlaggedRows": 60,
+    "matrixRulesEndpointsSamplesWarmupsUnchanged": true
+  }
+}

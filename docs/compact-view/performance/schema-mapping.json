@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "kind": "compact-performance-source-schema-mapping",
+  "frozenPlan": "performance/planned-matrix.json",
+  "legacyProducer": {
+    "path": "tools/verification/run-next-expansion-performance.mjs",
+    "sha256": "ab9abf15f333a5da529a4dac62b7504edc9c52177210bfe67adbbe50471d51e1",
+    "unchanged": true,
+    "viewport": {
+      "width": 1920,
+      "height": 1200,
+      "dpr": 1,
+      "touch": false
+    },
+    "samples": 7,
+    "warmups": 0,
+    "loadModes": [
+      {
+        "raw": "source-http",
+        "plan": "source-http",
+        "surface": "source index.html over local HTTP"
+      },
+      {
+        "raw": "standalone-http",
+        "plan": "emitted-http",
+        "surface": "exact emitted standalone HTML over local HTTP"
+      },
+      {
+        "raw": "standalone-file",
+        "plan": "standalone-file",
+        "surface": "exact emitted standalone HTML from file:"
+      }
+    ],
+    "startup": "Legacy raw startup aggregation has14 samples per arm/loading mode because both post-startup index controls contribute their7 fresh contexts. It has no fabricated warmup. Keep raw legacy labels and arrays; normalize only explicit semantic loading-mode aliases in the response index."
+  },
+  "newProducer": {
+    "path": "tools/verification/run-compact-mobile-performance.mjs",
+    "samples": 7,
+    "warmups": 1,
+    "viewport": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1,
+      "touch": true
+    },
+    "loadModes": [
+      "source-http",
+      "emitted-http",
+      "standalone-file"
+    ],
+    "qualification": "Touch emulation, not a physical phone or a calibrated slower-device measurement."
+  },
+  "timing": "Uninstrumented compare contexts only. Resource/profile observations are separate and cannot contribute latency. Do not run collectors/builds/test workers concurrently.",
+  "disposition": "Every material/variation/ordinary-target flag is retained and individually disposed; no unchanged rerun seeks green and no statistical/owner acceptance is inferred."
+}

@@ -28,7 +28,7 @@ jobs:
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: 1.4.2
+          bun-version: 1.4.3
       - name: Set up pinned offline DNSSEC prerequisites
         uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
         with:
@@ -60,6 +60,7 @@ jobs:
       - name: Verify pinned full cryptographic vectors
         run: bun run verify:crypto
       - name: Run the test suite
+        timeout-minutes: 90
         run: bun run test
       - name: Build standalone with the release tag
         if: github.ref_type == 'tag'

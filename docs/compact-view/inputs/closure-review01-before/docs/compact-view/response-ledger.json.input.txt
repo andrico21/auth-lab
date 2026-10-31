@@ -1,0 +1,944 @@
+{
+  "schemaVersion": 1,
+  "kind": "compact-view-mc01-mc20-requirement-response-ledger",
+  "review01PathConvention": "source/ and review/ paths start at extracted delivery root. Current QA/ and original absolute QA collection references resolve through review/evidence/review01/REPORT-LOCATIONS.json; the top-level review/evidence/REPORT-LOCATIONS.json retains its734 historical JSON aliases. #unchangedSourceDependencyEvidence and #historicalEvidence identify JSON object keys in review01-impact.json, not independently executed reports. Preimages resolve through review/evidence/PREIMAGE-LOCATIONS.json.",
+  "status": "worker-current143-verification-complete-independent-review-closure-required",
+  "baseCommit": "142fccdff9c452f6491b8886b83726bc188f49cd",
+  "version": "1.1.1",
+  "acceptedControlCanonicalSha256": "b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825",
+  "workerInitialDescendantCanonicalSha256": "d69323ff1f26424a9185cd34cb34b0643e68f993846e6c2377fa1408ae96fbcb",
+  "currentCanonicalSha256": "01f4f40fc980868085d7bcdc941e6cafd3a83de845f94f5c348c549eae6da430",
+  "canonicalFiles": 271,
+  "standalone": {
+    "bytes": 5668235,
+    "sha256": "52479dd292643231ca5945c99fd2df41288d502de530013a07f08a28a93398a5"
+  },
+  "authority": "source/docs/compact-view/inputs/worker-plan.html.input.txt",
+  "pathBase": "Extracted delivery root for source/ and review/. Current QA paths/reports resolve through review/evidence/review02/REPORT-LOCATIONS.json. Prior review01 references are historical7bac and use its own locator and exact924-member source bridge. The older top-level locators retain their original734 reports and preimage recipes.",
+  "interpretation": "Implementation descriptions are not independent reviewer acceptance. Native, harness, build, performance, exact CI, human/device and publication scopes remain separate. Original failures and inherited closures retain their original inputs and qualifications.",
+  "requirements": [
+    {
+      "id": "MC-01",
+      "requirement": "Validated remembered Compact/Full preference and once-only700CSSpx startup selection.",
+      "response": "PresentationPreference accepts only compact/full, reads storage once, uses initial innerWidth<=700 only when no valid remembered value exists, and persists explicit choices. Resize and routes do not change presentation preference.",
+      "implementation": [
+        "source/src/presentation-preference.js",
+        "source/src/study-controller.js",
+        "source/src/app.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/implementation.md",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Current-source available native preference/lifecycle checks passed. Complete regression execution is tracked separately under MC-20.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-02",
+      "requirement": "Complete single-column phone reader and usable playback structure.",
+      "response": "Compact owns one active reader with current action/results, normal-flow playback, details and exact evidence access. It does not retain a hidden interactive Full body. Focus/scroll breathing room and shared notifications remain usable on short and very tall pages. Review01 current corrections: Mark only the duplicate ordinary description step-description and remove that class in Compact; retain shared cryptoDetail precedence and sourceComplete restrictions.; Use current-context fields and batches of 40; explicit global scope or nonempty search exposes the complete catalog. Reset limits on query/context/scope changes. Definition precedes results; Show more focuses first added field; Follow/Return deliberately reveal current action and Back returns to named definition. Full global policy remains unchanged.",
+      "implementation": [
+        "source/src/compact-view.js",
+        "source/src/styles.css",
+        "source/index.html"
+      ],
+      "evidence": [
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/native-acceptance-02-artifacts.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Current-source bounded available layouts passed. Physical phones and human accessibility acceptance remain unperformed.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R02",
+        "MC-R07"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-03",
+      "requirement": "Full catalog/search/case/member parity, including keyboard and IME behavior.",
+      "response": "The shared ScenarioPicker instances and original catalog/search producers remain common-shell owners. Compact preserves search/case/member selection rather than creating a reduced catalog or alternate ranking implementation. Review01 current corrections: Retain at most one transient and one switch-promoted nonempty query per picker. Focusout/outside dismissal and switching must not retain/promote untouched or whitespace-only visits; closed inputs keep their selected label. Nonempty query/active-result restoration remains bounded; ordinary reopen stays fresh and cancel/input/clear/selection/context/destroy invalidate drafts.",
+      "implementation": [
+        "source/src/scenario-picker.js",
+        "source/src/study-controller.js",
+        "source/src/compact-view.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/phase-0/catalog-and-cases.json",
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/functional-verification.json",
+        "review/evidence/final-ci/compiled-current-04/compiled-bundle-status.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "All 328 emitted picker identities and available native keyboard/IME semantics passed. Complete corrected source/emitted DOM phases each passed 3628 checks across 1158 reachable case/member states; frozen canonical parity passed all 134160 operations. Original failed producer results remain preserved.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R06"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-04",
+      "requirement": "Configuration/context access, Full editing handoffs and existing route/copied-link compatibility.",
+      "response": "Compact shows applied context, assumptions and configuration; editing explicitly opens Full without resetting the session. Shared routing remains the owner; presentation changes do not write a View route or reapply configuration. Review01 current corrections: Invalidate chapterControlsModel and attributeIndexRows after mounting the destination host; derive chapter content from retained session/model without reset. Cache index rows by live list host and ordered field IDs.",
+      "implementation": [
+        "source/src/compact-view.js",
+        "source/src/study-controller.js",
+        "source/src/app.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/phase-0/state-and-lifecycle-contract.json",
+        "source/docs/compact-view/implementation.md",
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Available native configuration/handoff/route paths and complete canonical, corrected DOM and source/emitted deep scopes passed. No presentation-only switch resets configuration or rewrites the route; exact CI is separately tracked under MC-20.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R01"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-05",
+      "requirement": "Truthful action, logical actors, operation scope and prefix-bound observed/pending results.",
+      "response": "Current action/results come from the shared authored/canonical producers at the exact active prefix. Logical owner and local/internal/network classifications remain explicit. Titles are not interpreted as success/failure outcomes; later effects remain pending.",
+      "implementation": [
+        "source/src/compact-view.js",
+        "source/src/held-study-state.js",
+        "source/src/held-study-projection.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/phase-0/panel-inventory.json",
+        "source/docs/compact-view/phase-0/deep-fixtures.json",
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Complete 134160-operation canonical comparisons passed. Each complete source/emitted deep phase checked 7230 independent rendered canonical prefixes plus rewind/history operations across all 69 frozen fixtures; available native representatives also passed.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-06",
+      "requirement": "Permission-correct current holdings, fields, exact-object history and exact-value access/copy.",
+      "response": "HeldStudyState owns shared identity, permission-scoped inspection and exact histories. Current holdings are distinct from cumulative history and authority. Detached historical inspection keeps only previously viewed permitted fields. Opaque possession does not grant plaintext. Exact copy preserves the full permitted value; unavailable Clipboard API offers explicitly labelled manual copy without claiming success. Review01 current corrections: Use shared fieldControlMetadata for payload, attribute buttons and index: Compact controls the named inline definition region, without dialog/F2 promises; Full retains dialog/F2. Deliberate field selection focuses and reveals the definition region, not trailing Follow.; Use current-context fields and batches of 40; explicit global scope or nonempty search exposes the complete catalog. Reset limits on query/context/scope changes. Definition precedes results; Show more focuses first added field; Follow/Return deliberately reveal current action and Back returns to named definition. Full global policy remains unchanged.",
+      "implementation": [
+        "source/src/held-study-state.js",
+        "source/src/held-study-projection.js",
+        "source/src/compact-view.js",
+        "source/src/held-object-view.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/phase-0/deep-fixtures.json",
+        "source/docs/compact-view/implementation.md",
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Each complete source/emitted deep phase passed 5140 field queues and 3530 exact-object queues, covering 17092 field-history rows and 8434 exact-history rows across all 69 frozen fixtures. Available native inspection/exact-copy cases passed. This is not native protocol/platform or human acceptance.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R04",
+        "MC-R07"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-07",
+      "requirement": "Every required protocol-specific learning/evidence panel or explicit Full-only editing action.",
+      "response": "Compact reuses the original learning/input/PAM/state/decision/Windows/lifetime/instance/attribute/action renderers. PAM physical lines and pending/internal/public results, source qualifications, failures and coverage remain visible through the frozen panel mapping. Configuration editing and diagrams use explicit labelled Full handoffs rather than silently omitted evidence. Review01 current corrections: Invalidate chapterControlsModel and attributeIndexRows after mounting the destination host; derive chapter content from retained session/model without reset. Cache index rows by live list host and ordered field IDs.; Mark only the duplicate ordinary description step-description and remove that class in Compact; retain shared cryptoDetail precedence and sourceComplete restrictions.",
+      "implementation": [
+        "source/src/compact-view.js",
+        "source/src/study-controller.js",
+        "source/src/app.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/phase-0/panel-inventory.json",
+        "source/docs/compact-view/phase-0/deep-fixtures.json",
+        "source/docs/compact-view/implementation.md",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Complete registered/source-only fixture scopes passed on source and emitted surfaces: 7644 deep checks per surface across all 69 frozen fixtures. Panel mappings and available native representatives are preserved; source-only factory coverage is not relabelled a registered/native result.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R01",
+        "MC-R02"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-08",
+      "requirement": "Protocol clocks, failures, partial knowledge and qualifications independent of presentation time.",
+      "response": "The original protocol models and exact canonical cursors remain authoritative. Protocol lifetimes and DNSSEC validator/cache/proof/alias/target clocks use original panels; playback elapsed time is separately labelled. Expiry does not erase possession without an authored release, and partial/not-modeled coverage is not an empty inventory.",
+      "implementation": [
+        "source/src/compact-view.js",
+        "source/src/held-study-state.js",
+        "source/src/study-controller.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/phase-0/deep-fixtures.json",
+        "source/docs/compact-view/assertion-interfaces.json",
+        "source/docs/compact-view/implementation.md",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Complete frozen branch/clock/prefix/rewind and history scopes passed on both source/emitted surfaces, with unchanged protocol models/oracles and all 134160 canonical operations matched. Physical/native interoperability and inherited external gaps remain separate.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-09",
+      "requirement": "One shared controller, context, held-state projection and FlowPlayer.",
+      "response": "AuthFlowStudio extends StudyController and owns the common session, one player, applied/draft context, routing and shared header/search settings. Presenters own only their active DOM/resources. HeldStudyState is headless and shared, not a second protocol or timing engine.",
+      "implementation": [
+        "source/src/study-controller.js",
+        "source/src/player.js",
+        "source/src/held-study-state.js",
+        "source/src/app.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/phase-0/state-and-lifecycle-contract.json",
+        "source/docs/compact-view/implementation.md",
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/performance/current-results.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Complete semantic/deep scopes and available native switching passed. Current-source instrumented resources passed all three paths with one shared player, no inactive Full/geometry calls, and 20 same-surface roundtrips per path within declared bounds; not a blanket no-leak proof.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-10",
+      "requirement": "Exact pause/preserve/unmount/mount/focus switch transaction without reset or reselection.",
+      "response": "A real view change pauses playing once, preserves the postpause cursor/queue/elapsed state, closes transient surfaces, releases pointer capture and unmounts the old presenter before mounting the new one. Logical focus/disclosure/scroll identities are restored without DOM-node retention, step reselection, reset, configuration reapply or autoplay. Same-view activation does not remount or pause. Review01 current corrections: Invalidate chapterControlsModel and attributeIndexRows after mounting the destination host; derive chapter content from retained session/model without reset. Cache index rows by live list host and ordered field IDs.; Retain at most one transient and one switch-promoted nonempty query per picker. Focusout/outside dismissal and switching must not retain/promote untouched or whitespace-only visits; closed inputs keep their selected label. Nonempty query/active-result restoration remains bounded; ordinary reopen stays fresh and cancel/input/clear/selection/context/destroy invalidate drafts.",
+      "implementation": [
+        "source/src/study-controller.js",
+        "source/src/full-view.js",
+        "source/src/compact-view.js",
+        "source/src/app.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/phase-0/state-and-lifecycle-contract.json",
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/implementation.md",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/performance/current-results.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Available native postpause/switch witnesses and complete source/emitted deep preservation passed. Current resource playing/switch checks passed separately. Six ordinary switching responsiveness-target misses remain explicitly open; correct state/focus preservation is not a speed waiver.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R01",
+        "MC-R06"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-11",
+      "requirement": "Exact active-queue boundary navigation, paused scope entry and cursor-preserving Return to journey.",
+      "response": "FlowPlayer.inspectQueue inspects exact integer row boundaries in the complete active queue without fractional seeking or suffix playback. Initial/partial/completed/terminal behavior is explicit. Field/artifact histories preserve heldCursorStart/End, empty histories remain empty, and Return to journey maps the same named source cursor without reset. Review01 current corrections: Classify step, attribute-step and trace-step as selected action replay; retain exact-object or field parent context when present, otherwise distinguish the parent-free selected action from the complete Journey. Real timeline and Full inspector Replay/Follow preserve queue contents, parent, canonical cursor and elapsed state across views.",
+      "implementation": [
+        "source/src/player.js",
+        "source/src/study-controller.js",
+        "source/src/compact-view.js",
+        "source/tests/compact-boundary-navigation.test.mjs"
+      ],
+      "evidence": [
+        "source/docs/compact-view/phase-0/state-and-lifecycle-contract.json",
+        "source/docs/compact-view/phase-0/deep-fixtures.json",
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Complete field/exact-object history sweeps and source/emitted prefix/rewind checks passed, together with available native boundary navigation. Empty histories and exact source cursor mappings retain their original positive assertions; full regression is separately tracked under MC-20.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R03"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-12",
+      "requirement": "Shared semantic preparation and headless held state separated from presenter DOM/geometry.",
+      "response": "HeldStudyState owns canonical context/cursor, logical owners and exact traces; heldInspectionHtml renders already permission-scoped data. Full graph/dock/packet/timeline work stays in Full owners. Typing and closed Compact detail surfaces do not compile a second model or mount hidden Full work. Review01 current corrections: Invalidate chapterControlsModel and attributeIndexRows after mounting the destination host; derive chapter content from retained session/model without reset. Cache index rows by live list host and ordered field IDs.",
+      "implementation": [
+        "source/src/held-study-state.js",
+        "source/src/held-study-projection.js",
+        "source/src/held-object-view.js",
+        "source/src/full-view.js",
+        "source/src/compact-view.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/implementation.md",
+        "source/docs/compact-view/performance/resource-observations.json",
+        "source/docs/compact-view/performance/current-results.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Prior-input causal/resource evidence remains historical. Fresh b91f13a1 source/emitted/file resource diagnostics passed with zero cold/playing Compact Full graph/dock/packet/geometry calls and no hidden Full DOM. No older result is relabelled current.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R01"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-13",
+      "requirement": "Explicit presenter lifecycle, inactive-work suppression and bounded resources across switches.",
+      "response": "Each presenter unmounts owned listeners, observers, placement references and nodes. Shared privacy/reduced-motion/player ownership survives a presentation change but retains original page-teardown behavior. Saved presentation state contains no retained DOM node. The resource collector releases prior CDP DOM-agent bindings to avoid manufacturing detached-node retention.",
+      "implementation": [
+        "source/src/full-view.js",
+        "source/src/compact-view.js",
+        "source/src/held-object-view.js",
+        "source/src/study-controller.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/performance/resource-observations.json",
+        "source/docs/compact-view/resource-evidence-encoding.json",
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/performance/current-results.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Current-source three-path 20-roundtrip resource collection passed all declared bounds: listener/observer/timer/player-listener growth zero and detached-node growth -6 on each path. Original inspector-retention failure/correction remains preserved; heap diagnostics are not a blanket no-leak claim.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-14",
+      "requirement": "One CSP-safe self-contained build with both views and all three loading paths.",
+      "response": "The explicit dependency-ordered build includes every new module before its consumers, isolates private concatenated identifiers and preserves the hash-based CSP. No new application runtime package or external asset is required. Source version remains1.1.1.",
+      "implementation": [
+        "source/build.mjs",
+        "source/index.html",
+        "source/package.json"
+      ],
+      "evidence": [
+        "source/docs/compact-view/build-contract.json",
+        "review/evidence/final-ci/compiled-current-04/compiled-bundle-status.json",
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Five actual pinned build modes produced byte-identical HTML; emitted328-choice smoke and current three-path native matrix passed. Final independent packet rebuild remains required.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-15",
+      "requirement": "Reflow, enlargement, touch, focus, disclosures, orientation, themes and reduced motion.",
+      "response": "Compact uses one active reader,44px shared targets without geometry interpolation, normal-flow playback, bounded manual scroll/focus, stable disclosures and existing themes/reduced-motion ownership. Native400percent zoom uses actual X11 keyboard input and mandatory PNG capture;200percent checks are explicitly user-style simulation. Review01 current corrections: Use shared fieldControlMetadata for payload, attribute buttons and index: Compact controls the named inline definition region, without dialog/F2 promises; Full retains dialog/F2. Deliberate field selection focuses and reveals the definition region, not trailing Follow.; Use setHelpOpen for trigger, Close and Escape; focus surviving Close/trigger and explicitly scroll nearest. Escape consumes only help dismissal and retains holdings. Automatic rerender/playback does not invoke this scroll path.; Retain at most one transient and one switch-promoted nonempty query per picker. Focusout/outside dismissal and switching must not retain/promote untouched or whitespace-only visits; closed inputs keep their selected label. Nonempty query/active-result restoration remains bounded; ordinary reopen stays fresh and cancel/input/clear/selection/context/destroy invalidate drafts.; Use current-context fields and batches of 40; explicit global scope or nonempty search exposes the complete catalog. Reset limits on query/context/scope changes. Definition precedes results; Show more focuses first added field; Follow/Return deliberately reveal current action and Back returns to named definition. Full global policy remains unchanged.",
+      "implementation": [
+        "source/src/styles.css",
+        "source/src/compact-view.js",
+        "source/src/app.js"
+      ],
+      "evidence": [
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/native-acceptance-02-artifacts.json",
+        "source/docs/compact-view/phase-0/browser-device-at-plan.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "All142available native cells passed, including three actual400percent and three qualified200percent cells. Fourteen unavailable external cells remain open; no blanket mobile accessibility or G01 acceptance.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R04",
+        "MC-R05",
+        "MC-R06",
+        "MC-R07"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-16",
+      "requirement": "Frozen catalog/case/cursor, loading-path, browser/device/AT and execution coverage manifests.",
+      "response": "The phase0 manifests freeze328picker identities,2079catalog cases,2080parity cases including one distinctly source-only fixture,12presets,878registered variant choices,1081variant/default states,66comparison members,921Core configurations and the complete134160-operation semantic definition. Execution status is not inferred from planning.",
+      "implementation": [
+        "source/docs/compact-view/phase-0/catalog-and-cases.json",
+        "source/docs/compact-view/phase-0/browser-device-at-plan.json",
+        "source/docs/compact-view/parity-operation-definition.json"
+      ],
+      "evidence": [
+        "source/docs/compact-view/current-progress.json",
+        "source/docs/compact-view/evidence-format.md",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Frozen operation definition verified and complete canonical phase passed all 2080 cases/134160 operations. Corrected complete DOM phases and byte-identical original complete deep scopes are explicitly joined, with original failures and producer identities preserved. No diagnostic subset substitutes for full coverage.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-17",
+      "requirement": "Resolved real deep semantic fixtures and actual registered variant/member identities.",
+      "response": "All69deep fixtures are resolved to actual registered models/variants/members or explicitly labelled source-only factories. Full comparisons retain authored/canonical fields, exact clocks, every entered field/artifact history row and positive projector assertions across source and emitted surfaces.",
+      "implementation": [
+        "source/docs/compact-view/phase-0/deep-fixtures.json",
+        "source/tools/verification/compact-view-fixtures.mjs",
+        "source/tools/verification/run-compact-view-checks.mjs"
+      ],
+      "evidence": [
+        "source/docs/compact-view/assertion-interfaces.json",
+        "source/docs/compact-view/current-progress.json",
+        "source/docs/compact-view/functional-verification.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "All 69 frozen fixtures executed completely on source and emitted surfaces: 7644 passed/0 failed/0 unperformed per surface. Exact planned IDs, original artifact hashes and raw prefix/history coverage were checked. Source-only fixtures remain explicitly labelled.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-18",
+      "requirement": "Bounded real-browser/layout/semantic matrix with honest unavailable device/human cells.",
+      "response": "The frozen156-cell matrix records actual Chromium155, host Firefox157 and isolated native X11 zoom methods. Parent/child input/namespace/screenshot bindings remain independently inspectable. WebKit/physical-device/human speech tasks remain explicitly unavailable rather than simulated acceptance.",
+      "implementation": [
+        "source/tools/verification/run-compact-mobile-browser.mjs",
+        "source/tools/verification/compact-native-zoom.mjs",
+        "source/docs/compact-view/phase-0/browser-device-at-plan.json"
+      ],
+      "evidence": [
+        "source/docs/compact-view/native-acceptance-02.json",
+        "source/docs/compact-view/native-acceptance-02-artifacts.json",
+        "source/docs/compact-view/native-complete-01-retention-index.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Current142available cells passed with zero failed;14external cells unperformed. Original native01failure102passed/40failed and subsequent corrections remain preserved.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-19",
+      "requirement": "Matched serial seven-sample comparisons, candidate-only actions, resource diagnostics and explicit flag dispositions.",
+      "response": "The unchanged desktop producer and separately named phone producer preserve three loading paths, two index states, seven paired measured samples, declared warmups/order, candidate-only ordinary/large actions and separate instrumentation. Source/standalone growth is measured. Historical flags and existing gates are not offset or waived by Compact. Review01 current corrections: Use current-context fields and batches of 40; explicit global scope or nonempty search exposes the complete catalog. Reset limits on query/context/scope changes. Definition precedes results; Show more focuses first added field; Follow/Return deliberately reveal current action and Back returns to named definition. Full global policy remains unchanged.",
+      "implementation": [
+        "source/tools/verification/run-next-expansion-performance.mjs",
+        "source/tools/verification/run-compact-mobile-performance.mjs",
+        "source/docs/compact-view/performance/planned-matrix.json",
+        "source/docs/compact-view/performance/fixtures.json"
+      ],
+      "evidence": [
+        "source/docs/compact-view/performance/current-results.json",
+        "source/docs/compact-view/performance/schema-mapping.json",
+        "source/docs/compact-view/build-contract.json",
+        "source/docs/compact-view/performance/resource-observations.json",
+        "review/evidence/current-performance/transport-and-state-proof.json.br",
+        "review/evidence/current-performance/optional-profile-omission-proof.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json"
+      ],
+      "historicalVerification": "Complete current-source serial desktop/phone/feature measurements and three-path20-roundtrip resources are recorded with all values/flags retained. Every current flagged row has an explicit open investigated disposition; six switching planning-target misses and all inherited/device/human gates are unwaived. Separate45-session profiles are diagnostic-only, not latency.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [
+        "MC-R07"
+      ],
+      "verification": "Current targeted evidence: source/docs/compact-view/review01-verification.json. Current complete CI passed; exact counts and the full byte-bound execution scope are in source/docs/compact-view/exact-ci-review01.json. Historical evidence retains its original inputs. No current complete canonical/DOM/deep recollection or independent acceptance claim."
+    },
+    {
+      "id": "MC-20",
+      "requirement": "Actual complete CI invocation and reproducible three-upload review handoff without publication.",
+      "response": "The actual unmodified current bun run test completed once under approved Bun1.4.3 at01f4/52479:2527passed,0failed across143files,37023expect calls,exit0. All931execution-stage file byte bindings stayed identical;139original runnable files and all256mandatory inputs/59authorities remain byte-exact. Four new behavioral files contain63cases. The independent5400second process-group watchdog didnotfire;all5000/900000/1800000ms in-process budgets remain unchanged. The aborted1.4.2run has no completed totals/pass and all928stagebytes are preserved. A new literal-three-upload preseal actually passed11permanent consumers with4377immutable component bindings, including the changed workflow/packager. Finaltransport is separately sealed;no Astra closure,performancewaiver,humanacceptanceorpublicationinferred.",
+      "implementation": [
+        "source/tools/verification/package-compact-review.mjs",
+        "source/tools/verification/compact-review-archive.py",
+        "source/docs/compact-view/reproduce.md",
+        "source/docs/compact-view/changed-files.json",
+        "source/docs/compact-view/assertion-interfaces.json"
+      ],
+      "evidence": [
+        "source/docs/compact-view/exact-ci.json",
+        "source/docs/compact-view/current-progress.json",
+        "review/evidence/final-ci/exact-ci.log",
+        "review/evidence/final-ci/inputs-before.json",
+        "review/evidence/final-ci/inputs-after.json",
+        "review/evidence/final-metadata/frozen-authority-preservation.json",
+        "review/evidence/final-metadata/active-reference-resolution.json",
+        "review/evidence/EVIDENCE-ENCODINGS.json",
+        "review/evidence/REPORT-LOCATIONS.json",
+        "review/evidence/PREIMAGE-LOCATIONS.json",
+        "review/evidence/packet-size/size-disposition.json",
+        "source/docs/compact-view/review01-impact.json",
+        "source/docs/compact-view/review01-verification.json",
+        "source/docs/compact-view/exact-ci-review01.json",
+        "source/docs/compact-view/performance/current-results-review01.json",
+        "source/docs/compact-view/review02-implementation.md",
+        "source/docs/compact-view/review02-impact.json",
+        "source/docs/compact-view/review02-verification.json",
+        "source/docs/compact-view/exact-ci-review02.json",
+        "source/docs/compact-view/performance/current-results-review02.json"
+      ],
+      "historicalVerification": "Actual exact final CI passed2464/0across139files without a narrower substitute or rerun. Current corpus scopes, native142available cells, emitted328-choice smoke, five build modes and serial timing/dispositions are separately bound.255mandatory frozen inputs and58authorities are selected byte-exactly. START-HERE.md states the actual packet and relocation check scope; no provisional size ZIP is a delivery. Independent/device/human/performance gates remain open and publication is unauthorized.",
+      "historicalQualification": "HISTORICAL 267/b91, not current 271/7bac execution. Reuse only as unchanged-dependency evidence under source/docs/compact-view/review01-impact.json#unchangedSourceDependencyEvidence and #historicalEvidence; changed app/controller/presenter wrappers require current positive UI checks.",
+      "review01Responses": [],
+      "verification": "Actual full command:source/docs/compact-view/exact-ci-review02.json; every931before/after binding and raw output are retained. Actual1.4.3portable consumers:review/evidence/review02/runtime143/portable-consumers/consumer-proof.json. Historical2516/0corrected01 and2464/0b91results retainoriginalscope;they are not current substitutes.",
+      "historicalResponse": "The actual exact bun run test completed once under pinnedBun1.4.2 across139current runnable files with unchanged5000/900000/1800000ms budgets:2464passed/0failed,37023expect calls,exit0. All907execution-stage files remained byte-identical. Original inputs/assertions/failures/authorities remain preserved.734original reports and483historical preimage members have real lossless restoration consumers and explicit logical locators. The permanent final packager checks every member, both checksum layers, extracted canonical identity and actual pinned no-install HTML rebuild.",
+      "historicalCorrected01Response": "The corrected-01 candidate at7bac preserved139original runnable test files and added four behavioral files with52cases. Its actual complete pinned-Bun1.4.2 command passed2516tests,0failed across143files,exit0; all921execution-file byte bindings stayed identical before/after. The late picker/replay boundary corrections change app/test inputs and require separately bound current verification, not an inferred reuse of that pass. Three-upload packaging and independent consumers retain their explicit component scopes; no publication authorization."
+    },
+    {
+      "id": "MC-R01",
+      "severity": "P2",
+      "requirement": "Preserve chapter controls and credential comparison across remounts.",
+      "response": "Invalidate chapterControlsModel and attributeIndexRows after mounting the destination host; derive chapter content from retained session/model without reset. Cache index rows by live list host and ordered field IDs.",
+      "affectedRequirements": [
+        "MC-04",
+        "MC-07",
+        "MC-10",
+        "MC-12"
+      ],
+      "implementation": [
+        "source/src/app.js",
+        "source/src/compact-view.js",
+        "source/src/study-controller.js"
+      ],
+      "behavioralTest": "source/tests/compact-review-content.test.mjs",
+      "evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review02-implementation.md",
+        "source/docs/compact-view/review02-impact.json",
+        "source/docs/compact-view/review02-verification.json",
+        "review/evidence/review02/positive-checks-02/source/status.json",
+        "review/evidence/review02/positive-checks-02/emitted/status.json",
+        "review/evidence/review02/native-01/combined-current-result.json",
+        "review/evidence/review02/supplied-probes-01/substantive-asserted-result.json"
+      ],
+      "verification": "Actual source and emitted producers each passed30/30 grouped behavior records; actual174 native cells passed,58 per loader,0 failures. Four behavioral files contain63 cases;139 original files remain byte-identical. These counts are grouped records/cells and authored cases, not inferred per-finding or complete-suite totals. Current complete command is separately bound in source/docs/compact-view/exact-ci-review02.json; historical7bac2516/0 is not a current pass claim.",
+      "closure": "Independent Astra closure still required; implementation and worker results do not close finding.",
+      "historicalCorrected01Evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review01-verification.json",
+        "QA/positive-checks-02/source/status.json",
+        "QA/positive-checks-02/emitted/status.json",
+        "QA/native-review01/combined-current-result.json",
+        "QA/supplied-probes-after-02"
+      ]
+    },
+    {
+      "id": "MC-R02",
+      "severity": "P2",
+      "requirement": "Preserve per-step cryptographic interpretation.",
+      "response": "Mark only the duplicate ordinary description step-description and remove that class in Compact; retain shared cryptoDetail precedence and sourceComplete restrictions.",
+      "affectedRequirements": [
+        "MC-02",
+        "MC-07"
+      ],
+      "implementation": [
+        "source/src/app.js",
+        "source/src/compact-view.js",
+        "source/src/study-controller.js"
+      ],
+      "behavioralTest": "source/tests/compact-review-content.test.mjs",
+      "evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review02-implementation.md",
+        "source/docs/compact-view/review02-impact.json",
+        "source/docs/compact-view/review02-verification.json",
+        "review/evidence/review02/positive-checks-02/source/status.json",
+        "review/evidence/review02/positive-checks-02/emitted/status.json",
+        "review/evidence/review02/native-01/combined-current-result.json",
+        "review/evidence/review02/supplied-probes-01/substantive-asserted-result.json"
+      ],
+      "verification": "Actual source and emitted producers each passed30/30 grouped behavior records; actual174 native cells passed,58 per loader,0 failures. Four behavioral files contain63 cases;139 original files remain byte-identical. These counts are grouped records/cells and authored cases, not inferred per-finding or complete-suite totals. Current complete command is separately bound in source/docs/compact-view/exact-ci-review02.json; historical7bac2516/0 is not a current pass claim.",
+      "closure": "Independent Astra closure still required; implementation and worker results do not close finding.",
+      "historicalCorrected01Evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review01-verification.json",
+        "QA/positive-checks-02/source/status.json",
+        "QA/positive-checks-02/emitted/status.json",
+        "QA/native-review01/combined-current-result.json",
+        "QA/supplied-probes-after-02"
+      ]
+    },
+    {
+      "id": "MC-R03",
+      "severity": "P2",
+      "requirement": "Label selected replay with its parent history.",
+      "response": "Classify step, attribute-step and trace-step as selected action replay; retain exact-object or field parent context when present, otherwise distinguish the parent-free selected action from the complete Journey. Real timeline and Full inspector Replay/Follow preserve queue contents, parent, canonical cursor and elapsed state across views.",
+      "affectedRequirements": [
+        "MC-11"
+      ],
+      "implementation": [
+        "source/src/app.js",
+        "source/src/compact-view.js",
+        "source/src/study-controller.js"
+      ],
+      "behavioralTest": "source/tests/compact-review-content.test.mjs",
+      "evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review02-implementation.md",
+        "source/docs/compact-view/review02-impact.json",
+        "source/docs/compact-view/review02-verification.json",
+        "review/evidence/review02/positive-checks-02/source/status.json",
+        "review/evidence/review02/positive-checks-02/emitted/status.json",
+        "review/evidence/review02/native-01/combined-current-result.json",
+        "review/evidence/review02/supplied-probes-01/substantive-asserted-result.json"
+      ],
+      "verification": "Actual source and emitted producers each passed30/30 grouped behavior records; actual174 native cells passed,58 per loader,0 failures. Four behavioral files contain63 cases;139 original files remain byte-identical. These counts are grouped records/cells and authored cases, not inferred per-finding or complete-suite totals. Current complete command is separately bound in source/docs/compact-view/exact-ci-review02.json; historical7bac2516/0 is not a current pass claim.",
+      "closure": "Independent Astra closure still required; implementation and worker results do not close finding.",
+      "historicalCorrected01Evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review01-verification.json",
+        "QA/positive-checks-02/source/status.json",
+        "QA/positive-checks-02/emitted/status.json",
+        "QA/native-review01/combined-current-result.json",
+        "QA/supplied-probes-after-02"
+      ]
+    },
+    {
+      "id": "MC-R04",
+      "severity": "P2",
+      "requirement": "Match field-control semantics to the active presenter.",
+      "response": "Use shared fieldControlMetadata for payload, attribute buttons and index: Compact controls the named inline definition region, without dialog/F2 promises; Full retains dialog/F2. Deliberate field selection focuses and reveals the definition region, not trailing Follow.",
+      "affectedRequirements": [
+        "MC-06",
+        "MC-15"
+      ],
+      "implementation": [
+        "source/src/app.js",
+        "source/src/compact-view.js",
+        "source/src/study-controller.js"
+      ],
+      "behavioralTest": "source/tests/compact-field-reading.test.mjs",
+      "evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review02-implementation.md",
+        "source/docs/compact-view/review02-impact.json",
+        "source/docs/compact-view/review02-verification.json",
+        "review/evidence/review02/positive-checks-02/source/status.json",
+        "review/evidence/review02/positive-checks-02/emitted/status.json",
+        "review/evidence/review02/native-01/combined-current-result.json",
+        "review/evidence/review02/supplied-probes-01/substantive-asserted-result.json"
+      ],
+      "verification": "Actual source and emitted producers each passed30/30 grouped behavior records; actual174 native cells passed,58 per loader,0 failures. Four behavioral files contain63 cases;139 original files remain byte-identical. These counts are grouped records/cells and authored cases, not inferred per-finding or complete-suite totals. Current complete command is separately bound in source/docs/compact-view/exact-ci-review02.json; historical7bac2516/0 is not a current pass claim.",
+      "closure": "Independent Astra closure still required; implementation and worker results do not close finding.",
+      "historicalCorrected01Evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review01-verification.json",
+        "QA/positive-checks-02/source/status.json",
+        "QA/positive-checks-02/emitted/status.json",
+        "QA/native-review01/combined-current-result.json"
+      ]
+    },
+    {
+      "id": "MC-R05",
+      "severity": "P2",
+      "requirement": "Complete Inventory help focus and dismissal lifecycle.",
+      "response": "Use setHelpOpen for trigger, Close and Escape; focus surviving Close/trigger and explicitly scroll nearest. Escape consumes only help dismissal and retains holdings. Automatic rerender/playback does not invoke this scroll path.",
+      "affectedRequirements": [
+        "MC-15"
+      ],
+      "implementation": [
+        "source/src/app.js",
+        "source/src/compact-view.js",
+        "source/src/study-controller.js"
+      ],
+      "behavioralTest": "source/tests/compact-help-lifecycle.test.mjs",
+      "evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review02-implementation.md",
+        "source/docs/compact-view/review02-impact.json",
+        "source/docs/compact-view/review02-verification.json",
+        "review/evidence/review02/positive-checks-02/source/status.json",
+        "review/evidence/review02/positive-checks-02/emitted/status.json",
+        "review/evidence/review02/native-01/combined-current-result.json",
+        "review/evidence/review02/supplied-probes-01/substantive-asserted-result.json"
+      ],
+      "verification": "Actual source and emitted producers each passed30/30 grouped behavior records; actual174 native cells passed,58 per loader,0 failures. Four behavioral files contain63 cases;139 original files remain byte-identical. These counts are grouped records/cells and authored cases, not inferred per-finding or complete-suite totals. Current complete command is separately bound in source/docs/compact-view/exact-ci-review02.json; historical7bac2516/0 is not a current pass claim.",
+      "closure": "Independent Astra closure still required; implementation and worker results do not close finding.",
+      "historicalCorrected01Evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review01-verification.json",
+        "QA/positive-checks-02/source/status.json",
+        "QA/positive-checks-02/emitted/status.json",
+        "QA/native-review01/combined-current-result.json"
+      ]
+    },
+    {
+      "id": "MC-R06",
+      "severity": "P3",
+      "requirement": "Preserve a bounded search draft for keyboard and pointer switching.",
+      "response": "Retain at most one transient and one switch-promoted nonempty query per picker. Focusout/outside dismissal and switching must not retain/promote untouched or whitespace-only visits; closed inputs keep their selected label. Nonempty query/active-result restoration remains bounded; ordinary reopen stays fresh and cancel/input/clear/selection/context/destroy invalidate drafts.",
+      "affectedRequirements": [
+        "MC-03",
+        "MC-10",
+        "MC-15"
+      ],
+      "implementation": [
+        "source/src/scenario-picker.js",
+        "source/src/study-controller.js"
+      ],
+      "behavioralTest": "source/tests/compact-search-drafts.test.mjs",
+      "evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review02-implementation.md",
+        "source/docs/compact-view/review02-impact.json",
+        "source/docs/compact-view/review02-verification.json",
+        "review/evidence/review02/positive-checks-02/source/status.json",
+        "review/evidence/review02/positive-checks-02/emitted/status.json",
+        "review/evidence/review02/native-01/combined-current-result.json",
+        "review/evidence/review02/supplied-probes-01/substantive-asserted-result.json"
+      ],
+      "verification": "Actual source and emitted producers each passed30/30 grouped behavior records; actual174 native cells passed,58 per loader,0 failures. Four behavioral files contain63 cases;139 original files remain byte-identical. These counts are grouped records/cells and authored cases, not inferred per-finding or complete-suite totals. Current complete command is separately bound in source/docs/compact-view/exact-ci-review02.json; historical7bac2516/0 is not a current pass claim.",
+      "closure": "Independent Astra closure still required; implementation and worker results do not close finding.",
+      "historicalCorrected01Evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review01-verification.json",
+        "QA/positive-checks-02/source/status.json",
+        "QA/positive-checks-02/emitted/status.json",
+        "QA/native-review01/combined-current-result.json"
+      ]
+    },
+    {
+      "id": "MC-R07",
+      "severity": "P2 ergonomics",
+      "requirement": "Bound field browsing and expose the selected definition/new scope.",
+      "response": "Use current-context fields and batches of 40; explicit global scope or nonempty search exposes the complete catalog. Reset limits on query/context/scope changes. Definition precedes results; Show more focuses first added field; Follow/Return deliberately reveal current action and Back returns to named definition. Full global policy remains unchanged.",
+      "affectedRequirements": [
+        "MC-02",
+        "MC-06",
+        "MC-15",
+        "MC-19"
+      ],
+      "implementation": [
+        "source/src/app.js",
+        "source/src/compact-view.js",
+        "source/src/study-controller.js"
+      ],
+      "behavioralTest": "source/tests/compact-field-reading.test.mjs",
+      "evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review02-implementation.md",
+        "source/docs/compact-view/review02-impact.json",
+        "source/docs/compact-view/review02-verification.json",
+        "review/evidence/review02/positive-checks-02/source/status.json",
+        "review/evidence/review02/positive-checks-02/emitted/status.json",
+        "review/evidence/review02/native-01/combined-current-result.json",
+        "review/evidence/review02/supplied-probes-01/substantive-asserted-result.json"
+      ],
+      "verification": "Actual source and emitted producers each passed30/30 grouped behavior records; actual174 native cells passed,58 per loader,0 failures. Four behavioral files contain63 cases;139 original files remain byte-identical. These counts are grouped records/cells and authored cases, not inferred per-finding or complete-suite totals. Current complete command is separately bound in source/docs/compact-view/exact-ci-review02.json; historical7bac2516/0 is not a current pass claim.",
+      "closure": "Independent Astra closure still required; implementation and worker results do not close finding.",
+      "historicalCorrected01Evidence": [
+        "source/docs/compact-view/review01-implementation.md",
+        "source/docs/compact-view/review01-verification.json",
+        "QA/positive-checks-02/source/status.json",
+        "QA/positive-checks-02/emitted/status.json",
+        "QA/native-review01/combined-current-result.json"
+      ]
+    }
+  ],
+  "openIndependentGates": {
+    "humanG01": "open",
+    "externalCompactMatrixCells": 14,
+    "nativeWindowsDC": "88unperformed; inherited scope unchanged",
+    "installedPAM": "Original164matches/1qualified divergence across165calls preserved; not relabelled a new Compact native result",
+    "historicalPerformance": "Candidate02two materialstartupflags and baseline-only variation, sixP6, fiveDNSSEC and earlier/P0 conditions remain open/unwaived",
+    "astraIndependentReview": "not-performed-for-this-candidate",
+    "currentPerformance": "60 distinct current flagged rows remain open: 36 comparison and 24 candidate action; five ordinary switching target misses. Historical 37 flags remain open separately; scopes not additive.",
+    "review01IndependentClosure": "MC-R01..MC-R07 all require Astra closure"
+  },
+  "publication": {
+    "authorized": false,
+    "commit": false,
+    "push": false,
+    "deploy": false,
+    "release": false,
+    "humanAcceptance": false,
+    "performanceWaiver": false
+  },
+  "review01Authority": "source/docs/compact-view/inputs/compact-review-01.html.input.txt",
+  "review01AuthoritySha256": "fd47e111f9d12cebb95671784baa33c356a4385b5c265b4a92a1c0201760f2dd",
+  "historicalExecutionScope": {
+    "completeCanonical": "Run16child0completed134160passed/0failed/0unperformed with unchanged inputs.",
+    "originalDOM": "Run16source and emitted DOM each failed3558passed/70failed. The app member-state assertion passed while the producer demanded a selector for single-member comparison choices.",
+    "acceptedControlDiagnosis": "Actual source-DOM probe observed all35affected single-member selections in accepted Full, current Full and current Compact: same declared member/state and intentionally absent selector. Four real multi-member controls pass in each. The shared rendering method is byte-identical. Complete strengthened source/emitted phases were collected separately and both passed; this is a producer expectation error, not an app regression.",
+    "correctedDOM": "Complete strengthened source and emitted phases each passed3628/0/0, covering328identities and1158reachable case/member states, including70formerly failed singleton observations and62real selectable-member observations. Their exact a26c2591producer is integrated.",
+    "completeDeep": "Original unchanged source and emitted phases each passed7644/0/0 across69frozen fixtures,7230canonical prefixes,5140field queues and3530exact-object queues. All frozen IDs and raw artifacts were independently checked.",
+    "inputSafety": "Original run16completed with unchanged bound runner/app. The DOM-only correction was integrated afterward. App267inputs/HTML and every non-DOM producer byte remain identical.",
+    "serialPerformance": "performance/current-results.json records84desktop samples/420actions,315phone measured samples/45warmups,3current-source resource paths with20roundtrips each,45separate profile contexts and all37unique flagged rows with explicit open investigated dispositions. No current accepted07Full-versus-newFull material flag;8Compact/open-fields material flags and6ordinary switching target misses remain open.",
+    "completion": "functional-verification.json explicitly joins completed original unchanged canonical/deep scopes under original05e66identity with complete corrected DOM phases under a26c2591. Original run16remains failed. Serial measurements/dispositions are complete, not waived or independently accepted. The actual exact final CI passed2464/0across139files with unchanged907execution files; exact-ci.json binds its original log and before/after manifests. Output integrity and independently relocated consumers are separate packaging checks, not release acceptance.",
+    "qualification": "HISTORICAL267/b91, not current271/01f4. Reuse only as byte-unchanged model/catalog/engine/canonical/access/trace dependency evidence qualified in review02-impact.json; changed UI wrappers have their own current runtime/native proofs."
+  },
+  "currentExecutionScope": {
+    "identity": {
+      "canonicalFiles": 271,
+      "canonicalSha256": "01f4f40fc980868085d7bcdc941e6cafd3a83de845f94f5c348c549eae6da430",
+      "htmlBytes": 5668235,
+      "htmlSha256": "52479dd292643231ca5945c99fd2df41288d502de530013a07f08a28a93398a5",
+      "originalTestsByteUnchanged": 139,
+      "newBehavioralTestFiles": 4,
+      "newBehavioralCases": 63,
+      "totalRunnableFiles": 143
+    },
+    "results": [
+      "source/docs/compact-view/review02-impact.json",
+      "source/docs/compact-view/review02-verification.json",
+      "source/docs/compact-view/exact-ci-review02.json",
+      "source/docs/compact-view/performance/current-results-review02.json"
+    ],
+    "finishedEvidence": {
+      "beforeAfter": "review/evidence/review02/before-after-edge-binding.json: actual before0/10 and after10/10, precise empty-picker and Full inspector Replay boundaries.",
+      "positiveSourceAndEmitted": "review/evidence/review02/positive-checks-02/{source,emitted}/status.json: actual30/30 grouped records each, no current failed record.",
+      "originalProbes": "review/evidence/review02/supplied-probes-01/substantive-asserted-result.json: three exact scripts x source/emitted= six actual runs; chapter/crypto, field metadata/focus, help ownership, nonempty drafts and one-row parent scope asserted.",
+      "native": "review/evidence/review02/native-01/combined-current-result.json: actual174/174,58 per loader,0 failures,36 PNGs,348 unchanged-input checkpoints,one producer SHA2562938388481b632f5c1d732e7f4a57338586ca7bdf3576261cc545c31a70d2715. Existing cells expanded with empty/whitespace visits plus12 actual Full-inspector replay cells.",
+      "managedVisual": "review/evidence/review02/managed-ui/actual-surface-result.json: actual pointer untouched picker transfers both directions; actual Full client_id Follow/Replay and rendered selected-action scope at observed390x844; two WebPs. Initial viewport/tool click limitations retained.",
+      "compiled": "review/evidence/review02/compiled-current-01/compiled-bundle-status.json: actual328 current choices passed; currentHTML/source unchanged; no eight extra UI-test claim.",
+      "timing": "review/evidence/review02/performance-compare-01/compact-mobile-performance-status.json: actual441measured+63warmups,51cells,1009unchanged-inputchecks,0collectionerrors,exit2review-required;51comparison+12candidate-action=63distinctcurrentflaggedrows,allopen,0materialflags,6ordinaryswitchtargetmisses. All18fieldendpointtargetsmet;5fieldvariabilityflagsremainopen. Historical37b91and60corrected01flagscopesarenotadditiveorwaived.",
+      "resources": "review/evidence/review02/performance-resource-01/compact-mobile-performance-status.json: three loading paths, six observed checkpoints each; all declared owned listener/observer/timer/detached growth bounds zero;7unchanged-inputchecks,0errors. Heapgrowth781680/799992/797724bytesincludesinstrumentation;noLeakClaimfalse. Instrumentedresourcesarenotlatencyevidence."
+    },
+    "completeCIRecord": "source/docs/compact-view/exact-ci-review02.json",
+    "qualification": "Actualcurrentwhole1.4.3commandpassed2527/0/143withall931executionbytesstable. Originaltargeted/native/timingrecordsremainactual1.4.2-producedforunchangedapp/HTML;the1.4.2runawayisnotapass. No canonical/DOM/deeprecollection,performancewaiverorindependentreviewclosureclaimed.",
+    "currentFullGateRuntime": "1.4.3",
+    "originalFocusedNativeTimingRuntime": "1.4.2",
+    "runtimeRecovery": "source/docs/compact-view/runtime-recovery-review02.json",
+    "completeCI": {
+      "passed": 2527,
+      "failed": 0,
+      "runnableFiles": 143,
+      "expectCalls": 37023,
+      "bunReportedSeconds": 3566.46,
+      "outerObservedSeconds": 3566.6848936460156,
+      "exitCode": 0,
+      "runtime": "1.4.3+c6da4a4d3",
+      "watchdogExpired": false,
+      "record": "source/docs/compact-view/exact-ci-review02.json",
+      "executionStageFiles": 931,
+      "everyExecutionByteBeforeAfterEqual": true,
+      "original139RunnableFilesUnchanged": true,
+      "canonicalSha256": "01f4f40fc980868085d7bcdc941e6cafd3a83de845f94f5c348c549eae6da430",
+      "standalone": {
+        "bytes": 5668235,
+        "sha256": "52479dd292643231ca5945c99fd2df41288d502de530013a07f08a28a93398a5"
+      },
+      "noTestBudgetRaise": true
+    },
+    "portableConsumers": {
+      "record": "review/evidence/review02/runtime143/portable-consumers/consumer-proof.json",
+      "actualConsumers": 11,
+      "immutableCoveredPayloads": 4377,
+      "componentBytesSha256": "bbadf3804f57c2f0b6a5501c161142cc2a7534cc4c84872cbe5a7b11fb5d9f3b",
+      "actualPresealContainer": {
+        "path": "auth-flow-studio-compact-source-and-review.zip",
+        "bytes": 108840477,
+        "sha256": "c58ffb3d65d9a53a9545425398dfb96edb1ebdf26f7c8988998a3c0f7afd9be5"
+      },
+      "literalRequiredInputs": 3,
+      "outerChecksumProvided": false,
+      "actualAll1182OriginalReportsVerified": true,
+      "qualification": "Thisactualpresealcomponentscopeisnotafabricatedfinalcontaineridentity. Finaltransportmustkeepevery4377rowandexplicitlyattributefourmetadatadeltasandnewCI/proofrecords."
+    }
+  },
+  "historicalCorrected01ExecutionScope": {
+    "identity": {
+      "canonicalFiles": 271,
+      "canonicalSha256": "7bac35907183867c4dc60bacf949c44cc006ab473356abf89e54e12968bbb02d",
+      "htmlBytes": 5668079,
+      "htmlSha256": "4a125cf0cba72b2af59704d05285229d6672e6cb8e9ef072504dde2adf4ea9c7",
+      "originalTestsByteUnchanged": 139,
+      "newBehavioralTestFiles": 4,
+      "newBehavioralCases": 52,
+      "totalRunnableFiles": 143
+    },
+    "results": [
+      "source/docs/compact-view/review01-verification.json",
+      "source/docs/compact-view/exact-ci-review01.json",
+      "source/docs/compact-view/performance/current-results-review01.json"
+    ],
+    "finishedEvidence": {
+      "positiveSourceAndEmitted": "QA/positive-checks-02/{source,emitted}/status.json:27/27groupedbehaviorrecords each,current7bac/4a125",
+      "originalProbes": "QA/supplied-probes-after-02:3exact suppliedscripts xsource/emitted=6actualruns,substantiveasserted-result.json,originalscriptsunchanged",
+      "native": "QA/native-review01/combined-current-result.json:162distinctactualcells,0fail,54perloader source-http/emitted-http/standalone-file;138keyboard+24pointer,separatelyboundproducerversions,sameapp/test/HTML;36nativePNGs+3managedwebps;actualmanagedUIalsoexercised",
+      "compiled": "QA/compiled-current-01/compiled-bundle-status.json:328actualchoices,sourceUnchangedtrue,currentHTML;no8extraUIclaim",
+      "timing": "QA/performance-review01-compare-01/compact-mobile-performance-status.json:441measuredsessions+63retainedwarmups,51cells,1009unchangedinputchecks,0collectionerrors,exit2review-required;0materialflags,36comparisonflaggedrows+24candidateactionflaggedrows=60distinctcurrentrows,allopen;5ordinaryswitchtargetmisses;all18newfieldendpointcellsmeet250median/500maxbut12variabilityflagged;nohistoricalfieldactionbaseline or speedupclaim;all37historicalflagsremainopen",
+      "resources": "QA/performance-review01-resource-01/compact-mobile-performance-status.json:3loadingpaths,20pausedCompact/Fullroundtripseach,allfourdeclaredlistener/observer/timer/detachedgrowthbounds0;7unchangedinputchecks;heapgrowth785076/796948/795400bytes,instrumentationincluded,noLeakClaimfalse;notlatencyorblanketnoleak",
+      "frozen": "QA/frozen-authority-preservation-review01.json:255priorfrozeninputs+58priorauthoritiesexactbytes verifiedliveandcompleteCIstage;newreviewmeans256mandatory/59authorityentries;preservationonly"
+    },
+    "completeCI": {
+      "status": "passed-actual-complete-pinned-command",
+      "record": "source/docs/compact-view/exact-ci-review01.json",
+      "command": "bun run test",
+      "script": "bun test --isolate --timeout=900000 tests/*.test.mjs",
+      "bun": "1.4.2",
+      "passed": 2516,
+      "failed": 0,
+      "expectCalls": 37023,
+      "reportedSeconds": 3971.19,
+      "runnableFiles": 143,
+      "executionStageFiles": 921,
+      "inputsUnchanged": true,
+      "qualification": "Actual complete command, exit0; every921executionfile byte-identical, no files added/removed, unchanged budgets. Final documentation attribution is explicit; no invented per-file numeric counts or independent acceptance."
+    },
+    "qualification": "HISTORICAL corrected-01 at7bac/4a125, preserved unchanged in its own source/HTML/producer scope. Actual completed CI2516/0/143; not current01f4 execution. All60 performance flags remain open."
+  },
+  "currentVerificationRuntime": {
+    "version": "1.4.3",
+    "sha256": "7ce7d6b654eddeec20afddf2396317fba6dc19ab52788a27e894e1806bf8f24b",
+    "policy": "source/docs/compact-view/runtime-recovery-review02.json"
+  }
+}

@@ -71,10 +71,13 @@ export class FlowPlayer {
     this.kind = 'demo';
     this.reducedMotion = false;
     this.timer = null;
+    this.inspectionCursor = null;
+    this.inspectionBoundary = null;
   }
   subscribe(listener) { this.listeners.add(listener); return () => this.listeners.delete(listener); }
   emit(type, extra = {}) { this.listeners.forEach(fn => fn({ type, ...this.snapshot(), ...extra })); }
   totalDuration(queue = this.queue) { return queue.reduce((total, step) => total + stepDuration(step), 0); }
+  durationFor(step) { return stepDuration(step); }
   snapshot() {
     const step = this.queue[this.position];
     const count = packetCount(step), duration = stepDuration(step);
@@ -88,7 +91,8 @@ export class FlowPlayer {
     return { status: this.status, speed: this.speed, kind: this.kind, step, queuePosition: this.position,
       queueLength: this.queue.length, ...presentation, packet: step?.payload?.[presentation.packetIndex],
       duration, elapsed: this.elapsed, stepElapsed: this.elapsed, overallDuration, overallElapsed,
-      overallProgress: overallDuration ? overallElapsed / overallDuration : 0 };
+      overallProgress: overallDuration ? overallElapsed / overallDuration : 0,
+      inspectionCursor: this.inspectionCursor, inspectionBoundary: this.inspectionBoundary };
   }
   play(queue, kind = 'demo') {
     this.stop(false);
@@ -96,6 +100,24 @@ export class FlowPlayer {
     this.queue = queue.slice(); this.position = 0; this.elapsed = 0; this.lastTime = null;
     this.kind = kind; this.status = this.speed > 0 ? 'playing' : 'paused';
     this.emit('step'); this.emit('state'); this.schedule();
+  }
+  /**
+   * Inspect an exact position without replacing the active queue or scheduling.
+   * A named source cursor avoids rounding an authored milestone through elapsed
+   * time when returning from a field/object/connection replay to the journey.
+   */
+  inspectQueue(queue, {position = 0, elapsed = 0, kind = 'demo', cursor = null, boundary = null} = {}) {
+    if (!Array.isArray(queue) || !Number.isInteger(position) || !Number.isFinite(elapsed)) throw new TypeError('Exact queue inspection requires an integer row and finite elapsed time.');
+    if (queue.length ? position < 0 || position >= queue.length || elapsed < 0 || elapsed > stepDuration(queue[position]) : position !== 0 || elapsed !== 0) throw new RangeError('Exact queue inspection is outside the active queue.');
+    if (boundary !== null && !['initial', 'start', 'end'].includes(boundary)) throw new RangeError('Unknown queue boundary.');
+    this.cancel();
+    if (queue !== this.queue) this.queue = queue.slice();
+    this.position = position; this.elapsed = elapsed; this.lastTime = null;
+    this.kind = kind; this.inspectionCursor = cursor; this.inspectionBoundary = boundary;
+    this.status = !queue.length || boundary === 'initial' ? 'idle'
+      : position === queue.length - 1 && elapsed === stepDuration(queue[position]) ? 'complete' : 'paused';
+    this.emit('step'); this.emit('state'); this.emit('frame');
+    return true;
   }
   /** Preview an absolute position in this queue; a seek never starts playback. */
   seek(queue, fraction, kind = 'demo') {
@@ -128,6 +150,7 @@ export class FlowPlayer {
   }
   advanceReducedMotion() {
     this.timer=null;if(this.status!=='playing')return;
+    this.inspectionCursor=null;this.inspectionBoundary=null;
     this.elapsed=stepDuration(this.queue[this.position]);this.emit('stepcomplete');
     if(this.position+1>=this.queue.length){this.status='complete';this.emit('complete');this.emit('state');return;}
     this.position+=1;this.elapsed=0;this.emit('step');this.emit('frame');this.schedule();
@@ -136,7 +159,9 @@ export class FlowPlayer {
     this.handle = null;
     if (this.status !== 'playing') return;
     const delta = this.lastTime === null ? 0 : Math.max(0, Math.min(100, time - this.lastTime));
-    this.lastTime = time; this.elapsed += delta * this.speed;
+    this.lastTime = time;
+    if (delta > 0) { this.inspectionCursor = null; this.inspectionBoundary = null; }
+    this.elapsed += delta * this.speed;
     let state = this.snapshot();
     while (this.elapsed >= state.duration) {
       this.emit('stepcomplete');
@@ -155,7 +180,12 @@ export class FlowPlayer {
     if (this.snapshot().overallProgress >= 1) {
       this.status = 'complete'; this.emit('complete'); this.emit('state'); return;
     }
-    this.status = 'playing'; this.lastTime = null; this.emit('state'); this.schedule();
+    this.status = 'playing'; this.lastTime = null;
+    if (this.inspectionBoundary === 'end' && this.elapsed === stepDuration(this.queue[this.position])) {
+      this.position += 1; this.elapsed = 0;
+      this.inspectionCursor = null; this.inspectionBoundary = null; this.emit('step');
+    }
+    this.emit('state'); this.schedule();
   }
   setSpeed(speed) {
     if (!['number', 'string'].includes(typeof speed) || typeof speed === 'string' && !speed.trim()) return false;
@@ -166,7 +196,7 @@ export class FlowPlayer {
     this.emit('speed'); return true;
   }
   cancel() { if(this.timer!==null){clearTimeout(this.timer);this.timer=null;}if (this.handle !== null) this.cancelFrame(this.handle); this.handle = null; }
-  stop(notify = true) { this.cancel(); this.status = 'idle'; this.queue = []; this.position = 0; this.elapsed = 0; this.lastTime = null; if (notify) this.emit('state'); }
+  stop(notify = true) { this.cancel(); this.status = 'idle'; this.queue = []; this.position = 0; this.elapsed = 0; this.lastTime = null; this.inspectionCursor = null; this.inspectionBoundary = null; if (notify) this.emit('state'); }
 }
 
 export const resolveActor = (id, authenticator) => id === 'authenticator' ? authenticator : id;

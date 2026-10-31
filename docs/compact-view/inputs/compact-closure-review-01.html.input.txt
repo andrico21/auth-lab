@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2026-10-31">
+  <title>Auth Flow Studio · Compact closure review</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"COMPACT CLOSURE";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+
+  pre{max-width:100%;max-height:480px;overflow:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}
+  pre code{padding:0;background:none;white-space:pre;font-size:12px}
+  details{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:8px}
+  summary{cursor:pointer;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+  summary:focus-visible,pre:focus-visible,.table-scroll:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}
+  @media print{pre{max-height:none;white-space:pre-wrap}pre code{white-space:pre-wrap}nav#TOC{display:none}}
+  </style>
+
+  <style>
+  main{min-width:0}a{overflow-wrap:anywhere}
+  h3[id^="mc-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}
+  details pre{max-height:34rem}summary{font-size:15px}
+  @media print{details pre{max-height:none}pre{break-inside:auto}}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Auth Flow Studio · Compact closure review</h1>
+<p class="subtitle">Independent recheck of corrected-02 · Worker
+handoff</p>
+<p class="date">31 October 2026</p>
+<div class="plan-stats"><span>7 findings closed</span><span>No new required code correction</span><span>218 focused tests passed</span><span>Human &amp; performance gates open</span></div></header>
+<nav id="TOC" role="doc-toc" aria-label="Review contents">
+<h2 id="toc-title">Closure and worker handoff</h2>
+<ul>
+<li><a href="#decision-and-exact-worker-instruction" id="toc-decision-and-exact-worker-instruction">1. Decision and exact
+worker instruction</a></li>
+<li><a href="#candidate-and-review-boundary" id="toc-candidate-and-review-boundary">2. Candidate and review
+boundary</a></li>
+<li><a href="#closure-evidence-for-each-finding" id="toc-closure-evidence-for-each-finding">3. Closure evidence for each
+finding</a></li>
+<li><a href="#what-was-executed-and-what-was-audited" id="toc-what-was-executed-and-what-was-audited">4. What was executed and
+what was audited</a></li>
+<li><a href="#evidence-package-and-reproducibility" id="toc-evidence-package-and-reproducibility">5. Evidence package and
+reproducibility</a></li>
+<li><a href="#performance-and-usability-disposition" id="toc-performance-and-usability-disposition">6. Performance and
+usability disposition</a></li>
+<li><a href="#gates-preserved-after-functional-closure" id="toc-gates-preserved-after-functional-closure">7. Gates preserved
+after functional closure</a></li>
+<li><a href="#worker-completion-checklist" id="toc-worker-completion-checklist">8. Worker completion
+checklist</a></li>
+<li><a href="#portable-independent-checks" id="toc-portable-independent-checks">9. Portable independent
+checks</a></li>
+</ul>
+</nav>
+<main id="compact-closure-review"><h2 id="decision-and-exact-worker-instruction">1. Decision and exact
+worker instruction</h2>
+<p><strong>Close MC-R01, MC-R02, MC-R03, MC-R04, MC-R05, MC-R06 and
+MC-R07 for the exact candidate identified below. No additional required
+implementation correction was found in this recheck.</strong> The
+seven-finding Compact correction assignment is closed in its reviewed
+functional scope. Overall release acceptance, performance-owner
+acceptance and human/device/accessibility acceptance remain open.</p>
+<p><strong>Give the worker this exact file:
+<code>auth-flow-studio-compact-closure-review.html</code>.</strong> It
+is the new independent closure record for the earlier seven findings. It
+does not replace the original mobile worker plan or erase the original
+review, failed attempts or historical qualifications.</p>
+<p>The worker’s next action is documentation-only reconciliation: record
+these seven independent closures, preserve the open gates listed in
+section 7, bind the result to this candidate, and return a short
+completion report. There is no new required product-code assignment in
+this document. No unrelated native or performance sweep is required
+merely to record this closure.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="1. Decision and exact
+worker instruction — table 1"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Finding</th>
+<th scope="col">Independent decision</th>
+<th scope="col">Result now established</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MC-R01</td>
+<td>Closed</td>
+<td>Chapters and MCP credential comparisons survive presentation
+remounts and remain actionable.</td>
+</tr>
+<tr class="even">
+<td>MC-R02</td>
+<td>Closed</td>
+<td>Authored event-specific cryptographic explanations remain visible at
+the appropriate source prefix.</td>
+</tr>
+<tr class="odd">
+<td>MC-R03</td>
+<td>Closed</td>
+<td>Selected-action replay is labelled correctly, including its retained
+field/object parent.</td>
+</tr>
+<tr class="even">
+<td>MC-R04</td>
+<td>Closed</td>
+<td>Compact field controls describe an inline definition; Full retains
+its working popup/F2 behavior.</td>
+</tr>
+<tr class="odd">
+<td>MC-R05</td>
+<td>Closed</td>
+<td>Inventory help opens, rerenders and dismisses with coherent state
+and focus.</td>
+</tr>
+<tr class="even">
+<td>MC-R06</td>
+<td>Closed</td>
+<td>Nonempty search drafts survive keyboard and pointer view transfers;
+cancellation and empty visits remain distinct.</td>
+</tr>
+<tr class="odd">
+<td>MC-R07</td>
+<td>Closed</td>
+<td>Bounded field browsing, definition-first reading, paused
+Follow/Return and deliberate scope focus are implemented.</td>
+</tr>
+</tbody>
+</table>
+</div><h2 id="candidate-and-review-boundary">2. Candidate and review
+boundary</h2>
+<p>Version <strong>1.1.1</strong>; checkpoint
+<strong><code>142fccdff9c452f6491b8886b83726bc188f49cd</code></strong>.
+Identities below refer to the submitted corrected-02 package, not to a
+newly built implementation or an earlier correction round. Download
+suffixes such as <code>(1)</code> do not change their byte identity.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="2. Candidate and review
+boundary — table 2"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Item</th>
+<th scope="col">Size / scope</th>
+<th scope="col">SHA-256</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Source/test/build canonical set</td>
+<td>271 files</td>
+<td><code>01f4f40fc980868085d7bcdc941e6cafd3a83de845f94f5c348c549eae6da430</code></td>
+</tr>
+<tr class="even">
+<td><code>auth-flow-studio-compact.html</code></td>
+<td>5,668,235 bytes</td>
+<td><code>52479dd292643231ca5945c99fd2df41288d502de530013a07f08a28a93398a5</code></td>
+</tr>
+<tr class="odd">
+<td><code>auth-flow-studio-compact-source-and-review.zip</code></td>
+<td>11,965,278 bytes</td>
+<td><code>2a91e38f06cd980a256b3d1b784e44747f9c856084148ac124baf76a5104021e</code></td>
+</tr>
+<tr class="even">
+<td>Original mobile worker plan</td>
+<td>Exact authority preserved in packet</td>
+<td><code>ae9bb6f78ccc9fa0e383c279cd861c057ce8f89f8ee99a716d666ce12b753541</code></td>
+</tr>
+<tr class="odd">
+<td>Original seven-finding review</td>
+<td>57,331 bytes; exact authority preserved</td>
+<td><code>fd47e111f9d12cebb95671784baa33c356a4385b5c265b4a92a1c0201760f2dd</code></td>
+</tr>
+</tbody>
+</table>
+</div><p>All three outer bindings, 779 internal checksum rows and 777
+inventory payload entries checked successfully. A fresh <strong>Node
+build reproduced the supplied HTML byte for byte</strong>. The original
+plan and review embedded in the packet match the previously supplied
+authorities exactly.</p>
+<p>Compared with the originally reviewed Compact candidate, the
+canonical change set consists of four modified implementation
+files—<code>src/app.js</code>, <code>src/compact-view.js</code>,
+<code>src/scenario-picker.js</code> and
+<code>src/study-controller.js</code>—and four added behavioral test
+files. All <strong>139 pre-existing runnable test files remain
+byte-identical</strong>; the delivered total is 143. Protocol models,
+catalog data, canonical state engines, adapters, styles and build inputs
+did not change in that comparison.</p>
+<p>This is a presentation, interaction and evidence recheck. It
+preserves earlier protocol-review closures within their original scope.
+It is <strong>not a new all-RFC certification</strong>, a fresh
+full-protocol-corpus execution or proof of live interoperability. The
+relevant content checks establish that the corrected presentation
+displays the retained authored semantics without inventing completion,
+validation, custody or permission.</p>
+<h2 id="closure-evidence-for-each-finding">3. Closure evidence for each
+finding</h2>
+<h3 id="mc-r01-chapter-controls-and-comparison-content-closed">MC-R01 —
+Chapter controls and comparison content: closed</h3>
+<p>Presentation remounts now invalidate cached chapter and field-index
+DOM state. A cache belonging to the old mounted view no longer prevents
+the new view from constructing its controls. This does not reset the
+canonical study state.</p>
+<p>Independent checks exercised <code>lab-dnssec01</code>,
+<code>lab-dnssec15</code> and <code>lab-mcp09</code>, starting in both
+Full and Compact, through repeated switches at partial playback
+positions. They compared exact player/canonical state, retained queue
+identity, chapter button identities, enabled/pressed state, and
+credential comparison rows. Actual chapter activation updated the
+expected source cursor and current chapter in both presentations. MCP
+issuer, resource and prefix-dependent held/not-held explanations
+remained present and correct.</p>
+<p><strong>Closure basis:</strong> positive source and exact
+emitted-bundle execution, implementation inspection, and the bound
+current native correction evidence. No new DNSSEC or MCP model change
+was required.</p>
+<h3 id="mc-r02-cryptographic-explanation-body-closed">MC-R02 —
+Cryptographic explanation body: closed</h3>
+<p>Ordinary descriptive text is now marked separately as
+<code>step-description</code>. Compact removes that redundant
+description without deleting the authored cryptographic explanation that
+shares the broader detail styling.</p>
+<p>Independent checks asserted the full event-specific explanation for
+three SMB multichannel actions: protected read response, unwrap and
+accept. They also exercised the MCP/profile fallback, Journey/Crypto
+switching, and repeated Full/Compact transitions. In Compact, before the
+corresponding source event completes, future payload and cryptographic
+interpretation remain withheld. At the completed prefix, the exact
+explanation appears in both presentations.</p>
+<p><strong>Closure basis:</strong> actual explanatory body text and
+prefix gating were checked; a heading or a nonempty container alone was
+not treated as success.</p>
+<h3 id="mc-r03-selected-action-replay-scope-closed">MC-R03 —
+Selected-action replay scope: closed</h3>
+<p>The scope label now recognizes the selected-action queue kinds,
+including <code>trace-step</code>. Where an exact-object or field
+investigation remains the parent, the label names that parent rather
+than incorrectly presenting the one-action queue as the whole
+journey.</p>
+<p>Independent checks used both actual Full timeline activation and the
+Full inspector Replay control, with exact-object, field and parent-free
+contexts. They paused replay, switched presentations, compared full
+state and queue identity, and verified the one-row Compact queue and
+current-action title. Return to journey cleared the investigation
+selection, restored the journey scope and retained the reached canonical
+source prefix.</p>
+<p><strong>Closure basis:</strong> both replay entry points and all
+three parent contexts passed. This includes the inspector boundary
+addressed in the worker’s later correction, not only the original
+timeline example.</p>
+<h3 id="mc-r04-field-accessibility-metadata-closed">MC-R04 — Field
+accessibility metadata: closed</h3>
+<p>Shared field-control metadata now follows the active presentation.
+Compact controls point to the inline
+<code>compact-field-definition</code> region and no longer advertise a
+popup dialog or an unsupported F2 shortcut. Full keeps its implemented
+dialog/F2 interface.</p>
+<p>Independent checks covered field-index and current-action controls,
+their actual explanatory content, view roundtrips, and Full
+F2/open/Escape/focus-return behavior. Compact activation focuses the
+named definition region at the beginning of the explanation. Reading a
+field does not select a protocol action or change the canonical
+snapshot.</p>
+<p><strong>Closure basis:</strong> corrected semantics and handler
+behavior pass. This does not substitute for hearing and understanding
+the interface with an actual screen reader.</p>
+<h3 id="mc-r05-inventory-help-lifecycle-closed">MC-R05 — Inventory help
+lifecycle: closed</h3>
+<p>Help opening and closing now render the current help state before
+resolving and focusing the surviving control. Escape handles help
+dismissal before the outer inventory disclosure. Logical focus recovery
+also covers selection rerenders and presentation roundtrips.</p>
+<p>Independent checks exercised Close, Escape and trigger dismissal,
+retained the open outer holdings disclosure, and verified connected
+focus on the appropriate surviving trigger. A rerender and Full/Compact
+roundtrip retained usable help. Automatic player rendering did not pull
+focus away from Play into an already open help panel.</p>
+<p><strong>Closure basis:</strong> state, DOM and focus agree across the
+reported lifecycle boundaries. No modal redesign or human
+speech/comprehension acceptance is inferred.</p>
+<h3 id="mc-r06-search-draft-transfer-closed">MC-R06 — Search-draft
+transfer: closed</h3>
+<p>The picker now retains one bounded transient nonempty draft across
+dismissal toward a view switch and promotes it only when the switch
+occurs. Preservation no longer depends on pointerdown alone. Ordinary
+reopening, explicit cancellation, committed selection and context
+invalidation remain separate transitions. Empty and whitespace-only
+visits retain the ordinary closed selected-label behavior.</p>
+<p>Independent checks covered both pickers, both starting presentations,
+keyboard and pointer transfer sequences, and roundtrips. They retained a
+nonfirst active result with the raw query, while comparing lesson/model
+identity and full canonical/player state. Escape, toggle, clear,
+ordinary reopening, unmatched queries, empty-result Enter,
+empty/whitespace visits and changed lesson context did not resurrect or
+misapply a draft.</p>
+<p><strong>Closure basis:</strong> behavioral parity passed in source
+and emitted execution. Harness event sequences are application-level
+checks; they are not independently performed browser Tab traversal.</p>
+<h3 id="mc-r07-field-reading-and-scope-navigation-closed">MC-R07 — Field
+reading and scope navigation: closed</h3>
+<p>Compact now begins with current-lesson fields, uses a declared
+<strong>40-field batch</strong>, places the selected definition before
+the index and keeps explicit global browsing/search available.
+Independent initial observations were <strong>35 fields in Basic
+Keycloak, 35 in Core and 40 of 48 in MCP09</strong>. Explicit global
+browsing retained all <strong>10,843 definitions</strong>, initially
+displayed 40, and expanded to 80 without duplicates or loss of the first
+batch. Show more focused the first newly exposed field.</p>
+<p>Independent source and exact emitted checks found and opened an
+actual out-of-lesson definition through global search. Query changes
+reset the visible batch. A context change resets batching; an active
+global field query can remain until the user explicitly chooses Current
+lesson fields, which clears it. This is distinct from the cancelled
+scenario-picker draft behavior in MC-R06.</p>
+<p>Field activation focuses the explanatory region and reveals it.
+Explicit Follow opens a paused field history, focuses/reveals the
+current action and exposes Return. Back to definition retains the active
+history queue and source prefix. Return restores journey scope without
+changing the reached prefix. Real partial-cursor paths and empty
+histories were checked in all three lessons. Empty histories do not
+start playback. Automatic playback did not repeatedly scroll or steal
+focus; explicitly returning to a definition paused playback and
+preserved the exact queue and elapsed time.</p>
+<p><strong>Closure basis:</strong> 18 independent grouped records passed
+in each loading mode; the broader 218-test focused run also covered the
+worker’s synthetic receipt/verification boundary cases. The supplied
+measured field endpoints all meet their declared latency targets,
+subject to the open variability conditions in section 6. Physical-phone
+ergonomics and human AT remain separate acceptance work.</p>
+<h2 id="what-was-executed-and-what-was-audited">4. What was executed and
+what was audited</h2>
+<p>Counts in this table describe different, overlapping scopes. They
+must not be summed into a larger test or native-cell total.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="4. What was executed and
+what was audited — table 3"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Evidence lane</th>
+<th scope="col">Result</th>
+<th scope="col">Attribution and limit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Independent focused regression run</td>
+<td><strong>218 passed, 0 failed, 12 files</strong></td>
+<td>Node v24.22.1; delivered tests unchanged; not the complete Bun
+suite. Includes standalone boot with its existing VM budget.</td>
+</tr>
+<tr class="even">
+<td>Independent content/navigation probe</td>
+<td><strong>28/28 source and 28/28 emitted</strong></td>
+<td>MC-R01–03; grouped behavioral records containing multiple
+assertions.</td>
+</tr>
+<tr class="odd">
+<td>Independent interaction probe</td>
+<td><strong>39/39 source and 39/39 emitted</strong></td>
+<td>MC-R04–06; purpose-built DOM harness.</td>
+</tr>
+<tr class="even">
+<td>Independent field-reading probe</td>
+<td><strong>18/18 source and 18/18 emitted</strong></td>
+<td>MC-R07; three real lessons, partial/empty histories and focus
+behavior.</td>
+</tr>
+<tr class="odd">
+<td>Current full CI record</td>
+<td><strong>2,527 passed, 0 failed, 143 files; 37,023 expect
+calls</strong></td>
+<td>Worker execution of the actual <code>bun run test</code>, Bun 1.4.3
+/ <code>c6da4a4d3</code>; log, completion and bindings independently
+audited. Not rerun here.</td>
+</tr>
+<tr class="even">
+<td>Current worker positive probes</td>
+<td><strong>30/30 per mode</strong></td>
+<td>Restored originals and projection/producer joins audited; distinct
+from the independently authored probes above.</td>
+</tr>
+<tr class="odd">
+<td>Current native correction evidence</td>
+<td><strong>174 actual Chromium cells; 58 per loader</strong></td>
+<td>Worker source HTTP, emitted HTTP and standalone file execution;
+originals and bindings audited. No native rerun here.</td>
+</tr>
+<tr class="even">
+<td>Current compiled choices</td>
+<td><strong>328 worker-reported choices</strong></td>
+<td>Retains its bounded emitted-VM scope; not an additional native or
+complete semantic corpus.</td>
+</tr>
+</tbody>
+</table>
+</div><p>The full CI completion record reports exit 0, approximately 3,566.46
+seconds of test execution, no interruption and no expiry of the
+independent 5,400-second outer watchdog. All <strong>931 execution-stage
+files</strong> matched before/after; all <strong>271 delivered canonical
+inputs</strong> matched that stage. The five common stage/delivery
+differences are final documentation records, not application or test
+inputs. Original in-process budgets were preserved.</p>
+<p>The earlier Bun 1.4.2 runaway remains an aborted attempt with no
+completed totals or pass. Current full CI is explicitly attributed to
+1.4.3. Earlier targeted/native/timing observations retain their actual
+1.4.2 provenance. This review does not independently establish an
+upstream-runtime root cause or restamp earlier measurements with the
+newer runtime.</p>
+<p><strong>Reviewer environment:</strong> Node was available; Bun and
+native browser binaries were not. No runtime version was spoofed.
+Positive source/emitted execution, independent builds and byte/sample
+audits are reported as such. No human, physical-device, WebKit,
+native-protocol or timing collection occurred in this recheck.</p>
+<p>Reviewer probe mistakes were retained and corrected before drawing
+conclusions: a content probe initially used an unsupported harness
+selector; the initial field probe incorrectly demanded automatic
+field-query clearing and used an unexpanded external source catalog for
+emitted-field discovery. The corrected probes use supported equivalent
+selection, the actual presentation contract and the definitions of the
+executing application. Initial results and diagnoses remain in the
+reviewer workspace. No product source or delivered test was changed to
+satisfy those probes.</p>
+<h2 id="evidence-package-and-reproducibility">5. Evidence package and
+reproducibility</h2>
+<p>The reduced upload is sufficient for this bounded correction review.
+A large historical preservation archive is not required just to record
+these closures.</p>
+<p>The reviewer reconstructed <strong>all 192 current original reports,
+totaling 151,164,281 bytes</strong>, and checked every external index
+length/hash, chunk binding and the complete final hash. This used a
+separate Node consumer of the supplied codec because the documented
+restoration CLI correctly requires unavailable Bun. It is full
+reconstruction of the current stream, not a claim that the Bun CLI ran
+here.</p>
+<p>The reviewer also actually restored the <strong>50 legacy captured
+test documents</strong> into an isolated folder; all matched the
+previously available bytes. Three necessary canonical baseline preimage
+sets were independently rebuilt with Node and reproduced their declared
+standalone hashes:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="5. Evidence package and
+reproducibility — table 4"><table style="width:100%;">
+<colgroup>
+<col style="width: 23%">
+<col style="width: 30%">
+<col style="width: 23%">
+<col style="width: 23%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Baseline</th>
+<th style="text-align: right;" scope="col">Canonical files</th>
+<th scope="col">Canonical SHA-256</th>
+<th scope="col">Rebuilt HTML SHA-256</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Accepted Windows protection 07</td>
+<td style="text-align: right;">256</td>
+<td><code>b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825</code></td>
+<td><code>9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694</code></td>
+</tr>
+<tr class="even">
+<td>Originally reviewed Compact</td>
+<td style="text-align: right;">267</td>
+<td><code>b91f13a1c8bdf7c0a192f4236520096a8089484abbc7f6e3593d884691af460c</code></td>
+<td><code>c7166bbd7b20c7427ea08f7253df2545fe75dab2ce9d76b5f6f5869118b228c1</code></td>
+</tr>
+<tr class="odd">
+<td>Before later correction boundaries</td>
+<td style="text-align: right;">271</td>
+<td><code>7bac35907183867c4dc60bacf949c44cc006ab473356abf89e54e12968bbb02d</code></td>
+<td><code>4a125cf0cba72b2af59704d05285229d6672e6cb8e9ef072504dde2adf4ea9c7</code></td>
+</tr>
+</tbody>
+</table>
+</div><p>The 797 external DOM-state gzip payloads, older 734/256-report
+streams, superseded whole snapshots and bulk historical profiles are
+explicitly retained outside this upload. Their disclosed omission limits
+independent full raw-state/historical replay. It does not invalidate the
+original current numeric measurements, statuses and selected correction
+evidence that were restored and inspected. Historical documents may
+still point to the separately preserved archive; those references must
+not be represented as newly uploaded evidence.</p>
+<p>For the current native evidence, the audit verified <strong>177
+status/case provenance bindings and 1,350 projection pointers</strong>
+against originals, and checked the declared 174 cells without
+suppressing failed actions, exceptions or truncation. Earlier failed
+positive and focused attempts retain their original failed status.
+Correcting incidental producer assertions was not counted as a passing
+execution of their old bytes.</p>
+<p>Useful worker-side entry points, relative to the extracted submitted
+packet, are <code>START-HERE.md</code>,
+<code>review/REPRODUCE.md</code>,
+<code>review/DELIVERY-SCOPE.json</code>, <code>review/ci143/</code>,
+<code>review/native/outcome-index.json</code>,
+<code>review/performance/</code>, and <code>review/originals/</code>.
+The original authority and implementation responses remain under
+<code>source/docs/compact-view/</code>.</p>
+<h2 id="performance-and-usability-disposition">6. Performance and
+usability disposition</h2>
+<p><strong>Performance-owner acceptance remains open.</strong> The
+current record has zero material comparative-regression flags, but that
+does not clear variability or missed absolute interaction targets.</p>
+<p>The independent audit recomputed all <strong>60 comparison
+distributions and 39 candidate-action distributions</strong> from
+<strong>441 measured sessions</strong>, with <strong>63 separately
+retained warmups</strong> across 51 declared cells. Each measured
+arm/feature retained seven samples; the twelve comparative cells
+alternated paired order. Numeric projections, classifications, producer
+bindings and all 271 candidate inputs matched the originals.</p>
+<p>There are <strong>63 distinct current flagged rows</strong> with
+exact open/unaccepted dispositions: 51 comparison rows and 12 action
+rows. The 11 action-variation flags and six ordinary switching target
+misses overlap. Do not add those overlapping categories as separate
+unique conditions. All 18 field endpoint rows meet 250 ms median / 500
+ms maximum; five of those rows still carry variability flags.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="6. Performance and
+usability disposition — table 5"><table>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 26%">
+<col style="width: 26%">
+<col style="width: 26%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Action</th>
+<th style="text-align: right;" scope="col">Source HTTP median / max</th>
+<th style="text-align: right;" scope="col">Emitted HTTP median / max</th>
+<th style="text-align: right;" scope="col">Standalone file median / max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Compact → Full</td>
+<td style="text-align: right;">1,830 / 2,751 ms</td>
+<td style="text-align: right;">1,810 / 3,016 ms</td>
+<td style="text-align: right;">1,706 / 2,489 ms</td>
+</tr>
+<tr class="even">
+<td>Full → Compact</td>
+<td style="text-align: right;">259 / 321 ms</td>
+<td style="text-align: right;">262 / 434 ms</td>
+<td style="text-align: right;">259 / 287 ms</td>
+</tr>
+<tr class="odd">
+<td>All 18 field endpoints</td>
+<td style="text-align: right;">Across loaders: medians 120–232 ms</td>
+<td style="text-align: right;">Largest observed maximum: 297 ms</td>
+<td style="text-align: right;">All endpoint targets met; five
+variability flags open</td>
+</tr>
+</tbody>
+</table>
+</div><p>These are the worker’s host-based Chromium measurements with a phone
+viewport, not physical-phone timings. <strong>Compact → Full delay
+remains the main visible performance concern in this correction
+scope.</strong> Full → Compact narrowly misses the median target.
+Neither should be silently accepted by this closure, and the smaller
+miss should not be described as a multi-second delay.</p>
+<p>The field correction now has measured usable-content endpoints; the
+result is not inferred merely from a smaller DOM. The unchanged Full
+global-index policy still contributes substantial work when Full is
+mounted, but the available evidence does not establish a complete causal
+attribution for each timing condition. Any future optimization should
+preserve the timed work and comparison method.</p>
+<p>Resource diagnostics show zero endpoint growth in the declared
+listener, observer, timer, node, detached-target and player-listener
+counters over 20 roundtrips. Heap growth remains <strong>781,680 /
+799,992 / 797,724 bytes</strong> for source/emitted/file. These are
+qualified instrumented observations, not blanket absence-of-leak proof
+or substitute latency samples.</p>
+<p>The current 63, corrected-01 60 and earlier 37 flagged rows are
+separate historical scopes, <strong>not an additive total</strong>.
+Their original dispositions remain visible. This document grants no
+acceptance or waiver for any of them.</p>
+<h2 id="gates-preserved-after-functional-closure">7. Gates preserved
+after functional closure</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="7. Gates preserved
+after functional closure — table 6"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Gate or qualification</th>
+<th scope="col">Status after this review</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MC-R01–07 independent implementation recheck</td>
+<td>Closed for the identified candidate.</td>
+</tr>
+<tr class="even">
+<td>Current performance flags and owner decision</td>
+<td>Open; all 63 current dispositions retained, including six switching
+misses and five field-variability rows.</td>
+</tr>
+<tr class="odd">
+<td>Earlier performance scopes</td>
+<td>Preserved as separately open/unaccepted; no retroactive
+relabelling.</td>
+</tr>
+<tr class="even">
+<td>Human G01 speech/comprehension acceptance</td>
+<td>Unperformed/open. Automated semantics and focus checks do not close
+it.</td>
+</tr>
+<tr class="odd">
+<td>Fourteen inherited WebKit/device/human/AT cells</td>
+<td>Disclosed/open; the older omitted individual manifest was not
+independently recounted in this reduced-packet audit.</td>
+</tr>
+<tr class="even">
+<td>Windows/DC conditions</td>
+<td>Existing 88-case qualification remains. No new native Windows/DC
+acceptance.</td>
+</tr>
+<tr class="odd">
+<td>Installed PAM observations</td>
+<td>Preserve 164 matches, one qualified divergence, 165 calls and their
+original interpretation.</td>
+</tr>
+<tr class="even">
+<td>Candidate02/P6/DNSSEC/P0 and earlier limitations</td>
+<td>Preserve their prior scopes, closures and remaining conditions.</td>
+</tr>
+<tr class="odd">
+<td>Release/publication</td>
+<td>No overall release acceptance, commit, push, deployment, publication
+or version change is authorized by this review.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Earlier full-corpus counts—134,160 canonical operations, 3,628 DOM
+checks per surface and 7,644 deep checks per surface—remain historical
+evidence for their original candidate. They were not newly collected
+here. The unchanged model/catalog/engine dependencies support scoped
+preservation of that evidence; they do not transform old runs into
+current full-corpus runs.</p>
+<h2 id="worker-completion-checklist">8. Worker completion checklist</h2>
+<ol type="1">
+<li>Preserve this HTML as a new exact independent-review input. Record
+its filename, bytes and SHA-256 using the existing authority-input
+convention. Keep the original worker plan and seven-finding review
+unchanged.</li>
+<li>Update <code>source/docs/compact-view/response-ledger.json</code> to
+close MC-R01–07 by this independent review, explicitly bound to
+canonical <code>01f4f40f…</code> and standalone <code>52479dd2…</code>.
+Keep worker implementation, worker verification and independent closure
+distinguishable.</li>
+<li>Reconcile current-progress, open-gates, implementation handoff,
+navigation and applicable start-here documents. Remove only the pending
+independent closure for these seven findings; retain all section 7
+conditions and historical evidence boundaries.</li>
+<li>Record the closure as documentation-only. Do not change product
+code, tests, thresholds, baseline identities, timing classifications or
+the application version simply to produce the acknowledgment. Do not
+generate a new functional candidate without an identified need.</li>
+<li>Run the documentation checks relevant to changed links, authority
+identities, ledger consistency and gate consistency. Verify that the
+reviewed application/test inputs and standalone bytes remain unchanged.
+Report the actual check count and result; do not reuse a previous count
+as if rerun.</li>
+<li>Return a short acknowledgment naming the seven closures, unchanged
+candidate identities and remaining human/performance/external gates.
+State any actual publication activity accurately. No new full
+CI/native/performance sweep is requested for a documentation-only
+acknowledgment.</li>
+</ol>
+<p>Suggested completion wording, adjusted only to the worker’s actual
+verification result:</p>
+<blockquote>
+<p>Astra closed MC-R01–07 for corrected-02, canonical 01f4f40f… /
+standalone 52479dd2…. No further required Compact implementation
+correction was identified. Closure is recorded in the response ledger
+and handoff documents. Documentation verification completed; reviewed
+application/test/standalone inputs remain unchanged. Human G01,
+performance-owner decisions and the previously disclosed
+external/historical conditions remain open. This is not overall release
+acceptance.</p>
+</blockquote>
+<h2 id="portable-independent-checks">9. Portable independent checks</h2>
+<p>The three scripts below are embedded exactly so the worker can
+reproduce the independent behavioral checks without receiving a second
+review artifact. Save each under the indicated path within an extracted
+packet. They require Node and the delivered DOM harness. They operate on
+source or the actual standalone inline bundle and produce a nonzero exit
+on a failed positive record. They do not modify the application or claim
+browser/AT/timing execution.</p>
+<pre class="sh" tabindex="0" role="region" aria-label="Reproduction source or result 1"><code>node independent-validation/semantics/recheck-content.mjs source source auth-flow-studio-compact.html independent-validation/semantics/source-results.json
+node independent-validation/semantics/recheck-content.mjs source emitted auth-flow-studio-compact.html independent-validation/semantics/emitted-results.json
+node independent-validation/ux/recheck-ux.mjs source source auth-flow-studio-compact.html independent-validation/ux/source-recheck.json
+node independent-validation/ux/recheck-ux.mjs source emitted auth-flow-studio-compact.html independent-validation/ux/emitted-recheck.json
+node independent-validation/field-recheck.mjs source source auth-flow-studio-compact.html independent-validation/field-source-results.json
+node independent-validation/field-recheck.mjs source emitted auth-flow-studio-compact.html independent-validation/field-emitted-results.json</code></pre>
+<p>The independent 218-test focused run, from <code>source/</code>,
+used:</p>
+<pre class="sh" tabindex="0" role="region" aria-label="Reproduction source or result 2"><code>node --test --test-concurrency=1 \
+  tests/compact-review-content.test.mjs \
+  tests/compact-field-reading.test.mjs \
+  tests/compact-help-lifecycle.test.mjs \
+  tests/compact-search-drafts.test.mjs \
+  tests/compact-presentation.test.mjs \
+  tests/compact-boundary-navigation.test.mjs \
+  tests/scenario-picker.test.mjs \
+  tests/scenario-search-metadata.test.mjs \
+  tests/focus-return-regression.test.mjs \
+  tests/resize-focus-regression.test.mjs \
+  tests/held-object-ui.test.mjs \
+  tests/standalone-runtime.test.mjs</code></pre>
+<details>
+<summary>
+independent-validation/semantics/recheck-content.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source or result 3"><code>import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import {pathToFileURL} from 'node:url';
+import assert from 'node:assert/strict';
+
+// node recheck-content.mjs SOURCE_ROOT source|emitted STANDALONE_HTML OUTPUT_JSON
+const source=path.resolve(process.argv[2]);
+const mode=process.argv[3]||'source';
+const htmlFile=path.resolve(process.argv[4]);
+const output=path.resolve(process.argv[5]);
+const {installHarness}=await import(pathToFileURL(path.join(source,'tests/dom-harness.mjs')));
+let env,Component;
+if(mode==='emitted'){
+  const html=fs.readFileSync(htmlFile,'utf8');
+  const scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];
+  assert.equal(scripts.length,1);
+  const sandbox={structuredClone};env=installHarness(sandbox);
+  new vm.Script(scripts[0][1],{filename:'uploaded-compact:inline'}).runInContext(vm.createContext(sandbox),{timeout:5000});
+  Component=env.registry.get('auth-flow-studio');
+}else{
+  assert.equal(mode,'source');env=installHarness();
+  ({AuthFlowStudio:Component}=await import(pathToFileURL(path.join(source,'src/app.js'))));
+}
+const report={mode,qualification:'Independent positive DOM-harness checks; no native browser, AT or timing claim.',checks:[],failures:[]};
+function check(name,fn){try{const details=fn();report.checks.push({name,passed:true,details});}catch(error){report.checks.push({name,passed:false,message:error.message});report.failures.push({name,message:error.message,stack:error.stack});}}
+function mount(initialMode='compact'){
+  env.window.innerWidth=390;env.window.localStorage={getItem:()=&gt;initialMode,setItem(){}};
+  const app=new Component();env.document.body.appendChild(app);app.connectedCallback();return app;
+}
+function close(app){app.disconnectedCallback();env.document.body.removeChild(app);env.clock.frames.clear();env.clock.timers.clear();}
+const norm=value=&gt;JSON.parse(JSON.stringify(value));
+function state(app){return norm({held:app.heldView.snapshot(),player:app.player.snapshot(),lesson:app.labScenarioId,variant:app.lessonVariant,member:app.lessonSubfixture,chapter:app.graphChapter?.id,object:app.objectTraceSelection,field:app.attributeSelection,index:app.index,traceIndex:app.traceIndex});}
+const buttonList=app=&gt;[...app.querySelectorAll('[data-lesson-chapter]')];
+function chapterEvidence(app){
+  const chapters=app.labModel.chapters,buttons=buttonList(app);
+  assert.deepEqual(buttons.map(x=&gt;x.dataset.lessonChapter),Array.from(chapters,x=&gt;x.id));
+  for(let n=0;n&lt;buttons.length;n++){
+    assert.equal(buttons[n].disabled,chapters[n].stepIds.length===0);
+    assert.equal(buttons[n].getAttribute('aria-pressed'),String(app.graphChapter?.id===chapters[n].id));
+  }
+  const tokens=app.labModel.chapterComparison||[];
+  const comparison=app.querySelector('#chapter-token-comparison');assert.ok(comparison);
+  const rows=[...comparison.querySelectorAll('tbody tr')];assert.equal(rows.length,tokens.length);
+  const holdings=app.heldView.snapshot().holdings;
+  for(let n=0;n&lt;tokens.length;n++){
+    const cells=rows[n].querySelectorAll('td'),token=tokens[n];
+    assert.ok(cells[0].textContent.includes(token.artifactId));
+    assert.equal(cells[1].textContent,token.issuer);assert.equal(cells[2].textContent,token.resource);
+    assert.equal(cells[3].textContent,holdings.some(x=&gt;x.artifactId===token.artifactId)?'A representation is held; this alone is not validation or permission.':'Not held in this source prefix.');
+  }
+  return {buttons:buttons.length,tokenComparisons:rows.length};
+}
+for(const lesson of ['lab-dnssec01','lab-dnssec15','lab-mcp09'])for(const initialMode of ['compact','full']){
+  const app=mount(initialMode);
+  try{
+    app.selectLabScenario(lesson);
+    const position=Math.min(4,app.steps.length-1);app.player.inspectQueue(app.steps,{position,elapsed:app.player.durationFor(app.steps[position])*.41,kind:'demo'});
+    const before=state(app),queue=app.player.queue,scenario=app.scenarioSnapshot();
+    check('MC-R01 repeated remount preserves chapter evidence and exact partial state '+lesson+' from '+initialMode,()=&gt;{
+      const samples=[];
+      for(const view of [initialMode,initialMode==='full'?'compact':'full',initialMode,initialMode==='full'?'compact':'full',initialMode]){
+        app.switchPresentation(view);assert.deepEqual(state(app),before);assert.equal(app.player.queue,queue);assert.equal(app.scenarioSnapshot(),scenario);
+        samples.push({view,...chapterEvidence(app)});
+      }
+      return samples;
+    });
+    for(const view of ['compact','full']){
+      app.switchPresentation(view);
+      check('MC-R01 real chapter actions and cursor/comparison refresh '+lesson+' in '+view,()=&gt;{
+        const jumped=[];
+        for(const chapter of app.labModel.chapters.filter(x=&gt;x.stepIds.length)){
+          const target=app.steps.findIndex(step=&gt;step.id===chapter.stepIds[0]);
+          buttonList(app).find(b=&gt;b.dataset.lessonChapter===chapter.id).click();
+          assert.deepEqual(norm(app.heldView.snapshot().cursor),{eventIndex:target,milestone:'complete'});
+          assert.equal(app.graphChapter.id,chapter.id);assert.notEqual(app.player.status,'playing');
+          assert.equal(app.lessonVariant,before.variant);assert.equal(app.lessonSubfixture,before.member);
+          jumped.push({id:chapter.id,index:target,...chapterEvidence(app)});
+        }
+        return jumped;
+      });
+    }
+  }finally{close(app);}
+}
+for(const suffix of ['mc-read-response','mc-read-response-unwrap','mc-read-accept']){
+  const app=mount();try{
+    app.selectLabScenario('lab-smb-multichannel-binding-success');app.setLearningDetail('crypto');
+    const index=app.steps.findIndex(x=&gt;x.id.endsWith(':'+suffix));assert.ok(index&gt;=0);
+    const text=app.steps[index].cryptoDetail;assert.ok(text);
+    check('MC-R02 per-event explanation and future-prefix exclusion '+suffix,()=&gt;{
+      app.inspectSourceCursor({eventIndex:index,milestone:'before'});
+      assert.equal(app.refs['compact-data'].textContent.includes(text),false);assert.equal(app.refs['compact-data'].querySelector('.payload-list'),null);
+      const before=state(app);app.switchPresentation('full');app.switchPresentation('compact');assert.deepEqual(state(app),before);
+      assert.equal(app.refs['compact-data'].textContent.includes(text),false);
+      app.inspectSourceCursor({eventIndex:index,milestone:'complete'});const completed=state(app);
+      for(const view of ['compact','full','compact']){
+        app.switchPresentation(view);const region=view==='compact'?app.refs['compact-data']:app.refs.inspector;
+        assert.ok(region.textContent.includes(text));assert.equal([...region.querySelectorAll('.step-detail')].filter(node=&gt;!node.classList.contains('step-description')).length,1);
+        app.setLearningDetail('journey');assert.equal(region.textContent.includes(text),false);
+        app.setLearningDetail('crypto');assert.ok(region.textContent.includes(text));assert.deepEqual(state(app),completed);
+      }
+      return {step:app.steps[index].id,index,explanation:text};
+    });
+  }finally{close(app);}
+}
+{
+  const app=mount();try{
+    app.selectLabScenario('lab-mcp09');app.setLearningDetail('crypto');
+    const index=app.steps.findIndex(x=&gt;!x.cryptoDetail),expected=app.labModel.profile.cryptoDetail;
+    check('MC-R02 profile fallback and incomplete gating',()=&gt;{
+      assert.ok(index&gt;=0&amp;&amp;typeof expected==='string'&amp;&amp;expected.length);
+      app.inspectSourceCursor({eventIndex:index,milestone:'before'});assert.equal(app.refs['compact-data'].textContent.includes(expected),false);
+      app.inspectSourceCursor({eventIndex:index,milestone:'complete'});
+      for(const view of ['compact','full','compact']){app.switchPresentation(view);assert.ok((view==='compact'?app.refs['compact-data']:app.refs.inspector).textContent.includes(expected));}
+      return {lesson:app.labScenarioId,index};
+    });
+  }finally{close(app);}
+}
+for(const history of ['object','field','none'])for(const sourceControl of ['timeline','inspector']){
+  const app=mount('full');try{
+    check('MC-R03 actual '+sourceControl+' replay from '+history+' and cursor-preserving return',()=&gt;{
+      if(history==='object')app.heldView.trace('account-password');
+      if(history==='field')app.selectAttribute('clientIdApp',false);
+      const parentQueue=app.traceQueue,parentObject=app.objectTraceSelection,parentField=app.attributeSelection;
+      if(sourceControl==='timeline')app.refs.timeline.querySelector('[data-step="1"]').click();
+      else{app.player.pause();if(history==='field')app.querySelector('#follow').click();app.refs.inspector.querySelector('[data-replay]').click();}
+      env.clock.frame();env.clock.frame(45);app.player.pause();
+      const before=state(app),queue=app.player.queue;
+      assert.equal(queue.length,1);assert.equal(app.objectTraceSelection,parentObject);assert.equal(app.attributeSelection,parentField);
+      const expected='Selected action replay'+(history==='object'?' within exact object history: account-password':history==='field'?' within field history: '+app.selectionName(parentField):'');
+      const observations=[];
+      for(const view of ['compact','full','compact']){
+        app.switchPresentation(view);assert.deepEqual(state(app),before);assert.equal(app.player.queue,queue);assert.equal(app.traceQueue,parentQueue);assert.equal(app.studyQueue().label,expected);
+        if(view==='compact'){
+          assert.equal(app.refs['compact-scope'].textContent,'Active scope: '+expected);
+          assert.ok(app.refs['compact-queue-label'].textContent.includes(expected));assert.equal(app.querySelectorAll('[data-compact-row]').length,1);
+          assert.equal(app.refs['compact-current-title'].textContent,queue[0].title);
+        }
+        observations.push({view,kind:app.player.kind,label:app.studyQueue().label});
+      }
+      const canonical=norm(app.heldView.snapshot());app.querySelector('[data-compact-action="return"]').click();
+      assert.deepEqual(norm(app.heldView.snapshot()),canonical);assert.equal(app.studyQueue().label,'Journey');assert.equal(app.attributeSelection,null);assert.equal(app.objectTraceSelection,null);assert.equal(app.player.queue.length,app.steps.length);assert.notEqual(app.player.status,'playing');
+      return observations;
+    });
+  }finally{close(app);}
+}
+report.passed=report.checks.filter(x=&gt;x.passed).length;report.failed=report.failures.length;
+fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({mode,passed:report.passed,failed:report.failed,failures:report.failures.map(x=&gt;({name:x.name,message:x.message})),output},null,2));
+if(report.failed)process.exitCode=1;</code></pre>
+</details>
+<details>
+<summary>
+independent-validation/ux/recheck-ux.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source or result 4"><code>import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+
+const root=path.resolve(process.argv[2]||'source'),mode=process.argv[3]||'source';
+const htmlPath=path.resolve(process.argv[4]||'auth-flow-studio-compact.html');
+const output=process.argv[5]||'ux-recheck-'+mode+'.json';
+const {installHarness,HarnessEvent}=await import(pathToFileURL(path.join(root,'tests/dom-harness.mjs')));
+let harness,Component;
+if(mode==='emitted'){
+  const sandbox={structuredClone};harness=installHarness(sandbox);
+  const scripts=[...fs.readFileSync(htmlPath,'utf8').matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];
+  assert.equal(scripts.length,1);
+  new vm.Script(scripts[0][1],{filename:'submitted-standalone:inline'}).runInContext(vm.createContext(sandbox),{timeout:5000});
+  Component=harness.registry.get('auth-flow-studio');
+}else{harness=installHarness();({AuthFlowStudio:Component}=await import(pathToFileURL(path.join(root,'src/app.js'))));}
+const {document,window,clock}=harness;
+const result={mode,qualification:'Independent source or exact emitted DOM-harness assertions; not browser layout, device or human AT acceptance.',records:[],failures:[]};
+function check(name,fn){try{const detail=fn();result.records.push({name,passed:true,...(detail?{detail}:{})});}catch(error){result.records.push({name,passed:false,error:error.stack});result.failures.push(name);}}
+function mount(presentation='compact'){
+  window.innerWidth=390;window.localStorage={getItem:()=&gt;presentation,setItem(){}};
+  const app=new Component();document.body.appendChild(app);document.activeElement=document.body;
+  app.addEventListener('focusin',e=&gt;document.activeElement=e.target);app.connectedCallback();return app;
+}
+function remove(app){app.disconnectedCallback();document.body.removeChild(app);document.activeElement=document.body;clock.frames.clear();clock.timers.clear();}
+function visibleFocus(app,node=document.activeElement){
+  assert.equal(document.activeElement,node);assert.ok(app.contains(node));assert.equal(node.closest('[hidden]'),null);
+  for(let p=node.parentElement;p&amp;&amp;p!==app;p=p.parentElement)if(p.tagName==='DETAILS'&amp;&amp;!p.hasAttribute('open'))assert.ok(p.querySelector('summary').contains(node));
+}
+function openDetails(node){node.setAttribute('open','');node.dispatchEvent(new HarnessEvent('toggle'));}
+function key(input,value,extra={}){const event=new HarnessEvent('keydown',{key:value,...extra});input.dispatchEvent(event);return event;}
+function type(picker,query){picker.input.focus();picker.input.value=query;picker.input.dispatchEvent(new HarnessEvent('input'));}
+function viewButton(app,destination){return app.querySelector('[data-presentation-choice="'+destination+'"]');}
+function switchFromPicker(picker,target,method){
+  if(method==='keyboard')key(picker.input,'Tab',{shiftKey:true});else target.dispatchEvent(new HarnessEvent('pointerdown'));
+  picker.input.dispatchEvent(new HarnessEvent('focusout',{relatedTarget:target}));target.focus();target.click();
+}
+function snapshot(app){return JSON.stringify({scenario:app.labScenarioId,variant:app.lessonVariant,member:app.lessonSubfixture,player:app.player.snapshot(),held:app.heldView.snapshot(),route:window.location?.hash});}
+
+for(const surface of ['index','action']){
+  const app=mount();
+  try{check('MC-R04 '+surface+' Compact inline semantics and Full F2 roundtrip',()=&gt;{
+    if(surface==='index')app.openFieldIndex();
+    else app.inspectSourceCursor({eventIndex:app.steps.findIndex(row=&gt;row.fields?.length),milestone:'complete'});
+    const list=surface==='index'?app.refs['attribute-index-list']:app.refs['compact-data'];
+    const controls=[...list.querySelectorAll('[data-attribute],[data-index-attribute]')];assert.ok(controls.length);
+    for(const item of controls){assert.equal(item.hasAttribute('aria-haspopup'),false);assert.equal(item.hasAttribute('aria-keyshortcuts'),false);assert.equal(item.getAttribute('aria-controls'),'compact-field-definition');}
+    const trigger=controls[0],id=trigger.dataset.attribute||trigger.dataset.indexAttribute,before=snapshot(app);
+    trigger.focus();trigger.click();const definition=app.refs['compact-field-definition'];visibleFocus(app,definition);
+    assert.ok(definition.textContent.includes(app.definition(id).meaning));assert.equal(app.refs['attribute-popup'].hidden,true);assert.equal(snapshot(app),before);
+    app.switchPresentation('full');app.openFieldIndex();
+    const full=[...app.refs['attribute-index-list'].querySelectorAll('[data-index-attribute]')].find(n=&gt;n.dataset.indexAttribute===id);assert.ok(full);
+    assert.equal(full.getAttribute('aria-haspopup'),'dialog');assert.equal(full.getAttribute('aria-keyshortcuts'),'F2');
+    full.focus();key(full,'F2');assert.equal(app.refs['attribute-popup'].hidden,false);assert.ok(app.refs['attribute-popup'].contains(document.activeElement));
+    key(document.activeElement,'Escape');assert.equal(app.refs['attribute-popup'].hidden,true);visibleFocus(app);assert.equal(document.activeElement.dataset.indexAttribute,id);
+    app.switchPresentation('compact');for(const item of app.querySelectorAll('[data-attribute],[data-index-attribute]')){assert.equal(item.hasAttribute('aria-haspopup'),false);assert.equal(item.hasAttribute('aria-keyshortcuts'),false);}
+    return {controls:controls.length,field:id};
+  });}finally{remove(app);}
+}
+
+{
+ const app=mount();try{
+  const outer=app.querySelector('[data-compact-disclosure="holdings"]');openDetails(outer);
+  const first=app.querySelector('[data-holding-id]');assert.ok(first);const owner=first.closest('details');openDetails(owner);first.click();
+  const help=()=&gt;app.querySelector('#held-inspector [data-held-help]'),close=()=&gt;app.querySelector('#held-inspector [data-held-help-close]');
+  for(const action of ['close','escape','trigger'])check('MC-R05 help '+action+' keeps connected focus and outer disclosure',()=&gt;{
+    help().focus();help().click();assert.equal(app.heldView.helpOpen,true);visibleFocus(app,close());assert.ok(app.querySelector('.held-help').contains(document.activeElement));
+    if(action==='escape'){const event=key(close(),'Escape');assert.equal(event.defaultPrevented,true);}else (action==='trigger'?help():close()).click();
+    assert.equal(app.heldView.helpOpen,false);assert.equal(close(),null);assert.equal(outer.hasAttribute('open'),true);assert.equal(help().getAttribute('aria-expanded'),'false');visibleFocus(app,help());
+  });
+  check('MC-R05 help survives current-state rerender and presenter roundtrip',()=&gt;{
+    help().click();visibleFocus(app,close());app.compactView.render('selection');visibleFocus(app,close());
+    app.switchPresentation('full');app.switchPresentation('compact');assert.equal(app.heldView.helpOpen,true);assert.ok(close());
+    close().focus();key(close(),'Escape');assert.equal(app.heldView.helpOpen,false);visibleFocus(app,help());
+    assert.equal(app.querySelector('[data-compact-disclosure="holdings"]').hasAttribute('open'),true);
+  });
+  check('MC-R05 playback does not steal focus into help',()=&gt;{
+    help().click();const play=app.querySelector('[data-compact-action="play"]');play.focus();app.compactView.render('player');visibleFocus(app,play);
+  });
+ }finally{remove(app);}
+}
+
+for(const kind of ['scenario','workspace'])for(const presentation of ['compact','full'])for(const method of ['keyboard','pointer']){
+ const app=mount(presentation);try{check('MC-R06 '+kind+' '+presentation+' '+method+' preserves raw draft and nonfirst highlight both ways',()=&gt;{
+  const picker=app[kind+'Picker'],before=snapshot(app),model=app.scenarioSnapshot(),compiled=app.heldView.compiled();
+  type(picker,'kerberos');assert.ok(picker.results.length&gt;1);key(picker.input,'End');const active=picker.input.getAttribute('aria-activedescendant');
+  for(const targetMode of [presentation==='compact'?'full':'compact',presentation]){
+    switchFromPicker(picker,viewButton(app,targetMode),method);assert.equal(app.presentationMode,targetMode);picker.input.focus();
+    assert.equal(picker.query,'kerberos');assert.equal(picker.input.value,'kerberos');assert.equal(picker.input.getAttribute('aria-activedescendant'),active);assert.equal(picker.menu.hidden,false);
+    assert.equal(snapshot(app),before);assert.equal(app.scenarioSnapshot(),model);assert.equal(app.heldView.compiled(),compiled);
+  }
+ });}finally{remove(app);}
+}
+
+for(const kind of ['scenario','workspace'])for(const presentation of ['compact','full']){
+ const app=mount(presentation);try{
+  const picker=app[kind+'Picker'];
+  for(const cancel of ['Escape','toggle','clear','ordinary-reopen'])check('MC-R06 '+kind+' '+presentation+' '+cancel+' cannot restore stale draft',()=&gt;{
+    type(picker,'kerberos');
+    if(cancel==='Escape')key(picker.input,'Escape');
+    else if(cancel==='toggle')picker.toggleButton.click();
+    else if(cancel==='clear'){picker.clearButton.click();key(picker.input,'Tab');}
+    else{key(picker.input,'Tab');picker.input.focus();assert.equal(picker.query,'');key(picker.input,'Escape');}
+    app.switchPresentation(app.presentationMode==='compact'?'full':'compact');picker.input.focus();assert.equal(picker.query,'');assert.equal(picker.input.value,'');key(picker.input,'Escape');
+  });
+  check('MC-R06 '+kind+' '+presentation+' empty and unmatched drafts',()=&gt;{
+    for(const query of ['', ' \t ', 'no-unmatched-real-scenario-zzzz']){
+      type(picker,query);key(picker.input,'Tab');app.switchPresentation(app.presentationMode==='compact'?'full':'compact');
+      if(!query.trim())assert.equal(picker.suspended,null);
+      picker.input.focus();assert.equal(picker.query,query.trim()?query:'');
+      if(query.trim()){assert.equal(picker.results.length,0);assert.equal(picker.input.hasAttribute('aria-activedescendant'),false);const before=snapshot(app);key(picker.input,'Enter');assert.equal(snapshot(app),before);}
+      key(picker.input,'Escape');
+    }
+  });
+  check('MC-R06 '+kind+' '+presentation+' lesson change clears suspended draft',()=&gt;{
+    type(picker,'kerberos');key(picker.input,'Tab');app.switchPresentation(app.presentationMode==='compact'?'full':'compact');app.selectLabScenario('lab-pam01');
+    app.switchPresentation(app.presentationMode==='compact'?'full':'compact');picker.input.focus();assert.equal(picker.query,'');assert.equal(picker.input.value,'');
+  });
+ }finally{remove(app);}
+}
+result.passed=result.records.filter(x=&gt;x.passed).length;result.failed=result.failures.length;
+fs.writeFileSync(output,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify({mode,passed:result.passed,failed:result.failed,output},null,2));if(result.failed)process.exitCode=1;</code></pre>
+</details>
+<details>
+<summary>
+independent-validation/field-recheck.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source or result 5"><code>import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+
+// node field-recheck.mjs SOURCE_ROOT source|emitted STANDALONE_HTML OUTPUT_JSON
+const source=path.resolve(process.argv[2]),mode=process.argv[3],html=path.resolve(process.argv[4]),output=path.resolve(process.argv[5]);
+const {installHarness,HarnessEvent}=await import(pathToFileURL(path.join(source,'tests/dom-harness.mjs')));
+let env,Component;
+if(mode==='emitted'){
+  const scripts=[...fs.readFileSync(html,'utf8').matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];assert.equal(scripts.length,1);
+  const sandbox={structuredClone};env=installHarness(sandbox);
+  new vm.Script(scripts[0][1]).runInContext(vm.createContext(sandbox),{timeout:5000});Component=env.registry.get('auth-flow-studio');
+}else{assert.equal(mode,'source');env=installHarness();({AuthFlowStudio:Component}=await import(pathToFileURL(path.join(source,'src/app.js'))));}
+const report={mode,qualification:'Independent DOM-harness checks of real lessons; no browser layout, human AT or native timing claim.',checks:[]};
+const norm=v=&gt;JSON.parse(JSON.stringify(v));
+const canonical=app=&gt;norm(app.heldView.snapshot());
+const controls=app=&gt;[...app.refs['attribute-index-list'].querySelectorAll('[data-index-attribute]')];
+const action=(app,name)=&gt;app.querySelector('[data-compact-action="'+name+'"]');
+const scope=(app,name)=&gt;app.querySelector('[data-compact-field-scope="'+name+'"]');
+function search(app,value){app.refs['attribute-search'].value=value;app.refs['attribute-search'].dispatchEvent(new HarnessEvent('input'));}
+function mount(lesson){env.window.innerWidth=390;env.window.localStorage={getItem:()=&gt; 'compact',setItem(){}};const app=new Component();env.document.body.appendChild(app);app.addEventListener('focusin',e=&gt;{env.document.activeElement=e.target;});app.connectedCallback();app.selectLabScenario(lesson);return app;}
+function close(app){app.disconnectedCallback();env.document.body.removeChild(app);env.clock.frames.clear();env.clock.timers.clear();env.document.activeElement=env.document.body;}
+function check(name,fn){try{report.checks.push({name,passed:true,details:fn()});}catch(e){report.checks.push({name,passed:false,message:e.message,stack:e.stack});}}
+function definition(app,id){const region=app.refs['compact-field-definition'],data=app.definition(id);assert.equal(region.hidden,false);assert.equal(region.getAttribute('role'),'region');assert.equal(region.getAttribute('tabindex'),'-1');assert.equal(env.document.activeElement,region);assert.ok(region.textContent.includes(data.name));assert.ok(region.textContent.includes(data.meaning||data.description));assert.ok(region.textContent.includes(data.purpose));assert.ok(region.scrollCalls.length);}
+for(const lesson of ['basic-keycloak','core','lab-mcp09']){
+  const app=mount(lesson);
+  try{
+    check('MC-R07 current lesson is a bounded initial field view: '+lesson,()=&gt;{
+      const before=canonical(app),queue=app.player.queue;app.openFieldIndex();
+      const rows=controls(app);assert.ok(rows.length&gt;0&amp;&amp;rows.length&lt;=40);assert.equal(scope(app,'current').getAttribute('aria-pressed'),'true');
+      const region=app.refs['compact-field-definition'],index=app.refs['attribute-index'];assert.equal(region.parentElement,index.parentElement);
+      assert.ok([...region.parentElement.children].indexOf(region)&lt;[...index.parentElement.children].indexOf(index));
+      assert.deepEqual(canonical(app),before);assert.equal(app.player.queue,queue);return {rows:rows.length,totalCurrentMatches:app.attributeIndexRows.total};
+    });
+    check('MC-R07 explicit global expansion keeps order and focuses new batch: '+lesson,()=&gt;{
+      const before=canonical(app),queue=app.player.queue;scope(app,'global').click();const first=controls(app).map(x=&gt;x.dataset.indexAttribute);assert.equal(first.length,40);assert.equal(app.attributeIndexRows.total,10843);
+      app.refs['compact-field-more'].click();const expanded=controls(app);assert.equal(expanded.length,80);assert.deepEqual(expanded.slice(0,40).map(x=&gt;x.dataset.indexAttribute),first);
+      assert.equal(new Set(expanded.map(x=&gt;x.dataset.indexAttribute)).size,80);assert.equal(env.document.activeElement,expanded[40]);
+      search(app,'PKCE');assert.ok(controls(app).length&lt;=40);scope(app,'current').click();assert.equal(app.attributeQuery,'');assert.ok(controls(app).length&lt;=40);
+      assert.deepEqual(canonical(app),before);assert.equal(app.player.queue,queue);return {first:40,expanded:80};
+    });
+    check('MC-R07 full global lookup and empty history preserve source prefix: '+lesson,()=&gt;{
+      const current=new Set(controls(app).map(x=&gt;x.dataset.indexAttribute));
+      const item=['residentKey','realmSigningKey'].map(id=&gt;[id,app.definition(id)]).find(([id,d])=&gt;!current.has(id)&amp;&amp;d.name?.length&gt;24&amp;&amp;app.attributeUsage(app.steps,id).length===0);assert.ok(item);
+      const [id,d]=item,before=canonical(app),queue=app.player.queue;search(app,d.name);const row=controls(app).find(x=&gt;x.dataset.indexAttribute===id);assert.ok(row);assert.ok(controls(app).length&lt;=40);
+      row.click();definition(app,id);assert.equal(app.attributeSelection,null);assert.deepEqual(canonical(app),before);assert.equal(app.player.queue,queue);
+      app.querySelector('[data-compact-field-trace]').click();assert.equal(app.attributeSelection,id);assert.equal(app.player.queue.length,0);assert.notEqual(app.player.status,'playing');assert.equal(env.document.activeElement,app.refs['compact-current-title']);assert.deepEqual(canonical(app),before);
+      assert.equal(action(app,'play').disabled,true);action(app,'field-definition').click();definition(app,id);action(app,'return').click();assert.equal(app.attributeSelection,null);assert.equal(app.player.kind,'demo');assert.equal(env.document.activeElement,app.refs['compact-current-title']);assert.deepEqual(canonical(app),before);return {id,name:d.name};
+    });
+    check('MC-R07 Follow and Return retain a real partial prefix: '+lesson,()=&gt;{
+      const index=app.steps.findIndex(x=&gt;x.fields?.some(id=&gt;app.definition(id).name&amp;&amp;app.attributeUsage(app.steps,id).length));assert.ok(index&gt;=0);
+      const id=app.steps[index].fields.find(id=&gt;app.definition(id).name&amp;&amp;app.attributeUsage(app.steps,id).length);
+      app.player.inspectQueue(app.steps,{position:index,elapsed:app.player.durationFor(app.steps[index])*.37,kind:'demo'});
+      app.player.pause();const before=canonical(app);app.compactView.showField(id);definition(app,id);app.querySelector('[data-compact-field-trace]').click();
+      assert.equal(app.attributeSelection,id);assert.ok(app.player.queue.length);assert.notEqual(app.player.status,'playing');assert.equal(env.clock.frames.size,0);assert.equal(env.document.activeElement,app.refs['compact-current-title']);assert.ok(app.querySelector('.compact-current').scrollCalls.length);
+      assert.deepEqual(canonical(app),before);const queue=app.player.queue;action(app,'field-definition').click();definition(app,id);assert.equal(app.player.queue,queue);assert.deepEqual(canonical(app),before);
+      action(app,'return').click();assert.equal(app.attributeSelection,null);assert.equal(app.player.kind,'demo');assert.equal(env.document.activeElement,app.refs['compact-current-title']);assert.deepEqual(canonical(app),before);return {id,index};
+    });
+    check('MC-R07 playback does not steal focus; explicit definition pauses exactly: '+lesson,()=&gt;{
+      const id=app.steps.flatMap(x=&gt;x.fields||[]).find(id=&gt;app.definition(id).name&amp;&amp;app.attributeUsage(app.steps,id).length);assert.ok(id);app.compactView.showField(id);app.querySelector('[data-compact-field-trace]').click();
+      const card=app.querySelector('.compact-current'),scrolls=card.scrollCalls.length;action(app,'play').focus();action(app,'play').click();env.clock.frame();env.clock.frame(30);
+      assert.equal(app.player.status,'playing');assert.equal(env.document.activeElement,action(app,'play'));assert.equal(card.scrollCalls.length,scrolls);
+      const queue=app.player.queue,elapsed=app.player.elapsed,before=canonical(app);action(app,'field-definition').click();assert.equal(app.player.status,'paused');assert.equal(env.clock.frames.size,0);assert.equal(app.player.queue,queue);assert.equal(app.player.elapsed,elapsed);assert.deepEqual(canonical(app),before);definition(app,id);return {id,elapsed};
+    });
+    check('MC-R07 lesson changes reset batching; global query stays explicit until current scope is requested: '+lesson,()=&gt;{
+      scope(app,'global').click();app.refs['compact-field-more'].click();search(app,'PKCE');app.selectLabScenario(lesson==='core'?'basic-keycloak':'core');app.openFieldIndex();
+      assert.equal(app.attributeQuery,'PKCE');assert.equal(scope(app,'global').getAttribute('aria-pressed'),'true');assert.equal(app.compactView.fieldBrowser.limit,40);assert.ok(controls(app).length&lt;=40);scope(app,'current').click();assert.equal(app.attributeQuery,'');assert.equal(scope(app,'current').getAttribute('aria-pressed'),'true');assert.ok(controls(app).length&lt;=40);return {nextLesson:app.labScenarioId,rows:controls(app).length};
+    });
+  }finally{close(app);}
+}
+report.passed=report.checks.filter(x=&gt;x.passed).length;report.failed=report.checks.length-report.passed;
+fs.writeFileSync(output,JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));if(report.failed)process.exitCode=1;</code></pre>
+</details>
+<details>
+<summary>
+Independent result summary and audit counts
+</summary>
+<pre class="json" tabindex="0" role="region" aria-label="Reproduction source or result 6"><code>{
+  "independentBehavioralRecords": [
+    {
+      "path": "semantics/source-results.json",
+      "mode": "source",
+      "passed": 28,
+      "failed": 0
+    },
+    {
+      "path": "semantics/emitted-results.json",
+      "mode": "emitted",
+      "passed": 28,
+      "failed": 0
+    },
+    {
+      "path": "ux/source-recheck.json",
+      "mode": "source",
+      "passed": 39,
+      "failed": 0
+    },
+    {
+      "path": "ux/emitted-recheck.json",
+      "mode": "emitted",
+      "passed": 39,
+      "failed": 0
+    },
+    {
+      "path": "field-source-results.json",
+      "mode": "source",
+      "passed": 18,
+      "failed": 0
+    },
+    {
+      "path": "field-emitted-results.json",
+      "mode": "emitted",
+      "passed": 18,
+      "failed": 0
+    }
+  ],
+  "focusedNodeTests": {
+    "passed": 218,
+    "failed": 0,
+    "files": 12,
+    "runtime": "Node v24.22.1"
+  },
+  "packageAudit": {
+    "ciStageBeforeAfterExact": true,
+    "ciStageFiles": 931,
+    "allDeliveredCanonicalMatchCI": 271,
+    "originalTestsByteIdentical": 139,
+    "deliveredRunnableTests": 143,
+    "deliveredStageCommonFilesChanged": [
+      "docs/compact-view/assertion-interfaces.json",
+      "docs/compact-view/changed-files.json",
+      "docs/compact-view/current-progress.json",
+      "docs/compact-view/response-ledger.json",
+      "docs/compact-view/review02-verification.json"
+    ],
+    "baselineRebuilds": [
+      {
+        "name": "accepted07",
+        "canonicalFiles": 256,
+        "canonicalSha256": "b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825",
+        "standaloneSha256": "9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694",
+        "runtime": "Node, independent byte rebuild; not pinned Bun consumer"
+      },
+      {
+        "name": "reviewed-b91",
+        "canonicalFiles": 267,
+        "canonicalSha256": "b91f13a1c8bdf7c0a192f4236520096a8089484abbc7f6e3593d884691af460c",
+        "standaloneSha256": "c7166bbd7b20c7427ea08f7253df2545fe75dab2ce9d76b5f6f5869118b228c1",
+        "runtime": "Node, independent byte rebuild; not pinned Bun consumer"
+      },
+      {
+        "name": "before-late-fixes",
+        "canonicalFiles": 271,
+        "canonicalSha256": "7bac35907183867c4dc60bacf949c44cc006ab473356abf89e54e12968bbb02d",
+        "standaloneSha256": "4a125cf0cba72b2af59704d05285229d6672e6cb8e9ef072504dde2adf4ea9c7",
+        "runtime": "Node, independent byte rebuild; not pinned Bun consumer"
+      }
+    ],
+    "captureRestoration": {
+      "actualRestored": 50,
+      "matchedPriorAvailableBytes": 50,
+      "sourceModified": false
+    },
+    "status": "passed"
+  },
+  "performanceAudit": {
+    "status": "passed",
+    "qualification": "Recomputed original worker measurements and bindings; no new timing/resource/native execution.",
+    "sessions": 441,
+    "warmups": 63,
+    "declaredCells": 51,
+    "comparisons": 60,
+    "candidateActions": 39,
+    "counts": {
+      "materialRegressions": 0,
+      "comparisonVariationRows": 51,
+      "actionVariationRows": 11,
+      "ordinaryTargetMisses": 6,
+      "distinctFlaggedRows": 63,
+      "fieldRows": 18,
+      "fieldTargetMisses": 0,
+      "fieldVariationRows": 5
+    },
+    "dispositionCoverageExact": true,
+    "allProjectionLatenciesEqualOriginals": true,
+    "candidateInputBindings": 271,
+    "producerHelperFixtureLegacyBindingsMatched": true,
+    "comparisonPairedOrdersAlternate": true,
+    "switching": [
+      {
+        "cell": "ordinary-switch-full/perf-basic-web/phone390/source-http",
+        "action": "switch-full",
+        "medianMs": 1830.4498469999526,
+        "maxMs": 2750.615804000059
+      },
+      {
+        "cell": "ordinary-switch-full/perf-basic-web/phone390/emitted-http",
+        "action": "switch-full",
+        "medianMs": 1810.1194120000582,
+        "maxMs": 3015.789311000146
+      },
+      {
+        "cell": "ordinary-switch-full/perf-basic-web/phone390/standalone-file",
+        "action": "switch-full",
+        "medianMs": 1706.2099709999748,
+        "maxMs": 2488.5099049999844
+      },
+      {
+        "cell": "ordinary-switch-compact/perf-basic-web/phone390/source-http",
+        "action": "switch-compact",
+        "medianMs": 258.94705899991095,
+        "maxMs": 320.7064800001681
+      },
+      {
+        "cell": "ordinary-switch-compact/perf-basic-web/phone390/emitted-http",
+        "action": "switch-compact",
+        "medianMs": 262.4166369999293,
+        "maxMs": 433.58141899993643
+      },
+      {
+        "cell": "ordinary-switch-compact/perf-basic-web/phone390/standalone-file",
+        "action": "switch-compact",
+        "medianMs": 258.7691609999165,
+        "maxMs": 286.76318100001663
+      }
+    ],
+    "fields": {
+      "medianMin": 120.09433799982071,
+      "medianMax": 232.21139999991283,
+      "maximumMax": 296.7543249996379
+    },
+    "resources": [
+      {
+        "cell": "resource/perf-basic-web/phone390/source-http",
+        "growth": {
+          "listeners": 0,
+          "observers": 0,
+          "timers": 0,
+          "documentNodes": 0,
+          "detachedNodes": 0,
+          "detachedListenerTargets": 0,
+          "heapBytes": 781680,
+          "playerListeners": 0
+        },
+        "checkpoints": 6,
+        "cycles": 20,
+        "noLeakClaim": false
+      },
+      {
+        "cell": "resource/perf-basic-web/phone390/emitted-http",
+        "growth": {
+          "listeners": 0,
+          "observers": 0,
+          "timers": 0,
+          "documentNodes": 0,
+          "detachedNodes": 0,
+          "detachedListenerTargets": 0,
+          "heapBytes": 799992,
+          "playerListeners": 0
+        },
+        "checkpoints": 6,
+        "cycles": 20,
+        "noLeakClaim": false
+      },
+      {
+        "cell": "resource/perf-basic-web/phone390/standalone-file",
+        "growth": {
+          "listeners": 0,
+          "observers": 0,
+          "timers": 0,
+          "documentNodes": 0,
+          "detachedNodes": 0,
+          "detachedListenerTargets": 0,
+          "heapBytes": 797724,
+          "playerListeners": 0
+        },
+        "checkpoints": 6,
+        "cycles": 20,
+        "noLeakClaim": false
+      }
+    ]
+  }
+}</code></pre>
+</details>
+<p class="source-note">Independent Compact closure review · 31 October 2026 · Exact corrected-02 candidate · Application and tests unchanged · No release, human or performance acceptance.</p></main></body>
+</html>

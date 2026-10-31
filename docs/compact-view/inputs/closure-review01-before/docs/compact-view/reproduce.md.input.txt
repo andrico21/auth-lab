@@ -1,0 +1,239 @@
+# Compact review reproduction - corrected-02
+
+Version **1.1.1**; checkpoint `142fccdff9c452f6491b8886b83726bc188f49cd`. The supplied review remains `inputs/compact-review-01.html.input.txt`; corrected-02 is a worker correction round, not a new Astra review or finding closure.
+
+Current identity: 271 canonical app/test files, SHA256 `01f4f40fc980868085d7bcdc941e6cafd3a83de845f94f5c348c549eae6da430`; standalone 5,668,235 bytes, SHA256 `52479dd292643231ca5945c99fd2df41288d502de530013a07f08a28a93398a5`. `captureInputs` in `tools/verification/compact-mobile-browser.mjs` hashes sorted path/NUL/actual-bytes/NUL, not a serialized per-file-hash map. `CONTENTS.json` gives the physical source payload count; 271 is not that count.
+
+## Three uploads and prerequisites
+
+Receive exactly the ZIP, `auth-flow-studio-compact.html` and `START-HERE.md`. Extract the ZIP into a fresh owned directory and place both companions beside its `source/` and `review/` directories. From there:
+
+```sh
+sha256sum -c review/SHA256SUMS
+export DELIVERY_ROOT="$PWD"
+export PINNED_BUN="$(command -v bun)"
+"$PINNED_BUN" --version
+```
+
+Preprovision Bun **1.4.3**, Python3, unzip and ordinary shell tools. No app dependency install is required. For the immutable historical Python reconstruction/solid consumers only, also set `HISTORICAL_BUN` to an absolute provisioned Bun **1.4.2** executable; their old runtime guards and evidence are not rewritten. Current gates use `PINNED_BUN` 1.4.3. `runtime-recovery-review02.json` records the explicit user authorization, actual 1.4.2 runaway and bounded 1.4.3 trigger smoke. The optional outer `SHA256SUMS` is a local-owner sidecar, not a fourth required upload. The internal list binds payloads and both companions; it excludes itself and generated `CONTENTS.json` to avoid a hash cycle. No-fetch/automatic-install-disabled mode is not OS network denial.
+
+Before large writes or browser work, check both temporary storage and Windows host-drive headroom. Use an owned **short file-backed** `REVIEW_TMP_PARENT` outside the extraction tree, not an assumed `/tmp` RAM capacity. From Bash:
+
+```sh
+umask 077
+export TMPDIR="$(mktemp -d "$REVIEW_TMP_PARENT/af02.XXXXXX")"
+chmod 700 "$TMPDIR"
+export BUN_TMPDIR="$TMPDIR"
+```
+
+Keep Chrome's complete Unix socket path below 108 bytes. Use an absolute owned external `RESULTS` parent; every output leaf must be fresh. Never clear a cache owned by a live job. Raw evidence, frozen controls, pinned runtimes/libraries and another project's targets are not disposable build caches. Linux guest free space does not establish Windows host capacity.
+
+## Current build and complete regression
+
+From extracted `source/`:
+
+```sh
+BUN_INSTALL_AUTO=disable "$PINNED_BUN" run build --source-version
+cmp dist/auth-flow-studio.html ../auth-flow-studio-compact.html
+AUTH_LAB_QA_EVIDENCE_DIR="$RESULTS/compiled" "$PINNED_BUN" tools/verification/compiled-bundle-smoke.mjs
+```
+
+The actual current emitted smoke passed all 328 choices with unchanged source and the current HTML. It does not claim eight extra UI tests or native layout/AT acceptance.
+
+`bun run test` remains exactly `bun test --isolate --timeout=900000 tests/*.test.mjs`. Run it serially, not through the four-worker diagnostic generator; keep its full log and actual exit. The 5000 ms VM, 900000 ms test and 1800000 ms diagnostic-file budgets are unchanged. All 139 original runnable files remain byte-identical; four behavioral files now contain 63 cases, for 143 runnable files. Those authored counts do not predict a pass.
+
+`exact-ci-review02.json` records the actual complete current command on its frozen 931-file stage under Bun1.4.3. To reproduce every execution byte rather than retroactively include later result documents, first build delivered source, then run from the delivery root:
+
+```sh
+python3 review/evidence/original-diagnostics/native-before-overlay-review01/reconstruct.py \
+  --base=source --bun="$HISTORICAL_BUN" \
+  --manifest=review/evidence/review02/exact-ci-stage143/reconstruction-manifest.json \
+  --out=NEW_CURRENT_CI_STAGE
+python3 review/evidence/review02/runtime143/bounded-command.py \
+  --cwd=NEW_CURRENT_CI_STAGE/source --out="$RESULTS/current-ci-full" \
+  --wall-seconds=5400 -- "$PINNED_BUN" run test
+```
+
+The recipe rebuilds and verifies every member under `NEW_CURRENT_CI_STAGE/source`, canonical 01f4/current HTML. Six verbatim pre-result documentation overlays preserve the actual stage; final outcome/measurement documents are explicitly later. The immutable reconstruction helper uses historical1.4.2 only to regenerate exact member bytes; the complete test command executes with current `PINNED_BUN`1.4.3. The independent process-group watchdog bounds the whole command to90minutes, and the CI test step has `timeout-minutes:90`; no in-process test timeout is raised. Its real1second expiry smoke killed both parent and child, returned124 and was recorded as failure, not pass. The optional reviewer command is not another worker-run claim. Read the completed-command record for observed totals, exit and whole-stage before/after identity.
+
+## Current targeted checks and original supplied probes
+
+From built extracted `source/`:
+
+```sh
+for mode in source emitted; do
+  "$PINNED_BUN" tools/verification/run-compact-review01-checks.mjs \
+    --root="$PWD" --html="$PWD/dist/auth-flow-studio.html" \
+    --mode="$mode" --out="$RESULTS/positive-$mode"
+done
+```
+
+The existing captured producers each passed 30/30 grouped behavior records across the seven findings under1.4.2; these observations are not restamped1.4.3. Current1.4.3fullCI/build/package/decoder/compiled gates have separate runtime bindings. Their grouped counts are not per-finding or whole-corpus totals. The before/after consumer independently observed ten late failures before the two production corrections and ten correct cases after: eight untouched closed-picker transfers and two real Full inspector replay parent contexts.
+
+The three supplied scripts remain byte-exact and ran in source/emitted modes, six actual runs with substantive assertions. Preserve their relative import layout. From extracted `source/`:
+
+```sh
+PROBES="$RESULTS/original-probes"
+mkdir -p "$PROBES/independent-validation/ux"
+cp -a "$DELIVERY_ROOT/source" "$PROBES/source"
+cp "$DELIVERY_ROOT/auth-flow-studio-compact.html" "$PROBES/"
+cp "$DELIVERY_ROOT/review/evidence/review02/supplied-probes-01/content-probe.mjs" "$PROBES/"
+cp "$DELIVERY_ROOT/review/evidence/review02/supplied-probes-01/trace-step-scope-repro.mjs" "$PROBES/"
+cp "$DELIVERY_ROOT/review/evidence/review02/supplied-probes-01/independent-validation/ux/interaction-probe.mjs" "$PROBES/independent-validation/ux/"
+cd "$PROBES"
+for mode in source emitted; do
+  "$PINNED_BUN" content-probe.mjs source auth-flow-studio-compact.html "$mode" "$mode-content.json"
+  "$PINNED_BUN" independent-validation/ux/interaction-probe.mjs "$mode"
+  "$PINNED_BUN" trace-step-scope-repro.mjs source "$mode" auth-flow-studio-compact.html
+done
+```
+
+The interaction probe imports `../../source/tests/dom-harness.mjs` from its own directory. Do not flatten it. DOM-harness observations are not native viewport or human/AT evidence; exit 0 alone is not the substantive assertion proof.
+
+## Current actual native matrix
+
+Preprovision the recorded Playwright-Core 1.64.1 JavaScript entry, Chromium 155 and Linux shared libraries. Export absolute `PLAYWRIGHT_MODULE`, `CHROMIUM_EXECUTABLE` and `LD_LIBRARY_PATH`. These are verification prerequisites, not standalone app dependencies; Node/npm are unnecessary. From built extracted `source/`:
+
+```sh
+for mode in source-http emitted-http standalone-file; do
+  "$PINNED_BUN" tools/verification/run-compact-review01-browser.mjs \
+    --root="$PWD" --mode="$mode" --out="$RESULTS/current-native-$mode" \
+    --playwright-module="$PLAYWRIGHT_MODULE" \
+    --chromium-executable="$CHROMIUM_EXECUTABLE" --library-path="$LD_LIBRARY_PATH"
+done
+```
+
+The producer defaults to **58 cells per loader**. All174 captured cells actually passed under one1.4.2 producer identity for the unchanged browser app/HTML; this is not a new1.4.3 native collection; this is not the old 138-keyboard/24-pointer join. Existing picker cells add empty/whitespace visits and 12 cells exercise actual Full inspector Replay/Follow. `--cell=EXACT_ID` is focused and leaves all other cells explicitly unperformed. The unchanged budgets/request allowlist/CSP remain bound.
+
+Thirty-six current PNG captures are byte-verified. Thirty reuse only proven identical preserved physical image bytes; six are new physical PNGs. This does not reuse old native pass results. `native-01/screenshot-locations-and-proof.json` gives every current capture's actual hash and location. Two separately captured managed WebPs show the closed selected labels and selected-action field-history surface at observed 390x844. Initial managed viewport/click-tool limitations remain disclosed. Synthetic phone-sized Chromium is not a physical phone, native OS text scaling or human/AT acceptance.
+
+## Restore the exact accepted07 control
+
+From extracted `source/`, choose a fresh absolute external `CONTROL` path:
+
+```sh
+export CONTROL="$RESULTS/accepted07-control"
+python3 - <<'PY'
+import os
+from pathlib import Path
+from zipfile import ZipFile
+inputs = Path('docs/compact-view/inputs')
+control = Path(os.environ['CONTROL'])
+control.mkdir(exist_ok=False)
+for name in ('candidate07-source.zip', 'candidate07-support.zip', 'candidate07-standalone.zip'):
+    with ZipFile(inputs / name) as archive:
+        if archive.testzip() is not None:
+            raise SystemExit('Corrupt frozen archive: ' + name)
+        archive.extractall(control)
+print(control.resolve())
+PY
+```
+
+No build, install, fetch or reinterpretation of the accepted baseline is performed. The support archive supplies the exact original verification helper. Expected 256-file control canonical SHA256: `b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825`; control HTML SHA256: `9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694`. `phase-0/accepted-input-identity.json`, `phase-0/baseline-reconciliation.json` and `inputs/candidate07-support.json` retain the accepted/publication bridge.
+
+## Current serial timing and separate resources
+
+Never run a build, test worker or other browser/acceptance job alongside timing. Keep all seven samples, the separately retained warmup, original targets, flags and dispositions. Do not rerun unchanged inputs to seek green. The frozen changed-input repeat uses `performance/fixtures-review02.json` and `performance/plan-review02.md`; older plans remain historical. The exact fixture SHA256 is `f27e5c334c1ce31e7225f8264604b073061cb4cfe2dc805bc443c767b0505144`.
+
+From built extracted `source/`, with the accepted `CONTROL` and browser prerequisites above:
+
+```sh
+COMMON=(
+  --baseline-root="$CONTROL" --candidate-root="$PWD"
+  --baseline-source-sha256=b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825
+  --candidate-source-sha256=01f4f40fc980868085d7bcdc941e6cafd3a83de845f94f5c348c549eae6da430
+  --baseline-html-sha256=9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694
+  --candidate-html-sha256=52479dd292643231ca5945c99fd2df41288d502de530013a07f08a28a93398a5
+  --fixtures="$PWD/docs/compact-view/performance/fixtures-review02.json"
+  --fixtures-sha256=f27e5c334c1ce31e7225f8264604b073061cb4cfe2dc805bc443c767b0505144
+  --playwright-module="$PLAYWRIGHT_MODULE" --chromium-executable="$CHROMIUM_EXECUTABLE"
+  --library-path="$LD_LIBRARY_PATH"
+)
+if "$PINNED_BUN" tools/verification/run-compact-mobile-performance.mjs --mode=compare "${COMMON[@]}" --out="$RESULTS/performance-phone"; then
+  COMPARE_EXIT=0
+else
+  COMPARE_EXIT=$?
+fi
+printf 'Compare exit: %s (2 means review-required, not pass)\n' "$COMPARE_EXIT"
+case "$COMPARE_EXIT" in 0|2) ;; *) exit "$COMPARE_EXIT" ;; esac
+"$PINNED_BUN" tools/verification/run-compact-mobile-performance.mjs --mode=resource "${COMMON[@]}" --out="$RESULTS/resources"
+```
+
+The actual1.4.2-produced repeat collected441 measured sessions plus 63 retained warmups, 51 cells, 1009 unchanged-input checks and no collection errors. Exit 2 remains review-required: **63 current flagged rows** (51 comparison/12 candidate-action), zero material-regression rows and six ordinary switching target misses. All 18 field endpoint targets met 250 ms median/500 ms maximum, but five field variability flags remain open. No historical field-action baseline, causal speedup or outlier removal is claimed.
+
+Separate resources observed cycles 0/1/5/10/15/20 in each of three loading paths. Declared owned listener/observer/timer/detached-node growth bounds were zero; seven input checks stayed unchanged. Heap growth was 781680/799992/797724 bytes, including instrumentation. This is not latency evidence or blanket no-leak proof. Prior CDP DOM-agent bindings are released to avoid collector-manufactured retention. The 60 corrected01/7bac and 37 earlier b91 flags remain open in their own non-additive scopes.
+
+## Complete JSON originals and raw witnesses
+
+From the extracted delivery root, the current correction-round stream restores all **192 reports / 151164281 original bytes**, including retained failed positive attempts and complete current reports:
+
+```sh
+"$PINNED_BUN" source/tools/verification/compact-json-evidence.mjs restore-all \
+  --input=review/evidence/review02/original-json/original-json.dag.jsonl.gz --compression=gzip \
+  --expected-records=192 \
+  --expected-last-sha256=759716219abcaa35075103d4f53aaaa08c9abe4fe819715329ba4088097efd7b \
+  --out=NEW_CORRECTED02_JSON
+cp -a review/evidence/review01/performance-review01-compare-01/raw \
+  NEW_CORRECTED02_JSON/reports/review/evidence/review02/performance-compare-01/
+cp -a review/evidence/review02/performance-compare-01/raw/. \
+  NEW_CORRECTED02_JSON/reports/review/evidence/review02/performance-compare-01/raw/
+```
+
+All 797 current expected timing states have independent encoded/decoded length and SHA256 checks in `review/evidence/review02/performance-current-raw-state-proof.json`. Exactly 296 reuse proven identical old physical gzip bytes; 501 are new sparse physical files. The copy sequence may retain extra historical state files; validate the 797 expected current names/hashes, not the union directory count. No old timing value is restamped. Current reports and raw/image aliases use `review/evidence/review02/REPORT-LOCATIONS.json`.
+
+The two older streams remain byte-unchanged and separately scoped:
+
+```sh
+"$PINNED_BUN" source/tools/verification/compact-json-evidence.mjs restore-all \
+  --input=review/evidence/review01/original-json/original-json.dag.jsonl.gz --compression=gzip \
+  --expected-records=256 \
+  --expected-last-sha256=2484b575fa1af3c2d25a3931f5d8fc5b0bbd570fde4664320da8329b2a9b714a \
+  --out=NEW_CORRECTED01_JSON
+"$PINNED_BUN" source/tools/verification/compact-json-evidence.mjs restore-all \
+  --input=review/evidence/shared-original-json-23/reports.dag.jsonl.br --compression=brotli \
+  --expected-records=734 \
+  --expected-last-sha256=5015aeb5d70ce256c2c5d6f145b79ed5a5f0229f1ae272add788f5cc9d78b319 \
+  --out=NEW_HISTORICAL_JSON
+```
+
+Their original totals remain 161857119 and 678679555 bytes. Their own locators preserve original collection aliases. Require complete record counts **and** final chain hashes; a valid prefix is not completeness. Standard standalone `.br` payloads use standard Brotli decoding, not the shared JSON/typed-value DAG codec. `evidence-format.md` retains the historical typed-canonical decoder contracts. Never remove failed rows, hidden details, source qualifiers or original observations to make a report smaller.
+
+## Exact prior source and CI reconstruction
+
+All 2678 old physical `review/` payloads are copied byte-exactly from the untouched corrected01 ZIP. Its 923 original `source/` payloads and standalone are recovered without nesting that 98 MB ZIP. Build current delivered source first, then from the delivery root:
+
+```sh
+python3 review/evidence/original-diagnostics/native-before-overlay-review01/reconstruct.py \
+  --base=source --bun="$HISTORICAL_BUN" \
+  --manifest=review/evidence/review02/runtime143/before-corrected01/reconstruction-manifest.json \
+  --out=NEW_CORRECTED01_SOURCE
+```
+
+This actually rebuilds and checks 924 members: every original source file plus 4a125 HTML, canonical 7bac. The original Windows corrected01 handoff stays untouched. **All unchanged review01 recipes still require that restored 7bac base**, not current 01f4:
+
+```sh
+python3 review/evidence/original-diagnostics/native-before-overlay-review01/reconstruct.py \
+  --base=NEW_CORRECTED01_SOURCE/source --bun="$HISTORICAL_BUN" --out=NEW_NATIVE_BEFORE_SOURCE
+python3 review/evidence/original-diagnostics/native-before-overlay-review01/reconstruct.py \
+  --base=NEW_CORRECTED01_SOURCE/source --bun="$HISTORICAL_BUN" \
+  --manifest=review/evidence/review01/reviewed-source/reconstruction-manifest.json \
+  --out=NEW_REVIEWED_B91_SOURCE
+python3 review/evidence/original-diagnostics/native-before-overlay-review01/reconstruct.py \
+  --base=NEW_CORRECTED01_SOURCE/source --bun="$HISTORICAL_BUN" \
+  --manifest=review/evidence/review01/reviewed-source/ci-execution-stage-manifest.json \
+  --out=NEW_CORRECTED01_CI_STAGE
+python3 review/evidence/original-diagnostics/solid-preimages-32/extract-preimages.py \
+  --bun="$HISTORICAL_BUN" --out=NEW_OTHER_PREIMAGES
+```
+
+The strict consumers respectively rebuild/check all 467 original native-snapshot members (72f/6806 HTML), 908 reviewed-b91 source/HTML members, and 921 actual corrected01 CI-stage members (7bac/4a125). The solid consumer restores the other 16 exact historical members; it does not invent complete trees for partial snapshots. Together the six old diagnostic archive identities and 483 members/33711798 bytes remain preserved, without duplicate ZIP containers or changed target hashes. Recipes 29/64 and the older canonical-only recipe remain historical, not current-base shortcuts. Reconstruction is not a rerun of old native/CI acceptance.
+
+The fresh runtime143 bridge adds exact old CI-workflow/packager preimages to the original11 overlays:13 total, without changing any923-member target byte or old recipe. The failed1.4.2 whole-command stage is independently recoverable through `review/evidence/review02/runtime143/aborted142-ci-stage/reconstruction-manifest.json`:928 exact members and8 documentation/tool overlays. This preserves the terminated30hour runaway, not a completed suite or pass. Do not restart it to confirm the known failure.
+
+## Historical scopes, size and open gates
+
+The exact prior 314-line reproduction guide is preserved inside the 7bac bridge at `NEW_CORRECTED01_SOURCE/source/docs/compact-view/reproduce.md`. Use it for the full historical singleton diagnosis, canonical/DOM/deep, X11 zoom/text/Firefox, desktop/performance and typed-evidence procedures. Run b91-pinned commands in `NEW_REVIEWED_B91_SOURCE/source`, not current source. The original 134160 canonical operations, 3628 DOM checks per surface, 7644 deep checks per surface, 142 available native cells and 2464/139-file CI retain their original scope; the corrected01 2516/143-file CI and 162 native cells remain 7bac history. None is current recollection.
+
+All 255 prior mandatory inputs/58 prior authorities remain byte-exact; including the supplied review gives 256/59. Preservation is not closure. Large forensic archives stay local/on demand. The immutable five-file frozen-input size conflict already exceeds 11 MB compressed; do not promise a single-digit-MiB packet by dropping inputs. Use final `CONTENTS.json` and sibling hashes for actual size/content, not provisional old ZIP measurements.
+
+`review02-verification.json`, `exact-ci-review02.json`, final locators and actual portable-consumer/component receipts define the exercised current scope. Historical receipts do not certify new transport. Original failures remain failed with exact preimages and diagnoses. Astra alone closes the review. All current/historical performance, fourteen external WebKit/device/human/AT cells, G01, 88 Windows/DC cells, PAM164matches/1qualifieddivergence/165calls and inherited candidate02/P6/DNSSEC/P0 conditions remain open/qualified. No owner waiver, human acceptance, commit, push, deployment, release or version change is authorized.

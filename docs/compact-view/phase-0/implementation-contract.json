@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "kind": "compact-view-integration-contract",
+  "root": "/home/andrico/auth-lab-held-objects",
+  "plan": "docs/compact-view/inputs/worker-plan.html.input.txt",
+  "appIntegrationOwner": "parent",
+  "sourceBoundaries": {
+    "parent": ["src/app.js", "src/player.js", "src/held-object-view.js", "new headless held-study modules", "presentation preference", "build.mjs", "shared shell", "exact navigation", "browser acceptance", "tests"],
+    "compactPresenter": ["new src/compact-view.js", "src/styles.css Compact-only appended rules"],
+    "catalogVerification": ["new tools/verification/compact-view-fixtures.mjs", "new tools/verification/run-compact-view-checks.mjs", "docs/compact-view/phase-0/catalog-and-cases.json", "docs/compact-view/phase-0/deep-fixtures.json"],
+    "performance": ["new tools/verification/compact-mobile-browser.mjs", "new tools/verification/run-compact-mobile-performance.mjs"]
+  },
+  "compactPresenter": {
+    "exports": ["CompactView", "compactReadProjection"],
+    "constructor": "new CompactView(app)",
+    "lifecycle": ["mount(host) writes its own reader markup, caches local nodes and registers owned listeners", "render(reason = 'state', event = app.player.snapshot()) updates stable reader sections only at meaningful canonical/selection changes", "onPlayer(event) updates meaningful state without replacing the whole reader or stealing focus/scroll", "unmount() explicitly removes listeners and presentation-owned resources; parent clears host"],
+    "sharedHeader": "Parent owns #studio, the View buttons, ScenarioPicker and workspace picker, theme button, shared toast/popups, mode preference and app-level lifecycle. Compact mount receives only the active presentation host. Never duplicate shared header IDs, search pickers or live regions.",
+    "existingEvidenceIds": ["scenario-title", "scenario-description", "learning-question", "learning-start", "learning-boundary", "current-lesson-case", "lesson-inputs", "lesson-link-manual", "lesson-link-value", "lesson-chapters", "chapter-token-comparison", "lesson-decisions", "windows-remote-evidence", "pam-configuration-panel", "lifetime-strip", "protocol-state-panel", "protocol-state-label", "protocol-state-body", "lab-support", "learning-profile", "related-journeys", "learning-profile-crypto", "attribute-index", "attribute-search", "attribute-results", "attribute-count", "held-objects", "held-inspector"],
+    "evidenceRendering": "Use app.renderCompactEvidence() for the existing PAM, decision, Windows, lifetime, protocol-history, lesson-input and learning-reference renderers. Parent makes these legitimate active-surface renderers without Full geometry. Compact may add semantics/disclosures around their stable contract markup, not duplicate protocol logic.",
+    "heldState": "app.heldView remains the one shared state object. compiled(), snapshot(event), buildTrace(artifactId), select(selection), inspectionHtml(snapshot) are available without Full DOM/geometry/observers. selection, actorId, expanded, initial and selected are shared. inspectionHtml uses the shared permission-scoped inspector projector, including detached history. Do not invoke old trace() or configureGeometry()/render() from Compact.",
+    "logicalActors": "app.studyActor(id) returns the exact logical actor, without Full folding.",
+    "queue": "app.studyQueue() returns {rows,kind,label,position,initial,atEnd,empty,playback,cursor}. rows are the actual active journey/field/exact-object/connection queue; position is an integer active-queue row. Initial cursor may be -1; no-match traces stay empty.",
+    "commands": ["app.inspectQueueBoundary(index, edge = 'end')", "app.playCompact()", "app.pauseForStudy()", "app.enterFieldTrace(attributeId)", "app.enterObjectTrace(artifactId)", "app.returnToJourney()", "app.switchPresentation('full', {target:'diagram'|'configuration'})", "app.copyExactValue(text, trigger)", "app.renderCompactEvidence()"],
+    "existingCommands": ["selectLessonVariant", "selectLessonSubfixture", "selectLabScenario", "copyLessonLink", "ensureRunningSpeed", "definition", "stepHtml", "attributeHtml", "actorContextHtml", "renderAttributeIndex", "setLearningDetail", "renderLearningProfile"],
+    "events": "Compact owns its lesson-input, playback, disclosure, queue, held-inspection, field-history and exact-copy interactions. Disclosures/search/history pause only if playing; closing never resumes. Parent owns common search, View, theme, routing and popup interactions. Do not bind Full graph or window handlers.",
+    "naming": "Compact reader classes use compact-study/compact-* selectors and cannot reuse Full dock-geometry compact names. New module-private helpers use compact prefixes; parent explicitly isolates the new module in the concatenated build."
+  },
+  "verification": {
+    "acceptedControlRoot": "/home/andrico/.cache/auth-lab-held-qa/windows-protection-independent-relocation-07-ieT06V/source",
+    "acceptedCanonicalSha256": "b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825",
+    "acceptedHtmlSha256": "9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694",
+    "currentPreimplementationCanonicalSha256": "d69323ff1f26424a9185cd34cb34b0643e68f993846e6c2377fa1408ae96fbcb",
+    "newCanonicalFields": "Never remove/normalize protocol fields to achieve parity, including PAM evaluation/results, authority generation, permission/knowledge, clocks/expiry and custody. Stable serialization must preserve meaningful undefined and typed data if encountered.",
+    "runnerRules": "Producers derive default checkout from import.meta.url, bind exact source/HTML/producer/helper/manifest inputs before and after, keep attempted/pass/fail/unperformed distinct, preserve all failed attempts, and never claim native/device/AT acceptance from DOM or emulation."
+  },
+  "workRules": ["Read the actual complete supplied plan for your slice.", "No build, lint, test, formatter, install or browser launch during delegated implementation.", "The catalog owner may execute phase-0 registry enumeration only, against the immutable accepted control; no comparisons or acceptance collection until the parent integrates and freezes candidate inputs.", "Use surgical edits for existing files and write for new files. ASCII hyphens only in authored project text; immutable original inputs stay exact.", "No commit, push, deployment, release or waiver.", "No stubs, fake fallbacks, catch-and-ignore failures, weakened tests or raised timeouts."]
+}

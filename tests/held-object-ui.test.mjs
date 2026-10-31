@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { installHarness, HarnessEvent } from './dom-harness.mjs';
 import { compileHeldObjects, projectHeldObjects, heldCursorForPlayback } from '../src/held-object-state.js';
-import { holdingSlots, holdingControlKey, fullDockGeometry, compactDockGeometry, detachedHoldingStatus } from '../src/held-object-view.js';
+import { fullDockGeometry, compactDockGeometry } from '../src/held-object-view.js';
+import { holdingSlots, holdingControlKey, detachedHoldingStatus } from '../src/held-study-state.js';
 
 const {document,clock}=installHarness();
 const {AuthFlowStudio}=await import('../src/app.js');

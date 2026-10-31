@@ -1,0 +1,307 @@
+{
+  "schemaVersion": 1,
+  "kind": "compact-mobile-performance-fixtures",
+  "frozen": true,
+  "scope": "Predeclared before first performance collection; desktop touch emulation is not a physical phone. All inherited gates remain open in their recorded scope.",
+  "arms": [
+    {
+      "id": "accepted07-full",
+      "root": "baseline",
+      "presentation": "full",
+      "preference": null
+    },
+    {
+      "id": "new-full",
+      "root": "candidate",
+      "presentation": "full",
+      "preference": "full"
+    },
+    {
+      "id": "new-compact",
+      "root": "candidate",
+      "presentation": "compact",
+      "preference": "compact"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "perf-basic-web",
+      "classification": "ordinary",
+      "scenarioId": "basic-keycloak",
+      "startupScenarioId": "basic-keycloak"
+    },
+    {
+      "id": "perf-long-dnssec-history",
+      "classification": "large-history",
+      "scenarioId": "lab-dnssec15",
+      "startupScenarioId": "basic-keycloak",
+      "variantId": "rfc5011-add",
+      "queueBoundary": 24,
+      "queueEdge": "end",
+      "historyArtifactId": "lab-dnssec15:anchor-signature-child-anchor-observation-long-signature",
+      "historyHoldingId": "lab-dnssec15:rfc5011-add:holding:29",
+      "historyOwner": "dnsResolver",
+      "historyRows": 10,
+      "sourceSteps": 25
+    },
+    {
+      "id": "perf-nested-jwt-payload",
+      "classification": "large-payload",
+      "scenarioId": "lab-jwt03",
+      "startupScenarioId": "basic-keycloak",
+      "variantId": "invalid-inner-signature",
+      "queueBoundary": 3,
+      "queueEdge": "end",
+      "sourceSteps": 7,
+      "authoredRowBytes": 7007
+    }
+  ],
+  "viewports": [
+    {
+      "id": "phone390",
+      "width": 390,
+      "height": 844,
+      "dpr": 1,
+      "touch": true,
+      "reducedMotion": "no-preference"
+    }
+  ],
+  "loadModes": [
+    "source-http",
+    "emitted-http",
+    "standalone-file"
+  ],
+  "indexStates": [
+    "closed",
+    "open"
+  ],
+  "comparisons": [
+    {
+      "id": "accepted-candidate07-Full-vs-new-Full-phone",
+      "baselineArm": "accepted07-full",
+      "candidateArm": "new-full",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "actions": [
+        "startup",
+        "idle-filter",
+        "selection",
+        "replay-start",
+        "playing-filter"
+      ]
+    },
+    {
+      "id": "new-Full-vs-new-Compact-phone",
+      "baselineArm": "new-full",
+      "candidateArm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "actions": [
+        "startup",
+        "idle-filter",
+        "selection",
+        "replay-start",
+        "playing-filter"
+      ]
+    }
+  ],
+  "candidateActions": [
+    {
+      "id": "ordinary-switch-full",
+      "name": "switch-full",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "selector": "[data-presentation-choice=\"full\"]",
+      "resultSelector": "#graph"
+    },
+    {
+      "id": "ordinary-switch-compact",
+      "name": "switch-compact",
+      "arm": "new-full",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "selector": "[data-presentation-choice=\"compact\"]",
+      "resultSelector": "#compact-current-title"
+    },
+    {
+      "id": "ordinary-next",
+      "name": "next",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "selector": "[data-compact-command=\"next\"]",
+      "resultSelector": "#compact-current-title"
+    },
+    {
+      "id": "ordinary-previous",
+      "name": "previous",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "setup": [
+        {
+          "action": "click",
+          "selector": "[data-compact-command=\"next\"]"
+        },
+        {
+          "action": "click",
+          "selector": "[data-compact-command=\"next\"]"
+        }
+      ],
+      "selector": "[data-compact-command=\"previous\"]",
+      "resultSelector": "#compact-current-title"
+    },
+    {
+      "id": "ordinary-playing-disclosure",
+      "name": "disclosure-open",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-basic-web"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "setup": [
+        {
+          "action": "click",
+          "selector": "[data-compact-command=\"play\"]"
+        }
+      ],
+      "selector": "[data-compact-disclosure=\"data\"] > summary",
+      "resultSelector": "#compact-data"
+    },
+    {
+      "id": "large-exact-history",
+      "name": "exact-history",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-long-dnssec-history"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "setup": [
+        {
+          "action": "click",
+          "selector": "[data-compact-disclosure=\"holdings\"] > summary"
+        },
+        {
+          "action": "click",
+          "selector": "[data-compact-owner=\"dnsResolver\"] > summary"
+        },
+        {
+          "action": "click",
+          "selector": "[data-holding-id=\"lab-dnssec15:rfc5011-add:holding:29\"]"
+        }
+      ],
+      "selector": "#held-inspector [data-held-trace=\"lab-dnssec15:anchor-signature-child-anchor-observation-long-signature\"]",
+      "resultSelector": "#compact-current-title"
+    },
+    {
+      "id": "large-nested-payload",
+      "name": "large-payload",
+      "arm": "new-compact",
+      "fixtureIds": [
+        "perf-nested-jwt-payload"
+      ],
+      "viewportIds": [
+        "phone390"
+      ],
+      "selector": "[data-compact-disclosure=\"data\"] > summary",
+      "resultSelector": "#compact-data"
+    }
+  ],
+  "resource": {
+    "arm": "new-compact",
+    "fixtureIds": [
+      "perf-basic-web"
+    ],
+    "viewportIds": [
+      "phone390"
+    ],
+    "returnViewport": {
+      "width": 430,
+      "height": 844
+    },
+    "fullOnlySelectors": [
+      "#graph",
+      "#timeline",
+      "#packet",
+      "#connections",
+      ".held-dock"
+    ],
+    "fullMethods": [
+      {
+        "owner": "app",
+        "name": "renderActors",
+        "category": "graph"
+      },
+      {
+        "owner": "heldView",
+        "name": "configureGeometry",
+        "category": "geometry"
+      },
+      {
+        "owner": "heldView",
+        "name": "render",
+        "category": "dock"
+      },
+      {
+        "owner": "app",
+        "name": "renderPacket",
+        "category": "packet"
+      },
+      {
+        "owner": "app",
+        "name": "renderTimeline",
+        "category": "timeline"
+      }
+    ],
+    "switchFullSelector": "[data-presentation-choice=\"full\"]",
+    "switchCompactSelector": "[data-presentation-choice=\"compact\"]",
+    "fullReturnSelector": "#graph",
+    "fullPlaySelector": "#play",
+    "resourceBounds": {
+      "listeners": 0,
+      "observers": 0,
+      "timers": 0,
+      "detachedNodes": 0
+    }
+  },
+  "rules": {
+    "samplesPerArm": 7,
+    "separatelyRetainedWarmupsPerArm": 1,
+    "serial": true,
+    "alternatingArms": true,
+    "noInstrumentedLatency": true,
+    "ordinaryMedianTargetMs": 250,
+    "ordinaryMaximumTargetMs": 500,
+    "strictZeroGrowthBounds": "Owned active listener/observer/timer and collected detached-node counts must not grow after stable warmup. Unsupported CDP evidence is explicitly unperformed, never zero.",
+    "fixturesAudit": "The immutable candidate07 compiled fixture resolved the 25-row RFC5011-add journey, exact resolver holding:29 and 10-row artifact history, and the 7-row invalid-inner-signature JWT journey with authored row3=7007 UTF-8 bytes. Classification was fixed in planned-matrix.json before results."
+  }
+}

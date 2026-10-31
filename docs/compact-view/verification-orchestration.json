@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "compact-functional-verification-orchestration",
+  "canonicalSourceSha256": "72f0404d5a92b7fc75b136909764dc0e38cc3cf6f247873fb898b849d5d75230",
+  "standaloneSha256": "6806a4c048e87fe86d4abbe824582f0076a85d3e6bdf986f529acc5efc6ac318",
+  "functionalCollectors": [
+    {
+      "producer": "tools/verification/run-compact-view-checks.mjs",
+      "mode": "all",
+      "output": "complete-canonical-dom-deep-01",
+      "schedule": "Sequential canonical parity, source DOM, emitted DOM, source deep and emitted deep child collectors. This is not the Bun regression/test-worker schedule."
+    },
+    {
+      "producer": "tools/verification/run-compact-mobile-browser.mjs",
+      "output": "native-complete-01",
+      "schedule": "Sequential156cell native functional matrix, started while the independent pure canonical collector was active. Neither collector supplies latency or resource-growth observations."
+    }
+  ],
+  "constraint": "The immutable worker plan requires paired timing samples to be serial and acceptance collectors not to overlap regression workers (input plan lines1368-1372). No Bun regression workers or timing/resource collectors run alongside these two read-only functional collectors.",
+  "next": "Uninstrumented legacy desktop/new phone timing, any separate profiling, compiled final smoke and the exact final bun run test are scheduled after both functional collectors finish. Preserve every failure/input binding; no material/variation flag is removed or waived by scheduling.",
+  "qualification": "This is an orchestration record, not a result. Actual outcome/counts and unchanged-input checks come only from the corresponding completed producer reports."
+}

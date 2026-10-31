@@ -1,0 +1,110 @@
+# Compact / Full implementation
+
+The release adds a reader presentation without adding lessons, cases, protocol decisions or a second timing engine. The current footer is **Version 1.2**, with plain tag **1.2**; [the publication record](../verification/releases/1.2/publication.json) proves the version-only change from reviewed 1.1.1 bytes. Astra's supplied [closure authority](inputs/compact-closure-review-01.html.input.txt), recorded in the [independent closure](independent-closure-review01.json), closes **MC-R01 through MC-R07** for the exact reviewed functional scope only. The user separately authorizes publication without waiving remaining acceptance conditions.
+
+## Preserved reviewed boundary and independent closure
+
+Reviewed 1.1.1 identity: 271 canonical inputs, `01f4f40fc980868085d7bcdc941e6cafd3a83de845f94f5c348c549eae6da430`; standalone 5,668,235 bytes, `52479dd292643231ca5945c99fd2df41288d502de530013a07f08a28a93398a5`. The accepted 11,965,278-byte small review ZIP remains `2a91e38f06cd980a256b3d1b784e44747f9c856084148ac124baf76a5104021e`, with every sibling unchanged and no reseal. The authorized 1.2 release changes only two source version fields and the emitted version marker; all other canonical inputs remain byte-exact.
+
+[review02-implementation.md](review02-implementation.md), [review02-impact.json](review02-impact.json), [review02-verification.json](review02-verification.json) and [exact-ci-review02.json](exact-ci-review02.json) retain the worker implementation and execution. The completed whole Bun 1.4.3 command passed 2,527 tests with no failures across 143 runnable files and 37,023 expectations; all 931 execution files were stable. All 139 original runnable files remain byte-exact. Astra separately reports 218/0 across 12 files on Node v24.22.1, content 28/28, interaction 39/39 and field-reading 18/18 in each source/emitted mode. These independent and worker scopes overlap and must not be summed. Recording closure does not rerun them.
+
+[open-gates.json](open-gates.json) preserves all 63 current performance flagged rows, six ordinary switching target misses and five field variability flags. The 60 corrected-01 and 37 earlier flagged-row scopes remain separately open, not additive or waived. G01, physical-device/human/AT, fourteen inherited external cells, 88 Windows/DC qualifications, PAM 164 matches/one qualified divergence across 165 calls and candidate02/P6/DNSSEC/P0 conditions retain their original limits. Publication of 1.2 is explicitly authorized; no owner performance waiver, human acceptance, native-platform acceptance or blanket release acceptance is inferred.
+
+Historical review01 results remain bound to `7bac35907183867c4dc60bacf949c44cc006ab473356abf89e54e12968bbb02d` and `4a125cf0cba72b2af59704d05285229d6672e6cb8e9ef072504dde2adf4ea9c7`, including its 2,516/0 complete CI and 162 native cells. Earlier 134,160 canonical, 3,628 DOM per surface, 7,644 deep per surface, 142 available native and 2,464/0/139-file results remain b91/c716 history, not current recollection. The original plan/review, all failures and the paired exact pre-closure metadata are preserved. The ownership and original implementation evidence below do not replace the current bound results.
+
+## Ownership
+
+| Owner | Responsibility | Not owned here |
+| --- | --- | --- |
+| `AuthFlowStudio extends StudyController` | Selected lesson/case/member, configuration, runtime draft/applied revision, routing, one `FlowPlayer`, headless held state, shared search/header/theme/privacy/reduced motion | Presenter DOM and geometry |
+| `PresentationPreference` | Validate `compact`/`full`, read storage once, initial `innerWidth <= 700` fallback, persist explicit choice only | URL, protocol context, resize-driven selection |
+| `HeldStudyState` | Compile/memoize the canonical context, cursor, initial/selected flags, logical owner selection, exact trace construction, permission-scoped current/detached inspection | DOM, layout, observers, reduced-motion ownership |
+| `heldInspectionHtml` | Pure escaped HTML over already permission-scoped inspection data | New access, decryption, historical authority or knowledge |
+| `CompactView` | Stable one-column reader, logical actors, current action/results, inline evidence/disclosures, static queue inspection, exact-value access, owned input listeners | Full graph, docks, packet/timeline work, model evaluation while typing |
+| `FullView` / `HeldObjectView` | Existing Full shell, graph/dock geometry, packet/timeline and Full-only input/observer lifecycle | Session reset on mount/unmount |
+
+The common shell retains the View controls, both `ScenarioPicker` instances, shared transient surfaces, live announcement and source/footer references. Only `#presentation-host` is replaced. Reused panel IDs therefore identify one active body, never hidden duplicate interactive trees. The same common `#toast` status node is temporarily placed inside Compact playback, then restored to its exact shell position before unmount; it is never cloned and keeps its shared timer/announcement owner.
+
+## Switching
+
+1. An explicit choice updates only the presentation preference. Re-selecting the active view does not pause or remount it.
+2. If playing, call the existing player pause once. Use the resulting postpause cursor/queue/elapsed state, not the pre-click racing frame.
+3. Save per-view disclosure, logical-focus and scroll identities. Close transient popups, suspend picker drafts and release pointer capture.
+4. Unmount the outgoing presenter's listeners, observers and nodes. Mount only the destination and paint the same canonical prefix.
+5. Restore an available logical focus target and reading state. Do not select a step, reset, stop, reapply configuration, write a View route or resume.
+6. Announce the chosen view and, if applicable, paused playback once. This normal new status may replace an older transient advisory; old message wording/timer identity is not preserved as session state.
+
+Shared invariants include picker identity, case/member/profile, runtime draft/applied values and revision, context identity, full active queue and kind, source/visible/trace position, named canonical cursor, exact elapsed time, initial/selected flags, speed/last-positive speed, inspection identity and permitted historical fields, detail/internals preference and custom layouts. Presentation-local saved state contains no retained DOM node; active placement/listener references are cleared on unmount.
+
+`FullView.render(reason)` forwards the render reason. A presentation-only return does not run route-layout validation that would delete custom layout data. The shared reduced-motion and privacy listeners survive Full unmount; page teardown, unlike a View change, still performs the original privacy/disconnect work.
+
+## Exact navigation
+
+`FlowPlayer.inspectQueue` places the complete active queue at an integer row and exact elapsed boundary. It does not approximate a boundary with a fractional seek, run a suffix queue or schedule playback. `StudyController` maps the row to its actual canonical source cursor.
+
+- Before the queue, Previous is disabled; Next inspects the first end boundary and Play starts the first row.
+- A partial row's Previous selects the preceding end/initial boundary; Next selects the current end; Resume continues the exact original queue and elapsed time.
+- At a completed row, Next selects the following end and Continue traverses the same original queue.
+- At the terminal boundary, Next is disabled and replay requires explicit activation.
+- A no-match field history stays empty, explains the scope and disables playback/navigation. It does not fall back to the journey or erase the current prefix.
+- Exact histories may contain an initial source index `-1` and several rows for one source event. Their authored `heldCursorStart` / `heldCursorEnd` are authoritative.
+- A connection receipt interval is not whole-event completion and cannot apply later local verification effects.
+- Return to journey clears investigation selection while mapping to the same named source cursor. It does not call the old reset-based exit helper.
+
+Opening Compact search, a case chooser, evidence or history pauses active playback. Unstarted histories may have the player's `idle` enum; the invariant is no autoplay or scheduled advancement, not an incidental status spelling. Closing a surface does not resume.
+
+Manual Next/Previous retain the activating control while enabled. If the boundary disables it, focus moves to the usable Play/Replay control. Card scrolling is constrained to keep a normal-flow control and its focus outline visible when a tall card cannot fit beside it. Automatic playback neither scrolls the document nor replaces a focused summary.
+
+## Evidence and protocol boundaries
+
+The reader uses the original producers: `renderLearningProfile`, `renderLessonInputs`, `renderPamConfiguration`, `renderProtocolState`, `renderLessonDecisions`, `renderWindowsRemoteEvidence`, `renderLifetimes` / `renderProtocolTimeline`, `renderProtocolInstanceHistory`, `renderAttributeIndex`, `attributeHtml` and `stepHtml`. These are active-surface renderers, not a second protocol implementation.
+
+| Evidence | Active Compact surface |
+| --- | --- |
+| Authored title, purpose, starting assumptions, completion boundary, case/member/profile | Lesson context and `#lesson-inputs` |
+| Current queue/source position, exact logical actors, local/internal/network classification, described action, observed/pending result | `.compact-current`, `#compact-current-title`, `#compact-result` |
+| Critical decision, validation failure, denial, unsupported/coverage qualification | Current outcome, `#lesson-decisions`, `#windows-remote-evidence` |
+| PAM physical source file/line, controls/flags, public aggregate versus internal password dispatch and pending calls | `#pam-configuration-panel`, original `data-pam-*` controls |
+| Exact payload and checks | `#compact-data` using the existing action renderer |
+| Canonical current state and cumulative exact occurrence history | `#protocol-state-panel`, `#protocol-state-summary`, `#protocol-state-value`, `#protocol-instance-list` |
+| Current logical-owner inventory and representation permissions | `#held-objects`, `data-compact-owner`, `#held-inspector` |
+| Field reference and a separate paused field path | `#attribute-index`, `#attribute-search`, `#attribute-index-list`, `#compact-field-definition` |
+| Exact artifact history | The permission-scoped inspector's `data-held-trace` control and labelled active queue |
+| Independent protocol lifetimes, DNSSEC validator/cache/proof/alias/target clocks | Original lifetime/state/decision panels; playback time is separately labelled |
+| Applied context, draft/assumptions and provider configuration | `#compact-configuration`; editing explicitly opens Full configuration |
+| Pinned profile, algorithms, source qualifications and related lessons | `#lesson-reference`, `#learning-profile-crypto`, `#related-journeys` |
+| Authored chapter/comparison overview and current active queue | `#lesson-chapters`, `#chapter-token-comparison`, `#compact-queue`; explicit Full diagram handoff |
+
+Current holdings are not cumulative history, knowledge or issuer authority. Removed/rewound inspection retains only a previously viewed permitted snapshot and labels it historical. Opaque possession does not reveal plaintext. Partial/not-modeled coverage is not an empty inventory. Expiry does not erase possession without an authored release. No success/failure conclusion is derived from words in a title.
+
+Copy controls retain the exact permitted displayed value. Expected Clipboard API unavailability offers a readonly untruncated text area; the fallback does not claim clipboard success. Reference examples remain reference material, not new holder permissions.
+
+## Reflow and focus
+
+Playback is in normal document flow immediately after Current action, before potentially enormous expanded evidence. Notifications do not overlay playback, inputs or results. Focusable reader controls have real scroll breathing room, including on million-CSS-pixel field/reference pages. Shared header targets do not shrink or interpolate their minimum size when the View changes: only colors, borders and shadows transition. This avoids genuinely sub-44px hit areas during an otherwise correct switch.
+
+The explicitly qualified 200% user-style diagnostic checks exact computed 2x ratios after actions without recalibrating during trusted pointer down/up. Temporary font reset preserves the original viewport/focused node and restores transition styles before user input. Native 400% zoom uses a separately verified private X11 child with actual keyboard zoom and mandatory PNG capture; Firefox remains in the normal host namespace with its original sandbox configuration. See `reproduce.md` for exact methods/prerequisites and the final evidence ledger for exercised scope.
+
+
+## Loading, verification and limits
+
+The dependency-ordered build includes all new modules before their consumers and isolates private concatenated module identifiers. Both presentations share one offline HTML artifact and the existing hash-based CSP. There are no new runtime packages or external assets.
+
+- Frozen inventories: `phase-0/catalog-and-cases.json`, `phase-0/deep-fixtures.json`, `phase-0/browser-device-at-plan.json`.
+- Canonical, DOM and deep producers: `tools/verification/run-compact-view-checks.mjs`; DOM-harness results are not browser/layout acceptance.
+- Native producer: `tools/verification/run-compact-mobile-browser.mjs`; focused `--cell` attempts are explicitly diagnostics and leave every excluded frozen cell unperformed.
+- Performance: the unchanged legacy desktop producer plus `run-compact-mobile-performance.mjs`, with historical `performance/fixtures.json` frozen before the old collection. Review01 uses separately bound `performance/fixtures-review01-02.json` and `performance/planned-matrix-review01-02.json`. Latency, profiles and resource instrumentation are separate sessions. Raw state and geometry are losslessly compressed and checksum-bound rather than repeated as bulk JSON in the readable reports.
+- Final exact suite: `bun run test` on the stable intended tree, with unchanged VM/test/file budgets. A narrow or four-worker diagnostic is not that gate.
+- Historical b91 outcomes: `functional-verification.json` joins old canonical/deep scopes with corrected old DOM scopes, preserving the failed original all-five report. This is not current 7bac whole-corpus evidence; see `review01-impact.json` for dependency boundaries.
+- Historical b91 performance/resource outcomes: `performance/current-results.json` retains every original distribution, failure and open disposition. Current review01 outcomes are separately linked above; neither collection closes performance gates.
+
+Functional verifier runs are unprofiled. Pinned Bun1.4.2 `--cpu-prof` caused severe retention in the mounted DOM harness: same-input profiler-on/off controls isolated the flag, while forced GC and native-turn yields did not repair the profiled growth. The ordinary no-profiler/no-GC/no-yield control stayed bounded; complete comparisons were not the dominant cost. The profiled timeout and all causal actions/inputs remain preserved under `review/evidence/canonical-correction-06/deep-field-causal-14/`. No app/harness change, GC workaround, omitted action or increased timeout was justified. These bounded diagnostics are not full five-phase acceptance; the exact runtime retention mechanism remains unproven.
+
+The resource collector releases prior CDP DOM-agent bindings before GC and each detached-node snapshot. `DOM.getDetachedDomNodes` otherwise pins its returned nodes: a separate minimal control grew from2,001 to8,004 inspector-retained nodes without release, but stayed at2,001 with release. The original flagged application run is preserved. On pre-layout-correction source `72f0404d5a92b7fc75b136909764dc0e38cc3cf6f247873fb898b849d5d75230`, the corrected20-roundtrip collection passed source HTTP, emitted HTTP and standalone-file with unchanged zero-growth bounds: no active listener, observer, timer, detached-listener-target or player-listener growth, and six fewer collected detached nodes. Cold Compact made zero declared Full render/geometry calls and constructed one player. Current-source refresh remains a separate final gate; these observations are not restamped or a blanket no-leak claim.
+
+Unavailable physical-phone, human VoiceOver/TalkBack, G01 and native Windows/DC checks remain explicitly open/unperformed. User-style 200% text simulation is not native OS/browser text scaling. Native 400% zoom uses an isolated real desktop X11 browser and measured DPR/viewport, never CDP page scale, pinch or CSS transforms. Historical closures and unresolved performance conditions retain their original scopes; collection is not owner acceptance or a waiver.
+
+## Review packet integrity
+
+The review ZIP uses `source/` for the complete canonical application/test inputs plus authored prerequisites and `review/` for evidence. Root `CONTENTS.json` binds the canonical file map, selected payloads, external standalone/entrypoint and explicit omissions. `review/SHA256SUMS` binds selected payloads and the two companion uploads; it excludes itself and generated `CONTENTS.json` to avoid a checksum cycle. The external checksum binds the final ZIP. The packager checks every extracted member, performs the pinned no-install build, compares the complete HTML and independently recomputes the extracted canonical source identity. Packaging integrity is separate from functional, independent-review and release acceptance.
+

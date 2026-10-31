@@ -76,6 +76,7 @@ export class ScenarioPicker {
     this.optionPrefix=optionPrefix;this.optionAttribute=optionAttribute;this.optionSelector='['+optionAttribute+']';
     this.singular=singular;this.plural=plural;this.emptyMessage=emptyMessage;
     this.opened=false;this.query='';this.activeIndex=-1;this.listeners=[];
+    this.suspended=null;this.draft=null;
     this.optionNodes=new Map();
     // Prepare static metadata before interaction, not on the first keystroke.
     // Content signatures still invalidate in-place edits when filtering.
@@ -85,33 +86,53 @@ export class ScenarioPicker {
     this.clearButton=root.querySelector('#'+prefix+'-clear');this.toggleButton=root.querySelector('#'+prefix+'-toggle');
     this.listen(this.input,'focusin',()=>this.open());
     this.listen(this.input,'click',()=>this.open());
-    this.listen(this.input,'input',()=>{this.query=this.input.value;if(this.opened)this.render();else this.open(true);});
+    this.listen(this.input,'input',()=>{this.suspended=null;this.draft=null;this.query=this.input.value;if(this.opened)this.render();else this.open(true);});
     this.listen(this.input,'keydown',event=>this.keydown(event));
-    this.listen(root,'focusout',event=>{if(!root.contains(event.relatedTarget))this.close();});
+    this.listen(root,'focusout',event=>{if(!root.contains(event.relatedTarget))this.close({preserveDraft:true});});
     this.listen(root,'pointerdown',event=>{if(event.target.closest('button'))event.preventDefault();});
     this.listen(this.list,'click',event=>{const option=event.target.closest(this.optionSelector);if(option)this.choose(option.getAttribute(this.optionAttribute));});
-    this.listen(this.clearButton,'click',()=>{this.query='';this.input.value='';this.open();this.render();this.input.focus();});
+    this.listen(this.clearButton,'click',()=>{this.suspended=null;this.draft=null;this.query='';this.input.value='';this.open();this.render();this.input.focus();});
     this.listen(this.toggleButton,'click',()=>{if(this.opened)this.close();else{this.open();this.input.focus();}});
-    const closeOutside=event=>{if(!root.contains(event.target))this.close();};
+    const closeOutside=event=>{if(!root.contains(event.target))this.close({preserveDraft:true});};
     this.listen(document,'pointerdown',closeOutside);
     if(outsideRoot&&outsideRoot!==document)this.listen(outsideRoot,'pointerdown',closeOutside);
     this.setSelected(options.some(option=>option.id==='core')?'core':options[0]?.id);
   }
   listen(node,type,listener) {node.addEventListener(type,listener);this.listeners.push([node,type,listener]);}
-  destroy() {this.listeners.forEach(([node,type,listener])=>node.removeEventListener(type,listener));this.listeners=[];this.optionNodes.clear();}
+  destroy() {this.listeners.forEach(([node,type,listener])=>node.removeEventListener(type,listener));this.listeners=[];this.optionNodes.clear();this.suspended=null;this.draft=null;}
   setSelected(id) {if(!this.options.some(option=>option.id===id))return;this.selectedId=id;this.close();}
   open(fromInput=false) {
     if(this.opened)return;
-    this.opened=true;
-    // Native input owns the caret and IME composition; do not rewrite its value.
-    if(!fromInput){this.query='';this.input.value='';}
+    this.opened=true;const suspended=this.suspended;this.suspended=null;this.draft=null;
+    // Only an explicit presenter switch restores a draft. Ordinary reopening
+    // starts fresh, while native input retains its caret and IME composition.
+    if(suspended){this.query=suspended.query;this.input.value=this.query;}
+    else if(!fromInput){this.query='';this.input.value='';}
     this.menu.hidden=false;
     this.input.setAttribute('aria-expanded','true');this.toggleButton.setAttribute('aria-expanded','true');
     this.root.classList.add('is-open');this.render();
+    if(suspended?.activeId){const index=this.results.findIndex(option=>option.id===suspended.activeId);if(index>=0){this.activeIndex=index;this.updateActive(false);}}
   }
-  close() {
+  close({preserveDraft=false}={}) {
+    if(preserveDraft){
+      if(this.suspended)return;
+      // A single candidate survives transient dismissal, not a search history.
+      // Repeated blur/outside events must not overwrite it with the reset UI.
+      if(this.opened)this.draft=this.query.trim()?{query:this.query,activeId:this.results?.[this.activeIndex]?.id}:null;
+    }else{this.suspended=null;this.draft=null;}
     this.opened=false;this.query='';this.menu.hidden=true;this.clearButton.hidden=true;
     const selected=this.options.find(option=>option.id===this.selectedId);this.input.value=selected?.selectedLabel||selected?.title||'';
+    this.input.setAttribute('aria-expanded','false');this.input.removeAttribute('aria-activedescendant');
+    this.toggleButton.setAttribute('aria-expanded','false');this.root.classList.remove('is-open');
+  }
+  /** Only a presenter switch promotes the last transiently dismissed draft. */
+  suspend() {
+    if(this.suspended)return;
+    const draft=this.opened?{query:this.query,activeId:this.results?.[this.activeIndex]?.id}:this.draft;
+    this.draft=null;
+    if(!draft?.query.trim()){this.close();return;}
+    this.suspended=draft;this.query=draft.query;this.input.value=this.query;
+    this.opened=false;this.menu.hidden=true;this.clearButton.hidden=!this.query;
     this.input.setAttribute('aria-expanded','false');this.input.removeAttribute('aria-activedescendant');
     this.toggleButton.setAttribute('aria-expanded','false');this.root.classList.remove('is-open');
   }
@@ -161,7 +182,7 @@ export class ScenarioPicker {
   keydown(event) {
     if(event.isComposing)return;
     if(event.key==='Escape'){event.preventDefault();this.close();return;}
-    if(event.key==='Tab'){this.close();return;}
+    if(event.key==='Tab'){this.close({preserveDraft:true});return;}
     // Leave modified navigation to the platform's text-editing shortcuts.
     if(event.shiftKey||event.ctrlKey||event.metaKey||event.altKey)return;
     if(event.key==='Enter'){if(this.opened){event.preventDefault();const active=this.results[this.activeIndex];if(active)this.choose(active.id);}return;}

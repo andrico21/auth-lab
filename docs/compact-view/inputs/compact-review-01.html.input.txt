@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Auth Flow Studio — Compact review</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"COMPACT REVIEW 01";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+
+  pre{max-width:100%;max-height:480px;overflow:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}
+  pre code{padding:0;background:none;white-space:pre;font-size:12px}
+  details{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:8px}
+  summary{cursor:pointer;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+  summary:focus-visible,pre:focus-visible,.table-scroll:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}
+  @media print{pre{max-height:none;white-space:pre-wrap}pre code{white-space:pre-wrap}nav#TOC{display:none}}
+  </style>
+
+  <style>
+  main{min-width:0}a{overflow-wrap:anywhere}
+  h3[id^="mc-r"]{padding:14px 17px;border-left:4px solid #ae5c26;background:#fff6ec;border-radius:0 9px 9px 0}
+  header{border-top-color:#ae5c26}.plan-stats span:first-child{color:#7b351c;background:#fff0e4;border-color:#e2b79c}
+  details pre{max-height:34rem}summary{font-size:15px}
+  @media print{details pre{max-height:none}pre{break-inside:auto}}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Auth Flow Studio — Compact review</h1>
+<p class="subtitle">Independent implementation review and worker
+correction handoff</p>
+<p class="date">29 October 2026 · Review 01 · Document version 1</p>
+<div class="plan-stats"><span>Changes requested</span><span>7 correction requests</span><span>211 focused tests passed</span><span>Evidence audit passed</span></div></header>
+<nav id="TOC" role="doc-toc" aria-label="Review contents">
+<h2 id="toc-title">Findings and correction handoff</h2>
+<ul>
+<li><a href="#decision-and-next-assignment" id="toc-decision-and-next-assignment">1. Decision and next
+assignment</a></li>
+<li><a href="#exact-candidate-and-independent-verification" id="toc-exact-candidate-and-independent-verification">2. Exact candidate
+and independent verification</a></li>
+<li><a href="#required-content-and-navigation-corrections" id="toc-required-content-and-navigation-corrections">3. Required content
+and navigation corrections</a></li>
+<li><a href="#required-interaction-and-phone-reading-corrections" id="toc-required-interaction-and-phone-reading-corrections">4. Required
+interaction and phone-reading corrections</a></li>
+<li><a href="#what-the-review-supports" id="toc-what-the-review-supports">5. What the review supports</a></li>
+<li><a href="#performance-and-external-acceptance-remain-open" id="toc-performance-and-external-acceptance-remain-open">6. Performance
+and external acceptance remain open</a></li>
+<li><a href="#correction-sequence-and-recheck-delivery" id="toc-correction-sequence-and-recheck-delivery">7. Correction sequence
+and recheck delivery</a></li>
+<li><a href="#embedded-reproductions" id="toc-embedded-reproductions">8.
+Embedded reproductions</a></li>
+<li><a href="#review-boundary" id="toc-review-boundary">9. Review
+boundary</a></li>
+</ul>
+</nav>
+<main id="compact-review"><h2 id="decision-and-next-assignment">1. Decision and next
+assignment</h2>
+<p><strong>Changes requested.</strong> The additive Compact / Full
+architecture is substantially implemented and the supplied evidence is
+internally consistent. The current candidate nevertheless loses authored
+content and navigation after view changes, exposes incorrect interaction
+semantics, and has a field-reading path that is poorly suited to a
+phone. Correct <strong>MC-R01 through MC-R07</strong> below before
+requesting closure of this implementation review.</p>
+<p>This is the next worker handoff. It <strong>supplements the original
+Compact worker plan, document version 1</strong>; it does not replace
+its scope, restart the protocol expansion, or authorize publication. The
+packet already contains the exact original plan at
+<code>source/docs/compact-view/inputs/worker-plan.html.input.txt</code>.
+Its bytes match the issued plan. Send this comments HTML to the worker;
+the reproducible finding probes are embedded in section 8.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="1. Decision and next
+assignment — table 1"><table>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">ID</th>
+<th scope="col">Priority</th>
+<th scope="col">Required correction</th>
+<th scope="col">Plan relationship</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MC-R01</td>
+<td>P2</td>
+<td>Preserve chapter controls and credential comparison evidence across
+presenter remounts</td>
+<td>MC-04, MC-07, MC-10, MC-12</td>
+</tr>
+<tr class="even">
+<td>MC-R02</td>
+<td>P2</td>
+<td>Restore per-step cryptographic interpretation in Compact</td>
+<td>MC-02, MC-07</td>
+</tr>
+<tr class="odd">
+<td>MC-R03</td>
+<td>P2</td>
+<td>Identify a selected history action as history replay, not
+Journey</td>
+<td>MC-11</td>
+</tr>
+<tr class="even">
+<td>MC-R04</td>
+<td>P2</td>
+<td>Make field-control ARIA and keyboard behavior match Compact’s inline
+interaction</td>
+<td>MC-06, MC-15</td>
+</tr>
+<tr class="odd">
+<td>MC-R05</td>
+<td>P2</td>
+<td>Give Inventory help a correct open/close/Escape focus lifecycle</td>
+<td>MC-15</td>
+</tr>
+<tr class="even">
+<td>MC-R06</td>
+<td>P3</td>
+<td>Preserve unfinished search consistently for keyboard and pointer
+view changes</td>
+<td>MC-03, MC-10, MC-15</td>
+</tr>
+<tr class="odd">
+<td>MC-R07</td>
+<td>P2 ergonomics</td>
+<td>Bound field browsing and make the selected definition/new study
+scope readily reachable</td>
+<td>MC-02, MC-06, MC-15; related measurement work under MC-19</td>
+</tr>
+</tbody>
+</table>
+</div><p>P2 means a concrete correctness, accessibility or usability issue
+that should be corrected in this assignment. P3 is a smaller interaction
+inconsistency, still covered by the agreed switch contract. These are
+seven findings, not a count of failed assertions. The performance and
+external acceptance conditions in section 6 are separate; this review
+grants no waiver.</p>
+<h2 id="exact-candidate-and-independent-verification">2. Exact candidate
+and independent verification</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="2. Exact candidate
+and independent verification — table 2"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Item</th>
+<th scope="col">Reviewed identity or result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Worker checkpoint / version</td>
+<td><code>142fccdff9c452f6491b8886b83726bc188f49cd</code> / displayed
+version <code>1.1.1</code></td>
+</tr>
+<tr class="even">
+<td>Source ZIP</td>
+<td>80,022,604 bytes; SHA-256
+<code>426ef74f77e8e512401a9f9161b07b1465728c439e1bd8de238be3820264d23e</code></td>
+</tr>
+<tr class="odd">
+<td>Canonical application/test inputs</td>
+<td>267 files; SHA-256
+<code>b91f13a1c8bdf7c0a192f4236520096a8089484abbc7f6e3593d884691af460c</code></td>
+</tr>
+<tr class="even">
+<td>Uploaded standalone</td>
+<td>5,661,948 bytes; SHA-256
+<code>c7166bbd7b20c7427ea08f7253df2545fe75dab2ce9d76b5f6f5869118b228c1</code></td>
+</tr>
+<tr class="odd">
+<td>Original worker plan</td>
+<td>SHA-256
+<code>ae9bb6f78ccc9fa0e383c279cd861c057ce8f89f8ee99a716d666ce12b753541</code>;
+exact match</td>
+</tr>
+<tr class="even">
+<td>Outer and internal checksums</td>
+<td>All three outer bindings and all 2,354 internal checksum rows
+passed; all 2,352 payload inventory entries matched</td>
+</tr>
+<tr class="odd">
+<td>Independent rebuild</td>
+<td>Node <code>v24.22.1</code>,
+<code>node build.mjs --source-version</code>: byte-identical to the
+uploaded standalone</td>
+</tr>
+<tr class="even">
+<td>Focused delivered regression</td>
+<td><strong>211 passed, 0 failed across 12 selected test files</strong>,
+including standalone boot with its original 5,000 ms VM budget</td>
+</tr>
+<tr class="odd">
+<td>Additional state checks</td>
+<td><strong>44/44 grouped check records passed</strong>, covering seven
+real lessons, partial playback, exact histories, scope exit and
+connection receipt</td>
+</tr>
+<tr class="even">
+<td>Additional semantic checks</td>
+<td><strong>487 passed / 11 failed assertions</strong>; the failures
+identify MC-R01 and MC-R02, not eleven separate bugs</td>
+</tr>
+<tr class="odd">
+<td>Additional source/emitted probes</td>
+<td>Chapter/content, replay-scope and interaction findings reproduced
+against both modules and the exact uploaded inline bundle</td>
+</tr>
+</tbody>
+</table>
+</div><p>The focused Node run covered Compact presentation/boundaries/codec,
+player seek and controls, held-object UI, focus/resize, routing, hidden
+search metadata, PAM result disclosure and standalone runtime. It is
+<strong>not</strong> the full Bun CI run. No application or
+delivered-test input was edited during this review; building created
+only the ordinary generated output.</p>
+<p>No browser binary or Bun executable was available in this review
+environment. Source/emitted observations therefore use the supplied DOM
+harness, and the rebuild uses Node. Worker browser screenshots were
+inspected, but fresh real-browser layout, physical phones,
+speech/comprehension and timing were not run here. These limits do not
+prevent reproducing the concrete DOM/content/state defects below.</p>
+<h2 id="required-content-and-navigation-corrections">3. Required content
+and navigation corrections</h2>
+<h3 id="mc-r01-chapter-controls-and-comparison-evidence-vanish-after-switching">MC-R01
+— Chapter controls and comparison evidence vanish after switching</h3>
+<p><strong>Code:</strong> <code>src/app.js:987</code>
+(<code>chapterControlsModel</code>);
+<code>src/study-controller.js:63</code>
+(<code>invalidatePresentationCaches</code>).</p>
+<p><code>renderLessonDecisions()</code> rebuilds chapter controls only
+when the lab model changes. Switching presentation replaces the host DOM
+while retaining that model and cache key. The new chapter panel becomes
+visible but empty. Its <code>#chapter-token-comparison</code> child also
+disappears.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="MC-R01
+— Chapter controls and comparison evidence vanish after switching — table 3"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Fixture</th>
+<th scope="col">Before switching</th>
+<th scope="col">After switching to the other view and back</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>lab-dnssec01</code></td>
+<td>4 chapter buttons</td>
+<td>0 in both destinations</td>
+</tr>
+<tr class="even">
+<td><code>lab-dnssec15</code></td>
+<td>5 chapter buttons</td>
+<td>0 in both destinations</td>
+</tr>
+<tr class="odd">
+<td><code>lab-mcp09/default</code></td>
+<td>2 chapter buttons and downstream/upstream credential comparison</td>
+<td>Both navigation and comparison absent</td>
+</tr>
+</tbody>
+</table>
+</div><p>The symmetric Full→Compact→Full sequence also fails. The MCP
+comparison distinguishes separate downstream MCP and upstream API
+credentials, issuers, resources and current custody. Losing it is a
+learning-evidence defect as well as a missing shortcut. Canonical state
+itself remained correct in the probes.</p>
+<p><strong>Worker correction:</strong> invalidate this presentation
+cache on mount, or bind it to the current DOM host. Rebuild both
+controls and comparison from the current session. Do not reset the
+lesson, reselect a step, clear history or modify protocol state to force
+rendering.</p>
+<p><strong>Acceptance:</strong> exercise both directions, repeated
+switches and at least one partial cursor for a chaptered DNSSEC case and
+MCP09. Assert actual chapter IDs, enabled states, jump behavior and
+comparison content—not merely an unhidden container or unchanged state
+hash. Preserve the current cursor, chapter, case/member and custody. Run
+these assertions in source and emitted execution.</p>
+<h3 id="mc-r02-per-step-cryptographic-interpretation-is-deleted">MC-R02
+— Per-step cryptographic interpretation is deleted</h3>
+<p><strong>Code:</strong> <code>src/compact-view.js:227</code>
+(<code>renderData</code>); <code>src/app.js:1438</code>
+(<code>stepHtml</code>).</p>
+<p>Compact removes every <code>.step-detail</code> node from the shared
+action renderer. That class is used for both an ordinary description and
+the distinct <strong>Cryptographic interpretation</strong> paragraph.
+Consequently Compact retains the heading but deletes its explanation.
+The current card’s ordinary detail and the global profile’s crypto
+section do not restore the missing per-event text.</p>
+<p><strong>Reproduction:</strong> open
+<code>lab-smb-multichannel-binding-success</code>, select Cryptographic
+detail, inspect a completed source event ending in
+<code>:mc-read-response-unwrap</code> (zero-based index 65 / displayed
+event 66), then expand Data and checks. The heading is empty. Full at
+the same event contains the authored transform, S2C cipher-key
+derivation, authenticated READ header and data explanation. The same
+omission is confirmed for <code>:mc-read-response</code> and
+<code>:mc-read-accept</code> at indices 64 and 66.</p>
+<p><strong>Worker correction:</strong> remove only duplicated ordinary
+description nodes, or explicitly render the authored crypto paragraph
+from the same data. Preserve the existing incomplete-prefix
+restrictions; restoring detail must not reveal future payloads or imply
+that a check has already succeeded.</p>
+<p><strong>Acceptance:</strong> assert the exact authored explanation is
+present at its appropriate completed boundary in Compact and Full,
+across detail changes and view switches. Cover a per-event override and
+the existing profile fallback. Keep separate negative assertions for
+intermediate prefixes and unreadable/opaque values. An empty heading or
+unrelated profile text cannot satisfy content parity.</p>
+<h3 id="mc-r03-history-action-replay-is-labelled-journey">MC-R03 —
+History action replay is labelled Journey</h3>
+<p><strong>Code:</strong> <code>src/study-controller.js:158</code>;
+displayed by <code>src/compact-view.js:156</code>.</p>
+<p>Full timeline replay inside a field/exact-object investigation uses
+player kind <code>trace-step</code>. <code>studyQueue()</code> does not
+classify that kind and falls through to <strong>Journey</strong>.</p>
+<p><strong>Reproduction:</strong> start Basic Keycloak in Full; open the
+<code>account-password</code> exact history; activate its second Full
+timeline row; select Compact. The one-row replay is labelled
+<strong>Active scope: Journey</strong>, even though the retained exact
+history has three rows, <code>objectTraceSelection</code> remains
+<code>account-password</code>, and Return to journey is shown. Source
+and emitted reproduce it; canonical state is preserved.</p>
+<p><strong>Worker correction:</strong> identify <code>trace-step</code>
+explicitly as the selected action within its parent field or
+exact-object investigation. Keep the one-row queue, exact elapsed time
+and parent trace identity. Do not clear the investigation or replace the
+queue merely to make the label true.</p>
+<p><strong>Acceptance:</strong> positive labels for exact-object and
+field-history timeline replays, including paused switches and queue
+overview. Keep ordinary journey, selected journey step, connection
+subset and complete history labels distinct. Retain existing
+cursor/queue continuity assertions.</p>
+<h2 id="required-interaction-and-phone-reading-corrections">4. Required
+interaction and phone-reading corrections</h2>
+<h3 id="mc-r04-field-controls-promise-an-unsupported-dialog-and-f2-shortcut">MC-R04
+— Field controls promise an unsupported dialog and F2 shortcut</h3>
+<p><strong>Code:</strong> <code>src/app.js:1441</code>
+(<code>attributeButton</code>) and <code>src/app.js:1585</code>
+(<code>renderAttributeIndex</code>); Compact <code>showField</code> at
+<code>src/compact-view.js:356</code> and <code>onKey</code> at
+<code>src/compact-view.js:405</code>.</p>
+<p>In Compact, field buttons still expose
+<code>aria-haspopup="dialog"</code>,
+<code>aria-controls="attribute-popup"</code> and
+<code>aria-keyshortcuts="F2"</code>. Full’s F2 handlers are unmounted.
+Compact activation opens the inline
+<code>#compact-field-definition</code>; the advertised popup remains
+hidden. Pressing F2 does nothing.</p>
+<p><strong>Reproduction:</strong> open Compact’s Attribute index, focus
+<code>accessTokenA</code>, press F2, then activate the field. The
+independent source and emitted probes record the stale metadata,
+unhandled F2 and the different inline destination. This is a directly
+observed interaction/semantic mismatch; it is not a claim about speech
+from a particular screen reader.</p>
+<p><strong>Worker correction:</strong> use presentation-appropriate
+metadata. Remove unsupported popup/shortcut claims in Compact and
+associate a control with its actual inline destination where
+appropriate. Preserve Full’s working dialog and F2 behavior. Do not add
+a modal just to match old attributes. Keyboard activation should start
+reading at a meaningful definition target rather than skip all
+explanatory text to its trailing Follow action.</p>
+<p><strong>Acceptance:</strong> check index buttons and action-field
+buttons, not only one renderer. Source and emitted metadata must match
+the implemented action; Full F2/open/return remains working. The inline
+explanation and Follow action remain keyboard-reachable.</p>
+<p>The relevant primary guidance is <a href="https://www.w3.org/TR/wai-aria-1.2/#aria-haspopup">WAI-ARIA 1.2
+<code>aria-haspopup</code></a> and <a href="https://www.w3.org/TR/wai-aria-1.2/#aria-keyshortcuts"><code>aria-keyshortcuts</code></a>:
+expose the actual popup behavior and implemented shortcut. <a href="https://www.w3.org/WAI/WCAG22/Understanding/name-role-value.html">WCAG
+Name, Role, Value</a> explains why accurate component semantics matter.
+This review does not certify whole-product WCAG conformance.</p>
+<h3 id="mc-r05-inventory-help-has-an-incomplete-focusdismissal-lifecycle">MC-R05
+— Inventory help has an incomplete focus/dismissal lifecycle</h3>
+<p><strong>Code:</strong> <code>src/compact-view.js:338</code> and
+<code>src/compact-view.js:405</code>; help markup at
+<code>src/held-study-projection.js:29</code>. Full’s corresponding
+handler at <code>src/held-object-view.js:256</code> explicitly restores
+focus.</p>
+<p><strong>Reproduction:</strong> in Basic Keycloak Compact, expand
+Participants/current holdings, select the password holding and activate
+Inventory help. The help is exposed as a dialog, but focus stays outside
+it. Focus and activate Close help: its focused node is removed without a
+replacement receiving focus. The DOM harness records that the active
+node is no longer in the application. Reopen help and press Escape from
+Close help: the outer holdings disclosure closes while
+<code>helpOpen</code> remains true and the help dialog remains inside
+it.</p>
+<p><strong>Worker correction:</strong> use a coherent inline disclosure
+for this short explanation, or complete the existing nonmodal-dialog
+lifecycle. Close and Escape must dismiss the help itself, update its
+state and return focus to a surviving visible trigger. They must not
+inadvertently close holdings. Avoid introducing a modal stack or
+unnecessary focus trap.</p>
+<p><strong>Acceptance:</strong> opening, Close and Escape with keyboard;
+connected visible focus; matching help state and DOM; outer holdings
+remains open when help alone closes. Repeat after view changes and
+rerenders. Use the <a href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/">Disclosure
+pattern</a> if implementing a disclosure and verify a logical <a href="https://www.w3.org/WAI/WCAG22/Understanding/focus-order.html">focus
+order</a>. Fresh browser keyboard checks remain necessary; human speech
+acceptance is separate.</p>
+<h3 id="mc-r06-search-draft-survives-pointer-switching-but-not-keyboard-switching">MC-R06
+— Search draft survives pointer switching but not keyboard
+switching</h3>
+<p><strong>Code:</strong> <code>src/study-controller.js:30</code>
+suspends drafts on View pointerdown;
+<code>src/scenario-picker.js:114</code> clears the draft on close; Tab
+and focusout can close before switching.</p>
+<p><strong>Reproduction:</strong> in Compact, type
+<code>filtering</code> in the scenario search. Moving toward View using
+Shift+Tab and activating Full loses the draft; reopening search is
+blank. Pointerdown on Full before focus transfer retains
+<code>filtering</code> and the active result. The same handler-level
+distinction is reproduced in source and emitted. The probe simulates the
+relevant events; it does not claim a real-browser Tab traversal.</p>
+<p>Ordinary preexisting picker blur intentionally clears a search. This
+finding concerns the additional MC-10 view-switch preservation contract
+and its pointer-only implementation. It is lower priority than lost
+protocol content, but should be made consistent.</p>
+<p><strong>Worker correction:</strong> retain the bounded draft
+independently of a pointer-only event, or provide an equally accessible
+explicit switch path with the same preservation. Keep explicit cancel,
+actual selection and context changes distinct; do not resurrect a draft
+deliberately cancelled by the learner. Typing still must not select or
+evaluate a lesson.</p>
+<p><strong>Acceptance:</strong> both pickers, both directions, pointer
+and keyboard switching; explicit cancel and committed selection; result
+highlight and text restored appropriately; no route or canonical-state
+changes from browsing alone.</p>
+<h3 id="mc-r07-field-investigation-traverses-an-unbounded-index-and-leaves-the-learner-away-from-the-new-scope">MC-R07
+— Field investigation traverses an unbounded index and leaves the
+learner away from the new scope</h3>
+<p><strong>Code:</strong> layout in <code>src/compact-view.js:79</code>;
+<code>showField</code> at <code>src/compact-view.js:356</code>; Follow
+dispatch at <code>src/compact-view.js:345</code>; global index
+construction at <code>src/app.js:1567</code>; Compact overflow styling
+at <code>src/styles.css:1064</code>.</p>
+<p>Basic Keycloak’s empty-query Compact index renders <strong>10,843
+field buttons</strong>. The selected definition sits after that entire
+index. Activating a field opens the disclosure, moves to the definition
+and focuses its trailing Follow action. Following the field changes the
+study scope near the top of the page but leaves focus on that trailing
+action and does not reveal the current card. The probes record the same
+structure and behavior in source and emitted execution.</p>
+<p>This is a required ergonomics correction for the requested simplified
+phone view. It is a reviewer assessment grounded in the observed
+structure and MC-02/MC-15, not a fabricated WCAG rule imposing a maximum
+list length. No page height was measured independently here, and the DOM
+count does not prove the cause of a timing regression.</p>
+<p><strong>Worker correction:</strong></p>
+<ul>
+<li>Put the selected definition before the result list, beside its
+trigger, or in another immediately reachable inline location. Do not
+make its reading order depend on traversing the global catalog.</li>
+<li>Show relevant/current-lesson fields initially and keep global lookup
+available. Use an accessible bounded result batch or explicit Show more
+if needed. Preserve all global metadata, search semantics and access to
+every field; this is not permission to remove lessons or fields.</li>
+<li>On explicit Follow, make the new current action, playback and Return
+controls discoverable through deliberate focus/scroll. Provide a
+coherent way back to the originating field. Scope entry remains paused;
+automatic playback must still avoid focus theft or repeated
+scrolling.</li>
+</ul>
+<p><strong>Acceptance:</strong> Basic Keycloak, Core and a
+profile-backed lesson at representative 320/390 px and with keyboard.
+The initial result policy has a declared finite bound; definitions and
+the selected scope can be reached without traversing thousands of
+controls; every global field remains findable; exact values and readable
+representations are unchanged. Test Follow/Return with partial cursors
+and empty histories. Measure affected fields-open interactions using the
+existing timing method; do not infer a speedup from fewer nodes
+alone.</p>
+<h2 id="what-the-review-supports">5. What the review supports</h2>
+<p>The implementation has one shared player and canonical study state.
+Switching uses the post-pause snapshot without resetting/reselecting,
+the inactive Full graph is unmounted, reduced-motion and page-privacy
+ownership remain shared, and the headless held-state extraction is in
+place. The independent preservation checks did not identify another
+required state/lifecycle correction.</p>
+<p>The source identity comparison found <strong>108 pre-existing
+<code>src/</code> files unchanged</strong> from accepted candidate-07.
+Five existing UI/player files changed, alongside new presentation/state
+modules. No protocol model or canonical engine was changed. Selected PAM
+password-change public/internal/pending separation, Windows filtering
+versus ACL denial, Kubernetes authorization and DNSSEC state/clock
+evidence remained correct in the bounded checks. Exact history, custody
+and connection receipt-before-local-verification checks passed.</p>
+<p>This is a <strong>presentation preservation review</strong>, not a
+new exhaustive RFC audit of every protocol or native implementation.
+Earlier protocol closures remain preserved within their accepted scope.
+MC-R01 and MC-R02 show why unchanged protocol data and canonical parity
+alone cannot prove that a new view still teaches all of that data. Do
+not relabel this review as whole-product RFC, accessibility or native
+interoperability certification.</p>
+<p>The evidence package also passed substantial independent checks:</p>
+<ul>
+<li>Exact CI log: <strong>2,464 passed / 0 failed, 139 files, 37,023
+expectations</strong>, under the stated Bun 1.4.2 command. All 907
+before/after stage bindings match, all 139 delivered test files match
+the CI inputs, and six later differences are documentation-only. This
+supports the worker’s CI evidence for these exact inputs; it is not an
+independently rerun Bun suite.</li>
+<li>The original failed aggregate/DOM runs remain failed. The corrected
+DOM producer changes the singleton-selector contract while preserving
+the non-DOM producer prefix/suffix. The source and emitted corrected
+results each report 3,628/0; the unaffected deep scopes each report
+7,644/0. The scope join and producer identities checked out.</li>
+<li>The native before/after reports preserve the same 156 planned IDs
+and expected-property lists. The 40 previously failed cells are
+reexecuted as passing; current results are 142 passed and 14
+unperformed. Three child zoom passes are not double-counted. These are
+verified worker records, not new device executions by this
+reviewer.</li>
+<li>Four original performance/resource/profile reports were decoded and
+hash-verified. All <strong>87 comparison distributions and 21
+candidate-action distributions</strong> were recomputed from raw
+samples. Flags and the <strong>37 distinct flagged-row
+dispositions</strong> match; no evidence-integrity correction was
+identified.</li>
+<li>The shared evidence stream’s entire 734-record
+checksum/previous/index/node-offset chain was validated. The first 228
+value records were decoded to recover the three exact native reports;
+the remaining 506 bodies were not reconstructed. An earlier full Node
+decode exhausted its default heap; that reviewer limitation is retained,
+not misreported as product corruption or complete value validation.</li>
+</ul>
+<h2 id="performance-and-external-acceptance-remain-open">6. Performance
+and external acceptance remain open</h2>
+<p>The worker disclosed the performance conditions correctly. That is
+useful evidence, not acceptance of the resulting responsiveness.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="6. Performance
+and external acceptance remain open — table 4"><table>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Current ordinary action on the worker’s phone390 setup</th>
+<th scope="col">Median</th>
+<th scope="col">Maximum</th>
+<th scope="col">Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Compact→Full, source HTTP</td>
+<td>1,883 ms</td>
+<td>2,632 ms</td>
+<td>Misses both provisional targets</td>
+</tr>
+<tr class="even">
+<td>Compact→Full, emitted HTTP</td>
+<td>1,773 ms</td>
+<td>2,037 ms</td>
+<td>Misses both provisional targets</td>
+</tr>
+<tr class="odd">
+<td>Compact→Full, standalone file</td>
+<td>1,816 ms</td>
+<td>1,976 ms</td>
+<td>Misses both provisional targets</td>
+</tr>
+<tr class="even">
+<td>Full→Compact, source HTTP</td>
+<td>284 ms</td>
+<td>367 ms</td>
+<td>Median misses 250 ms target</td>
+</tr>
+<tr class="odd">
+<td>Full→Compact, emitted HTTP</td>
+<td>253 ms</td>
+<td>307 ms</td>
+<td>Median narrowly misses target</td>
+</tr>
+<tr class="even">
+<td>Full→Compact, standalone file</td>
+<td>252 ms</td>
+<td>265 ms</td>
+<td>Median narrowly misses target</td>
+</tr>
+</tbody>
+</table>
+</div><p>The agreed provisional ordinary-action targets are 250 ms median /
+500 ms maximum on the named setup. These measurements use the worker’s
+host-based browser automation with a phone viewport; they are not
+physical-phone timings. The large Full-switch misses deserve
+optimization/investigation. The two narrow Compact median misses should
+retain their exact values and variation context, not be exaggerated into
+multi-second delays.</p>
+<p>There are <strong>8 material phone comparison flags</strong>, all
+Compact versus new Full with fields open; none is an accepted07 Full
+versus new Full material flag. There are also 15 phone comparison
+variation flags, 8 desktop variation flags, 7 candidate-action variation
+flags and 6 ordinary target misses. Categories overlap: <strong>37
+distinct rows</strong>, not the sum of those numbers. All remain
+open/unaccepted.</p>
+<p>For follow-up, isolate expensive work around the affected field/index
+and remount actions before choosing an optimization. Whole-session CPU
+profiles do not establish which operation caused an action’s delay.
+MC-R07 gives a concrete rendering/interaction concern to investigate,
+but this review does not claim it explains every flag. Keep
+uninstrumented paired timing separate from diagnostic counters/profiles.
+Do not mark a shell ready before usable content appears, omit previously
+timed work, change thresholds after collection, or use Compact speed to
+offset a Full regression.</p>
+<p>Preserve the 14 unavailable WebKit/device/human/AT cells, human G01,
+88 native Windows/DC cells, and the original installed-PAM 164 matches /
+one qualified divergence across 165 calls. Historical candidate02
+startup/baseline variation, six P6, five DNSSEC and earlier/P0
+conditions retain their original open scope. Current zero-growth
+resource observations are bounded diagnostics, not proof that no
+possible leak exists. No release, owner acceptance, human acceptance or
+waiver is granted by this review.</p>
+<h2 id="correction-sequence-and-recheck-delivery">7. Correction sequence
+and recheck delivery</h2>
+<ol type="1">
+<li><strong>Fix the content/scope regressions first:</strong> MC-R01–03,
+with positive source/emitted assertions over actual rendered content and
+actions.</li>
+<li><strong>Repair interaction semantics and field reading:</strong>
+MC-R04–07. Keep shared semantics in one place while allowing
+presenter-specific behavior. Preserve Full, the entire lesson catalog
+and all protocol data.</li>
+<li><strong>Run focused verification during work.</strong> Cover the
+listed regressions, field/index/copy/trace paths and relevant
+focus/search tests. Check the affected browser keyboard/layout tasks at
+representative widths and both themes when those browsers are
+available.</li>
+<li><strong>Collect timing only after the functional candidate is
+stable.</strong> Refresh affected fields-open actions, switching, and
+the Full controls needed to protect against regressions. Use predeclared
+paired samples and retain previous flags. Avoid concurrent test workers
+during timing. Do not rerun unrelated native protocol sweeps solely
+because UI markup changed.</li>
+<li><strong>Run the final exact <code>bun run test</code> once on the
+stable final inputs</strong>, with the original budgets, then rebuild
+and bind the delivered standalone. The successful full invocation can
+satisfy the complete-regression requirement; no second redundant full
+suite is required. Changes after that run need an explicit impact
+decision, not silent restamping.</li>
+<li><strong>Preserve evidence honestly.</strong> Unaffected earlier
+canonical/model evidence may remain historical with precise
+input/dependency justification. Do not claim an old whole-candidate
+result was run on a new hash. If projection/cursor rules change, rerun
+the affected semantic checks. Keep all failures and disclosed omissions,
+without adding unnecessary full forensic dumps.</li>
+</ol>
+<p>Return the three established siblings:
+<code>auth-flow-studio-compact.html</code>,
+<code>auth-flow-studio-compact-source-and-review.zip</code>, and
+<code>START-HERE.md</code>. An adjacent checksum sidecar may remain
+optional. Include a response row for each MC-R01–07 with the
+implementation location, actual tests and remaining limits; update
+MC-01–20 without erasing the original plan. Bind changed
+application/test/HTML and verification-producer bytes. Preserve prior
+closures and open gates.</p>
+<p>The next independent review should be able to answer each of the
+seven findings directly. <strong>Do not mark overall release acceptance,
+human G01 or performance-owner acceptance closed. No commit, push,
+deployment or version bump is requested here.</strong></p>
+<h2 id="embedded-reproductions">8. Embedded reproductions</h2>
+<p>These probes inspect the candidate; they do not repair it. Save them
+at the stated paths relative to the extracted packet root. They use Node
+and the delivered DOM harness. Keep the exact companion HTML beside
+<code>source/</code>; no install or build is needed for these probes.
+They are not real-browser, phone or AT tests.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="8. Embedded reproductions — table 5"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Save path</th>
+<th scope="col">Run from packet root</th>
+<th scope="col">Expected current observation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>content-probe.mjs</code></td>
+<td><code>node content-probe.mjs source auth-flow-studio-compact.html source source-content.json</code>
+and replace the mode/output with
+<code>emitted emitted-content.json</code></td>
+<td>Both regression flags true; chapter counts disappear and crypto body
+is absent only in Compact</td>
+</tr>
+<tr class="even">
+<td><code>independent-validation/ux/interaction-probe.mjs</code></td>
+<td><code>node independent-validation/ux/interaction-probe.mjs source</code>
+and
+<code>node independent-validation/ux/interaction-probe.mjs emitted</code></td>
+<td>Field metadata, help lifecycle, draft modality and unbounded-index
+observations</td>
+</tr>
+<tr class="odd">
+<td><code>trace-step-scope-repro.mjs</code></td>
+<td><code>node trace-step-scope-repro.mjs source source</code> and
+<code>node trace-step-scope-repro.mjs source emitted auth-flow-studio-compact.html</code></td>
+<td>Incorrect Journey label; this reproducer exits 1 when the defect is
+observed</td>
+</tr>
+</tbody>
+</table>
+</div><p>The content and interaction scripts are observation collectors:
+successful process exit is not a product pass. Convert the required
+outcomes into positive regression assertions in the worker suite. The
+first reviewer content-probe attempt used unprefixed step IDs and
+stopped before a completed result; its selector was corrected to resolve
+actual lesson-prefixed IDs before these final source/emitted
+observations. No product assertion was weakened.</p>
+<details>
+<summary>
+content-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 1"><code>import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import {pathToFileURL} from 'node:url';
+
+// Run from the extracted packet root:
+// node content-probe.mjs source auth-flow-studio-compact.html source source-content.json
+// node content-probe.mjs source auth-flow-studio-compact.html emitted emitted-content.json
+const source=path.resolve(process.argv[2]||'source');
+const standalone=path.resolve(process.argv[3]||'auth-flow-studio-compact.html');
+const mode=process.argv[4]||'source';
+const output=process.argv[5]||mode+'-content.json';
+const {installHarness}=await import(pathToFileURL(path.join(source,'tests/dom-harness.mjs')));
+let env,Component;
+if(mode==='emitted'){
+  const sandbox={structuredClone};env=installHarness(sandbox);
+  const text=fs.readFileSync(standalone,'utf8');
+  const scripts=[...text.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];
+  if(scripts.length!==1)throw new Error('Expected one standalone script');
+  new vm.Script(scripts[0][1],{filename:'uploaded-standalone:inline'}).runInContext(vm.createContext(sandbox),{timeout:5000});
+  Component=env.registry.get('auth-flow-studio');
+}else{
+  env=installHarness();
+  ({AuthFlowStudio:Component}=await import(pathToFileURL(path.join(source,'src/app.js'))));
+}
+const result={mode,qualification:'Independent DOM-harness observations; not native layout or human AT.',chapters:[],crypto:[]};
+function mount(initialMode){
+  env.window.innerWidth=390;env.window.localStorage={getItem:()=&gt;initialMode,setItem(){}};
+  const app=new Component();env.document.body.appendChild(app);app.connectedCallback();return app;
+}
+function close(app){app.disconnectedCallback();env.document.body.removeChild(app);env.clock.frames.clear();env.clock.timers.clear();}
+for(const initialMode of ['compact','full'])for(const lesson of ['lab-dnssec01','lab-dnssec15','lab-mcp09']){
+  const app=mount(initialMode);
+  try{
+    app.selectLabScenario(lesson);
+    const expected=app.labModel.chapters.length;
+    const observations=[];
+    for(const view of [initialMode,initialMode==='compact'?'full':'compact',initialMode]){
+      app.switchPresentation(view);
+      observations.push({view,buttons:app.querySelectorAll('[data-lesson-chapter]').length,comparisonNodePresent:!!app.querySelector('#chapter-token-comparison')});
+    }
+    result.chapters.push({lesson,initialMode,expected,observations});
+  }finally{close(app);}
+}
+for(const id of ['mc-read-response','mc-read-response-unwrap','mc-read-accept']){
+  const app=mount('compact');
+  try{
+    app.selectLabScenario('lab-smb-multichannel-binding-success');app.setLearningDetail('crypto');
+    const index=app.steps.findIndex(step=&gt;step.id===id||step.id.endsWith(':'+id));if(index&lt;0)throw new Error('Missing authored step '+id);
+    app.inspectSourceCursor({eventIndex:index,milestone:'complete'});
+    const expected=app.steps[index].cryptoDetail;
+    const compactText=app.querySelector('.compact-study').textContent;
+    const compact={expectedTextPresent:compactText.includes(expected),headingPresent:app.querySelector('#compact-data').textContent.includes('Cryptographic interpretation')};
+    app.switchPresentation('full');app.selectStep(index,false);
+    result.crypto.push({lesson:app.labScenarioId,id,index,expected,compact,fullExpectedTextPresent:app.refs.inspector.textContent.includes(expected)});
+  }finally{close(app);}
+}
+result.chapterRegression=result.chapters.every(row=&gt;row.observations[0].buttons===row.expected&amp;&amp;row.observations.slice(1).every(x=&gt;x.buttons===0));
+result.cryptoRegression=result.crypto.every(row=&gt;!row.compact.expectedTextPresent&amp;&amp;row.compact.headingPresent&amp;&amp;row.fullExpectedTextPresent);
+fs.writeFileSync(output,JSON.stringify(result,null,2)+'\n');
+console.log(JSON.stringify({mode,chapterRegression:result.chapterRegression,cryptoRegression:result.cryptoRegression,output},null,2));</code></pre>
+</details>
+<details>
+<summary>
+independent-validation/ux/interaction-probe.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 2"><code>import fs from 'node:fs';
+import vm from 'node:vm';
+import {installHarness,HarnessEvent} from '../../source/tests/dom-harness.mjs';
+
+const mode=process.argv[2]||'source';
+let built,Component;
+if(mode==='emitted'){
+  const sandbox={structuredClone};built=installHarness(sandbox);
+  built.window.innerWidth=390;built.window.localStorage={getItem:()=&gt; 'compact',setItem(){}};
+  const html=fs.readFileSync(new URL('../../auth-flow-studio-compact.html',import.meta.url),'utf8');
+  const scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];
+  if(scripts.length!==1)throw new Error('Expected one emitted script');
+  new vm.Script(scripts[0][1],{filename:'uploaded-standalone:inline'}).runInContext(vm.createContext(sandbox),{timeout:5000});
+  Component=built.registry.get('auth-flow-studio');
+}else{
+  built=installHarness();built.window.innerWidth=390;built.window.localStorage={getItem:()=&gt; 'compact',setItem(){}};
+  ({AuthFlowStudio:Component}=await import('../../source/src/app.js'));
+}
+const {document,clock}=built;
+function mount(){const app=new Component();document.body.appendChild(app);document.activeElement=document.body;app.addEventListener('focusin',e=&gt;document.activeElement=e.target);app.connectedCallback();return app;}
+function close(app){app.disconnectedCallback();document.body.removeChild(app);document.activeElement=document.body;clock.frames.clear();clock.timers.clear();}
+const result={mode,environment:'Delivered purpose-built DOM harness, not browser layout or actual AT',checks:[]};
+{
+ const app=mount();
+ try{
+  app.openFieldIndex();const allFields=app.querySelectorAll('[data-index-attribute]');const field=allFields.find(node=&gt;!node.classList.contains('is-unavailable'));field.focus();
+  const f2=new HarnessEvent('keydown',{key:'F2'});field.dispatchEvent(f2);
+  const before={field:field.dataset.indexAttribute,renderedFieldButtons:allFields.length,hasPopup:field.getAttribute('aria-haspopup'),controls:field.getAttribute('aria-controls'),keyShortcuts:field.getAttribute('aria-keyshortcuts'),popupHidden:app.refs['attribute-popup'].hidden,f2Handled:f2.defaultPrevented};
+  field.click();
+  result.checks.push({name:'Field control announces Full popup behavior in Compact',before,after:{popupHidden:app.refs['attribute-popup'].hidden,inlineDefinitionVisible:!app.refs['compact-field-definition'].hidden,focus:document.activeElement.dataset.compactFieldTrace},defect:before.hasPopup==='dialog'&amp;&amp;before.keyShortcuts==='F2'&amp;&amp;!before.f2Handled&amp;&amp;app.refs['attribute-popup'].hidden});
+  const follow=app.querySelector('[data-compact-field-trace]'),title=app.refs['compact-current-title'];follow.click();
+  result.checks.push({name:'Field follow retains focus after unbounded index instead of current scope card',renderedFieldButtons:allFields.length,selectedField:app.attributeSelection,scope:app.studyQueue().label,focusRemainsOnFollow:document.activeElement===follow,currentTitleScrollCalls:title.scrollCalls.length,definitionScrollCalls:app.refs['compact-field-definition'].scrollCalls.length,qualification:'Structural and handler observation; no actual viewport geometry collected'});
+ }finally{close(app);}
+}
+{
+ const app=mount();
+ try{
+  const details=app.querySelector('[data-compact-disclosure="holdings"]');details.setAttribute('open','');details.dispatchEvent(new HarnessEvent('toggle'));
+  const holding=app.querySelector('[data-holding-id]');holding.click();
+  const help=app.querySelector('[data-held-help]');help.focus();help.click();
+  const dialog=app.querySelector('.held-help');const opened={dialogRole:dialog.getAttribute('role'),focusInsideDialog:dialog.contains(document.activeElement),helpOpen:app.heldView.helpOpen};
+  const closeButton=app.querySelector('[data-held-help-close]');closeButton.focus();closeButton.click();
+  result.checks.push({name:'Closing Inventory help leaves focus on a removed control',opened,after:{helpOpen:app.heldView.helpOpen,focusStillInApp:app.contains(document.activeElement),focusedNodeWasCloseButton:document.activeElement===closeButton,replacementHelpExists:!!app.querySelector('[data-held-help]')},defect:!app.contains(document.activeElement)});
+  app.querySelector('[data-held-help]').click();const escapeTarget=app.querySelector('[data-held-help-close]');escapeTarget.focus();escapeTarget.dispatchEvent(new HarnessEvent('keydown',{key:'Escape'}));
+  result.checks.push({name:'Escape from Inventory help closes outer holdings, not help',after:{helpOpen:app.heldView.helpOpen,helpDialogExists:!!app.querySelector('.held-help'),holdingsOpen:details.hasAttribute('open'),focusSummary:document.activeElement.tagName==='SUMMARY'},defect:app.heldView.helpOpen&amp;&amp;!details.hasAttribute('open')});
+ }finally{close(app);}
+}
+for(const inputMethod of ['keyboard','pointer']){
+ const app=mount();
+ try{
+  const input=app.refs['lab-scenario-search'],target=app.querySelector('[data-presentation-choice="full"]');input.focus();input.value='filtering';input.dispatchEvent(new HarnessEvent('input'));
+  const before={query:app.scenarioPicker.query,value:input.value};
+  if(inputMethod==='keyboard')input.dispatchEvent(new HarnessEvent('keydown',{key:'Tab',shiftKey:true}));
+  else target.dispatchEvent(new HarnessEvent('pointerdown'));
+  input.dispatchEvent(new HarnessEvent('focusout',{relatedTarget:target}));target.focus();target.click();
+  const afterSwitch={query:app.scenarioPicker.query,value:input.value,suspended:app.scenarioPicker.suspended,presentation:app.presentationMode};
+  input.focus();
+  result.checks.push({name:'View-switch search draft via '+inputMethod,before,afterSwitch,reopen:{query:app.scenarioPicker.query,value:input.value},qualification:inputMethod==='keyboard'?'Simulates Shift+Tab key handling and focus transfer toward View; ordinary preexisting blur also clears.':'Simulates actual pointerdown suspend before blur and View activation.'});
+ }finally{close(app);}
+}
+const output=JSON.stringify(result,null,2)+'\n';fs.writeFileSync(new URL('./'+mode+'-interaction-results.json',import.meta.url),output);console.log(output);</code></pre>
+</details>
+<details>
+<summary>
+trace-step-scope-repro.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 3"><code>import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import {pathToFileURL} from 'node:url';
+
+const [sourceArgument,mode='source',htmlArgument]=process.argv.slice(2);
+const source=path.resolve(sourceArgument);
+const {installHarness}=await import(pathToFileURL(path.join(source,'tests/dom-harness.mjs')));
+let harness,Component;
+if(mode==='emitted'){
+  const html=fs.readFileSync(path.resolve(htmlArgument),'utf8');
+  const scripts=[...html.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];
+  assert.equal(scripts.length,1);
+  const sandbox={structuredClone};harness=installHarness(sandbox);
+  new vm.Script(scripts[0][1],{filename:path.basename(htmlArgument)+':inline-script'}).runInContext(vm.createContext(sandbox),{timeout:5000});
+  Component=harness.registry.get('auth-flow-studio');
+}else{
+  assert.equal(mode,'source');harness=installHarness();
+  ({AuthFlowStudio:Component}=await import(pathToFileURL(path.join(source,'src/app.js'))));
+}
+harness.window.innerWidth=1440;
+harness.window.localStorage={getItem:()=&gt; 'full',setItem(){}};
+const app=new Component();harness.document.body.appendChild(app);app.connectedCallback();
+try{
+  assert.equal(app.labScenarioId,'basic-keycloak');
+  // The real lesson's account-password history has three rows. Selecting a
+  // row on Full's timeline invokes selectStep(index,true), an existing handler.
+  app.heldView.trace('account-password');
+  assert.equal(app.traceQueue.length,3);
+  app.refs.timeline.querySelector('[data-step="1"]').click();
+  const canonicalBefore=JSON.stringify(app.heldView.snapshot());
+  app.querySelector('[data-presentation-choice="compact"]').click();
+  assert.equal(JSON.stringify(app.heldView.snapshot()),canonicalBefore);
+  const result={mode,lesson:app.labScenarioId,artifactId:app.objectTraceSelection,
+    playerKind:app.player.kind,activeQueueRows:app.player.queue.length,exactHistoryRows:app.traceQueue.length,
+    visibleScope:app.querySelector('#compact-scope').textContent,
+    rowTitle:app.querySelector('#compact-current-title').textContent,
+    returnToJourneyVisible:!app.querySelector('[data-compact-action="return"]').hidden,
+    canonicalStatePreserved:true,
+    expected:'Selected action replay within exact object history; must not be labelled Journey',
+    defectReproduced:app.player.kind==='trace-step'&amp;&amp;app.studyQueue().label==='Journey',
+  };
+  fs.writeFileSync(new URL('./trace-step-scope-'+mode+'.json',import.meta.url),JSON.stringify(result,null,2)+'\n');
+  console.log(JSON.stringify(result,null,2));
+  if(result.defectReproduced)process.exitCode=1;
+}finally{
+  app.disconnectedCallback();harness.document.body.removeChild(app);harness.clock.frames.clear();harness.clock.timers.clear();
+}</code></pre>
+</details>
+<h2 id="review-boundary">9. Review boundary</h2>
+<p>Reviewed on 29 October 2026 against the exact identities in section
+2. The review confirms packaging/rebuild integrity and the stated
+bounded positive results, and requests the seven concrete corrections
+above. Source, emitted DOM and worker evidence are distinguished
+throughout. Earlier protocol closures remain preserved; current
+implementation closure, mobile/human acceptance and performance-owner
+acceptance are not granted.</p>
+<p class="source-note">Independent Compact review 01 · 29 October 2026 · Exact submitted candidate · Application inputs unchanged · No publication, release acceptance or waiver.</p></main></body>
+</html>

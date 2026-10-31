@@ -1,0 +1,625 @@
+{
+  "schemaVersion": 1,
+  "kind": "known-sibling-disclosure-not-a-fix",
+  "status": "unchanged-outside-win11-scope",
+  "recordedAt": "2026-10-21T19:34:16.963Z",
+  "candidate": {
+    "bytes": 2899536,
+    "sha256": "91cd57f410eede179cc8f464b717a76cee3d93a115e6e544d23406e86f26e257"
+  },
+  "windowsSourceSha256": "b72940b52b56429c9d4a902b59429612b2be095c611cbaa3033477f02c77090d",
+  "runtime": "1.4.2",
+  "inspectedProfiles": [
+    "lab-win-credssp-v6-kerberos",
+    "lab-win-rdp-normal",
+    "lab-win-winrm-credssp-second-hop"
+  ],
+  "keyKinds": [
+    "tls-inner-key",
+    "tgt-key",
+    "ticket-session-key",
+    "downstream-tgt-key",
+    "downstream-session-key",
+    "outer-tls-key"
+  ],
+  "examples": [
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "tls-inner-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:tls-inner-key",
+      "creator": "winClient",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:inner-tls",
+      "creationStage": "inner-tls",
+      "creationIndex": 7,
+      "carrier": {
+        "from": "winHost",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:inner-tls-server-finished"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "verify",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:inner-tls",
+        "sourceIndex": 7
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "tgt-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:tgt-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:as-reply",
+      "creationStage": "as-reply",
+      "creationIndex": 10,
+      "carrier": {
+        "from": "winDC",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:tgt",
+        "lab-win-winrm-credssp-second-hop:as-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:as-verify",
+        "sourceIndex": 11
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "ticket-session-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:ticket-session-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:tgs-reply",
+      "creationStage": "tgs-reply",
+      "creationIndex": 13,
+      "carrier": {
+        "from": "winDC",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:service-ticket",
+        "lab-win-winrm-credssp-second-hop:tgs-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:ticket-verify",
+        "sourceIndex": 14
+      },
+      "fieldMomentCount": 2
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "downstream-tgt-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:downstream-tgt-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:downstream-as-reply",
+      "creationStage": "downstream-as-reply",
+      "creationIndex": 39,
+      "carrier": {
+        "from": "winDC",
+        "to": "winHost"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:downstream-tgt",
+        "lab-win-winrm-credssp-second-hop:downstream-as-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winHost",
+        "to": "winHost",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:downstream-as-verify",
+        "sourceIndex": 40
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "downstream-session-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:downstream-session-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:downstream-tgs-reply",
+      "creationStage": "downstream-tgs-reply",
+      "creationIndex": 42,
+      "carrier": {
+        "from": "winDC",
+        "to": "winHost"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:downstream-ticket",
+        "lab-win-winrm-credssp-second-hop:downstream-tgs-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winHost",
+        "to": "winHost",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:downstream-ticket-verify",
+        "sourceIndex": 43
+      },
+      "fieldMomentCount": 2
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "outer-tls-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:outer-tls-key",
+      "creator": "winClient",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:outer-https",
+      "creationStage": "outer-https",
+      "creationIndex": 0,
+      "carrier": {
+        "from": "winHost",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:outer-certificate"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": null,
+      "fieldMomentCount": 0
+    }
+  ],
+  "observedRows": [
+    {
+      "modelId": "lab-win-credssp-v6-kerberos",
+      "key": "tls-inner-key",
+      "artifactId": "lab-win-credssp-v6-kerberos:tls-inner-key",
+      "creator": "winClient",
+      "creationStepId": "lab-win-credssp-v6-kerberos:inner-tls",
+      "creationStage": "inner-tls",
+      "creationIndex": 1,
+      "carrier": {
+        "from": "winHost",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-credssp-v6-kerberos:certificate"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "verify",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-credssp-v6-kerberos:inner-tls",
+        "sourceIndex": 1
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-credssp-v6-kerberos",
+      "key": "tgt-key",
+      "artifactId": "lab-win-credssp-v6-kerberos:tgt-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-credssp-v6-kerberos:as-reply",
+      "creationStage": "as-reply",
+      "creationIndex": 4,
+      "carrier": {
+        "from": "winDC",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-credssp-v6-kerberos:tgt",
+        "lab-win-credssp-v6-kerberos:as-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-credssp-v6-kerberos:as-verify",
+        "sourceIndex": 5
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-credssp-v6-kerberos",
+      "key": "ticket-session-key",
+      "artifactId": "lab-win-credssp-v6-kerberos:ticket-session-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-credssp-v6-kerberos:tgs-reply",
+      "creationStage": "tgs-reply",
+      "creationIndex": 7,
+      "carrier": {
+        "from": "winDC",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-credssp-v6-kerberos:service-ticket",
+        "lab-win-credssp-v6-kerberos:tgs-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-credssp-v6-kerberos:ticket-verify",
+        "sourceIndex": 8
+      },
+      "fieldMomentCount": 2
+    },
+    {
+      "modelId": "lab-win-credssp-v6-kerberos",
+      "key": "acceptor-subkey",
+      "artifactId": "lab-win-credssp-v6-kerberos:acceptor-subkey",
+      "creator": "winHost",
+      "creationStepId": "lab-win-credssp-v6-kerberos:ap-reply",
+      "creationStage": "ap-reply",
+      "creationIndex": 12,
+      "carrier": {
+        "from": "winHost",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-credssp-v6-kerberos:ap-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": true,
+      "firstFieldMoment": {
+        "kind": "create",
+        "from": "winHost",
+        "to": "winHost",
+        "sourceStepId": "lab-win-credssp-v6-kerberos:ap-reply",
+        "sourceIndex": 12
+      },
+      "fieldMomentCount": 3
+    },
+    {
+      "modelId": "lab-win-rdp-normal",
+      "key": "tls-inner-key",
+      "artifactId": "lab-win-rdp-normal:tls-inner-key",
+      "creator": "winClient",
+      "creationStepId": "lab-win-rdp-normal:inner-tls",
+      "creationStage": "inner-tls",
+      "creationIndex": 3,
+      "carrier": {
+        "from": "winHost",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-rdp-normal:certificate"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "verify",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-rdp-normal:inner-tls",
+        "sourceIndex": 3
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-rdp-normal",
+      "key": "tgt-key",
+      "artifactId": "lab-win-rdp-normal:tgt-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-rdp-normal:as-reply",
+      "creationStage": "as-reply",
+      "creationIndex": 6,
+      "carrier": {
+        "from": "winDC",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-rdp-normal:tgt",
+        "lab-win-rdp-normal:as-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-rdp-normal:as-verify",
+        "sourceIndex": 7
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-rdp-normal",
+      "key": "ticket-session-key",
+      "artifactId": "lab-win-rdp-normal:ticket-session-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-rdp-normal:tgs-reply",
+      "creationStage": "tgs-reply",
+      "creationIndex": 9,
+      "carrier": {
+        "from": "winDC",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-rdp-normal:service-ticket",
+        "lab-win-rdp-normal:tgs-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-rdp-normal:ticket-verify",
+        "sourceIndex": 10
+      },
+      "fieldMomentCount": 2
+    },
+    {
+      "modelId": "lab-win-rdp-normal",
+      "key": "acceptor-subkey",
+      "artifactId": "lab-win-rdp-normal:acceptor-subkey",
+      "creator": "winHost",
+      "creationStepId": "lab-win-rdp-normal:ap-reply",
+      "creationStage": "ap-reply",
+      "creationIndex": 14,
+      "carrier": {
+        "from": "winHost",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-rdp-normal:ap-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": true,
+      "firstFieldMoment": {
+        "kind": "create",
+        "from": "winHost",
+        "to": "winHost",
+        "sourceStepId": "lab-win-rdp-normal:ap-reply",
+        "sourceIndex": 14
+      },
+      "fieldMomentCount": 3
+    },
+    {
+      "modelId": "lab-win-rdp-normal",
+      "key": "downstream-tgt-key",
+      "artifactId": "lab-win-rdp-normal:downstream-tgt-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-rdp-normal:downstream-as-reply",
+      "creationStage": "downstream-as-reply",
+      "creationIndex": 29,
+      "carrier": {
+        "from": "winDC",
+        "to": "winHost"
+      },
+      "sentArtifactIds": [
+        "lab-win-rdp-normal:downstream-tgt",
+        "lab-win-rdp-normal:downstream-as-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winHost",
+        "to": "winHost",
+        "sourceStepId": "lab-win-rdp-normal:downstream-as-verify",
+        "sourceIndex": 30
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-rdp-normal",
+      "key": "downstream-session-key",
+      "artifactId": "lab-win-rdp-normal:downstream-session-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-rdp-normal:downstream-tgs-reply",
+      "creationStage": "downstream-tgs-reply",
+      "creationIndex": 32,
+      "carrier": {
+        "from": "winDC",
+        "to": "winHost"
+      },
+      "sentArtifactIds": [
+        "lab-win-rdp-normal:downstream-ticket",
+        "lab-win-rdp-normal:downstream-tgs-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winHost",
+        "to": "winHost",
+        "sourceStepId": "lab-win-rdp-normal:downstream-ticket-verify",
+        "sourceIndex": 33
+      },
+      "fieldMomentCount": 2
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "outer-tls-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:outer-tls-key",
+      "creator": "winClient",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:outer-https",
+      "creationStage": "outer-https",
+      "creationIndex": 0,
+      "carrier": {
+        "from": "winHost",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:outer-certificate"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": null,
+      "fieldMomentCount": 0
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "tls-inner-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:tls-inner-key",
+      "creator": "winClient",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:inner-tls",
+      "creationStage": "inner-tls",
+      "creationIndex": 7,
+      "carrier": {
+        "from": "winHost",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:inner-tls-server-finished"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "verify",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:inner-tls",
+        "sourceIndex": 7
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "tgt-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:tgt-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:as-reply",
+      "creationStage": "as-reply",
+      "creationIndex": 10,
+      "carrier": {
+        "from": "winDC",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:tgt",
+        "lab-win-winrm-credssp-second-hop:as-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:as-verify",
+        "sourceIndex": 11
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "ticket-session-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:ticket-session-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:tgs-reply",
+      "creationStage": "tgs-reply",
+      "creationIndex": 13,
+      "carrier": {
+        "from": "winDC",
+        "to": "winClient"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:service-ticket",
+        "lab-win-winrm-credssp-second-hop:tgs-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winClient",
+        "to": "winClient",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:ticket-verify",
+        "sourceIndex": 14
+      },
+      "fieldMomentCount": 2
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "downstream-tgt-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:downstream-tgt-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:downstream-as-reply",
+      "creationStage": "downstream-as-reply",
+      "creationIndex": 39,
+      "carrier": {
+        "from": "winDC",
+        "to": "winHost"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:downstream-tgt",
+        "lab-win-winrm-credssp-second-hop:downstream-as-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winHost",
+        "to": "winHost",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:downstream-as-verify",
+        "sourceIndex": 40
+      },
+      "fieldMomentCount": 1
+    },
+    {
+      "modelId": "lab-win-winrm-credssp-second-hop",
+      "key": "downstream-session-key",
+      "artifactId": "lab-win-winrm-credssp-second-hop:downstream-session-key",
+      "creator": "winDC",
+      "creationStepId": "lab-win-winrm-credssp-second-hop:downstream-tgs-reply",
+      "creationStage": "downstream-tgs-reply",
+      "creationIndex": 42,
+      "carrier": {
+        "from": "winDC",
+        "to": "winHost"
+      },
+      "sentArtifactIds": [
+        "lab-win-winrm-credssp-second-hop:downstream-ticket",
+        "lab-win-winrm-credssp-second-hop:downstream-tgs-reply"
+      ],
+      "canonicalCreationCount": 1,
+      "hasCreatorLocalCreate": false,
+      "firstFieldMoment": {
+        "kind": "store",
+        "from": "winHost",
+        "to": "winHost",
+        "sourceStepId": "lab-win-winrm-credssp-second-hop:downstream-ticket-verify",
+        "sourceIndex": 43
+      },
+      "fieldMomentCount": 2
+    }
+  ],
+  "collector": {
+    "argv": [
+      "/home/andrico/.cache/auth-lab-held-qa/expansion-ci-bun-1.4.2/bun-linux-x64/bun",
+      "--eval",
+      "import {WINDOWSLAB_SCENARIOS} from './src/windows-auth-lab.js';\nimport {ATTRIBUTES} from './src/protocol-data.js';\nimport {getAttributeUsage} from './src/attribute-usage.js';\nimport {buildAttributeTrace} from './src/attribute-trace.js';\nconst ids=['lab-win-credssp-v6-kerberos','lab-win-rdp-normal','lab-win-winrm-credssp-second-hop'];\nconst rows=[];\nfor(const id of ids){const model=WINDOWSLAB_SCENARIOS.find(item=>item.id===id),steps=model.steps();for(const key of model.windowsInventory.artifacts.filter(item=>item.type==='session-key')){\n const index=steps.findIndex(step=>model.windowsInventory.events[step.id].milestones.some(milestone=>milestone.effects.some(effect=>effect.op==='create'&&effect.artifactId===key.artifactId)));\n if(index<0)continue;\n const step=steps[index],event=model.windowsInventory.events[step.id],sent=(event.messages||[]).flatMap(message=>message.objects.map(object=>object.artifactId));\n if(!sent.length||sent.includes(key.artifactId))continue;\n const old=ATTRIBUTES[key.attributeId];ATTRIBUTES[key.attributeId]=model.definitions()[key.attributeId];\n try{const trace=buildAttributeTrace(getAttributeUsage(steps,key.attributeId),model.examples(),model.protocolValues||{});rows.push({modelId:id,key:key.key,artifactId:key.artifactId,creator:key.creator,creationStepId:step.id,creationStage:step.winStage,creationIndex:index,carrier:{from:step.from,to:step.to},sentArtifactIds:sent,canonicalCreationCount:event.milestones.flatMap(milestone=>milestone.effects).filter(effect=>effect.op==='create'&&effect.artifactId===key.artifactId).length,hasCreatorLocalCreate:trace.some(moment=>moment.traceKind==='create'&&moment.from===key.creator&&moment.to===key.creator&&moment.sourceStepId===step.id),firstFieldMoment:trace[0]?{kind:trace[0].traceKind,from:trace[0].from,to:trace[0].to,sourceStepId:trace[0].sourceStepId,sourceIndex:trace[0].sourceIndex}:null,fieldMomentCount:trace.length});}\n finally{if(old)ATTRIBUTES[key.attributeId]=old;else delete ATTRIBUTES[key.attributeId];}\n}}\nconsole.log(JSON.stringify({runtime:Bun.version,rows}));"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "program": "import {WINDOWSLAB_SCENARIOS} from './src/windows-auth-lab.js';\nimport {ATTRIBUTES} from './src/protocol-data.js';\nimport {getAttributeUsage} from './src/attribute-usage.js';\nimport {buildAttributeTrace} from './src/attribute-trace.js';\nconst ids=['lab-win-credssp-v6-kerberos','lab-win-rdp-normal','lab-win-winrm-credssp-second-hop'];\nconst rows=[];\nfor(const id of ids){const model=WINDOWSLAB_SCENARIOS.find(item=>item.id===id),steps=model.steps();for(const key of model.windowsInventory.artifacts.filter(item=>item.type==='session-key')){\n const index=steps.findIndex(step=>model.windowsInventory.events[step.id].milestones.some(milestone=>milestone.effects.some(effect=>effect.op==='create'&&effect.artifactId===key.artifactId)));\n if(index<0)continue;\n const step=steps[index],event=model.windowsInventory.events[step.id],sent=(event.messages||[]).flatMap(message=>message.objects.map(object=>object.artifactId));\n if(!sent.length||sent.includes(key.artifactId))continue;\n const old=ATTRIBUTES[key.attributeId];ATTRIBUTES[key.attributeId]=model.definitions()[key.attributeId];\n try{const trace=buildAttributeTrace(getAttributeUsage(steps,key.attributeId),model.examples(),model.protocolValues||{});rows.push({modelId:id,key:key.key,artifactId:key.artifactId,creator:key.creator,creationStepId:step.id,creationStage:step.winStage,creationIndex:index,carrier:{from:step.from,to:step.to},sentArtifactIds:sent,canonicalCreationCount:event.milestones.flatMap(milestone=>milestone.effects).filter(effect=>effect.op==='create'&&effect.artifactId===key.artifactId).length,hasCreatorLocalCreate:trace.some(moment=>moment.traceKind==='create'&&moment.from===key.creator&&moment.to===key.creator&&moment.sourceStepId===step.id),firstFieldMoment:trace[0]?{kind:trace[0].traceKind,from:trace[0].from,to:trace[0].to,sourceStepId:trace[0].sourceStepId,sourceIndex:trace[0].sourceIndex}:null,fieldMomentCount:trace.length});}\n finally{if(old)ATTRIBUTES[key.attributeId]=old;else delete ATTRIBUTES[key.attributeId];}\n}}\nconsole.log(JSON.stringify({runtime:Bun.version,rows}));",
+    "programSha256": "2cd5faf072e6a9ffd386fcc433a16e0dc7879d223c50b437bf5ed599d11c6b71"
+  },
+  "scope": {
+    "applicationChangedForTheseSiblings": false,
+    "exhaustiveAudit": false,
+    "win11StillLimitedToThirteenAcceptorSubkeyCases": true,
+    "note": "These creator-origin omissions are known, unchanged and outside WIN-11 scope. Outer TLS currently has no field-only moments; inner TLS begins at client verification, not creation. Other listed examples begin at a validated receiver store."
+  },
+  "baselineEvidence": {
+    "beforeAfterReport": "windows-models-before-after.json",
+    "nonTargetOperationsUnchangedAcrossWindowsProfiles": 62
+  },
+  "futureRepairConstraint": "Use the actual artifact creator, not necessarily the carrier sender; preserve verification operations, wire membership and canonical held effects."
+}

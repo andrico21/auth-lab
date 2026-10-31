@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "kind": "predeclared-bounded-compact-performance-plan",
+  "frozenBeforeCollection": true,
+  "acceptedControl": {
+    "canonicalSha256": "b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825",
+    "htmlSha256": "9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694"
+  },
+  "legacyDesktop": {
+    "producer": "tools/verification/run-next-expansion-performance.mjs",
+    "producerSha256": "ab9abf15f333a5da529a4dac62b7504edc9c52177210bfe67adbbe50471d51e1",
+    "unchanged": true,
+    "viewport": {
+      "width": 1920,
+      "height": 1200,
+      "dpr": 1,
+      "touch": false
+    },
+    "loadModes": [
+      "source-http",
+      "emitted-http",
+      "standalone-file"
+    ],
+    "indexStates": [
+      "closed",
+      "open"
+    ],
+    "actions": [
+      "startup",
+      "idle-filter",
+      "selection",
+      "replay-start",
+      "playing-filter"
+    ],
+    "samplesPerArm": 7,
+    "warmup": "Frozen legacy producer has no warmup; no fabricated warmup or edited producer."
+  },
+  "newProducer": {
+    "path": "tools/verification/run-compact-mobile-performance.mjs",
+    "measuredSamplesPerArm": 7,
+    "separatelyRetainedWarmupsPerArm": 1,
+    "serial": true,
+    "alternatingArmOrder": true,
+    "freshIsolatedContextEachArm": true,
+    "phone": {
+      "width": 390,
+      "height": 844,
+      "dpr": 1,
+      "touch": true
+    },
+    "loadModes": [
+      "source-http",
+      "emitted-http",
+      "standalone-file"
+    ],
+    "indexStates": [
+      "closed",
+      "open"
+    ],
+    "matchedComparisons": [
+      "accepted-candidate07-Full-vs-new-Full-phone",
+      "new-Full-vs-new-Compact-phone"
+    ],
+    "legacyActions": [
+      "startup",
+      "idle-filter",
+      "selection",
+      "replay-start",
+      "playing-filter"
+    ],
+    "newActions": [
+      "switch-full",
+      "switch-compact",
+      "next",
+      "previous",
+      "disclosure-open",
+      "exact-history",
+      "large-payload"
+    ],
+    "ordinaryFixture": {
+      "id": "perf-basic-web",
+      "scenarioId": "basic-keycloak"
+    },
+    "separatelyClassifiedFixtures": [
+      {
+        "id": "perf-long-dnssec-history",
+        "classification": "large-history",
+        "scenarioId": "lab-dnssec15",
+        "variantId": "rfc5011-add"
+      },
+      {
+        "id": "perf-nested-jwt-payload",
+        "classification": "large-payload",
+        "scenarioId": "lab-jwt03",
+        "variantId": "invalid-inner-signature"
+      }
+    ],
+    "classificationFrozen": true,
+    "selectorManifest": "docs/compact-view/performance/fixtures.json will bind actual stable UI selectors before first collection, without dropping this matrix."
+  },
+  "rules": {
+    "material": {
+      "relativeIncrease": 0.25,
+      "startupAbsoluteMs": 100,
+      "interactionAbsoluteMs": 50,
+      "conjunction": "both thresholds strictly exceeded"
+    },
+    "variability": {
+      "rangeOverMedian": 0.25,
+      "absoluteRange": "same corresponding startup/interaction threshold on either arm"
+    },
+    "ordinaryNewActionTargets": {
+      "medianMs": 250,
+      "maxMs": 500
+    },
+    "noOutlierRemoval": true,
+    "noInstrumentedLatency": true,
+    "noConcurrentCollectorsOrTestWorkers": true,
+    "allFlagsRequireExplicitDisposition": true,
+    "noStatisticalSignificanceOrOwnerAcceptanceInference": true
+  },
+  "separateDiagnostics": {
+    "toggleRoundtrips": 20,
+    "coldCompactNeverMountsFull": true,
+    "onePlayerScheduler": true,
+    "playingSwitchPostpause": "Diagnostic-only FlowPlayer subscription or forwarding wrapper, removed afterward; no production timing instrumentation.",
+    "resourceGrowth": "Compare after stable warmup at same active surface; all owned observers/listeners/timers removed on unmount. Bound retained resources explicitly before diagnostic collection.",
+    "memory": "GC/DOM counters are diagnostics, not blanket no-leak proof."
+  },
+  "capabilities": {
+    "realPhoneTiming": "unperformed unless an actual device becomes available; desktop touch/CPU emulation diagnostic only",
+    "physicalDevicesAndHumanAT": "unperformed; emulation is not device/AT acceptance"
+  }
+}

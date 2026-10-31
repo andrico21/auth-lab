@@ -1,0 +1,41 @@
+# Compact late-boundary corrections - corrected-02
+
+Version remains **1.1.1**. This correction round is worker implementation, not a second Astra review, finding closure, owner waiver or publication authorization. The supplied immutable review remains `inputs/compact-review-01.html.input.txt`.
+
+## Preserved before candidate
+
+The verified corrected-01 packet remains untouched. Its source canonical identity is `7bac35907183867c4dc60bacf949c44cc006ab473356abf89e54e12968bbb02d`; its standalone SHA256 is `4a125cf0cba72b2af59704d05285229d6672e6cb8e9ef072504dde2adf4ea9c7`. Its actual complete pinned CI passed 2,516 tests with no failures across 143 files. Those results are historical evidence for that identity, not a pass for changed app/test inputs.
+
+The before smoke observed ten real consumer failures: empty visits blanked the closed selected label in both pickers, both starting views and keyboard/pointer transfers; Full inspector Replay labelled a selected object action as an ordinary step and a selected field action as the complete field path. The same ten sequences passed after the production corrections.
+
+## MC-R06 - empty visits are not search drafts
+
+`ScenarioPicker.close({preserveDraft:true})` retains a draft only when `query.trim()` is nonempty. `suspend()` likewise refuses empty/whitespace drafts and restores the ordinary closed selected-label UI. Nonempty query and active-result restoration, fresh ordinary reopening, cancellation, selection/context invalidation and shared picker ownership are unchanged.
+
+Eight new behavioral cases cover both pickers, both starting views and keyboard/pointer View transfers. Each includes untouched and whitespace-only visits, Tab/blur/outside dismissal and both switching directions. A programmatic view change while the picker itself owns logical focus may legitimately restore that focus and reopen a fresh search; it is not misclassified as a user-activated View control leaving the picker closed.
+
+## MC-R03 - every selected action retains its parent scope
+
+`StudyController.studyQueue()` treats `step`, `attribute-step` and `trace-step` as single-action replays. If exact-object or field selection is retained, the label names that parent investigation. A parent-free selected action remains distinct from the complete Journey; complete object and field histories keep their complete-history labels.
+
+Queue kind, queue contents/identity, parent history, cursor, elapsed time and player semantics are unchanged. Regression cases activate both real timeline rows and real Full inspector Replay controls; field inspector setup uses the actual Follow control. Assertions preserve the selected row, parent, canonical prefix and deliberate pause through Compact/Full switches. The current action heading is checked where rendered; ordinary title/detail text is not incorrectly demanded inside Compact's separate data region.
+
+## MC-20 - report observed CI, not a stale job state
+
+MC-20 identifies the actual completed corrected-01 run and separates it from the changed candidate's own bound commands. `review02-impact.json` binds the before/current inputs. Current observed checks and current complete CI belong to `review02-verification.json` and `exact-ci-review02.json`; older review01 result documents retain their original identities.
+
+## Verification and retained failures
+
+All 139 original runnable test files remain byte-identical. The same four new behavioral files now contain 63 cases, giving 143 runnable files overall. Current command outputs, not authored counts or old passes, establish execution results.
+
+The first new four-file attempt is retained as failed: 50 passed and 13 failed. Five new assertions incorrectly pinned title/detail placement inside the Compact data region; eight newly added programmatic-focus sequences assumed a closed menu despite deliberate logical focus restoration. Those incidental/wrong-policy assertions were removed without changing production code. Exact failed test preimages and logs remain preserved. The independently observed before-ten-failed/after-ten-passed consumer sequences are not rewritten.
+
+The subsequent two-file attempt is also retained as failed: 45 passed and one failed. That new parent-free case incorrectly demanded array-reference identity against `app.steps` after the intentional Return to Journey transition, although the actual complete ordered rows matched. It now checks complete row content at that transition and keeps queue identity, canonical state, cursor and elapsed invariance across view-only switches. The positive producer's matching 29-pass/one-fail source and emitted attempts remain preserved. No production workaround or budget change was made for any of these fixture errors.
+
+The permanent positive producer covers 30 grouped checks per source/emitted mode. The native producer retains its previous cells, adds empty/whitespace visits to the existing keyboard/pointer picker cases and adds four actual Full inspector replay cells per loader, for a declared 58 cells per loader. Execution counts and producer identities are recorded separately; a declared matrix is not completed coverage.
+
+## Unchanged boundaries
+
+Protocol models, engines, adaptors, access rules, canonical projections, exact/field history builders, catalog/ranking, styles, assets, build/CSP and the shared app/presenter modules are byte-unchanged from corrected-01. Only the two state/label UI modules and two existing new behavioral test files change canonical bytes. Verification-only producers and documentation have separately bound changes.
+
+The 60 flagged corrected-01 performance rows and 37 earlier historical flags remain open in their own scopes; fresh changed-input measurements do not waive them. Physical-device, human/AT, Windows/DC, PAM and inherited conditions retain their qualifications. Astra alone closes the supplied findings. No commit, push, deployment, release or version change is part of this handoff.

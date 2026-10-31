@@ -27,6 +27,7 @@ import { STUDIO_WORKSPACES, STUDIO_FAMILIES, workspaceOf, studioRoute, studioVar
 import { scenarioContextRows, projectScenarioContext, scenarioBindingValue } from './scenario-context.js';
 import { buildProtocolInstances } from './protocol-state.js';
 import { HeldObjectView } from './held-object-view.js';
+import { StudyController } from './study-controller.js';
 
 Object.assign(ATTRIBUTES,VARIANT_ATTRIBUTES,FIDO_ATTRIBUTES);
 Object.assign(ATTRIBUTES,SAML_ATTRIBUTES,JWE_ATTRIBUTES);
@@ -75,7 +76,7 @@ const channelLabels = {browser:'Browser navigation',server:'Server exchange',net
 const modeMetadata = {...JOURNEYS,...FIDO_JOURNEYS};
 const ATTR_KIND = {static:'Configured / stored',generated:'Creates / computes',received:'Receives / verifies'};
 
-export class AuthFlowStudio extends HTMLElement {
+export class AuthFlowStudio extends StudyController {
   connectedCallback() {
     if(this.initialized) return;
     this.initialized=true;
@@ -88,12 +89,8 @@ export class AuthFlowStudio extends HTMLElement {
     this.theme='dark'; this.closeTimer=null; this.attributeTimer=null;this.showStepAttributes=true;this.stepOverlayIdentity='';this.lastRunningSpeed=1;
     this.player=new FlowPlayer({getTiming:(step,kind)=>authoredMessageTiming(this.heldView?.compiled().plan,step,kind)});
     this.unsubscribe=this.player.subscribe(event=>this.onPlayer(event));
-    this.innerHTML=this.shell();
-    this.refs={};
-    ['studio','graph','connections','actors','packet','packet-name','packet-value','packet-count','timeline','inspector','inspector-heading','progress','story','play','speed','speed-label','seek','seek-position','mode','authenticator','architecture','upstream','status','actor-popup','attribute-popup','toast','attribute-index','attribute-search','attribute-index-list','attribute-topics','attribute-focus','attribute-index-meta','attribute-index-empty','app-protocol','broker-protocol','saml-binding','saml-initiation','token-protection','assertion-protection','protocol-summary','step-attributes','step-attributes-tether','show-step-attributes','oidc-flow','lab-catalog','lab-search','lab-cards','lab-support','move-participants','provider-settings','provider-profile','provider-note','environment-fields','environment-errors','environment-status'].forEach(id=>this.refs[id]=this.querySelector('#'+id));
-    this.refs['step-attributes-external']=this.querySelector('#step-attributes-external');
-    this.refs['show-step-attributes'].checked=this.showStepAttributes;
-    this.heldView=new HeldObjectView(this);
+    this.initializePresentation();this.innerHTML=this.shell();this.cacheRefs();
+    this.heldView=new HeldObjectView(this,{mount:false});
     const presetIds=new Set(LEARNING_PRESETS.map(preset=>preset.id));
     const coreSearchOption={id:'core',title:'Core lab · configurable sign-in, SAML, FIDO and grants',category:'Custom configuration',summary:'Explore your own combination using Advanced configuration.',protocol:'OAuth / OIDC / SAML / WebAuthn',ids:studioCoreSearchAttributeIds};
     const pickerOptions=[
@@ -109,9 +106,9 @@ export class AuthFlowStudio extends HTMLElement {
     this.scenarioPicker=new ScenarioPicker(this.querySelector('#lab-scenario-picker'),pickerOptions,(id,result)=>this.selectSearchResult(id,result),this);
     this.workspaceOptions=studioWorkspaceOptions(LAB_MODELS);
     this.workspacePicker=new ScenarioPicker(this.querySelector('#workspace-navigation'),this.workspaceOptions,id=>{const target=this.workspaceOptions.find(option=>option.id===id);if(target)this.selectLabScenario(target.scenarioId);},this,{prefix:'workspace',optionPrefix:'workspace-option',optionAttribute:'data-workspace-option',singular:'learning destination',plural:'learning destinations',emptyMessage:'No matching workspace or family. Try a protocol, platform or access task.'});
-    this.bind(); this.renderAll();this.openRoute();
+    this.bindShared();this.prepareStudyConfiguration();this.syncSharedNavigation();this.mountPresentation();this.openRoute();
   }
-  disconnectedCallback() { this.heldView?.destroy();this.player?.stop(false); this.unsubscribe?.();this.scenarioPicker?.destroy();this.workspacePicker?.destroy();window.removeEventListener('hashchange',this.routeListener);window.removeEventListener('pagehide',this.environmentPageHide);window.removeEventListener('pageshow',this.environmentPageShow);window.removeEventListener('resize',this.windowResizeListener);window.removeEventListener('blur',this.windowBlurListener); clearTimeout(this.closeTimer); clearTimeout(this.attributeTimer); }
+  disconnectedCallback() { this.destroyPresentation();this.heldView?.destroy();this.player?.stop(false);this.unsubscribe?.();this.scenarioPicker?.destroy();this.workspacePicker?.destroy();clearTimeout(this.closeTimer);clearTimeout(this.attributeTimer);clearTimeout(this.toastTimer); }
   get learningPreset() {return getLearningPreset(this.labScenarioId);}
   get baseLabModel() {return LAB_MODELS[this.learningPreset?.modelId||this.labScenarioId]||null;}
   get labModel() {
@@ -168,7 +165,7 @@ export class AuthFlowStudio extends HTMLElement {
   get hasTrace() {return !!(this.attributeSelection||this.objectTraceSelection);}
   get visibleSteps() {return this.hasTrace?this.traceQueue:this.steps;}
   get visibleIndex() {return this.hasTrace?this.traceIndex:this.index;}
-  get currentStep() { return this.visibleSteps[this.visibleIndex]; }
+  get currentStep() { return this.visibleSteps[Math.max(0,this.visibleIndex)]; }
   get graphChapter(){
     const chapters=this.labModel?.chapters;if(!chapters?.length)return null;
     const step=this.currentStep,sourceId=step?.sourceStepId||step?.id||this.steps[0]?.id;
@@ -234,16 +231,26 @@ export class AuthFlowStudio extends HTMLElement {
   nodeId(id) { const logical=resolveActor(id,this.authenticator);return this.scenarioOwnedActors?visibleActorId(logical,this.scenarioOwnedActors,this.showInternals):logical; }
   illustration(id) {const actor=this.labModel?.actors(this.protocolConfig())[id],kindArt={person:'user',human:'user',user:'user',client:'app',application:'app',workstation:'app',computer:'app',idp:'realmA',kdc:'realmA',as:'realmA',tgs:'realmA',server:'webapp',service:'webapp',host:'webapp',ca:'realmB',authenticator:'smartcard',card:'smartcard',key:'yubikey',agent:'hello',browser:'browser',pam:'webapp',sssd:'webapp'};return actorIllustration(actor?.art||actor?.artwork||kindArt[actor?.kind]|| (id==='realmB'&&(this.upstream==='external'||this.oidcFlow==='ciba')?'external':id==='app'&&this.architecture==='web'?'webapp':id));}
   shell() {
-    return `<main class="studio" id="studio" data-theme="dark">
+    return `<main class="studio" id="studio" data-theme="${this.theme}" data-presentation-mode="${this.presentationMode}">
       <header class="app-header">
         <div class="brand"><span class="brand-mark">${uiIcon('shield')}</span><div><div class="brand-title">Auth Flow Studio</div><div class="brand-subtitle">Trust, made visible</div></div></div>
-        <div class="header-actions"><span class="lab-label">INTERACTIVE LEARNING LAB</span><button class="button quiet" id="index-open" aria-label="Attribute index" title="Attribute index">${uiIcon('book')}<span>Attribute index</span></button><button class="button quiet" id="glossary-open" aria-label="Field guide" title="Field guide">${uiIcon('info')}<span>Field guide</span></button><button class="icon-button" id="theme-toggle" aria-label="Switch color theme">${uiIcon('sun')}</button></div>
+        <div class="header-actions"><div class="presentation-switch" id="presentation-switch" role="group" aria-label="View"><span>View</span><button type="button" class="button quiet" data-presentation-choice="compact" aria-pressed="${this.presentationMode==='compact'}">Compact</button><button type="button" class="button quiet" data-presentation-choice="full" aria-pressed="${this.presentationMode==='full'}">Full</button></div><span class="lab-label">INTERACTIVE LEARNING LAB</span><button class="button quiet" id="index-open" aria-label="Attribute index" title="Attribute index">${uiIcon('book')}<span>Attribute index</span></button><button class="button quiet" id="glossary-open" aria-label="Field guide" title="Field guide">${uiIcon('info')}<span>Field guide</span></button><button class="icon-button" id="theme-toggle" aria-label="Switch color theme">${uiIcon('sun')}</button></div>
       </header>
       <div class="learning-navigation"><nav class="workspace-navigation select-field scenario-picker" id="workspace-navigation" aria-label="Learning workspaces"><label for="workspace-search">Workspace or family</label><div class="scenario-picker-control"><span class="scenario-picker-icon" aria-hidden="true">${uiIcon('search')}</span><input id="workspace-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="workspace-results" aria-describedby="workspace-hint" autocomplete="off" spellcheck="false" placeholder="Search workspaces and families"><button type="button" id="workspace-clear" aria-label="Clear workspace search" hidden>×</button><button type="button" id="workspace-toggle" tabindex="-1" aria-label="Show workspace and family choices" aria-expanded="false" aria-controls="workspace-results">${uiIcon('next')}</button></div><span class="scenario-picker-hint" id="workspace-hint">Grouped destinations · choosing starts a fresh lesson</span><div class="scenario-picker-menu" id="workspace-menu" hidden><div class="scenario-picker-menu-heading"><span id="workspace-search-status" role="status" aria-live="polite"></span><span>↑ ↓ to navigate · Enter to choose</span></div><div class="scenario-picker-results" id="workspace-results" role="listbox" aria-label="Workspaces and families"></div></div></nav>
       <section class="lab-navigation"><div class="select-field scenario-picker" id="lab-scenario-picker"><label for="lab-scenario-search">Universal lab scenario</label><div class="scenario-picker-control"><span class="scenario-picker-icon" aria-hidden="true">${uiIcon('search')}</span><input id="lab-scenario-search" type="search" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="lab-scenario-results" aria-describedby="lab-scenario-hint" autocomplete="off" spellcheck="false" placeholder="Search scenarios, protocols or attributes…"><button type="button" id="lab-scenario-clear" aria-label="Clear scenario search" hidden>×</button><button type="button" id="lab-scenario-toggle" tabindex="-1" aria-label="Show scenario choices" aria-expanded="false" aria-controls="lab-scenario-results">${uiIcon('next')}</button></div><span class="scenario-picker-hint" id="lab-scenario-hint">Type to search · Start with Basic Keycloak sign-in</span><div class="scenario-picker-menu" id="lab-scenario-menu" hidden><div class="scenario-picker-menu-heading"><span id="lab-scenario-search-status" role="status" aria-live="polite"></span><span>↑ ↓ to navigate · Enter to choose</span></div><div class="scenario-picker-results" id="lab-scenario-results" role="listbox" aria-label="Lab scenarios"></div></div></div></section>
       </div>
-      <section class="journey-introduction" aria-label="Learning question and starting context"><h1 id="learning-question"></h1><p id="learning-start"></p><div id="learning-boundary"></div></section>
       <section class="search-case-choice" id="search-case-choice" role="dialog" aria-modal="false" aria-labelledby="search-case-choice-title" hidden></section>
+      <div id="presentation-host"></div>
+      <footer class="sources-footer"><p class="documentation-baseline">Expansion journeys declare their own pinned source revision, implementation assumptions and completion boundary before Play. The Web documentation baseline is <a href="https://www.keycloak.org/2026/10/keycloak-2680-released" target="_blank" rel="noopener noreferrer">Keycloak 26.8.0</a> · checked 8 October 2026; Windows, Network, MIT Kerberos and PAKE use their separate profiles. Reference and Experimental do not certify product support. This offline symbolic model is not a live compatibility test.</p><details><summary>Protocol notes & primary sources</summary><div class="source-notes">${(LEARNING_NOTES||[]).filter(note=>['One authenticator per attempt','Sessions can shorten real sign-in','Passkey plus TOTP is an explicit flow','TOTP codes can be phished'].includes(note.title)).map(note=>`<p>${escapeHtml(note.text)}</p>`).join('')}<p>Illustrative messages and values. Login assumes a fresh session. Registration starts with a verified relying-party account. FIDO2 combines WebAuthn and CTAP: external FIDO2 keys use CTAP2 locally; Windows Hello uses the platform authenticator path. In single-realm sign-in, Realm A verifies the selected method and returns the selected protocol’s identity result. In brokered sign-in the upstream provider verifies WebAuthn. For OIDC, application client_id is a configured public identifier; the app validates the ID token’s aud against it. For SAML, Keycloak’s registered client identifier is the SP entity ID, used as AuthnRequest Issuer and assertion Audience; the XML does not gain an OAuth client_id parameter. In direct FIDO2 sign-in the web application itself is the relying party, using its own RP ID and public-key credential records.</p><p>Passkey + TOTP and passwordless TOTP require explicit configured flows. TOTP alone is one factor. External providers must support and configure the chosen method; login-form field names and credential policies are provider-specific.</p><p>SAML Web SSO uses Redirect/POST requests and POST responses. Assertion encryption uses XML Encryption. JWE protects OIDC ID tokens; recipients decrypt locally before verifying the inner signature and applicable claims. Device and CIBA tokens have no invented Authorization Code, PKCE or nonce stages.</p><p>Service accounts act as the application’s own identity and receive an access token without a human login or MFA. Device user_code is not TOTP: it links a separate browser to a private device_code. CIBA uses an administrator-controlled authentication-channel service; its illustrated password/passkey/TOTP policy is a service implementation, not a built-in CIBA browser redirect flow. Standard Token Exchange V2 here is same-realm and access-token-to-access-token; strict downscoping is explicitly configured, not assumed from the grant.</p></div><p>Animated coverage and remaining variants are listed in SPA, API & coverage above. These examples illustrate messages, not live authentication or exhaustive Keycloak configuration.</p><div class="source-links">${[...SOURCES,...FIDO_SOURCES,...SAML_SOURCES,...JWE_SOURCES,...SERVICE_SOURCES,...DEVICE_SOURCES,...CIBA_SOURCES,...EXCHANGE_SOURCES,...LAB_SOURCES].map(source=>`<a href="${escapeHtml(source.url||source.source)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.label||source.name||source.title)}</a>`).join('')}</div></details><p class="studio-credit"><span>Version <span id="studio-version">${escapeHtml(this.getAttribute('data-build-version')||'1.0')}</span></span><a href="https://github.com/andrico21" target="_blank" rel="noopener noreferrer">Kirill Andrienko</a><a href="https://github.com/andrico21/auth-lab" target="_blank" rel="noopener noreferrer">andrico21/auth-lab</a></p><span>Built to explore · RFC / Microsoft / IEEE / OASIS / W3C / FIDO names, plain-language explanations</span></footer>
+      <div id="actor-popup" class="floating-panel" role="dialog" aria-modal="false" aria-label="Participant attributes" hidden></div>
+      <div id="attribute-popup" class="attribute-tooltip" role="dialog" aria-modal="false" aria-label="Attribute explanation" hidden></div>
+      <div id="toast" class="toast" role="status" hidden></div>
+      <div id="held-announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+    </main>`;
+  }
+  fullShell() {
+    return `
+      <section class="journey-introduction" aria-label="Learning question and starting context"><h1 id="learning-question"></h1><p id="learning-start"></p><div id="learning-boundary"></div></section>
       <div class="journey-link-controls"><span id="current-lesson-case" class="current-lesson-case" hidden></span><button class="button quiet" id="copy-lesson-link">Copy lesson link</button><label id="lesson-link-manual" hidden>Copy the named lesson/case link (comparison controls use defaults)<input id="lesson-link-value" type="text" readonly aria-label="Named lesson and case link"></label></div>
       <section class="lesson-inputs" id="lesson-inputs" aria-label="Selected lesson profile and case" hidden></section>
       <div class="workspace">
@@ -320,16 +327,11 @@ export class AuthFlowStudio extends HTMLElement {
       </div><p class="protocol-note">SAML responses use HTTP-POST. Encryption protects the message; signatures and recipient checks still establish trust. JWE applies to OIDC ID tokens, while SAML uses XML Encryption.</p></details></details>
       <details class="environment-panel" id="environment-panel"><summary><strong>Use your environment</strong><span>Optional · addresses for this open page</span></summary><p class="environment-note">Show your application and identity-provider addresses in the animation. Values stay in this open page and return to examples on reload, navigation away or Reset environment. The animation makes no requests to these addresses.</p><div id="environment-fields"></div><p class="environment-errors" id="environment-errors" role="alert" hidden></p><div class="environment-actions"><button class="button primary" id="environment-apply">Apply to animation</button><button class="button quiet" id="environment-reset">Reset environment</button><span id="environment-status" role="status"></span></div></details>
       <details class="coverage-panel"><summary><strong>SPA, API & coverage</strong><span>Core controls + ${LAB_SCENARIOS.length} extended scenarios</span></summary><div class="coverage-content"><div><h3>SPA and API are different roles</h3><p>A <strong>Single Page Application (SPA)</strong> runs in the browser. A pure browser OAuth client cannot keep a client secret. The SPA walkthrough shows its HTTPS callback, Code + PKCE, token handling, CORS and a separate resource API.</p><p>An <strong>API</strong> checks the access token’s trust, intended audience, lifetime and permissions. API introspection, 401/403, JWKS rotation, certificate binding and DPoP are distinct scenarios. An ID token is the client’s login result, not an API credential.</p><p>A <strong>Backend for Frontend (BFF)</strong> retains credentials and tokens on the server and gives the browser an opaque session cookie. The BFF → API scenario shows this boundary.</p><h3>How to use the lab</h3><p>Choose a scenario above or browse the searchable library. Play the entire process, click a connection, or select one attribute. Enable Show step attributes to keep the message’s complete names beside its active link. Enable Move participants to drag cards or use arrow keys; Reset layout restores their positions.</p></div><div><h3>Animated coverage</h3><ul><li>Core configurable OIDC/SAML sign-in: one realm, two realms, independent upstream IdP, native loopback and confidential web callback; passwords, passkeys, FIDO2, TOTP and configured MFA.</li>${LAB_CATEGORIES.map(category=>'<li>'+escapeHtml(category)+' · '+LAB_SCENARIOS.filter(model=>model.category===category).length+' scenarios</li>').join('')}</ul><h3>Support is visible</h3><p>Each scenario links to primary documentation and identifies supported/configured Keycloak behavior, Preview/deprecated behavior or a standards-only profile. CIBA Push and alternate signed-hint profiles are not presented as built-in Keycloak features. Legacy grants are educational comparisons.</p><h3>Practical limits</h3><p>This is an offline protocol simulator. Values and cryptographic operations are schematic; it does not configure or contact a live server. Provider-specific policies and every combination of extensions are not expanded into separate presets. Detailed factor ceremonies remain available in the core journeys. Version-specific support is stated in the scenario’s note.</p></div></div></details>
-      <footer class="sources-footer"><p class="documentation-baseline">Expansion journeys declare their own pinned source revision, implementation assumptions and completion boundary before Play. The Web documentation baseline is <a href="https://www.keycloak.org/2026/10/keycloak-2680-released" target="_blank" rel="noopener noreferrer">Keycloak 26.8.0</a> · checked 8 October 2026; Windows, Network, MIT Kerberos and PAKE use their separate profiles. Reference and Experimental do not certify product support. This offline symbolic model is not a live compatibility test.</p><details><summary>Protocol notes & primary sources</summary><div class="source-notes">${(LEARNING_NOTES||[]).filter(note=>['One authenticator per attempt','Sessions can shorten real sign-in','Passkey plus TOTP is an explicit flow','TOTP codes can be phished'].includes(note.title)).map(note=>`<p>${escapeHtml(note.text)}</p>`).join('')}<p>Illustrative messages and values. Login assumes a fresh session. Registration starts with a verified relying-party account. FIDO2 combines WebAuthn and CTAP: external FIDO2 keys use CTAP2 locally; Windows Hello uses the platform authenticator path. In single-realm sign-in, Realm A verifies the selected method and returns the selected protocol’s identity result. In brokered sign-in the upstream provider verifies WebAuthn. For OIDC, application client_id is a configured public identifier; the app validates the ID token’s aud against it. For SAML, Keycloak’s registered client identifier is the SP entity ID, used as AuthnRequest Issuer and assertion Audience; the XML does not gain an OAuth client_id parameter. In direct FIDO2 sign-in the web application itself is the relying party, using its own RP ID and public-key credential records.</p><p>Passkey + TOTP and passwordless TOTP require explicit configured flows. TOTP alone is one factor. External providers must support and configure the chosen method; login-form field names and credential policies are provider-specific.</p><p>SAML Web SSO uses Redirect/POST requests and POST responses. Assertion encryption uses XML Encryption. JWE protects OIDC ID tokens; recipients decrypt locally before verifying the inner signature and applicable claims. Device and CIBA tokens have no invented Authorization Code, PKCE or nonce stages.</p><p>Service accounts act as the application’s own identity and receive an access token without a human login or MFA. Device user_code is not TOTP: it links a separate browser to a private device_code. CIBA uses an administrator-controlled authentication-channel service; its illustrated password/passkey/TOTP policy is a service implementation, not a built-in CIBA browser redirect flow. Standard Token Exchange V2 here is same-realm and access-token-to-access-token; strict downscoping is explicitly configured, not assumed from the grant.</p></div><p>Animated coverage and remaining variants are listed in SPA, API & coverage above. These examples illustrate messages, not live authentication or exhaustive Keycloak configuration.</p><div class="source-links">${[...SOURCES,...FIDO_SOURCES,...SAML_SOURCES,...JWE_SOURCES,...SERVICE_SOURCES,...DEVICE_SOURCES,...CIBA_SOURCES,...EXCHANGE_SOURCES,...LAB_SOURCES].map(source=>`<a href="${escapeHtml(source.url||source.source)}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.label||source.name||source.title)}</a>`).join('')}</div></details><p class="studio-credit"><span>Version <span id="studio-version">${escapeHtml(this.getAttribute('data-build-version')||'1.0')}</span></span><a href="https://github.com/andrico21" target="_blank" rel="noopener noreferrer">Kirill Andrienko</a><a href="https://github.com/andrico21/auth-lab" target="_blank" rel="noopener noreferrer">andrico21/auth-lab</a></p><span>Built to explore · RFC / Microsoft / IEEE / OASIS / W3C / FIDO names, plain-language explanations</span></footer>
-      <div id="actor-popup" class="floating-panel" role="dialog" aria-modal="false" aria-label="Participant attributes" hidden></div>
-      <div id="attribute-popup" class="attribute-tooltip" role="dialog" aria-modal="false" aria-label="Attribute explanation" hidden></div>
-      <div id="toast" class="toast" role="status" hidden></div>
-      <div id="held-announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
-    </main>`;
+    `;
   }
-  bind() {
-    this.querySelector('#workspace-presets').addEventListener('click',event=>{const button=event.target.closest('[data-lab-scenario]');if(button)this.selectJourneyFromControl(button,button.dataset.labScenario);});
-    this.querySelector('#lesson-inputs').addEventListener('change',event=>{
+  bindFull() {
+    this.listenFull(this.querySelector('#workspace-presets'), 'click', event=>{const button=event.target.closest('[data-lab-scenario]');if(button)this.selectJourneyFromControl(button,button.dataset.labScenario);});
+    this.listenFull(this.querySelector('#lesson-inputs'), 'change', event=>{
       const control=event.target,returnTarget=captureFocusTarget(this,control);
       if(control.id==='lesson-case')this.selectLessonVariant(control.value);
       else if(control.id==='lesson-subfixture')this.selectLessonSubfixture(control.value);
@@ -339,93 +341,81 @@ export class AuthFlowStudio extends HTMLElement {
       }
       if(returnTarget)this.restoreTargetFocus(returnTarget,{fallbackSelector:'#play'});
     });
-    this.querySelector('#lesson-chapters').addEventListener('click',event=>{
+    this.listenFull(this.querySelector('#lesson-chapters'), 'click', event=>{
       const button=event.target.closest('[data-lesson-chapter]'),chapter=this.labModel?.chapters?.find(item=>item.id===button?.dataset.lessonChapter);
       if(!chapter?.stepIds.length)return;
       if(this.hasTrace)this.clearAttribute();
       const index=this.steps.findIndex(step=>step.id===chapter.stepIds[0]);if(index>=0)this.selectStep(index,false);
     });
-    this.querySelector('#learning-profile').addEventListener('click',event=>{
+    this.listenFull(this.querySelector('#learning-profile'), 'click', event=>{
       const detail=event.target.closest('[data-learning-detail]');
       if(detail&&['journey','fields','crypto'].includes(detail.dataset.learningDetail)){
         this.learningDetail=detail.dataset.learningDetail;this.renderLearningProfile();this.updateStep();this.renderInspector();
       }
     });
-    this.querySelector('#show-internals').addEventListener('change',()=>{
+    this.listenFull(this.querySelector('#show-internals'), 'change', ()=>{
       this.hidePopups();this.showInternals=this.querySelector('#show-internals').checked;this.renderAll();this.renderPacket(this.player.snapshot());
       this.querySelector('#show-internals').focus();
     });
-    this.routeListener=()=>this.openRoute();window.addEventListener('hashchange',this.routeListener);
-    this.querySelector('#quick-start').addEventListener('click',e=>{const button=e.target.closest('[data-learning-preset]');if(button)this.selectLabScenario(button.dataset.learningPreset);});
-    this.refs['provider-profile'].addEventListener('change',()=>{this.providerProfileId=this.refs['provider-profile'].value;this.brokerProtocol=this.providerProfile.protocol;this.providerManaged=this.providerProfileId!=='generic'||!!this.learningPreset?.providerSelectable;this.refreshConfiguration();});
-    this.refs['environment-fields'].addEventListener('input',e=>{const field=e.target.closest('[data-environment-field]');if(field){const key=field.dataset.environmentField;this.runtimeEnvironment.updateDraft(key.startsWith('provider.')?{provider:{[key.slice(9)]:field.value}}:{[key]:field.value},{profileId:this.providerProfile.id});}});
-    this.querySelector('#environment-apply').addEventListener('click',()=>this.applyEnvironment());
-    this.querySelector('#environment-reset').addEventListener('click',()=>this.resetEnvironment());
-    this.environmentPageHide=()=>this.resetEnvironment();this.environmentPageShow=e=>{if(e.persisted)this.resetEnvironment();};
-    window.addEventListener('pagehide',this.environmentPageHide);window.addEventListener('pageshow',this.environmentPageShow);
-    this.querySelector('#lab-open').addEventListener('click',()=>{this.querySelector('#ready-journeys').open=true;this.refs['lab-catalog'].open=!this.refs['lab-catalog'].open;if(this.refs['lab-catalog'].open)this.refs['lab-search'].focus();});
-    this.refs['lab-search'].addEventListener('input',()=>{this.catalogQuery=this.refs['lab-search'].value;this.renderCatalog();});
-    this.refs['lab-cards'].addEventListener('click',event=>{const card=event.target.closest('[data-lab-scenario]');if(card)this.selectSearchResult(card.dataset.labScenario,this.catalogResultsById?.get(card.dataset.labScenario),card);});
-    this.querySelector('#copy-lesson-link').addEventListener('click',()=>this.copyLessonLink());
-    this.querySelector('#search-case-choice').addEventListener('click',event=>{
-      const target=event.target.closest('[data-search-case]');
-      if(target&&this.searchCaseChoice){const id=this.searchCaseChoice.id,variant=target.dataset.searchCase;this.closeSearchCaseChoice();this.selectLabScenario(id,{variant});this.querySelector('#play')?.focus();this.showToast('Selected case: '+(this.baseLabModel?.variantChoices?.find(choice=>choice.id===this.lessonVariant)?.label||this.lessonVariant));}
-      else if(event.target.closest('[data-cancel-search-case]'))this.closeSearchCaseChoice(true);
-    });
-    this.querySelector('#search-case-choice').addEventListener('keydown',event=>{if(event.key==='Escape'){event.preventDefault();this.closeSearchCaseChoice(true);}});
-    this.addEventListener('click',event=>{const target=event.target.closest('[data-compare-scenario]');if(target&&LAB_MODELS[target.dataset.compareScenario])this.selectJourneyFromControl(target,target.dataset.compareScenario,{variant:target.dataset.compareVariant||'default'});});
-    this.refs['move-participants'].addEventListener('change',()=>{this.moveParticipants=!!this.refs['move-participants'].checked;this.refs.graph.classList.toggle('is-move-mode',this.moveParticipants);this.heldView.configureGeometry();this.renderActors();this.renderConnections();this.renderPacket(this.player.snapshot());});
-    this.querySelector('#layout-reset').addEventListener('click',()=>{delete this.customLayouts[this.layoutKey];this.renderAll();this.renderPacket(this.player.snapshot());this.renderStepAttributes(this.player.snapshot(),true);});
-    ['mode','authenticator','architecture','upstream'].forEach(key=>this.refs[key].addEventListener('change',()=>{const wasDirect=this.isDirectFido;this.labScenarioId='core';this[key]=this.refs[key].value;if(key==='mode'&&(this.isDirectFido||modeMetadata[this.mode]?.enrollment))this.oidcFlow='authorization-code';if(key==='mode'&&this.isDirectFido&&!wasDirect){this.authenticator='yubikey';this.refs.authenticator.value='yubikey';}this.refreshConfiguration();}));
-    this.refs['oidc-flow'].addEventListener('change',()=>{this.labScenarioId='core';this.oidcFlow=this.refs['oidc-flow'].value;if(this.isAdvancedFlow){this.applicationProtocol='oidc';if(this.isDirectFido||modeMetadata[this.mode]?.enrollment)this.mode='passkey';this.refs.mode.value=this.mode;}this.refreshConfiguration();});
-    [['app-protocol','applicationProtocol'],['broker-protocol','brokerProtocol'],['saml-binding','samlBinding'],['saml-initiation','samlInitiation'],['token-protection','tokenProtection'],['assertion-protection','assertionProtection']].forEach(([id,key])=>this.refs[id].addEventListener('change',()=>{this.labScenarioId='core';this[key]=this.refs[id].value;if(id==='app-protocol'&&this.applicationProtocol==='saml')this.oidcFlow='authorization-code';this.refreshConfiguration();}));
-    this.refs.play.addEventListener('click',()=>{
+    this.listenFull(this.querySelector('#quick-start'), 'click', e=>{const button=e.target.closest('[data-learning-preset]');if(button)this.selectLabScenario(button.dataset.learningPreset);});
+    this.listenFull(this.refs['provider-profile'], 'change', ()=>{this.providerProfileId=this.refs['provider-profile'].value;this.brokerProtocol=this.providerProfile.protocol;this.providerManaged=this.providerProfileId!=='generic'||!!this.learningPreset?.providerSelectable;this.refreshConfiguration();});
+    this.listenFull(this.refs['environment-fields'], 'input', e=>{const field=e.target.closest('[data-environment-field]');if(field){const key=field.dataset.environmentField;this.runtimeEnvironment.updateDraft(key.startsWith('provider.')?{provider:{[key.slice(9)]:field.value}}:{[key]:field.value},{profileId:this.providerProfile.id});}});
+    this.listenFull(this.querySelector('#environment-apply'), 'click', ()=>this.applyEnvironment());
+    this.listenFull(this.querySelector('#environment-reset'), 'click', ()=>this.resetEnvironment());
+    this.listenFull(this.querySelector('#lab-open'), 'click', ()=>{this.querySelector('#ready-journeys').open=true;this.refs['lab-catalog'].open=!this.refs['lab-catalog'].open;if(this.refs['lab-catalog'].open)this.refs['lab-search'].focus();});
+    this.listenFull(this.refs['lab-search'], 'input', ()=>{this.catalogQuery=this.refs['lab-search'].value;this.renderCatalog();});
+    this.listenFull(this.refs['lab-cards'], 'click', event=>{const card=event.target.closest('[data-lab-scenario]');if(card)this.selectSearchResult(card.dataset.labScenario,this.catalogResultsById?.get(card.dataset.labScenario),card);});
+    this.listenFull(this.querySelector('#copy-lesson-link'), 'click', ()=>this.copyLessonLink());
+    this.listenFull(this.refs['move-participants'], 'change', ()=>{this.moveParticipants=!!this.refs['move-participants'].checked;this.refs.graph.classList.toggle('is-move-mode',this.moveParticipants);this.heldView.configureGeometry();this.renderActors();this.renderConnections();this.renderPacket(this.player.snapshot());});
+    this.listenFull(this.querySelector('#layout-reset'), 'click', ()=>{delete this.customLayouts[this.layoutKey];this.renderAll();this.renderPacket(this.player.snapshot());this.renderStepAttributes(this.player.snapshot(),true);});
+    ['mode','authenticator','architecture','upstream'].forEach(key=>this.listenFull(this.refs[key], 'change', ()=>{const wasDirect=this.isDirectFido;this.labScenarioId='core';this[key]=this.refs[key].value;if(key==='mode'&&(this.isDirectFido||modeMetadata[this.mode]?.enrollment))this.oidcFlow='authorization-code';if(key==='mode'&&this.isDirectFido&&!wasDirect){this.authenticator='yubikey';this.refs.authenticator.value='yubikey';}this.refreshConfiguration();}));
+    this.listenFull(this.refs['oidc-flow'], 'change', ()=>{this.labScenarioId='core';this.oidcFlow=this.refs['oidc-flow'].value;if(this.isAdvancedFlow){this.applicationProtocol='oidc';if(this.isDirectFido||modeMetadata[this.mode]?.enrollment)this.mode='passkey';this.refs.mode.value=this.mode;}this.refreshConfiguration();});
+    [['app-protocol','applicationProtocol'],['broker-protocol','brokerProtocol'],['saml-binding','samlBinding'],['saml-initiation','samlInitiation'],['token-protection','tokenProtection'],['assertion-protection','assertionProtection']].forEach(([id,key])=>this.listenFull(this.refs[id], 'change', ()=>{this.labScenarioId='core';this[key]=this.refs[id].value;if(id==='app-protocol'&&this.applicationProtocol==='saml')this.oidcFlow='authorization-code';this.refreshConfiguration();}));
+    this.listenFull(this.refs.play, 'click', ()=>{
+      if(this.player.inspectionBoundary){this.playCompact();return;}
       this.ensureRunningSpeed();
       if(this.player.status==='playing')this.player.pause();
       else if(this.player.status==='paused')this.player.resume();
       else if(this.hasTrace)this.playAttribute();
       else {this.inspection={type:'step'};this.visited.clear();this.player.play(this.steps,'demo');}
     });
-    this.querySelector('#reset').addEventListener('click',()=>this.reset());
-    this.refs.speed.addEventListener('input',()=>this.player.setSpeed(this.refs.speed.value));
-    this.refs.seek.addEventListener('input',()=>this.seekPlayback(Number(this.refs.seek.value)/1000));
-    this.refs['show-step-attributes'].addEventListener('change',()=>{this.showStepAttributes=!!this.refs['show-step-attributes'].checked;this.renderStepAttributes(this.player.snapshot(),true);});
-    this.querySelector('#previous').addEventListener('click',()=>this.selectStep(Math.max(0,this.visibleIndex-1),true));
-    this.querySelector('#next').addEventListener('click',()=>this.selectStep(Math.min(this.visibleSteps.length-1,this.visibleIndex+1),true));
-    this.querySelector('#follow').addEventListener('click',()=>{this.inspection={type:'step'};this.renderInspector();});
-    this.querySelector('#glossary-open').addEventListener('click',()=>{this.inspection={type:'glossary'};this.renderInspector();});
-    this.querySelector('#index-open').addEventListener('click',()=>{this.refs['attribute-index'].hidden=false;this.renderAttributeIndex();this.refs['attribute-search'].focus();});
-    this.querySelector('#attribute-index-toggle').addEventListener('click',()=>{this.hidePopups();this.refs['attribute-index'].hidden=true;this.restoreTargetFocus({elementId:'index-open'});});
-    this.refs['attribute-search'].addEventListener('input',()=>{this.attributeQuery=this.refs['attribute-search'].value;this.renderAttributeIndex();});
-    this.refs['attribute-index'].addEventListener('click',e=>{const field=e.target.closest('[data-index-attribute]');const topic=e.target.closest('[data-trace-topic]');if(field)this.selectAttribute(field.dataset.indexAttribute);if(topic)this.selectAttribute(topic.dataset.traceTopic);});
-    this.refs['attribute-index-list'].addEventListener('pointerover',e=>{const field=e.target.closest('[data-index-attribute]');if(e.pointerType!=='touch'&&field&&!field.contains(e.relatedTarget))this.showAttributePopup(field.dataset.indexAttribute,field);});
-    this.refs['attribute-index-list'].addEventListener('pointerout',()=>this.deferCloseAttribute());
-    this.refs['attribute-index-list'].addEventListener('focusin',e=>{const field=e.target.closest('[data-index-attribute]');if(field?.matches(':focus-visible'))this.showAttributePopup(field.dataset.indexAttribute,field);});
-    this.refs['attribute-index-list'].addEventListener('focusout',e=>this.deferCloseAttribute(e.relatedTarget));
-    this.refs['attribute-focus'].addEventListener('click',e=>{if(e.target.closest('[data-clear-trace]'))this.clearAttribute();if(e.target.closest('[data-trace-play]')){this.ensureRunningSpeed();if(this.player.status==='playing')this.player.pause();else if(this.player.status==='paused')this.player.resume();else this.playAttribute();}});
-    this.querySelector('#theme-toggle').addEventListener('click',()=>{this.theme=this.theme==='dark'?'light':'dark';this.refs.studio.dataset.theme=this.theme;});
-    this.refs.timeline.addEventListener('click',e=>{const button=e.target.closest('[data-step]');if(button)this.selectStep(Number(button.dataset.step),true);});
-    this.querySelector('#protocol-state-panel').addEventListener('toggle',event=>{if(event.target.id==='protocol-state-panel')this.renderProtocolState();else if(event.target.matches('[data-instance-history]'))this.renderProtocolInstanceHistory(event.target);},true);
-    this.refs.actors.addEventListener('click',e=>{const node=e.target.closest('[data-actor]');if(node&&!this.moveParticipants)this.inspectActor(node.dataset.actor);});
-    this.refs.actors.addEventListener('pointerdown',event=>this.startActorDrag(event));
-    this.refs.actors.addEventListener('pointermove',event=>this.updateActorDrag(event));
-    this.refs.actors.addEventListener('pointerup',event=>this.endActorDrag(event));
-    this.refs.actors.addEventListener('pointercancel',event=>this.endActorDrag(event));
-    this.refs.actors.addEventListener('keydown',event=>{const card=event.target.closest('[data-actor]'),delta={ArrowLeft:[-12,0],ArrowRight:[12,0],ArrowUp:[0,-12],ArrowDown:[0,12]}[event.key];if(this.moveParticipants&&card&&delta){event.preventDefault();const p=this.positions[card.dataset.actor];this.moveActor(card.dataset.actor,p.x+delta[0],p.y+delta[1]);}});
-    this.refs.actors.addEventListener('pointerover',e=>{const node=e.target.closest('[data-actor]');if(e.pointerType!=='touch'&&node&&!node.contains(e.relatedTarget))this.showActorPopup(node.dataset.actor,node);});
-    this.refs.actors.addEventListener('pointerout',e=>{const node=e.target.closest('[data-actor]');if(node&&!node.contains(e.relatedTarget))this.deferCloseActor();});
-    this.refs.actors.addEventListener('focusin',e=>{const node=e.target.closest('[data-actor]');if(node?.matches(':focus-visible'))this.showActorPopup(node.dataset.actor,node);});
-    this.refs.actors.addEventListener('focusout',e=>this.deferCloseActor(e.relatedTarget));
-    this.refs.connections.addEventListener('click',e=>{const edge=e.target.closest('[data-pair]');if(edge)this.replayConnection(edge.dataset.pair);});
-    this.refs.connections.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const edge=e.target.closest('[data-pair]');if(edge){e.preventDefault();this.replayConnection(edge.dataset.pair);}}});
+    this.listenFull(this.querySelector('#reset'), 'click', ()=>this.reset());
+    this.listenFull(this.refs.speed, 'input', ()=>this.player.setSpeed(this.refs.speed.value));
+    this.listenFull(this.refs.seek, 'input', ()=>this.seekPlayback(Number(this.refs.seek.value)/1000));
+    this.listenFull(this.refs['show-step-attributes'], 'change', ()=>{this.showStepAttributes=!!this.refs['show-step-attributes'].checked;this.renderStepAttributes(this.player.snapshot(),true);});
+    this.listenFull(this.querySelector('#previous'), 'click', ()=>this.selectStep(Math.max(0,this.visibleIndex-1),true));
+    this.listenFull(this.querySelector('#next'), 'click', ()=>this.selectStep(Math.min(this.visibleSteps.length-1,this.visibleIndex+1),true));
+    this.listenFull(this.querySelector('#follow'), 'click', ()=>{this.inspection={type:'step'};this.renderInspector();});
+    this.listenFull(this.querySelector('#attribute-index-toggle'), 'click', ()=>{this.hidePopups();this.refs['attribute-index'].hidden=true;this.restoreTargetFocus({elementId:'index-open'});});
+    this.listenFull(this.refs['attribute-search'], 'input', ()=>{this.attributeQuery=this.refs['attribute-search'].value;this.renderAttributeIndex();});
+    this.listenFull(this.refs['attribute-index'], 'click', e=>{const field=e.target.closest('[data-index-attribute]');const topic=e.target.closest('[data-trace-topic]');if(field)this.selectAttribute(field.dataset.indexAttribute);if(topic)this.selectAttribute(topic.dataset.traceTopic);});
+    this.listenFull(this.refs['attribute-index-list'], 'pointerover', e=>{const field=e.target.closest('[data-index-attribute]');if(e.pointerType!=='touch'&&field&&!field.contains(e.relatedTarget))this.showAttributePopup(field.dataset.indexAttribute,field);});
+    this.listenFull(this.refs['attribute-index-list'], 'pointerout', ()=>this.deferCloseAttribute());
+    this.listenFull(this.refs['attribute-index-list'], 'focusin', e=>{const field=e.target.closest('[data-index-attribute]');if(field?.matches(':focus-visible'))this.showAttributePopup(field.dataset.indexAttribute,field);});
+    this.listenFull(this.refs['attribute-index-list'], 'focusout', e=>this.deferCloseAttribute(e.relatedTarget));
+    this.listenFull(this.refs['attribute-focus'], 'click', e=>{if(e.target.closest('[data-clear-trace]'))this.clearAttribute();if(e.target.closest('[data-trace-play]')){this.ensureRunningSpeed();if(this.player.status==='playing')this.player.pause();else if(this.player.status==='paused')this.player.resume();else this.playAttribute();}});
+    this.listenFull(this.refs.timeline, 'click', e=>{const button=e.target.closest('[data-step]');if(button)this.selectStep(Number(button.dataset.step),true);});
+    this.listenFull(this.querySelector('#protocol-state-panel'), 'toggle', event=>{if(event.target.id==='protocol-state-panel')this.renderProtocolState();else if(event.target.matches('[data-instance-history]'))this.renderProtocolInstanceHistory(event.target);}, true);
+    this.listenFull(this.refs.actors, 'click', e=>{const node=e.target.closest('[data-actor]');if(node&&!this.moveParticipants)this.inspectActor(node.dataset.actor);});
+    this.listenFull(this.refs.actors, 'pointerdown', event=>this.startActorDrag(event));
+    this.listenFull(this.refs.actors, 'pointermove', event=>this.updateActorDrag(event));
+    this.listenFull(this.refs.actors, 'pointerup', event=>this.endActorDrag(event));
+    this.listenFull(this.refs.actors, 'pointercancel', event=>this.endActorDrag(event));
+    this.listenFull(this.refs.actors, 'keydown', event=>{const card=event.target.closest('[data-actor]'),delta={ArrowLeft:[-12,0],ArrowRight:[12,0],ArrowUp:[0,-12],ArrowDown:[0,12]}[event.key];if(this.moveParticipants&&card&&delta){event.preventDefault();const p=this.positions[card.dataset.actor];this.moveActor(card.dataset.actor,p.x+delta[0],p.y+delta[1]);}});
+    this.listenFull(this.refs.actors, 'pointerover', e=>{const node=e.target.closest('[data-actor]');if(e.pointerType!=='touch'&&node&&!node.contains(e.relatedTarget))this.showActorPopup(node.dataset.actor,node);});
+    this.listenFull(this.refs.actors, 'pointerout', e=>{const node=e.target.closest('[data-actor]');if(node&&!node.contains(e.relatedTarget))this.deferCloseActor();});
+    this.listenFull(this.refs.actors, 'focusin', e=>{const node=e.target.closest('[data-actor]');if(node?.matches(':focus-visible'))this.showActorPopup(node.dataset.actor,node);});
+    this.listenFull(this.refs.actors, 'focusout', e=>this.deferCloseActor(e.relatedTarget));
+    this.listenFull(this.refs.connections, 'click', e=>{const edge=e.target.closest('[data-pair]');if(edge)this.replayConnection(edge.dataset.pair);});
+    this.listenFull(this.refs.connections, 'keydown', e=>{if(e.key==='Enter'||e.key===' '){const edge=e.target.closest('[data-pair]');if(edge){e.preventDefault();this.replayConnection(edge.dataset.pair);}}});
     [this.refs.inspector,this.refs['actor-popup']].forEach(container=>{
-      container.addEventListener('pointerover',e=>{const field=e.target.closest('[data-attribute]');if(e.pointerType!=='touch'&&field&&!field.contains(e.relatedTarget))this.showAttributePopup(field.dataset.attribute,field);});
-      container.addEventListener('pointerout',e=>{const field=e.target.closest('[data-attribute]');if(field&&!field.contains(e.relatedTarget))this.deferCloseAttribute();});
-      container.addEventListener('focusin',e=>{const field=e.target.closest('[data-attribute]');if(field?.matches(':focus-visible'))this.showAttributePopup(field.dataset.attribute,field);});
-      container.addEventListener('focusout',e=>this.deferCloseAttribute(e.relatedTarget));
-      container.addEventListener('click',e=>{const field=e.target.closest('[data-attribute]');if(field)this.selectAttribute(field.dataset.attribute);});
+      this.listenFull(container, 'pointerover', e=>{const field=e.target.closest('[data-attribute]');if(e.pointerType!=='touch'&&field&&!field.contains(e.relatedTarget))this.showAttributePopup(field.dataset.attribute,field);});
+      this.listenFull(container, 'pointerout', e=>{const field=e.target.closest('[data-attribute]');if(field&&!field.contains(e.relatedTarget))this.deferCloseAttribute();});
+      this.listenFull(container, 'focusin', e=>{const field=e.target.closest('[data-attribute]');if(field?.matches(':focus-visible'))this.showAttributePopup(field.dataset.attribute,field);});
+      this.listenFull(container, 'focusout', e=>this.deferCloseAttribute(e.relatedTarget));
+      this.listenFull(container, 'click', e=>{const field=e.target.closest('[data-attribute]');if(field)this.selectAttribute(field.dataset.attribute);});
     });
-    this.refs.inspector.addEventListener('click',e=>{
+    this.listenFull(this.refs.inspector, 'click', e=>{
       if(e.target.closest('[data-replay]')&&this.currentStep){this.ensureRunningSpeed();this.player.play([this.currentStep],this.attributeSelection?'attribute-step':'step');}
       const trace=e.target.closest('[data-trace-step]');if(trace)this.selectStep(Number(trace.dataset.traceStep),true);
       if(e.target.closest('[data-trace-play]')){this.ensureRunningSpeed();this.playAttribute();}
@@ -441,24 +431,24 @@ export class AuthFlowStudio extends HTMLElement {
       if(e.target.closest('[data-use-totp]')){this.exitLab();this.mode='password-totp';this.refs.mode.value=this.mode;this.refreshConfiguration();}
       if(e.target.closest('[data-back]')){this.inspection={type:'step'};this.renderInspector();}
     });
-    this.refs.inspector.addEventListener('input',e=>{if(e.target.matches('#glossary-search'))this.filterGlossary(e.target.value);});
-    this.refs['actor-popup'].addEventListener('mouseenter',()=>clearTimeout(this.closeTimer));
-    this.refs['actor-popup'].addEventListener('mouseleave',()=>this.deferCloseActor());
-    this.refs['actor-popup'].addEventListener('click',e=>{if(e.target.closest('[data-close]'))this.dismissPopup('actor');});
-    this.refs['attribute-popup'].addEventListener('mouseenter',()=>{clearTimeout(this.attributeTimer);if(this.refs['actor-popup'].contains(this.attributeAnchor))clearTimeout(this.closeTimer);});
-    this.refs['attribute-popup'].addEventListener('mouseleave',()=>{this.deferCloseAttribute();this.deferCloseActor();});
-    this.refs['attribute-popup'].addEventListener('click',e=>{if(e.target.closest('[data-close]'))this.dismissPopup('attribute');});
+    this.listenFull(this.refs.inspector, 'input', e=>{if(e.target.matches('#glossary-search'))this.filterGlossary(e.target.value);});
+    this.listenFull(this.refs['actor-popup'], 'mouseenter', ()=>clearTimeout(this.closeTimer));
+    this.listenFull(this.refs['actor-popup'], 'mouseleave', ()=>this.deferCloseActor());
+    this.listenFull(this.refs['actor-popup'], 'click', e=>{if(e.target.closest('[data-close]'))this.dismissPopup('actor');});
+    this.listenFull(this.refs['attribute-popup'], 'mouseenter', ()=>{clearTimeout(this.attributeTimer);if(this.refs['actor-popup'].contains(this.attributeAnchor))clearTimeout(this.closeTimer);});
+    this.listenFull(this.refs['attribute-popup'], 'mouseleave', ()=>{this.deferCloseAttribute();this.deferCloseActor();});
+    this.listenFull(this.refs['attribute-popup'], 'click', e=>{if(e.target.closest('[data-close]'))this.dismissPopup('attribute');});
     ['actor','attribute'].forEach(kind=>{
-      this.refs[kind+'-popup'].addEventListener('focusin',()=>{
+      this.listenFull(this.refs[kind+'-popup'], 'focusin', ()=>{
         if(kind==='actor'||this.refs['actor-popup'].contains(this.attributeAnchor))clearTimeout(this.closeTimer);
         if(kind==='attribute'||this.popupOwnsFocus('attribute'))clearTimeout(this.attributeTimer);
         // :focus-within reveals the keyboard hint and changes the measured height.
         const popup=this.refs[kind+'-popup'],anchor=this[kind+'Anchor'];
         if(anchor&&!popup.hidden)this.placePopup(popup,anchor,kind==='actor'?370:340);
       });
-      this.refs[kind+'-popup'].addEventListener('focusout',e=>{this.deferCloseAttribute(e.relatedTarget);this.deferCloseActor(e.relatedTarget);});
+      this.listenFull(this.refs[kind+'-popup'], 'focusout', e=>{this.deferCloseAttribute(e.relatedTarget);this.deferCloseActor(e.relatedTarget);});
     });
-    this.addEventListener('keydown',e=>{
+    this.listenFull(this, 'keydown', e=>{
       if(e.key==='Escape'){
         if(this.refs['attribute-popup'].contains(e.target))this.dismissPopup('attribute');
         else if(this.refs['actor-popup'].contains(e.target))this.dismissPopup('actor');
@@ -471,9 +461,7 @@ export class AuthFlowStudio extends HTMLElement {
       }
     });
     this.windowResizeListener=()=>{this.resizeHelpPanels();const state=this.player.snapshot();this.renderPacket(state);this.renderStepAttributes(state,true);};
-    this.windowBlurListener=()=>{if(this.player.status==='playing')this.player.pause();};
-    window.addEventListener('resize',this.windowResizeListener);
-    window.addEventListener('blur',this.windowBlurListener);
+    this.listenFull(window, 'resize', this.windowResizeListener);
   }
   selectJourneyFromControl(button,id,{variant='default'}={}){
     const returnTarget=button.contains(document.activeElement)?captureFocusTarget(this,document.activeElement):null;
@@ -520,7 +508,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.workspace=workspaceOf(LAB_MODELS[preset?.modelId||id]);this.family=this.labModel?.family||'ad-ds';this.showInternals=false;this.learningDetail='journey';
     if(preset){const profile=preset.providerSelectable?(this.providerProfileId==='generic'?'entra':this.providerProfileId):'generic';Object.assign(this,getPresetConfiguration(id,profile));this.labScenarioId=id;}
     if(id==='core'&&this.coreConfiguration)Object.assign(this,this.coreConfiguration);
-    if(id==='core'){if(this.providerProfileId==='generic')this.providerManaged=false;this.querySelector('#advanced-configuration').open=true;this.querySelector('#advanced-configuration').setAttribute('open','');}
+    if(id==='core'){if(this.providerProfileId==='generic')this.providerManaged=false;if(this.presentationMode==='full'){this.querySelector('#advanced-configuration').open=true;this.querySelector('#advanced-configuration').setAttribute('open','');}}
     if(this.labModel&&this.attributeSelection)this.attributeSelection=this.labAttributeAlias(this.attributeSelection);
     this.dragState=null;this.refreshConfiguration();
     if(navigate)this.writeRoute();
@@ -554,11 +542,16 @@ export class AuthFlowStudio extends HTMLElement {
   writeRoute(){
     const route=studioRoute(this.labScenarioId,LAB_MODELS,this.lessonVariant||'default');if(window.location&&window.location.hash!==route&&window.history?.pushState)window.history.pushState(null,'',route);
   }
-  renderWorkspace(){
+  syncSharedNavigation(){
     this.workspace=workspaceOf(this.labModel);
-    const workspace=STUDIO_WORKSPACES.find(item=>item.id===this.workspace),families=STUDIO_FAMILIES.filter(item=>item.workspace===this.workspace);
-    const selected=this.workspaceOptions.find(option=>option.workspace===this.workspace&&option.family===this.family)||this.workspaceOptions.find(option=>option.id==='workspace-'+this.workspace);
+    const workspace=STUDIO_WORKSPACES.find(item=>item.id===this.workspace),selected=this.workspaceOptions.find(option=>option.workspace===this.workspace&&option.family===this.family)||this.workspaceOptions.find(option=>option.id==='workspace-'+this.workspace);
     if(selected)this.workspacePicker.setSelected(selected.id);
+    this.scenarioPicker.setSelected(this.labScenarioId);
+    const defaultTitle=LAB_MODELS[workspace.defaultId]?.title||getLearningPreset(workspace.defaultId)?.title||workspace.title;
+    this.querySelector('#lab-scenario-hint').textContent='Global search · Start with '+defaultTitle;
+  }
+  renderWorkspace(){
+    const workspace=STUDIO_WORKSPACES.find(item=>item.id===this.workspace),families=STUDIO_FAMILIES.filter(item=>item.workspace===this.workspace);
     this.querySelector('#quick-start').hidden=this.workspace!=='web';
     const panel=this.querySelector('#workspace-presets');panel.hidden=this.workspace==='web';
     const models=LAB_SCENARIOS.filter(model=>workspaceOf(model)===this.workspace&&(!families.length||model.family===this.family));
@@ -566,8 +559,6 @@ export class AuthFlowStudio extends HTMLElement {
     const starters=models.filter(model=>model.featured||model.id===defaultId||model.id==='lab-kc-kerberos-sso');
     panel.innerHTML='<p>Choose a ready-made journey, then press Play. Search the full catalog for failure paths and comparisons.</p><div class="workspace-preset-grid">'+(starters.length?starters:models.slice(0,4)).slice(0,6).map(model=>`<button class="quick-preset" data-lab-scenario="${model.id}" aria-pressed="${model.id===this.labScenarioId}"><strong>${escapeHtml(model.title)}</strong><span>${escapeHtml(model.summary)}</span></button>`).join('')+'</div>';
     const internals=!!Object.values(this.scenarioOwnedActors||{}).some(actor=>actor.parentId);this.querySelector('#internals-control').hidden=!internals;this.querySelector('#show-internals').checked=this.showInternals;
-    const defaultTitle=LAB_MODELS[workspace.defaultId]?.title||getLearningPreset(workspace.defaultId)?.title||workspace.title;
-    this.querySelector('#lab-scenario-hint').textContent='Global search · Start with '+defaultTitle;
     this.querySelectorAll('.zone-label').forEach(label=>label.hidden=this.workspace!=='web');
     this.refs.graph.classList.toggle('workspace-protocol',this.workspace!=='web');
   }
@@ -599,7 +590,7 @@ export class AuthFlowStudio extends HTMLElement {
   renderLearningProfile(){
     const model=this.labModel,profile=model?.profile,panel=this.querySelector('#learning-profile');
     const starting=profile?.startingSummary||model?.prerequisites?.slice(0,2);
-    const actors=[...new Set(this.steps.flatMap(step=>[this.nodeId(step.from),this.nodeId(step.to)]))].map(id=>this.actor(id).name);
+    const compact=this.presentationMode==='compact',actors=[...new Set(this.steps.flatMap(step=>compact?[step.from,step.to]:[this.nodeId(step.from),this.nodeId(step.to)]))].map(id=>compact?this.studyActor(id).name:this.actor(id).name);
     this.querySelector('#learning-question').textContent=model?.learningObjective||'What establishes trust during '+(this.learningPreset?.title||this.advancedFlow?.title||modeMetadata[this.mode]?.title||'this journey')+'?';
     this.querySelector('#learning-start').textContent='Start: '+(starting?(Array.isArray(starting)?starting.join(' '):starting):actors.join(' · ')+(this.learningPreset?.summary?' - '+this.learningPreset.summary:''));
     this.querySelector('#learning-boundary').innerHTML=(profile?`<span class="profile-pin">${escapeHtml(profile.name===model.title?model.protocol||profile.name:profile.name)} · ${escapeHtml(profile.version)}</span>`:'')+`<p><strong>Finish:</strong> ${escapeHtml(profile?.completion||this.steps.at(-1)?.summary||'Follow the authored outcome and its acceptance boundary.')}</p>`;
@@ -740,9 +731,10 @@ export class AuthFlowStudio extends HTMLElement {
     this.player.stop(false);this.runtimeEnvironment.reset();this.scenarioMemo.clear();this.definitionMemo=null;
     this.hidePopups();
     for(const kind of ['actor','attribute']){this.refs[kind+'-popup'].innerHTML='';this[kind+'Anchor']=null;this[kind+'FocusTarget']=null;}
-    for(const id of ['packet-name','packet-value','packet-count'])this.refs[id].textContent='';
+    if(this.presentationMode==='full')for(const id of ['packet-name','packet-value','packet-count'])this.refs[id].textContent='';
     this.packetIdentity='';this.attributeUsages=[];
-    this.refs['environment-errors'].hidden=true;this.refs['environment-errors'].textContent='';this.refreshConfiguration();
+    if(this.presentationMode==='full'){this.refs['environment-errors'].hidden=true;this.refs['environment-errors'].textContent='';}
+    this.refreshConfiguration();
   }
   moveActor(id,x,y) {
     const current=this.heldGeometry?this.basePositions:this.positions;if(!current[id]||!Number.isFinite(x)||!Number.isFinite(y))return false;
@@ -785,20 +777,19 @@ export class AuthFlowStudio extends HTMLElement {
     if(!this.dragState||event.pointerId!==this.dragState.pointerId)return;
     this.dragState.card.classList.remove('is-dragging');this.dragState.card.releasePointerCapture?.(event.pointerId);this.dragState=null;
   }
-  renderAll() {
+  prepareStudyConfiguration() {
     if(this.labModel){this.upstream='single';this.architecture=this.labModel.architecture||'web';this.applicationProtocol=this.labModel.protocol==='saml'?'saml':'oidc';this.oidcFlow='authorization-code';this.mode='passkey';this.tokenProtection='signed';this.assertionProtection='signed';}
     else if(this.isAdvancedFlow){this.upstream='single';this.applicationProtocol='oidc';if(this.oidcFlow!=='device')this.architecture='web';if(this.isDirectFido||modeMetadata[this.mode]?.enrollment)this.mode='passkey';}
     if(this.isDirectFido||this.applicationProtocol==='saml')this.architecture='web';
     if(this.providerOwnsAuthentication&&modeMetadata[this.mode]?.enrollment)this.mode='password';
     if(this.upstream==='external'&&!this.labModel&&!this.isDirectFido&&!this.isAdvancedFlow&&this.providerProfileId!=='generic')this.brokerProtocol=this.providerProfile.protocol;
-    this.refs.mode.value=this.mode;
-    this.refs.architecture.value=this.architecture;
-    this.refs.upstream.value=this.upstream;
-    this.updateProtocolControls();
-    this.activeSteps=this.journeyFor();this.renderWorkspace();
-    this.graphChapterKey=this.graphChapter?.id||null;
-    this.heldView?.configureGeometry();
-    if(!this.heldGeometry)this.ensureLayoutRoutes(this.traceQueue);
+    const direct=this.isDirectFido,appOidc=!direct&&this.applicationProtocol==='oidc'&&(!this.isAdvancedFlow||this.advancedFlow.hasPerson),brokerEncryptionAllowed=this.upstream!=='external'||this.providerProfile.brokerTokenProtection?.includes('jwe');
+    if(!brokerEncryptionAllowed&&['broker-jwe','both-jwe'].includes(this.tokenProtection)){this.tokenProtection=this.tokenProtection==='both-jwe'&&appOidc?'app-jwe':'signed';this.showToast('This provider profile uses signed broker identity results. Choose Generic external IdP to study broker JWE on an OIDC leg.');}
+    if(this.isAdvancedFlow&&(!appOidc||this.tokenProtection==='broker-jwe'))this.tokenProtection='signed';
+    this.activeSteps=this.journeyFor();this.heldView.compiled();
+  }
+  renderAll() {this.prepareStudyConfiguration();this.syncSharedNavigation();this.presenter.render('configuration');}
+  renderScenarioDescription() {
     const meta=modeMetadata[this.mode];
     this.querySelector('#scenario-title').textContent=this.advancedFlow?.title||meta.title;
     const description=this.isSingleRealm?meta.description.replace(/the upstream provider/gi,'the Keycloak realm').replace(/upstream/gi,'Realm A'):meta.description;
@@ -808,6 +799,18 @@ export class AuthFlowStudio extends HTMLElement {
     if(this.providerOwnsAuthentication){this.querySelector('#scenario-title').textContent='Provider-managed sign-in · '+this.providerProfile.title;this.querySelector('#scenario-description').textContent=this.applicationProtocol.toUpperCase()+' application · '+this.brokerProtocol.toUpperCase()+' federation · Authentication and MFA follow the external provider policy. No particular credential method or assurance level is assumed.';}
     if(this.learningPreset){this.querySelector('#scenario-title').textContent=this.learningPreset.title;this.querySelector('#scenario-description').textContent=this.learningPreset.summary+(this.upstream==='external'?' · '+this.providerProfile.title:'');}
     this.querySelector('#scenario-description').textContent=this.runtimeEnvironment.projectValue(this.querySelector('#scenario-description').textContent,this.environmentOptions);
+  }
+  renderFull(reason='state') {
+    this.refs.mode.value=this.mode;
+    this.refs.architecture.value=this.architecture;
+    this.refs.upstream.value=this.upstream;
+    this.updateProtocolControls();
+    this.renderWorkspace();
+    this.graphChapterKey=this.graphChapter?.id||null;
+    this.heldView?.configureGeometry();
+    if(reason!=='presentation'&&!this.heldGeometry)this.ensureLayoutRoutes(this.traceQueue);
+    const meta=modeMetadata[this.mode];
+    this.renderScenarioDescription();
     this.refs.mode.disabled=this.isAdvancedFlow&&!this.advancedFlow.hasPerson;
     this.querySelector('label[for="mode"]').textContent=this.isAdvancedFlow?(this.advancedFlow.hasPerson?'Verification method':'Human authentication'):'Learning journey';
     Object.entries(modeMetadata).forEach(([value,m])=>{const option=this.refs.mode.querySelector('[value="'+value+'"]');option.disabled=this.isAdvancedFlow&&!!(m.directFido||m.enrollment);option.textContent=this.isAdvancedFlow&&!this.advancedFlow.hasPerson&&value===this.mode?'Not used in this grant':m.title;});
@@ -820,7 +823,6 @@ export class AuthFlowStudio extends HTMLElement {
     if(this.isAdvancedFlow){this.refs.architecture.querySelector('[value="web"]').textContent=this.oidcFlow==='device'?'Device service · confidential backend':this.oidcFlow==='ciba'?'Consumption app · confidential backend':this.oidcFlow==='token-exchange'?'Token requester · confidential backend':'Background service · confidential client';this.refs.architecture.title=this.oidcFlow==='device'?'Choose public or confidential device-client authentication; neither variant has an inbound application callback.':'This example authenticates its confidential backend directly to Realm A.';}
     this.refs.upstream.querySelector('[value="external"]').textContent='Keycloak + external '+(this.brokerProtocol==='saml'?'SAML':'OIDC')+' IdP';
     this.refs.upstream.title=this.isDirectFido?'The web application verifies the credential directly; no upstream IdP participates.':this.isAdvancedFlow?'This grant walkthrough uses one Keycloak realm. CIBA’s controlled authentication service is a separate integration, not another realm.':'';
-    this.scenarioPicker.setSelected(this.labScenarioId);
     if(this.labModel){
       this.refs.mode.disabled=true;this.refs.authenticator.disabled=true;this.refs.architecture.disabled=true;this.refs.upstream.disabled=true;
       this.querySelector('label[for="mode"]').textContent='Scenario policy';this.refs.mode.querySelector('[value="'+this.mode+'"]').textContent='Defined by this scenario';
@@ -840,8 +842,6 @@ export class AuthFlowStudio extends HTMLElement {
     const direct=this.isDirectFido,enrollment=!!modeMetadata[this.mode]?.enrollment;
     const appOidc=!direct&&this.applicationProtocol==='oidc'&&(!this.isAdvancedFlow||this.advancedFlow.hasPerson),brokerOidc=!direct&&!this.isAdvancedFlow&&this.upstream!=='single'&&this.brokerProtocol==='oidc';
     const brokerEncryptionAllowed=this.upstream!=='external'||this.providerProfile.brokerTokenProtection?.includes('jwe');
-    if(!brokerEncryptionAllowed&&['broker-jwe','both-jwe'].includes(this.tokenProtection)){this.tokenProtection=this.tokenProtection==='both-jwe'&&appOidc?'app-jwe':'signed';this.showToast('This provider profile uses signed broker identity results. Choose Generic external IdP to study broker JWE on an OIDC leg.');}
-    if(this.isAdvancedFlow&&(!appOidc||this.tokenProtection==='broker-jwe'))this.tokenProtection='signed';
     const saml=!direct&&(this.applicationProtocol==='saml'||this.upstream!=='single'&&this.brokerProtocol==='saml');
     const values={'oidc-flow':this.oidcFlow,'app-protocol':this.applicationProtocol,'broker-protocol':this.brokerProtocol,'saml-binding':this.samlBinding,'saml-initiation':this.samlInitiation,'token-protection':this.tokenProtection,'assertion-protection':this.assertionProtection};
     const disabled={'app-protocol':direct,'broker-protocol':direct||this.upstream==='single'||this.upstream==='external'&&this.providerProfileId!=='generic','saml-binding':!saml||enrollment,'saml-initiation':direct||this.applicationProtocol!=='saml'||enrollment,'token-protection':direct||enrollment||!appOidc&&!brokerOidc,'assertion-protection':!saml||enrollment};
@@ -908,7 +908,16 @@ export class AuthFlowStudio extends HTMLElement {
   }
   protocolSnapshot(){
     const snapshot=this.scenarioSnapshot();
-    if(this.protocolMemo?.source!==snapshot){const variant=this.lessonVariant&&this.lessonVariant!=='default'?':variant-'+this.lessonVariant:'',model={...this.labModel,instanceScope:this.labScenarioId+'@context-'+this.runtimeEnvironment.revision+variant,steps:()=>snapshot.steps,initialState:snapshot.initialState||this.labModel?.initialState||{},protocolValues:snapshot.protocolValues||this.labModel?.protocolValues||{}};this.protocolMemo={source:snapshot,model,instances:new Map()};}
+    if(this.protocolMemo?.source!==snapshot){
+      const variant=this.lessonVariant&&this.lessonVariant!=='default'?':variant-'+this.lessonVariant:'',base=this.labModel;
+      const model=Object.create(base||Object.prototype,{
+        instanceScope:{value:this.labScenarioId+'@context-'+this.runtimeEnvironment.revision+variant,enumerable:true},
+        steps:{value:()=>snapshot.steps,enumerable:true},
+        initialState:{value:snapshot.initialState||base?.initialState||{},enumerable:true},
+        protocolValues:{value:snapshot.protocolValues||base?.protocolValues||{},enumerable:true},
+      });
+      this.protocolMemo={source:snapshot,model,instances:new Map()};
+    }
     const held=this.heldView.snapshot(),sourceIndex=held.cursor.milestone==='complete'?held.cursor.eventIndex:Math.max(-1,held.cursor.eventIndex-1);
     const memo=this.protocolMemo;
     return {model:memo.model,sourceIndex,selectedSourceIndex:held.cursor.eventIndex,cursor:held.cursor,state:held.state,get instances(){
@@ -1155,6 +1164,7 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs.timeline.innerHTML=this.visibleSteps.map((s,i)=>`<button class="timeline-step ${i===this.visibleIndex?'is-current':''} ${this.hasTrace?'is-trace-step':''}" data-step="${i}" aria-current="${i===this.visibleIndex?'step':'false'}"><span class="step-number">${String(i+1).padStart(2,'0')}</span><span class="step-title">${escapeHtml(s.title)}</span><span class="step-phase">${escapeHtml(this.hasTrace?(s.traceKind+' · journey '+(s.sourceIndex+1)):s.phase)}</span></button>`).join('');
   }
   selectStep(index,animate=false) {
+    if(this.presentationMode==='compact')return this.inspectQueueBoundary(index,'end');
     this.player.stop(false);this.hidePopups();
     this.heldView?.selectStep();
     if(this.hasTrace){this.traceIndex=index;this.index=this.traceQueue[index]?.sourceIndex||0;this.inspection=this.traceInspection();}
@@ -1167,7 +1177,9 @@ export class AuthFlowStudio extends HTMLElement {
     if(this.attributeSelection){this.selectAttribute(this.attributeSelection,false);return;}
     this.player.stop(false);this.index=0;this.visited.clear();this.packetIdentity='';this.inspection={type:'step'};
     this.attributeSelection=null;this.objectTraceSelection=null;this.traceQueue=[];this.traceIndex=0;
-    this.hidePopups();this.refs.packet.hidden=true;this.hideStepAttributes();this.refreshChapterProjection();this.renderConnections();this.renderTimeline();this.renderAttributeIndex();this.renderFocus();this.updateStep();this.renderInspector();this.updateControls();
+    this.hidePopups();
+    if(this.presentationMode==='compact'){this.compactView.render('reset');return;}
+    this.refs.packet.hidden=true;this.hideStepAttributes();this.refreshChapterProjection();this.renderConnections();this.renderTimeline();this.renderAttributeIndex();this.renderFocus();this.updateStep();this.renderInspector();this.updateControls();
   }
   replayConnection(pair) {
     this.hidePopups();const exchanges=this.visibleSteps.filter(step=>pairKey(this.nodeId(step.from),this.nodeId(step.to))===pair);
@@ -1179,6 +1191,7 @@ export class AuthFlowStudio extends HTMLElement {
   inspectActor(id) {this.hidePopups();this.inspection={type:'actor',id};this.renderInspector();this.updateNodeSelection();}
   updateNodeSelection() {this.refs.actors.querySelectorAll('[data-actor]').forEach(n=>n.classList.toggle('is-selected',this.inspection.type==='actor'&&n.dataset.actor===this.inspection.id));}
   updateStep() {
+    if(this.presentationMode==='compact'){this.compactView.render('step');return;}
     this.refreshChapterProjection();
     this.renderProtocolState();
     this.renderPamConfiguration();
@@ -1200,19 +1213,31 @@ export class AuthFlowStudio extends HTMLElement {
       else {delete g.dataset.presentation;g.querySelector('.connection-line').removeAttribute('marker-end');}
     });
     this.refs.timeline.querySelectorAll('[data-step]').forEach(button=>{const n=Number(button.dataset.step);button.classList.toggle('is-current',n===this.visibleIndex);button.classList.toggle('is-done',n<this.visibleIndex);button.setAttribute('aria-current',n===this.visibleIndex?'step':'false');});
-    const percentage=Math.round(this.visibleIndex/this.visibleSteps.length*100);this.refs.progress.style.width=percentage+'%';
+    const percentage=Math.max(0,Math.round(this.visibleIndex/this.visibleSteps.length*100));this.refs.progress.style.width=percentage+'%';
     this.refs.progress.parentElement.setAttribute('aria-valuenow',percentage);
     const narration=this.learningDetail==='journey'&&this.labModel?.profile?s.beginnerSummary||s.summary:s.summary;
     this.refs.story.innerHTML=`<span class="story-index">${String(this.visibleIndex+1).padStart(2,'0')} / ${String(this.visibleSteps.length).padStart(2,'0')}</span><div><span class="story-phase">${escapeHtml(this.objectTraceSelection?'EXACT OBJECT HISTORY · '+s.traceKind:this.attributeSelection?'ATTRIBUTE PATH · '+s.traceKind:s.phase)}</span><p>${escapeHtml(narration)}</p></div>`;
     this.updateNodeSelection();
   }
   onPlayer(event) {
-    this.heldView?.event(event);
+    if(event.type==='step'&&event.step){
+      const row=event.step,index=row.sourceIndex??this.steps.findIndex(step=>step.id===(row.sourceStepId||row.id));
+      if(index>=-1)this.index=event.kind==='demo'&&event.inspectionBoundary==='initial'?-1:index;
+      if(this.hasTrace){
+        const same=this.player.queue.length===this.traceQueue.length&&this.player.queue.every((step,i)=>step===this.traceQueue[i]);
+        const traceIndex=same?event.queuePosition:this.traceQueue.indexOf(row);
+        if(traceIndex>=0)this.traceIndex=traceIndex;
+      }
+    }
+    if(event.type==='speed'&&event.speed>0)this.lastRunningSpeed=event.speed;
+    if(event.type==='stepcomplete'&&event.step)this.visited.add(pairKey(this.nodeId(event.step.from),this.nodeId(event.step.to)));
+    this.heldView.event(event);this.presenter.onPlayer(event);
+  }
+  onFullPlayer(event) {
+    this.heldView.render(event);
     if(['frame','stepcomplete','complete','state'].includes(event.type))this.renderProtocolState();
     if(['stepcomplete','state'].includes(event.type))this.renderPamConfiguration();
     if(event.type==='step'&&event.step){
-      const index=this.steps.findIndex(s=>s.id===(event.step.sourceStepId||event.step.id));if(index>=0)this.index=index;
-      if(this.hasTrace){const traceIndex=this.traceQueue.findIndex(s=>s.id===event.step.id);if(traceIndex>=0)this.traceIndex=traceIndex;}
       this.updateStep();if(this.inspection.type==='step'||(this.attributeSelection&&['attribute','topic'].includes(this.inspection.type)))this.renderInspector();
       const button=this.refs.timeline.querySelector(`[data-step="${this.visibleIndex}"]`);
       if(button)this.refs.timeline.scrollTo?.({left:this.refs.timeline.scrollLeft+button.getBoundingClientRect().left-this.refs.timeline.getBoundingClientRect().left-(this.refs.timeline.clientWidth-button.offsetWidth)/2,behavior:'smooth'});
@@ -1223,7 +1248,7 @@ export class AuthFlowStudio extends HTMLElement {
     }
     if(['frame','stepcomplete','complete','state'].includes(event.type)&&event.step)this.renderPacket(event);
     if(['step','frame','state','complete'].includes(event.type))this.updateSeekControls(event);
-    if(event.type==='stepcomplete'&&event.step){this.visited.add(pairKey(this.nodeId(event.step.from),this.nodeId(event.step.to)));this.hideStepAttributes();}
+    if(event.type==='stepcomplete'&&event.step)this.hideStepAttributes();
     if(event.type==='complete'){
       this.refs.packet.hidden=true;this.hideStepAttributes();
       if(event.kind==='demo'||event.kind==='attribute'){this.showToast(event.kind==='attribute'?'Attribute path complete. Choose another field or return to the full journey.':'Journey complete. Replay any connection to explore its details.');}
@@ -1363,6 +1388,7 @@ export class AuthFlowStudio extends HTMLElement {
     const percentage=Math.round(fraction*100);this.refs.progress.style.width=percentage+'%';this.refs.progress.parentElement.setAttribute('aria-valuenow',percentage);
   }
   updateControls() {
+    if(this.presentationMode==='compact'){this.compactView.render('controls');return;}
     const status=this.player.status;
     if(status==='idle')this.renderPacket(this.player.snapshot());
     const label=status==='playing'?'Pause':status==='paused'?'Resume':this.objectTraceSelection?'Play exact object history':this.attributeSelection?'Play attribute path':'Play demo';
@@ -1373,11 +1399,12 @@ export class AuthFlowStudio extends HTMLElement {
     this.refs.speed.value=String(this.player.speed);this.refs['speed-label'].textContent=this.player.speed===0?'Stopped':this.player.speed+'×';
     this.refs.status.textContent=status==='playing'?(this.attributeSelection?'FOLLOWING ATTRIBUTE':this.player.kind==='connection'?'REPLAYING CONNECTION':'DEMO RUNNING'):status==='paused'?'PAUSED':status==='complete'?'COMPLETE':'READY TO EXPLORE';
     this.refs.status.dataset.status=status;
-    this.querySelector('#previous').disabled=this.visibleIndex===0||!this.visibleSteps.length;this.querySelector('#next').disabled=this.visibleIndex>=this.visibleSteps.length-1;
+    this.querySelector('#previous').disabled=this.visibleIndex<=0||!this.visibleSteps.length;this.querySelector('#next').disabled=this.visibleIndex>=this.visibleSteps.length-1;
     this.refs['attribute-focus'].querySelectorAll('[data-trace-play]').forEach(button=>{button.textContent=status==='playing'?'Pause':status==='paused'?'Resume':'Replay path';button.disabled=!this.traceQueue.length;});
     this.updateSeekControls();
   }
   renderInspector() {
+    if(this.presentationMode==='compact'){this.compactView.render('inspection');return;}
     const returnTarget=this.refs.inspector.contains(document.activeElement)?captureFocusTarget(this,document.activeElement):null;
     const view=this.inspection;
     this.refs['inspector-heading'].textContent={step:'EXCHANGE INSPECTOR',actor:'PARTICIPANT INSPECTOR',attribute:'ATTRIBUTE LIFECYCLE',topic:'ATTRIBUTE LIFECYCLE',glossary:'FIELD GUIDE',connection:'CONNECTION INSPECTOR'}[view.type];
@@ -1403,15 +1430,16 @@ export class AuthFlowStudio extends HTMLElement {
     const payload=(inspectedPayload||[]).map((p,i)=>{
       const id=this.payloadAttributeId(p,s),value=formatProtocolValue(p.value);
       const display=profile&&value.length>120?`<details class="long-protocol-value"><summary>Show full value: ${escapeHtml(p.name)}</summary><code class="field-value">${escapeHtml(value)}</code></details>`:`<code class="field-value">${escapeHtml(value)}</code>`;
-      return `<div class="payload-row"><button class="field-name" ${id&&ATTRIBUTES[id]?`data-attribute="${id}"`:''}><span class="payload-number">${i+1}</span><code>${escapeHtml(p.name)}</code>${id&&ATTRIBUTES[id]?uiIcon('info'):''}</button>${display}${p.description?`<span class="field-description">${escapeHtml(p.description)}</span>`:''}</div>`;
+      return `<div class="payload-row"><button class="field-name" ${id&&ATTRIBUTES[id]?`data-attribute="${id}" ${this.fieldControlMetadata()}`:''}><span class="payload-number">${i+1}</span><code>${escapeHtml(p.name)}</code>${id&&ATTRIBUTES[id]?uiIcon('info'):''}</button>${display}${p.description?`<span class="field-description">${escapeHtml(p.description)}</span>`:''}</div>`;
     }).join('');
     const fieldSection=`<h3 class="section-title">${s.from===s.to?'Local derivation and checks':'Wire message fields and protected envelopes'}</h3>${s.from!==s.to?'<p class="field-description">These fields form one message. Moving field chips are not independent deliveries. Protected wire values remain distinct from an actor’s decoded local view.</p>':''}<div class="payload-list">${payload}</div>`;
     const projectedFields=profile&&this.learningDetail==='journey'?`<details class="progressive-fields"><summary>Inspect this event’s fields</summary>${fieldSection}</details>`:fieldSection;
     const layers=profile&&this.learningDetail!=='journey'&&(s.layers||authored.layers)?.length?`<h3 class="section-title">Canonical protocol layers</h3><ul class="protocol-layer-list">${(s.layers||authored.layers).map(layer=>`<li><strong>${escapeHtml(layer.protocol)} · ${escapeHtml(layer.transport)}</strong><span>${escapeHtml(this.actor(layer.from).name)} → ${escapeHtml(this.actor(layer.to).name)}</span><span>${escapeHtml(layer.protection)}</span>${layer.keyRef?`<span>Key reference: ${escapeHtml(layer.keyRef)}</span>`:''}${layer.certificateRole?`<span>Certificate role: ${escapeHtml(layer.certificateRole)}</span>`:''}</li>`).join('')}</ul>`:'';
     const crypto=profile&&this.learningDetail==='crypto'?`<h3 class="section-title">Cryptographic interpretation</h3><p class="step-detail">${escapeHtml(s.cryptoDetail||authored.cryptoDetail||profile.cryptoDetail)}</p>`:'';
-    return `<div class="inspector-kicker">STEP ${String(index+1).padStart(2,'0')} OF ${this.visibleSteps.length} · ${escapeHtml(s.phase)}</div><h2 class="inspector-title">${escapeHtml(s.title)}</h2><p class="inspector-summary">${escapeHtml(summary)}</p><div class="route-row"><span class="route-actor">${escapeHtml(from.name)}</span>${uiIcon('arrow')}<span class="route-actor">${escapeHtml(to.name)}</span></div><span class="channel-badge" data-channel="${category}">${channelLabels[category]} · ${escapeHtml(protocolLabel)}</span>${!profile||this.learningDetail!=='journey'?`<p class="step-detail">${escapeHtml(s.protocolDetail||s.detail)}</p>`:''}<button class="button quiet replay-button" data-replay>${uiIcon('play')}Replay this step</button>${projectedFields}${layers}${crypto}${s.checks?.length?`<h3 class="section-title">What the receiver checks</h3><ul class="check-list">${s.checks.map(check=>`<li>${uiIcon('check')}<span>${escapeHtml(check)}</span></li>`).join('')}</ul>`:''}<h3 class="section-title">Explore these attributes</h3><div class="attribute-list">${fields.filter(id=>ATTRIBUTES[id]).map(id=>this.attributeButton(id)).join('')}</div>`;
+    return `<div class="inspector-kicker">STEP ${String(index+1).padStart(2,'0')} OF ${this.visibleSteps.length} · ${escapeHtml(s.phase)}</div><h2 class="inspector-title">${escapeHtml(s.title)}</h2><p class="inspector-summary">${escapeHtml(summary)}</p><div class="route-row"><span class="route-actor">${escapeHtml(from.name)}</span>${uiIcon('arrow')}<span class="route-actor">${escapeHtml(to.name)}</span></div><span class="channel-badge" data-channel="${category}">${channelLabels[category]} · ${escapeHtml(protocolLabel)}</span>${!profile||this.learningDetail!=='journey'?`<p class="step-detail step-description">${escapeHtml(s.protocolDetail||s.detail)}</p>`:''}<button class="button quiet replay-button" data-replay>${uiIcon('play')}Replay this step</button>${projectedFields}${layers}${crypto}${s.checks?.length?`<h3 class="section-title">What the receiver checks</h3><ul class="check-list">${s.checks.map(check=>`<li>${uiIcon('check')}<span>${escapeHtml(check)}</span></li>`).join('')}</ul>`:''}<h3 class="section-title">Explore these attributes</h3><div class="attribute-list">${fields.filter(id=>ATTRIBUTES[id]).map(id=>this.attributeButton(id)).join('')}</div>`;
   }
-  attributeButton(id,kind,ownerName) {const a=this.definition(id);return `<button class="attribute-button" data-attribute="${id}" aria-haspopup="dialog" aria-controls="attribute-popup" aria-keyshortcuts="F2"><code>${escapeHtml(a.name)}</code>${ownerName?`<span class="attribute-owner">${escapeHtml(ownerName)}</span>`:''}${kind?`<span class="kind-badge ${kind}">${escapeHtml(ATTR_KIND[kind]||kind)}</span>`:uiIcon('info')}</button>`;}
+  fieldControlMetadata() {return this.presentationMode==='compact'?'aria-controls="compact-field-definition"':'aria-haspopup="dialog" aria-controls="attribute-popup" aria-keyshortcuts="F2"';}
+  attributeButton(id,kind,ownerName) {const a=this.definition(id);return `<button class="attribute-button" data-attribute="${id}" ${this.fieldControlMetadata()}><code>${escapeHtml(a.name)}</code>${ownerName?`<span class="attribute-owner">${escapeHtml(ownerName)}</span>`:''}${kind?`<span class="kind-badge ${kind}">${escapeHtml(ATTR_KIND[kind]||kind)}</span>`:uiIcon('info')}</button>`;}
   payloadAttributeId(payload,step) {
     if(payload.attributeId&&ATTRIBUTES[payload.attributeId])return payload.attributeId;
     const names=payload.name.replace(/^response\./,'').split(' / ');
@@ -1429,7 +1457,8 @@ export class AuthFlowStudio extends HTMLElement {
   refreshConfiguration() {
     const selection=this.attributeSelection;
     this.heldView?.reset();this.objectTraceSelection=null;
-    this.player.stop(false);this.hidePopups();this.activeSteps=null;this.attributeSelection=null;this.traceQueue=[];this.traceIndex=0;this.index=0;this.visited.clear();this.inspection={type:'step'};this.refs.packet.hidden=true;this.hideStepAttributes();
+    this.player.stop(false);this.hidePopups();this.activeSteps=null;this.attributeSelection=null;this.traceQueue=[];this.traceIndex=0;this.index=0;this.visited.clear();this.inspection={type:'step'};
+    if(this.presentationMode==='full'){this.refs.packet.hidden=true;this.hideStepAttributes();}
     this.renderAll();if(selection)this.selectAttribute(selection,false);
   }
   exploreProtocol(protocol) {
@@ -1489,6 +1518,7 @@ export class AuthFlowStudio extends HTMLElement {
     return buildAttributeTrace(usages,examples,this.scenarioSnapshot().protocolValues||this.labModel?.protocolValues||{});
   }
   selectAttribute(id,animate=true) {
+    if(this.presentationMode==='compact')return this.enterFieldTrace(id);
     const returnTarget=captureFocusTarget(this,document.activeElement);
     id=this.labAttributeAlias(id);
     if(!getAttributeIds(id).length)return;
@@ -1535,26 +1565,36 @@ export class AuthFlowStudio extends HTMLElement {
     if(this.refs['attribute-index'].hidden)return;
     const focused=document.activeElement;
     const focusKey=this.refs['attribute-index-list'].contains(focused)?['data-index-attribute',focused.dataset.indexAttribute]:this.refs['attribute-topics'].contains(focused)?['data-trace-topic',focused.dataset.traceTopic]:null;
-    const steps=this.steps,query=this.attributeQuery.trim().toLowerCase(),journeyIds=this.labModel?.profile&&!query?new Set(this.labModel.ids):null;
+    const steps=this.steps,query=this.attributeQuery.trim().toLowerCase(),compact=this.presentationMode==='compact',browser=compact?this.compactView.fieldBrowser:null;
+    if(compact&&browser.context!==this.heldView.contextId){browser.context=this.heldView.contextId;browser.scope='current';browser.limit=this.compactView.fieldBatchSize;}
+    if(compact&&browser.query!==query){browser.query=query;browser.limit=this.compactView.fieldBatchSize;}
     const usageIds=new Set();
     for(const step of steps)for(const action of getStepAttributeOperations(step,this.authenticator))if(action.kind!=='inspect')usageIds.add(action.attributeId);
+    let indexIds=!compact&&this.labModel?.profile&&!query?new Set(this.labModel.ids):null;
+    if(compact&&!query&&browser.scope!=='global'){
+      indexIds=new Set([...usageIds,...(this.labModel?.ids||[])]);
+      for(const step of steps)for(const id of step.fields||[])indexIds.add(id);
+    }
     const hasUsage=id=>ATTRIBUTE_TOPICS[id]?ATTRIBUTE_TOPICS[id].attributeIds.some(field=>usageIds.has(field)):usageIds.has(id);
     this.refs['attribute-topics'].innerHTML=Object.entries(ATTRIBUTE_TOPICS).filter(([,topic])=>!topic.labScenarioId||topic.labScenarioId===(this.labModel?.id||this.labScenarioId)).map(([id,topic])=>{
       const count=hasUsage(id)?this.attributeUsage(steps,id).length:0;
-      if(journeyIds&&!count)return '';
+      if(indexIds&&!count)return '';
       const summary=id==='clientIdentity'&&this.isAdvancedFlow?'The configured public client identifier selects the registration. Confidential variants authenticate the client separately; no identifier is generated per request.':this.isSingleRealm?topic.summary.replace(/\bB\b/g,'Realm A'):topic.summary;
       return `<button class="attribute-topic ${id===this.attributeSelection?'is-selected':''}" data-trace-topic="${id}" aria-pressed="${id===this.attributeSelection}" title="${escapeHtml(summary)}"><span>${escapeHtml({clientIdentity:'client_id · App',pkce:'PKCE',webauthn:'WebAuthn',fido2:'FIDO2 / CTAP2',totp:'TOTP',saml:'SAML',jwe:'JWE',serviceAccounts:'Service accounts',deviceFlow:'Device Flow',ciba:'CIBA',tokenExchange:'Token exchange'}[id]||topic.name||id)}</span><span>${count}</span></button>`;
     }).join('');
-    const rows=Object.entries(ATTRIBUTES).filter(([id])=>!journeyIds||journeyIds.has(id)).sort((a,b)=>a[1].name.localeCompare(b[1].name)||a[0].localeCompare(b[0])).map(([id])=>{
+    let matches=Object.entries(ATTRIBUTES).filter(([id])=>!indexIds||indexIds.has(id)).sort((a,b)=>a[1].name.localeCompare(b[1].name)||a[0].localeCompare(b[0]));
+    if(query)matches=matches.filter(([id])=>{
       const a=this.definition(id),topics=studioFieldTopicText.get(id)||'';
-      const search=(a.name+' '+a.meaning+' '+a.purpose+' '+a.origin+' '+a.standard+' '+topics).toLowerCase();
-      if(query&&!search.includes(query))return null;
+      return (a.name+' '+a.meaning+' '+a.purpose+' '+a.origin+' '+a.standard+' '+topics).toLowerCase().includes(query);
+    });
+    const rows=(compact?matches.slice(0,browser.limit):matches).map(([id])=>{
+      const a=this.definition(id),topics=studioFieldTopicText.get(id)||'',search=(a.name+' '+a.meaning+' '+a.purpose+' '+a.origin+' '+a.standard+' '+topics).toLowerCase();
       const count=hasUsage(id)?getAttributeUsage(steps,id,this.authenticator).length:0,pressed=String(id===this.attributeSelection);
       const className='attribute-index-item '+(id===this.attributeSelection?'is-selected':'')+' '+(count?'':'is-unavailable');
       const context=this.indexContext(id,a),label=a.name+'. '+count+' source steps in this journey. '+context;
       const contents=`<code>${escapeHtml(a.name)}</code><span class="attribute-index-count" title="Journey steps with an operation">${count}</span><span class="attribute-index-context">${escapeHtml(context)}</span>`;
-      return {id,search,pressed,className,contents,label,markup:`<button class="${className}" data-index-attribute="${id}" aria-label="${escapeHtml(label)}" aria-haspopup="dialog" aria-controls="attribute-popup" aria-keyshortcuts="F2" aria-pressed="${pressed}">${contents}</button>`};
-    }).filter(Boolean);
+      return {id,search,pressed,className,contents,label,markup:`<button class="${className}" data-index-attribute="${id}" aria-label="${escapeHtml(label)}" ${this.fieldControlMetadata()} aria-pressed="${pressed}">${contents}</button>`};
+    });
     const list=this.refs['attribute-index-list'],signature=rows.map(row=>row.id).join('\0');
     if(this.attributeIndexRows?.list===list&&this.attributeIndexRows.signature===signature){
       for(const row of rows){
@@ -1571,6 +1611,7 @@ export class AuthFlowStudio extends HTMLElement {
       for(const node of list.querySelectorAll('[data-index-attribute]')){const row=rows[index++];entries.set(row.id,{node,markup:row.markup,search:row.search});}
       this.attributeIndexRows={list,signature,entries};
     }
+    this.attributeIndexRows.total=matches.length;this.attributeIndexRows.global=!indexIds;
     this.refs['attribute-search'].placeholder='Search fields across every journey';
     this.refs['attribute-search'].value=this.attributeQuery;this.filterAttributeIndex();
     if(focusKey){
@@ -1585,7 +1626,12 @@ export class AuthFlowStudio extends HTMLElement {
     const q=this.attributeQuery.trim().toLowerCase();let count=0;
     for(const {node,search} of this.attributeIndexRows.entries.values()){node.hidden=!search.includes(q);if(!node.hidden)count++;}
     let topics=0;this.refs['attribute-topics'].querySelectorAll('[data-trace-topic]').forEach(button=>{const topic=ATTRIBUTE_TOPICS[button.dataset.traceTopic];button.hidden=!!q&&!((topic.name+' '+topic.summary+' '+topic.attributeIds.map(id=>this.definition(id).name).join(' ')).toLowerCase().includes(q));if(!button.hidden)topics++;});
-    this.refs['attribute-index-meta'].textContent=count+(q?' matching attributes · global catalog search · numbers count current-journey steps':this.labModel?.profile?' current-journey attributes · type to search all protocols':' attributes · numbers count journey steps · 0 means unused in this setup');
+    if(this.presentationMode==='compact'){
+      const total=this.attributeIndexRows.total,global=this.attributeIndexRows.global;
+      this.refs['attribute-index-meta'].textContent='Showing '+count+' of '+total+(q?' matching global fields':global?' global fields':' current-lesson fields')+' · '+this.compactView.fieldBatchSize+' per batch · numbers count current-journey steps';
+      const more=this.refs['compact-field-more'];more.hidden=count>=total;more.textContent='Show '+Math.min(this.compactView.fieldBatchSize,total-count)+' more fields';
+      for(const button of this.querySelectorAll('[data-compact-field-scope]'))button.setAttribute('aria-pressed',String(button.dataset.compactFieldScope===(global?'global':'current')));
+    }else this.refs['attribute-index-meta'].textContent=count+(q?' matching attributes · global catalog search · numbers count current-journey steps':this.labModel?.profile?' current-journey attributes · type to search all protocols':' attributes · numbers count journey steps · 0 means unused in this setup');
     this.refs['attribute-index-empty'].hidden=!!(count||topics);
   }
   renderFocus() {

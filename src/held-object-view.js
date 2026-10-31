@@ -1,28 +1,8 @@
-import { buildHeldObjects } from './held-objects.js';
-import { projectHeldObjects, inspectHeldObject, heldObjectTrace, heldCursorForPlayback } from './held-object-state.js';
+import { HeldStudyState, holdingControlKey, orderedHoldings, holdingSlots, logicalStudyActors } from './held-study-state.js';
 import { getPositions } from './layout.js';
 import { scenarioActorIds, scenarioPositions } from './workspaces.js';
 
 const html = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const valueText = value => typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value ?? '');
-export const holdingControlKey = holding => JSON.stringify([holding.contextId, holding.actorId, holding.artifactId, holding.representationId, holding.holdingId]);
-export function orderedHoldings(holdings) {
-  return [...holdings].sort((a,b) => (a.displayOrder ?? Number.MAX_SAFE_INTEGER) - (b.displayOrder ?? Number.MAX_SAFE_INTEGER) || (a.ordinal ?? 0) - (b.ordinal ?? 0) || a.holdingId.localeCompare(b.holdingId));
-}
-export function holdingSlots(holdings, pinnedId) {
-  const ordered = orderedHoldings(holdings);
-  if (ordered.length <= 3) return { visible: ordered, hidden: [] };
-  const visible = ordered.slice(0,2), pinned = ordered.find(item => item.holdingId === pinnedId);
-  if (pinned && !visible.includes(pinned)) visible[1] = pinned;
-  return { visible, hidden: ordered.filter(item => !visible.includes(item)) };
-}
-export function detachedHoldingStatus(compiled, snapshot, selection) {
-  if (!snapshot.artifacts.some(item => item.artifactId === selection.artifactId)) return 'Not created';
-  const cursors=compiled.cursors||[],current=cursors.findIndex(cursor=>cursor.eventIndex===snapshot.cursor.eventIndex&&cursor.milestone===snapshot.cursor.milestone);
-  const acquired=cursors.findIndex(cursor=>cursor.eventIndex===selection.acquiredAt?.eventIndex&&cursor.milestone===selection.acquiredAt?.milestone);
-  if(acquired>current)return 'Not yet held';
-  return 'No longer held';
-}
 
 // Reserve physical participants for the selected internals mode, not logical
 // aliases. Cursor-hidden physical actors keep their cells and routes.
@@ -180,10 +160,15 @@ function compositeRoute(from,to,positions,rectangles,actorBounds) {
   return points;
 }
 
-export class HeldObjectView {
-  constructor(app) {
-    this.app=app;this.memo=new WeakMap();this.visible=true;this.selection=null;this.actorId=null;this.inventoryTrigger=null;this.expanded=new Set();this.lastKey='';
+export class HeldObjectView extends HeldStudyState {
+  constructor(app,{mount=true}={}) {
+    super(app);this.mounted=false;if(mount)this.mount();
+  }
+  mount() {
+    if(this.mounted)return;
+    const app=this.app;this.mounted=true;
     this.root=app.querySelector('#held-objects');this.docks=app.querySelector('#held-docks');this.inspector=app.querySelector('#held-inspector');
+    const mountedRoot=this.root;
     this.click=event=>this.onClick(event);app.addEventListener('click',this.click);
     this.focus=event=>{const control=event.target.closest('[data-held-key]');if(control)this.focusedId=control.dataset.holdingId;};app.addEventListener('focusin',this.focus);
     this.toggle=()=>{this.visible=app.querySelector('#show-held-objects').checked;this.lastKey='';this.render();if(!this.visible)app.querySelector('#show-held-objects').focus();};
@@ -198,6 +183,7 @@ export class HeldObjectView {
     const controls=app.querySelector('#map-controls'),measureControls=()=>app.refs.graph.style.setProperty('--map-controls-height',controls.getBoundingClientRect().height+'px');
     measureControls();
     this.resize=()=>{
+      if(!this.mounted||this.root!==mountedRoot)return;
       measureControls();
       const previous=app.heldGeometry?.key,active=document.activeElement,{key,actorId:actor,region}=this.focusIdentity(active),owned=!!region,actorFocus=active?.dataset?.actor;
       this.configureGeometry();if(previous===app.heldGeometry?.key)return;
@@ -206,31 +192,24 @@ export class HeldObjectView {
       if(owned)this.recoverFocus(key,actor,region);else if(actorFocus)app.refs.actors.querySelector(`[data-actor="${actorFocus}"]`)?.focus();
     };
     this.observer=typeof ResizeObserver==='function'?new ResizeObserver(this.resize):null;this.observer?.observe(app.refs.graph);this.observer?.observe(app.refs.graph.parentElement);this.observer?.observe(controls);
-    this.motion=window.matchMedia('(prefers-reduced-motion: reduce)');this.motionChange=()=>app.player.setReducedMotion(this.motion.matches);this.motion.addEventListener?.('change',this.motionChange);this.motionChange();
+    this.lastKey='';this.geometrySignature=null;
   }
-  destroy(){this.observer?.disconnect();this.motion.removeEventListener?.('change',this.motionChange);this.app.querySelector('#show-held-objects').removeEventListener('change',this.toggle);this.app.removeEventListener('click',this.click);this.app.removeEventListener('focusin',this.focus);this.app.removeEventListener('keydown',this.escape);}
+  unmount(){
+    if(!this.mounted)return;
+    this.mounted=false;this.observer?.disconnect();
+    this.app.querySelector('#show-held-objects').removeEventListener('change',this.toggle);
+    this.app.removeEventListener('click',this.click);this.app.removeEventListener('focusin',this.focus);this.app.removeEventListener('keydown',this.escape);
+    this.observer=null;this.resize=null;this.click=null;this.focus=null;this.toggle=null;this.escape=null;
+    this.root=null;this.docks=null;this.inspector=null;this.geometrySignature=null;this.initialGraphGeometry=null;this.rejectedCompactKey=null;this.app.heldGeometry=null;
+  }
+  destroy(){this.unmount();}
   compiled() {
-    const app=this.app,source=app.scenarioSnapshot();let compiled=this.memo.get(source);
-    if(!compiled){
-      const actors=logicalActorsForView(app);
-      const config={...app.protocolConfig(),oidcFlow:app.oidcFlow,tokenProtection:app.tokenProtection};
-      const contextParts=[app.labScenarioId,config,app.runtimeEnvironment.revision];
-      if(app.labModel?.variantId&&app.labModel.variantId!=='default')contextParts.push('variant='+app.labModel.variantId);
-      if(app.labModel?.subfixtureId)contextParts.push('subfixture='+app.labModel.subfixtureId);
-      const contextId=JSON.stringify(contextParts);
-      const model=app.labModel?{...app.labModel,steps:()=>source.steps,initialState:source.initialState||app.labModel.initialState,protocolValues:source.protocolValues||app.labModel.protocolValues}:null;
-      compiled=buildHeldObjects({model,steps:source.steps,actors,config,contextId,choiceId:app.labScenarioId});this.memo.set(source,compiled);
-    }
-    if(this.contextId!==compiled.contextId){const hadFocus=this.app.contains(document.activeElement)&&!!document.activeElement?.closest?.('#held-objects, #held-inspector, #held-docks');this.contextId=compiled.contextId;this.selection=null;this.actorId=null;this.inventoryTrigger=null;this.focusedId=null;this.helpOpen=false;this.previousHoldings=null;this.expanded.clear();this.app.objectTraceSelection=null;this.initial=true;this.selected=false;this.lastKey='';if(hadFocus)this.app.querySelector('#lab-scenario-search').focus();}
+    const previous=this.contextId,compiled=super.compiled();
+    if(previous&&previous!==this.contextId&&this.mounted&&this.app.contains(document.activeElement)&&document.activeElement?.closest?.('#held-objects, #held-inspector, #held-docks'))this.app.querySelector('#lab-scenario-search').focus();
     return compiled;
   }
-  snapshot(event=this.app.player.snapshot()) {
-    const compiled=this.compiled();
-    const cursor=heldCursorForPlayback(compiled,{...event,queue:this.app.player.queue},this.app.currentStep,{initial:this.initial!==false && !event.step,selected:this.selected===true});
-    return projectHeldObjects(compiled,cursor);
-  }
   configureGeometry(){
-    const app=this.app,actors=logicalActorsForView(app),layoutSteps=app.graphSteps;
+    const app=this.app,actors=logicalStudyActors(app),layoutSteps=app.graphSteps;
     const active=new Set(scenarioActorIds(layoutSteps)),participants=new Set([...active].map(id=>app.nodeId(id)));
     const ids=[...new Set(Object.keys(actors).map(id=>app.nodeId(id)))].filter(id=>participants.has(id)),all=ids,aliases={};
     if(app.showInternals){
@@ -268,9 +247,10 @@ export class HeldObjectView {
     for(const card of cards){const rect=card.getBoundingClientRect();if(rect.width&&rect.height&&(!first||rect.left<first.left))first=rect;}
     if(first&&(first.left<bounds.left||first.right>bounds.right))viewport.scrollLeft+=first.left-bounds.left-16;
   }
-  reset(){const owned=!!document.activeElement?.closest?.('#held-objects, #held-inspector, #held-docks');this.initial=true;this.selected=false;this.selection=null;this.inventoryTrigger=null;this.helpOpen=false;this.expanded.clear();this.lastKey='';this.app.objectTraceSelection=null;if(owned)this.app.querySelector('#lab-scenario-search').focus();}
-  event(event){if(event.step){this.initial=false;this.selected=false;}if(['step','frame','stepcomplete','complete','state'].includes(event.type))this.render(event);}
-  selectStep(){this.initial=false;this.selected=true;this.lastKey='';}
+  reset(){
+    const owned=this.mounted&&!!document.activeElement?.closest?.('#held-objects, #held-inspector, #held-docks');
+    super.reset();if(owned)this.app.querySelector('#lab-scenario-search').focus();
+  }
   onClick(event){
     const control=event.target.closest('[data-holding-id], [data-held-actor], [data-held-collapse], [data-held-trace], [data-held-related], [data-held-exit], [data-held-help], [data-held-help-close]');if(!control)return;
     if(control.hasAttribute('data-held-help')||control.hasAttribute('data-held-help-close')){this.helpOpen=!this.helpOpen;this.lastKey='';this.render();this.inspector.querySelector(this.helpOpen?'[data-held-help-close]':'[data-held-help]')?.focus();return;}
@@ -283,8 +263,7 @@ export class HeldObjectView {
     this.actorId=actor;this.inventoryTrigger=collapse?null:trigger;collapse?this.expanded.delete(actor):this.expanded.add(actor);this.lastKey='';this.render();
     if(fromDock&&!collapse){const first=this.root.querySelector(`[data-held-owner="${actor}"] [data-holding-id]`);if(first)first.focus();else this.recoverFocus(key,actor,region);this.root.scrollIntoView?.({block:'nearest'});}else this.recoverFocus(key,actor,region);
   }
-  select(holding){this.selection={...holding};this.actorId=holding.actorId;this.expanded.add(holding.actorId);this.helpOpen=false;this.lastKey='';this.render();}
-  buildTrace(artifactId){return heldObjectTrace(this.compiled(),artifactId);}
+  select(holding){super.select(holding);if(this.mounted)this.render();}
   trace(artifactId){
     const app=this.app,queue=this.buildTrace(artifactId);
     if(!queue.length)return;
@@ -344,51 +323,11 @@ export class HeldObjectView {
     }
     if(this.selection)this.renderInspector(snapshot,compiled);
     const holdings=new Map(snapshot.holdings.map(item=>[item.holdingId,item.store]));
-    if(this.previousHoldings&&this.visible&&!this.motion.matches)this.app.querySelectorAll('[data-holding-id]').forEach(control=>{const id=control.dataset.holdingId;if(!this.previousHoldings.has(id)||this.previousHoldings.get(id)!==holdings.get(id))control.animate?.([{opacity:.4},{opacity:1}],{duration:220});});
+    if(this.previousHoldings&&this.visible&&!app.player.reducedMotion)this.app.querySelectorAll('[data-holding-id]').forEach(control=>{const id=control.dataset.holdingId;if(!this.previousHoldings.has(id)||this.previousHoldings.get(id)!==holdings.get(id))control.animate?.([{opacity:.4},{opacity:1}],{duration:220});});
     this.previousHoldings=holdings;
     const announcement=JSON.stringify([snapshot.protocolClock,snapshot.holdings.map(item=>[item.holdingId,item.store]),snapshot.observations,snapshot.authority]);
-    if(this.announcement!==announcement){app.querySelector('#held-announcement').textContent=snapshot.holdings.length+' known holdings at '+(snapshot.cursor.eventIndex<0?'the initial state':'source event '+(snapshot.cursor.eventIndex+1)+' '+snapshot.cursor.milestone)+'. '+snapshot.observations.length+' authored observations.';this.announcement=announcement;}
+    if(this.announcement!==announcement){if(!app.suppressStudyAnnouncement)app.querySelector('#held-announcement').textContent=snapshot.holdings.length+' known holdings at '+(snapshot.cursor.eventIndex<0?'the initial state':'source event '+(snapshot.cursor.eventIndex+1)+' '+snapshot.cursor.milestone)+'. '+snapshot.observations.length+' authored observations.';this.announcement=announcement;}
     if(owned&&this.visible)this.recoverFocus(focusKey,focusActor,focusRegion);
   }
-  renderInspector(snapshot,compiled){
-    const selection=this.selection,holding=snapshot.holdings.find(item=>item.holdingId===selection.holdingId);
-    const status=holding?'Currently held':detachedHoldingStatus(compiled,snapshot,selection);
-    const inspected=holding?inspectHeldObject(snapshot,holding.holdingId):null;
-    const artifact=compiled.plan.artifacts.find(item=>item.artifactId===selection.artifactId);
-    // Historical inspection never grants new fields or knowledge to a former holder.
-    if(inspected){selection.inspected=inspected;selection.authority=snapshot.authority.filter(item=>item.artifactId===selection.artifactId);}
-    const safe=inspected||selection.inspected,fields=safe?.fields||[];
-    const observations=holding?snapshot.observations.filter(item=>item.artifactId===selection.artifactId&&item.actorId===selection.actorId):selection.inspected?.observations||[];
-    const authority=holding?snapshot.authority.filter(item=>item.artifactId===selection.artifactId):selection.authority||[];
-    const related=[...new Set([...(artifact?.derivedFrom||[]),...(artifact?.replaces||[]),...(artifact?.related||[])])];
-    const action=(name)=>html(JSON.stringify([this.contextId,selection.artifactId,selection.actorId,name]));
-    this.inspector.innerHTML=`
-      <h2>Exact object inspector</h2><h3>${html(artifact?.label||selection.artifactId)}</h3>
-      <p class="held-detached-status">${status}${holding?'':' - previously viewed historical snapshot, not current possession'}</p>
-      <dl><dt>Exact artifact ID</dt><dd><code>${html(selection.artifactId)}</code></dd>
-      <dt>Exact holding ID</dt><dd><code>${html(selection.holdingId)}</code></dd>
-      <dt>Creator</dt><dd>${html(artifact?.creator)}</dd><dt>Logical holder</dt><dd>${html(selection.actorId)}</dd>
-      <dt>Acquisition cursor</dt><dd>${html(valueText(selection.acquiredAt))}</dd>
-      <dt>Store / retention / representation</dt><dd>${html(selection.store)} / ${html(selection.retention)} / ${html(selection.representationId)}</dd>
-      ${artifact?.expiresAt!=null?`<dt>Expiry at protocol clock</dt><dd>${html(artifact.expiresAt)}${snapshot.protocolClock>=artifact.expiresAt?' - expired, possession unchanged':''}</dd>`:''}</dl>
-      <p>${html(artifact?.details||'')}</p>
-      <h3>Permission-scoped fields for ${html(selection.actorId)}</h3>
-      ${fields.length?'<dl>'+fields.map(field=>`<dt>${html(field.name||field.attributeId)}</dt><dd><pre>${field.readable?html(valueText(field.value)):'Not readable by this holder'}</pre></dd>`).join('')+'</dl>':'<p>No readable fields in this representation. Opaque possession is not decryption.</p>'}
-      <h3>Checks, request acceptance and knowledge of ${html(selection.actorId)}</h3>
-      ${observations.length?observations.map(item=>`<p><strong>${html(item.actorId)} · ${html(item.kind)} · ${html(item.result)}</strong><br>Request ${html(item.requestId||'not specified')} · endpoint ${html(item.endpoint||'not specified')} · policy ${html(item.policy||'not specified')}<br>${html(item.detail||'')}</p>`).join(''):'<p>No authored observation for this holder at this cursor.</p>'}
-      <h3>Authority state - not automatic holder knowledge</h3>
-      ${authority.length?authority.map(item=>`<p>${html(item.authorityId)} · ${html(item.status)} · ${html(item.detail||'')}</p>`).join(''):'<p>No authored authority change at this cursor.</p>'}
-      <h3>Related exact IDs</h3>
-      ${related.map(id=>snapshot.holdings.some(item=>item.artifactId===id&&item.actorId===selection.actorId)?`<button class="held-related" data-held-action="${action('related:'+id)}" data-held-related="${html(id)}">${html(id)}</button>`:`<p><code>${html(id)}</code> - not held by this logical actor at this cursor</p>`).join('')||'<p>None declared.</p>'}
-      <button class="held-summary-control" data-held-action="${action('trace')}" data-held-trace="${html(selection.artifactId)}">Replay exact object history</button>
-      <button class="held-summary-control" data-held-action="${action('help')}" data-held-help aria-expanded="${!!this.helpOpen}">Inventory help</button>
-      ${this.helpOpen?`<section class="held-help" role="dialog" aria-label="Inventory help"><p>Holding means possession of this representation in the named logical store. Receipt, local checks, request acceptance and issuer authority are separate authored observations. A detached snapshot is only previously viewed history. Replay follows this exact artifact, not every field with the same name.</p><button class="held-summary-control" data-held-action="${action('help-close')}" data-held-help-close>Close help</button></section>`:''}
-      ${this.app.objectTraceSelection?'<button class="held-summary-control" data-held-action="exit" data-held-exit>Return to full journey</button>':''}
-      <p>History is not current possession. Exact replay uses the same canonical source prefix, not an attribute alias.</p>`;
-  }
-}
-function logicalActorsForView(app){
-  if(app.scenarioOwnedActors)return app.scenarioOwnedActors;
-  const ids=new Set(scenarioActorIds(app.scenarioSnapshot().steps).filter(Boolean).map(id=>app.actor(id).id));
-  return Object.fromEntries([...ids].map(id=>[id,app.actor(id)]));
+  renderInspector(snapshot,compiled){this.inspector.innerHTML=this.inspectionHtml(snapshot,compiled);}
 }

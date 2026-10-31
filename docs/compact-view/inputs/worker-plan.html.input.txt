@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Auth Flow Studio — Compact mobile view</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"COMPACT VIEW PLAN";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+
+  pre{max-width:100%;max-height:480px;overflow:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}
+  pre code{padding:0;background:none;white-space:pre;font-size:12px}
+  details{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:8px}
+  summary{cursor:pointer;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+  summary:focus-visible,pre:focus-visible,.table-scroll:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}
+  @media print{pre{max-height:none;white-space:pre-wrap}pre code{white-space:pre-wrap}nav#TOC{display:none}}
+  </style>
+
+  <style>
+  main{min-width:0}a{overflow-wrap:anywhere}h4{font-size:20px;line-height:1.3;margin:14px 0}
+  .reader-sketch{display:grid;grid-template-columns:minmax(0,350px) minmax(0,1fr);align-items:center;gap:28px;margin:28px 0;padding:24px;background:#eef5f6;border:1px solid var(--line);border-radius:14px}
+  .sketch-phone{background:white;border:1px solid #adbdc8;border-top:5px solid #294c60;border-radius:22px;padding:22px 17px;box-shadow:0 6px 16px #17304812;font-size:14px;line-height:1.5;min-width:0}
+  .sketch-brand{font-size:10px;font-weight:750;letter-spacing:1px;color:#526b7a}
+  .sketch-mode{display:flex;align-items:center;gap:8px;margin:10px 0 15px;font-size:12px;font-weight:650}
+  .sketch-mode span,.sketch-controls span{padding:6px 9px;border:1px solid #cbd9df;border-radius:7px}
+  .sketch-mode .sketch-selected,.sketch-controls .sketch-selected{color:white;background:#00716b;border-color:#00716b}
+  .sketch-search{padding:11px 12px;border:1px solid #bccdd5;border-radius:8px;color:#526575;margin-bottom:21px;background:#f7fafb}
+  .sketch-kicker{font-size:10px;letter-spacing:.6px;font-weight:700;color:#526575}
+  .sketch-local{font-size:12px;color:#176356;font-weight:650}
+  .sketch-pending{padding:13px 12px;border:1px solid #c9a555;border-left:4px solid #92701c;background:#fff8e7;border-radius:7px;margin:17px 0;line-height:1.6;font-size:13px}
+  .sketch-disclosure{display:flex;justify-content:space-between;gap:10px;padding:12px 0;border-bottom:1px solid #dae5ea;font-size:12px;font-weight:650}
+  .sketch-disclosure span{font-size:14px;flex:none}
+  .sketch-controls{display:flex;justify-content:space-between;gap:5px;margin-top:19px;font-size:12px;font-weight:650}
+  .reader-sketch figcaption{font-size:14px;line-height:1.7;color:#435d6f}
+  .reader-sketch figcaption strong{display:block;color:#18384a;font-size:17px;margin-bottom:8px}
+  @media(max-width:730px){.reader-sketch{grid-template-columns:minmax(0,1fr);padding:16px;gap:18px}.sketch-phone{max-width:350px;width:100%;margin:auto}}
+  @media(max-width:390px){.reader-sketch{padding:9px}.sketch-phone{padding:17px 12px}.sketch-controls{font-size:11px}.sketch-controls span{padding:6px}}
+  @media print{.reader-sketch{break-inside:avoid;grid-template-columns:260px 1fr;background:#fff}.sketch-phone{box-shadow:none;font-size:11px}.sketch-controls{font-size:10px}}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Auth Flow Studio — Compact mobile view</h1>
+<p class="subtitle">Detailed worker implementation plan · Additive
+Compact / Full presentation</p>
+<p class="date">27 October 2026 · Document version 1</p>
+<div class="plan-stats"><span>Additive Compact / Full</span><span>Same catalog and session</span><span>20 acceptance requirements</span><span>Release gates preserved</span></div></header>
+<nav id="TOC" role="doc-toc" aria-label="Plan contents">
+<h2 id="toc-title">Implementation and acceptance</h2>
+<ul>
+<li><a href="#assignment-and-completion-criteria" id="toc-assignment-and-completion-criteria">1. Assignment and completion
+criteria</a></li>
+<li><a href="#authoritative-baseline-and-inherited-gates" id="toc-authoritative-baseline-and-inherited-gates">2. Authoritative
+baseline and inherited gates</a></li>
+<li><a href="#product-decisions-fixed-by-this-plan" id="toc-product-decisions-fixed-by-this-plan">3. Product decisions fixed
+by this plan</a></li>
+<li><a href="#protocol-and-evidence-requirements-mc-05-to-mc-08" id="toc-protocol-and-evidence-requirements-mc-05-to-mc-08">4. Protocol
+and evidence requirements — MC-05 to MC-08</a></li>
+<li><a href="#study-state-and-navigation-contract" id="toc-study-state-and-navigation-contract">5. Study-state and
+navigation contract</a></li>
+<li><a href="#implementation-architecture-and-concrete-code-work" id="toc-implementation-architecture-and-concrete-code-work">6.
+Implementation architecture and concrete code work</a></li>
+<li><a href="#mobile-accessibility-and-visual-requirements-mc-15" id="toc-mobile-accessibility-and-visual-requirements-mc-15">7. Mobile
+accessibility and visual requirements — MC-15</a></li>
+<li><a href="#verification-plan-and-coverage-manifest" id="toc-verification-plan-and-coverage-manifest">8. Verification plan
+and coverage manifest</a></li>
+<li><a href="#performance-methodology-mc-19" id="toc-performance-methodology-mc-19">9. Performance methodology —
+MC-19</a></li>
+<li><a href="#implementation-sequence-and-reviewable-checkpoints" id="toc-implementation-sequence-and-reviewable-checkpoints">10.
+Implementation sequence and reviewable checkpoints</a></li>
+<li><a href="#final-checks-evidence-and-delivery-mc-20" id="toc-final-checks-evidence-and-delivery-mc-20">11. Final checks,
+evidence and delivery — MC-20</a></li>
+<li><a href="#plan-provenance-and-checklist-index" id="toc-plan-provenance-and-checklist-index">12. Plan provenance and
+checklist index</a></li>
+</ul>
+</nav>
+<main id="worker-plan"><h2 id="assignment-and-completion-criteria">1. Assignment and completion
+criteria</h2>
+<p>Add a <strong>Compact</strong> presentation optimized for reading and
+operating lessons on a phone. Keep <strong>Full</strong>, the existing
+diagram/timeline/inspector workspace, available on every device. Both
+presentations use the same catalog, scenarios, cases, protocol engine,
+object model and current study session. Compact is a presentation
+choice, not another protocol workspace or a reduced lesson catalog.</p>
+<p>The user has requested a careful implementation plan. This document
+defines the worker’s implementation scope; it is not evidence that
+implementation or acceptance has happened. Execute the phases below
+without stopping for routine design confirmations. A first
+implementation is complete when all required functionality exists,
+measured results are delivered against exact inputs, failures and
+unavailable acceptance checks are disclosed, and an independent review
+can reproduce the result. Publication and existing owner acceptance
+remain separate.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="1. Assignment and completion
+criteria — table 1"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Required outcome</th>
+<th scope="col">Acceptance meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>An alternative view</td>
+<td>Explicit Compact / Full control; phone can choose Full and desktop
+can choose Compact</td>
+</tr>
+<tr class="even">
+<td>A useful phone reader</td>
+<td>One current-step card, searchable lessons/cases, touch navigation,
+expandable evidence, no ordinary page-wide horizontal panning</td>
+</tr>
+<tr class="odd">
+<td>Same learning content</td>
+<td>Every existing picker identity and registered case/member remains
+reachable; no quiet success-only subset</td>
+</tr>
+<tr class="even">
+<td>Same protocol truth</td>
+<td>Identical canonical state, holders, readable representations,
+decisions and histories at the same cursor</td>
+</tr>
+<tr class="odd">
+<td>Safe switching</td>
+<td>Exact study context survives switching, including an in-progress
+exchange and trace; playing pauses without resetting</td>
+</tr>
+<tr class="even">
+<td>Full preservation</td>
+<td>Existing Full functionality, routing, configuration, diagram
+interactions and accepted corrections remain intact</td>
+</tr>
+<tr class="odd">
+<td>Measured cost</td>
+<td>Inactive Full graph work is stopped; Full regressions and actual
+mobile behavior are measured separately</td>
+</tr>
+<tr class="even">
+<td>Reviewable delivery</td>
+<td>Exact standalone, source/review ZIP, entrypoint, evidence and
+remaining gates</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Required for this release:</strong> the complete reader,
+all-catalog access, shared state, switching, preference, existing
+offline build, mobile/accessibility checks and performance evidence.
+<strong>Deferred:</strong> PWA/service worker, native app, swipe
+navigation, a second mobile graph, new protocols, AI-generated
+explanations, cross-device progress synchronization,
+presentation-specific URL parameters and logo work. These are not
+prerequisites for this assignment.</p>
+<h2 id="authoritative-baseline-and-inherited-gates">2. Authoritative
+baseline and inherited gates</h2>
+<p>Start from the independently reviewed <strong>candidate-07</strong>
+product, or an explicitly identified descendant whose application/test
+changes are reconciled before implementation. Documentation-only closure
+recording may already have occurred; it does not require restarting
+review of unchanged application bytes.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="2. Authoritative
+baseline and inherited gates — table 2"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Baseline</th>
+<th scope="col">Exact binding</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Published parent</td>
+<td><code>ae9dffe2da2bca33c01daee1eaacfcbedfc95aa0</code></td>
+</tr>
+<tr class="even">
+<td>Canonical application/test set</td>
+<td>256 files; SHA-256
+<code>b743e4fc4cc8f9a804c55c1d8b2f8a0f845fab9caf94bb66d0d75c4a3396b825</code></td>
+</tr>
+<tr class="odd">
+<td>Standalone</td>
+<td>5,583,631 bytes; SHA-256
+<code>9ff001b8d035a90e732a9bea8ccce944226e8c9a81729ab224d3b4b75fdb6694</code></td>
+</tr>
+<tr class="even">
+<td>Independent closure authority</td>
+<td><code>auth-flow-studio-windows-protection-closure-review.html</code>;
+SHA-256
+<code>c9a780fa332b9ff3e008b9396dcf7d02c4962f550951dc502076e99f2491fcd3</code></td>
+</tr>
+<tr class="odd">
+<td>Catalog</td>
+<td>317 lab models, 12 presets, <strong>328 deduplicated picker
+identities including Core</strong>, 11 workspaces</td>
+</tr>
+<tr class="even">
+<td>Existing tests</td>
+<td>135 files; retained worker local suite 2,395/0; independent focused
+Node run 236/0 across ten files</td>
+</tr>
+</tbody>
+</table>
+</div><p>Freeze this baseline and its current manifests before changing shared
+UI/controller code. The 328 picker identities are not the number of
+variant/subfixture executions; enumerate those separately from the real
+registry. Preserve the existing 29 hidden-search-tag fixtures and
+metadata-only lookup behavior.</p>
+<p>All seven Windows-protection review findings are closed in their
+accepted scopes. Preserve those closures, including PAM’s
+public/internal/pending separation and sudo secret release. Preserve
+earlier P6/P6C, DNSSEC and WIN-11 closures and all historical failure
+records. A change that touches an accepted behavior must prove it
+remains correct; a new presentation is not permission to change its
+oracle.</p>
+<p>Keep these release conditions explicit: human G01 remains open;
+current candidate-07 performance is unmeasured; candidate-02’s two
+material startup flags and one baseline-only variation, six P6
+conditions, five DNSSEC material conditions and earlier/P0
+qualifications remain unaccepted/unwaived. Native Windows/DC remains
+unperformed for 88 cases; historical installed-PAM evidence remains 164
+matches and one qualified divergence across 165 calls. The exact CI
+invocation has not been observed passing for this baseline. Compact work
+does not close these gates by implication.</p>
+<h2 id="product-decisions-fixed-by-this-plan">3. Product decisions fixed
+by this plan</h2>
+<h3 id="view-choice-startup-and-persistence-mc-01">3.1 View choice,
+startup and persistence — MC-01</h3>
+<p>Use the visible labels <strong>Compact</strong> and
+<strong>Full</strong>, grouped under <strong>View</strong>. Implement a
+named radio group or correctly labelled mutually exclusive pressed
+buttons. It is not a tab bar unless a complete tab interaction model is
+deliberately implemented; ordinary buttons/radios are preferred
+here.</p>
+<p>Resolve the initial mode once, before mounting either
+presentation:</p>
+<ol type="1">
+<li>A valid remembered explicit choice wins.</li>
+<li>Otherwise, use Compact at an initial layout viewport width of
+<strong>700 CSS px or less</strong>, Full above 700.</li>
+<li>If viewport detection is unavailable, use Full; both controls remain
+available.</li>
+</ol>
+<p>Store only a validated <code>compact</code> or <code>full</code>
+enum, under a versioned preference key such as
+<code>auth-flow-studio.presentation.v1</code>. Catch storage read/write
+failures, including file-origin restrictions, and retain a working
+page-memory preference. Do not persist automatically suggested mode as
+an explicit choice. Do not persist session state, searches, environment
+drafts or object values to remember the view. Do not auto-switch on
+resize, orientation, zoom, keyboard appearance or another tab’s
+preference change.</p>
+<p>Mode selection and <strong>Open Full diagram</strong> use the same
+switch operation. The latter selects Full at the same study cursor,
+without navigating to another lesson. Returning to Compact uses the
+normal mode control. Neither action adds a browser-history entry.</p>
+<h3 id="phone-page-order-mc-02">3.2 Phone page order — MC-02</h3>
+<p>Use one vertical reading surface with inline disclosures. Core
+reading must not require nested bottom sheets, a modal stack, horizontal
+card swiping or simultaneous panels.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="3.2 Phone page order — MC-02 — table 3"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Order</th>
+<th scope="col">Required content and interaction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Header</td>
+<td>Product identity, View choice, visible lesson-search entry. Keep it
+small; do not autofocus search or summon the software keyboard on
+load.</td>
+</tr>
+<tr class="even">
+<td>Lesson context</td>
+<td>Title, workspace/family, named case, selected comparison/profile,
+short purpose and essential assumptions. <strong>Change case</strong>
+and <strong>Find lesson</strong> remain discoverable.</td>
+</tr>
+<tr class="odd">
+<td>Current step</td>
+<td>Position and active scope; logical actor(s); local/internal/transfer
+classification; action; authored explanation; current observed result or
+pending status.</td>
+</tr>
+<tr class="even">
+<td>Critical outcome</td>
+<td>Relevant denial, validation failure, expired credential, unsupported
+operation or coverage qualification remains visible without opening
+several panels.</td>
+</tr>
+<tr class="odd">
+<td>Evidence disclosures</td>
+<td>Data and checks; state changes; participants/current holdings;
+field/exact-object history; protocol/configuration detail and
+sources.</td>
+</tr>
+<tr class="even">
+<td>Overview</td>
+<td>Vertical step list with current position and jump controls;
+<strong>Open Full diagram</strong>.</td>
+</tr>
+<tr class="odd">
+<td>Playback controls</td>
+<td>Previous, Play/Resume/Pause/Replay and Next with clear progress. Use
+a sticky bottom row only when it fits without hiding content; otherwise
+use normal flow.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Preserve the authored lesson text. Use existing
+<code>beginnerSummary</code>, <code>summary</code>, <code>detail</code>,
+definitions and profile qualifications according to the current detail
+preference. Do not introduce runtime-generated explanations, merge
+semantic steps, or manufacture a success/failure label from keywords in
+a title.</p>
+<figure class="reader-sketch" aria-labelledby="reader-sketch-caption">
+<div class="sketch-phone">
+<div class="sketch-brand">
+AUTH FLOW STUDIO
+</div>
+<div class="sketch-mode">
+View <span class="sketch-selected">Compact</span> <span>Full</span>
+</div>
+<div class="sketch-search">
+Find a lesson or case…
+</div>
+<div class="sketch-kicker">
+LINUX · PAM PASSWORD CHANGE
+</div>
+<h4>
+Preliminary checks completed
+</h4>
+<div class="sketch-local">
+Local PAM operation
+</div>
+<p>
+The preliminary pass has finished. The update pass and public call have
+not yet completed.
+</p>
+<div class="sketch-pending">
+<strong>Public call: pending</strong><br>Internal preliminary pass:
+success
+</div>
+<div class="sketch-disclosure">
+Configuration line and checks <span>＋</span>
+</div>
+<div class="sketch-disclosure">
+Current holdings and history <span>＋</span>
+</div>
+<div class="sketch-disclosure">
+Steps and Full diagram <span>＋</span>
+</div>
+<div class="sketch-controls">
+<span>Previous</span><span class="sketch-selected">Resume</span><span>Next</span>
+</div>
+</div>
+<figcaption id="reader-sketch-caption">
+<strong>Reading hierarchy sketch, not an interactive prototype.</strong>
+Illustrative wording for an intermediate PAM state: the pending public
+result stays visible while detailed evidence is expandable. Final labels
+come from the actual authored case and current cursor; no success is
+inferred from a completed internal pass.
+</figcaption>
+</figure>
+<h3 id="search-catalog-and-case-selection-mc-03">3.3 Search, catalog and
+case selection — MC-03</h3>
+<p>Reuse <code>ScenarioPicker</code>, current metadata, ranking, hidden
+aliases and ambiguity handling. Compact must find
+<code>filtering</code>, <code>lsa</code>, <code>sudo</code>,
+<code>FAST</code> and the existing tested queries with the same results
+and order as Full. Preserve distinctions such as SPAKE2 versus SPAKE2+,
+success versus denial cases, and protocol/platform profiles.</p>
+<p>Typing or highlighting does not select a lesson or evaluate a new
+model. Multiple matching cases require the existing explicit case
+choice; cancel returns to the current lesson. Keep enough
+title/family/case text visible to distinguish results, wrapping rather
+than truncating the only useful qualifier. Preserve keyboard editing,
+IME composition, arrow/Enter/Escape navigation, tap activation,
+result-count status and clear-query behavior.</p>
+<p>Every named case and comparison member remains selectable in Compact.
+Browsing/selecting a new lesson or case deliberately uses the existing
+lesson-reset semantics. Presentation switching is a different action.
+Search/case controls must never route through a duplicate mobile
+catalog.</p>
+<h3 id="configuration-links-and-existing-full-capabilities-mc-04">3.4
+Configuration, links and existing Full capabilities — MC-04</h3>
+<p>Compact shows current profile and environment assumptions, including
+an indication when custom context is applied. Named cases and comparison
+selectors remain Compact controls. Advanced custom configuration,
+participant dragging, graph layout editing and other diagram-specific
+tools remain available in Full through clearly labelled actions. The
+current Core configuration can be read and played in Compact;
+<strong>Edit configuration in Full</strong> preserves the session on
+switching. Applying a real configuration change retains its existing
+reset/recompute behavior.</p>
+<p>Keep current named-lesson/case URLs and copied-link behavior
+unchanged. <strong>Do not add <code>view=</code> in this
+release.</strong> <code>parseStudioRoute()</code> currently rejects
+query keys other than one valid <code>case</code>, and
+<code>openRoute()</code> can reset a comparison selection. A
+presentation hash change would therefore be hazardous without separate
+routing work.</p>
+<p>Copied links continue to share the named lesson/case, with comparison
+controls reopening at defaults as currently disclosed. They do not share
+mode, exact progress, trace, environment or secrets. Back/Forward
+remains lesson navigation; do not intercept it to close inline
+disclosures or write a history entry for each step. Reload follows
+existing lesson/session behavior; preserving a live cursor across a view
+switch does not promise persistence across page reload.</p>
+<h2 id="protocol-and-evidence-requirements-mc-05-to-mc-08">4. Protocol
+and evidence requirements — MC-05 to MC-08</h2>
+<h3 id="mc-05-current-action-and-result">MC-05: Current action and
+result</h3>
+<p>The card must distinguish <strong>described action</strong> from
+<strong>observed result</strong>. On initial load the first step may be
+described, but state remains <strong>Before step 1</strong>. At an
+intermediate cursor, receipt, verification, admission or completion
+cannot appear early. Use the existing canonical cursor and declared
+decision evidence; if an outcome is not recorded at this prefix, say so.
+Do not infer a generic “authenticated,” “secure” or “allowed” result
+from possession of a credential or successful transport.</p>
+<p>Local processing, local IPC, internal exchanges between logical
+components and network transfers retain their own labels. A
+self-operation is not drawn as a new inter-host transfer. Parent/child
+actors retain exact identity even if Full folds them into one visual
+card. Long actor/realm/forest names must remain distinguishable.</p>
+<h3 id="mc-06-current-holdings-and-history">MC-06: Current holdings and
+history</h3>
+<p>Use the same owner-local holdings and representation permissions as
+Full. Show coverage as complete/partial/not modeled where declared.
+Current holdings and cumulative history are separate views; a released
+object must not look currently held. Historical inspection does not
+grant access to a plaintext representation or a secret held by another
+actor. Preserve encrypted/opaque values and permission-scoped readable
+fields.</p>
+<p>Allow a learner to tap a field definition, follow its path, select an
+exact object and inspect its history without a hover interaction or
+mandatory switch to Full. The exact object identity, representation,
+owner, source event and field occurrence must survive navigation.
+Collapsing a long value is acceptable only with access to the complete
+permitted value; copy uses exact data, never an ellipsized preview.</p>
+<h3 id="mc-07-protocol-specific-detail-remains-available">MC-07:
+Protocol-specific detail remains available</h3>
+<p>Inventory every current learning/evidence panel and map it to Compact
+or a documented Full-only <em>editing/diagram</em> action. Required
+learning evidence stays readable in Compact. Prefer shared
+projections/components for existing panels over copied renderer
+logic.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="MC-07:
+Protocol-specific detail remains available — table 4"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Boundary</th>
+<th scope="col">Mandatory preservation examples</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Windows</td>
+<td>Token filtering versus ACL authorization; Credential Guard/LSA
+protection distinctions; existing policy, token and qualification
+evidence</td>
+</tr>
+<tr class="even">
+<td>PAM/sudo</td>
+<td>Physical file/line/control/module flags; public API result versus
+internal preliminary/update passes versus pending/not-started entries;
+no post-release password use</td>
+</tr>
+<tr class="odd">
+<td>Kerberos/forests</td>
+<td>Trust/referral direction, PKINIT/FAST operations, cryptographic
+prerequisites, actual credential owners and independent lifetimes</td>
+</tr>
+<tr class="even">
+<td>SMB/NFS/SSH</td>
+<td>Authentication versus share/file/account admission; transport
+protection, session/channel binding, client-asserted versus
+authenticated identity</td>
+</tr>
+<tr class="odd">
+<td>RADIUS/PAKE</td>
+<td>EAP method versus adjacent transport; separate admission/accounting;
+endpoint-specific confirmation and failure</td>
+</tr>
+<tr class="even">
+<td>OAuth/OIDC/SAML/JWT/MCP</td>
+<td>Token audience/purpose, validation versus decoding,
+host/upstream/resource decisions, consent and platform limitations</td>
+</tr>
+<tr class="odd">
+<td>Kubernetes</td>
+<td>Accepted identity, request attributes, Role/ClusterRole and
+bindings, authorization and admission as separate decisions</td>
+</tr>
+<tr class="even">
+<td>DNSSEC</td>
+<td>Validator ownership; secure/insecure/bogus/unresolved outcomes;
+proof, alias/target/cache deadlines, signing/delegation and clock
+evidence</td>
+</tr>
+</tbody>
+</table>
+</div><h3 id="mc-08-time-failures-and-qualifications">MC-08: Time, failures
+and qualifications</h3>
+<p>Playback time is presentation time. View changes, phone rotation,
+speed changes and scrolling do not change protocol time, ticket expiry,
+DNS TTLs, revocation state or authority generation. Preserve authored
+failure branches and partial knowledge. Important assumptions,
+experimental/deprecated-profile labels and modeled/native limits remain
+reachable and are not converted to unqualified claims by shorter
+prose.</p>
+<h2 id="study-state-and-navigation-contract">5. Study-state and
+navigation contract</h2>
+<h3 id="one-shared-session-mc-09">5.1 One shared session — MC-09</h3>
+<p>There is one session/controller, one scenario context, one held-state
+projection and one <code>FlowPlayer</code>. Presentation state is
+separate from protocol state. A minimum switch-preservation record
+includes:</p>
+<ul>
+<li>Selected picker/model identity, protocol/Core settings, case,
+comparison member, provider profile and runtime environment
+draft/applied values plus revision.</li>
+<li>Authored snapshot/context identity; source cursor including
+milestone/progress; source and visible row indices; initial/selected
+flags.</li>
+<li>Field/exact-object trace selection, trace queue and mapping, current
+actor/object/representation selection and inspection target.</li>
+<li>Player queue, queue position, elapsed time, kind, speed,
+paused/idle/complete status; current replay scope and chapter.</li>
+<li>Existing learning detail, internal-actor preference and custom graph
+layouts.</li>
+</ul>
+<p>Each presentation may separately retain disclosure state, logical
+focus and scroll anchors in page memory. Store identities, not DOM
+nodes. The presentation enum must not enter the protocol context key or
+invalidate model/compiled-state caches.</p>
+<h3 id="switch-transaction-mc-10">5.2 Switch transaction — MC-10</h3>
+<ol type="1">
+<li>Capture logical focus and per-view reading state; pause only if
+playing, using <code>FlowPlayer.pause()</code>.</li>
+<li>Preserve the exact resulting player/session snapshot. A playing
+session becomes paused; an idle/paused/complete session keeps its
+status.</li>
+<li>Close transient popups and cancel active pointer capture safely.
+Preserve logical inspection, trace, unfinished context values and search
+text; a view switch is not Apply, Reset or lesson selection.</li>
+<li>Unmount outgoing presenter listeners/observers/DOM and stop its
+presentation-only scheduling. Mount the destination once.</li>
+<li>Render the destination from the same snapshot, without advancing or
+re-selecting a step. Restore a valid corresponding control or the mode
+control/current-step heading and meaningful scroll anchor. Announce the
+view change and paused status once.</li>
+<li>A session paused by switching stays paused until explicit Resume; an
+already idle/paused/complete session retains its status. Assert all
+semantic identities/state/holdings and queue position/elapsed/kind/speed
+are unchanged; the permitted playback change is playing→paused.</li>
+</ol>
+<p><strong>Do not implement switching by calling
+<code>selectLabScenario()</code>, <code>refreshConfiguration()</code>,
+<code>reset()</code>, <code>selectStep()</code> or
+<code>player.stop()</code>.</strong> These current methods clear or
+reconstruct session state, discard queues or mark the selected event
+complete. Re-selecting the same integer step would incorrectly complete
+an in-flight event.</p>
+<h3 id="compact-navigation-mc-11">5.3 Compact navigation — MC-11</h3>
+<p>Compact manual navigation is static inspection at exact authored row
+boundaries. Full keeps its existing controls and playback semantics. Add
+a small shared controller/player primitive for exact queue
+position/elapsed inspection and continuation rather than approximating
+with fractional seek epsilon values or creating shortened suffix
+queues.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="5.3 Compact navigation — MC-11 — table 5"><table>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Current state in the active study queue</th>
+<th scope="col">Previous</th>
+<th scope="col">Next / initial Start</th>
+<th scope="col">Play control</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Initial, before first row</td>
+<td>Disabled</td>
+<td>Inspect first row’s end; never skip row 1</td>
+<td>Play starts the first row</td>
+</tr>
+<tr class="even">
+<td>Playing</td>
+<td>Pause, then apply the appropriate manual navigation</td>
+<td>Pause, then apply the appropriate manual navigation</td>
+<td>Pause</td>
+</tr>
+<tr class="odd">
+<td>Paused at a row’s start or partway through it</td>
+<td>Preceding row’s end, or initial if first</td>
+<td>Current row’s end</td>
+<td>Resume exact saved queue/elapsed</td>
+</tr>
+<tr class="even">
+<td>Completed selected row, including a player paused at its end</td>
+<td>Preceding row’s end, or initial if first</td>
+<td>Following row’s end</td>
+<td>Continue from the next row using the same active queue</td>
+</tr>
+<tr class="odd">
+<td>Final completed row</td>
+<td>Preceding row’s end</td>
+<td>Disabled</td>
+<td>Explicitly labelled Replay; restart only when activated</td>
+</tr>
+<tr class="even">
+<td>Empty trace</td>
+<td>Disabled</td>
+<td>Disabled</td>
+<td>Disabled, with explanatory empty state</td>
+</tr>
+</tbody>
+</table>
+</div><p>Determine row completion from its canonical mapped endpoint, not only
+<code>player.status</code>. On explicit Play/Resume at speed zero,
+retain the existing <code>ensureRunningSpeed</code> policy that restores
+the last positive speed. A presentation switch by itself preserves zero
+and does not start playback.</p>
+<p>Define the active queue explicitly: journey, field path, exact-object
+history or connection replay. A paused Full connection replay may use a
+subset even though <code>visibleSteps</code> lists the whole journey.
+Compact stays in that active scope, labels it, and provides
+<strong>Return to journey</strong>. Never reinterpret a queue index as a
+source-event index.</p>
+<p>Trace rows use their actual
+<code>heldCursorStart</code>/<code>heldCursorEnd</code>; multiple rows
+may map to one source event and an exact history can include an initial
+row. Preserve that mapping and expose both trace position and source
+position. Returning to journey maps to the same source cursor without
+applying future effects. No-match traces and initial rows need explicit
+tests.</p>
+<p>Implement Return to journey as an exit-scope command that clears
+trace/connection selection and maps to the full queue while retaining
+that exact source cursor. Do not reuse current
+<code>clearAttribute()</code>, which calls <code>reset()</code> and
+rewinds. Include initial source index <code>-1</code> and multiple trace
+rows from one source event in the mapping tests.</p>
+<p>For connection replay, preserve the existing
+<code>kind='connection'</code> message-interval mapping even when a
+queue row has no explicit
+<code>heldCursorStart</code>/<code>heldCursorEnd</code>. Its
+received-message boundary is not whole-source-event completion. Do not
+use <code>selectStep()</code> or <code>selected=true</code> to
+manufacture this boundary: that could apply later local verification
+effects. Add a receipt-before-local-check fixture proving those effects
+remain pending.</p>
+<p>The vertical list represents the labelled active queue. Selecting a
+row statically inspects its exact mapped end boundary; selecting an
+explicit initial row shows its initial boundary. It does not start
+playback. Use the same boundary command as Next/Previous and retain the
+distinction between an inspected end state and a partially playing
+event.</p>
+<p>Opening search, case choice, an evidence disclosure or object-history
+investigation in Compact pauses active playback; closing it does not
+resume automatically. Entering a field/exact-history scope requires a
+separate paused scope-entry command: current
+<code>HeldObjectView.trace()</code>/<code>playAttribute()</code> helpers
+start playback and must not be called unchanged merely to open an
+investigation. Scrolling does not silently change study state. Autoplay
+starts only through Play/Resume. Keep one timing engine; Compact may
+omit decorative packet motion and coalesce DOM updates, but it must
+process all canonical transitions. Reduced-motion handling must continue
+when Full is unmounted.</p>
+<h2 id="implementation-architecture-and-concrete-code-work">6.
+Implementation architecture and concrete code work</h2>
+<h3 id="extract-responsibilities-incrementally-mc-12">6.1 Extract
+responsibilities incrementally — MC-12</h3>
+<p>Use these boundaries; filenames are suggested, not a demand for a
+framework rewrite:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="6.1 Extract
+responsibilities incrementally — MC-12 — table 6"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Responsibility</th>
+<th scope="col">Suggested change</th>
+<th scope="col">Required constraint</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Session/controller</td>
+<td>Extract from <code>AuthFlowStudio</code> initialization,
+configuration and semantic commands into a small shared service</td>
+<td>Same factories, snapshots, context revision and actions; no
+duplicate reducer/player</td>
+</tr>
+<tr class="even">
+<td>Held-study state</td>
+<td>Separate <code>HeldObjectView.compiled()</code>, cursor flags,
+snapshot, selection/trace identity from DOM/geometry</td>
+<td>Usable without graph nodes, layout measurement, focus calls or
+observers</td>
+</tr>
+<tr class="odd">
+<td>Shared presentation projection</td>
+<td>Add a pure read model for lesson, scope, logical actors, current
+cursor, holdings, decisions, evidence and available actions</td>
+<td>Reads canonical data; formats labels; never evaluates protocol rules
+or manufactures results</td>
+</tr>
+<tr class="even">
+<td>Full presenter</td>
+<td>Wrap current graph, timeline, inspector and held-object visuals with
+mount/update/unmount ownership</td>
+<td>Preserve existing accepted Full behavior and controls</td>
+</tr>
+<tr class="odd">
+<td>Compact presenter</td>
+<td>Add single-column reader and inline evidence consumers</td>
+<td>Emits shared semantic commands; no second scenario catalog or state
+engine</td>
+</tr>
+<tr class="even">
+<td>Shared shell/preferences</td>
+<td>Mount header, view choice and appropriate common utilities once</td>
+<td>Validate enum; initial mode before large UI mount; no duplicate IDs
+or pickers</td>
+</tr>
+</tbody>
+</table>
+</div><p><code>connectedCallback()</code> currently creates the entire Full
+shell and caches required nodes before binding. <code>bind()</code> and
+render methods contain direct queries that assume those controls exist.
+<code>renderAll()</code> also prepares/mutates configuration before
+graph work. Extract semantic preparation from visual rendering first;
+broad optional chaining around missing nodes is not an adequate
+separation.</p>
+<p><code>HeldObjectView</code> currently mixes state with a graph
+ResizeObserver, geometry, focus and a reduced-motion listener. Move
+shared state and reduced-motion ownership out of the Full presenter.
+Keep real pagehide/pageshow privacy behavior at application level.
+Unmounting a view must not be treated as leaving the page or reset
+page-only context.</p>
+<p><code>onPlayer()</code> currently drives canonical updates and
+graph/packet/inspector work together. Deliver each player event to
+shared state once, then only the active presenter. Canonical
+intermediate milestones must update even when there is no SVG. Avoid
+rebuilding the entire Compact DOM on every frame: update stable
+nodes/active values at meaningful projection changes, retaining focus
+and text selection.</p>
+<h3 id="lifetime-and-cost-mc-13">6.2 Lifetime and cost — MC-13</h3>
+<p>Compact cold start must not first mount Full and remove it. While
+Compact is active, there must be no Full graph geometry/dock routing,
+graph ResizeObserver, hidden packet animation or full timeline
+rendering. A single bundled code payload can still contain both
+presenters; this requirement concerns execution and live DOM.</p>
+<p>Unmount presenter-owned handlers, observers and pointer captures
+explicitly. The single shared player may schedule playback; there must
+not be a second visual timer updating hidden Full UI. After 20 repeated
+mode toggles, listener/subscription/timer/observer and detached-node
+retention must return to stable bounds. Returning to Full computes
+layout for the current viewport while preserving custom layout data.</p>
+<p>Use stable logical focus targets and scope selectors to the active
+surface. No duplicate IDs, duplicate live regions, detached focus
+targets or hidden interactive trees in the accessibility tree. Preserve
+shared controls’ ownership so two presenters cannot handle one click
+twice.</p>
+<h3 id="build-and-offline-behavior-mc-14">6.3 Build and offline behavior
+— MC-14</h3>
+<p>Keep one self-contained output HTML containing both modes.
+<code>build.mjs</code> has an explicit ordered module list and strips
+source imports/exports; only certain module names are automatically
+isolated. Add new modules in deliberate dependency order and guard
+against global identifier collisions in the emitted IIFE. Source-module
+success alone does not prove the standalone build.</p>
+<p>Keep current CSP generation, embedded assets, footer and
+source/explicit/tag version behavior. Do not introduce CDN scripts,
+remote fonts, lazy network chunks, <code>eval</code> dependencies,
+service workers or weakened CSP to make switching work. Offline
+preference and clipboard failures need graceful existing/manual
+fallbacks. Source HTTP, emitted HTTP and the actual standalone file are
+distinct execution modes to verify.</p>
+<h2 id="mobile-accessibility-and-visual-requirements-mc-15">7. Mobile
+accessibility and visual requirements — MC-15</h2>
+<p>Implement and test the following concrete targets. <a href="https://www.w3.org/TR/WCAG22/">WCAG 2.2</a> is the normative
+reference; its Understanding documents and APG explain individual
+behaviors. These checks do not by themselves establish whole-product
+WCAG conformance or close G01.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="7. Mobile
+accessibility and visual requirements — MC-15 — table 7"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Area</th>
+<th scope="col">Required product behavior</th>
+<th scope="col">Authority / qualification</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Reflow</td>
+<td>Ordinary Compact reading/navigation works at 320 CSS px without
+page-wide horizontal scrolling. Long hashes, principals, URLs, tokens
+and prose wrap/expand; their length alone is not an exception. Local
+scrolling is reserved for content whose meaning requires two dimensions,
+such as a comparison table, with labelled/reachable regions and wrapping
+cells.</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/reflow.html">SC
+1.4.10</a>; a diagram’s two-dimensional exception does not justify a
+wide reader page. Visual wrapping must not change copied bytes.</td>
+</tr>
+<tr class="even">
+<td>Text enlargement</td>
+<td>Text can reach 200% without loss; separately check equivalent 400%
+desktop zoom/reflow. No disabled pinch zoom or restrictive maximum
+scale.</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html">SC
+1.4.4</a></td>
+</tr>
+<tr class="odd">
+<td>Touch controls</td>
+<td>At least 44×44 CSS px hit areas for non-inline Compact controls;
+main playback buttons preferably 48 px.</td>
+<td>Product target; <a href="https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html">SC
+2.5.8 AA</a> specifies 24 px with exceptions, not a universal 44 px
+rule</td>
+</tr>
+<tr class="even">
+<td>Focus visibility</td>
+<td>Focus is visible in both themes and fully uncovered by app
+headers/bars; scrolling restores visibility without displacing reading
+unnecessarily.</td>
+<td>Product target stronger than <a href="https://www.w3.org/WAI/WCAG22/Understanding/focus-not-obscured-minimum.html">SC
+2.4.11</a>’s not-entirely-obscured minimum</td>
+</tr>
+<tr class="odd">
+<td>Input access</td>
+<td>All tasks work with touch and keyboard; swipe/drag/hover are never
+the only method. Preserve text editing and IME.</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/keyboard.html">Keyboard</a>,
+<a href="https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html">Dragging
+Movements</a></td>
+</tr>
+<tr class="even">
+<td>Orientation</td>
+<td>Portrait and landscape operate without forced rotation or mode
+changes.</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/orientation.html">SC
+1.3.4</a></td>
+</tr>
+<tr class="odd">
+<td>Disclosure/search semantics</td>
+<td>Prefer native details/summary and reuse the existing combobox
+behavior. Correct names, expanded state, relationships and keyboard
+activation.</td>
+<td><a href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/">Disclosure
+APG</a>, <a href="https://www.w3.org/WAI/ARIA/apg/patterns/combobox/">Combobox
+APG</a></td>
+</tr>
+<tr class="even">
+<td>Announcements</td>
+<td>Short polite updates for selection, mode/pause, search counts and
+meaningful results. Never announce full inspectors or every animation
+frame.</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/status-messages.html">SC
+4.1.3</a>; verify actual speech and comprehension</td>
+</tr>
+<tr class="odd">
+<td>Motion</td>
+<td>No automatic playback on load; pause stays reachable; reduced-motion
+is respected without losing evidence.</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html">SC
+2.2.2 guidance</a>, plus explicit product policy</td>
+</tr>
+</tbody>
+</table>
+</div><p>Start ordinary body text around 16 CSS px with scalable units and
+readable spacing; this is a design target, not a WCAG font-size rule.
+Long principals, actor names, hashes and configuration lines must remain
+readable. Status uses text as well as color. Preserve text/non-text
+contrast in both existing themes.</p>
+<p>Reserve space for a sticky playback bar and safe-area insets. At
+short landscape heights and while an editable control has focus, prefer
+a normal-flow bar to covering input/results. Test actual
+software-keyboard behavior on iOS and Android. Safe-area values are not
+a universal keyboard detector. Add VisualViewport handling only when
+needed, feature-detect it and clean up listeners; no browser-specific
+keyboard API may be essential to navigation.</p>
+<p>Automatic playback must not steal keyboard focus, repeatedly scroll
+the document or replace a focused disclosure summary. For manual
+Next/Previous, keep focus on the activating control and bring the new
+card into view only as needed. Preserve per-view scroll anchors, but
+never restore an anchor that hides the current focus. Any existing modal
+that remains reachable must retain its actual modal focus/close/return
+behavior; this plan adds no new modal stack.</p>
+<h2 id="verification-plan-and-coverage-manifest">8. Verification plan
+and coverage manifest</h2>
+<h3 id="freeze-intended-checks-before-collection-mc-16">8.1 Freeze
+intended checks before collection — MC-16</h3>
+<p>Create a manifest with stable IDs, scenario/preset, actual
+variant/member, cursor/event, loading mode, presentation,
+viewport/engine and expected semantic property. Record
+attempted/passed/failed/unperformed for every planned item. Distinguish
+registered choices, source-only factories, DOM harness, browser engines,
+real devices and human AT. Do not derive an execution count by
+multiplying catalog sizes or add overlapping assertion counts into
+unique coverage.</p>
+<h3 id="broad-automatic-coverage">8.2 Broad automatic coverage</h3>
+<p><strong>A. Catalog/search:</strong> assert all 328 identities,
+labels/profile qualifications and case/member reachability in both
+views; existing hidden-tag ranking and ambiguity fixtures pass; typing
+does not construct/re-evaluate scenarios. Core is a configurable choice,
+not proof of every possible configuration.</p>
+<p><strong>B. Canonical/projection parity:</strong> enumerate every
+actual registered variant/member plus existing supported Core/preset
+fixture combinations. Compare frozen candidate-07 and new candidate
+authored steps, logical actors, initial state, inventories, effects and
+canonical state/holdings at initial, before, every authored milestone
+and complete cursor. Run Compact’s read projection over those same
+cursors. Exclude only declared presentation state; do not normalize away
+<code>pamEvaluation</code>, <code>pamResults</code>, authority,
+knowledge, expiry or custody. Record actual finite enumeration
+counts.</p>
+<p><strong>C. Catalog rendered smoke:</strong> select all 328 picker
+identities in source and actual emitted runtime, Full and Compact, at
+initial/terminal states. Check controls, context, safe text, available
+evidence, no exceptions and correct selection. Use the DOM harness for
+this breadth; it does not count as real mobile rendering.</p>
+<p><strong>D. Focused transition tests:</strong> both switch directions
+at initial, partial send, receipt-before-verification, completed event,
+final, zero speed, field path, exact-object history and connection
+subset. Include subfixtures, draft/applied context, folded logical
+owners, chapter changes, open disclosures/search and active drag. Test
+the navigation table literally, including first/last/empty rows and
+multiple trace rows from one source event. Verify exact
+queue/elapsed/cursor equality on switches and no future data.</p>
+<p><strong>E. Extraction regressions:</strong> run affected
+player/held-state/UI/focus/routing/search/runtime tests during work. Run
+the complete final repository suite because shared app/player/rendering
+changed. Existing assertions and outcome expectations remain; if an API
+extraction requires a fixture migration, preserve the old producer,
+explain the necessary interface change, and prove the same positive
+contract. Do not relax timeouts or replace failures with a passing
+subset.</p>
+<h3 id="deep-semantic-fixtures-mc-17">8.3 Deep semantic fixtures —
+MC-17</h3>
+<p>Bind the following existing selectors to the phase-0 manifest; slash
+notation below means model/case, not a new URL. Resolve real subfixture
+IDs from the registry. A missing selector is a manifest error to
+reconcile explicitly, not a reason to fabricate a case. The
+source/emitted deep checks cover initial, relevant intermediate, end,
+rewind, field/exact history and view continuity where those operations
+are modeled.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="8.3 Deep semantic fixtures —
+MC-17 — table 8"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Fixture group</th>
+<th scope="col">Required selectors / source of exact selector</th>
+<th scope="col">Property</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Core/web</td>
+<td><code>basic-keycloak</code>, <code>core</code>,
+<code>lab-spa-api</code>, <code>lab-bff-api</code>; actual existing
+SAML/FIDO positive and negative fixtures</td>
+<td>Core/preset settings, browser versus backend custody, redirects and
+local authenticators</td>
+</tr>
+<tr class="even">
+<td>SSH</td>
+<td><code>lab-ssh-cert-success</code>,
+<code>lab-ssh-cert-principal</code></td>
+<td>Certificate acquisition, server acceptance and account
+admission</td>
+</tr>
+<tr class="odd">
+<td>Kerberos</td>
+<td><code>lab-ad-pkinit-success</code>,
+<code>lab-ad-pkinit-kdc-trust</code>,
+<code>lab-ad-fast-tgs-success</code></td>
+<td>Trust, cryptographic operations, opaque data, prerequisites</td>
+</tr>
+<tr class="even">
+<td>Forests</td>
+<td><code>lab-ad-forest-one-way</code>,
+<code>lab-ad-forest-one-way-reverse</code></td>
+<td>Several logical actors, referrals and trust direction</td>
+</tr>
+<tr class="odd">
+<td>Windows/RDP</td>
+<td><code>lab-win-rdp-remote-credential-guard</code>,
+<code>lab-win-rdp-rcg-kerberos-unavailable</code>;
+<code>lab-wra01/default-filtered</code>,
+<code>lab-wra01/full-token-acl-denied</code>;
+<code>lab-wprot03/fresh-authentication</code></td>
+<td>Credential custody, no false fallback, filtering versus
+authorization, fresh epoch</td>
+</tr>
+<tr class="even">
+<td>SMB</td>
+<td><code>lab-smb-nonjoined-kerberos</code>,
+<code>lab-smb-nonjoined-share-denied</code>,
+<code>lab-smb-multichannel-binding-success</code></td>
+<td>Nonjoined access, share denial, session/channel binding and
+protection</td>
+</tr>
+<tr class="odd">
+<td>RADIUS</td>
+<td><code>lab-net-eap-tls13-wired</code>,
+<code>lab-net-radius-udp-radsec</code>,
+<code>lab-net-radius-disconnect-ack</code></td>
+<td>EAP, adjacent transport, admission versus teardown knowledge</td>
+</tr>
+<tr class="even">
+<td>PAKE/JWT</td>
+<td><code>lab-pake-spake2-success</code>,
+<code>lab-pake-spake2-password-mismatch</code>;
+<code>lab-jwt03/invalid-inner-signature</code>,
+<code>lab-jwt08/id-substitution</code></td>
+<td>Endpoint confirmation, decode/decrypt versus validity/purpose</td>
+</tr>
+<tr class="odd">
+<td>PAM/sudo</td>
+<td>PAM01 password-change
+success/preliminary-failure/update-failure/unsupported members; all six
+reached-change LLOG04 cases; <code>lab-lelev01/wrong-password</code>;
+source-only <code>prelimOk:false</code></td>
+<td>Public/internal/pending, config line, released secrets, account
+decision</td>
+</tr>
+<tr class="even">
+<td>macOS</td>
+<td><code>lab-mlog01/unlock-password</code>,
+<code>lab-melev01/right-denied</code></td>
+<td>Unlock/login distinctions and scoped authorization</td>
+</tr>
+<tr class="odd">
+<td>NFS</td>
+<td><code>lab-nfs-v42-kerberos-read/read-denied</code>,
+<code>lab-nfs-v3-auth-sys/root-squash</code>,
+<code>lab-nfs-gss-protection/krb5i</code></td>
+<td>Identity claim/authentication, service protection and file
+permission</td>
+</tr>
+<tr class="even">
+<td>Kubernetes</td>
+<td><code>lab-k8s04/bob</code>, <code>lab-k8s06/pod-log-denied</code>,
+<code>lab-k8s09/cached-old-expired</code></td>
+<td>Binding/request scope and token generation/expiry</td>
+</tr>
+<tr class="odd">
+<td>MCP</td>
+<td><code>lab-mcp01/default</code>,
+<code>lab-mcp09/upstream-consent-denied</code>,
+<code>lab-mcp13/os-denied</code></td>
+<td>Resource/upstream/host decisions and local stdio</td>
+</tr>
+<tr class="even">
+<td>DNSSEC</td>
+<td><code>lab-dnssec01/warm-answer-cache</code>,
+<code>lab-dnssec06/both-validate</code>,
+<code>lab-dnssec15/rfc5011-add</code>; exact corrected
+alias/failed-target fixture from DNS-R10 manifest</td>
+<td>Validators, independent cache/proof deadlines, clocks and chaptered
+journeys</td>
+</tr>
+</tbody>
+</table>
+</div><p>Properties may share a fixture; overlapping checks must not be
+counted as new unique executions. These are model/presentation checks,
+not new native protocol interoperability claims.</p>
+<h3 id="real-layout-devices-and-human-acceptance-mc-18">8.4 Real layout,
+devices and human acceptance — MC-18</h3>
+<p>Use a bounded browser matrix, separate from all-catalog DOM
+coverage:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="8.4 Real layout,
+devices and human acceptance — MC-18 — table 9"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Layer</th>
+<th scope="col">Required scope</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Loading paths</td>
+<td>Source over HTTP; actual emitted HTML over HTTP; exact offline file.
+Declare any platform restriction honestly.</td>
+</tr>
+<tr class="even">
+<td>Main phone layout</td>
+<td>320, 360, 390 and 430 CSS px portrait; short landscape around
+844×390; tablet 768; desktop 1440. Also test 700/701 default
+selection.</td>
+</tr>
+<tr class="odd">
+<td>Layout fixtures</td>
+<td>One simple web lesson, multi-forest/dense-actor lesson, long
+JWT/payload case, PAM disclosures, Kubernetes decision and DNSSEC
+chapter/long evidence. Test both themes, enlargement/reflow and
+keyboard-open tasks on representatives.</td>
+</tr>
+<tr class="even">
+<td>Semantic browser set</td>
+<td>Freeze a property-covering subset of section 8.3, with at least one
+representative from each of the 11 workspaces, in all three loading
+paths on the primary browser. Do not run the whole Cartesian product at
+every width.</td>
+</tr>
+<tr class="odd">
+<td>Cross-engine</td>
+<td>Chromium and WebKit representative layout/switch/keyboard set;
+Firefox desktop smoke. Record missing engine cells as unperformed.</td>
+</tr>
+<tr class="even">
+<td>Real phones</td>
+<td>At least one iPhone/Safari and Android/Chrome task session: tap,
+keyboard, orientation, viewport chrome, safe areas and text enlargement.
+Desktop emulation/WebKit automation is not an iOS device pass.</td>
+</tr>
+<tr class="odd">
+<td>Human screen reader</td>
+<td>Compact tasks with VoiceOver/iOS and TalkBack/Android, plus the
+existing Full G01 acceptance path. Record actual spoken
+output/comprehension and versions or explicit unperformed cells.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Manual tasks: find <code>filtering</code>/<code>lsa</code>; choose a
+specific failure case; read why access is denied; inspect the PAM
+physical line and pending/internal/public result; trace an exact object
+through release and rewind; switch Full and back mid-flow; continue at
+the same cursor. Confirm touch-only and keyboard-only operation, no
+hidden duplicate controls, no forced horizontal reading, and no focus
+under the playback bar.</p>
+<p>The implementation can be submitted for independent review with
+unavailable human/device checks explicitly open. It cannot claim mobile
+accessibility or overall release acceptance for those unperformed cells.
+Automated semantics/screenshots do not close G01.</p>
+<h2 id="performance-methodology-mc-19">9. Performance methodology —
+MC-19</h2>
+<p>Freeze inputs and collection plans before performance runs. The
+existing collector
+<code>tools/verification/run-next-expansion-performance.mjs</code> uses
+1920×1200 and five desktop actions (<code>startup</code>,
+<code>idle-filter</code>, <code>selection</code>,
+<code>replay-start</code>, <code>playing-filter</code>). Extend/version
+it or add a clearly named mobile producer; do not relabel its old
+desktop output as phone evidence.</p>
+<p>Keep three comparisons distinct:</p>
+<ol type="1">
+<li><strong>Frozen candidate-07 Full versus new Full</strong> at matched
+desktop and representative phone conditions: regression protection.</li>
+<li><strong>New Compact versus new Full</strong> on the same
+phone/browser/fixture: comparative presentation cost.</li>
+<li><strong>New feature actions</strong>—switch, Next/Previous,
+disclosure, exact history and large payload—measured as candidate-only
+actions with no invented historical baseline.</li>
+</ol>
+<p>Preserve historical frozen-baseline flags separately from a fresh
+candidate-07 control run. A faster Compact result cannot offset a slower
+Full cell or waive an inherited startup condition.</p>
+<p>Start with seven paired serial samples per comparable cell, alternate
+order, isolate browser contexts and do not run acceptance collectors
+concurrently with test workers. Predeclare warmup handling and retain it
+separately; never delete slow observations after seeing results. Record
+raw values, median/range, browser/device/OS, viewport/DPR,
+touch/throttle state, storage preference, loading path and
+source/test/HTML/producer hashes before/after. Additional samples are
+justified by instability or a changed input, not an attempt to select a
+favorable subset.</p>
+<p>Use the existing descriptive flag rules: increase <strong>over 25%
+and over 100 ms for startup</strong>, or <strong>over 25% and over 50 ms
+for interactions</strong>. Mark variability when range/median exceeds
+25% and absolute range exceeds the corresponding threshold on either
+arm. These flags are not statistical significance or owner acceptance.
+Every flagged/variable cell requires an explicit disposition.</p>
+<p>The startup endpoint must include a usable active view: correct
+lesson/cursor, working search/navigation and visible current content
+after layout. Do not declare success at an empty shell before lesson
+construction. Separate cold startup, action-to-visible-result latency
+and resource retention. Use uninstrumented timing runs for comparisons;
+graph-call counters, traces and heap diagnostics are separate diagnostic
+runs.</p>
+<p>For new action responsiveness, predeclare a provisional product
+target of <strong>250 ms median / 500 ms maximum</strong> to a usable,
+correctly rendered result for mode switching, Next/Previous and ordinary
+disclosure opening on the named test device, excluding intentional
+playback duration. Large-history/payload actions are measured and
+reported separately. Freeze ordinary versus large-history/payload
+fixture IDs in phase 0; do not reclassify slow observations after
+measurement. These are planning targets, not prior accepted baselines; a
+miss requires investigation/disposition, not a fabricated waiver. Record
+at least one actual slower-phone task-latency run when available,
+otherwise preserve that gap. Emulation or CPU throttling remains
+labelled diagnostic evidence.</p>
+<p>Structural checks are mandatory regardless of speed: Compact performs
+no Full graph/dock/packet rendering, there is one shared player, and
+repeated switching does not accumulate active resources. Report source
+and standalone byte growth. No claimed speedup substitutes for Full
+regression checks.</p>
+<h2 id="implementation-sequence-and-reviewable-checkpoints">10.
+Implementation sequence and reviewable checkpoints</h2>
+<div class="table-scroll" tabindex="0" role="region" aria-label="10.
+Implementation sequence and reviewable checkpoints — table 10"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Phase</th>
+<th scope="col">Work</th>
+<th scope="col">Exit evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0 — Freeze and inventory</td>
+<td>Preserve candidate-07 and closure; inventory every panel/action, DOM
+dependency, state owner and real case/member; freeze
+coverage/performance manifests</td>
+<td>Baseline hashes, panel-to-Compact mapping, state contract and named
+fixtures; no missing required evidence silently deferred</td>
+</tr>
+<tr class="even">
+<td>1 — Shared-state extraction</td>
+<td>Separate semantic preparation/held state/player ownership from Full
+UI; add presenter lifecycle behind existing Full</td>
+<td>Full behavioral parity, unchanged model/state/outcome checks, valid
+source and emitted build</td>
+</tr>
+<tr class="odd">
+<td>2 — Switch and navigation</td>
+<td>Add preference, initial mode resolution, exact switch transaction
+and queue-boundary commands; minimal Compact diagnostic surface</td>
+<td>All cursor/queue/trace/subfixture/context preservation cases,
+initial/partial/final navigation, no hidden Full work</td>
+</tr>
+<tr class="even">
+<td>3 — Complete Compact reader</td>
+<td>Search/cases, card, critical outcomes, detail/evidence access,
+object/field traces, step list and Full handoff</td>
+<td>All-catalog smoke, protocol-specific detail mapping and deep
+source/emitted checks pass</td>
+</tr>
+<tr class="odd">
+<td>4 — Phone ergonomics</td>
+<td>Reflow, touch, focus/scroll, keyboard/safe area, themes, reduced
+motion, stable disclosures</td>
+<td>Bounded real-browser/layout matrix and actual device/AT worksheet
+with honest unperformed cells</td>
+</tr>
+<tr class="even">
+<td>5 — Final verification</td>
+<td>Required complete regression, exact CI invocation, final offline
+build, matched performance and resource checks</td>
+<td>Exact-input raw results, all failures/flags disposed or explicitly
+open; no mixed-candidate reports</td>
+</tr>
+<tr class="odd">
+<td>6 — Worker handoff</td>
+<td>Update docs/ledger, package reproducible source and standalone,
+preserve original evidence and gates</td>
+<td>Three sibling deliverables below, clear independent-review request;
+no publication</td>
+</tr>
+</tbody>
+</table>
+</div><p>Finish each phase’s necessary work before progressing into dependent
+work. Do not request permission for routine refactoring, reversible
+edits or checks within this scope. If the actual checkout differs
+materially from the stated baseline, reconcile it in the ledger and
+continue independent tasks; do not silently discard the worker’s
+intervening changes.</p>
+<h2 id="final-checks-evidence-and-delivery-mc-20">11. Final checks,
+evidence and delivery — MC-20</h2>
+<p>Run the final complete regression once on stable inputs after focused
+checks pass. Run the <strong>actual CI command
+<code>bun run test</code></strong> in the intended environment and
+record the result. A successful execution on those final inputs also
+satisfies the complete-regression requirement; two redundant full runs
+are not required. The local exclusive-standalone/four-worker schedule is
+a different execution and cannot stand in for it. Preserve the original
+5,000 ms standalone VM, 900,000 ms test and 1,800,000 ms per-file
+budgets; a failure remains a failure. If the exact command cannot be
+run, leave that gate unperformed and explain the blocker.</p>
+<p>Supply exactly these user-upload siblings:</p>
+<ol type="1">
+<li><strong><code>auth-flow-studio-compact.html</code></strong> — one
+standalone with both views, built from the delivered source.</li>
+<li><strong><code>auth-flow-studio-compact-source-and-review.zip</code></strong>
+— source, tests, authoritative plan, necessary baseline preimages,
+manifests, evidence and reproduction tools.</li>
+<li><strong><code>START-HERE.md</code></strong> — read order,
+baseline/current identity, completed scope, actual counts, failures/open
+gates, and rebuild/checksum commands.</li>
+</ol>
+<p>Retain the established internal build output name if appropriate; the
+external filename identifies this delivery. Include
+<code>docs/compact-view/</code> (or an equally clear established
+location) with:</p>
+<ul>
+<li>Requirement/response ledger MC-01 through MC-20, changed-file index,
+architecture/state/panel mappings and immutable plan copy.</li>
+<li>Catalog/case/cursor, browser/device/AT and performance manifests
+with actual statuses; source-only fixtures distinctly labelled.</li>
+<li>Exact source/test/HTML/producer identities; raw
+regression/browser/performance logs and concise projections;
+before/after evidence for any changed assertion interface.</li>
+<li>Preserved review closures, historical failures and open release
+conditions; no relabelled timing or inferred human acceptance.</li>
+<li>Reproducible no-install build and actual emitted execution checks,
+source-version/explicit/tag behavior, CSP and offline results.</li>
+</ul>
+<p>Provide all raw inputs needed to reproduce the claimed critical
+comparisons. Large optional dumps may remain local/on demand only with
+exact hashes, sizes and omission reasons. A summary is not a substitute
+for an omitted raw report claimed as independently inspectable.
+Screenshots illustrate actual states; they do not replace functional or
+human evidence.</p>
+<p>No commit, push, deployment, release, human acceptance or performance
+waiver is part of this handoff. The reviewer should receive a concrete
+implementation and measured evidence, with each remaining limit stated
+plainly.</p>
+<h2 id="plan-provenance-and-checklist-index">12. Plan provenance and
+checklist index</h2>
+<p>This plan was grounded in candidate-07 source inspection, the
+accepted closure packet, shared-state/renderer analysis, current
+tests/build/performance producers and official W3C guidance opened on 27
+October 2026. No application changes or new acceptance results were
+produced while writing it.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="12. Plan provenance and
+checklist index — table 11"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Requirements</th>
+<th scope="col">Worker/reviewer checkpoint</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MC-01–04</td>
+<td>Mode/default/preference; phone structure; search/case parity;
+configuration/link compatibility</td>
+</tr>
+<tr class="even">
+<td>MC-05–08</td>
+<td>Truthful current status, custody/history, protocol-specific
+evidence, clocks/failure/qualification</td>
+</tr>
+<tr class="odd">
+<td>MC-09–11</td>
+<td>Single session, exact switch transaction, defined queue/navigation
+behavior</td>
+</tr>
+<tr class="even">
+<td>MC-12–14</td>
+<td>Bounded extraction, inactive work/resource ownership,
+source/emitted/offline build</td>
+</tr>
+<tr class="odd">
+<td>MC-15</td>
+<td>Mobile accessibility and visual contracts</td>
+</tr>
+<tr class="even">
+<td>MC-16–18</td>
+<td>Frozen coverage, broad parity, deep semantic and real-device/human
+checks</td>
+</tr>
+<tr class="odd">
+<td>MC-19</td>
+<td>Matched timing, variability, resource and historical performance
+dispositions</td>
+</tr>
+<tr class="even">
+<td>MC-20</td>
+<td>Complete final verification and three-file review handoff</td>
+</tr>
+</tbody>
+</table>
+</div><p class="source-note">Worker plan · Document version 1 · 27 October 2026 · Grounded in candidate-07 and official accessibility guidance. Planning only; no application modification, publication or acceptance waiver.</p></main></body>
+</html>

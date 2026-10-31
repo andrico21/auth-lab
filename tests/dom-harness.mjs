@@ -25,7 +25,11 @@ class EventTarget {
     return !event.defaultPrevented;
   }
 }
-class TextNode { constructor(text){this.data=decode(text);this.parentElement=null;} get textContent(){return this.data;} set textContent(v){this.data=String(v);} }
+function nextSiblingOf(node){
+  const siblings=node.parentElement?.childNodes,index=siblings?.indexOf(node)??-1;
+  return index<0?null:siblings[index+1]??null;
+}
+class TextNode { constructor(text){this.data=decode(text);this.parentElement=null;} get textContent(){return this.data;} set textContent(v){this.data=String(v);} get nextSibling(){return nextSiblingOf(this);} }
 function selectorParts(selector){return selector.trim().split(/\s+(?=(?:[^\[\]]*\[[^\[\]]*\])*[^\[\]]*$)/);}
 // Compile only for the duration of one query. DOM mutations need no cache invalidation.
 function selectorGroups(selector){
@@ -63,7 +67,15 @@ export class HarnessElement extends EventTarget {
   }
   get id(){return this.getAttribute('id')||'';} set id(v){this.setAttribute('id',v);}
   get children(){return this.childNodes.filter(n=>n instanceof HarnessElement);}
+  get nextSibling(){return nextSiblingOf(this);}
   appendChild(node){if(node.parentElement)node.parentElement.removeChild(node);this.childNodes.push(node);node.parentElement=this;return node;}
+  insertBefore(node,reference){
+    if(reference==null)return this.appendChild(node);
+    if(!this.childNodes.includes(reference))throw new Error('Reference node is not a child.');
+    if(node===reference)return node;
+    if(node.parentElement)node.parentElement.removeChild(node);
+    this.childNodes.splice(this.childNodes.indexOf(reference),0,node);node.parentElement=this;return node;
+  }
   removeChild(node){const i=this.childNodes.indexOf(node);if(i>=0)this.childNodes.splice(i,1);node.parentElement=null;return node;}
   get textContent(){return this.childNodes.map(n=>n.textContent).join('');}
   set textContent(value){this.childNodes=[];this.appendChild(new TextNode(String(value)));}
