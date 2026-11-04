@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "kind": "independent-german-semantic-ai-closure",
+  "reviewId": "de-semantic-ai-source11-A-closure",
+  "locale": "de",
+  "date": "2026-11-02",
+  "status": "two-findings-closed-within-four-exact-source11-bindings-only",
+  "sourceSetSha256": "4834ac9924afb47ff586b3a616076653969ce9905ab47becba1302f35126b9db",
+  "sourceTableGzipSha256": "328a6bb95442662ffc94e1b0be4a64f6ee1df79c856710be308aa966c294672b",
+  "reviewedCatalogSha256": "c6803b2634aadb0d2015ad1e17d1d3325499d369682fe07dd91c53757da030e2",
+  "firstPassReview": {
+    "path": "docs/localization/review/de-semantic-ai-source11-A.json",
+    "sha256": "4c6184e3a8fefa17362b34153a3a9d390c64b3df4cd60a6612ebe958c9b0c3e2",
+    "preservedUnchanged": true
+  },
+  "authorCorrectionEvidence": {
+    "path": "/home/andrico/.cache/auth-lab-held-qa/localization-0a3cbkmo/authoring/de-full/run-09-source11-semantic-corrections/before-after-source11.json",
+    "sha256": "ffdbf2298ea755b657cc35b0ed567a720bdd05d74550d7dc714443b890ca8c71"
+  },
+  "provenance": {
+    "workerIdentity": "GermanMeaningA",
+    "role": "Original independent reviewer, not correction author",
+    "modelIdentity": "openai-codex/gpt-6.1-sol",
+    "method": "Direct independent rereading of all four complete corrected German messages against English and actual actor/operation/owner semantics. Compared current catalog exact overrides, original first-pass records, frozen Source11 compact schema/membership, and canonical runtime-binding records. Read actual producer implementation in first pass; current producer SHA compared unchanged. Administrative JSON/placeholder/hash comparisons do not themselves establish semantic closure. No external completion calls. Only prior English/German guidance applied.",
+    "completionCalls": 0,
+    "sourceOrCatalogEdits": false,
+    "buildsTestsLintBrowserRuns": false
+  },
+  "coverage": {
+    "findings": 2,
+    "exactKeys": 4,
+    "scope": "Only DE-S11-A-001 and DE-S11-A-002 at these four exact Source11 bindings. Not whole-catalog, future Source12, native, browser, human, AT or owner acceptance."
+  },
+  "producerEvidence": [
+    {
+      "path": "src/kubernetes-auth-lab.js",
+      "sha256": "6c0351e054b23f0a212b9b7d329969ab9a1a1dc012f3f033c65b178c6006a79b",
+      "lines": "101-105",
+      "reviewedMeaning": "Shared summary for separate sender/receiver operations; actor and kind remain authoritative.",
+      "observedSha256": "6c0351e054b23f0a212b9b7d329969ab9a1a1dc012f3f033c65b178c6006a79b",
+      "unchangedFromFirstPass": true
+    },
+    {
+      "path": "src/windows-auth-lab.js",
+      "sha256": "b72940b52b56429c9d4a902b59429612b2be095c611cbaa3033477f02c77090d",
+      "lines": "332-336,340-362",
+      "reviewedMeaning": "Client candidate derivation precedes separate account verification and validator-owned key return.",
+      "observedSha256": "b72940b52b56429c9d4a902b59429612b2be095c611cbaa3033477f02c77090d",
+      "unchangedFromFirstPass": true
+    }
+  ],
+  "records": [
+    {
+      "findingId": "DE-S11-A-001",
+      "key": "runtime:3d9430982ba26c470a0e33aab56791e5",
+      "sourceSha256": "2d33b50ba10e6740a1054368c1895fafdf49fe9f800e5f52b394ce828dddd8b6",
+      "source11StorageBindingIndex": 71681,
+      "owner": {
+        "semanticId": "step:lab-k8s03:api-request",
+        "fieldPath": "attributeOperations.detail"
+      },
+      "context": {
+        "attributeId": "k8s_k8s03_request_g1",
+        "actorId": "k8sAPI",
+        "operationKind": "receive"
+      },
+      "classification": "mixed",
+      "english": "Receive exact {protected1} request",
+      "semanticParameters": {
+        "protected1": {
+          "kind": "protected",
+          "value": "API"
+        }
+      },
+      "canonicalParameterSources": {
+        "protected1": "formal-technical-name:API"
+      },
+      "placeholderCounts": {
+        "protected1": 1
+      },
+      "beforeGerman": "Exakte {protected1}-Anfrage senden",
+      "afterGerman": "Exakte {protected1}-Anfrage empfangen",
+      "verdict": "closed-in-exact-source11-ai-semantic-scope",
+      "independentTechnicalReason": "The full corrected message uses empfangen for k8sAPI receive of k8s_k8s03_request_g1. It no longer reverses current sender/receiver custody and keeps the exact API parameter once. This verdict does not apply to client send siblings.",
+      "observedComparisons": {
+        "sourceSetMatchesSource11": true,
+        "strongSourceShaMatches": true,
+        "englishMatches": true,
+        "semanticParametersMatch": true,
+        "ownerMatches": true,
+        "contextMatches": true,
+        "classificationMatches": true,
+        "nativeMatchesAppliedAuthorCorrection": true,
+        "placeholderMultisetMatches": true
+      }
+    },
+    {
+      "findingId": "DE-S11-A-001",
+      "key": "runtime:da135e20fcf5da02035c1e65ef18ce33",
+      "sourceSha256": "2d33b50ba10e6740a1054368c1895fafdf49fe9f800e5f52b394ce828dddd8b6",
+      "source11StorageBindingIndex": 71786,
+      "owner": {
+        "semanticId": "step:lab-k8s15:api-request",
+        "fieldPath": "attributeOperations.detail"
+      },
+      "context": {
+        "attributeId": "k8s_k8s15_rbac_proposal_g1",
+        "actorId": "k8sAPI",
+        "operationKind": "receive"
+      },
+      "classification": "mixed",
+      "english": "Receive exact {protected1} request",
+      "semanticParameters": {
+        "protected1": {
+          "kind": "protected",
+          "value": "API"
+        }
+      },
+      "canonicalParameterSources": {
+        "protected1": "formal-technical-name:API"
+      },
+      "placeholderCounts": {
+        "protected1": 1
+      },
+      "beforeGerman": "Exakte {protected1}-Anfrage senden",
+      "afterGerman": "Exakte {protected1}-Anfrage empfangen",
+      "verdict": "closed-in-exact-source11-ai-semantic-scope",
+      "independentTechnicalReason": "The full corrected message uses empfangen for k8sAPI receive of k8s_k8s15_rbac_proposal_g1. It no longer reverses current sender/receiver custody and keeps the exact API parameter once. This verdict does not apply to client send siblings.",
+      "observedComparisons": {
+        "sourceSetMatchesSource11": true,
+        "strongSourceShaMatches": true,
+        "englishMatches": true,
+        "semanticParametersMatch": true,
+        "ownerMatches": true,
+        "contextMatches": true,
+        "classificationMatches": true,
+        "nativeMatchesAppliedAuthorCorrection": true,
+        "placeholderMultisetMatches": true
+      }
+    },
+    {
+      "findingId": "DE-S11-A-002",
+      "key": "runtime:c0055ffa2051e1f8dfff32e9bc19d7ff",
+      "sourceSha256": "410462c6e2e576f8c015a4f298a090d4f9b032a89d847b251e2128568f3618a3",
+      "source11StorageBindingIndex": 94783,
+      "owner": {
+        "semanticId": "step:lab-win-ntlmv2-local:derive",
+        "fieldPath": "payload.description"
+      },
+      "context": {
+        "attributeId": "win_ntlmv2_local_session-base-key",
+        "payloadName": "Client candidate SessionBaseKey"
+      },
+      "classification": "mixed",
+      "english": "{protected1} is returned as protected validation information on successful domain validation.",
+      "semanticParameters": {
+        "protected1": {
+          "kind": "protected",
+          "value": "SessionBaseKey"
+        }
+      },
+      "canonicalParameterSources": {
+        "protected1": "source-identifier:payload.description:a56e3b43f35b3eb7866a51e6b2802041e64e8b39a1ef0ebd3d17a4b4d0446632:0"
+      },
+      "placeholderCounts": {
+        "protected1": 1
+      },
+      "beforeGerman": "Der Schl\u00fcssel {protected1} wird bei erfolgreicher lokaler Kontovalidierung als gesch\u00fctzte Validierungsinformation zur\u00fcckgegeben.",
+      "afterGerman": "Der Client leitet den Kandidaten f\u00fcr {protected1} lokal aus seinem Antwortschl\u00fcssel und seinem Antwortnachweis ab. Dieser clientseitige Kandidat ist vom sp\u00e4teren R\u00fcckgabeobjekt der pr\u00fcfenden lokalen Kontoinstanz zu unterscheiden; eine erfolgreiche Kontovalidierung ist damit noch nicht belegt.",
+      "verdict": "closed-in-exact-source11-ai-semantic-scope",
+      "independentTechnicalReason": "The full corrected message names client-local candidate derivation from response key/proof, distinguishes the later local account-authority return object and explicitly denies established validation success. It preserves the SessionBaseKey token once and correctly scopes local rather than domain account authority; matching mathematical key values are not asserted to be different.",
+      "observedComparisons": {
+        "sourceSetMatchesSource11": true,
+        "strongSourceShaMatches": true,
+        "englishMatches": true,
+        "semanticParametersMatch": true,
+        "ownerMatches": true,
+        "contextMatches": true,
+        "classificationMatches": true,
+        "nativeMatchesAppliedAuthorCorrection": true,
+        "placeholderMultisetMatches": true
+      }
+    },
+    {
+      "findingId": "DE-S11-A-002",
+      "key": "runtime:e0d0e7d1ec3d90c76f7436ac77ae9d38",
+      "sourceSha256": "410462c6e2e576f8c015a4f298a090d4f9b032a89d847b251e2128568f3618a3",
+      "source11StorageBindingIndex": 94776,
+      "owner": {
+        "semanticId": "field:win_ntlmv2_local_session-base-key",
+        "fieldPath": "meaning"
+      },
+      "context": {},
+      "classification": "mixed",
+      "english": "{protected1} is returned as protected validation information on successful domain validation.",
+      "semanticParameters": {
+        "protected1": {
+          "kind": "protected",
+          "value": "SessionBaseKey"
+        }
+      },
+      "canonicalParameterSources": {
+        "protected1": "source-identifier:meaning:a56e3b43f35b3eb7866a51e6b2802041e64e8b39a1ef0ebd3d17a4b4d0446632:0"
+      },
+      "placeholderCounts": {
+        "protected1": 1
+      },
+      "beforeGerman": "Der Schl\u00fcssel {protected1} wird bei erfolgreicher lokaler Kontovalidierung als gesch\u00fctzte Validierungsinformation zur\u00fcckgegeben.",
+      "afterGerman": "Der Client leitet den Kandidaten f\u00fcr {protected1} lokal aus seinem Antwortschl\u00fcssel und seinem Antwortnachweis ab. Dieser clientseitige Kandidat ist vom sp\u00e4teren R\u00fcckgabeobjekt der pr\u00fcfenden lokalen Kontoinstanz zu unterscheiden; eine erfolgreiche Kontovalidierung ist damit noch nicht belegt.",
+      "verdict": "closed-in-exact-source11-ai-semantic-scope",
+      "independentTechnicalReason": "The full corrected message names client-local candidate derivation from response key/proof, distinguishes the later local account-authority return object and explicitly denies established validation success. It preserves the SessionBaseKey token once and correctly scopes local rather than domain account authority; matching mathematical key values are not asserted to be different.",
+      "observedComparisons": {
+        "sourceSetMatchesSource11": true,
+        "strongSourceShaMatches": true,
+        "englishMatches": true,
+        "semanticParametersMatch": true,
+        "ownerMatches": true,
+        "contextMatches": true,
+        "classificationMatches": true,
+        "nativeMatchesAppliedAuthorCorrection": true,
+        "placeholderMultisetMatches": true
+      }
+    }
+  ],
+  "findings": [
+    {
+      "id": "DE-S11-A-001",
+      "priorStatus": "open-changes-required",
+      "closureStatus": "closed-in-exact-source11-ai-semantic-scope",
+      "keys": [
+        "runtime:3d9430982ba26c470a0e33aab56791e5",
+        "runtime:da135e20fcf5da02035c1e65ef18ce33"
+      ],
+      "reason": "Actual corrected complete messages and unchanged strong source/native parameters/exact membership satisfy this finding at reviewed Source11 owners."
+    },
+    {
+      "id": "DE-S11-A-002",
+      "priorStatus": "open-changes-required",
+      "closureStatus": "closed-in-exact-source11-ai-semantic-scope",
+      "keys": [
+        "runtime:c0055ffa2051e1f8dfff32e9bc19d7ff",
+        "runtime:e0d0e7d1ec3d90c76f7436ac77ae9d38"
+      ],
+      "reason": "Actual corrected complete messages and unchanged strong source/native parameters/exact membership satisfy this finding at reviewed Source11 owners."
+    }
+  ],
+  "limitations": [
+    "Original first-pass report remains historical and unchanged; closure is additive, not fabricated retroactive approval.",
+    "Source11 remains provisional for known DNS-owner literal isolation and all unrelated gates. No unrelated independent findings or approvals closed.",
+    "Source12 or any future checkpoint requires separate actual strong-source/native/exact-membership comparison; this closure must not be blindly restamped.",
+    "No native-language, browser, human comprehension, AT, owner or release approval. No build/test/lint execution."
+  ],
+  "privateEvidence": "/home/andrico/.cache/auth-lab-held-qa/localization-0a3cbkmo/semantic-review/de-source11-pre-dns-literal-rebase/reviewer-A/source11-closure-evidence.json"
+}

@@ -71,6 +71,20 @@ test('collapsed advanced details reject descendants while their summary remains 
   }finally{document.body.removeChild(root);}
 });
 
+test('rebuilt explanation controls retain semantic focus without matching translated labels',()=>{
+  const root=document.createElement('section'),href='https://www.rfc-editor.org/rfc/rfc7636#section-4';
+  root.innerHTML='<a class="source-link" href="'+href+'">Unrelated citation</a><div id="attribute-popup"><button data-close>Close</button><a class="source-link" href="'+href+'">Primary source</a></div><button id="play">Play</button>';
+  document.body.appendChild(root);try{
+    const popup=root.querySelector('#attribute-popup'),source=captureFocusTarget(root,popup.querySelector('.source-link')),close=captureFocusTarget(root,popup.querySelector('[data-close]'));
+    popup.innerHTML='<button data-close>סגירה</button><a class="source-link" href="'+href+'">מקור ראשי</a>';
+    assert.equal(resolveFocusTarget(root,source),popup.querySelector('.source-link'));
+    assert.equal(resolveFocusTarget(root,close),popup.querySelector('[data-close]'));
+    popup.hidden=true;
+    assert.equal(resolveFocusTarget(root,source),root.querySelector('#play'));
+    assert.equal(resolveFocusTarget(root,close),root.querySelector('#play'));
+  }finally{document.body.removeChild(root);}
+});
+
 test('R2: explanation Escape after ongoing playback resolves a current inspector field',()=>{
   const app=mount();try{
     playToBasicRedirect(app);

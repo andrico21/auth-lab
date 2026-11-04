@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "kind": "localization-glossary-correction-authoring-record",
+  "locale": "fr",
+  "status": "corrections-authored-awaiting-independent-closure",
+  "author": {
+    "workerIdentity": "GlossaryFixWestern",
+    "authorType": "AI implementation worker",
+    "modelIdentity": "openai-codex/gpt-6.1-sol",
+    "method": "Direct correction authoring against canonical English and editorial policy, informed by all first-pass independent AI findings; proposed wording assessed for remaining semantic and grammatical defects."
+  },
+  "scope": "Only conceptualProse.definition corrections for the enumerated glossary findings. No full-catalog, runtime, human, native-speaker, AT, release or publication acceptance. Existing glossary authorship and review metadata unchanged.",
+  "baseCommit": "1e87576924d82d1579959904aa7b2a3e89742067",
+  "versionUnchanged": "1.2",
+  "inputs": [
+    {
+      "path": "docs/localization/glossaries/fr.json",
+      "sha256": "967fe4e61bfe08213b742852119b913e7d1f7bd80a45d64d5cfe3119319ee4a0",
+      "role": "exact pre-correction locale input"
+    },
+    {
+      "path": "docs/localization/glossaries/en.json",
+      "sha256": "8c898b42c13ddc7fb8fcd501124012d5866c8219a333aeb8f5c9046dae449fec",
+      "role": "unchanged English authority"
+    },
+    {
+      "path": "docs/localization/editorial-policy.json",
+      "sha256": "6d11e5a8f5d06d549c82163d08832959b4414353328eeb6d3a8bb1b0b70e1742",
+      "role": "unchanged editorial authority"
+    }
+  ],
+  "firstPassReview": {
+    "frozenReport": "local://localization-glossary-review-fr.json",
+    "fullReportField": "rawToolResult.text",
+    "reviewerAgent": "GlossaryReviewFrench",
+    "reviewerModel": "bifrost/vllm/deepseek-v4.1-flash",
+    "originalVerdict": "changes-required",
+    "preservation": "The frozen report and all original findings remain preserved unchanged. This correction record is not an independent closure."
+  },
+  "findings": [
+    {
+      "findingId": "L10N-GFR-001",
+      "severity": "P2",
+      "conceptId": "verification",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Contrôler une propriété précise, par exemple une signature, sans décider de l'accès.",
+      "new": "Contrôler des éléments de preuve par rapport à une propriété énoncée, par exemple lors de la vérification d'une signature ; ce n'est pas une décision d'accès.",
+      "reason": "Restore evidence-to-stated-property checking and make signature verification an example of the checking operation, not a property. Retain the access-decision exclusion.",
+      "englishDefinition": "Checking evidence against a stated property, such as a signature; not an access decision."
+    },
+    {
+      "findingId": "L10N-GFR-002",
+      "severity": "P2",
+      "conceptId": "admission",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Décision finale d'admettre l'opération ou la session à la frontière indiquée.",
+      "new": "Décision finale d'admettre l'opération ou la session à la frontière indiquée ; distincte de l'authentification et des résultats intermédiaires.",
+      "reason": "Restore distinction from authentication and intermediate results while retaining final boundary decision scope.",
+      "englishDefinition": "The final decision to admit an operation or session at the boundary shown; distinct from authentication and intermediate results."
+    },
+    {
+      "findingId": "L10N-GFR-003",
+      "severity": "P2",
+      "conceptId": "invalid",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Un contrôle de validité représenté échoue; à distinguer d'un cas non pris en charge.",
+      "new": "Un contrôle de validité représenté échoue ; à distinguer d'une entrée non prise en charge et d'éléments de preuve inconnus.",
+      "reason": "Restore the unknown-evidence distinction and specify unsupported input rather than an unspecified unsupported case.",
+      "englishDefinition": "A represented validity check fails; distinguish unsupported input and unknown evidence."
+    },
+    {
+      "findingId": "L10N-GFR-004",
+      "severity": "P2",
+      "conceptId": "encryption",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Protéger la confidentialité du contenu au moyen d'une clé; ne prouve pas un droit d'accès.",
+      "new": "Transformer le contenu au moyen d'une clé pour en protéger la confidentialité ; le chiffrement ne constitue pas à lui seul une preuve d'autorisation.",
+      "reason": "Restore content transformation under a key, the alone sufficiency qualification and authorization rather than narrowing to access rights. Explicit le chiffrement avoids the proposal's unclear cela/à lui seul reference.",
+      "englishDefinition": "Transforming content for confidentiality under a key; not alone proof of authorization."
+    },
+    {
+      "findingId": "L10N-GFR-005",
+      "severity": "P3",
+      "conceptId": "tlsTransport",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Protection du canal dans le contexte indiqué, ni validation DNSSEC ni autorisation applicative.",
+      "new": "Protection du canal dans le contexte TLS indiqué ; ni validation DNSSEC ni autorisation applicative de bout en bout.",
+      "reason": "Restore TLS context and end-to-end scope of the application authorization contrast.",
+      "englishDefinition": "Channel protection in the specified TLS context; not DNSSEC validation or end-to-end application authorization."
+    },
+    {
+      "findingId": "L10N-GFR-006",
+      "severity": "P3",
+      "conceptId": "dnssecValidation",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Contrôler les données DNS et le déni d'existence authentifié selon la chaîne de confiance; pas un chiffrement du transport.",
+      "new": "Contrôler les données DNS et le déni d'existence authentifié selon une chaîne de confiance et les conditions pertinentes ; pas un chiffrement du transport.",
+      "reason": "Restore relevant conditions alongside a chain of trust rather than implying the chain alone suffices.",
+      "englishDefinition": "Checking DNS data and authenticated denial against a chain of trust and relevant conditions; not transport encryption."
+    },
+    {
+      "findingId": "L10N-GFR-007",
+      "severity": "P3",
+      "conceptId": "credentialIsolation",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Isoler les secrets, notamment avec la protection Credential Guard indiquée; pas filtrer les jetons.",
+      "new": "Isolation des éléments d'authentification, notamment au moyen de la protection Credential Guard indiquée ; il ne s'agit pas du filtrage des jetons.",
+      "reason": "Restore credential material rather than secrets alone. Use parallel nominal wording and an explicit conceptual contrast, avoiding the proposal's infinitive/noun mismatch and the former instruction not to filter.",
+      "englishDefinition": "Isolation of credential material, such as the stated Credential Guard protection; not token filtering."
+    },
+    {
+      "findingId": "L10N-GFR-008",
+      "severity": "P2",
+      "conceptId": "dnssecSecure",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Le verdict littéral secure indique une validation réussie dans le contexte de confiance donné, pas une sécurité générale.",
+      "new": "Le verdict littéral secure indique que la validation DNSSEC requise réussit dans le contexte de confiance indiqué ; il ne constitue pas une garantie générale de sécurité.",
+      "reason": "Restore required DNSSEC validation, stated trust context and explicit denial of a general safety guarantee.",
+      "englishDefinition": "The exact verdict secure: required DNSSEC validation succeeds within the stated trust context; not a general safety guarantee."
+    },
+    {
+      "findingId": "L10N-GFR-009",
+      "severity": "P2",
+      "conceptId": "dnssecInsecure",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Le verdict littéral insecure désigne des données non couvertes par la chaîne de confiance DNSSEC pertinente selon la politique indiquée, par exemple une délégation non signée authentifiée; pas bogus.",
+      "new": "Le verdict littéral insecure désigne des données dont il est établi qu'elles ne sont pas couvertes par la chaîne de confiance DNSSEC pertinente selon la politique indiquée, par exemple une délégation non signée mais authentifiée ; il ne s'agit pas du verdict de validation bogus.",
+      "reason": "Restore established non-coverage under the stated policy, authenticated unsigned delegation and an explicit bogus validation-verdict contrast.",
+      "englishDefinition": "The exact verdict insecure: data are known not to be covered by the relevant DNSSEC chain of trust under the stated policy, for example an authenticated unsigned delegation; not bogus validation."
+    },
+    {
+      "findingId": "L10N-GFR-010",
+      "severity": "P3",
+      "conceptId": "dnssecBogus",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Le verdict littéral bogus indique que la validation DNSSEC attendue n'a pas établi la validité, pas seulement des données non signées.",
+      "new": "Le verdict littéral bogus indique que la validation DNSSEC attendue ne peut pas établir la validité ; il ne s'agit pas seulement de données non signées.",
+      "reason": "Restore cannot establish modality rather than merely a past non-establishment; retain not merely unsigned data.",
+      "englishDefinition": "The exact verdict bogus: expected DNSSEC validation cannot establish validity; not merely unsigned data."
+    },
+    {
+      "findingId": "L10N-GFR-011",
+      "severity": "P2",
+      "conceptId": "dnssecIndeterminate",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Le verdict littéral indeterminate indique que l'état de sécurité ne peut pas être déterminé, pas une réussite.",
+      "new": "Le verdict littéral indeterminate indique que le validateur ne peut pas déterminer l'état de sécurité requis ; ce n'est pas une réussite.",
+      "reason": "Restore the validator actor and required security state; retain not success.",
+      "englishDefinition": "The exact verdict indeterminate: the validator cannot determine the required security state; not success."
+    },
+    {
+      "findingId": "L10N-GFR-012",
+      "severity": "P3",
+      "conceptId": "normativeRequirement",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Exigence de la spécification citée dans son périmètre; conserver sa force obligatoire.",
+      "new": "Exigence attribuée à la spécification citée dans le périmètre indiqué ; conserver sa force obligatoire.",
+      "reason": "Restore attribution to the cited specification within the stated scope without claiming independently verified specification membership; retain obligation strength.",
+      "englishDefinition": "A requirement attributed to the cited specification in its stated scope; retain obligation strength."
+    },
+    {
+      "findingId": "L10N-GFR-013",
+      "severity": "P2",
+      "conceptId": "credential",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Élément servant à étayer une identité; sa possession ne constitue pas une authentification réussie.",
+      "new": "Élément servant à étayer une identité ou une authentification ; sa possession ne suffit pas nécessairement à établir une authentification réussie.",
+      "reason": "Restore identity or authentication scope and not necessarily modality rather than an absolute denial about possession.",
+      "englishDefinition": "Material used to support identity or authentication; possession need not establish successful authentication."
+    },
+    {
+      "findingId": "L10N-GFR-014",
+      "severity": "P2",
+      "conceptId": "evidence",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Observations disponibles dans les limites d'affichage autorisées pour étayer une affirmation.",
+      "new": "Observations actuellement disponibles, filtrées selon les permissions, pour étayer une affirmation.",
+      "reason": "Restore currently available and permission-filtered observations rather than a UI display limitation.",
+      "englishDefinition": "The permission-projected observations currently available to support a claim."
+    },
+    {
+      "findingId": "L10N-GFR-015",
+      "severity": "P2",
+      "conceptId": "pamOptional",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Dans le contrôle simple indiqué, le résultat compte généralement seulement pour l'unique module pertinent de ce type de service; conserver les conditions exactes de la pile.",
+      "new": "Dans le contrôle simple Linux-PAM indiqué, le résultat n'a généralement d'importance que si ce module est l'unique module pertinent pour ce type de service ; conserver les conditions exactes de la pile telles qu'elles sont modélisées.",
+      "reason": "Restore explicit sole-relevant-module condition, Linux-PAM shown-simple-control scope and exact modeled stack conditions. Rephrase the proposal to attach modeling clearly to the conditions.",
+      "englishDefinition": "For the Linux-PAM simple control shown, the result generally matters only if it is the sole relevant module for that service type; retain the exact modeled stack conditions."
+    },
+    {
+      "findingId": "L10N-GFR-016",
+      "severity": "P3",
+      "conceptId": "pamInclude",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Inclure les entrées du type de module correspondant dans la pile environnante, sans les isoler comme un substack.",
+      "new": "Inclure les entrées du type de module correspondant dans la pile environnante ; préserver le flux de contrôle englobant plutôt que de traiter ce contrôle comme un substack.",
+      "reason": "Restore the positive enclosing-control-flow requirement and distinguish this control from substack rather than merely describing isolation of entries.",
+      "englishDefinition": "Include matching module-type entries in the surrounding stack; preserve enclosing control flow rather than treating it as substack."
+    }
+  ],
+  "reviewLimits": {
+    "independentClosure": "pending-original-independent-reviewer",
+    "qualifiedHumanLanguageReview": "unperformed",
+    "nativeSpeakerApproval": "unperformed",
+    "humanComprehensionReview": "unperformed",
+    "humanPronunciationReview": "unperformed",
+    "actualScreenReaderReview": "unperformed",
+    "buildsTestsLintFormattersBrowserModelExecution": "not run by correction author",
+    "approvals": [],
+    "waivers": []
+  }
+}

@@ -12,10 +12,10 @@ Use an existing matching Playwright Core/Chromium installation. The application 
 bun install --cwd tools/verification/expansion-crypto --frozen-lockfile --ignore-scripts
 # Run focused source/mounted assertions before rebuilding:
 bun test --isolate --timeout=900000 \
-  tests/windows-auth-lab.test.mjs tests/held-object-windows.test.mjs \
-  tests/network-access-lab.test.mjs tests/held-object-network.test.mjs \
-  tests/review-network-replay-ui.test.mjs \
-  tests/smb-access-lab.test.mjs tests/smb-multichannel-lab.test.mjs tests/smb-ui.test.mjs
+  ./tests/windows-auth-lab.test.mjs ./tests/held-object-windows.test.mjs \
+  ./tests/network-access-lab.test.mjs ./tests/held-object-network.test.mjs \
+  ./tests/review-network-replay-ui.test.mjs \
+  ./tests/smb-access-lab.test.mjs ./tests/smb-multichannel-lab.test.mjs ./tests/smb-ui.test.mjs
 bun run build
 bun tools/verification/run-review-corrections-crypto.mjs \
   --bun142=/absolute/path/to/bun-1.4.2 \
@@ -116,6 +116,8 @@ Parses the actual emitted JavaScript as one program, verifies exact SHA-256 scri
 bun run test
 ```
 
+The complete package command selects all 145 intended top-level files through `./tests/*.test.mjs`, with `--isolate --timeout=900000` unchanged. Prefix focused Bun test paths with `./` too: unprefixed `tests/...` arguments are recursive path filters and can select retained, incomplete historical copies. Those frozen copies are evidence, not additional runnable suites. The prior complete attempt expired at its independent 5400 s watchdog; corrected focused/full results remain pending, not green. Keep normal regressions and browser collection serial: `standalone-runtime.test.mjs` rebuilds the shared `dist/` artifact.
+
 The supplied source snapshot passed 465 tests with Node 24.19.0 before implementation. Use the final verification report for results after implementation. Its purpose-built DOM harness verifies application projections and event handling; it is explicitly not a native browser, protocol endpoint or cryptographic implementation.
 
 ## HTML2 R1 emitted-context acceptance
@@ -138,7 +140,7 @@ Build first. This independent tool evaluates the actual inline IIFE with only th
 
 ```sh
 bun run build
-bun test --isolate --timeout=900000 tests/held-object-*.test.mjs
+bun test --isolate --timeout=900000 ./tests/held-object-*.test.mjs
 bun tools/verification/held-objects-check.mjs
 ```
 

@@ -1,8 +1,10 @@
 import { HeldStudyState, holdingControlKey, orderedHoldings, holdingSlots, logicalStudyActors } from './held-study-state.js';
 import { getPositions } from './layout.js';
 import { scenarioActorIds, scenarioPositions } from './workspaces.js';
+import { heldInspectionHtml } from './held-study-projection.js';
 
 const html = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const protectedHtml = value => `<bdi dir="ltr" translate="no">${html(value)}</bdi>`;
 
 // Reserve physical participants for the selected internals mode, not logical
 // aliases. Cursor-hidden physical actors keep their cells and routes.
@@ -164,6 +166,24 @@ export class HeldObjectView extends HeldStudyState {
   constructor(app,{mount=true}={}) {
     super(app);this.mounted=false;if(mount)this.mount();
   }
+  message(key, source, params = {}) {
+    const english = source.replace(/\{(\w+)\}/g, (_, name) => params[name] ?? `{${name}}`);
+    return this.app.localizer ? this.app.localizer.text(key, english, params) : english;
+  }
+  markup(key, source, params = {}) {
+    const english = source.replace(/\{(\w+)\}/g, (_, name) => params[name] ?? `{${name}}`);
+    return this.app.localizer ? this.app.localizer.html(key, english, params) : html(english);
+  }
+  count(key, count, source) {
+    return this.app.localizer ? this.app.localizer.plural(key, count, source, {count}) : source;
+  }
+  explanation(owner, field, source, context = {}) {
+    if (!source) return '';
+    return this.app.localizer ? this.app.localizer.explainHtml(owner, field, source || '', this.app.localeContext(context)) : html(source || '');
+  }
+  inspectionHtml(snapshot=this.snapshot(), compiled=this.compiled()) {
+    return heldInspectionHtml(this.inspectionData(snapshot, compiled), {contextId:this.contextId, helpOpen:this.helpOpen, objectTraceSelection:this.app.objectTraceSelection, localization:this.app.localizer, sourceSteps:this.app.steps, context:{scenarioId:this.app.labModel?.id, variantId:this.app.lessonVariant, subfixtureId:this.app.lessonSubfixture}});
+  }
   mount() {
     if(this.mounted)return;
     const app=this.app;this.mounted=true;
@@ -287,30 +307,36 @@ export class HeldObjectView extends HeldStudyState {
     this.ensureInitialGraphView(compiled.plan.contextId);
     if(this.selection){const moved=snapshot.holdings.find(item=>item.holdingId===this.selection.holdingId || item.actorId===this.selection.actorId&&item.artifactId===this.selection.artifactId&&item.representationId===this.selection.representationId&&item.ordinal===this.selection.ordinal);if(moved)this.selection={...this.selection,...moved};}
     const row=event?.step||app.currentStep;
-    const key=JSON.stringify([snapshot.cursor,this.visible,this.selection?.holdingId,this.selection?.store,this.actorId,[...this.expanded],app.heldGeometry?.key,app.showInternals,this.helpOpen,this.focusedId,row?.id]);if(key===this.lastKey)return;this.lastKey=key;
+    const key=JSON.stringify([app.localizer?.revision,snapshot.cursor,this.visible,this.selection?.holdingId,this.selection?.store,this.actorId,[...this.expanded],app.heldGeometry?.key,app.showInternals,this.helpOpen,this.focusedId,row?.id]);if(key===this.lastKey)return;this.lastKey=key;
     const {key:focusKey,actorId:focusActor,region:focusRegion}=this.focusIdentity(),owned=!!focusRegion;
     this.root.hidden=!this.visible;this.docks.hidden=!this.visible;this.inspector.hidden=!this.visible||!this.selection;
     const artifacts=new Map(snapshot.artifacts.map(item=>[item.artifactId,item]));
     const actors=compiled.actors;
     if(!this.actorId||!actors.includes(this.actorId))this.actorId=actors[0];
-    const button=holding=>{const artifact=artifacts.get(holding.artifactId),expired=artifact?.expiresAt!=null&&snapshot.protocolClock>=artifact.expiresAt;return `<button class="held-object-control" data-holding-id="${html(holding.holdingId)}" data-held-key="${html(holdingControlKey(holding))}" aria-pressed="${holding.holdingId===this.selection?.holdingId}" title="${html(artifact?.label||holding.artifactId)} - ${html(holding.actorId)} - ${html(holding.store)}"><strong>${html(artifact?.label||holding.artifactId)}</strong><small>${expired?'Expired - still held':holding.retention==='temporary'?'Temporary':'Stored'} · ${html(holding.store)} · ${html(holding.representationId)}</small></button>`;};
+    const button=holding=>{
+      const artifact=artifacts.get(holding.artifactId),expired=artifact?.expiresAt!=null&&snapshot.protocolClock>=artifact.expiresAt;
+      const label=artifact?.label?this.explanation('artifact:'+holding.artifactId,'label',artifact.label,{actorId:holding.actorId}):protectedHtml(holding.artifactId);
+      const title=artifact?.label&&app.localizer?app.localizer.explain('artifact:'+holding.artifactId,'label',artifact.label,app.localeContext({actorId:holding.actorId})):artifact?.label||holding.artifactId;
+      return `<button class="held-object-control" data-holding-id="${html(holding.holdingId)}" data-held-key="${html(holdingControlKey(holding))}" aria-pressed="${holding.holdingId===this.selection?.holdingId}" title="${html(title)} - ${html(holding.actorId)} - ${html(holding.store)}"><strong class="locale-prose">${label}</strong><small><span class="locale-prose">${expired?this.markup('held.holding.expired','Expired - still held'):holding.retention==='temporary'?this.markup('held.holding.temporary','Temporary'):this.markup('held.holding.stored','Stored')}</span> · ${protectedHtml(holding.store)} · ${protectedHtml(holding.representationId)}</small></button>`;
+    };
     const compartment=(actorId,dock=false)=>{
       const holdings=orderedHoldings(snapshot.holdings.filter(item=>item.actorId===actorId)),coverage=snapshot.coverage.find(item=>item.actorId===actorId),slots=holdingSlots(holdings,this.focusedId||this.selection?.holdingId),expanded=this.expanded.has(actorId),status=coverage?.status||'not-modeled';
-      const label=status==='complete'?(holdings.length?'Held objects':'No held objects'):status==='partial'?'Known held objects - incomplete model':'Inventory not modeled';
-      return `<section class="held-compartment" data-held-owner="${html(actorId)}"><h3>${html(app.actor(actorId).name)} <small>${html(label)}</small></h3>${(dock?slots.visible:holdings).map(button).join('')}${dock&&slots.hidden.length?`<button class="held-summary-control" data-held-actor="${html(actorId)}" data-held-action="dock-overflow:${html(actorId)}" aria-controls="held-objects" aria-expanded="${expanded&&this.actorId===actorId}">+${slots.hidden.length} known objects</button>`:''}${!dock&&app.heldGeometry?`<button class="held-summary-control" data-held-collapse="${html(actorId)}" data-held-action="collapse:${html(actorId)}">Collapse complete inventory</button>`:''}${!dock?`<p class="held-coverage">${html((coverage?.stores||[]).join(', '))}${(coverage?.gaps||[]).map(gap=>`<span>Model gap: ${html(gap.reason)}</span>`).join('')}</p>`:''}</section>`;
+      const label=status==='complete'?(holdings.length?this.markup('held.coverage.held','Held objects'):this.markup('held.coverage.noHeld','No held objects')):status==='partial'?this.markup('held.coverage.partial','Known held objects - incomplete model'):this.markup('held.coverage.unmodeled','Inventory not modeled');
+      return `<section class="held-compartment" data-held-owner="${html(actorId)}"><h3>${protectedHtml(app.actor(actorId).name)} <small class="locale-prose">${label}</small></h3>${(dock?slots.visible:holdings).map(button).join('')}${dock&&slots.hidden.length?`<button class="held-summary-control locale-prose" data-held-actor="${html(actorId)}" data-held-action="dock-overflow:${html(actorId)}" aria-controls="held-objects" aria-expanded="${expanded&&this.actorId===actorId}">${html(this.count('held.count.overflow',slots.hidden.length,'+'+slots.hidden.length+' known objects'))}</button>`:''}${!dock&&app.heldGeometry?`<button class="held-summary-control locale-prose" data-held-collapse="${html(actorId)}" data-held-action="collapse:${html(actorId)}">${this.markup('held.inventory.collapse','Collapse complete inventory')}</button>`:''}${!dock?`<p class="held-coverage locale-prose">${protectedHtml((coverage?.stores||[]).join(', '))}${(coverage?.gaps||[]).map(gap=>`<span>${this.markup('held.coverage.gap','Model gap: ')}${this.explanation('actor:'+actorId,'coverage.gaps.reason',gap.reason,{gap})}</span>`).join('')}</p>`:''}</section>`;
     };
     const atomic=row?.sourceStepId&&!row?.heldCursorStart&&(compiled.plan.events[row.sourceStepId]?.milestones?.length||0)<=1;
-    const position=snapshot.cursor.eventIndex<0?'Before step 1':this.selected?'After step '+(snapshot.cursor.eventIndex+1):'Source event '+(snapshot.cursor.eventIndex+1)+' / '+snapshot.cursor.milestone;
-    this.root.innerHTML=`<header><h2>Current held objects</h2><p>Protocol clock ${html(snapshot.protocolClock)} · ${position}${atomic?' · Atomic event - '+(snapshot.cursor.milestone==='complete'?'after':'before')+' completion':''}. Possession is not acceptance or authority.</p></header><div class="held-actor-picker" aria-label="Choose logical inventory owner">${actors.map(id=>`<button class="held-summary-control" data-held-actor="${html(id)}" data-held-action="picker:${html(id)}" aria-pressed="${id===this.actorId}">${html(app.actor(id).name)} · ${snapshot.holdings.filter(item=>item.actorId===id).length} known</button>`).join('')}</div>${this.actorId?(!app.heldGeometry||this.expanded.has(this.actorId)?compartment(this.actorId):'<p>Choose a logical owner above or open its dock overflow to inspect the complete known list and coverage.</p>'):'<p>Inventory not modeled.</p>'}`;
+    const position=snapshot.cursor.eventIndex<0?this.markup('held.position.before','Before step 1'):this.selected?this.markup('held.position.after','After step {event}',{event:snapshot.cursor.eventIndex+1}):this.markup('held.position.source','Source event {event} / {milestone}',{event:snapshot.cursor.eventIndex+1,milestone:snapshot.cursor.milestone});
+    this.root.innerHTML=`<header><h2>${this.markup('held.inventory.title','Current held objects')}</h2><p>${this.markup('held.inventory.clock','Protocol clock {clock}',{clock:snapshot.protocolClock})} · ${position}${atomic?(snapshot.cursor.milestone==='complete'?this.markup('held.inventory.atomicAfter',' · Atomic event - after completion'):this.markup('held.inventory.atomicBefore',' · Atomic event - before completion')):''}${this.markup('held.inventory.boundary','. Possession is not acceptance or authority.')}</p></header><div class="held-actor-picker" aria-label="${html(this.message('held.inventory.chooseLabel','Choose logical inventory owner'))}">${actors.map(id=>`<button class="held-summary-control" data-held-actor="${html(id)}" data-held-action="picker:${html(id)}" aria-pressed="${id===this.actorId}">${protectedHtml(app.actor(id).name)} · ${html(this.count('held.count.known',snapshot.holdings.filter(item=>item.actorId===id).length,snapshot.holdings.filter(item=>item.actorId===id).length+' known'))}</button>`).join('')}</div>${this.actorId?(!app.heldGeometry||this.expanded.has(this.actorId)?compartment(this.actorId):'<p>'+this.markup('held.inventory.choose','Choose a logical owner above or open its dock overflow to inspect the complete known list and coverage.')+'</p>'):'<p>'+this.markup('held.inventory.unmodeled','Inventory not modeled.')+'</p>'}`;
+    this.docks.setAttribute('dir','ltr');this.docks.setAttribute('data-technical-ltr','');
     this.docks.innerHTML=app.heldGeometry?Object.keys(app.heldGeometry.positions).map(id=>{
       const owners=actors.filter(owner=>app.nodeId(owner)===id);
       if(app.heldGeometry.mode==='compact'){
         const chosen=owners.includes(this.selection?.actorId)?this.selection.actorId:owners.includes(this.actorId)?this.actorId:owners[0],count=snapshot.holdings.filter(item=>owners.includes(item.actorId)).length;
         const records=owners.map(owner=>snapshot.coverage.find(record=>record.actorId===owner)),complete=records.every(record=>record?.status==='complete'),unknown=records.every(record=>!record||record.status==='not-modeled');
-        const label=owners.map(owner=>app.actor(owner).name+': '+snapshot.holdings.filter(item=>item.actorId===owner).length+' known; '+(snapshot.coverage.find(record=>record.actorId===owner)?.status||'not-modeled')).join('. ');
-        return `<div class="held-compact-summary" data-held-dock="${html(id)}"><button class="held-summary-control" data-held-actor="${html(chosen)}" data-held-action="compact:${html(id)}" aria-controls="held-objects" aria-expanded="${this.actorId===chosen&&this.expanded.has(chosen)}" aria-label="Open separate logical-owner inventories. ${html(label)}"><span>${unknown?'?':count}</span><small>${complete?'known':unknown?'model':'partial'}</small></button></div>`;
+        const label=owners.map(owner=>{const count=snapshot.holdings.filter(item=>item.actorId===owner).length;return app.actor(owner).name+': '+this.count('held.count.known',count,count+' known')+'; '+(snapshot.coverage.find(record=>record.actorId===owner)?.status||'not-modeled');}).join('. ');
+        return `<div class="held-compact-summary" data-held-dock="${html(id)}"><button class="held-summary-control" data-held-actor="${html(chosen)}" data-held-action="compact:${html(id)}" aria-controls="held-objects" aria-expanded="${this.actorId===chosen&&this.expanded.has(chosen)}" aria-label="${html(this.message('held.dock.openInventories','Open separate logical-owner inventories. ')+label)}"><span>${unknown?'?':count}</span><small class="locale-prose">${complete?this.markup('held.dock.known','known'):unknown?this.markup('held.dock.model','model'):this.markup('held.dock.partial','partial')}</small></button></div>`;
       }
-      return `<div class="held-dock" data-held-dock="${html(id)}">${owners.length===1?compartment(owners[0],true):`<h3>Logical owner inventories</h3>${owners.map(owner=>`<button class="held-summary-control" data-held-actor="${html(owner)}" data-held-action="dock-owner:${html(owner)}" aria-controls="held-objects" aria-expanded="${this.actorId===owner&&this.expanded.has(owner)}"><strong>${html(app.actor(owner).name)}</strong><small>${snapshot.holdings.filter(item=>item.actorId===owner).length} known objects</small></button>`).join('')}`}</div>`;
+      return `<div class="held-dock" data-held-dock="${html(id)}">${owners.length===1?compartment(owners[0],true):`<h3 class="locale-prose">${this.markup('held.dock.inventories','Logical owner inventories')}</h3>${owners.map(owner=>`<button class="held-summary-control" data-held-actor="${html(owner)}" data-held-action="dock-owner:${html(owner)}" aria-controls="held-objects" aria-expanded="${this.actorId===owner&&this.expanded.has(owner)}"><strong>${protectedHtml(app.actor(owner).name)}</strong><small class="locale-prose">${html(this.count('held.count.objects',snapshot.holdings.filter(item=>item.actorId===owner).length,snapshot.holdings.filter(item=>item.actorId===owner).length+' known objects'))}</small></button>`).join('')}`}</div>`;
     }).join(''):'';
     this.docks.querySelectorAll('[data-held-dock]').forEach(dock=>{const p=app.positions[dock.dataset.heldDock],compact=app.heldGeometry.mode==='compact';dock.style.left=(compact?p.x:p.x+90)/1120*100+'%';dock.style.top=(compact?p.y:p.y-87)/730*100+'%';});
     if(this.visible&&app.heldGeometry?.mode==='compact'){
@@ -326,7 +352,7 @@ export class HeldObjectView extends HeldStudyState {
     if(this.previousHoldings&&this.visible&&!app.player.reducedMotion)this.app.querySelectorAll('[data-holding-id]').forEach(control=>{const id=control.dataset.holdingId;if(!this.previousHoldings.has(id)||this.previousHoldings.get(id)!==holdings.get(id))control.animate?.([{opacity:.4},{opacity:1}],{duration:220});});
     this.previousHoldings=holdings;
     const announcement=JSON.stringify([snapshot.protocolClock,snapshot.holdings.map(item=>[item.holdingId,item.store]),snapshot.observations,snapshot.authority]);
-    if(this.announcement!==announcement){if(!app.suppressStudyAnnouncement)app.querySelector('#held-announcement').textContent=snapshot.holdings.length+' known holdings at '+(snapshot.cursor.eventIndex<0?'the initial state':'source event '+(snapshot.cursor.eventIndex+1)+' '+snapshot.cursor.milestone)+'. '+snapshot.observations.length+' authored observations.';this.announcement=announcement;}
+    if(this.announcement!==announcement){if(!app.suppressStudyAnnouncement){const position=snapshot.cursor.eventIndex<0?this.message('held.announcement.initial','the initial state'):this.message('held.announcement.source','source event {event} {milestone}',{event:snapshot.cursor.eventIndex+1,milestone:snapshot.cursor.milestone});app.querySelector('#held-announcement').textContent=this.count('held.announcement.holdings',snapshot.holdings.length,snapshot.holdings.length+' known holdings')+this.message('held.announcement.at',' at ')+position+'. '+this.count('held.announcement.observations',snapshot.observations.length,snapshot.observations.length+' authored observations.');}this.announcement=announcement;}
     if(owned&&this.visible)this.recoverFocus(focusKey,focusActor,focusRegion);
   }
   renderInspector(snapshot,compiled){this.inspector.innerHTML=this.inspectionHtml(snapshot,compiled);}

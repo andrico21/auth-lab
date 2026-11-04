@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "kind": "actual-Source13-DE-complete-sample-Native-correction",
+  "status": "applied-Native-data-corrections-independent-closure-pending",
+  "sourceSetSha256": "6a9961b1e424768f33448b976fd137c10eabeadd61580235ba2be1774ce463f6",
+  "catalogBefore": {
+    "bytes": 4755365,
+    "sha256": "a38c4b5542bbb872dee41c2397ba7307b2201176bc2732e81d9ea59252250cd7",
+    "overrides": 186
+  },
+  "catalogAfter": {
+    "bytes": 4754929,
+    "sha256": "cdc03ac50c4fade5ee65918cd69185fea575645bf997088e898b34cecce33d27",
+    "overrides": 184
+  },
+  "changes": [
+    {
+      "findingId": "LOC-14-DE-SOURCE13-001",
+      "key": "runtime:5d19522179acfd123e81a8dd8a473662",
+      "sourceSha256": "9256a6315d18aa50f95686e9fd2ec7b085b815e2ee3c4bff2589ad7680c643bf",
+      "schemaIndex": 25482,
+      "english": "Publish exact answer/{protected1} generation",
+      "parameters": {
+        "protected1": {
+          "kind": "protected",
+          "value": "RRSIG"
+        }
+      },
+      "membership": {
+        "key": "runtime:5d19522179acfd123e81a8dd8a473662",
+        "bindingIndex": 239625,
+        "owner": {
+          "semanticId": "step:lab-dnssec18:cached-keys-provider-switch:receive-b-answer-using-a-cached-keys",
+          "fieldPath": "summary"
+        },
+        "context": {},
+        "classification": "mixed"
+      },
+      "beforeNative": "Die konkrete Generation aus Antwort und {protected1} von Provider B mit den von Provider A zwischengespeicherten Schlüsseln empfangen",
+      "afterNative": "Die konkrete Generation aus Antwort und {protected1} veröffentlichen",
+      "action": "remove-obsolete-override-use-existing-correct-Native-default",
+      "sourceEvidence": [
+        {
+          "module": "src/dnssec-signing-cases.js",
+          "lines": "111-114,399-400",
+          "sha256": "71dfc22e9f6c14649a7ecbee1a71170bafe7518018c38b53d379ad03a0a043c1"
+        },
+        {
+          "module": "src/dnssec-authoring.js",
+          "lines": "139-149",
+          "sha256": "dbe099f3de049cebaf817e4df856f757a6a7c1f8888578a7cb0dbd268553ce03"
+        }
+      ]
+    },
+    {
+      "findingId": "LOC-14-DE-SOURCE13-001",
+      "key": "runtime:b68c67778cc75cebc8cb203f8ce421cd",
+      "sourceSha256": "9256a6315d18aa50f95686e9fd2ec7b085b815e2ee3c4bff2589ad7680c643bf",
+      "schemaIndex": 25482,
+      "english": "Publish exact answer/{protected1} generation",
+      "parameters": {
+        "protected1": {
+          "kind": "protected",
+          "value": "RRSIG"
+        }
+      },
+      "membership": {
+        "key": "runtime:b68c67778cc75cebc8cb203f8ce421cd",
+        "bindingIndex": 239630,
+        "owner": {
+          "semanticId": "step:lab-dnssec18:missing-cross-provider-key:b-answer-has-no-cached-key",
+          "fieldPath": "payload.description"
+        },
+        "context": {},
+        "classification": "mixed"
+      },
+      "beforeNative": "Die konkrete Generation aus Antwort und {protected1} empfangen, für die kein passender Schlüssel im Cache vorliegt",
+      "afterNative": "Die konkrete Generation aus Antwort und {protected1} veröffentlichen",
+      "action": "remove-obsolete-override-use-existing-correct-Native-default",
+      "sourceEvidence": [
+        {
+          "module": "src/dnssec-signing-cases.js",
+          "lines": "111-114,399-400",
+          "sha256": "71dfc22e9f6c14649a7ecbee1a71170bafe7518018c38b53d379ad03a0a043c1"
+        },
+        {
+          "module": "src/dnssec-authoring.js",
+          "lines": "139-149",
+          "sha256": "dbe099f3de049cebaf817e4df856f757a6a7c1f8888578a7cb0dbd268553ce03"
+        }
+      ]
+    },
+    {
+      "findingId": "LOC-14-DE-SOURCE13-002",
+      "key": "runtime:9264934535fea5851f9497818f08561a",
+      "sourceSha256": "e1c878add2d629961e85422e5281fcb5bbc4ee570f2e6fda7b0fa6d9888e0756",
+      "schemaIndex": 39288,
+      "english": "A failed {protected1} authentication outcome.",
+      "parameters": {
+        "protected1": {
+          "kind": "protected",
+          "value": "SSH"
+        }
+      },
+      "membership": {
+        "key": "runtime:9264934535fea5851f9497818f08561a",
+        "bindingIndex": 324236,
+        "owner": {
+          "semanticId": "field:sshcert_session_failure",
+          "fieldPath": "meaning"
+        },
+        "context": {},
+        "classification": "mixed"
+      },
+      "beforeNative": "Ein fehlgeschlagener Vorgang bei der Sitzungseinrichtung für {protected1}.",
+      "afterNative": "Ein fehlgeschlagenes Authentifizierungsergebnis für {protected1}: Der Besitznachweis wurde für eine andere Transportverbindung signiert und wird hier nicht akzeptiert.",
+      "action": "replace-exact-binding-override",
+      "sourceEvidence": [
+        {
+          "module": "src/ssh-access-lab.js",
+          "lines": "408-418",
+          "sha256": "3b08ee75ee54669e604ba9361c51fecefd631078602d094e8e78c04973300de4"
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "all44549SchemaDefaultsUnchanged": true,
+    "effectiveNativeBindingsChanged": 3,
+    "obsoleteOverridesRemoved": 2,
+    "remainingOverrideReplacements": 1,
+    "placeholderMultiplicityErrors": 0,
+    "unsafeMarkupBidiOrNonASCIIHyphenErrors": 0,
+    "canonicalSourceModelQueueDataChanged": false
+  },
+  "method": "Parent directly compared the actual current canonical producer lines cited in the independent review. Accepted complete corrected German wording; removed two unnecessary overrides because the existing default is already exact. No completion/API authorship, independent closure, human/native AT or release approval is invented. Original findings remain unchanged."
+}

@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "kind": "localization-glossary-correction-authoring-record",
+  "locale": "de",
+  "status": "corrections-authored-awaiting-independent-closure",
+  "author": {
+    "workerIdentity": "GlossaryFixWestern",
+    "authorType": "AI implementation worker",
+    "modelIdentity": "openai-codex/gpt-6.1-sol",
+    "method": "Direct correction authoring against canonical English and editorial policy, informed by all first-pass independent AI findings; proposed wording assessed for remaining semantic and grammatical defects."
+  },
+  "scope": "Only conceptualProse.definition corrections for the enumerated glossary findings. No full-catalog, runtime, human, native-speaker, AT, release or publication acceptance. Existing glossary authorship and review metadata unchanged.",
+  "baseCommit": "1e87576924d82d1579959904aa7b2a3e89742067",
+  "versionUnchanged": "1.2",
+  "inputs": [
+    {
+      "path": "docs/localization/glossaries/de.json",
+      "sha256": "a2ffe2dfb59cf253dfa83df1174dbe69a3069247ca66c391f67dd90a1498e053",
+      "role": "exact pre-correction locale input"
+    },
+    {
+      "path": "docs/localization/glossaries/en.json",
+      "sha256": "8c898b42c13ddc7fb8fcd501124012d5866c8219a333aeb8f5c9046dae449fec",
+      "role": "unchanged English authority"
+    },
+    {
+      "path": "docs/localization/editorial-policy.json",
+      "sha256": "6d11e5a8f5d06d549c82163d08832959b4414353328eeb6d3a8bb1b0b70e1742",
+      "role": "unchanged editorial authority"
+    }
+  ],
+  "firstPassReview": {
+    "frozenReport": "local://localization-glossary-review-de.json",
+    "fullReportField": "rawToolResult.text",
+    "reviewerAgent": "GlossaryReviewGerman",
+    "reviewerModel": "not stated in the frozen German report",
+    "originalVerdict": "changes-required",
+    "preservation": "The frozen report and all original findings remain preserved unchanged. This correction record is not an independent closure."
+  },
+  "findings": [
+    {
+      "findingId": "L10N-GDE-01",
+      "severity": "P2",
+      "conceptId": "verification",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Ein konkreter Nachweis wird geprüft, etwa eine Signatur; noch keine Zugriffsentscheidung.",
+      "new": "Nachweise werden auf eine angegebene Eigenschaft hin geprüft, etwa bei der Prüfung einer Signatur; dies ist keine Zugriffsentscheidung.",
+      "reason": "Restore evidence checked against a stated property, with signature checking as an example of the check rather than a signature as a property. Preserve the exclusion of an access decision.",
+      "englishDefinition": "Checking evidence against a stated property, such as a signature; not an access decision."
+    },
+    {
+      "findingId": "L10N-GDE-02",
+      "severity": "P2",
+      "conceptId": "acceptance",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Ein bestimmter Empfänger akzeptiert das Objekt nach seinen Prüfungen und Richtlinien.",
+      "new": "Ein bestimmter Empfänger akzeptiert das Objekt nach seinen Prüfungen und Richtlinien; das begründet kein allgemeines Vertrauen.",
+      "reason": "Restore the explicit exclusion of universal trust while retaining the particular consumer and its checks and policy.",
+      "englishDefinition": "A particular consumer accepts an object under its checks and policy; not universal trust."
+    },
+    {
+      "findingId": "L10N-GDE-03",
+      "severity": "P3",
+      "conceptId": "invalid",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Eine dargestellte Gültigkeitsprüfung schlägt fehl; nicht mit fehlender Unterstützung verwechseln.",
+      "new": "Eine dargestellte Gültigkeitsprüfung schlägt fehl; weder mit nicht unterstützten Eingaben noch mit unbekannten Nachweisen verwechseln.",
+      "reason": "Restore both unsupported-input and unknown-evidence distinctions, not merely missing implementation support.",
+      "englishDefinition": "A represented validity check fails; distinguish unsupported input and unknown evidence."
+    },
+    {
+      "findingId": "L10N-GDE-04",
+      "severity": "P2",
+      "conceptId": "unsupported",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Dieses Verhalten oder Eingabeformat wird nicht unterstützt; es muss deshalb nicht ungültig sein.",
+      "new": "Die Implementierung oder das Modell unterstützt diese Eingabe oder diesen Mechanismus nicht; das bedeutet nicht zwangsläufig, dass die Eingabe oder der Mechanismus ungültig ist.",
+      "reason": "Restore implementation/model as actor and input/mechanism as objects. Avoid the proposal's ambiguous pronoun and retain not necessarily invalid.",
+      "englishDefinition": "The implementation or model does not support this input or mechanism; not necessarily invalid."
+    },
+    {
+      "findingId": "L10N-GDE-05",
+      "severity": "P3",
+      "conceptId": "tlsTransport",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Schutz des genannten Kanals; weder DNSSEC-Validierung noch Anwendungsautorisierung.",
+      "new": "Schutz des Kanals im angegebenen TLS-Kontext; weder DNSSEC-Validierung noch Ende-zu-Ende-Anwendungsautorisierung.",
+      "reason": "Restore the specified TLS context and end-to-end application authorization qualifier; retain the DNSSEC exclusion.",
+      "englishDefinition": "Channel protection in the specified TLS context; not DNSSEC validation or end-to-end application authorization."
+    },
+    {
+      "findingId": "L10N-GDE-06",
+      "severity": "P2",
+      "conceptId": "dnssecInsecure",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Das literale Ergebnis insecure bezeichnet Daten ohne die relevante DNSSEC-Vertrauenskette gemäß der angegebenen Richtlinie, etwa bei einer authentifiziert unsignierten Delegierung; nicht bogus.",
+      "new": "Das literale Ergebnis insecure bezeichnet Daten, die gemäß der angegebenen Richtlinie bekanntermaßen nicht von der relevanten DNSSEC-Vertrauenskette erfasst werden, etwa bei einer authentifizierten, unsignierten Delegierung; kein Validierungsergebnis bogus.",
+      "reason": "Restore known non-coverage under the stated policy rather than absence of a chain; repair adjective agreement and make bogus an explicit validation-result contrast.",
+      "englishDefinition": "The exact verdict insecure: data are known not to be covered by the relevant DNSSEC chain of trust under the stated policy, for example an authenticated unsigned delegation; not bogus validation."
+    },
+    {
+      "findingId": "L10N-GDE-07",
+      "severity": "P3",
+      "conceptId": "dnssecBogus",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Das literale Ergebnis bogus bezeichnet eine nicht erfolgreich belegte, erwartete DNSSEC-Validierung; nicht bloß unsignierte Daten.",
+      "new": "Das literale Ergebnis bogus bedeutet, dass die erwartete DNSSEC-Validierung die Gültigkeit nicht belegen kann; nicht bloß unsignierte Daten.",
+      "reason": "Make validity the object that expected DNSSEC validation cannot establish, rather than calling validation itself unproven.",
+      "englishDefinition": "The exact verdict bogus: expected DNSSEC validation cannot establish validity; not merely unsigned data."
+    },
+    {
+      "findingId": "L10N-GDE-08",
+      "severity": "P2",
+      "conceptId": "pamSufficient",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Erfolg kann nur ohne früheren required-Fehler erfolgreich beenden; ein eigener Fehler wird bei dieser einfachen Steuerung ignoriert.",
+      "new": "Bei der gezeigten einfachen Steuerung in Linux-PAM kann der Erfolg des Moduls die Auswertung nur dann erfolgreich beenden, wenn kein früherer Fehler eines Moduls mit der Steuerung required vorliegt; ein Fehler des Moduls selbst wird ignoriert.",
+      "reason": "Repair transitive beenden with an explicit evaluation object and module-success subject. Retain Linux-PAM shown-simple-control scope, the earlier required-failure condition and ignored own failure; the proposal alone omitted module success.",
+      "englishDefinition": "For the Linux-PAM simple control shown, success can finish successfully only without an earlier required failure; its own failure is ignored."
+    },
+    {
+      "findingId": "L10N-GDE-09",
+      "severity": "P2",
+      "conceptId": "pamOptional",
+      "field": "conceptualProse.definition",
+      "disposition": "correction-authored-awaiting-independent-closure",
+      "old": "Bei der gezeigten einfachen Steuerung zählt das Ergebnis im Allgemeinen nur als einziges relevantes Modul dieses Diensttyps; die konkreten Stackbedingungen beibehalten.",
+      "new": "Bei der gezeigten einfachen Steuerung in Linux-PAM zählt das Ergebnis im Allgemeinen nur dann, wenn das Modul das einzige relevante Modul für diesen Diensttyp ist; die genauen modellierten Stackbedingungen beibehalten.",
+      "reason": "Make the module, not its result, the sole relevant module in an explicit only-if condition. Restore Linux-PAM shown-simple-control scope and exact modeled stack conditions.",
+      "englishDefinition": "For the Linux-PAM simple control shown, the result generally matters only if it is the sole relevant module for that service type; retain the exact modeled stack conditions."
+    }
+  ],
+  "reviewLimits": {
+    "independentClosure": "pending-original-independent-reviewer",
+    "qualifiedHumanLanguageReview": "unperformed",
+    "nativeSpeakerApproval": "unperformed",
+    "humanComprehensionReview": "unperformed",
+    "humanPronunciationReview": "unperformed",
+    "actualScreenReaderReview": "unperformed",
+    "buildsTestsLintFormattersBrowserModelExecution": "not run by correction author",
+    "approvals": [],
+    "waivers": []
+  }
+}

@@ -1,0 +1,951 @@
+{
+  "schemaVersion": 1,
+  "kind": "localization-authoring-editorial-policy",
+  "authority": {
+    "path": "docs/localization/inputs/localization-worker-plan.html.input.txt",
+    "sha256": "07e83043df68214542ce1576662c360c4b10734c8cebce32b1ea547902033540",
+    "startingInputManifest": "docs/localization/starting-inputs.json",
+    "baseCommit": "1e87576924d82d1579959904aa7b2a3e89742067",
+    "versionUnchanged": "1.2"
+  },
+  "scope": "Common concept vocabulary and independent locale authoring guidance. These documents do not override canonical source, generate production translations, establish complete catalog coverage or change any model.",
+  "authorshipAndReview": {
+    "authorType": "AI implementation worker",
+    "workerIdentity": "LocaleGlossaryPolicy",
+    "modelIdentity": "openai-codex/gpt-6.1-sol",
+    "method": "Direct authoring from the canonical English meaning contract, with locale-specific terminology and author self-review. No named human reviewer participated.",
+    "authorSelfReview": "completed within authored terminology and policy scope only",
+    "independentTechnicalReview": "pending",
+    "qualifiedHumanLanguageReview": "unperformed",
+    "humanComprehensionReview": "unperformed",
+    "humanPronunciationReview": "unperformed",
+    "actualScreenReaderReview": "unperformed",
+    "approvals": [],
+    "waivers": [],
+    "acceptanceClaim": "Reviewable author-self-reviewed implementation; not qualified native approval, independent technical closure, human acceptance or release acceptance."
+  },
+  "localeOrder": [
+    "en",
+    "ru",
+    "uk",
+    "he",
+    "de",
+    "ar-AE",
+    "fr",
+    "pl"
+  ],
+  "glossaryContract": {
+    "filePattern": "docs/localization/glossaries/{locale}.json",
+    "conceptIdentity": "concepts object keys are stable shared semantic IDs, never translated identifiers. Each entry includes an English definition and independent locale conceptual prose.",
+    "noInheritance": "Each locale file contains its entire vocabulary, protected-literal contract and editorial style. No locale borrows another locale as a translation fallback or intermediate language.",
+    "conceptualVersusLiteral": "conceptualProse.term and conceptualProse.definition are explanatory authoring choices, not replacements for model names. literalForms lists illustrative exact forms associated with a concept, not localized synonyms and not an exhaustive protected registry.",
+    "contextBinding": "The production inventory binds protected occurrences by semantic owner and source position. An unrelated ordinary word is not protected merely because some definition has that name.",
+    "canonicalNames": "Every definition.name, actor.name, formal actor.role and other canonical formal name remains exact even if it looks like ordinary English. Translate permitted definitions, plainRole and explanatory notes around it.",
+    "catalogUse": "Catalog workers use this vocabulary as technical and stylistic guidance, not blind string substitution. Retain per-owner meaning, context, typed parameters and current source fingerprints.",
+    "authoringLocale": "Use the canonical English explanation directly. Ukrainian is not translated via Russian. Polish has its own syntax and number agreement. Arabic is technical Modern Standard Arabic suitable for UAE readers, not colloquial transliteration."
+  },
+  "protectedLiteralContract": {
+    "scope": "Occurrence-bound formal literals, not blanket protection of every ordinary word that also appears in a name.",
+    "preserveExact": [
+      "canonical definition.name",
+      "actor.name and formal actor.role",
+      "formal role names",
+      "field and claim names",
+      "payload names and values",
+      "IDs and enum values",
+      "error and return codes",
+      "commands and flags",
+      "configuration keys and values",
+      "protocol and product names",
+      "protocol versions and numeric syntax",
+      "timestamps and technical units",
+      "URLs",
+      "official citation titles and exact quotations"
+    ],
+    "never": [
+      "translate a formal literal",
+      "inflect a formal literal",
+      "transliterate a formal literal",
+      "add translated morphology inside a literal",
+      "change casing or internal whitespace",
+      "invent a localized enum",
+      "change model state or copy payloads"
+    ],
+    "proseRule": "Translate conceptual nouns and their explanations. Put a translated generic noun around a renderer-isolated unchanged token when grammar requires it. A translated concept label never replaces a canonical formal name.",
+    "rendering": "The renderer owns bdi dir=ltr translate=no and escaping. Catalog text must contain named placeholders, not translator HTML or bidi control characters.",
+    "clipboard": "Only canonical raw values may be copied. Human explanation text is not a substitute payload.",
+    "examples": [
+      {
+        "kind": "claim name",
+        "literal": "aud",
+        "conceptId": "audience"
+      },
+      {
+        "kind": "module return code",
+        "literal": "PAM_SUCCESS",
+        "conceptId": "pamModuleReturn"
+      },
+      {
+        "kind": "PAM control flag",
+        "literal": "required",
+        "conceptId": "pamRequired"
+      },
+      {
+        "kind": "PAM action",
+        "literal": "done",
+        "conceptId": "pamSubstack"
+      },
+      {
+        "kind": "PAM action",
+        "literal": "die",
+        "conceptId": "pamSubstack"
+      },
+      {
+        "kind": "DNSSEC enum",
+        "literal": "secure",
+        "conceptId": "dnssecSecure"
+      },
+      {
+        "kind": "DNSSEC enum",
+        "literal": "insecure",
+        "conceptId": "dnssecInsecure"
+      },
+      {
+        "kind": "DNSSEC enum",
+        "literal": "bogus",
+        "conceptId": "dnssecBogus"
+      },
+      {
+        "kind": "DNSSEC enum",
+        "literal": "indeterminate",
+        "conceptId": "dnssecIndeterminate"
+      },
+      {
+        "kind": "formal role name example",
+        "literal": "Resource Owner",
+        "conceptId": "role"
+      },
+      {
+        "kind": "command",
+        "literal": "sudo",
+        "conceptId": "admission"
+      },
+      {
+        "kind": "configuration path",
+        "literal": "pam.d",
+        "conceptId": "pamAggregate"
+      }
+    ]
+  },
+  "numbers": {
+    "digits": "0123456789",
+    "numberingSystem": "latn",
+    "useGrouping": false,
+    "uiDecimalSeparator": ".",
+    "scope": "Product convention for UI counts, not a claim about locale defaults. Select grammar using the requested locale independently of digit presentation.",
+    "technicalValues": "Keep all technical numbers, version numbers, units, serialized examples, durations, offsets and timestamps exactly as authored in canonical data.",
+    "neverParseDisplay": "Never parse a localized displayed count, time or number back into player or model state."
+  },
+  "pluralReference": {
+    "version": "CLDR 49",
+    "url": "https://raw.githubusercontent.com/unicode-org/cldr-json/49.0.0/cldr-json/cldr-core/supplemental/plurals.json",
+    "chartURL": "https://www.unicode.org/cldr/charts/49/supplemental/language_plural_rules.html",
+    "categoriesAreNotWords": "Cardinal categories select whole messages; one does not always mean the integer 1, and other is not simply the English plural.",
+    "operands": "n is the absolute numeric value; i the integer digits; v the number of visible fraction digits; e the compact-decimal exponent. The UI count convention is ungrouped ordinary decimal numbers, not compact notation.",
+    "criticalReferenceCases": [
+      {
+        "locale": "he",
+        "value": "0.5",
+        "category": "one",
+        "qualification": "The rule also includes all represented fractions with integer part zero; 0 < n < 1 is not other."
+      },
+      {
+        "locale": "fr",
+        "value": "0",
+        "category": "one"
+      },
+      {
+        "locale": "fr",
+        "value": "1",
+        "category": "one"
+      },
+      {
+        "locale": "fr",
+        "value": "1000000",
+        "category": "many"
+      },
+      {
+        "locale": "pl",
+        "value": "21",
+        "category": "many"
+      },
+      {
+        "locale": "ru",
+        "value": "21",
+        "category": "one"
+      },
+      {
+        "locale": "uk",
+        "value": "21",
+        "category": "one"
+      }
+    ],
+    "integrationReferenceValues": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "11",
+      "12",
+      "14",
+      "21",
+      "22",
+      "25",
+      "100",
+      "101",
+      "102",
+      "1000000",
+      "0.5",
+      "1.5"
+    ],
+    "visiblePrecision": "CLDR lexical operands can distinguish 1 from 1.0. JavaScript Number does not retain trailing-zero spelling; document actual runtime behavior and explicit formatting choices rather than claiming it does.",
+    "runtimeEvidence": "No browser, Intl.PluralRules, supportedLocalesOf, resolvedOptions or ICU behavior was exercised by this worker. Runtime/ICU differences must be recorded during integration, not hidden by an English fallback.",
+    "catalogRule": "Use complete count messages in every required category. Keep the same required protected parameters and occurrences in each branch; never concatenate a translated noun suffix or pass an English noun as a protected grammatical parameter."
+  },
+  "semanticPreservation": [
+    {
+      "id": "possession-is-not-verification",
+      "conceptIds": [
+        "possession",
+        "verification",
+        "validation",
+        "acceptance",
+        "authentication",
+        "authorization",
+        "admission"
+      ],
+      "rule": "Receipt or possession proves none of the later checks. Verification names its property. Acceptance names its consumer. Authentication establishes identity; authorization decides an action; admission is the final boundary decision shown."
+    },
+    {
+      "id": "observation-and-time",
+      "conceptIds": [
+        "present",
+        "absent",
+        "unknown",
+        "expired",
+        "notYetObserved",
+        "notReached",
+        "notModeled",
+        "sourcePrefix"
+      ],
+      "rule": "Keep existence, knowledge, time and model coverage distinct. Not yet observed is relative to the currently reached prefix. Never turn a later check into a completed present check or reveal later evidence."
+    },
+    {
+      "id": "invalid-is-not-unsupported",
+      "conceptIds": [
+        "invalid",
+        "unsupported",
+        "unknown",
+        "denied"
+      ],
+      "rule": "A failed validity check differs from missing support, unknown evidence and a policy refusal. Preserve JWT and other mechanism-specific distinctions without inventing a verdict."
+    },
+    {
+      "id": "direction-and-authority",
+      "conceptIds": [
+        "trust",
+        "trustDirection",
+        "issuer",
+        "audience",
+        "delegation",
+        "impersonation",
+        "referral"
+      ],
+      "rule": "Preserve who trusts whom, sender and recipient, issuer and audience, cross-forest direction, referral target and delegation scope. Impersonation does not itself pass an authorization check."
+    },
+    {
+      "id": "distinct-protection",
+      "conceptIds": [
+        "signing",
+        "encryption",
+        "integrity",
+        "confidentiality",
+        "tlsTransport",
+        "dnssecValidation",
+        "credentialIsolation",
+        "tokenFiltering"
+      ],
+      "rule": "Do not equate SMB signing with encryption, TLS channel protection with DNSSEC validation, or Credential Guard isolation with token filtering. Preserve the protected object, mechanism and relevant checks."
+    },
+    {
+      "id": "pam-control-flow",
+      "conceptIds": [
+        "pamModuleReturn",
+        "pamAggregate",
+        "pamAdmission",
+        "pamRequired",
+        "pamRequisite",
+        "pamSufficient",
+        "pamOptional",
+        "pamInclude",
+        "pamSubstack"
+      ],
+      "rule": "Keep module return, aggregate stack result and application admission separate. Literal flags, bracket actions, include and substack remain exact. Their explanations preserve execution order, saved failures, short-circuit conditions and stack boundaries. Attribute the simple control semantics to the implementation shown, not all PAM implementations."
+    },
+    {
+      "id": "uac-prompt-kind",
+      "conceptIds": [
+        "uacConsent",
+        "uacCredentials"
+      ],
+      "rule": "Consent to elevation is not credential entry. Do not infer that the same account, token or protection applies to both prompt types."
+    },
+    {
+      "id": "dnssec-verdicts",
+      "conceptIds": [
+        "dnssecSecure",
+        "dnssecInsecure",
+        "dnssecBogus",
+        "dnssecIndeterminate"
+      ],
+      "rule": "Preserve secure, insecure, bogus and indeterminate as literal enums. Explain them without turning insecure into a bogus signature or indeterminate into successful validation. Retain the trust-anchor, local-policy and validation context."
+    },
+    {
+      "id": "claim-qualification",
+      "conceptIds": [
+        "normativeRequirement",
+        "profileRequirement",
+        "configuredBehavior",
+        "modelAssumption",
+        "modelLimitation",
+        "conditionalClaim"
+      ],
+      "rule": "Attribute obligations to their actual specification, product profile or explicit configuration. Model assumptions and limitations are not normative protocol claims. Preserve negation, modality, conditions, time and evidence scope."
+    }
+  ],
+  "layoutAndAccessibility": {
+    "rtl": [
+      "Hebrew and Arabic human prose uses RTL. Technical graphs, raw JSON, identifiers, commands and technical tables remain LTR.",
+      "Renderer-owned LTR bdi isolation surrounds unchanged inline tokens; catalog authors supply no HTML, bidi overrides or hidden directional controls.",
+      "Use logical spacing and alignment. Do not reverse arrays, trust directions, arrow meaning, punctuation or token character order to obtain an RTL visual effect.",
+      "Use readable translated generic nouns around isolated tokens instead of attaching native-language morphology to them."
+    ],
+    "expansion": "Allow wrapping, longer labels and flexible control widths for all locales, especially German compounds. Do not remove semantic conditions or negation to fit a width. No unsupported claims of reflow or zoom acceptance.",
+    "accessibleNames": "Translate visible and accessible labels together. The accessible name includes the visible localized label and correct state. Keep IDs, aria-controls, roles and shortcut tokens exact. No English-only accessible-name override for a translated control.",
+    "languageMetadata": "Mark predominant human language with the selected BCP 47 tag and direction. Mark genuine English fallback as English/LTR. Acronyms and technical names do not require arbitrary pronunciation rewrites.",
+    "pronunciation": "Accessible names may flatten inline language markup. Do not claim actual pronunciation or comprehension without human assistive-technology review."
+  },
+  "punctuation": {
+    "allowedDash": "ASCII hyphen U+002D only",
+    "forbiddenDashes": [
+      "U+2013",
+      "U+2014"
+    ],
+    "scope": "Newly authored project prose. Frozen historical input bytes and exact protected quotes remain unchanged. Locale punctuation never modifies internal literal bytes."
+  },
+  "safeAuthoring": {
+    "parameters": "Named parameters follow typed owner contracts. Human prose parameters use structured translation references; technical parameters are exact/protected. Preserve required placeholder occurrences and source hashes.",
+    "noTranslatorStructure": "Do not author HTML, scripts, styles, link destinations or markup-bearing translations. Renderer-owned emphasis, code and source links are the only structural fragments.",
+    "evidenceBoundary": "Translate already permission- and prefix-projected display data only; do not query future trace data or evaluate semantic models in the localizer.",
+    "search": "Localized prose and aliases are additive search aids only. Preserve canonical IDs, values, Ukrainian letters and technical plus signs; never normalize display or copy payloads."
+  },
+  "localePolicies": {
+    "en": {
+      "glossaryPath": "docs/localization/glossaries/en.json",
+      "style": {
+        "language": "English",
+        "direction": "ltr",
+        "register": "Keep existing canonical English as the reference. These concept definitions guide meaning; they do not rewrite frozen source text.",
+        "grammar": "Use complete messages and named parameters. Distinguish subject, recipient and acting party. Do not join translated suffixes or protect an English noun just to avoid grammar.",
+        "casing": "Sentence case for ordinary UI labels. Preserve the exact casing of formal literals.",
+        "punctuation": "Use ordinary English punctuation outside protected fragments. Use only ASCII hyphens, never U+2013 or U+2014.",
+        "expansion": "Allow wrapping and variable control widths. Do not shorten a label by dropping a condition, negation or actor.",
+        "accessibleNames": "Localize visible labels and accessible names together. An accessible name contains the visible label and the same state. Keep shortcut tokens and ARIA identifiers exact.",
+        "bidi": "Prose is LTR. Protect technical values with renderer-owned LTR isolation; do not author bidi controls.",
+        "literalExample": "The field {token} describes the intended recipient.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "An intended recipient is not necessarily the issuer.",
+        "pluralNote": "The category one applies to the integer 1 without visible decimal places. A CLDR decimal spelling such as 1.0 has other; JavaScript Number does not retain that spelling.",
+        "normativeModality": {
+          "requirement": "must",
+          "recommendation": "should",
+          "permission": "may",
+          "prohibition": "must not"
+        }
+      },
+      "cardinalCategories": [
+        "one",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "i = 1 and v = 0",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1"
+        ],
+        "other": [
+          "0",
+          "2",
+          "21",
+          "0.5",
+          "1000000"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "Found {count} item.",
+        "other": "Found {count} items."
+      },
+      "review": {
+        "authorWorker": "LocaleGlossaryPolicy",
+        "authorSelfReview": "completed",
+        "independentTechnicalReview": "pending",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "ru": {
+      "glossaryPath": "docs/localization/glossaries/ru.json",
+      "style": {
+        "language": "Русский",
+        "direction": "ltr",
+        "register": "Ясный технический русский без разговорных кальк. Самостоятельный русский текст; не использовать его как промежуточный язык для украинского.",
+        "grammar": "Строить полные предложения и согласовывать падеж, число и род. Защищённый литерал не склонять: склонять окружающее родовое слово, например «значение поля {token}». Не объединять аутентификацию и авторизацию.",
+        "casing": "Обычные заголовки и подписи начинать с прописной буквы без английского выделения каждого слова. Регистр литералов не менять.",
+        "punctuation": "Использовать русскую пунктуацию и кавычки «». Только дефис ASCII; знаки U+2013 и U+2014 не использовать. Знаки предложения размещать вне защищённого токена.",
+        "expansion": "Допускать переносы и расширение элементов. Не сокращать за счёт отрицаний, условий или направления доверия.",
+        "accessibleNames": "Название для вспомогательных технологий должно включать видимую русскую подпись и тот же смысл состояния. Сочетания клавиш и ARIA-идентификаторы не переводить.",
+        "bidi": "Русский текст слева направо; технические фрагменты изолирует renderer как LTR. Управляющие символы bidi в перевод не вставлять.",
+        "literalExample": "Поле {token} указывает целевого получателя.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Целевой получатель не обязательно является издателем.",
+        "pluralNote": "Для целых 21 относится к one, 22 к few, 11 к many; дроби относятся к other. Выбирать целое сообщение, а не добавлять окончание к существительному.",
+        "normativeModality": {
+          "requirement": "должен / требуется",
+          "recommendation": "следует / рекомендуется",
+          "permission": "допускается",
+          "prohibition": "запрещается / не должен"
+        }
+      },
+      "cardinalCategories": [
+        "one",
+        "few",
+        "many",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "v = 0 and i % 10 = 1 and i % 100 != 11",
+        "few": "v = 0 and i % 10 = 2..4 and i % 100 != 12..14",
+        "many": "v = 0 and i % 10 = 0 or v = 0 and i % 10 = 5..9 or v = 0 and i % 100 = 11..14",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1",
+          "21",
+          "101"
+        ],
+        "few": [
+          "2",
+          "3",
+          "4",
+          "22",
+          "102"
+        ],
+        "many": [
+          "0",
+          "5",
+          "11",
+          "12",
+          "14",
+          "25",
+          "100",
+          "1000000"
+        ],
+        "other": [
+          "0.5",
+          "1.5"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "Найден {count} элемент.",
+        "few": "Найдено {count} элемента.",
+        "many": "Найдено {count} элементов.",
+        "other": "Количество найденных элементов: {count}."
+      },
+      "review": {
+        "authorWorker": "LocaleGlossaryPolicy",
+        "authorSelfReview": "completed",
+        "independentTechnicalReview": "pending",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "uk": {
+      "glossaryPath": "docs/localization/glossaries/uk.json",
+      "style": {
+        "language": "Українська",
+        "direction": "ltr",
+        "register": "Самостійна українська технічна мова, написана з англійського джерела без перекладу через російську. Використовувати «автентифікація», «облікові дані», «застосунок» і «чинність» за змістом.",
+        "grammar": "Узгоджувати рід, відмінок і число в цілому реченні. Не відмінювати літерали; відмінювати родове слово довкола них. Зберігати українські і, ї, є, ґ та апостроф, не замінювати російськими літерами.",
+        "casing": "У звичайних підписах велика літера лише на початку й у власних назвах. Регістр технічних літералів зберігати.",
+        "punctuation": "Українська пунктуація й лапки «». Уживати лише дефіс ASCII, без U+2013 та U+2014. Розділові знаки речення залишати поза технічним токеном.",
+        "expansion": "Дозволяти перенесення й довші підписи. Не вилучати заперечення, умови або назви сторін задля стислості.",
+        "accessibleNames": "Доступна назва має містити видимий український підпис і той самий стан. Клавіші та ARIA-ідентифікатори лишаються точними.",
+        "bidi": "Текст має напрямок LTR; технічні значення відокремлює renderer. Не вставляти керувальних символів bidi.",
+        "literalExample": "Поле {token} визначає цільового одержувача.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Цільовий одержувач не обов’язково є видавцем.",
+        "pluralNote": "Цілі 21 належить до one, 22 до few, 11 до many; дробові значення належать до other. Вибирати повне повідомлення з власним українським узгодженням.",
+        "normativeModality": {
+          "requirement": "має / вимагається",
+          "recommendation": "слід / рекомендовано",
+          "permission": "дозволено",
+          "prohibition": "заборонено / не можна"
+        }
+      },
+      "cardinalCategories": [
+        "one",
+        "few",
+        "many",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "v = 0 and i % 10 = 1 and i % 100 != 11",
+        "few": "v = 0 and i % 10 = 2..4 and i % 100 != 12..14",
+        "many": "v = 0 and i % 10 = 0 or v = 0 and i % 10 = 5..9 or v = 0 and i % 100 = 11..14",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1",
+          "21",
+          "101"
+        ],
+        "few": [
+          "2",
+          "3",
+          "4",
+          "22",
+          "102"
+        ],
+        "many": [
+          "0",
+          "5",
+          "11",
+          "12",
+          "14",
+          "25",
+          "100",
+          "1000000"
+        ],
+        "other": [
+          "0.5",
+          "1.5"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "Знайдено {count} елемент.",
+        "few": "Знайдено {count} елементи.",
+        "many": "Знайдено {count} елементів.",
+        "other": "Кількість знайдених елементів: {count}."
+      },
+      "review": {
+        "authorWorker": "LocaleGlossaryPolicy",
+        "authorSelfReview": "completed",
+        "independentTechnicalReview": "pending",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "he": {
+      "glossaryPath": "docs/localization/glossaries/he.json",
+      "style": {
+        "language": "עברית",
+        "direction": "rtl",
+        "register": "עברית טכנית עכשווית ובהירה. להבחין בין אימות זהות, הרשאה והתרת כניסה. אין לתעתק שמות פורמליים או להפוך אותיות לטיניות לעבריות.",
+        "grammar": "להתאים מין ומספר במשפט שלם. להעדיף תוויות שם עצם או ניסוח ניטרלי במקום פנייה מגדרית מיותרת. מילת יחס או ה״א הידיעה שייכות לטקסט העברי שמחוץ לטוקן המוגן.",
+        "casing": "בעברית אין אותיות רישיות. לשמר בדיוק את הרישיות של שמות וערכים לטיניים.",
+        "punctuation": "להשתמש בפיסוק עברי רגיל, בלי מקפים מסוג U+2013 או U+2014; המקף היחיד הוא ASCII. סימני המשפט נשארים מחוץ לאי הטכני. אין להפוך סוגריים או להוסיף רווחים כדי לתקן סדר חזותי.",
+        "expansion": "לאפשר גלישת טקסט ותוויות ארוכות. אין למחוק שלילה, תנאי או שם של צד כדי להתאים לרוחב.",
+        "accessibleNames": "השם הנגיש כולל את התווית העברית הגלויה ואת אותו מצב. יש לשמר קיצורי מקשים ומזהי ARIA. הגייה והבנה בקורא מסך דורשות בדיקה אנושית שטרם בוצעה.",
+        "bidi": "הפרוזה בכיוון RTL; קוד, טבלאות טכניות וערכים בכיוון LTR בבידוד שמייצר הרכיב המציג. אין להכניס תווי בקרה של bidi או להפוך טוקנים ביד. לא מחברים תחילית עברית בתוך טוקן מוגן.",
+        "literalExample": "השדה {token} מציין את הנמען המיועד.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "הנמען המיועד אינו בהכרח המנפיק.",
+        "pluralNote": "הקטגוריות הן one, two, other. לפי CLDR 49 גם שבר שבו 0 < n < 1 שייך ל-one. מספרים 21 ו-1000000 שייכים ל-other. יש לבחור משפט שלם, לא סיומת.",
+        "normativeModality": {
+          "requirement": "חובה / נדרש",
+          "recommendation": "מומלץ",
+          "permission": "מותר",
+          "prohibition": "אסור"
+        }
+      },
+      "cardinalCategories": [
+        "one",
+        "two",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "i = 1 and v = 0 or i = 0 and v != 0",
+        "two": "i = 2 and v = 0",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1",
+          "0.5",
+          "0.1"
+        ],
+        "two": [
+          "2"
+        ],
+        "other": [
+          "0",
+          "3",
+          "11",
+          "21",
+          "1.5",
+          "1000000"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "נמצא {count} פריט.",
+        "two": "נמצאו {count} פריטים.",
+        "other": "נמצאו {count} פריטים."
+      },
+      "review": {
+        "authorWorker": "LocaleGlossaryPolicy",
+        "authorSelfReview": "completed",
+        "independentTechnicalReview": "pending",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "de": {
+      "glossaryPath": "docs/localization/glossaries/de.json",
+      "style": {
+        "language": "Deutsch",
+        "direction": "ltr",
+        "register": "Sachliches Standarddeutsch. Authentifizierung und Autorisierung konsequent unterscheiden. Keine unnötigen Anglizismen in Erklärungen; formale Namen unverändert lassen.",
+        "grammar": "Deutsche Satzstellung und Kasus vollständig ausformulieren. Geschützte Tokens nicht flektieren und nicht mit übersetzten Endungen verbinden; ein generisches Substantiv davor setzen.",
+        "casing": "Substantive großschreiben, gewöhnliche Bedienelemente in Satzschreibung. Groß- und Kleinschreibung formaler Namen unverändert lassen.",
+        "punctuation": "Deutsche Interpunktion und Anführungszeichen „“. Nur ASCII-Bindestriche verwenden, keine Zeichen U+2013 oder U+2014. Satzzeichen außerhalb geschützter Tokens setzen.",
+        "expansion": "Lange Komposita und mehrzeilige Beschriftungen zulassen; keine feste Breite voraussetzen. Bedingungen, Verneinungen und Beteiligte nicht wegkürzen.",
+        "accessibleNames": "Der zugängliche Name enthält die sichtbare deutsche Beschriftung und denselben Zustand. Tastenkürzel und ARIA-Kennungen unverändert lassen.",
+        "bidi": "Prosa läuft LTR. Technische Werte erhalten durch den Renderer eine eigene LTR-Isolation; keine Bidi-Steuerzeichen in Katalogtexte schreiben.",
+        "literalExample": "Das Feld {token} bezeichnet den vorgesehenen Empfänger.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Der vorgesehene Empfänger ist nicht notwendigerweise der Aussteller.",
+        "pluralNote": "one gilt für die ganze Zahl 1 ohne sichtbare Nachkommastellen; sonst other. Vollständige Meldungen statt angehängter Pluralendungen verwenden.",
+        "normativeModality": {
+          "requirement": "muss / ist erforderlich",
+          "recommendation": "sollte / wird empfohlen",
+          "permission": "darf",
+          "prohibition": "darf nicht"
+        }
+      },
+      "cardinalCategories": [
+        "one",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "i = 1 and v = 0",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1"
+        ],
+        "other": [
+          "0",
+          "2",
+          "21",
+          "0.5",
+          "1000000"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "{count} Eintrag gefunden.",
+        "other": "{count} Einträge gefunden."
+      },
+      "review": {
+        "authorWorker": "LocaleGlossaryPolicy",
+        "authorSelfReview": "completed",
+        "independentTechnicalReview": "pending",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "ar-AE": {
+      "glossaryPath": "docs/localization/glossaries/ar-AE.json",
+      "style": {
+        "language": "العربية (الإمارات)",
+        "direction": "rtl",
+        "register": "عربية فصحى تقنية واضحة مناسبة للقراء في الإمارات. لا تُستخدم لهجة محلية أو كتابة عربية لأسماء لاتينية محمية. يُفصل التخويل عن التفويض وعن المصادقة على الهوية.",
+        "grammar": "صياغة جمل كاملة مع مراعاة التذكير والتأنيث والمثنى وقواعد العدد. تُستخدم أسماء عامة مترجمة حول الرموز المحمية؛ لا تُلحق أداة التعريف أو علامة جمع أو إعراب بالرمز نفسه.",
+        "casing": "لا توجد أحرف كبيرة وصغيرة في العربية؛ تُحفظ حالة الأحرف اللاتينية في القيم والأسماء حرفيا.",
+        "punctuation": "تُستخدم الفاصلة العربية ، والفاصلة المنقوطة ؛ وعلامة الاستفهام ؟ في النثر. لا تُستخدم U+2013 أو U+2014؛ الشرطة الوحيدة هي ASCII. يبقى ترقيم الجملة خارج الرمز، ولا تُعكس الأقواس يدويا.",
+        "expansion": "يُسمح بالتفاف النص واتساع الأزرار. لا تُحذف شروط أو أدوات نفي أو أسماء أطراف لتقصير النص، ولا تُضاف كشيدة لفرض عرض معين.",
+        "accessibleNames": "يحتوي الاسم الميسر على التسمية العربية الظاهرة والحالة نفسها. تبقى اختصارات المفاتيح ومعرفات ARIA دون تغيير. لم تُجر بعد مراجعة بشرية للفهم أو النطق بقارئ الشاشة.",
+        "bidi": "اتجاه النثر RTL؛ يعزل المكون العارض الرموز والقيم والجداول التقنية باتجاه LTR. لا تُدرج محارف تحكم ثنائية الاتجاه ولا تُعكس الرموز يدويا. تبقى أل التعريف خارج الرمز المحمي.",
+        "literalExample": "يحدد الحقل {token} الجهة المستهدفة.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "الجهة المستهدفة ليست بالضرورة الجهة المصدرة.",
+        "pluralNote": "الفئات zero وone وtwo وfew وmany وother مستقلة. ينتمي 21 إلى many و100 إلى other. تُصاغ الرسالة كاملة؛ استخدام الأرقام اللاتينية اختيار للمنتج لا وصف للإعداد الافتراضي في الإمارات.",
+        "normativeModality": {
+          "requirement": "يجب / يلزم",
+          "recommendation": "ينبغي / يوصى",
+          "permission": "يجوز",
+          "prohibition": "يُحظر / يجب ألا"
+        }
+      },
+      "cardinalCategories": [
+        "zero",
+        "one",
+        "two",
+        "few",
+        "many",
+        "other"
+      ],
+      "cardinalRules": {
+        "zero": "n = 0",
+        "one": "n = 1",
+        "two": "n = 2",
+        "few": "n % 100 = 3..10",
+        "many": "n % 100 = 11..99",
+        "other": ""
+      },
+      "categoryExamples": {
+        "zero": [
+          "0"
+        ],
+        "one": [
+          "1"
+        ],
+        "two": [
+          "2"
+        ],
+        "few": [
+          "3",
+          "4",
+          "5",
+          "103"
+        ],
+        "many": [
+          "11",
+          "12",
+          "14",
+          "21",
+          "22",
+          "25"
+        ],
+        "other": [
+          "100",
+          "101",
+          "102",
+          "1000000",
+          "0.5"
+        ]
+      },
+      "completeMessageExamples": {
+        "zero": "لم يُعثر على أي عنصر ({count}).",
+        "one": "عُثر على عنصر واحد ({count}).",
+        "two": "عُثر على عنصرين ({count}).",
+        "few": "عُثر على {count} عناصر.",
+        "many": "عُثر على {count} عنصرًا.",
+        "other": "عدد العناصر التي عُثر عليها: {count}."
+      },
+      "review": {
+        "authorWorker": "LocaleGlossaryPolicy",
+        "authorSelfReview": "completed",
+        "independentTechnicalReview": "pending",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "fr": {
+      "glossaryPath": "docs/localization/glossaries/fr.json",
+      "style": {
+        "language": "Français",
+        "direction": "ltr",
+        "register": "Français technique neutre, sans restriction à la France. Préférer «chiffrement» à «cryptage». Distinguer authentification, autorisation et admission.",
+        "grammar": "Rédiger des messages complets avec accords de genre et de nombre. Ne pas fléchir ni translittérer les littéraux; placer un nom générique traduit autour du jeton isolé.",
+        "casing": "Employer la casse de phrase pour les commandes et titres ordinaires, sans capitalisation anglaise de chaque mot. Conserver la casse exacte des littéraux.",
+        "punctuation": "Employer les guillemets « » et une espace insécable avant : ; ! ? dans le texte humain lorsque nécessaire. Ne jamais modifier les espaces internes des littéraux. Utiliser seulement le trait d’union ASCII, sans U+2013 ni U+2014.",
+        "expansion": "Permettre des libellés plus longs et des retours à la ligne. Ne supprimer ni négation, ni condition, ni acteur pour réduire la longueur.",
+        "accessibleNames": "Le nom accessible contient le libellé français visible et le même état. Conserver les raccourcis clavier et les identifiants ARIA exacts.",
+        "bidi": "Le texte suit LTR; le moteur de rendu isole les valeurs techniques en LTR. Ne pas saisir de caractères de contrôle bidi dans les traductions.",
+        "literalExample": "Le champ {token} indique le destinataire prévu.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Le destinataire prévu n’est pas nécessairement l’émetteur.",
+        "pluralNote": "Les nombres 0 et 1 relèvent de one; 1000000 relève de many. Le groupe one inclut aussi les valeurs dont la partie entière vaut 0 ou 1. Ne pas reprendre la règle anglaise.",
+        "normativeModality": {
+          "requirement": "doit / est exigé",
+          "recommendation": "devrait / est recommandé",
+          "permission": "peut / est permis",
+          "prohibition": "ne doit pas / est interdit"
+        }
+      },
+      "cardinalCategories": [
+        "one",
+        "many",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "i = 0..1",
+        "many": "e = 0 and i != 0 and i % 1000000 = 0 and v = 0 or e != 0..5",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "0",
+          "1",
+          "0.5",
+          "1.5"
+        ],
+        "many": [
+          "1000000",
+          "2000000"
+        ],
+        "other": [
+          "2",
+          "3",
+          "21",
+          "100",
+          "2.5"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "{count} élément trouvé.",
+        "many": "{count} éléments trouvés.",
+        "other": "{count} éléments trouvés."
+      },
+      "review": {
+        "authorWorker": "LocaleGlossaryPolicy",
+        "authorSelfReview": "completed",
+        "independentTechnicalReview": "pending",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "pl": {
+      "glossaryPath": "docs/localization/glossaries/pl.json",
+      "style": {
+        "language": "Polski",
+        "direction": "ltr",
+        "register": "Naturalny polski język techniczny z pełnymi znakami diakrytycznymi. To samodzielne opracowanie, nie wariant rosyjskiego ani ukraińskiego. Rozróżniać uwierzytelnianie, autoryzację i dopuszczenie.",
+        "grammar": "Stosować polską odmianę, zgodność rodzaju i pełne zdania. Nie odmieniać chronionych tokenów ani nie dopisywać do nich polskich końcówek; odmieniać otaczający rzeczownik pospolity.",
+        "casing": "W zwykłych tytułach i etykietach stosować wielką literę na początku, nie w każdym wyrazie. Zachować wielkość liter w nazwach formalnych.",
+        "punctuation": "Stosować polską interpunkcję i cudzysłowy „”. Używać wyłącznie łącznika ASCII, bez U+2013 i U+2014. Znaki zdania umieszczać poza chronionym tokenem.",
+        "expansion": "Dopuszczać dłuższe etykiety i zawijanie wierszy. Nie usuwać przeczeń, warunków ani uczestników dla skrócenia tekstu.",
+        "accessibleNames": "Nazwa dostępna zawiera widoczną polską etykietę i ten sam stan. Skróty klawiszowe i identyfikatory ARIA pozostają niezmienione.",
+        "bidi": "Tekst jest LTR; wartości techniczne izoluje renderer jako LTR. Nie dodawać znaków sterujących bidi do tłumaczeń.",
+        "literalExample": "Pole {token} wskazuje docelowego odbiorcę.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Docelowy odbiorca nie musi być wystawcą.",
+        "pluralNote": "Tylko całkowite 1 należy do one. Liczba 21 należy do many, nie do one; 22 należy do few, a ułamki do other. Nie zapożyczać rosyjskiego wzorca liczebników.",
+        "normativeModality": {
+          "requirement": "musi / jest wymagane",
+          "recommendation": "zaleca się / powinien",
+          "permission": "wolno / jest dozwolone",
+          "prohibition": "nie wolno / jest zabronione"
+        }
+      },
+      "cardinalCategories": [
+        "one",
+        "few",
+        "many",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "i = 1 and v = 0",
+        "few": "v = 0 and i % 10 = 2..4 and i % 100 != 12..14",
+        "many": "v = 0 and i != 1 and i % 10 = 0..1 or v = 0 and i % 10 = 5..9 or v = 0 and i % 100 = 12..14",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1"
+        ],
+        "few": [
+          "2",
+          "3",
+          "4",
+          "22",
+          "102"
+        ],
+        "many": [
+          "0",
+          "5",
+          "11",
+          "12",
+          "14",
+          "21",
+          "25",
+          "100",
+          "101",
+          "1000000"
+        ],
+        "other": [
+          "0.5",
+          "1.5"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "Znaleziono {count} element.",
+        "few": "Znaleziono {count} elementy.",
+        "many": "Znaleziono {count} elementów.",
+        "other": "Liczba znalezionych elementów: {count}."
+      },
+      "review": {
+        "authorWorker": "LocaleGlossaryPolicy",
+        "authorSelfReview": "completed",
+        "independentTechnicalReview": "pending",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    }
+  },
+  "reviewEvidenceContract": {
+    "currentEvidence": "Actual AI author identity and author self-review only. No independent reviewer identity, native qualification, human approval, waiver, runtime pass or performance result is asserted.",
+    "independentReviewRequiredRecord": [
+      "exact reviewed concept IDs or message keys",
+      "English source version and fingerprint",
+      "locale and translated revision",
+      "actual reviewer identity and qualifications where applicable",
+      "method and scope",
+      "specific corrections and their closure status"
+    ],
+    "statusSeparation": "Keep draft/author review, independent technical review, qualified language review, human comprehension, human pronunciation and actual screen-reader review separate. A machine check or back-translation does not establish native fluency.",
+    "knownDefects": "Known incorrect technical meaning must be corrected, not waived by an author-reviewed label. Pending human review is explicit, not a claim of release acceptance.",
+    "execution": "No tests, builds, linters, formatters, browser runs or performance runs were performed for this assignment."
+  }
+}

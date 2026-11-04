@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "kind": "actual-semantic-sample-producer-smoke",
+  "status": "passed-mechanical-producer-checks-not-linguistic-review",
+  "sourceSetSha256": "6a9961b1e424768f33448b976fd137c10eabeadd61580235ba2be1774ce463f6",
+  "producer": {
+    "path": "tools/verification/localization/semantic-sample.mjs",
+    "bytes": 12427,
+    "sha256": "7a222948da10e67d43cf05ba524ce5525349362954a9f06a566ccf038c21a81b"
+  },
+  "selection": {
+    "path": "docs/localization/review/high-risk-source13-selection.json",
+    "sha256": "4a16ee4ee3731f9748f3588d457738d792f513606012ea0f5354bf728ac6d56f",
+    "counts": {
+      "highRiskEnglishSelectors": 192,
+      "requiredDistinctionEnglishSelectors": 36,
+      "EnglishSelectionRecords": 228,
+      "explicitBindingPairs": 376,
+      "meaningFamilyCounts": {
+        "possession-validation-authorization": 24,
+        "source-prefix-time-and-unknown": 24,
+        "authentication-versus-authorization": 24,
+        "trust-and-direction": 24,
+        "protection-mechanism-distinctions": 24,
+        "control-flow-and-consent": 24,
+        "formal-results-and-fallback": 24,
+        "normative-source-versus-demo-policy": 24
+      }
+    }
+  },
+  "positive": {
+    "de": {
+      "root": "/home/andrico/.cache/auth-lab-held-qa/localization-0a3cbkmo/semantic-sample-source13-de-02-output-guard",
+      "counts": {
+        "EnglishSelectionRecords": 228,
+        "actualNativeSampleRecords": 414,
+        "explicitBindingPairs": 562,
+        "distinctBindings": 557,
+        "distinctSourceSchemas": 258,
+        "exactNativeOverrides": 186,
+        "exactNativeOverridesCovered": 186,
+        "otherwiseUncoveredOverridesAdded": 186
+      },
+      "sampleBytes": 1025013,
+      "sampleSha256": "d8fd986acaeda40fedae9a549700331b88309639fd239a31b88b6a26fecbda77",
+      "byteIdenticalToBeforeOutputGuardFix": true
+    },
+    "he": {
+      "root": "/home/andrico/.cache/auth-lab-held-qa/localization-0a3cbkmo/semantic-sample-source13-he-02-output-guard",
+      "counts": {
+        "EnglishSelectionRecords": 228,
+        "actualNativeSampleRecords": 283,
+        "explicitBindingPairs": 431,
+        "distinctBindings": 426,
+        "distinctSourceSchemas": 234,
+        "exactNativeOverrides": 55,
+        "exactNativeOverridesCovered": 55,
+        "otherwiseUncoveredOverridesAdded": 55
+      },
+      "sampleBytes": 839697,
+      "sampleSha256": "7e35bf25c983fd8bccfa009c6bbfb4d5c03297a4e5ce93e24a2ca942d9450cff",
+      "byteIdenticalToBeforeOutputGuardFix": true
+    }
+  },
+  "actualNativeFork": {
+    "root": "/home/andrico/.cache/auth-lab-held-qa/localization-0a3cbkmo/semantic-sample-source13-actual-Native-fork-01",
+    "sourceSha256": "02ea9f610f9fe8550c4f74749d4542a9efc1b80de38dd7fc66581c45c83e8a66",
+    "actualNativeGroups": 2,
+    "exactDistinctContexts": [
+      "send",
+      "receive"
+    ],
+    "eachGroupNativeAndMembershipMatchesOwnCompletedCatalog": true
+  },
+  "negativeExpectedRejections": {
+    "negative-Native-source-set": {
+      "root": "/home/andrico/.cache/auth-lab-held-qa/localization-0a3cbkmo/semantic-sample-source13-negative-Native-source-set-01",
+      "observedExitCode": 1,
+      "error": "AssertionError [ERR_ASSERTION]: Native catalog Source set\n+ actual - expected\n\n+ '0000000000000000000000000000000000000000000000000000000000000000'\n- '6a9961b1e424768f33448b976fd137c10eabeadd61580235ba2be1774ce463f6'\n\n    at main (/home/andrico/auth-lab-held-objects/tools/verification/localization/semantic-sample.mjs:58:12)\n    at /home/andrico/auth-lab-held-objects/tools/verification/localization/semantic-sample.mjs:135:84"
+    },
+    "negative-membership": {
+      "root": "/home/andrico/.cache/auth-lab-held-qa/localization-0a3cbkmo/semantic-sample-source13-negative-membership-01",
+      "observedExitCode": 1,
+      "error": "AssertionError [ERR_ASSERTION]: Exact selected owner/field/context/classification\n    at appendSelection (/home/andrico/auth-lab-held-objects/tools/verification/localization/semantic-sample.mjs:100:16)\n    at main (/home/andrico/auth-lab-held-objects/tools/verification/localization/semantic-sample.mjs:110:43)\n    at /home/andrico/auth-lab-held-objects/tools/verification/localization/semantic-sample.mjs:135:84"
+    }
+  },
+  "outputGuard": {
+    "beforeProducer": "local-only semantic-sample-9456-output-guard-before.mjs",
+    "beforeUnexpectedAllowedOutput": "local-only semantic-sample-output-guard-before-01; relocated unchanged from the owned in-checkout diagnostic leaf",
+    "fix": "Canonicalize checkout root and real output parent, reusing the existing browser-producer destination pattern.",
+    "actualAfterDiagnostic": "In-checkout fresh output leaf rejected before creation; observed CLI exit1: AssertionError: Output must be outside the checkout.",
+    "afterOutputAbsent": true,
+    "qualification": "Direct in-checkout boundary exercised. Physical symlink rejection is implemented but not claimed exercised by this smoke."
+  },
+  "qualification": "Actual mechanical Source/Native identity, exact membership, real context-sensitive Native split and all-override sample coverage only. No translation-quality judgment, new runtime/model cases, human/native AT, Astra or release acceptance. Original failures and raw fixtures stay local; repository contains this bounded proof, not bulk forensic output."
+}

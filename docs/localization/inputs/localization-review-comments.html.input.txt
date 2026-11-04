@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2026-11-03">
+  <title>Auth Flow Studio · Localization review comments</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"LOCALIZATION REVIEW";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+
+  pre{max-width:100%;max-height:480px;overflow:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}
+  pre code{padding:0;background:none;white-space:pre;font-size:12px}
+  details{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:8px}
+  summary{cursor:pointer;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+  summary:focus-visible,pre:focus-visible,.table-scroll:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}
+  @media print{pre{max-height:none;white-space:pre-wrap}pre code{white-space:pre-wrap}nav#TOC{display:none}}
+  </style>
+
+  <style>
+  main{min-width:0}a{overflow-wrap:anywhere}
+  h3[id^="l10n-r"]{padding:14px 17px;border-left:4px solid #ae5c26;background:#fff6ec;border-radius:0 9px 9px 0}
+  header{border-top-color:#ae5c26}.plan-stats span:first-child{color:#7b351c;background:#fff0e4;border-color:#e2b79c}
+  details pre{max-height:34rem}summary{font-size:15px}
+  @media print{details pre{max-height:none}pre{break-inside:auto}}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Auth Flow Studio · Localization review comments</h1>
+<p class="subtitle">Independent review of the unpublished 1.2 candidate
+· Worker correction handoff</p>
+<p class="date">3 November 2026</p>
+<div class="plan-stats"><span>Changes requested</span><span>6 correction findings</span><span>228 focused tests passed</span><span>Performance &amp; human gates open</span></div></header>
+<nav id="TOC" role="doc-toc" aria-label="Review contents">
+<h2 id="toc-title">Review findings and worker handoff</h2>
+<ul>
+<li><a href="#decision-and-exact-worker-input" id="toc-decision-and-exact-worker-input">1. Decision and exact worker
+input</a></li>
+<li><a href="#exact-candidate-and-verification-scope" id="toc-exact-candidate-and-verification-scope">2. Exact candidate and
+verification scope</a></li>
+<li><a href="#required-corrections" id="toc-required-corrections">3.
+Required corrections</a></li>
+<li><a href="#what-this-review-supports-and-what-it-does-not" id="toc-what-this-review-supports-and-what-it-does-not">4. What this
+review supports and what it does not</a></li>
+<li><a href="#correction-sequence-and-handoff" id="toc-correction-sequence-and-handoff">5. Correction sequence and
+handoff</a></li>
+<li><a href="#reproducing-the-independent-observations" id="toc-reproducing-the-independent-observations">6. Reproducing the
+independent observations</a></li>
+</ul>
+</nav>
+<main id="localization-review"><h2 id="decision-and-exact-worker-input">1. Decision and exact worker
+input</h2>
+<p><strong>Changes requested.</strong> The seven-language infrastructure
+and much of the stated evidence are present, but the candidate does not
+yet satisfy the central protected-terminology and complete-explanation
+requirements. Exact field searches also regress, localized discovery
+misses a requested concept, and an unsupported decompression capability
+can prevent startup. The worker’s own focused measurements show
+substantial current usability regressions that remain unaccepted.</p>
+<p><strong>Send this exact file to the worker:
+<code>auth-flow-studio-localization-review-comments.html</code>.</strong>
+Treat L10N-R01–R06 below as the correction assignment. Preserve the
+original localization plan, the Compact closure, all earlier failed
+observations and the open acceptance gates. This file is a review of the
+submitted candidate; it is not an instruction to publish, commit, push,
+deploy, bump a version or waive performance/human review.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="1. Decision and exact worker
+input — table 1"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Finding</th>
+<th scope="col">Priority</th>
+<th scope="col">Required correction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>L10N-R01</td>
+<td>P1</td>
+<td>Protect actual protocol/actor/status occurrences in the source
+contract and correct affected translations.</td>
+</tr>
+<tr class="even">
+<td>L10N-R02</td>
+<td>P1</td>
+<td>Localize visible Full quick-start explanations and audit render
+paths omitted from catalog coverage.</td>
+</tr>
+<tr class="odd">
+<td>L10N-R03</td>
+<td>P2</td>
+<td>Restore exact punctuation-sensitive technical-name matching and
+priority.</td>
+</tr>
+<tr class="even">
+<td>L10N-R04</td>
+<td>P2</td>
+<td>Provide useful localized hidden aliases for the requested
+token-filtering discovery case.</td>
+</tr>
+<tr class="odd">
+<td>L10N-R05</td>
+<td>P2</td>
+<td>Recover safely from failed/unsupported catalog decompression at
+startup and language selection.</td>
+</tr>
+<tr class="even">
+<td>L10N-R06</td>
+<td>P1</td>
+<td>Investigate and materially improve the observed
+language/startup/search delays; retain all performance flags and owner
+decisions.</td>
+</tr>
+</tbody>
+</table>
+</div><p>P1/P2 indicate review priority, not a CVSS rating. An independently
+observed DOM-harness result is labelled as such. Human linguistic
+review, actual screen-reader acceptance and native interoperability
+remain separate.</p>
+<h2 id="exact-candidate-and-verification-scope">2. Exact candidate and
+verification scope</h2>
+<p>Version <strong>1.2</strong>, base checkpoint
+<strong><code>1e87576924d82d1579959904aa7b2a3e89742067</code></strong>.
+This review is bound to the following exact supplied bytes. Download
+suffixes do not change the identity.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="2. Exact candidate and
+verification scope — table 2"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Item</th>
+<th scope="col">Scope / length</th>
+<th scope="col">SHA-256</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Canonical application/test/build set</td>
+<td>277 files</td>
+<td><code>230e3b605e68277e9a5433067e783054cfaa174fea4f7b54d753f0d707524e11</code></td>
+</tr>
+<tr class="even">
+<td>Standalone HTML</td>
+<td>22,891,541 bytes</td>
+<td><code>71484a80530f71f6e1533cbff7f8193936e913ebb712f56e145485de563933d3</code></td>
+</tr>
+<tr class="odd">
+<td>Source and review ZIP</td>
+<td>50,477,002 bytes</td>
+<td><code>b87b9e7d8d120c1c25343508ed254b210a851c6978e02c79dafd354436e9fbc8</code></td>
+</tr>
+<tr class="even">
+<td><code>START-HERE.md</code></td>
+<td>9,432 bytes</td>
+<td><code>7c29b42716bad1026eb57721bcb20f21ab5f018bfe5e24f7ce3d15d361f581c9</code></td>
+</tr>
+<tr class="odd">
+<td>Localization worker plan, document version 1</td>
+<td>Exact embedded authority</td>
+<td><code>07e83043df68214542ce1576662c360c4b10734c8cebce32b1ea547902033540</code></td>
+</tr>
+</tbody>
+</table>
+</div><p>All three outer hashes matched. The supplied standard TAR/XZ
+extraction actually restored <strong>1,469 data members</strong>; both
+internal checksum layers passed. An independent audit matched all
+<strong>1,149 selected source files</strong>, all <strong>1,747
+path-and-hash-qualified provenance entries</strong>, and the canonical
+277-file digest. An independent Node v24.22.1 build reproduced the exact
+uploaded HTML byte for byte. This was <strong>not</strong> a Bun build
+or execution of the Bun-only full relocation recipe.</p>
+<p>The localization starting freeze was independently reconstructed: 271
+files matched the earlier Compact candidate except
+<code>index.html</code> and <code>package.json</code>, which already
+read 1.2 rather than 1.1.1. Its canonical <code>0fd563d3…</code> and
+standalone <code>cd8e435f…</code> were reproduced with Node. The packet
+identifies 1.2 as its starting state; this review cannot independently
+establish who made or authorized that earlier version change. The prior
+Compact MC-R01–07 closures remain valid only for their original reviewed
+candidate. The earlier closure HTML is referenced by its exact authority
+hash; it is not included as a complete HTML file in this reduced
+packet.</p>
+<p><strong>Independent focused run:</strong> 228 passed, 0 failed across
+10 delivered test files under Node, including localization, search,
+selected Compact regressions and standalone boot. This is not the
+complete Bun suite. The worker’s actual bound CI log reports
+<code>bun run test</code>, Bun 1.4.3, <strong>2,622 passed / 0 failed /
+145 files / 37,023 expect calls</strong>; before/after inputs were
+audited, not independently rerun. The differing Bun and OS elapsed
+clocks remain separately reported by the worker.</p>
+<p>Three of the previous 143 runnable tests changed. The focus-return
+test gained a case; the DOM search test changed its assertions; the
+keyboard test removed the old direct <code>aria-label</code> assertion.
+The actual Full popup now uses two <code>aria-labelledby</code> targets.
+Worker-provided Chromium accessibility-tree evidence shows the English
+name <code>Attribute explanation code_verifier</code>; independent
+DOM-harness checks found coherent Full/Compact names in English,
+Russian, Hebrew, Arabic and German. This is evidence of current
+behavior, <strong>not</strong> an unchanged test file or a human
+screen-reader pass. Restore the baseline intent with a regression
+assertion that resolves the actual labelled-by targets.</p>
+<p>The current worker evidence contains <strong>96 passed browser
+cells</strong> (48 ordinary, 40 layout, 8 native zoom), with no failed
+or unperformed <em>cells</em>. Its nested records also contain
+<strong>80 unperformed copy-related probes</strong> in Full, attributed
+to exact-value copy controls being Compact-only. Do not turn a
+cell-level count into a claim that every nested check or Full copy path
+ran. No browser, physical phone, WebKit, human AT or native protocol
+environment was newly executed in this review.</p>
+<h2 id="required-corrections">3. Required corrections</h2>
+<h3 id="l10n-r01-protected-names-and-dnssec-verdicts-are-missing-from-localized-explanations">L10N-R01
+— Protected names and DNSSEC verdicts are missing from localized
+explanations</h3>
+<p><strong>Priority: P1.</strong> The catalog’s typed
+protected-parameter checks can only protect occurrences actually
+classified as protected. Several formal entities, field names, actor
+names and DNSSEC result labels are instead classified as ordinary prose
+and translated away. This directly contradicts the user’s constraint and
+plan sections 2, 4 and 6.</p>
+<p><strong>Concrete shipped behavior:</strong></p>
+<ol type="1">
+<li><code>step:web-bff-redirect</code> / <code>detail</code> says that
+the redirect includes the public <code>PKCE</code> challenge,
+<code>state</code>, <code>nonce</code> and a registered <code>BFF</code>
+callback; the verifier and confidential <code>client_secret</code>
+remain on the backend. Russian, Ukrainian, Arabic and Polish replace
+both exact parameter names <code>state</code> and <code>nonce</code>
+with ordinary translated words; French replaces <code>state</code>. The
+same message does protect <code>PKCE</code>, <code>BFF</code> and
+<code>client_secret</code>. Schema <strong>4714</strong>, binding
+<strong>47683</strong>, demonstrates that protecting <em>some</em> terms
+in a sentence does not establish the others are covered.</li>
+<li>In <code>field:cibaLoginHint</code> / <code>purpose</code>, the
+actual <code>Realm A</code> actor name is translated away in Russian,
+Arabic, French and Polish. In Arabic, the generated operation detail for
+<code>step:lab-krb-spake-success-advertisement</code> replaces the
+canonical actor identifier <code>spake-kdc</code> with a generic
+description. These are not merely different translations of surrounding
+explanation.</li>
+<li><code>field:serviceAccessSignature</code> / <code>purpose</code>
+translates the formal role <code>resource server</code> away in all
+seven catalogs. <code>lesson:lab-mcp02</code> translates away
+<code>authorization server</code> in all seven. An independent
+source-table screening with exact per-binding overrides found
+<strong>12/12</strong> <code>resource server</code> bindings missing the
+exact literal in each locale; <code>authorization server</code> was
+absent from <strong>64</strong> bindings in
+Russian/Ukrainian/Hebrew/Arabic/French and <strong>60</strong> in
+German/Polish. These are screening counts, not a claim that each row was
+separately seen on screen. The field and MCP title were also exercised
+through the actual resolver/renderer. The Russian BFF step was
+separately exercised through the production step renderer.</li>
+<li>In the mounted Arabic Compact app, DNSSEC-09’s case
+<code>cname-bogus-target</code> displays a localized caption containing
+neither the source <code>cname</code> nor <code>bogus</code>. The
+<code>cname-insecure-target</code> caption likewise omits
+<code>cname</code> and <code>insecure</code>. DNSSEC-11’s completed
+<code>tcp failure not cryptographic bogus</code> step displays an Arabic
+title containing neither <code>tcp</code> nor <code>bogus</code>. The
+machine case IDs still exist; that does not restore the missing
+human-visible formal labels.</li>
+<li>The Russian and Arabic versions of
+<code>Accept non-bogus data or withhold a bogus answer</code> replace
+<code>bogus</code> with an explanation about a check not finding
+invalidity. That wording risks suggesting that validation was actually
+performed and passed. <code>non-bogus</code> must not be silently
+narrowed into verified/secure: <code>insecure</code> and
+<code>indeterminate</code> are distinct concepts, and the scenario’s own
+reliance decision still controls behavior. This review does
+<strong>not</strong> assert that an RFC requires accepting every
+indeterminate response.</li>
+</ol>
+<p>The status issue is context-specific: other tested DNSSEC definitions
+retain their four labels correctly. Do not report that every DNSSEC
+translation is wrong. The independent resolver probe covers 63
+context/locale combinations, while the case and step above were
+additionally checked in the mounted source app; neither is a
+native-browser/AT run.</p>
+<p><strong>Likely cause, not a complete audit:</strong>
+<code>source/tools/verification/localization/protected.mjs</code> uses
+structure/case heuristics that miss simple names such as
+<code>state</code> and <code>nonce</code>, as well as multiword roles
+and some actual actor labels. The corresponding schema may have no
+protected parameters, so a no-missing-placeholder compiler result cannot
+catch the omission.</p>
+<p><strong>Additional renderer boundary:</strong>
+<code>attributeButton()</code> emits sampled <code>client_id</code> as a
+<code>code</code> node without an explicit <code>translate="no"</code>
+directive or protected ancestor. This was observed in source and emitted
+DOM for both presentation paths. The app’s built-in locale did not
+change that sampled value, and no external browser translator was run;
+the observed defect is the missing HTML protection directive, not
+demonstrated corruption by an external translator.</p>
+<p><strong>Worker correction:</strong></p>
+<ul>
+<li>Re-inventory <em>semantic occurrences</em> against authoritative
+attribute/claim/parameter names, formal protocol roles, result labels,
+RFC entities, authored actors and machine-visible case labels. Add
+context-aware protected references, including simple lowercase
+identifiers and multiword names. Do not blindly treat every ordinary use
+of the English word “state” as an OAuth parameter or replace every
+adjective “insecure.”</li>
+<li>Correct affected source contracts, source fingerprints, per-binding
+overrides, catalogs and generated resources for <strong>all seven
+locales</strong>. Keep exact source spelling/case such as
+<code>cname</code> when it is the protected source entity; allow the
+human-language explanation around it to be natural.</li>
+<li>Repair the meaning of the affected DNSSEC explanations and
+independently sample the same risk across OAuth/OIDC, Kerberos, Windows,
+PAM, SMB/NFS, Kubernetes and MCP. Maintain each exact source prefix,
+actor, trust direction and uncertainty. No broad automated rewrite may
+invent validation, permission or acceptance.</li>
+<li>Add direct rendered and exact emitted-bundle tests for the examples
+above, plus automated registry checks whose input is independent of the
+current heuristically generated protected registry. Include actual UI
+controls, <code>translate="no"</code> / directional isolation for
+protected names where planned, raw clipboard bytes, and
+English/canonical-state invariants. Add regression tests for
+<code>state</code>, <code>nonce</code>, <code>Realm A</code>,
+<code>spake-kdc</code>, <code>resource server</code>,
+<code>authorization server</code>, <code>cname</code>, <code>tcp</code>,
+<code>bogus</code> and <code>insecure</code> in their identified
+contexts.</li>
+<li>Report what was reviewed and any unresolved cases. A
+placeholder-integrity pass using the same incomplete classification as
+both producer and oracle is not sufficient. Preserve non-protected prose
+and avoid changing protocol objects or the actual wire model.</li>
+</ul>
+<p><strong>Primary reference context:</strong> OAuth <code>state</code>
+is a named request parameter in <a href="https://www.rfc-editor.org/rfc/rfc6749.html#section-4.1.1" rel="noopener noreferrer">RFC
+6749 §4.1.1</a>; OpenID Connect defines <code>nonce</code> in <a href="https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest" rel="noopener noreferrer">Core
+§3.1.2.1</a>. <a href="https://www.rfc-editor.org/rfc/rfc9499.html#section-10" rel="noopener noreferrer">RFC 9499
+§10</a> distinguishes the DNSSEC result terms. The requirement to
+preserve their spelling in this product comes from the user’s
+instruction and the supplied plan; do not conflate that product
+requirement with a claim that the RFCs prohibit translation.</p>
+<h3 id="l10n-r02-visible-quick-start-prose-bypasses-localization-and-coverage-accounting">L10N-R02
+— Visible quick-start prose bypasses localization and coverage
+accounting</h3>
+<p><strong>Priority: P1.</strong> In Full → Web → Basic Keycloak,
+<code>src/app.js</code> renders <code>.quick-start-grid</code> with
+<code>escapeHtml(p.title)</code> and <code>escapeHtml(p.summary)</code>
+directly. These strings bypass <code>Localizer</code>, even while the
+section heading is translated.</p>
+<p>Independent mounted-app source DOM-harness checks in <strong>all
+seven translated locales</strong>, plus an exact emitted-bundle check in
+Russian, found the same visible English card:</p>
+<blockquote>
+<p>Web sign-in with MFA<br>
+One realm · password + TOTP · both checks at Keycloak</p>
+</blockquote>
+<p>The nearest language is the selected locale, including Hebrew/Arabic,
+and <code>Localizer.diagnostics().fallbacks</code> is empty. Other
+visible quick-start summaries are also English. <code>MFA</code>,
+<code>TOTP</code> and <code>Keycloak</code> must remain exact; the
+surrounding teaching text is translatable. This is not a claim that
+every other Full/Compact surface is English.</p>
+<p><strong>Impact:</strong> the advertised all-occurrence catalog counts
+do not cover this render path. A clean missing/stale/fallback report can
+therefore coexist with untranslated user-facing prose and incorrect
+language metadata.</p>
+<p><strong>Worker correction:</strong></p>
+<ul>
+<li>Bind each quick-start preset title and summary by stable preset
+identity to proper locale messages; retain the original
+<code>data-learning-preset</code>, scenario selection and canonical
+model. Translate all visible cards in all seven locales, protecting
+embedded identifiers.</li>
+<li>Audit other renderers for human-facing text that never enters the
+occurrence manifest/localizer: dynamic DOM nodes, SVG accessible text,
+selected and hidden disclosures, captions and controls. Reconcile
+extraction, manifest and actual rendered usage; report truly protected
+text separately.</li>
+<li>Add actual Full Web rendering tests for every locale, source and
+exact emitted bundle, and an independent rendered-surface inventory
+capable of detecting a bypass. Confirm explicit English fallback is
+language-marked when needed. Preserve accessible names, selected card
+and state through language/view changes.</li>
+</ul>
+<h3 id="l10n-r03-punctuation-distinct-field-names-are-ranked-as-the-same-exact-identifier">L10N-R03
+— Punctuation-distinct field names are ranked as the same exact
+identifier</h3>
+<p><strong>Priority: P2.</strong> The new identifier-search path admits
+a punctuation-folded prose form as exact rank 0. This is a regression in
+the user’s technical-name discovery workflow, not a change to the
+underlying field values.</p>
+<p>In the actual Compact field index, source and exact uploaded emitted
+bundle, searching <strong><code>Conditions/@NotBefore</code></strong>
+returns two fields at rank 0, with the wrong spelling
+<strong><code>Conditions@NotBefore</code></strong> first and the exact
+<strong><code>Conditions/@NotBefore</code></strong> second. In the
+previously reviewed 1.1.1 Compact candidate the same query returned only
+the exact field; the reversed query returned the other field. The new
+<code>Conditions-NotBefore</code> query also matches both as exact.</p>
+<p>A separate actual-app source-harness probe found that searching
+<strong><code>id_token</code></strong> places five <code>id token</code>
+fields ahead of the exact <code>id_token</code> fields; both spellings
+receive rank 0. Similar helper collisions include <code>user.name</code>
+versus <code>user-name</code> or <code>user/name</code>.
+<code>SPAKE2</code> and <code>SPAKE2+</code> remained distinct in the
+independent tests.</p>
+<p><strong>Worker correction:</strong> keep a separate exact-identifier
+lane that respects the intended canonical punctuation and gives true
+exact identifiers precedence. If punctuation-forgiving discovery is
+useful, it may remain as a clearly lower-ranked prose/alias lane; it
+must not be presented or sorted as exact. Test the actual full
+field-index ordering, not only helper ranks, against the pairs above,
+reverse queries, duplicate exact names, <code>pam.d</code>, current
+English/operator queries and all seven locale overlays. Preserve
+explicit case selection, no scenario evaluation during typing and
+current 40-field Compact batching.</p>
+<h3 id="l10n-r04-common-localized-filtering-queries-miss-the-intended-scenario">L10N-R04
+— Common localized “filtering” queries miss the intended scenario</h3>
+<p><strong>Priority: P2.</strong> The original user explicitly wanted
+searches such as <code>filtering</code> to find the relevant scenario.
+The English metadata for <code>lab-wra01</code> includes both
+<code>filtering</code> and <code>token filtering</code>. Its localized
+search entry, however, has no localized search tags; some matches occur
+incidentally through a translated case caption.</p>
+<p>Public picker-input probes in source and exact emitted execution
+produced:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="L10N-R04
+— Common localized “filtering” queries miss the intended scenario — table 3"><table>
+<thead>
+<tr class="header">
+<th scope="col">Active locale</th>
+<th scope="col">Native query</th>
+<th scope="col">Result relevant to <code>lab-wra01</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Ukrainian</td>
+<td><code>фільтрація</code></td>
+<td>Zero results.</td>
+</tr>
+<tr class="even">
+<td>German</td>
+<td><code>Filterung</code></td>
+<td>Two forest/SID lessons; <code>lab-wra01</code> absent.</td>
+</tr>
+<tr class="odd">
+<td>French</td>
+<td><code>filtrage</code></td>
+<td>Two forest/SID lessons; <code>lab-wra01</code> absent.</td>
+</tr>
+<tr class="even">
+<td>Arabic (UAE)</td>
+<td><code>تصفية</code></td>
+<td>Two forest/SID lessons; <code>lab-wra01</code> absent.</td>
+</tr>
+<tr class="odd">
+<td>Polish</td>
+<td><code>filtrowanie</code></td>
+<td>One forest/SID lesson; <code>lab-wra01</code> absent.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Shorter stems or another inflection can find the scenario, and
+Russian <code>фильтрация</code> / Hebrew <code>סינון</code> did find it
+in the sampled run. English <code>Kerberos</code> and unmatched
+native-script queries also behaved as expected. This is a bounded
+synonym/alias issue, not a requirement for unrestricted stemming or
+proof that all non-English search is broken.</p>
+<p><strong>Worker correction:</strong> add reviewed, bounded per-locale
+hidden aliases for the actual token-filtering scenarios and their common
+native noun/inflection forms, including the examples above. Cover
+related promised concepts such as <code>lsa</code> with a documented
+query set for all seven languages. Keep SID filtering and token
+filtering discoverable as distinct scenarios, preserve denial-case
+identity and exact-identifier priority, and do not evaluate models
+during search or silently select a success case. Use actual
+input-handler tests in source and emitted execution; label
+qualified-language review accurately.</p>
+<h3 id="l10n-r05-catalog-decompression-failure-can-leave-a-blank-app">L10N-R05
+— Catalog decompression failure can leave a blank app</h3>
+<p><strong>Priority: P2.</strong> <code>localeInflate()</code>
+constructs <code>DecompressionStream('gzip')</code> unconditionally. If
+that API is unavailable, or preparation otherwise rejects, the
+application does not handle the failure safely.</p>
+<p>Independent source <strong>and exact emitted-bundle</strong>
+DOM-harness simulations set <code>DecompressionStream</code> to
+unavailable:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="L10N-R05
+— Catalog decompression failure can leave a blank app — table 4"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Entry path</th>
+<th scope="col">Observed outcome</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Start with saved <code>ru</code></td>
+<td>Unhandled <code>TypeError</code>; app remains uninitialized with
+zero child elements and no language selector.</td>
+</tr>
+<tr class="even">
+<td>Start in English, then choose <code>ru</code></td>
+<td>Unhandled <code>TypeError</code>; English remains, the selector
+silently resets to <code>en</code>, and no visible error is
+announced.</td>
+</tr>
+</tbody>
+</table>
+</div><p>This is a deliberate API-absence simulation, <strong>not</strong> a
+claim about a particular browser version or that the worker’s Chromium
+runs failed. Nevertheless, a saved preference must not make the entire
+offline application unrecoverable, and a rejected selection must not
+fail silently.</p>
+<p><strong>Worker correction:</strong> catch preparation/decode failures
+at both initialization and explicit selection. Boot a usable English
+interface with an English recovery selector and a clear, accessible
+failure status; preserve the selected lesson and paused state on
+selection failure. Prevent unhandled rejections and stale
+busy/preparation state. To maintain the promised offline languages, ship
+a safe bounded decoder/fallback or establish and test an explicit
+support/capability boundary; a statement about minimum browser support
+alone does not excuse a blank screen. Add source and exact emitted tests
+for missing API, decode rejection, saved locale, rapid/repeated
+selections and recovery, without a remote translation dependency.</p>
+<h3 id="l10n-r06-measured-localization-delays-are-a-material-usability-issue">L10N-R06
+— Measured localization delays are a material usability issue</h3>
+<p><strong>Priority: P1.</strong> The performance packet is candid that
+all <strong>864 timing flags plus two resource flags remain
+open</strong>. Independent recomputation of the delivered timing-only
+projections found no arithmetic discrepancy. The issue is their
+magnitude and impact, not a demand to relabel the observations as
+passed.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="L10N-R06
+— Measured localization delays are a material usability issue — table 5"><table>
+<colgroup>
+<col style="width: 27%">
+<col style="width: 36%">
+<col style="width: 36%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Worker-measured fixture, seven-sample medians</th>
+<th style="text-align: right;" scope="col">Earlier/control</th>
+<th style="text-align: right;" scope="col">Current candidate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Basic / Full / source HTTP, English startup</td>
+<td style="text-align: right;">3,640 ms frozen English</td>
+<td style="text-align: right;">4,795 ms candidate English</td>
+</tr>
+<tr class="even">
+<td>Basic / Full / source HTTP, first <code>client_id</code> field
+search</td>
+<td style="text-align: right;">662 ms frozen English</td>
+<td style="text-align: right;">1,992 ms candidate English</td>
+</tr>
+<tr class="odd">
+<td>Basic / Full / standalone file, saved Arabic UAE startup</td>
+<td style="text-align: right;">8,160 ms candidate English</td>
+<td style="text-align: right;">18,658 ms Arabic UAE</td>
+</tr>
+<tr class="even">
+<td>Same Arabic UAE fixture, first language switch</td>
+<td style="text-align: right;">New feature, no earlier baseline</td>
+<td style="text-align: right;">13,130 ms</td>
+</tr>
+<tr class="odd">
+<td>Same Arabic UAE fixture, first <code>client_id</code> field
+search</td>
+<td style="text-align: right;">2,471 ms candidate English</td>
+<td style="text-align: right;">12,736 ms Arabic UAE</td>
+</tr>
+</tbody>
+</table>
+</div><p>These are the worker’s host-based results, not fresh reviewer
+measurements or a claim about every device. The Arabic
+startup/switch/search samples have substantial variation; include the
+actual ranges rather than presenting the medians as universal. The named
+ordinary-action targets remain 250 ms median / 500 ms maximum; startup
+and newly introduced features must retain their own declared
+classifications.</p>
+<p>Of 1,393 comparisons, <strong>341 carry material flags</strong>: 36
+frozen-English→candidate-English and 305 candidate-English→native. The
+field named <code>candidateOrdinaryTargetMiss</code> is true on 694
+rows, but those include <strong>434 ordinary, 236 large-payload and 24
+large-history rows</strong>, and include startup. These categories
+overlap other flags. Do not describe 694 as 694 independent
+ordinary-interaction regressions or add them to 864.</p>
+<p><strong>Worker correction:</strong> investigate the concrete startup,
+first language switch and first/repeated field-search paths on the
+actual full-content fixture; profile diagnostically to identify
+expensive work rather than assuming that one catalog or decompression
+step is the sole cause. Implement targeted changes that materially
+improve the demonstrated delays without changing canonical state,
+emptying content, changing the ready endpoint, disabling translations,
+or weakening the declared targets. Then rerun the
+<strong>affected</strong> predeclared paired cells with unchanged
+sample/threshold definitions and provide raw timings, ranges, candidate
+identities and explicit dispositions. The user/performance owner retains
+the decision on remaining flagged observations; no waiver is
+inferred.</p>
+<p>Keep the 104 complete timing cells, 136 lacking complete paired
+results, two completed resource cells, 208 deferred resource cells, 13
+unaggregated complete partial measurements and one cancellation-failed
+row accurately separated. Seven samples per arm, excluded warmups, 210
+total retained warmups and resource qualification remain as recorded.
+The supplied projections let this reviewer recalculate the distributions
+and flags; the approximately 16.7 GB original full-state streams are
+owner-local and were <strong>not</strong> independently replayed here.
+Prior 63/60/37 Compact scopes and the earlier Compact→Full delay remain
+historical, non-additive and open.</p>
+<h2 id="what-this-review-supports-and-what-it-does-not">4. What this
+review supports and what it does not</h2>
+<p>The seven catalogs, English reference and translated UI exist. In
+independently exercised source and emitted paths, ordinary native-script
+queries generally work, unknown native queries yield zero results, and
+<code>Kerberos</code> remains discoverable. In a deeper DOM-harness
+sample, changing <code>ru → he → ar-AE → fr</code> while paused in
+<code>clientIdApp</code> field history preserved the held/player
+snapshot, queue identity, field selection and nonempty field/scenario
+queries. Do not generalize that sample into all 362,463 bindings or a
+human/physical-device pass.</p>
+<p>The worker’s 96-cell native report was independently matched to its
+delivered decoded originals and producer identities. It is valuable
+evidence for its declared browser cells, with the 80 nested Full copy
+probes described above. The independent review did not execute those
+native cells again.</p>
+<p>No qualified human reviewer, language-specific speech/comprehension
+acceptance, actual screen-reader run, physical-device approval,
+Windows/DC validation or installed-PAM validation was performed here.
+Machine/AI translation review remains identified as such. This is not a
+full RFC compliance certification or a finding that all translations are
+incorrect.</p>
+<p>No application source, canonical test input, uploaded HTML or archive
+was modified for this review. Temporary extraction, Node build, reviewer
+probes and generated observations are separate review work. The prior
+Compact feature closures and historic test/performance runs are retained
+in their original scopes; this candidate needs the current localization
+corrections above.</p>
+<h2 id="correction-sequence-and-handoff">5. Correction sequence and
+handoff</h2>
+<ol type="1">
+<li><strong>Freeze evidence first.</strong> Record this review as a new
+authority input and retain the exact candidate, old compiled catalogs,
+native outcomes, 866 open flags, prior failed attempts, and
+omitted/local-only source qualifications. Do not overwrite a failure
+with a success-labelled excerpt.</li>
+<li><strong>Correct L10N-R01 and R02 together.</strong> Repair
+occurrence extraction and protected-term classification, then
+recalculate relevant English source contracts, protected registry,
+locale catalogs, overrides, generated resource identities and coverage
+denominators. Preserve all seven translations and protected technical
+names. Check both genuinely rendered and source-only occurrences;
+document the exact before/after bindings and unresolved
+classifications.</li>
+<li><strong>Correct L10N-R03 and R04.</strong> Restore exact
+technical-name priority and add targeted reviewed aliases. Keep the
+existing cancellation, IME, empty/no-result, explicit case-choice and
+view-switch behaviors.</li>
+<li><strong>Correct L10N-R05.</strong> Exercise both initialization and
+explicit-switch failure/recovery, source and emitted. Retain offline
+behavior, no unhandled rejection, state, selector and accessible
+status.</li>
+<li><strong>Address L10N-R06.</strong> Profile and optimize the
+demonstrated slow paths, then rerun focused relevant comparisons.
+Preserve thresholds, old samples and every unaccepted condition. Do not
+request a blanket waiver as a substitute for investigating the material
+regressions.</li>
+<li><strong>Run appropriate validation.</strong> Preserve or replace the
+old accessibility assertion’s intent, run protected-literal/corpus and
+rendered-surface audits, current complete normal suite, targeted
+source/emitted probes and relevant native/RTL checks for changed paths.
+If no relevant native environment is available, mark the exact cells
+unperformed. Run no unrelated full Windows/DC/PAM or
+historical-forensics sweep solely for translation fixes.</li>
+<li><strong>Deliver one reviewable corrected packet.</strong> Update the
+response ledger with L10N-R01–06, changed files, exact
+source/build/catalog/HTML identities, source/emitted results, timing
+samples/dispositions, linguistic-review matrix and all retained gates.
+Include actual outcomes and preserve earlier failed attempts; do not
+claim Astra closure before independent recheck.</li>
+</ol>
+<p>No broad waiver or all-RFC certification follows from a green test
+suite. Human G01, qualified native-language review, the 14 external
+cells, 88 Windows/DC cases, PAM 164 matches / one qualified divergence /
+165 calls, inherited candidate02/P6/DNSSEC/P0 conditions and all
+unaccepted performance scopes remain in their original status.</p>
+<h2 id="reproducing-the-independent-observations">6. Reproducing the
+independent observations</h2>
+<p>The scripts below are embedded in this file so the worker needs only
+this one review document. Save each under its shown filename in the
+<strong>root of a freshly restored copy of the submitted
+packet</strong>, alongside <code>source/</code> and
+<code>auth-flow-studio-compact.html</code>. They read the shipped
+Node-compatible source, DOM harness and/or exact inline bundle. Node
+must provide <code>Response</code> and <code>DecompressionStream</code>
+for ordinary locale-loading probes; the decompression-failure probe
+deliberately removes the latter.</p>
+<p>These are <strong>historical defect reproducers</strong>, not tests
+to keep passing after correction: some assert the old wrong output or
+intentionally remove an API. Once fixed, replace those assertions with
+positive regression tests. The quick-preset and DNSSEC probes write
+their small JSON results into the working copy. The search probe
+includes explicit <code>isConnected</code> / <code>replaceChild</code>
+shims for gaps in the supplied DOM harness and does not modify product
+code. The Full/Compact protected-markup probe inspects HTML directives
+only; it does not run a browser translator.</p>
+<pre class="sh" tabindex="0" role="region" aria-label="Reproduction source 1"><code>node review-protected-terms.mjs
+node review-dnssec-mounted.mjs
+node review-quick-presets.mjs
+node review-field-and-locale-search.mjs source
+node review-field-and-locale-search.mjs emitted auth-flow-studio-compact.html
+node review-decompression.mjs source source auth-flow-studio-compact.html startup
+node review-decompression.mjs source emitted auth-flow-studio-compact.html startup
+node review-decompression.mjs source source auth-flow-studio-compact.html switch
+node review-decompression.mjs source emitted auth-flow-studio-compact.html switch
+node review-attribute-markup.mjs source source auth-flow-studio-compact.html
+node review-attribute-markup.mjs source emitted auth-flow-studio-compact.html</code></pre>
+<p>The reviewer-authored search and protected-term probes accept the
+extracted packet’s source and standalone paths; all application inputs
+remain exact. Any probe result is bounded by its stated execution mode
+and harness.</p>
+<details>
+<summary>
+review-protected-terms.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 2"><code>import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+const root=path.resolve(process.argv[2]||'source');
+const {Localizer}=await import(pathToFileURL(root+'/src/localization.js'));
+const {LOCALIZATION_BINDINGS,LOCALIZATION_CATALOGS}=await import(pathToFileURL(root+'/src/localization-resources.js'));
+const host={localStorage:{getItem(){return null},setItem(){}}};
+const loc=new Localizer({host,catalogs:LOCALIZATION_CATALOGS,bindings:LOCALIZATION_BINDINGS});
+const source='Allows a resource server to verify the token using the corresponding trusted public key. The private signing key stays in Realm A.';
+const mcp='Discover the correct resource and authorization server';
+const kdc='spake-kdc creates its opaque representation of Initial negotiation cookie; decoded state stays limited to the listed readers.';
+const redirect='The redirect includes the public PKCE challenge, state, nonce and registered BFF callback. The verifier and confidential client_secret remain on the backend.';
+const hint='Realm A resolves the intended account and trusted authentication service. This hint identifies the person; it is neither user authentication nor confidential-client authentication.';
+const rows=[];
+for(const locale of ['ru','uk','he','de','ar-AE','fr','pl']){
+ await loc.prepare(locale);loc.activate(locale,{persist:false});
+ rows.push({locale,field:loc.explain('field:serviceAccessSignature','purpose',source,{}),fieldHtml:loc.explainHtml('field:serviceAccessSignature','purpose',source,{}),fieldLanguage:loc.language('field:serviceAccessSignature.purpose'),mcpTitle:loc.explain('lesson:lab-mcp02','title',mcp,{}),mcpLanguage:loc.language('lesson:lab-mcp02.title'),spake:loc.explain('step:lab-krb-spake-success-advertisement','attributeOperations.detail',kdc,{actorId:'spake-kdc',attributeId:'kspInitialCookieCookieBytes',operationKind:'create'}),spakeLanguage:loc.language('step:lab-krb-spake-success-advertisement.attributeOperations.detail'),redirect:loc.explain('step:web-bff-redirect','detail',redirect,{}),redirectLanguage:loc.language('step:web-bff-redirect.detail'),hint:loc.explain('field:cibaLoginHint','purpose',hint,{}),hintLanguage:loc.language('field:cibaLoginHint.purpose')});
+}
+console.log(JSON.stringify({source,mcp,kdc,rows},null,2));</code></pre>
+</details>
+<details>
+<summary>
+review-dnssec-mounted.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 3"><code>import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {installHarness} from './source/tests/dom-harness.mjs';
+const env=installHarness();
+env.window.innerWidth=390;
+env.window.localStorage={getItem:key=&gt;key==='auth-flow-studio.presentation.v1'?'compact':key==='auth-flow-studio.locale.v1'?'ar-AE':null,setItem(){}};
+const {AuthFlowStudio}=await import('./source/src/app.js');
+const app=new AuthFlowStudio();env.document.body.appendChild(app);app.isConnected=true;
+app.addEventListener('focusin',event=&gt;{env.document.activeElement=event.target;});
+await app.connectedCallback();
+assert.equal(app.localizer.locale,'ar-AE');
+app.selectLabScenario('lab-dnssec09',{variant:'cname-bogus-target',navigate:false});
+const select=app.querySelector('#lesson-case');assert.ok(select);
+const item=[...select.querySelectorAll('option')].find(x=&gt;x.getAttribute('value')==='cname-bogus-target');assert.ok(item);
+const out={qualification:'Actual application and production source catalog mounted in the provided Node DOM harness. Not a native-browser or AT execution.',locale:app.localizer.locale,scenario:app.labScenarioId,variant:app.lessonVariant,caseOption:{value:item.getAttribute('value'),displayed:item.textContent},visibleCase:app.querySelector('#current-lesson-case')?.textContent};
+assert.equal(item.textContent,'هدف الاسم المستعار الذي يفشل التحقق من صلاحيته');
+const insecure=[...select.querySelectorAll('option')].find(x=&gt;x.getAttribute('value')==='cname-insecure-target');assert.ok(insecure);
+out.insecureCaseOption={value:insecure.getAttribute('value'),displayed:insecure.textContent};
+assert.equal(insecure.textContent,'هدف الاسم المستعار غير المشمول بسلسلة الثقة');
+app.selectLabScenario('lab-dnssec11',{variant:'tcp-blocked',navigate:false});
+const index=app.steps.findIndex(step=&gt;step.id==='lab-dnssec11:tcp-blocked:tcp-failure-not-cryptographic-bogus');assert.ok(index&gt;=0);
+app.inspectSourceCursor({eventIndex:index,milestone:'complete'});
+out.step={scenario:app.labScenarioId,variant:app.lessonVariant,index,english:app.steps[index].title,title:app.refs['compact-current-title'].textContent};
+assert.equal(out.step.title,'فشل الاتصال ليس فشلا في التحقق التشفيري');
+fs.writeFileSync(new URL('./dnssec-mounted-recheck-results.json',import.meta.url),JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out));
+app.disconnectedCallback();env.document.body.removeChild(app);env.clock.frames.clear();env.clock.timers.clear();</code></pre>
+</details>
+<details>
+<summary>
+review-quick-presets.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 4"><code>import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {mount,unmount} from './source/tests/compact-fixture.mjs';
+import {HarnessElement} from './source/tests/dom-harness.mjs';
+HarnessElement.prototype.replaceChild=function(next,old){this.insertBefore(next,old);this.removeChild(old);return old;};
+const app=mount({mode:'full',width:1400}),result=[];app.isConnected=true;
+try{
+ for(const locale of ['en','ru','uk','he','de','ar-AE','fr','pl']){
+  if(locale!=='en')await app.changeLocale(locale);
+  assert.equal(app.localizer.locale,locale);assert.equal(app.presentationMode,'full');assert.equal(app.labScenarioId,'basic-keycloak');
+  const section=app.querySelector('#quick-start');assert.equal(section.hidden,false);const item=section.querySelector('[data-learning-preset="web-mfa"]');assert.ok(item);
+  const title=item.querySelector('strong').textContent,summary=item.querySelector('span').textContent;
+  assert.equal(title,'Web sign-in with MFA');assert.equal(summary,'One realm · password + TOTP · both checks at Keycloak');
+  const diagnostics=app.localizer.diagnostics();result.push({locale,sectionHidden:section.hidden,sectionHeading:section.querySelector('h2').textContent,title,summary,nearestLanguage:item.getAttribute('lang')||section.getAttribute('lang')||app.getAttribute('lang'),fallbacks:diagnostics.fallbacks});
+ }
+}finally{unmount(app);}
+fs.writeFileSync('independent-quick-presets-results.json',JSON.stringify(result,null,2));console.log(JSON.stringify(result,null,2));</code></pre>
+</details>
+<details>
+<summary>
+review-field-and-locale-search.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 5"><code>import {installHarness,HarnessEvent,HarnessElement} from './source/tests/dom-harness.mjs';
+import {filterScenarioOptions} from './source/src/scenario-picker.js';
+import {prepareSearchQuery,createSearchFields,rankSearchFields} from './source/src/locale-search.js';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const mode=process.argv[2]||'source';
+const sandbox={structuredClone,Response,DecompressionStream,performance};
+const env=installHarness(mode==='emitted'?sandbox:globalThis);
+// Harness lacks DOM replaceChild/isConnected; use equivalent local shim, never app edits.
+HarnessElement.prototype.replaceChild=function(next,old){this.insertBefore(next,old);this.removeChild(old);return old;};
+Object.defineProperty(HarnessElement.prototype,'isConnected',{get(){return env.document.contains(this);}});
+let AuthFlowStudio;
+if(mode==='emitted'){
+ if(!process.argv[3])throw Error('Pass the standalone HTML path as the third argument for emitted mode.');
+ const text=fs.readFileSync(process.argv[3],'utf8');
+ const scripts=[...text.matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];
+ if(scripts.length!==1)throw Error('Expected one executable script; found '+scripts.length);
+ new vm.Script(scripts[0][1],{filename:'uploaded-inline'}).runInContext(vm.createContext(sandbox),{timeout:5000});
+ AuthFlowStudio=env.registry.get('auth-flow-studio');
+}else if(mode==='source')({AuthFlowStudio}=await import('./source/src/app.js'));
+else throw Error('unknown mode');
+env.window.innerWidth=390;env.window.localStorage={getItem:()=&gt;null,setItem(){}};
+const app=new AuthFlowStudio();env.document.body.appendChild(app);app.addEventListener('focusin',e=&gt;{env.document.activeElement=e.target;});app.connectedCallback();
+const outputs={mode,punctuation:[],locales:[],errors:[]};
+for(const query of ['Conditions/@NotBefore','Conditions@NotBefore','Conditions-NotBefore','user.name','user-name','user/name']){
+ for(const id of ['samlNotBefore','slNotBefore','userName']){
+  const definition=app.definition(id);outputs.punctuation.push({query,id,name:definition.name,rank:app.fieldSearchRank(id,definition,prepareSearchQuery(query))});
+ }
+}
+app.openFieldIndex();app.attributeQuery='Conditions/@NotBefore';app.renderAttributeIndex();
+outputs.actualFieldResults={query:app.attributeQuery,total:app.attributeIndexRows.total,visible:[...app.refs['attribute-index-list'].querySelectorAll('[data-index-attribute]')].map(n=&gt;({id:n.dataset.indexAttribute,name:n.querySelector('code')?.textContent}))};
+app.attributeQuery='';app.renderAttributeIndex();
+const queries={ru:['фильтрация','Kerberos','ксенобезымянный'],uk:['фільтрація','Kerberos','немаєрезультатів'],he:['סינון','Kerberos','איןכאןתוצאה'],de:['Filterung','Kerberos','unmöglichereinzelwort'], 'ar-AE':['تصفية','Kerberos','لايوجدتطابق'],fr:['filtrage','Kerberos','motintrouvableunique'],pl:['filtrowanie','Kerberos','nieznaneslowowyjatkowe']};
+const state=()=&gt;JSON.stringify({held:app.heldView.snapshot(),player:app.player.snapshot(),lesson:app.labScenarioId,variant:app.lessonVariant,field:app.attributeSelection,object:app.objectTraceSelection});
+for(const [locale,tests] of Object.entries(queries)){
+ try {
+  const before=state(),queue=app.player.queue;
+  await app.changeLocale(locale,{explicit:false});
+  const after=state();
+  const results=[];
+  for(const query of tests){
+   const picker=app.scenarioPicker;picker.input.value=query;picker.input.dispatchEvent(new HarnessEvent('input'));
+   results.push({query,count:picker.results.length,first:picker.results.slice(0,4).map(row=&gt;({id:row.id,title:row.title}))});
+  }
+  outputs.locales.push({locale,active:app.localizer.locale,stateUnchanged:before===after,queueSame:queue===app.player.queue,results});
+ }catch(error){outputs.errors.push({locale,message:error.message,stack:error.stack});}
+}
+try{
+ app.selectLabScenario('basic-keycloak');
+ const position=Math.min(4,app.steps.length-1);app.player.inspectQueue(app.steps,{position,elapsed:app.player.durationFor(app.steps[position])*.37,kind:'demo'});app.player.pause();
+ app.compactView.showField('clientIdApp');app.querySelector('[data-compact-field-trace]').click();
+ const picker=app.scenarioPicker;picker.input.value='filtering';picker.input.dispatchEvent(new HarnessEvent('input'));
+ if(picker.results.length&gt;1)picker.input.dispatchEvent(new HarnessEvent('keydown',{key:'ArrowDown'}));
+ app.refs['attribute-search'].value='client_id';app.refs['attribute-search'].dispatchEvent(new HarnessEvent('input'));
+ const queue=app.player.queue,traceQueue=app.traceQueue,before=state(),query=picker.query,active=picker.results[picker.activeIndex]?.id,fieldQuery=app.attributeQuery,selected=app.compactView.selectedField;
+ outputs.deep=[];
+ for(const locale of ['ru','he','ar-AE','fr']){
+  await app.changeLocale(locale);outputs.deep.push({locale,stateUnchanged:before===state(),queueSame:queue===app.player.queue,traceQueueSame:traceQueue===app.traceQueue,attribute:app.attributeSelection,selectedField:app.compactView.selectedField,selectedFieldPreserved:app.compactView.selectedField===selected,fieldQueryPreserved:app.attributeQuery===fieldQuery,pickerQueryPreserved:picker.query===query,pickerActivePreserved:picker.results[picker.activeIndex]?.id===active,languageFocus:env.document.activeElement===app.refs['language-select']});
+ }
+}catch(error){outputs.errors.push({locale:'deep-scope',message:error.message,stack:error.stack});}
+app.disconnectedCallback();env.document.body.removeChild(app);env.clock.frames.clear();env.clock.timers.clear();
+console.log(JSON.stringify(outputs,null,2));if(outputs.errors.length)process.exitCode=1;</code></pre>
+</details>
+<details>
+<summary>
+review-decompression.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 6"><code>import path from 'node:path';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {setTimeout as delay} from 'node:timers/promises';
+import {pathToFileURL} from 'node:url';
+
+// node missing-decompression-ui-probe.mjs SOURCE_ROOT source|emitted HTML startup|switch
+const source=path.resolve(process.argv[2]),mode=process.argv[3],html=path.resolve(process.argv[4]),scenario=process.argv[5];
+const {installHarness,HarnessEvent}=await import(pathToFileURL(path.join(source,'tests/dom-harness.mjs')));
+let env,Component;
+if(mode==='emitted'){
+  const scripts=[...fs.readFileSync(html,'utf8').matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];assert.equal(scripts.length,1);
+  const sandbox={structuredClone,Response,Blob,DecompressionStream:undefined};env=installHarness(sandbox);
+  env.window.localStorage={getItem:key=&gt;scenario==='startup'&amp;&amp;key==='auth-flow-studio.locale.v1'?'ru':null,setItem(){}};
+  new vm.Script(scripts[0][1],{filename:'uploaded-localization:inline'}).runInContext(vm.createContext(sandbox),{timeout:5000});
+  Component=env.registry.get('auth-flow-studio');
+}else{
+  assert.equal(mode,'source');env=installHarness();globalThis.DecompressionStream=undefined;
+  env.window.localStorage={getItem:key=&gt;scenario==='startup'&amp;&amp;key==='auth-flow-studio.locale.v1'?'ru':null,setItem(){}};
+  ({AuthFlowStudio:Component}=await import(pathToFileURL(path.join(source,'src/app.js'))));
+}
+const app=new Component();app.ownerDocument=env.document;Object.defineProperty(app,'isConnected',{value:true});env.document.body.appendChild(app);
+const unhandled=new Promise(resolve=&gt;process.once('unhandledRejection',error=&gt;resolve({name:error.name,message:error.message})));
+app.connectedCallback();
+if(scenario==='switch'){
+  assert.equal(app.initialized,true);assert.equal(app.localizer.locale,'en');
+  const select=app.refs['language-select'];select.value='ru';select.dispatchEvent(new HarnessEvent('change'));
+}else assert.equal(scenario,'startup');
+const error=await Promise.race([unhandled,delay(3000).then(()=&gt;null)]);
+assert.ok(error);assert.match(error.message,/DecompressionStream/);
+const result={mode,scenario,error,initialized:!!app.initialized,childElements:app.children.length,locale:app.localizer?.locale??null,selectorPresent:!!app.querySelector('#language-select'),selectorValue:app.refs?.['language-select']?.value??null,toastText:app.refs?.toast?.textContent??null,toastHidden:app.refs?.toast?.hidden??null,busy:app.hasAttribute('aria-busy')};
+if(scenario==='startup'){assert.equal(result.initialized,false);assert.equal(result.childElements,0);assert.equal(result.selectorPresent,false);}
+else{assert.equal(result.initialized,true);assert.equal(result.locale,'en');assert.equal(result.selectorPresent,true);assert.equal(result.toastText,'');}
+console.log(JSON.stringify(result));</code></pre>
+</details>
+<details>
+<summary>
+review-attribute-markup.mjs
+</summary>
+<pre class="javascript" tabindex="0" role="region" aria-label="Reproduction source 7"><code>import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {pathToFileURL} from 'node:url';
+
+// node attribute-markup-probe.mjs SOURCE_ROOT source|emitted STANDALONE_HTML
+const source=path.resolve(process.argv[2]),mode=process.argv[3],html=path.resolve(process.argv[4]);
+const {installHarness}=await import(pathToFileURL(path.join(source,'tests/dom-harness.mjs')));
+let env,Component;
+if(mode==='emitted'){
+  const scripts=[...fs.readFileSync(html,'utf8').matchAll(/&lt;script(?:\s[^&gt;]*)?&gt;([\s\S]*?)&lt;\/script&gt;/gi)];assert.equal(scripts.length,1);
+  const sandbox={structuredClone,Response,Blob,DecompressionStream};env=installHarness(sandbox);
+  new vm.Script(scripts[0][1],{filename:'uploaded-localization:inline'}).runInContext(vm.createContext(sandbox),{timeout:5000});Component=env.registry.get('auth-flow-studio');
+}else{assert.equal(mode,'source');env=installHarness();({AuthFlowStudio:Component}=await import(pathToFileURL(path.join(source,'src/app.js'))));}
+env.window.localStorage={getItem:()=&gt;null,setItem(){}};
+const app=new Component();app.ownerDocument=env.document;env.document.body.appendChild(app);app.connectedCallback();
+const index=app.steps.findIndex(step=&gt;step.fields?.includes('clientIdApp'));assert.ok(index&gt;=0);
+const records=[];
+for(const view of ['full','compact']){
+ app.presentationMode=view;
+ const sample=env.document.createElement('div');sample.innerHTML=app.stepHtml(app.steps[index],index);app.refs.studio.appendChild(sample);
+ const button=[...sample.querySelectorAll('.attribute-list [data-attribute]')].find(node=&gt;node.dataset.attribute==='clientIdApp');assert.ok(button);
+ const code=button.querySelector('code');assert.ok(code);let node=code,directive=null;
+ while(node){if(node.hasAttribute?.('translate')){directive=node.getAttribute('translate');break;}node=node.parentElement;}
+ assert.equal(code.textContent,app.definition('clientIdApp').name);assert.equal(directive,null);
+ records.push({view,field:'clientIdApp',name:code.textContent,codeTranslate:code.getAttribute('translate'),nearestExplicitTranslate:directive,control:button.getAttribute('data-attribute')});
+ sample.parentElement.removeChild(sample);
+}
+console.log(JSON.stringify({mode,records,qualification:'DOM markup/HTML translation-mode inspection; no actual browser translator was run.'}));
+app.disconnectedCallback();env.clock.frames.clear();env.clock.timers.clear();</code></pre>
+</details>
+<p class="source-note">Independent localization review · 3 November 2026 · Exact submitted candidate · No product or test input changes · No release, performance or human acceptance.</p></main></body>
+</html>

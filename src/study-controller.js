@@ -6,14 +6,39 @@ import { getAttributeIds } from './attribute-usage.js';
 import { heldCursorForPlayback, projectHeldObjects } from './held-object-state.js';
 import { resolveActor } from './player.js';
 import { captureFocusTarget, resolveFocusTarget, isVisibleFocusTarget } from './focus-target.js';
+import { Localizer, LOCALES } from './localization.js';
+import { LOCALIZATION_BINDINGS, LOCALIZATION_CATALOGS } from './localization-resources.js';
 
 const studyFocusAttributes = ['id','data-presentation-choice','data-compact-command','data-compact-action','data-compact-step-index','data-held-key','data-held-action','data-holding-id','data-index-attribute','data-attribute','data-trace-topic','data-actor','data-learning-detail','data-lesson-chapter','data-instance-history','href'];
-const studyDetailAttributes = ['data-compact-disclosure','data-instance-history','data-pam-disclosure','data-remote-comparison'];
-const studyDetailKey = node => node.id ? 'id:'+node.id : studyDetailAttributes.map(name=>node.hasAttribute(name)?name+':'+node.getAttribute(name):'').find(Boolean)||'summary:'+(node.parentElement.closest('[id]')?.id||'')+':'+(node.querySelector('summary')?.textContent||'');
+const studyDetailAttributes = ['data-study-key','data-compact-disclosure','data-instance-history','data-pam-disclosure','data-remote-comparison'];
+const studyDetailKey = node => {
+  const key=node.id?'id:'+node.id:studyDetailAttributes.map(name=>node.hasAttribute(name)?name+':'+node.getAttribute(name):'').find(Boolean);
+  if(!key)throw new Error('A study disclosure requires an explicit stable binding.');
+  return key;
+};
+const studyLocaleEscape=value=>String(value??'').replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 
 /** Shared methods on the one custom-element controller, not another session. */
 export class StudyController extends HTMLElement {
+  initializeLocale() {
+    if(!this.localizer)this.localizer=new Localizer({host:window,catalogs:LOCALIZATION_CATALOGS,bindings:LOCALIZATION_BINDINGS});
+    return this.localizer.initialPreparation;
+  }
+  clearLocaleFailure() {
+    this.localeFailure=null;
+    if(this.refs?.toast?.hasAttribute('data-locale-failure')){this.refs.toast.hidden=true;this.refs.toast.removeAttribute('data-locale-failure');}
+  }
+  reportLocaleFailure(tag,error) {
+    this.pendingLocale=null;this.localizer.discardPrepared();
+    this.localeFailure={tag,error};
+    const requested=Localizer.metadata(tag).name,current=Localizer.metadata(this.localizer.locale).name;
+    this.showToast('Could not load '+requested+'. '+current+' remains active. Choose another language or retry when offline language resources are available.','en');
+    clearTimeout(this.toastTimer);this.toastTimer=null;this.refs.toast.setAttribute('data-locale-failure','');
+    if(this.refs['language-select'])this.refs['language-select'].value=this.localizer.locale;
+  }
   initializePresentation() {
+    this.initializeLocale();
+    this.localeCompositions=new Set();this.localeDeferredInputs=new Set();this.pendingLocale=null;this.localeFlushTimer=null;this.localePreparation=null;
     this.presentationPreference=new PresentationPreference(window);
     this.presentationMode=this.presentationPreference.mode;this.presentationSource=this.presentationPreference.source;
     this.presentationStates={full:{},compact:{}};this.sharedListeners=[];
@@ -21,27 +46,176 @@ export class StudyController extends HTMLElement {
   }
   cacheRefs() {
     this.refs={};for(const node of this.querySelectorAll('[id]'))this.refs[node.id]=node;
+    this.applyLocaleMetadata();
+    for(const input of this.querySelectorAll('input[type="search"]'))input.setAttribute('dir','auto');
+  }
+  applyLocaleMetadata() {
+    if(!this.localizer)return;
+    this.localizer.metadata(this,{documentOwner:this.hasAttribute('data-document-owner')});
+    if(this.refs?.studio)this.localizer.metadata(this.refs.studio);
+    // Toasts retain the language of the message actually shown, not the next UI locale.
+    for(const id of ['actor-popup','attribute-popup','search-case-choice'])if(this.refs?.[id])this.localizer.metadata(this.refs[id]);
+    if(this.refs?.['language-select'])this.refs['language-select'].value=this.localizer.locale;
+  }
+  languageSelectorHtml() {
+    return '<label class="language-control" for="language-select"><span id="language-label">'+this.localizer.html('ui.locale.label','Language')+'</span><select id="language-select" aria-labelledby="language-label">'+LOCALES.map(locale=>'<option value="'+locale.tag+'" lang="'+locale.tag+'" dir="'+locale.direction+'"'+(locale.tag===this.localizer.locale?' selected':'')+'>'+studyLocaleEscape(locale.name)+'</option>').join('')+'</select></label>';
+  }
+  refreshSharedLocaleChrome() {
+    // Re-render owned chrome only. Picker instances, inputs and live drafts stay mounted.
+    const staging=document.createElement('div');staging.innerHTML=this.shell();
+    for(const selector of ['.app-header','.sources-footer']){
+      const previous=this.querySelector(selector),next=staging.querySelector(selector);
+      previous.parentElement.replaceChild(next,previous);
+    }
+    for(const id of ['actor-popup','attribute-popup']){
+      const previous=this.querySelector('#'+id),next=staging.querySelector('#'+id);
+      if(previous.hasAttribute('aria-label'))previous.setAttribute('aria-label',next.getAttribute('aria-label'));
+    }
+    for(const picker of [this.scenarioPicker,this.workspacePicker]){
+      const next=staging.querySelector('#'+picker.root.id);
+      for(const attribute of ['aria-label','title'])if(next.hasAttribute(attribute))picker.root.setAttribute(attribute,next.getAttribute(attribute));
+      const previousLabel=picker.root.querySelector('label'),nextLabel=next.querySelector('label');
+      if(previousLabel&&nextLabel)previousLabel.innerHTML=nextLabel.innerHTML;
+      const previousHint=picker.root.querySelector('.scenario-picker-hint'),nextHint=next.querySelector('.scenario-picker-hint');
+      if(previousHint&&nextHint)previousHint.innerHTML=nextHint.innerHTML;
+      const previousKeys=picker.root.querySelector('.scenario-picker-menu-heading > span:last-child'),nextKeys=next.querySelector('.scenario-picker-menu-heading > span:last-child');
+      if(previousKeys&&nextKeys)previousKeys.innerHTML=nextKeys.innerHTML;
+      picker.refreshLocale();
+    }
+    this.cacheRefs();this.renderPickerHints();
+    if(this.searchCaseChoice)this.renderSearchCaseChoice();
+  }
+  captureLocaleAnchor() {
+    if(typeof document.elementFromPoint!=='function')return null;
+    let node=document.elementFromPoint(Math.min(36,window.innerWidth-1),Math.min(100,window.innerHeight-1));
+    node=node?.closest('[data-index-attribute],[data-compact-step-index],[data-study-key],[id]');
+    if(!node||!this.contains(node)||node.closest('.app-header'))return null;
+    for(const attribute of ['data-index-attribute','data-compact-step-index','data-study-key','id'])if(node.hasAttribute(attribute))return {attribute,value:node.getAttribute(attribute),top:node.getBoundingClientRect().top};
+    return null;
+  }
+  restoreLocaleAnchor(anchor) {
+    if(!anchor||typeof window.scrollBy!=='function')return;
+    const node=[...this.querySelectorAll('['+anchor.attribute+']')].find(candidate=>candidate.getAttribute(anchor.attribute)===anchor.value);
+    if(node)window.scrollBy({top:node.getBoundingClientRect().top-anchor.top,behavior:'auto'});
+  }
+  changeLocale(tag,{explicit=true}={}) {
+    if(!Localizer.valid(tag))throw new RangeError('Unknown display locale.');
+    if(this.localePreparation){this.pendingLocale={tag,explicit};return this.localePreparation;}
+    if(tag===this.localizer.locale){this.pendingLocale=null;this.localizer.discardPrepared();this.clearLocaleFailure();if(this.refs?.['language-select'])this.refs['language-select'].value=tag;return false;}
+    if(this.localeCompositions.size||[this.scenarioPicker,this.workspacePicker].some(picker=>picker.composing)){
+      this.pendingLocale={tag,explicit};return false;
+    }
+    if(!this.localizer.needsPreparation(tag))return this.commitLocale(tag,{explicit});
+    // Pause before decoding. No source state is captured and later restored
+    // across the asynchronous gap; a deliberate intervening user action wins.
+    const suppressed=this.suppressStudyAnnouncement;this.suppressStudyAnnouncement=true;
+    try{if(this.player.status==='playing')this.player.pause();}finally{this.suppressStudyAnnouncement=suppressed;}
+    this.pendingLocale={tag,explicit};this.setAttribute('aria-busy','true');
+    this.localePreparation=(async()=>{
+      while(this.pendingLocale){
+        let request=this.pendingLocale;this.pendingLocale=null;
+        if(request.tag===this.localizer.locale){this.localizer.discardPrepared();this.clearLocaleFailure();return false;}
+        if(this.localizer.needsPreparation(request.tag))try{await this.localizer.prepare(request.tag);}catch(error){
+          const latest=this.pendingLocale;this.pendingLocale=null;this.localizer.discardPrepared();
+          if(latest&&latest.tag!==request.tag){this.pendingLocale=latest;continue;}
+          if(this.isConnected)this.reportLocaleFailure(request.tag,error);
+          return false;
+        }
+        const latest=this.pendingLocale;this.pendingLocale=null;
+        if(latest&&latest.tag!==request.tag){this.pendingLocale=latest;continue;}
+        if(latest)request=latest;
+        if(!this.isConnected)return false;
+        if(this.localeCompositions.size||[this.scenarioPicker,this.workspacePicker].some(picker=>picker.composing)){this.pendingLocale=request;return false;}
+        return this.commitLocale(request.tag,{explicit:request.explicit});
+      }
+      return false;
+    })().finally(()=>{
+      this.localePreparation=null;this.localizer.discardPrepared();this.removeAttribute('aria-busy');
+      if(this.refs?.['language-select'])this.refs['language-select'].value=this.localizer.locale;
+    });
+    return this.localePreparation;
+  }
+  commitLocale(tag,{explicit=true}={}) {
+    this.pendingLocale=null;
+    const priorSuppression=this.suppressStudyAnnouncement;this.suppressStudyAnnouncement=true;
+    try{
+      // Player callbacks establish the exact postpause prefix before any display capture.
+      if(this.player.status==='playing')this.player.pause();
+      const paused=this.player.snapshot(),anchor=this.captureLocaleAnchor(),active=document.activeElement,focus=captureFocusTarget(this,active);
+      const presentationOwned=this.querySelector('#presentation-host').contains(active),summaryKey=this.contains(active)&&active?.tagName==='SUMMARY'&&!presentationOwned?studyDetailKey(active.parentElement):null;
+      this.capturePresentationState();
+      const disclosures=new Map([...this.querySelectorAll('details')].map(node=>[studyDetailKey(node),node.hasAttribute('open')]));
+      const help=['actor','attribute'].map(kind=>({kind,open:!this.refs[kind+'-popup'].hidden,target:this[kind+'FocusTarget'],id:this[kind+'HelpId']}));
+      clearTimeout(this.closeTimer);clearTimeout(this.attributeTimer);
+      // Validate the selected catalog before destroying the current presentation.
+      try{this.localizer.activate(tag,{persist:explicit});}catch(error){this.reportLocaleFailure(tag,error);return false;}
+      this.clearLocaleFailure();
+      this.releaseActorDrag();this.presenter.unmount();this.querySelector('#presentation-host').innerHTML='';
+      this.fieldSearchRecords=null;this.activeFieldTopicText=null;this.fieldSearchRevision=-1;
+      this.refreshSharedLocaleChrome();
+      this.mountPresentation('presentation',paused);
+      this.restorePresentationState(null,undefined,{restoreFocus:false});
+      for(const node of this.querySelectorAll('details'))if(disclosures.has(studyDetailKey(node))){
+        const open=disclosures.get(studyDetailKey(node));node.open=open;if(open)node.setAttribute('open','');else node.removeAttribute('open');
+      }
+      for(const item of help){
+        this.refs[item.kind+'-popup'].hidden=true;this[item.kind+'Anchor']=null;
+        if(!item.open||!item.id)continue;
+        const target=resolveFocusTarget(this,item.target);
+        if(target)(item.kind==='actor'?this.showActorPopup(item.id,target):this.showAttributePopup(item.id,target));
+      }
+      this.applyLocaleMetadata();this.restoreLocaleAnchor(anchor);
+      if(this.refs['held-announcement'])this.refs['held-announcement'].textContent='';
+      if(explicit)this.refs['language-select'].focus({preventScroll:true});
+      else if(presentationOwned)this.resolvePresentationFocus()?.focus({preventScroll:true});
+      else if(summaryKey)[...this.querySelectorAll('details')].find(node=>studyDetailKey(node)===summaryKey)?.querySelector('summary')?.focus({preventScroll:true});
+      else if(focus)this.restoreTargetFocus(focus,{preventScroll:true});
+      if(explicit){
+        const name=Localizer.metadata(tag).name;
+        this.notify('ui.locale.changed','Language changed to '+name+'.',{language:name});
+      }
+      return true;
+    }finally{this.suppressStudyAnnouncement=priorSuppression;}
+  }
+  finishLocaleComposition(target) {
+    this.localeCompositions.delete(target);clearTimeout(this.localeFlushTimer);
+    if(target.id==='attribute-search')this.attributeQuery=target.value;
+    else if(target.id==='lab-search')this.catalogQuery=target.value;
+    else if(target.id==='glossary-search')this.glossaryQuery=target.value;
+    if(['attribute-search','lab-search','glossary-search'].includes(target.id))this.localeDeferredInputs.add(target);
+    this.localeFlushTimer=setTimeout(()=>{
+      if(this.localeCompositions.size)return;
+      const inputs=[...this.localeDeferredInputs];this.localeDeferredInputs.clear();
+      if(this.pendingLocale){const pending=this.pendingLocale;this.changeLocale(pending.tag,{explicit:pending.explicit});}
+      else for(const input of inputs)if(input.isConnected)input.dispatchEvent(new Event('input',{bubbles:true}));
+    },0);
   }
   listenShared(node,type,listener,options) {
     node.addEventListener(type,listener,options);this.sharedListeners.push([node,type,listener,options]);
   }
   listenFull(node,type,listener,options) {this.fullView.listen(node,type,listener,options);}
   bindShared() {
-    this.listenShared(this.querySelector('#presentation-switch'),'click',event=>{const button=event.target.closest('[data-presentation-choice]');if(button)this.switchPresentation(button.dataset.presentationChoice);});
-    this.listenShared(this.querySelector('#theme-toggle'),'click',()=>{this.theme=this.theme==='dark'?'light':'dark';this.refs.studio.dataset.theme=this.theme;});
+    this.listenShared(this,'click',event=>{
+      const choice=event.target.closest('[data-presentation-choice]');
+      if(choice){this.switchPresentation(choice.dataset.presentationChoice);return;}
+      if(event.target.closest('#theme-toggle')){this.theme=this.theme==='dark'?'light':'dark';this.refs.studio.dataset.theme=this.theme;}
+      else if(event.target.closest('#index-open'))this.openFieldIndex();
+      else if(event.target.closest('#glossary-open')){if(this.presentationMode==='compact')this.openFieldIndex();else{this.inspection={type:'glossary'};this.renderInspector();}}
+    });
+    this.listenShared(this,'change',event=>{if(event.target.id==='language-select')this.changeLocale(event.target.value);});
+    this.listenShared(this,'compositionstart',event=>this.localeCompositions.add(event.target));
+    this.listenShared(this,'compositionend',event=>this.finishLocaleComposition(event.target));
     for(const picker of [this.scenarioPicker,this.workspacePicker]){
       this.listenShared(picker.root,'focusin',()=>{if(this.presentationMode==='compact')this.pauseForStudy();});
       this.listenShared(picker.root,'pointerdown',()=>{if(this.presentationMode==='compact')this.pauseForStudy();});
     }
     this.listenShared(this.querySelector('#search-case-choice'),'click',event=>{
       const target=event.target.closest('[data-search-case]');
-      if(target&&this.searchCaseChoice){const id=this.searchCaseChoice.id,variant=target.dataset.searchCase;this.closeSearchCaseChoice();this.selectLabScenario(id,{variant});this.querySelector('#play')?.focus();this.showToast('Selected case: '+(this.baseLabModel?.variantChoices?.find(choice=>choice.id===this.lessonVariant)?.label||this.lessonVariant));}
+      if(target&&this.searchCaseChoice){const id=this.searchCaseChoice.id,variant=target.dataset.searchCase;this.closeSearchCaseChoice();this.selectLabScenario(id,{variant});this.querySelector('#play')?.focus();this.announceSelectedCase();}
       else if(event.target.closest('[data-cancel-search-case]'))this.closeSearchCaseChoice(true);
     });
-    this.listenShared(this.querySelector('#search-case-choice'),'keydown',event=>{if(event.key==='Escape'){event.preventDefault();this.closeSearchCaseChoice(true);}});
+    this.listenShared(this.querySelector('#search-case-choice'),'keydown',event=>{if(event.isComposing||event.keyCode===229)return;if(event.key==='Escape'){event.preventDefault();this.closeSearchCaseChoice(true);}});
     this.listenShared(this,'click',event=>{const target=event.target.closest('[data-compare-scenario]');if(target&&LAB_MODELS[target.dataset.compareScenario])this.selectJourneyFromControl(target,target.dataset.compareScenario,{variant:target.dataset.compareVariant||'default'});});
-    this.listenShared(this.querySelector('#index-open'),'click',()=>this.openFieldIndex());
-    this.listenShared(this.querySelector('#glossary-open'),'click',()=>{if(this.presentationMode==='compact')this.openFieldIndex();else{this.inspection={type:'glossary'};this.renderInspector();}});
     this.routeListener=()=>this.openRoute();this.listenShared(window,'hashchange',this.routeListener);
     this.environmentPageHide=()=>this.resetEnvironment();this.environmentPageShow=event=>{if(event.persisted)this.resetEnvironment();};
     this.listenShared(window,'pagehide',this.environmentPageHide);this.listenShared(window,'pageshow',this.environmentPageShow);
@@ -63,10 +237,13 @@ export class StudyController extends HTMLElement {
     this.protocolRenderKey=null;this.pamRenderKey=null;this.remoteEvidenceKey=null;this.windowsComparisonKey=null;this.chapterControlsModel=null;this.attributeIndexRows=null;this.stepOverlayIdentity='';this.packetIdentity='';this.heldView.lastKey='';
   }
   mountPresentation(reason='initial',event=this.player.snapshot()) {
+    this.releaseExactCopyDownload();
     this.presenter=this.presentationMode==='compact'?this.compactView:this.fullView;
     this.presenter.mount(this.querySelector('#presentation-host'));
     if(this.presentationMode==='compact')this.cacheRefs();
     this.refs['attribute-search'].value=this.attributeQuery;
+    if(this.refs['lab-search'])this.refs['lab-search'].value=this.catalogQuery;
+    if(this.presentationStates[this.presentationMode].indexHidden!==undefined)this.refs['attribute-index'].hidden=this.presentationStates[this.presentationMode].indexHidden;
     this.invalidatePresentationCaches();this.updatePresentationControls();this.presenter.render(reason,event);
   }
   capturePresentationState() {
@@ -81,12 +258,8 @@ export class StudyController extends HTMLElement {
     state.disclosures=new Map([...host.querySelectorAll('details')].map(node=>[studyDetailKey(node),node.hasAttribute('open')]));
     if(this.presentationMode==='full'){const viewport=this.refs.graph.parentElement;state.graphScroll={x:viewport.scrollLeft,y:viewport.scrollTop};}
   }
-  restorePresentationState(commonFocus,target) {
-    const state=this.presentationStates[this.presentationMode],host=this.querySelector('#presentation-host');
-    if(state.indexHidden!==undefined)this.refs['attribute-index'].hidden=state.indexHidden;
-    if(state.disclosures)for(const details of host.querySelectorAll('details'))if(state.disclosures.has(studyDetailKey(details))){const open=state.disclosures.get(studyDetailKey(details));details.open=open;if(open)details.setAttribute('open','');else details.removeAttribute('open');}
-    if(this.presentationMode==='full'&&state.graphScroll){const viewport=this.refs.graph.parentElement;viewport.scrollLeft=state.graphScroll.x;viewport.scrollTop=state.graphScroll.y;}
-    let focus=null;
+  resolvePresentationFocus(commonFocus,target) {
+    const state=this.presentationStates[this.presentationMode],host=this.querySelector('#presentation-host');let focus=null;
     if(target==='configuration'){
       const panel=this.querySelector('#advanced-configuration');panel.open=true;panel.setAttribute('open','');focus=[...panel.querySelectorAll('select,input,button,summary')].find(node=>isVisibleFocusTarget(this,node));
     }else if(target==='diagram'){focus=this.querySelector('#scenario-title');focus.setAttribute('tabindex','-1');}
@@ -94,7 +267,15 @@ export class StudyController extends HTMLElement {
     else if(state.focus?.attribute)focus=[...host.querySelectorAll('['+state.focus.attribute+']')].find(node=>node.getAttribute(state.focus.attribute)===state.focus.value);
     else if(state.focus?.details)focus=[...host.querySelectorAll('details')].find(node=>studyDetailKey(node)===state.focus.details)?.querySelector('summary');
     if(!focus&&state.logicalFocus)focus=resolveFocusTarget(this,state.logicalFocus);
-    if(!isVisibleFocusTarget(this,focus))focus=this.querySelector('[data-presentation-choice="'+this.presentationMode+'"]');
+    return isVisibleFocusTarget(this,focus)?focus:this.querySelector('[data-presentation-choice="'+this.presentationMode+'"]');
+  }
+  restorePresentationState(commonFocus,target,{restoreFocus=true}={}) {
+    const state=this.presentationStates[this.presentationMode],host=this.querySelector('#presentation-host');
+    if(state.indexHidden!==undefined)this.refs['attribute-index'].hidden=state.indexHidden;
+    if(state.disclosures)for(const details of host.querySelectorAll('details'))if(state.disclosures.has(studyDetailKey(details))){const open=state.disclosures.get(studyDetailKey(details));details.open=open;if(open)details.setAttribute('open','');else details.removeAttribute('open');}
+    if(this.presentationMode==='full'&&state.graphScroll){const viewport=this.refs.graph.parentElement;viewport.scrollLeft=state.graphScroll.x;viewport.scrollTop=state.graphScroll.y;}
+    if(!restoreFocus){if(state.scroll&&typeof window.scrollTo==='function')window.scrollTo(state.scroll.x,state.scroll.y);return;}
+    const focus=this.resolvePresentationFocus(commonFocus,target);
     focus?.focus({preventScroll:true});
     if(target)focus?.scrollIntoView({block:'center',inline:'nearest',behavior:'auto'});
     else if(state.scroll&&typeof window.scrollTo==='function')window.scrollTo(state.scroll.x,state.scroll.y);
@@ -124,10 +305,14 @@ export class StudyController extends HTMLElement {
     this.suppressStudyAnnouncement=true;
     try {this.mountPresentation('presentation',paused);this.restorePresentationState(commonFocus,target);}
     finally {this.suppressStudyAnnouncement=false;}
-    this.showToast((mode==='compact'?'Compact':'Full')+' view.'+(wasPlaying?' Playback paused.':''));
+    if(mode==='compact')this.notify(wasPlaying?'ui.view.compact-paused':'ui.view.compact',wasPlaying?'Compact view. Playback paused.':'Compact view.');
+    else this.notify(wasPlaying?'ui.view.full-paused':'ui.view.full',wasPlaying?'Full view. Playback paused.':'Full view.');
   }
   destroyPresentation() {
+    this.releaseExactCopyDownload();
     this.presenter?.unmount();this.presenter=null;
+    clearTimeout(this.localeFlushTimer);this.pendingLocale=null;this.localeCompositions?.clear();
+    this.localeDeferredInputs?.clear();
     for(const [node,type,listener,options]of this.sharedListeners||[])node.removeEventListener(type,listener,options);
     if(this.sharedListeners)this.sharedListeners.length=0;
     this.motion?.removeEventListener?.('change',this.motionChange);
@@ -211,15 +396,34 @@ export class StudyController extends HTMLElement {
     this.renderScenarioDescription();this.renderLabSupport();this.renderLearningProfile();this.renderPamConfiguration();this.renderProtocolState();
     if(!this.refs['attribute-index'].hidden)this.renderAttributeIndex();
   }
+  releaseExactCopyDownload() {
+    if(!this.exactCopyDownloadURL)return;
+    URL.revokeObjectURL(this.exactCopyDownloadURL);this.exactCopyDownloadURL=null;
+    for(const link of this.querySelectorAll('[data-exact-copy-download]'))link.parentElement.removeChild(link);
+  }
   async copyExactValue(value,trigger) {
     const text=typeof value==='string'?value:String(value);
+    this.releaseExactCopyDownload();
     try {
       if(!globalThis.navigator?.clipboard?.writeText)throw new Error('Clipboard API unavailable');
-      await navigator.clipboard.writeText(text);this.showToast('Exact value copied.');return true;
+      await navigator.clipboard.writeText(text);this.notify('ui.copy.exact-copied','Exact value copied.');return true;
     }catch{
+      if(!this.contains(trigger))return false;
+      this.releaseExactCopyDownload();
       const parent=trigger.parentElement;let field=parent.querySelector('[data-exact-copy-fallback]');
-      if(!field){field=document.createElement('textarea');field.className='exact-copy-fallback';field.setAttribute('data-exact-copy-fallback','');field.setAttribute('aria-label','Exact untruncated value to copy');field.readOnly=true;parent.appendChild(field);}
-      field.value=text;field.textContent=text;field.focus();field.select?.();this.showToast('Clipboard unavailable. Select and copy the exact value in the text box.');return false;
+      if(!field){field=document.createElement('textarea');field.className='exact-copy-fallback';field.setAttribute('data-exact-copy-fallback','');field.readOnly=true;parent.appendChild(field);}
+      field.setAttribute('aria-label',this.localizer.text('ui.copy.exact-fallback-label','Exact untruncated value to copy'));field.setAttribute('dir','ltr');field.setAttribute('translate','no');
+      field.value=text;field.textContent=text;
+      if(field.value!==text){
+        // Textarea values normalize line endings. Export raw UTF-8 when manual copy cannot preserve them.
+        parent.removeChild(field);const link=document.createElement('a');
+        this.exactCopyDownloadURL=URL.createObjectURL(new Blob([text],{type:'text/plain;charset=utf-8',endings:'transparent'}));
+        link.href=this.exactCopyDownloadURL;link.download='auth-flow-studio-value.txt';link.className='button quiet';link.setAttribute('data-exact-copy-download','');
+        link.innerHTML=this.localizer.html('ui.copy.save-exact','Save exact value');parent.appendChild(link);link.focus();
+        this.notify('ui.copy.download-unavailable','Clipboard unavailable. Save the file to preserve the exact value.');return false;
+      }
+      field.focus();field.select?.();this.notify('ui.copy.unavailable','Clipboard unavailable. Select and copy the exact value in the text box.');return false;
     }
   }
+  notify(key,source,parameters={}) {this.showToast(this.localizer.text(key,source,parameters),this.localizer.language(key));}
 }

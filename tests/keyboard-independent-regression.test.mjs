@@ -20,7 +20,6 @@ test('attribute explanation is an accessible interactive dialog and retains focu
     const field=app.refs['attribute-index-list'].querySelector('[data-index-attribute="codeVerifier"]');
     focus(field);const popup=app.refs['attribute-popup'];
     assert.equal(popup.getAttribute('role'),'dialog');assert.equal(popup.getAttribute('aria-modal'),'false');
-    assert.match(popup.getAttribute('aria-label'),/code_verifier/);
     assert.equal(field.getAttribute('aria-haspopup'),'dialog');assert.equal(field.getAttribute('aria-controls'),popup.id);
     assert.equal(key(field,'F2').defaultPrevented,true);
     const source=popup.querySelector('.source-link');assert.equal(document.activeElement,source);

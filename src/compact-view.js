@@ -1,7 +1,10 @@
 import { channelCategory } from './layout.js';
+import { heldInspectionHtml } from './held-study-projection.js';
 
 const compactEscape = value => String(value ?? '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 const compactValue = value => typeof value === 'string' ? value : JSON.stringify(value, null, 2) ?? '';
+const compactProtected = value => '<bdi dir="ltr" translate="no">' + compactEscape(value) + '</bdi>';
+const compactRaw = value => compactEscape(JSON.stringify(String(value ?? '')));
 
 /** Read the existing session only. Queue positions are never source-event indices. */
 export function compactReadProjection(app, event = app.player.snapshot(), snapshot = app.heldView.snapshot(event)) {
@@ -42,54 +45,79 @@ export class CompactView {
     this.copyValues = new Map();
     this.copySerial = 0;
   }
+  message(key, source, params = {}) {
+    const english = source.replace(/\{(\w+)\}/g, (_, name) => params[name] ?? '{' + name + '}');
+    return this.app.localizer ? this.app.localizer.text(key, english, params) : english;
+  }
+  markup(key, source, params = {}) {
+    const english = source.replace(/\{(\w+)\}/g, (_, name) => params[name] ?? '{' + name + '}');
+    return this.app.localizer ? this.app.localizer.html(key, english, params) : compactEscape(english);
+  }
+  explanation(owner, field, source, context = {}) {
+    if (!source) return '';
+    return this.app.localizer ? this.app.localizer.explainHtml(owner, field, source || '', {scenarioId:this.app.labModel?.id, variantId:this.app.lessonVariant, subfixtureId:this.app.lessonSubfixture, ...context}) : compactEscape(source || '');
+  }
+  count(key, count, source) {
+    return this.app.localizer ? this.app.localizer.plural(key, count, source, {count}) : source;
+  }
+  sourcePosition(projection, asHtml = false) {
+    const index = projection.held.cursor.eventIndex, render = (key, source, params) => asHtml ? this.markup(key, source, params) : this.message(key, source, params);
+    return index < 0 ? render('compact.position.before', 'Before step 1') : render('compact.position.source', 'Source event {event} / {total} - {milestone}', {event:index + 1, total:this.app.steps.length, milestone:projection.held.cursor.milestone});
+  }
+  progress(projection) {
+    return projection.queue.empty ? this.message('compact.progress.empty', 'No steps in this scope') : projection.initial ? this.count('compact.progress.initial', projection.rows.length, 'Before the first row - ' + projection.rows.length + ' rows') : this.message('compact.progress.row', 'Row {row} of {total}', {row:projection.position + 1, total:projection.rows.length});
+  }
+  queueLabel(queue, asHtml = false) { return this.app.studyQueueLabel(queue,asHtml); }
+  stepExplanation(row, field, source, asHtml = true) { return this.app.stepProse(row,field,source,asHtml); }
   mount(host) {
     this.host = host;
-    host.innerHTML = `<article class="compact-study" aria-label="Compact lesson reader">
+    const h = (key, source) => this.markup(key, source), a = (key, source) => compactEscape(this.message(key, source));
+    host.innerHTML = `<article class="compact-study" aria-label="${a('compact.reader.label', 'Compact lesson reader')}">
       <section class="compact-context" aria-labelledby="scenario-title">
         <p class="compact-kicker" id="compact-family"></p><h1 id="scenario-title"></h1>
         <p id="scenario-description"></p><p id="current-lesson-case" hidden></p>
         <h2 class="compact-purpose" id="learning-question"></h2><p id="learning-start"></p><div id="learning-boundary"></div>
         <p id="compact-profile"></p><p id="compact-environment-status"></p>
-        <div class="compact-actions"><button class="button quiet" data-compact-action="case">Change case</button><button class="button quiet" data-compact-action="find">Find lesson</button><button class="button quiet" id="copy-lesson-link" data-compact-action="copy-link">Copy lesson link</button></div>
-        <label id="lesson-link-manual" hidden>Copy the named lesson/case link (comparison controls use defaults)<input id="lesson-link-value" type="text" readonly aria-label="Named lesson and case link"></label>
-        <section id="lesson-inputs" class="lesson-inputs" aria-label="Selected lesson profile and case" hidden></section>
+        <div class="compact-actions"><button class="button quiet" data-compact-action="case">${h('compact.case.change', 'Change case')}</button><button class="button quiet" data-compact-action="find">${h('compact.lesson.find', 'Find lesson')}</button><button class="button quiet" id="copy-lesson-link" data-compact-action="copy-link">${h('compact.lesson.copyLink', 'Copy lesson link')}</button></div>
+        <label id="lesson-link-manual" hidden>${h('compact.lesson.manualLink', 'Copy the named lesson/case link (comparison controls use defaults)')}<input id="lesson-link-value" type="text" dir="ltr" translate="no" readonly aria-label="${a('compact.lesson.linkLabel', 'Named lesson and case link')}"></label>
+        <section id="lesson-inputs" class="lesson-inputs" aria-label="${a('compact.lesson.inputs', 'Selected lesson profile and case')}" hidden></section>
       </section>
       <section class="compact-current" aria-labelledby="compact-current-title">
         <p class="compact-kicker" id="compact-position"></p><p id="compact-scope"></p>
-        <button class="button quiet" data-compact-action="return" hidden>Return to journey</button>
-        <button class="button quiet" data-compact-action="field-definition" hidden>Back to selected field definition</button>
+        <button class="button quiet" data-compact-action="return" hidden>${h('compact.journey.return', 'Return to journey')}</button>
+        <button class="button quiet" data-compact-action="field-definition" hidden>${h('compact.field.backSelected', 'Back to selected field definition')}</button>
         <h2 id="compact-current-title" tabindex="-1" aria-describedby="compact-scope compact-position"></h2>
-        <p class="compact-operation" id="compact-operation"></p><p id="compact-actors"></p>
-        <h3>Described action</h3><p id="compact-action-summary"></p><p id="compact-action-detail"></p>
-        <section class="compact-observed" aria-labelledby="compact-result-title"><h3 id="compact-result-title">Observed at this prefix</h3><p id="compact-result"></p><div id="compact-observations"></div></section>
+        <p class="compact-operation" id="compact-operation"></p><p id="compact-actors" dir="ltr" translate="no"></p>
+        <h3>${h('compact.action.described', 'Described action')}</h3><p id="compact-action-summary"></p><p id="compact-action-detail"></p>
+        <section class="compact-observed" aria-labelledby="compact-result-title"><h3 id="compact-result-title">${h('compact.action.observed', 'Observed at this prefix')}</h3><p id="compact-result"></p><div id="compact-observations"></div></section>
       </section>
-      <section class="compact-playback" aria-label="Study playback controls"><p id="compact-playback-status"></p><div class="compact-playback-buttons"><button class="button quiet" data-compact-action="previous">Previous</button><button class="button primary" id="play" data-compact-action="play">Play</button><button class="button quiet" data-compact-action="next">Next</button></div><label class="compact-speed" for="compact-speed">Playback speed <select id="compact-speed"><option value="0">0 - paused speed</option><option value="0.5">0.5x</option><option value="1">1x</option><option value="1.5">1.5x</option><option value="2">2x</option><option value="3">3x</option></select></label><p class="compact-clock-note">Playback time is presentation time, not protocol time.</p></section>
-      <section class="compact-outcome" aria-label="Current decisions, failures and qualifications">
-        <p id="compact-qualification"></p><section id="lesson-decisions" class="lesson-decisions" aria-label="Current authored decisions" hidden></section>
-        <section id="windows-remote-evidence" class="windows-remote-evidence" aria-label="Target policy and before-after authorization context" hidden></section>
-        <section id="pam-configuration-panel" class="pam-configuration-panel" aria-label="PAM configuration and current evaluation" hidden></section>
-        <section id="lifetime-strip" class="lifetime-strip" aria-label="Independent protocol and credential lifetimes" hidden></section>
+      <section class="compact-playback" aria-label="${a('compact.playback.controls', 'Study playback controls')}"><p id="compact-playback-status"></p><div class="compact-playback-buttons"><button class="button quiet" data-compact-action="previous">${h('compact.playback.previous', 'Previous')}</button><button class="button primary" id="play" data-compact-action="play">${h('compact.playback.play', 'Play')}</button><button class="button quiet" data-compact-action="next">${h('compact.playback.next', 'Next')}</button></div><label class="compact-speed" for="compact-speed">${h('compact.playback.speed', 'Playback speed')} <select id="compact-speed" dir="ltr"><option value="0">${h('compact.playback.pausedSpeed', '0 - paused speed')}</option><option value="0.5">0.5x</option><option value="1">1x</option><option value="1.5">1.5x</option><option value="2">2x</option><option value="3">3x</option></select></label><p class="compact-clock-note">${h('compact.playback.clockNote', 'Playback time is presentation time, not protocol time.')}</p></section>
+      <section class="compact-outcome" aria-label="${a('compact.outcome.label', 'Current decisions, failures and qualifications')}">
+        <p id="compact-qualification"></p><section id="lesson-decisions" class="lesson-decisions" aria-label="${a('compact.decisions.label', 'Current authored decisions')}" hidden></section>
+        <section id="windows-remote-evidence" class="windows-remote-evidence" aria-label="${a('compact.windows.label', 'Target policy and before-after authorization context')}" hidden></section>
+        <section id="pam-configuration-panel" class="pam-configuration-panel" aria-label="${a('compact.pam.label', 'PAM configuration and current evaluation')}" hidden></section>
+        <section id="lifetime-strip" class="lifetime-strip" aria-label="${a('compact.lifetime.label', 'Independent protocol and credential lifetimes')}" hidden></section>
       </section>
-      <details class="compact-disclosure" data-compact-disclosure="data"><summary>Data and checks for this action</summary><div id="compact-data"></div></details>
-      <details class="compact-disclosure protocol-state-panel" id="protocol-state-panel" data-compact-disclosure="state" hidden>
-        <summary><strong>Current state and exact field-instance history</strong><span id="protocol-state-summary"></span></summary>
-        <p>Current state follows the canonical source prefix. The cumulative field-instance ledger is history, not current possession. Playback speed does not change protocol time. Private keys and opaque ciphertext are not decrypted by this lab.</p><h3>Field-instance history</h3><div id="protocol-instance-list"></div><h3>Current protocol state</h3><pre id="protocol-state-value"></pre>
+      <details class="compact-disclosure" data-study-key="compact:data" data-compact-disclosure="data"><summary>${h('compact.data.summary', 'Data and checks for this action')}</summary><div id="compact-data"></div></details>
+      <details class="compact-disclosure protocol-state-panel" id="protocol-state-panel" data-study-key="compact:state" data-compact-disclosure="state" hidden>
+        <summary><strong>${h('compact.state.summary', 'Current state and exact field-instance history')}</strong><span id="protocol-state-summary"></span></summary>
+        <p>${h('compact.state.boundary', 'Current state follows the canonical source prefix. The cumulative field-instance ledger is history, not current possession. Playback speed does not change protocol time. Private keys and opaque ciphertext are not decrypted by this lab.')}</p><h3>${h('compact.state.history', 'Field-instance history')}</h3><div id="protocol-instance-list"></div><h3>${h('compact.state.current', 'Current protocol state')}</h3><pre id="protocol-state-value" dir="ltr" translate="no"></pre>
       </details>
-      <details class="compact-disclosure" data-compact-disclosure="holdings"><summary>Participants, current holdings and exact object history</summary>
-        <section id="held-objects" class="compact-holdings" aria-label="Current logical-owner inventory"></section>
-        <section id="held-inspector" class="held-inspector" aria-label="Permission-scoped exact object inspector" hidden></section>
+      <details class="compact-disclosure" data-study-key="compact:holdings" data-compact-disclosure="holdings"><summary>${h('compact.holdings.summary', 'Participants, current holdings and exact object history')}</summary>
+        <section id="held-objects" class="compact-holdings" aria-label="${a('compact.holdings.label', 'Current logical-owner inventory')}"></section>
+        <section id="held-inspector" class="held-inspector" aria-label="${a('compact.inspector.label', 'Permission-scoped exact object inspector')}" hidden></section>
       </details>
-      <details class="compact-disclosure" data-compact-disclosure="fields"><summary>Field definitions and paths</summary>
-        <section id="compact-field-definition" role="region" tabindex="-1" aria-label="Selected field definition" hidden></section>
-        <section id="attribute-index" class="compact-field-index" aria-label="Field index" hidden><label for="attribute-search">Search field names and purpose across all lessons</label><input id="attribute-search" type="search" autocomplete="off"><div class="compact-actions" role="group" aria-label="Field browsing scope"><button class="button quiet" id="compact-field-scope-current" data-compact-field-scope="current" aria-pressed="true">Current lesson fields</button><button class="button quiet" id="compact-field-scope-global" data-compact-field-scope="global" aria-pressed="false">All global fields</button></div><div id="attribute-topics"></div><p id="attribute-index-meta" role="status" aria-live="polite"></p><div id="attribute-index-list"></div><button class="button quiet" id="compact-field-more" data-compact-field-more hidden>Show more fields</button><p id="attribute-index-empty" hidden>No matching fields.</p></section>
+      <details class="compact-disclosure" data-study-key="compact:fields" data-compact-disclosure="fields"><summary>${h('compact.fields.summary', 'Field definitions and paths')}</summary>
+        <section id="compact-field-definition" role="region" tabindex="-1" aria-label="${a('compact.field.selected', 'Selected field definition')}" hidden></section>
+        <section id="attribute-index" class="compact-field-index" aria-label="${a('compact.fields.index', 'Field index')}" hidden><label for="attribute-search">${h('compact.fields.search', 'Search field names and purpose across all lessons')}</label><input id="attribute-search" type="search" autocomplete="off"><div class="compact-actions" role="group" aria-label="${a('compact.fields.scope', 'Field browsing scope')}"><button class="button quiet" id="compact-field-scope-current" data-compact-field-scope="current" aria-pressed="true">${h('compact.fields.current', 'Current lesson fields')}</button><button class="button quiet" id="compact-field-scope-global" data-compact-field-scope="global" aria-pressed="false">${h('compact.fields.global', 'All global fields')}</button></div><div id="attribute-topics"></div><p id="attribute-index-meta" role="status" aria-live="polite"></p><div id="attribute-index-list"></div><button class="button quiet" id="compact-field-more" data-compact-field-more hidden>${h('compact.fields.more', 'Show more fields')}</button><p id="attribute-index-empty" hidden>${h('compact.fields.empty', 'No matching fields.')}</p></section>
       </details>
-      <details class="compact-disclosure" data-compact-disclosure="configuration"><summary>Current configuration and assumptions</summary><div id="compact-configuration"></div><button class="button quiet" data-compact-action="configuration">Edit configuration in Full</button></details>
-      <details class="compact-disclosure lesson-reference" id="lesson-reference" data-compact-disclosure="sources" hidden><summary>Profile, protocol detail and primary sources</summary>
-        <div id="lab-support" class="lab-support" hidden></div><section id="learning-profile" class="learning-profile" aria-label="Selected teaching profile and completion boundary" hidden><div id="learning-profile-content"></div>
-          <div class="learning-detail-controls" role="group" aria-label="Lesson detail"><button class="button quiet" id="learning-detail-journey" data-learning-detail="journey">Journey</button><button class="button quiet" id="learning-detail-fields" data-learning-detail="fields">Fields</button><button class="button quiet" id="learning-detail-crypto" data-learning-detail="crypto">Cryptographic detail</button></div><div id="learning-profile-crypto" hidden></div><div id="related-journeys" class="related-journeys" aria-label="Compare related journeys" hidden></div>
-        </section><details id="windows-security-comparison" class="windows-security-comparison" hidden><summary>Compare Windows security boundaries</summary><p>Each link opens its own configured lesson. No credential, token or session is transferred.</p><div id="windows-security-comparison-rows"></div></details>
+      <details class="compact-disclosure" data-study-key="compact:configuration" data-compact-disclosure="configuration"><summary>${h('compact.configuration.summary', 'Current configuration and assumptions')}</summary><div id="compact-configuration"></div><button class="button quiet" data-compact-action="configuration">${h('compact.configuration.edit', 'Edit configuration in Full')}</button></details>
+      <details class="compact-disclosure lesson-reference" id="lesson-reference" data-study-key="compact:sources" data-compact-disclosure="sources" hidden><summary>${h('compact.sources.summary', 'Profile, protocol detail and primary sources')}</summary>
+        <div id="lab-support" class="lab-support" hidden></div><section id="learning-profile" class="learning-profile" aria-label="${a('compact.profile.label', 'Selected teaching profile and completion boundary')}" hidden><div id="learning-profile-content"></div>
+          <div class="learning-detail-controls" role="group" aria-label="${a('compact.detail.label', 'Lesson detail')}"><button class="button quiet" id="learning-detail-journey" data-learning-detail="journey">${h('compact.detail.journey', 'Journey')}</button><button class="button quiet" id="learning-detail-fields" data-learning-detail="fields">${h('compact.detail.fields', 'Fields')}</button><button class="button quiet" id="learning-detail-crypto" data-learning-detail="crypto">${h('compact.detail.crypto', 'Cryptographic detail')}</button></div><div id="learning-profile-crypto" hidden></div><div id="related-journeys" class="related-journeys" aria-label="${a('compact.journeys.compare', 'Compare related journeys')}" hidden></div>
+        </section><details id="windows-security-comparison" data-study-key="compact:windows-security-comparison" class="windows-security-comparison" hidden><summary>${h('compact.windows.compare', 'Compare Windows security boundaries')}</summary><p>${h('compact.windows.boundary', 'Each link opens its own configured lesson. No credential, token or session is transferred.')}</p><div id="windows-security-comparison-rows"></div></details>
       </details>
-      <details class="compact-disclosure" data-compact-disclosure="overview"><summary>Steps in this scope and Full diagram</summary><p id="compact-queue-label"></p><div id="lesson-chapters" class="lesson-chapters" hidden></div><ol id="compact-queue" class="compact-queue"></ol><button class="button quiet" data-compact-action="diagram">Open Full diagram</button></details>
+      <details class="compact-disclosure" data-study-key="compact:overview" data-compact-disclosure="overview"><summary>${h('compact.overview.summary', 'Steps in this scope and Full diagram')}</summary><p id="compact-queue-label"></p><div id="lesson-chapters" class="lesson-chapters" hidden></div><ol id="compact-queue" class="compact-queue"></ol><button class="button quiet" data-compact-action="diagram">${h('compact.overview.open', 'Open Full diagram')}</button></details>
     </article>`;
     this.root = host.querySelector('.compact-study');
     const notification = this.app.refs.toast;
@@ -126,7 +154,7 @@ export class CompactView {
     }
     const attributes = ['id','data-compact-action','data-compact-row','data-compact-field-trace','data-holding-id','data-held-action','data-held-actor','data-index-attribute','data-trace-topic','data-attribute','data-learning-detail','data-instance-history'];
     for (const attribute of attributes) if (node.hasAttribute(attribute)) return {attribute, value:node.getAttribute(attribute)};
-    if (node.tagName === 'SUMMARY') return {summary:this.disclosureIdentity(node.parentElement)};
+    if (node.tagName === 'SUMMARY') { const summary = this.disclosureIdentity(node.parentElement); return summary ? {summary} : null; }
     return null;
   }
   findFocus(identity) {
@@ -159,21 +187,24 @@ export class CompactView {
     const app = this.app, projection = compactReadProjection(app, event);
     this.projection = projection;
     const {queue, held, row, position} = projection;
-    const key = JSON.stringify([app.heldView.contextId, held.cursor, queue.kind, position, projection.rowComplete, projection.sourceComplete, projection.playback, queue.empty, app.learningDetail, app.lessonVariant, app.lessonSubfixture, app.runtimeEnvironment.revision, app.heldView.selection?.holdingId, app.heldView.actorId, app.heldView.helpOpen]);
+    const key = JSON.stringify([app.localizer?.revision, app.heldView.contextId, held.cursor, queue.kind, position, projection.rowComplete, projection.sourceComplete, projection.playback, queue.empty, app.learningDetail, app.lessonVariant, app.lessonSubfixture, app.runtimeEnvironment.revision, app.heldView.selection?.holdingId, app.heldView.actorId, app.heldView.helpOpen]);
     this.renderPlayback(projection);
     if (key === this.semanticKey && reason === 'player') return;
     this.semanticKey = key;
-    this.text('compact-family', [app.labModel?.workspace || app.workspace || 'Core', app.labModel?.family || app.labModel?.protocol || app.applicationProtocol].filter(Boolean).join(' - '));
-    this.text('compact-position', projection.progress + ' - ' + projection.sourcePosition);
-    this.text('compact-scope', 'Active scope: ' + queue.label);
+    this.setHtml(this.node('compact-family'), [app.labModel?.workspace || app.workspace || 'Core', app.labModel?.family || app.labModel?.protocol || app.applicationProtocol].filter(Boolean).map(compactProtected).join(' - '));
+    this.setHtml(this.node('compact-position'), compactEscape(this.progress(projection)) + ' - ' + this.sourcePosition(projection, true));
+    this.setHtml(this.node('compact-scope'), this.markup('compact.scope.active', 'Active scope: ') + this.queueLabel(queue, true));
     this.root.querySelector('[data-compact-action="return"]').hidden = !queue.scoped;
-    this.text('compact-current-title', row?.title || 'No matching steps in this scope');
-    this.text('compact-operation', projection.operation + (row?.protocolLabel || row?.channel ? ' - ' + (row.protocolLabel || row.channel) : ''));
+    this.setHtml(this.node('compact-current-title'), row ? this.stepExplanation(row, 'title', row.title) : this.markup('compact.action.noSteps', 'No matching steps in this scope'));
+    const operation = !row ? this.markup('compact.operation.none', 'No action in this scope') : row.from === row.to ? this.markup('compact.operation.processing', 'Local processing') : channelCategory(row.channel) === 'ipc' ? this.markup('compact.operation.ipc', 'Local IPC') : /internal/i.test(row.channel || '') ? this.markup('compact.operation.internal', 'Internal exchange between logical components') : channelCategory(row.channel) === 'local' ? this.markup('compact.operation.local', 'Local exchange between logical participants') : channelCategory(row.channel) === 'human' ? this.markup('compact.operation.human', 'Human interaction') : channelCategory(row.channel) === 'passkey' ? this.markup('compact.operation.authenticator', 'Authenticator interaction') : channelCategory(row.channel) === 'unknown' ? this.markup('compact.operation.unknown', 'Exchange - transport not classified') : this.markup('compact.operation.network', 'Network transfer');
+    this.setHtml(this.node('compact-operation'), operation + (row?.protocolLabel || row?.channel ? ' - ' + compactProtected(row.protocolLabel || row.channel) : ''));
     this.text('compact-actors', row ? row.from === row.to ? (projection.from?.name || row.from) + ' (' + row.from + ')' : (projection.from?.name || row.from) + ' (' + row.from + ') → ' + (projection.to?.name || row.to) + ' (' + row.to + ')' : '');
-    this.text('compact-action-summary', projection.summary);
-    this.text('compact-action-detail', app.learningDetail === 'journey' && app.labModel?.profile ? '' : row?.protocolDetail || row?.detail || projection.authored?.protocolDetail || projection.authored?.detail || '');
-    this.text('compact-result', queue.empty ? 'No authored action matches this investigation. The canonical source prefix is retained; no outcome is inferred.' : held.cursor.eventIndex < 0 ? 'Before step 1. The described action has not been performed; any initial-history row represents configured starting state only.' : projection.initial ? 'Before the first row in this active scope. The described action has not yet been performed in this queue.' : projection.rowComplete ? 'This queue row has reached its mapped end boundary. Completion of this row does not imply authentication, admission or any later result.' : 'This action has not reached its mapped end boundary. Only evidence recorded at this canonical prefix is observed; later effects are not included.');
-    this.setHtml(this.node('compact-observations'), projection.actionObservations.length ? '<ul>' + projection.actionObservations.map(item => '<li><strong>' + compactEscape(app.studyActor(item.actorId)?.name || item.actorId) + ' - ' + compactEscape(item.kind) + ': ' + compactEscape(item.result) + '</strong>' + (item.detail ? '<p>' + compactEscape(item.detail) + '</p>' : '') + '</li>').join('') + '</ul>' : '<p>No additional authored observation is recorded for this source event at the current prefix. See the current decision evidence below.</p>');
+    const summaryField = app.labModel?.profile && app.learningDetail === 'journey' && row?.beginnerSummary ? 'beginnerSummary' : 'summary';
+    this.setHtml(this.node('compact-action-summary'), this.stepExplanation(row, summaryField, projection.summary));
+    const detailRow = row?.protocolDetail || row?.detail ? row : projection.authored, detailField = detailRow?.protocolDetail ? 'protocolDetail' : 'detail';
+    this.setHtml(this.node('compact-action-detail'), app.learningDetail === 'journey' && app.labModel?.profile ? '' : this.stepExplanation(detailRow, detailField, detailRow?.[detailField] || ''));
+    this.text('compact-result', queue.empty ? this.message('compact.result.empty', 'No authored action matches this investigation. The canonical source prefix is retained; no outcome is inferred.') : held.cursor.eventIndex < 0 ? this.message('compact.result.beforeSource', 'Before step 1. The described action has not been performed; any initial-history row represents configured starting state only.') : projection.initial ? this.message('compact.result.beforeScope', 'Before the first row in this active scope. The described action has not yet been performed in this queue.') : projection.rowComplete ? this.message('compact.result.complete', 'This queue row has reached its mapped end boundary. Completion of this row does not imply authentication, admission or any later result.') : this.message('compact.result.incomplete', 'This action has not reached its mapped end boundary. Only evidence recorded at this canonical prefix is observed; later effects are not included.'));
+    this.setHtml(this.node('compact-observations'), projection.actionObservations.length ? '<ul>' + projection.actionObservations.map(item => '<li><strong>' + compactProtected(app.studyActor(item.actorId)?.name || item.actorId) + ' - ' + compactProtected(item.kind) + ': ' + compactProtected(item.result) + '</strong>' + (item.detail ? '<p>' + this.explanation('observation:' + JSON.stringify([item.sourceEventId ?? item.eventId ?? app.steps[item.cursor?.eventIndex]?.id ?? item.cursor?.eventIndex, item.actorId, item.kind, item.requestId]), 'detail', item.detail, {observation:item}) + '</p>' : '') + '</li>').join('') + '</ul>' : '<p>' + this.markup('compact.observation.none', 'No additional authored observation is recorded for this source event at the current prefix. See the current decision evidence below.') + '</p>');
     this.renderContext();
     this.renderQueue(projection);
     this.renderData(projection);
@@ -186,18 +217,19 @@ export class CompactView {
     if (focus && !this.root.contains(document.activeElement)) this.findFocus(focus)?.focus({preventScroll:true});
     this.addCopyControls();
     const announcementKey = JSON.stringify([app.heldView.contextId,held.cursor,queue.kind,position]);
-    if (reason === 'player' && announcementKey !== this.announcementKey && !app.suppressStudyAnnouncement) app.refs['held-announcement'].textContent = projection.progress + '. ' + projection.sourcePosition + (row ? '. ' + row.title : '. No matching action.');
+    if (reason === 'player' && announcementKey !== this.announcementKey && !app.suppressStudyAnnouncement) app.refs['held-announcement'].textContent = this.progress(projection) + '. ' + this.sourcePosition(projection) + (row ? '. ' + this.stepExplanation(row, 'title', row.title, false) : this.message('compact.announcement.noAction', '. No matching action.'));
     this.announcementKey = announcementKey;
     if (['mount','switch'].includes(reason) && this.state.focus) this.findFocus(this.state.focus)?.focus({preventScroll:true});
   }
   onPlayer(event) { this.render('player', event); }
   renderPlayback(projection) {
     const play = this.root.querySelector('[data-compact-action="play"]');
-    if (play.textContent !== projection.playLabel) play.textContent = projection.playLabel;
+    const label = projection.playback === 'playing' ? this.message('compact.playback.pause', 'Pause') : projection.rowComplete && projection.position === projection.rows.length - 1 ? this.message('compact.playback.replay', 'Replay') : projection.initial ? this.message('compact.playback.play', 'Play') : this.message('compact.playback.resume', 'Resume');
+    if (play.textContent !== label) play.textContent = label;
     play.disabled = projection.queue.empty;
     this.root.querySelector('[data-compact-action="previous"]').disabled = projection.previousDisabled;
     this.root.querySelector('[data-compact-action="next"]').disabled = projection.nextDisabled;
-    this.text('compact-playback-status', (projection.queue.empty ? 'No matching rows' : projection.initial ? 'Before first row' : 'Row ' + (projection.position + 1) + ' / ' + projection.rows.length) + ' - ' + projection.playback);
+    this.setHtml(this.node('compact-playback-status'), (projection.queue.empty ? this.markup('compact.playback.noRows', 'No matching rows') : projection.initial ? this.markup('compact.playback.beforeRow', 'Before first row') : this.markup('compact.playback.row', 'Row {row} / {total}', {row:projection.position + 1, total:projection.rows.length})) + ' - ' + compactProtected(projection.playback));
     const speed = this.node('compact-speed'), value = String(this.app.player.speed);
     if (![...speed.querySelectorAll('option')].some(option => option.value === value)) {
       const option = document.createElement('option'); option.value = value; option.textContent = value + 'x'; speed.appendChild(option);
@@ -206,21 +238,24 @@ export class CompactView {
   }
   renderContext() {
     const app = this.app, model = app.labModel, profile = model?.profile, environment = app.runtimeEnvironment;
-    this.text('compact-profile', profile ? [profile.name,profile.version,profile.publicationStatus,profile.supportStatus].filter(Boolean).join(' - ') : 'Current Core configuration');
-    this.text('compact-qualification', [model?.status,model?.supportNote,profile?.implementation].filter(Boolean).join(' - '));
+    const owner = 'lesson:' + (model?.id || app.applicationProtocol);
+    this.setHtml(this.node('compact-profile'), profile ? [profile.name,profile.version,profile.publicationStatus,profile.supportStatus].filter(Boolean).map(compactProtected).join(' - ') : this.markup('compact.profile.core', 'Current Core configuration'));
+    this.setHtml(this.node('compact-qualification'), [model?.status ? compactProtected(model.status) : '', model?.supportNote ? this.explanation(owner, 'supportNote', model.supportNote) : '', profile?.implementation ? this.explanation(owner, 'profile.implementation', profile.implementation) : ''].filter(Boolean).join(' - '));
     const draftChanged = JSON.stringify(environment.draft) !== JSON.stringify(environment.applied);
-    this.text('compact-environment-status', (environment.active ? 'Custom context applied' : 'Using example context') + ' - revision ' + environment.revision + (draftChanged ? '. Unapplied configuration draft retained; playback uses the applied context.' : '. No unapplied context changes.'));
+    this.text('compact-environment-status', (environment.active ? this.message('compact.context.custom', 'Custom context applied') : this.message('compact.context.example', 'Using example context')) + this.message('compact.context.revision', ' - revision {revision}', {revision:environment.revision}) + (draftChanged ? this.message('compact.context.draftRetained', '. Unapplied configuration draft retained; playback uses the applied context.') : this.message('compact.context.noDraft', '. No unapplied context changes.')));
     const configuration = app.protocolConfig();
-    const rows = Object.entries(configuration).map(([key,value]) => '<dt>' + compactEscape(key) + '</dt><dd><code>' + compactEscape(compactValue(value)) + '</code></dd>').join('');
+    const raw = value => '<pre dir="ltr" translate="no" data-copy-raw-json="' + compactRaw(compactValue(value)) + '">' + compactEscape(compactValue(value)) + '</pre>';
+    const rows = Object.entries(configuration).map(([key,value]) => '<dt>' + compactProtected(key) + '</dt><dd><code dir="ltr" translate="no" data-copy-raw-json="' + compactRaw(compactValue(value)) + '">' + compactEscape(compactValue(value)) + '</code></dd>').join('');
     const provider = app.providerProfile;
-    this.setHtml(this.node('compact-configuration'), '<h3>Applied Core settings</h3><dl>' + rows + '</dl>' + (provider && app.upstream === 'external' ? '<h3>Provider profile</h3><p>' + compactEscape(provider.title || provider.id) + '</p>' : '') + '<h3>Applied context overrides</h3><pre>' + compactEscape(compactValue(environment.applied)) + '</pre><h3>Retained draft - not applied to playback</h3><pre>' + compactEscape(compactValue(environment.draft)) + '</pre>' + (profile?.assumptions?.length || model?.prerequisites?.length ? '<h3>Essential assumptions</h3><ul>' + [...new Set([...(model?.prerequisites || []),...(profile?.assumptions || [])])].map(item => '<li>' + compactEscape(item) + '</li>').join('') + '</ul>' : ''));
+    const assumptions = [...new Set([...(model?.prerequisites || []),...(profile?.assumptions || [])])];
+    this.setHtml(this.node('compact-configuration'), '<h3>' + this.markup('compact.configuration.core', 'Applied Core settings') + '</h3><dl>' + rows + '</dl>' + (provider && app.upstream === 'external' ? '<h3>' + this.markup('compact.configuration.provider', 'Provider profile') + '</h3><p>' + (provider.title ? this.explanation('provider:' + provider.id, 'title', provider.title) : compactProtected(provider.id)) + '</p>' : '') + '<h3>' + this.markup('compact.configuration.overrides', 'Applied context overrides') + '</h3>' + raw(environment.applied) + '<h3>' + this.markup('compact.configuration.draft', 'Retained draft - not applied to playback') + '</h3>' + raw(environment.draft) + (assumptions.length ? '<h3>' + this.markup('compact.configuration.assumptions', 'Essential assumptions') + '</h3><ul>' + assumptions.map(item => '<li>' + this.explanation(owner, model?.prerequisites?.includes(item) ? 'prerequisites' : 'profile.assumptions', item, {source:item}) + '</li>').join('') + '</ul>' : ''));
   }
   renderQueue(projection) {
-    this.text('compact-queue-label', projection.queue.label + '. Selecting a row inspects its exact mapped boundary without starting playback.');
-    const signature = JSON.stringify([this.app.heldView.contextId, projection.queue.kind, projection.rows.map(row => [row.id,row.title,row.sourceIndex,row.sourceStepId,row.heldCursorEnd])]);
+    this.text('compact-queue-label', this.queueLabel(projection.queue) + this.message('compact.queue.selectBoundary', '. Selecting a row inspects its exact mapped boundary without starting playback.'));
+    const signature = JSON.stringify([this.app.localizer?.revision, this.app.heldView.contextId, projection.queue.kind, projection.rows.map(row => [row.id,row.title,row.sourceIndex,row.sourceStepId,row.heldCursorEnd])]);
     if (signature !== this.queueSignature) {
       this.queueSignature = signature;
-      this.setHtml(this.node('compact-queue'), projection.rows.map((row,index) => '<li><button class="compact-queue-row" data-compact-row="' + index + '"><span>Row ' + (index + 1) + '</span><strong>' + compactEscape(row.title) + '</strong><span>' + compactEscape(row.sourceIndex === -1 || row.heldCursorEnd?.eventIndex === -1 ? 'Initial source boundary' : 'Source event ' + ((row.sourceIndex ?? this.app.steps.findIndex(step => step.id === (row.sourceStepId || row.id))) + 1)) + '</span></button></li>').join('') || '<li>No matching rows. Return to journey to leave this scope.</li>');
+      this.setHtml(this.node('compact-queue'), projection.rows.map((row,index) => '<li><button class="compact-queue-row" data-compact-row="' + index + '"><span>' + this.markup('compact.queue.row', 'Row {row}', {row:index + 1}) + '</span><strong>' + this.stepExplanation(row, 'title', row.title) + '</strong><span>' + (row.sourceIndex === -1 || row.heldCursorEnd?.eventIndex === -1 ? this.markup('compact.queue.initialBoundary', 'Initial source boundary') : this.markup('compact.queue.sourceEvent', 'Source event {event}', {event:(row.sourceIndex ?? this.app.steps.findIndex(step => step.id === (row.sourceStepId || row.id))) + 1})) + '</span></button></li>').join('') || '<li>' + this.markup('compact.queue.empty', 'No matching rows. Return to journey to leave this scope.') + '</li>');
       for (const button of this.node('compact-queue').querySelectorAll('[data-compact-row]')) button.dataset.compactStepIndex = button.dataset.compactRow;
     }
     for (const button of this.node('compact-queue').querySelectorAll('[data-compact-row]')) {
@@ -230,45 +265,47 @@ export class CompactView {
   }
   renderData(projection) {
     const node = this.node('compact-data');
-    if (!projection.row) { this.setHtml(node,'<p>No matching action in this scope.</p>'); return; }
+    if (!projection.row) { this.setHtml(node,'<p>' + this.markup('compact.data.noAction', 'No matching action in this scope.') + '</p>'); return; }
     const template = document.createElement('div');
     template.innerHTML = this.app.stepHtml(projection.row, projection.position);
     for (const element of template.querySelectorAll('.inspector-kicker,.inspector-title,.inspector-summary,.route-row,.channel-badge,.step-description,.replay-button,svg')) element.parentElement.removeChild(element);
     if (!projection.sourceComplete) {
       const checks = template.querySelector('.check-list'), fields = template.querySelector('.attribute-list');
-      this.setHtml(node, '<p>The source action has not completed at this prefix. No future payload or result is shown here. Inspect permission-scoped current holdings for values already available.</p>' + (checks ? '<h3>Authored checks - not a claim they passed</h3>' + checks.outerHTML : '') + (fields ? '<h3>Field definitions</h3>' + fields.outerHTML : ''));
+      this.setHtml(node, '<p>' + this.markup('compact.data.incomplete', 'The source action has not completed at this prefix. No future payload or result is shown here. Inspect permission-scoped current holdings for values already available.') + '</p>' + (checks ? '<h3>' + this.markup('compact.data.authoredChecks', 'Authored checks - not a claim they passed') + '</h3>' + checks.outerHTML : '') + (fields ? '<h3>' + this.markup('compact.data.fields', 'Field definitions') + '</h3>' + fields.outerHTML : ''));
     } else this.setHtml(node, template.innerHTML);
   }
   renderHoldings(projection) {
     const app = this.app, held = projection.held, compiled = app.heldView.compiled();
     const artifacts = new Map(held.artifacts.map(item => [item.artifactId,item]));
     const actors = compiled.actors;
-    const html = '<h3>Current holdings - not cumulative history</h3><p>' + compactEscape(projection.sourcePosition) + ' - protocol clock ' + compactEscape(held.protocolClock) + '. Possession is not acceptance or authority.</p>' + actors.map(id => {
+    const html = '<h3>' + this.markup('compact.holdings.current', 'Current holdings - not cumulative history') + '</h3><p>' + this.sourcePosition(projection, true) + this.markup('compact.holdings.clock', ' - protocol clock {clock}. Possession is not acceptance or authority.', {clock:held.protocolClock}) + '</p>' + actors.map(id => {
       const actor = app.studyActor(id), coverage = held.coverage.find(item => item.actorId === id), holdings = held.holdings.filter(item => item.actorId === id);
-      return '<details class="compact-owner" data-compact-owner="' + compactEscape(id) + '"' + (app.heldView.expanded.has(id) ? ' open' : '') + '><summary>' + compactEscape(actor?.name || id) + ' (' + compactEscape(id) + ') - ' + holdings.length + ' known holdings - ' + compactEscape(coverage?.status || 'not-modeled') + '</summary><p>' + compactEscape(actor?.role || '') + '</p>' + app.actorContextHtml(id) + '<p>Coverage: ' + compactEscape(coverage?.status || 'not-modeled') + '. Stores: ' + compactEscape((coverage?.stores || []).join(', ') || 'not declared') + '. ' + compactEscape((coverage?.gaps || []).map(gap => gap.reason).join(' ')) + '</p>' + (holdings.length ? '<ul class="compact-holding-list">' + holdings.map(holding => {
+      const gaps = (coverage?.gaps || []).map(gap => this.explanation('actor:' + id, 'coverage.gaps.reason', gap.reason, {gap})).join(' ');
+      return '<details class="compact-owner" data-study-key="compact:owner:' + compactEscape(id) + '" data-compact-owner="' + compactEscape(id) + '"' + (app.heldView.expanded.has(id) ? ' open' : '') + '><summary>' + compactProtected(actor?.name || id) + ' (' + compactProtected(id) + ') - ' + compactEscape(this.count('compact.holdings.count', holdings.length, holdings.length + ' known holdings')) + ' - ' + compactProtected(coverage?.status || 'not-modeled') + '</summary><p>' + compactProtected(actor?.role || '') + '</p>' + app.actorContextHtml(id) + '<p>' + this.markup('compact.holdings.coverage', 'Coverage: {status}. Stores: ', {status:coverage?.status || 'not-modeled'}) + (coverage?.stores?.length ? compactProtected(coverage.stores.join(', ')) : this.markup('compact.holdings.storesUndeclared', 'not declared')) + '. ' + gaps + '</p>' + (holdings.length ? '<ul class="compact-holding-list">' + holdings.map(holding => {
         const artifact = artifacts.get(holding.artifactId), expired = artifact?.expiresAt != null && held.protocolClock >= artifact.expiresAt;
-        return '<li><button class="compact-holding" data-holding-id="' + compactEscape(holding.holdingId) + '" aria-pressed="' + (app.heldView.selection?.holdingId === holding.holdingId) + '"><strong>' + compactEscape(artifact?.label || holding.artifactId) + '</strong><span>' + compactEscape(holding.store) + ' - ' + compactEscape(holding.representationId) + ' - ' + compactEscape(expired ? 'Expired - still held' : holding.retention) + '</span><code>' + compactEscape(holding.holdingId) + '</code></button></li>';
-      }).join('') + '</ul>' : '<p>' + (coverage?.status === 'complete' ? 'No currently held objects.' : 'No known holdings. This does not establish an empty inventory.') + '</p>') + '</details>';
+        return '<li><button class="compact-holding" data-holding-id="' + compactEscape(holding.holdingId) + '" aria-pressed="' + (app.heldView.selection?.holdingId === holding.holdingId) + '"><strong>' + (artifact?.label ? this.explanation('artifact:' + holding.artifactId, 'label', artifact.label) : compactProtected(holding.artifactId)) + '</strong><span>' + compactProtected(holding.store) + ' - ' + compactProtected(holding.representationId) + ' - ' + (expired ? this.markup('compact.holdings.expired', 'Expired - still held') : compactProtected(holding.retention)) + '</span><code dir="ltr" translate="no" data-copy-raw-json="' + compactRaw(holding.holdingId) + '">' + compactEscape(holding.holdingId) + '</code></button></li>';
+      }).join('') + '</ul>' : '<p>' + (coverage?.status === 'complete' ? this.markup('compact.holdings.none', 'No currently held objects.') : this.markup('compact.holdings.unknown', 'No known holdings. This does not establish an empty inventory.')) + '</p>') + '</details>';
     }).join('');
     this.setHtml(this.node('held-objects'), html);
     const inspector = this.node('held-inspector'); inspector.hidden = !app.heldView.selection;
     if (app.heldView.selection) {
       const moved = held.holdings.find(item => item.holdingId === app.heldView.selection.holdingId || item.actorId === app.heldView.selection.actorId && item.artifactId === app.heldView.selection.artifactId && item.representationId === app.heldView.selection.representationId && item.ordinal === app.heldView.selection.ordinal);
       if (moved) app.heldView.selection = {...app.heldView.selection,...moved};
-      this.setHtml(inspector, app.heldView.inspectionHtml(held));
+      this.setHtml(inspector, heldInspectionHtml(app.heldView.inspectionData(held), {contextId:app.heldView.contextId, helpOpen:app.heldView.helpOpen, objectTraceSelection:app.objectTraceSelection, localization:app.localizer, sourceSteps:app.steps, context:{scenarioId:app.labModel?.id, variantId:app.lessonVariant, subfixtureId:app.lessonSubfixture}}));
     }
   }
   disclosureIdentity(details) {
+    if (details.dataset.studyKey) return 'study:' + details.dataset.studyKey;
     if (details.dataset.compactDisclosure) return 'reader:' + details.dataset.compactDisclosure;
     if (details.dataset.compactOwner) return 'owner:' + details.dataset.compactOwner;
     for (const key of ['instanceHistory','pamDisclosure','dnssecHopId','remoteComparison']) if (details.dataset[key] != null) return key + ':' + details.dataset[key];
     if (details.id) return 'id:' + details.id;
-    const parent = details.parentElement.closest('details');
-    return (parent ? this.disclosureIdentity(parent) : 'section:' + (details.closest('[id]')?.id || 'reader')) + '/summary:' + (details.querySelector('summary')?.textContent || '').trim();
+    return null;
   }
   restoreDisclosures(root = this.root) {
     for (const details of root.querySelectorAll('details')) {
       const key = this.disclosureIdentity(details);
+      if (!key) continue;
       if (this.state.disclosures.has(key)) {
         const open = this.state.disclosures.get(key);
         if (details.hasAttribute('open') !== open) open ? details.setAttribute('open','') : details.removeAttribute('open');
@@ -278,16 +315,17 @@ export class CompactView {
     }
   }
   addCopyControls() {
+    if (this.copyRevision !== this.app.localizer?.revision) { this.copyValues.clear(); this.copyRevision = this.app.localizer?.revision; }
     for (const node of this.root.querySelectorAll('pre,code')) {
       let token = node.dataset.compactValue;
       const existing = token ? [...node.parentElement.querySelectorAll('[data-compact-copy]')].find(button => button.dataset.compactCopy === token) : null;
-      const value = node.textContent;
-      if (node.parentElement.closest('pre,button,summary') || !value || value === 'Not readable by this holder') { if (existing) existing.parentElement.removeChild(existing); continue; }
-      if (existing) { this.copyValues.set(token,value); continue; }
+      const value = node.hasAttribute('data-copy-raw-json') ? JSON.parse(node.dataset.copyRawJson) : node.dataset.copyRaw ?? node.textContent;
+      if (node.parentElement.closest('pre,button,summary') || node.hasAttribute('data-copy-disabled') || !value && !node.hasAttribute('data-copy-raw-json') && !node.hasAttribute('data-copy-raw')) { if (existing) existing.parentElement.removeChild(existing); continue; }
+      if (existing) { this.copyValues.set(token,value); existing.textContent = this.message('compact.copy.exact', 'Copy exact value'); continue; }
       token = String(++this.copySerial); node.dataset.compactValue = token;
       const button = document.createElement('button');
       this.copyValues.set(token,value); button.setAttribute('type','button'); button.setAttribute('class','button quiet compact-copy');
-      button.dataset.compactCopy = token; button.textContent = 'Copy exact value';
+      button.dataset.compactCopy = token; button.textContent = this.message('compact.copy.exact', 'Copy exact value');
       node.parentElement.appendChild(button);
     }
     const live = new Set([...this.root.querySelectorAll('[data-compact-copy]')].map(node => node.dataset.compactCopy));
@@ -297,7 +335,7 @@ export class CompactView {
     for (const icon of this.root.querySelectorAll('svg')) icon.parentElement.removeChild(icon);
     for (const region of this.root.querySelectorAll('.instance-table-scroll')) {
       region.setAttribute('role','region'); region.setAttribute('tabindex','0');
-      if (!region.hasAttribute('aria-label') && !region.hasAttribute('aria-labelledby')) region.setAttribute('aria-label',region.querySelector('caption')?.textContent || 'Detailed protocol evidence comparison');
+      if (!region.hasAttribute('aria-label') && !region.hasAttribute('aria-labelledby')) region.setAttribute('aria-label',region.querySelector('caption')?.textContent || this.message('compact.table.label', 'Detailed protocol evidence comparison'));
     }
   }
   pause() { if (this.app.player.status === 'playing') this.app.pauseForStudy(); }
@@ -382,9 +420,9 @@ export class CompactView {
     const target = this.node('compact-field-definition'),back = this.root.querySelector('[data-compact-action="field-definition"]');
     target.hidden = !this.selectedField; back.hidden = !this.selectedField;
     if (!this.selectedField) return;
-    target.setAttribute('aria-label',this.app.definition(this.selectedField).name+' field definition');
-    this.setHtml(target, this.app.attributeHtml(this.selectedField,true) + '<button class="button quiet" data-compact-field-trace="' + compactEscape(this.selectedField) + '">Follow this field path</button>');
-    back.textContent = 'Back to '+this.app.definition(this.selectedField).name+' definition';
+    target.setAttribute('aria-label',this.message('compact.field.definitionLabel', '{field} field definition', {field:this.app.definition(this.selectedField).name}));
+    this.setHtml(target, this.app.attributeHtml(this.selectedField,true) + '<button class="button quiet" data-compact-field-trace="' + compactEscape(this.selectedField) + '">' + this.markup('compact.field.follow', 'Follow this field path') + '</button>');
+    back.textContent = this.message('compact.field.backDefinition', 'Back to {field} definition', {field:this.app.definition(this.selectedField).name});
   }
   showField(id) {
     this.pause(); this.selectedField = id; this.renderFieldDefinition();
@@ -410,13 +448,15 @@ export class CompactView {
   }
   onInput(event) {
     if (event.target.id !== 'attribute-search') return;
-    this.pause(); this.app.attributeQuery = event.target.value; this.app.renderAttributeIndex(); this.decorateTables(); this.addCopyControls();
+    this.pause();this.app.attributeQuery=event.target.value;
+    if(event.isComposing||this.app.localeCompositions.has(event.target)){this.app.localeDeferredInputs.add(event.target);return;}
+    this.app.localeDeferredInputs.delete(event.target);this.app.renderAttributeIndex();this.decorateTables();this.addCopyControls();
   }
   onToggle(event) {
     const details = event.target;
     if (details.tagName !== 'DETAILS') return;
     const key = this.disclosureIdentity(details), previous = this.state.disclosures.get(key), open = details.hasAttribute('open');
-    this.state.disclosures.set(key,open);
+    if (key) this.state.disclosures.set(key,open);
     if (details.dataset.compactOwner) {
       const id = details.dataset.compactOwner;
       if (open) { this.app.heldView.actorId = id; this.app.heldView.expanded.add(id); } else this.app.heldView.expanded.delete(id);
@@ -441,6 +481,7 @@ export class CompactView {
     target?.scrollIntoView({block:'nearest',behavior:'auto'});
   }
   onKey(event) {
+    if(event.isComposing||event.keyCode===229||this.app.localeCompositions.has(event.target))return;
     if (event.key !== 'Escape') return;
     if (this.app.heldView.helpOpen && event.target.closest('[data-compact-disclosure="holdings"]')) {
       this.setHelpOpen(false);
@@ -454,7 +495,7 @@ export class CompactView {
   unmount() {
     if (!this.root) return;
     this.state.focus = this.focusIdentity(document.activeElement) || this.state.focus;
-    for (const details of this.root.querySelectorAll('details')) this.state.disclosures.set(this.disclosureIdentity(details),details.hasAttribute('open'));
+    for (const details of this.root.querySelectorAll('details')) { const key = this.disclosureIdentity(details); if (key) this.state.disclosures.set(key,details.hasAttribute('open')); }
     this.notification.parent.insertBefore(this.notification.node,this.notification.nextSibling);
     this.notification = null;
     for (const [type, listener, capture] of this.listeners) this.root.removeEventListener(type,listener,capture);

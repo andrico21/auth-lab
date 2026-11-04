@@ -1,5 +1,5 @@
 /** Logical focus targets survive the inspector and attribute index being rebuilt. */
-const focusTargetRegions=['inspector','attribute-index','actor-popup','actors','lab-cards'];
+const focusTargetRegions=['inspector','attribute-index','actor-popup','attribute-popup','actors','lab-cards'];
 const focusTargetAttributeId=node=>node?.getAttribute?.('data-index-attribute')||node?.getAttribute?.('data-attribute')||null;
 const focusTargetFind=(root,selector,value,attribute)=>{
   if(!root||value==null)return null;
@@ -36,13 +36,16 @@ export function captureFocusTarget(root,node){
   const region=focusTargetRegions.find(id=>root.querySelector('#'+id)?.contains(trigger))||null;
   const card=trigger.closest?.('[data-actor]');
   const actorId=card?.getAttribute('data-actor')||(region==='actor-popup'?root.actorAnchor?.getAttribute('data-actor'):null)||null;
+  const control=region==='actor-popup'||region==='attribute-popup'?node.closest?.('.source-link[href], [data-close]'):null;
+  const popupControl=control?Object.freeze(control.hasAttribute('data-close')?{kind:'close'}:{kind:'source',href:control.getAttribute('href')}):null;
   return Object.freeze({
     attributeId:focusTargetAttributeId(trigger),
     topicId:trigger.getAttribute?.('data-trace-topic')||null,
     actorId,
     scenarioId:trigger.getAttribute?.('data-lab-scenario')||null,
     region,
-    elementId:trigger.id||null
+    elementId:trigger.id||null,
+    ...(popupControl?{popupControl}:{})
   });
 }
 
@@ -55,6 +58,10 @@ export function resolveFocusTarget(root,descriptor,{attributeId,fallbackSelector
   if(preferIndex){const node=indexTarget();if(node&&isVisibleFocusTarget(root,node))return node;}
   if(target.region){
     const region=root.querySelector('#'+target.region);
+    if(target.popupControl){
+      const control=target.popupControl.kind==='close'?region?.querySelector('[data-close]'):target.popupControl.kind==='source'?focusTargetFind(region,'.source-link[href]',target.popupControl.href,'href'):null;
+      if(control&&isVisibleFocusTarget(root,control))return control;
+    }
     const node=target.scenarioId?focusTargetFind(region,'[data-lab-scenario]',target.scenarioId,'data-lab-scenario')
       :target.topicId?focusTargetFind(region,'[data-trace-topic]',target.topicId,'data-trace-topic')
       :field?focusTargetFind(region,'[data-index-attribute], [data-attribute]',field,target.region==='attribute-index'?'data-index-attribute':'data-attribute')

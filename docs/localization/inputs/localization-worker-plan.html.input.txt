@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Auth Flow Studio · Localization worker plan</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  
+  <style>
+  :root{color-scheme:light;--ink:#173048;--muted:#536578;--accent:#00716b;--line:#d7e2e8;--paper:#fff;--wash:#f3f7f9}
+  *{box-sizing:border-box}html{scroll-padding-top:24px}body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:32px 40px 80px 316px;max-width:1540px}
+  header,main{max-width:1120px;margin:auto;background:var(--paper)}header{padding:38px 42px 28px;border-radius:18px 18px 0 0;border-top:6px solid var(--accent)}header h1{font-size:34px;line-height:1.16;letter-spacing:-.6px;margin:0 0 14px}header .subtitle{font-size:18px;color:var(--muted);margin:0 0 10px}header .date{font-size:14px;color:var(--muted);margin:0}main{padding:12px 42px 42px;border-radius:0 0 18px 18px}
+  nav#TOC{position:fixed;inset:28px auto 28px 22px;width:266px;overflow:auto;padding:20px 18px;background:#fff;border:1px solid var(--line);border-radius:14px;font-size:13px;line-height:1.5}nav#TOC::before{content:"LOCALIZATION PLAN";display:block;font-weight:750;letter-spacing:1.3px;color:var(--accent);margin-bottom:16px}nav ul{list-style:none;padding:0;margin:0}nav li{margin:0 0 12px}nav a{color:var(--ink);text-decoration:none}
+  h2{font-size:25px;line-height:1.25;margin:42px 0 18px;padding-top:18px;border-top:1px solid var(--line)}h2:first-child{margin-top:12px}h3{font-size:20px;line-height:1.3;margin:32px 0 12px}h3[id^="dns-r"]{padding:14px 17px;border-left:4px solid var(--accent);background:#edf7f5;border-radius:0 9px 9px 0}p{margin:12px 0}a{color:#006b78;text-underline-offset:3px}a:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}strong{font-weight:700}code{font:13px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf1f5;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}ul,ol{padding-left:24px}li{margin:7px 0}.table-scroll{width:100%;overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.55;margin:0}th{text-align:left;background:#18384a;color:#fff;font-weight:600}th,td{padding:12px 14px;vertical-align:top;border-bottom:1px solid var(--line)}td{overflow-wrap:anywhere}tr:last-child td{border-bottom:0}tbody tr:nth-child(even){background:#f5f8fa}td:first-child{min-width:110px}th p,td p{margin:0}.source-note{color:var(--muted);font-size:13px;margin-top:36px;border-top:1px solid var(--line);padding-top:16px}.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.plan-stats span{background:#e9f4f2;border:1px solid #c8e0da;color:#15564f;padding:4px 11px;border-radius:30px;font-size:13px;font-weight:650}
+  @media(max-width:1050px){body{padding:20px}nav#TOC{position:static;width:auto;max-height:none;max-width:1120px;margin:0 auto 20px}nav ul{columns:2;column-gap:25px}nav li{break-inside:avoid}header,main{padding-left:25px;padding-right:25px}}
+  @media(max-width:600px){body{padding:10px}header h1{font-size:27px}header,main{padding-left:17px;padding-right:17px}nav ul{columns:1}h2{font-size:22px}h3{font-size:18px}table{min-width:550px}.table-scroll{margin-left:0}body{font-size:15px}}
+  @media print{body{padding:0;max-width:none;background:white;font-size:10pt}nav#TOC{display:none}header,main{padding:0;border-radius:0;max-width:none}header{border-top:0}h2,h3{break-after:avoid}.table-scroll{overflow:visible}table{min-width:0!important;font-size:9pt}tr{break-inside:avoid}a{color:inherit}h2{margin-top:26px}code{font-size:8pt}}
+
+  pre{max-width:100%;max-height:480px;overflow:auto;padding:16px;background:#edf1f5;border:1px solid var(--line);border-radius:8px}
+  pre code{padding:0;background:none;white-space:pre;font-size:12px}
+  details{margin:16px 0;padding:14px;border:1px solid var(--line);border-radius:8px}
+  summary{cursor:pointer;font-weight:700;color:var(--accent);overflow-wrap:anywhere}
+  summary:focus-visible,pre:focus-visible,.table-scroll:focus-visible{outline:3px solid #c07a0c;outline-offset:3px}
+  @media print{pre{max-height:none;white-space:pre-wrap}pre code{white-space:pre-wrap}nav#TOC{display:none}}
+  </style>
+
+  <style>
+  main{min-width:0}a{overflow-wrap:anywhere}h3{color:#00645f}
+  main>p:first-of-type{font-size:18px;line-height:1.65}
+  tr[id^="loc-"] td:first-child{font-weight:750;color:#00645f}
+  td[lang="he"],td[lang="ar-AE"]{font-family:Arial,"Segoe UI",sans-serif;font-size:17px}
+  nav#TOC ul{padding-left:0}nav#TOC li{margin-bottom:10px}
+  @media print{table{font-size:8pt}td,th{padding:8px}main>p:first-of-type{font-size:11pt}}
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Auth Flow Studio · Localization worker plan</h1>
+<p class="subtitle">Seven translations · Protected technical vocabulary
+· Full and Compact</p>
+<p class="date">1 November 2026 · Document version 1</p>
+<div class="plan-stats"><span>7 translations + English</span><span>2 RTL languages</span><span>Technical names protected</span><span>20 work packages</span></div></header>
+<nav id="TOC" role="doc-toc" aria-label="Worker plan contents">
+<h2 id="toc-title">Implementation and acceptance</h2>
+<ul>
+<li><a href="#assignment-and-language-set" id="toc-assignment-and-language-set">1. Assignment and language
+set</a></li>
+<li><a href="#exact-translation-boundary" id="toc-exact-translation-boundary">2. Exact translation
+boundary</a></li>
+<li><a href="#baseline-and-concrete-source-findings" id="toc-baseline-and-concrete-source-findings">3. Baseline and concrete
+source findings</a></li>
+<li><a href="#architecture-and-catalog-contract" id="toc-architecture-and-catalog-contract">4. Architecture and catalog
+contract</a></li>
+<li><a href="#language-selection-and-state-preserving-switching" id="toc-language-selection-and-state-preserving-switching">5. Language
+selection and state-preserving switching</a></li>
+<li><a href="#corpus-coverage-and-translation-quality" id="toc-corpus-coverage-and-translation-quality">6. Corpus coverage and
+translation quality</a></li>
+<li><a href="#unicode-search-and-localized-hidden-tags" id="toc-unicode-search-and-localized-hidden-tags">7. Unicode search and
+localized hidden tags</a></li>
+<li><a href="#hebrew-and-arabic-layout-and-exact-technical-content" id="toc-hebrew-and-arabic-layout-and-exact-technical-content">8. Hebrew
+and Arabic: layout and exact technical content</a></li>
+<li><a href="#plurals-numbers-and-accessibility" id="toc-plurals-numbers-and-accessibility">9. Plurals, numbers and
+accessibility</a></li>
+<li><a href="#implementation-work-packages" id="toc-implementation-work-packages">10. Implementation work
+packages</a></li>
+<li><a href="#verification-and-acceptance-matrix" id="toc-verification-and-acceptance-matrix">11. Verification and
+acceptance matrix</a></li>
+<li><a href="#performance-caching-and-offline-delivery" id="toc-performance-caching-and-offline-delivery">12. Performance,
+caching and offline delivery</a></li>
+<li><a href="#worker-delivery-and-preserved-gates" id="toc-worker-delivery-and-preserved-gates">13. Worker delivery and
+preserved gates</a></li>
+<li><a href="#sources" id="toc-sources">14. Primary references</a></li>
+</ul>
+</nav>
+<main id="localization-worker-plan"><h2 id="assignment-and-language-set">1. Assignment and language set</h2>
+<p>Implement <strong>Russian, Ukrainian, Hebrew, German, Arabic (UAE),
+French and Polish</strong> for the human-facing explanatory layer of
+Auth Flow Studio. Retain English as the source of reference and an
+always-available language. Support both Full and Compact, including the
+offline standalone HTML.</p>
+<p>The user’s controlling constraint is: <strong>translate
+human-targeted explanations; do not change attribute names, RFC entities
+or other technical names.</strong> This plan includes human
+navigation/help/accessibility wording needed to use those explanations.
+It does not authorize translated protocol models, altered wire examples
+or renamed technical entities.</p>
+<p><strong>Worker input:
+<code>auth-flow-studio-localization-worker-plan.html</code>, document
+version 1.</strong> This is a new implementation assignment after the
+Compact closure. Complete the engineering work, catalogs and applicable
+validation across all seven languages; pilot stages below are
+implementation sequencing, not permission checkpoints or substitutes for
+the requested scope.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="1. Assignment and language set — table 1"><table>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Language</th>
+<th scope="col">Catalog / language tag</th>
+<th scope="col">Selector label</th>
+<th scope="col">Prose direction</th>
+<th scope="col">Editorial choice</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>English reference</td>
+<td><code>en</code></td>
+<td lang="en" dir="ltr">English</td>
+<td>LTR</td>
+<td>Existing wording and technical semantics remain the reference.</td>
+</tr>
+<tr class="even">
+<td>Russian</td>
+<td><code>ru</code></td>
+<td lang="ru" dir="ltr">Русский</td>
+<td>LTR</td>
+<td>Clear technical Russian; independent catalog.</td>
+</tr>
+<tr class="odd">
+<td>Ukrainian</td>
+<td><code>uk</code></td>
+<td lang="uk" dir="ltr">Українська</td>
+<td>LTR</td>
+<td>Clear Ukrainian; independent terminology and grammar.</td>
+</tr>
+<tr class="even">
+<td>Hebrew</td>
+<td><code>he</code></td>
+<td lang="he" dir="rtl">עברית</td>
+<td>RTL</td>
+<td>Contemporary technical Hebrew.</td>
+</tr>
+<tr class="odd">
+<td>German</td>
+<td><code>de</code></td>
+<td lang="de" dir="ltr">Deutsch</td>
+<td>LTR</td>
+<td>Standard German, with room for longer text.</td>
+</tr>
+<tr class="even">
+<td>Arabic (UAE)</td>
+<td><code>ar-AE</code></td>
+<td lang="ar-AE" dir="rtl">العربية (الإمارات)</td>
+<td>RTL</td>
+<td>Clear technical Modern Standard Arabic suitable for UAE readers; no
+assumed request for colloquial transliteration.</td>
+</tr>
+<tr class="odd">
+<td>French</td>
+<td><code>fr</code></td>
+<td lang="fr" dir="ltr">Français</td>
+<td>LTR</td>
+<td>Neutral technical French; no France-only restriction requested.</td>
+</tr>
+<tr class="even">
+<td>Polish</td>
+<td><code>pl</code></td>
+<td lang="pl" dir="ltr">Polski</td>
+<td>LTR</td>
+<td>Polish terminology, diacritics and grammatical forms.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Use BCP 47 tags, including <code>uk</code> rather than a country code
+and current <code>he</code> rather than authoring legacy
+<code>iw</code>. Region specificity is explicit only where requested.
+The tag/registry basis is <a href="#sources">S1–S3</a>. Native names are
+stable labels in the selector; optional English descriptors can aid
+recovery. Flags are not the language selector. No language is inferred
+from nationality, IP address or timezone.</p>
+<h2 id="exact-translation-boundary">2. Exact translation boundary</h2>
+<p>Classify content by meaning and use, not simply by JavaScript
+property names. A property called <code>title</code> may be a technical
+document title; a string in a state object may be explanatory evidence
+that must remain canonical internally.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="2. Exact translation boundary — table 2"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Content</th>
+<th scope="col">Treatment</th>
+<th scope="col">Examples and acceptance rule</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Human explanations</td>
+<td>Translate through a display overlay</td>
+<td>Learning question, prerequisites, summary, detail, cryptographic
+interpretation, purpose, assumptions, limitations, failure explanation
+and help. Preserve all qualifications and conditions.</td>
+</tr>
+<tr class="even">
+<td>Human controls and accessibility text</td>
+<td>Translate</td>
+<td>Play/Previous/Next, explanation headings, search hints, empty
+states, tooltip prose, status announcements, accessible names. Keep
+control identities and actions unchanged.</td>
+</tr>
+<tr class="odd">
+<td>Scenario/group/chapter captions</td>
+<td>Translate the explanatory wording only</td>
+<td>Any embedded protocol, product, formal role, mechanism or RFC-entity
+name remains an exact protected fragment. IDs, routing and grouping
+membership remain unchanged.</td>
+</tr>
+<tr class="even">
+<td>Attribute names</td>
+<td><strong>Never translate or rewrite</strong></td>
+<td>Every existing definition <code>.name</code>, including names that
+look like ordinary English, stays exact. Translate the separate
+meaning/purpose/explanation.</td>
+</tr>
+<tr class="odd">
+<td>Formal names and technical identities</td>
+<td><strong>Never translate, transliterate or inflect the
+token</strong></td>
+<td><code>Kerberos</code>, <code>PKINIT</code>, <code>FAST</code>,
+<code>SPAKE2</code>, <code>SPAKE2+</code>, <code>Keycloak</code>,
+<code>OAuth 2.0</code>, <code>Authorization Server</code>,
+<code>Resource Server</code>, <code>KDC</code>, <code>TGT</code>,
+<code>RRSIG</code>, and all other inventoried formal entities. Translate
+adjacent explanations.</td>
+</tr>
+<tr class="even">
+<td>Authored participant names and formal roles</td>
+<td>Preserve canonical labels</td>
+<td>Existing actor <code>.name</code>/formal <code>.role</code>,
+account/domain/forest names and diagram identities remain exact. A
+separate <code>plainRole</code> explanation may be localized.</td>
+</tr>
+<tr class="odd">
+<td>Field, claim, parameter and schema names</td>
+<td><strong>Never translate</strong></td>
+<td><code>client_id</code>, <code>aud</code>, <code>iss</code>,
+<code>exp</code>, <code>iat</code>, <code>nonce</code>,
+<code>code_verifier</code>, JSON keys, XML element/attribute names,
+ASN.1 identifiers, OIDs, URI schemes and HTTP headers.</td>
+</tr>
+<tr class="even">
+<td>Status/decision literals</td>
+<td>Preserve canonical values; translate the explanation beside
+them</td>
+<td><code>PAM_SUCCESS</code>, <code>KDC_ERR_*</code>,
+<code>secure</code>, <code>insecure</code>, <code>bogus</code>,
+<code>indeterminate</code>, booleans, enum values, error codes, HTTP
+status codes. A UI playback label may translate; the internal
+<code>playing</code>/<code>paused</code> value may not.</td>
+</tr>
+<tr class="odd">
+<td>Configuration and operating-system names</td>
+<td>Preserve exact command/configuration text and official
+identifiers</td>
+<td><code>sudo</code>, <code>runas</code>, <code>pam.d</code>,
+<code>required</code>, <code>requisite</code>, <code>sufficient</code>,
+<code>optional</code>, <code>include</code>, <code>substack</code>,
+module names, registry paths, GPO/setting names, API/function names and
+flags. Explain them in the selected language.</td>
+</tr>
+<tr class="even">
+<td>Example values and serialized data</td>
+<td><strong>Byte/code-point exact</strong></td>
+<td>JWT/JWE, JSON/XML, PEM, signatures, hashes, hex/base64, URLs,
+hostnames, IP addresses, ports, SPNs, SIDs, DNS names, trust anchors,
+paths, account names, examples and clipboard payloads.</td>
+</tr>
+<tr class="odd">
+<td>Numbers and time</td>
+<td>Separate UI counters from technical data</td>
+<td>A human result count may be localized. Protocol timestamps, TTLs,
+versions, bit positions, lengths, algorithms, simulated clock values and
+numeric example syntax keep their canonical representation. Do not infer
+timezone or calendar changes from <code>ar-AE</code>.</td>
+</tr>
+<tr class="even">
+<td>Sources and quotations</td>
+<td>Preserve authority</td>
+<td>URLs, section references, RFC numbers, official titles, product
+versions and literal quotations remain exact. A separately labelled
+explanatory paraphrase may translate. Do not present a translated
+paraphrase as an exact RFC quotation.</td>
+</tr>
+<tr class="odd">
+<td>Machine metadata</td>
+<td>Never translate</td>
+<td>IDs, <code>data-*</code> values, routes, ARIA role/relationship
+tokens, shortcut identifiers, test hooks, state keys and selected-case
+identities.</td>
+</tr>
+</tbody>
+</table>
+</div><p>The examples above are <strong>not an exhaustive term list</strong>.
+Build a protected-term registry from the actual source, with explicit
+occurrence bindings. Preserve capitalization, punctuation, spacing and
+Unicode code points of protected fragments. Grammar may move a fragment
+within a translated sentence; it may not change the fragment or reverse
+the described relationship. Use surrounding words instead of attaching a
+translated inflection to an identifier.</p>
+<p>Mixed content must be split. For example, the existing PKCE
+explanation contains a formula and English teaching text in one code
+block. Keep the formula exact; put the explanation in a localized
+paragraph or explicit prose segment. Blanket translation and blanket
+exclusion of that whole block both fail this assignment.</p>
+<p>When classification is genuinely unresolved, keep the English
+occurrence intact, record the ambiguity and continue independent work.
+An unresolved occurrence is not a completed translation and must appear
+in the final coverage report. Do not guess a new technical term merely
+to achieve a percentage.</p>
+<h2 id="baseline-and-concrete-source-findings">3. Baseline and concrete
+source findings</h2>
+<p>The planning inspection used corrected-02, version 1.1.1, checkpoint
+<code>142fccdff9c452f6491b8886b83726bc188f49cd</code>, canonical
+source/test/build SHA-256
+<code>01f4f40fc980868085d7bcdc941e6cafd3a83de845f94f5c348c549eae6da430</code>,
+and standalone SHA-256
+<code>52479dd292643231ca5945c99fd2df41288d502de530013a07f08a28a93398a5</code>.
+MC-R01–07 are independently closed for that candidate.</p>
+<p>Start from the worker’s actual current checkout, including any
+documentation-only closure acknowledgment. Record its identities and
+reconcile the diff from the reviewed candidate. Do not reset newer work
+to this checkpoint or pretend the old hash identifies new localization
+code. Preserve the original Compact plan and closure authorities.</p>
+<p>The prior verified product exposes <strong>10,843 field
+definitions</strong>, and the worker’s compiled coverage enumerated
+<strong>328 choices</strong>. These are scale observations, not a count
+of translation messages or a new corpus inventory. A translated header
+plus a handful of lessons is insufficient.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="3. Baseline and concrete
+source findings — table 3"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source finding</th>
+<th scope="col">Required response</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>scenario-picker.js</code> uses <code>/[^a-z0-9+]+/g</code>
+after normalization</td>
+<td>Replace the ASCII-only search policy. Cyrillic, Hebrew and Arabic
+queries currently collapse to empty and can return all results. Preserve
+the intentional <code>SPAKE2</code> / <code>SPAKE2+</code>
+distinction.</td>
+</tr>
+<tr class="even">
+<td><code>studyDetailKey()</code> can use summary
+<code>textContent</code> as identity</td>
+<td>Give translatable disclosures stable presentation keys before
+language switching. Focus/open-state recovery must not depend on English
+wording.</td>
+</tr>
+<tr class="odd">
+<td>The footer chooses <code>LEARNING_NOTES</code> by exact English
+titles</td>
+<td>Use a stable external binding/selection registry; keep canonical
+source note objects intact and translate only their display. Audit
+similar text-equality dependencies.</td>
+</tr>
+<tr class="even">
+<td>Frozen held-state snapshots contain labels, reasons and observation
+prose</td>
+<td>Localize those explanations at rendering time. Do not translate the
+snapshot, compiled plan or semantic evidence.</td>
+</tr>
+<tr class="odd">
+<td>Attribute/object trace builders generate English titles and detail
+inside data rows</td>
+<td>Keep player rows canonical; map stable operation/owner references to
+localized display templates. Do not manufacture translated queues.</td>
+</tr>
+<tr class="even">
+<td>Presentation caches currently do not know about locale</td>
+<td>Add a display-only locale revision or invalidate affected render
+caches. Do not change scenario/context/compiled-model cache
+identity.</td>
+</tr>
+<tr class="odd">
+<td>Runtime/provider projection performs English substitutions</td>
+<td>Select the existing canonical branch first; supply typed context
+values to the localized message. Never run those English replacement
+expressions against translated sentences.</td>
+</tr>
+<tr class="even">
+<td><code>build.mjs</code> uses a fixed module order and custom
+wrapping</td>
+<td>Explicitly integrate catalog/runtime modules and test the emitted
+artifact. Do not assume dynamic imports or fetched JSON work in
+standalone <code>file:</code> mode.</td>
+</tr>
+</tbody>
+</table>
+</div><p>No product implementation or translation catalog was changed while
+preparing this plan.</p>
+<h2 id="architecture-and-catalog-contract">4. Architecture and catalog
+contract</h2>
+<p>Use one presentation-only localization service. English models,
+cases, protocol engines, the player, state projection and held-object
+evidence remain shared. Do not put locale into
+<code>protocolConfig()</code>, scenario selection,
+<code>runtimeEnvironment.revision</code>, compiled-plan identities,
+canonical snapshots or route identities. Do not make
+<code>definition()</code> return a translated object that existing
+semantic/search code might consume.</p>
+<h3 id="inventory-and-stable-references">Inventory and stable
+references</h3>
+<p>Create an occurrence manifest covering every human-facing string and
+generated message branch. Bind each occurrence to a stable semantic
+owner, source module/export or renderer, field path,
+case/variant/subfixture context, exact English source fingerprint,
+classification and protected-parameter contract. Use an external
+occurrence registry where canonical records have no stable content ID.
+Array offsets or <code>t(englishText)</code> alone are not reliable
+identities.</p>
+<p>Keep separate counts for unique messages, display occurrences,
+generated templates, protected-only occurrences and case/context
+branches. Identical English wording in two different semantic contexts
+is not automatically the same translation unit. Deduplicate only when
+context and parameter contracts agree.</p>
+<h3 id="safe-messages-and-parameters">Safe messages and parameters</h3>
+<p>Use complete sentences with named typed placeholders, or a small
+restricted message tree. Catalogs contain text and approved structural
+tokens, not arbitrary HTML, JavaScript, CSS or URLs. Do not introduce a
+general-purpose runtime template evaluator or <code>eval</code>.</p>
+<p>Suggested namespaces include <code>ui.*</code>,
+<code>lesson.&lt;scenarioId&gt;.*</code>,
+<code>field.&lt;attributeId&gt;.*</code>,
+<code>actor.&lt;id&gt;.*</code>, and
+<code>evidence.&lt;ownerId&gt;.*</code>. A generated message
+additionally identifies its operation kind and stable occurrence. The
+worker may choose equivalent names, but must deliver the mapping and
+validation contract.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Safe messages and parameters — table 4"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Parameter kind</th>
+<th scope="col">Source and rendering rule</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Protected entity / attribute name</td>
+<td>Read exact canonical value; renderer supplies nontranslation and
+directional markup. Translator cannot supply a replacement value.</td>
+</tr>
+<tr class="even">
+<td>Exact example / protocol value</td>
+<td>Read only already-authorized projected data; escape for display and
+copy from the raw source. Translation must not widen what the actor can
+inspect.</td>
+</tr>
+<tr class="odd">
+<td>UI count</td>
+<td>Typed number; locale-specific grammatical selection, separately
+controlled visual formatting. Never parse it back from rendered
+text.</td>
+</tr>
+<tr class="even">
+<td>Human text / nested explanation</td>
+<td>Resolve another declared message with its own source binding. Do not
+conceal an unclassified raw string inside a placeholder.</td>
+</tr>
+<tr class="odd">
+<td>Source link</td>
+<td>Destination and formal citation remain canonical; translate only an
+approved generic action label such as opening the source.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Validate placeholder names, types and required occurrences in every
+message and plural branch. Permit grammatical ordering; reject
+missing/extra protected references or changed literal values.
+Renderer-owned emphasis, links and code spans must have safe escaping. A
+string containing <code>&lt;script&gt;</code>,
+<code>&lt;/script&gt;</code>, quotes or markup-like protocol content is
+data and must not become executable or break the standalone file.</p>
+<p>Do not translate by walking every string property, replacing
+substrings in the DOM, translating <code>innerHTML</code>, using a
+MutationObserver as the localization engine, or passing canonical data
+through a translation service. <code>translate="no"</code> is useful
+output metadata, <strong>not</strong> the enforcement mechanism;
+protected-reference tests enforce the application’s contract. HTML
+semantics are documented in <a href="#sources">S4</a>.</p>
+<h3 id="staleness-fallback-and-completeness">Staleness, fallback and
+completeness</h3>
+<p>Each translation is bound to the English source fingerprint and its
+parameter/term contract. If English meaning or parameters change, mark
+the translation stale. Do not keep displaying an old translation merely
+because the key still exists.</p>
+<p>Runtime fallback is the exact English occurrence, visibly intact and
+marked with English language/direction where appropriate. Never fall
+back from Ukrainian to Russian or Hebrew to Arabic. The
+<code>ar-AE</code> catalog may share build-time Arabic resources, but
+must be complete and independently validated for the requested locale. A
+malformed stored locale safely resolves to English.</p>
+<p>Fallback is resilience, not completion: per locale, report
+translated-current, missing, stale, ambiguous, deliberately protected,
+author-reviewed and human-reviewed counts separately. Require
+<strong>zero missing/stale allowlisted prose and zero protected-token
+violations</strong> for engineering completion. English-identical
+strings require explicit justification, rather than automatically
+counting as translated prose. Development pseudolocales are test tools,
+not additional advertised languages.</p>
+<h2 id="language-selection-and-state-preserving-switching">5. Language
+selection and state-preserving switching</h2>
+<p>Put a clearly labelled language selector in the shared shell,
+available in Full and Compact. Keep all eight language choices visible
+through recognizable native names. Use a native select or an
+equivalently accessible control without adding a second custom
+interaction system unnecessarily. Always offer a recognizable
+<code>English</code> recovery choice.</p>
+<p>Initial policy: <strong>a valid explicit saved choice, otherwise
+English</strong>. Persist only the chosen allowlisted language tag under
+a separate versioned locale preference. Handle denied storage, invalid
+data and standalone <code>file:</code> behavior gracefully. Do not
+auto-switch on browser-language changes or resize. Existing lesson links
+and route serialization stay unchanged; locale-bearing share links are
+outside this assignment.</p>
+<p>The explicit language-change transaction must:</p>
+<ol type="1">
+<li>Validate the requested locale; an unchanged selection is a no-op. If
+an input is composing text, defer a destructive refresh until
+composition commits or cancels; never commit a scenario through an IME
+keystroke.</li>
+<li>If playing, pause through the existing player path. Capture the
+<strong>postpause</strong> cursor and state. This follows the existing
+presentation-switch policy; do not automatically resume after changing
+language.</li>
+<li>Preserve lesson/case/variant/subfixture/profile, chapter, exact
+queue object and kind, position/elapsed/speed, protocol clock, runtime
+drafts/applied values, selected actor/field/holding/object/connection
+history, disclosure/help state and both picker drafts.</li>
+<li>Update only the display locale, appropriate
+<code>lang</code>/<code>dir</code>, mounted text and locale-sensitive
+caches. Do not call setup/selection routines that rebuild a scenario,
+reset playback or evaluate a different model. Keep one active
+presenter.</li>
+<li>Reindex only what needs the new locale. Keep raw query bytes;
+restore the active result by stable ID if it still matches. Otherwise
+use an explicit nonselecting state. Enter must never activate a stale
+invisible result. Cancelled and empty drafts remain
+cancelled/empty.</li>
+<li>Keep focus on the surviving language control after an explicit
+selection. Preserve logical disclosure and reading anchors; translated
+text height may change, so semantic position matters more than restoring
+a raw pixel offset. Automatic rerenders must not steal focus or
+repeatedly scroll.</li>
+<li>Announce at most one concise language-change status. Do not replay
+all historical observations as fresh live announcements. No new protocol
+evidence is produced by a locale change.</li>
+</ol>
+<p>Where a UI rerender replaces DOM, use stable presentation keys for
+restoration. Invalidate chapter, held-inspector, field-index, queue,
+detail, PAM, protocol-state and picker-node caches as applicable.
+Preserve the MC-R01–07 fixes, including Compact inline definitions, Full
+F2, help dismissal, nonempty drafts and 40-field batching.</p>
+<h2 id="corpus-coverage-and-translation-quality">6. Corpus coverage and
+translation quality</h2>
+<p>Translate the complete allowlisted explanatory corpus across all
+shipped groups and cases, including success, denial, fallback and
+incomplete/not-modeled states. This includes ordinary and advanced
+Web/OIDC/SAML/JWT flows; Kerberos/AD DS/forest trusts/PKINIT/FAST;
+Windows logon/elevation/filtering/protection; Linux/PAM/sudo and macOS;
+SMB/NFS/SSH/network/RADIUS/PAKE; Kubernetes authentication/RBAC; MCP;
+DNSSEC; and any other group present in the actual inventory. Inventory
+discovery, not this example list, defines completeness.</p>
+<p>Include text in hidden disclosures, help panels, attribute
+definitions, actor explanations, crypto detail, state/history tables,
+credential inventories, representation permissions, coverage gaps,
+source qualifications, comparison cards, tooltips, placeholders,
+accessible names and live messages. A string is not exempt merely
+because the default lesson does not render it.</p>
+<p>Create a glossary and short style sheet for each language. Keep
+technical names protected, use natural surrounding prose, and choose
+consistent words for teaching concepts. Russian and Ukrainian need
+independent authoring/review; Polish is not a grammatical variant of
+either. Avoid unsupported certainty, dropped negation, softened
+requirements and invented explanations.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="6. Corpus coverage and
+translation quality — table 5"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Meaning that must survive translation</th>
+<th scope="col">Required semantic review examples</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Possession, validation and authorization are different</td>
+<td>A received or held object is not automatically verified, accepted or
+permission to act.</td>
+</tr>
+<tr class="even">
+<td>Source prefix and time matter</td>
+<td>“Not yet observed,” expired, absent, unknown and not modeled must
+not become equivalent. Later checks must not appear completed
+early.</td>
+</tr>
+<tr class="odd">
+<td>Authentication is distinct from authorization</td>
+<td>Kubernetes authentication/impersonation/RoleBinding decisions;
+Windows target token and access checks.</td>
+</tr>
+<tr class="even">
+<td>Trust and direction matter</td>
+<td>Kerberos referrals, issuer/audience relationships, cross-forest
+trust direction, sender/recipient and delegation constraints.</td>
+</tr>
+<tr class="odd">
+<td>Protection mechanisms differ</td>
+<td>SMB signing versus encryption; TLS/transport encryption versus
+DNSSEC validation; Credential Guard versus token filtering.</td>
+</tr>
+<tr class="even">
+<td>Control flow matters</td>
+<td>PAM <code>required</code>, <code>requisite</code>,
+<code>sufficient</code>, <code>optional</code>, bracket actions,
+<code>include</code> and <code>substack</code>; UAC consent versus
+credential entry.</td>
+</tr>
+<tr class="odd">
+<td>Formal result labels stay distinct</td>
+<td>DNSSEC
+<code>secure</code>/<code>insecure</code>/<code>bogus</code>/<code>indeterminate</code>;
+JWT invalid versus unsupported/unknown; NTLM fallback conditions.</td>
+</tr>
+<tr class="even">
+<td>Normative source and demo policy differ</td>
+<td>Retain whether behavior is required by a specification, a product
+profile, explicit configuration, model assumption or limitation.</td>
+</tr>
+</tbody>
+</table>
+</div><p>For every locale, perform a technical bilingual review of a
+cross-family sample covering the distinctions above. Track the exact
+reviewed keys, reviewer/method, source version and corrections.
+Automated translation, back-translation and token checks can help; none
+alone establishes correct meaning or fluent human comprehension. Report
+draft/author review, independent technical review, qualified language
+review and actual screen-reader review separately.</p>
+<p>If a qualified human reviewer is unavailable, finish the
+implementation and machine checks and report that review as unperformed.
+Do not invent native approval, silently omit the language or leave the
+entire engineering assignment unfinished. Known wrong technical meaning
+remains a defect to fix before calling the locale complete; a reviewable
+candidate is not overall release acceptance.</p>
+<h2 id="unicode-search-and-localized-hidden-tags">7. Unicode search and
+localized hidden tags</h2>
+<p>This assignment must fix the current ASCII-only search normalization.
+Test actual native-script input through the public search handler.
+Translating placeholders while typing still works only in English is a
+failure.</p>
+<p>Preserve raw query/display strings. Build normalization and optional
+forgiving aliases only in separate search keys. Maintain Unicode
+letters/numbers; explicitly distinguish a truly empty/whitespace query
+from nonempty unmatched text. A query in an unsupported or unmatched
+script must not collapse to “show every scenario.”</p>
+<p>Retain the original English metadata and exact identifier path. Add
+selected-language titles/explanations and curated hidden aliases for
+learner concepts such as filtering, LSA, privilege elevation, trust,
+signing and verification. A small all-locale alias index may make known
+translated concepts discoverable across language changes; do not eagerly
+index seven copies of every long explanation on each keystroke. State
+the policy and test its ranking. Translation never selects or evaluates
+a lesson while typing.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="7. Unicode search and
+localized hidden tags — table 6"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Search family</th>
+<th scope="col">Required behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Existing technical/English queries</td>
+<td>Preserve discovery for <code>filtering</code>, <code>lsa</code>,
+<code>pam.d</code>, <code>PKINIT</code>, <code>FAST</code>,
+<code>SPAKE</code>, <code>client_id</code>, exact scenario/case IDs and
+the existing hidden-tag suite.</td>
+</tr>
+<tr class="even">
+<td>Significant syntax</td>
+<td><code>SPAKE2</code> and <code>SPAKE2+</code> remain distinct.
+Canonical identifier matching must not be weakened by broad
+punctuation/diacritic folding.</td>
+</tr>
+<tr class="odd">
+<td>Russian/Ukrainian</td>
+<td>Real Cyrillic queries work. Preserve Ukrainian <code>і</code>,
+<code>ї</code>, <code>є</code>, <code>ґ</code>; do not conflate distinct
+letters or reuse Russian translations as Ukrainian.</td>
+</tr>
+<tr class="even">
+<td>Hebrew/Arabic</td>
+<td>Real script and mixed script-plus-protocol queries work. Define
+optional vowel/diacritic handling in search copies only; do not strip
+meaningful display characters or rewrite identifiers.</td>
+</tr>
+<tr class="odd">
+<td>German/French</td>
+<td>Test umlauts, <code>ß</code>, French accents and agreed forgiving
+aliases. Do not apply a locale-sensitive transformation to canonical
+token identity.</td>
+</tr>
+<tr class="even">
+<td>Polish</td>
+<td>Test <code>ą ć ę ł ń ó ś ź ż</code>. Generic combining-mark removal
+does not handle <code>ł</code>; any <code>ł</code>/<code>l</code>
+convenience equivalence is an explicit prose-search policy.</td>
+</tr>
+<tr class="odd">
+<td>No results and IME</td>
+<td>Nonempty unmatched text yields a real empty result state;
+composition, Escape, clear, paste and Enter do not select stale/default
+lessons.</td>
+</tr>
+<tr class="even">
+<td>Cases and duplicates</td>
+<td>Preserve denial-only case matches, explicit multiple matching cases,
+stable IDs and tie order; repeated tags do not inflate rank. Identical
+translated captions do not merge distinct scenarios.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Use separate exact-identifier and prose/alias matching lanes.
+Original canonical matches keep priority; localized prose is additive.
+Update cache signatures for active catalog revision without touching
+models. Field lookup must search the active localized explanations and
+original names/English metadata, preserve all definitions and retain the
+current 40-item Compact batching behavior.</p>
+<h2 id="hebrew-and-arabic-layout-and-exact-technical-content">8. Hebrew
+and Arabic: layout and exact technical content</h2>
+<p>Set language and direction independently:
+<code>lang="he" dir="rtl"</code> and <code>lang="ar-AE" dir="rtl"</code>
+for the relevant application root; LTR for the others. For a standalone
+document, update document metadata; for a hosted component, do not
+change unrelated host-page content. Use HTML direction metadata and
+logical CSS spacing/alignment. <a href="#sources">S4–S5</a> describe the
+underlying behavior.</p>
+<p>Use tightly wrapped directional boundaries for mixed text. A
+protected inline name can render as
+<code>&lt;bdi dir="ltr" translate="no"&gt;client_id&lt;/bdi&gt;</code>.
+Direction for genuinely unknown human input can use
+<code>dir="auto"</code>; do not rely on first-character guessing for
+known technical values. Apply the markup to complete phrases with
+internal punctuation intact. <a href="#sources">S6</a></p>
+<p>The following are product requirements, not claims that a standard
+mandates this application’s particular graph design:</p>
+<ul>
+<li><strong>Keep protocol geometry and chronology fixed.</strong> No
+global SVG/canvas mirroring, <code>scaleX(-1)</code>, array reversal or
+string reversal. Sender, receiver, arrowheads, actor positions, bit/byte
+order, queue order and time direction retain their canonical
+meaning.</li>
+<li>Give code/configuration blocks, raw payloads, URLs, SPNs, DNS names,
+hashes and exact technical values an explicit LTR reading context.
+Localized explanations inside or beside those regions get their own
+prose direction.</li>
+<li>Classify tables. Ordinary UI tables may follow the interface
+direction; packet layouts, time sequences, sender/receiver comparisons
+and technical ordering need explicit fixed-direction containers.
+<code>dir="rtl"</code> can change table column flow, so a root attribute
+alone is insufficient. <a href="#sources">S5</a></li>
+<li>Mirror spatial UI affordances only through an explicit icon policy.
+Navigation labels must still unambiguously mean Previous/Next; protocol
+arrows never inherit that policy. Do not reverse keyboard commands
+globally.</li>
+<li>Test punctuation, parentheses, slashes, dots, <code>:</code>,
+<code>=</code>, hyphens, negative values, step numbers, adjacent
+technical tokens and long unbroken identifiers in real browsers. Logical
+copied text must also be correct; a screenshot alone does not establish
+byte fidelity.</li>
+<li>Use suitable system/local font fallbacks, adequate line height and
+wrapping. Avoid uppercase/letter-spacing transformations that damage
+Arabic/Hebrew text. Verify Arabic joining and combining marks; do not
+insert spaces between letters to fit a card.</li>
+<li>Add no translation-only LRM/RLM/isolate/override characters to
+canonical strings, copied commands, exports or URLs. Render isolation
+with markup. Clipboard actions read canonical raw data, not decorated
+<code>innerText</code>.</li>
+</ul>
+<p>Use a diagnostic view for any suspicious invisible character
+introduced into translation catalogs. Reject unexpected bidi control
+characters in authored messages unless an exact, reviewed
+plain-text-only accessibility need is documented; that exception never
+permits modifying raw technical values. Retain meaningful original
+Unicode data without silently sanitizing the underlying model.</p>
+<h2 id="plurals-numbers-and-accessibility">9. Plurals, numbers and
+accessibility</h2>
+<p>Use full count messages with named parameters and established
+<code>Intl.PluralRules</code> behavior, checking supported/resolved
+locales in actual target runtimes. Do not concatenate an English suffix
+or use <code>count === 1</code> as the whole grammar. If required locale
+data is unavailable, provide a tested, explicitly versioned fallback
+rather than silently applying English rules. Avoid new/proposed API
+options merely because a living specification mentions them. <a href="#sources">S7</a></p>
+<p>CLDR 49 lists these cardinal categories; they describe selection
+categories, not interchangeable translated words. <a href="#sources">S8</a></p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="9. Plurals, numbers and
+accessibility — table 7"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Locale</th>
+<th scope="col">Cardinal categories to account for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>ar-AE</code> / Arabic rules</td>
+<td><code>zero</code>, <code>one</code>, <code>two</code>,
+<code>few</code>, <code>many</code>, <code>other</code></td>
+</tr>
+<tr class="even">
+<td><code>he</code></td>
+<td><code>one</code>, <code>two</code>, <code>other</code></td>
+</tr>
+<tr class="odd">
+<td><code>ru</code>, <code>uk</code>, <code>pl</code></td>
+<td><code>one</code>, <code>few</code>, <code>many</code>,
+<code>other</code>; each language has its own rules and wording</td>
+</tr>
+<tr class="even">
+<td><code>fr</code></td>
+<td><code>one</code>, <code>many</code>, <code>other</code></td>
+</tr>
+<tr class="odd">
+<td><code>de</code></td>
+<td><code>one</code>, <code>other</code></td>
+</tr>
+</tbody>
+</table>
+</div><p>Exercise
+<code>0, 1, 2, 3, 4, 5, 11, 12, 14, 21, 22, 25, 100, 101, 102, 1000000</code>,
+plus fractions where the UI permits them. Polish 21 must not borrow the
+Russian rule; French zero/large-number cases must not borrow English
+behavior. Pin the rule/reference version and record runtime/ICU
+differences instead of asserting every browser ships the newest CLDR
+data.</p>
+<p>Choose and document UI number formatting explicitly. For the initial
+technical-learning interface, retaining Latin digits for counts is
+acceptable and keeps comparisons readable; it is a product convention,
+not a claim about UAE locale defaults. Grammatical selection still uses
+the requested language. Technical numbers and serialized examples remain
+exact in every locale. Do not parse localized displayed numbers into the
+player or model.</p>
+<p>Translate visible and accessible wording together, including dynamic
+help, status and validation messages. The accessible name must contain
+the visible translated control label. IDs, <code>aria-controls</code>,
+roles and shortcut tokens remain unchanged. <a href="#sources">S9</a></p>
+<p>Make the predominant human language programmatically determinable;
+mark genuine fallback English passages appropriately. Technical
+terms/proper names have exceptions under WCAG language-of-parts
+guidance, so do not require a voice switch for every acronym. Accessible
+names may flatten inline language markup: actual pronunciation and
+comprehension need human checks. <a href="#sources">S10–S11</a></p>
+<p>Validate reflow at 320 CSS px/equivalent zoom, ordinary 390 px
+phones, desktop Full, 200% text enlargement and a 400% zoom/reflow
+check. Explanation text and controls must remain readable without
+clipping. Deliberately two-dimensional diagrams/tables may use contained
+scrolling, with readable cell content and keyboard access; this is not a
+blanket exemption for the whole page. <a href="#sources">S12–S13</a></p>
+<h2 id="implementation-work-packages">10. Implementation work
+packages</h2>
+<p>Maintain a response ledger keyed by these IDs. Sequence the phases,
+but continue automatically when dependencies are satisfied. Do not stop
+after infrastructure or the pilot and call all languages delivered.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="10. Implementation work
+packages — table 8"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">ID</th>
+<th scope="col">Work package</th>
+<th scope="col">Concrete completion evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd" id="loc-01">
+<td>LOC-01</td>
+<td>Freeze actual starting inputs and inherited gates</td>
+<td>Source/test/build identities, current checkout diff, original
+plan/closure references, no lost worker work.</td>
+</tr>
+<tr class="even" id="loc-02">
+<td>LOC-02</td>
+<td>Inventory every display occurrence and generated branch</td>
+<td>Machine-readable manifest, source fingerprints, family/surface
+totals and unresolved classifications.</td>
+</tr>
+<tr class="odd" id="loc-03">
+<td>LOC-03</td>
+<td>Define protected terms and immutable data paths</td>
+<td>Registry plus occurrence/placeholder contracts; every attribute name
+and canonical value accounted for.</td>
+</tr>
+<tr class="even" id="loc-04">
+<td>LOC-04</td>
+<td>Remove text-dependent presentation identities</td>
+<td>Stable disclosure/note bindings; English behavior and canonical
+models unchanged.</td>
+</tr>
+<tr class="odd" id="loc-05">
+<td>LOC-05</td>
+<td>Add localization service and safe renderer</td>
+<td>Typed message resolution, escaping, source-hash checks,
+deterministic fallback and no runtime network translation.</td>
+</tr>
+<tr class="even" id="loc-06">
+<td>LOC-06</td>
+<td>Extract English display messages without semantic drift</td>
+<td>Existing English tests pass; no canonical object/queue
+translation.</td>
+</tr>
+<tr class="odd" id="loc-07">
+<td>LOC-07</td>
+<td>Implement selector and locale transaction</td>
+<td>Saved-choice/English default, storage-failure handling, postpause
+invariants and focus/draft preservation.</td>
+</tr>
+<tr class="even" id="loc-08">
+<td>LOC-08</td>
+<td>Integrate Full/Compact and specialized renderers</td>
+<td>All inventoried surface classes connected; permission/prefix
+boundaries and previous seven fixes retained.</td>
+</tr>
+<tr class="odd" id="loc-09">
+<td>LOC-09</td>
+<td>Implement Unicode search and localized aliases</td>
+<td>Native-script queries, English/technical discovery, case ranking,
+IME and no-model-evaluation proofs.</td>
+</tr>
+<tr class="even" id="loc-10">
+<td>LOC-10</td>
+<td>Implement RTL and technical-direction boundaries</td>
+<td>Hebrew/Arabic mixed-content fixtures, stable graph/table semantics
+and exact clipboard output.</td>
+</tr>
+<tr class="odd" id="loc-11">
+<td>LOC-11</td>
+<td>Implement plurals and complete accessibility text</td>
+<td>Locale rule tests, no English-only accessible-label override, actual
+language metadata.</td>
+</tr>
+<tr class="even" id="loc-12">
+<td>LOC-12</td>
+<td>Build a complex LTR and RTL pilot</td>
+<td>German plus Hebrew or Arabic cover every surface class;
+pseudolocalization exposes expansion; pilot issues fixed before bulk
+authoring.</td>
+</tr>
+<tr class="odd" id="loc-13">
+<td>LOC-13</td>
+<td>Complete all seven catalogs and style/glossary files</td>
+<td>Russian, Ukrainian, Hebrew, German, Arabic UAE, French and Polish
+fully accounted for; no fallback counted as translation.</td>
+</tr>
+<tr class="even" id="loc-14">
+<td>LOC-14</td>
+<td>Review technical meaning and linguistic quality</td>
+<td>Key-level review ledger and corrections; explicit human-review
+status per language.</td>
+</tr>
+<tr class="odd" id="loc-15">
+<td>LOC-15</td>
+<td>Integrate offline catalogs with the fixed bundler</td>
+<td>Source, emitted HTTP and standalone file work with all languages;
+valid CSP and no remote catalog/font dependency.</td>
+</tr>
+<tr class="even" id="loc-16">
+<td>LOC-16</td>
+<td>Run static integrity and state/parity checks</td>
+<td>Protected text, placeholders, stale-source handling, canonical
+invariants, current English regressions.</td>
+</tr>
+<tr class="odd" id="loc-17">
+<td>LOC-17</td>
+<td>Run native layout/interaction/accessibility checks</td>
+<td>Actual locale/view/loader matrix, RTL/zoom/keyboard coverage,
+unavailable human/device cells disclosed.</td>
+</tr>
+<tr class="even" id="loc-18">
+<td>LOC-18</td>
+<td>Measure size, latency and resources</td>
+<td>Predeclared fixtures and sample rules; raw results and explicit
+dispositions, including inherited open conditions.</td>
+</tr>
+<tr class="odd" id="loc-19">
+<td>LOC-19</td>
+<td>Assemble a reviewable source/evidence delivery</td>
+<td>Exact build, catalog coverage, reports, preserved failed attempts
+and reproduction commands.</td>
+</tr>
+<tr class="even" id="loc-20">
+<td>LOC-20</td>
+<td>Independent review and final handoff</td>
+<td>Clear implemented/verified/reviewed/unperformed states; no inferred
+release acceptance or publication.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Suggested phases are LOC-01–04 inventory; LOC-05–12 architecture and
+pilots; LOC-13–15 complete catalogs/build; LOC-16–18 verification;
+LOC-19–20 review handoff. Translate in parallel only after the common
+glossary, protected-term contract and occurrence schema are stable.</p>
+<h3 id="integration-map">Integration map</h3>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Integration map — table 9"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Existing code area</th>
+<th scope="col">Expected integration</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>app.js</code> shared/full shells and
+<code>stepHtml()</code></td>
+<td>UI messages, localized explanatory spans, protected mixed content
+and shared step rendering.</td>
+</tr>
+<tr class="even">
+<td><code>attributeHtml()</code>, <code>actorHtml()</code>,
+<code>traceHtml()</code></td>
+<td>Prose-only overlays; preserve names, examples and underlying
+definitions/trace rows.</td>
+</tr>
+<tr class="odd">
+<td>Lesson/context/chapter/decision/PAM/Windows/protocol/lifetime
+renderers</td>
+<td>Per-field classification; typed context parameters and exact
+evidence/configuration values.</td>
+</tr>
+<tr class="even">
+<td><code>held-study-projection.js</code>,
+<code>held-object-view.js</code></td>
+<td>Display resolver for already permission-scoped explanations; no
+broadened inspection or changed snapshot.</td>
+</tr>
+<tr class="odd">
+<td><code>compact-view.js</code>, <code>full-view.js</code>,
+<code>study-controller.js</code>, focus helpers</td>
+<td>Locale-aware rendering/cache invalidation and stable preservation
+transaction.</td>
+</tr>
+<tr class="even">
+<td><code>scenario-picker.js</code>,
+<code>scenario-search-metadata.js</code></td>
+<td>Unicode matching, localized display/tag overlays, exact identifiers
+and unchanged selection semantics.</td>
+</tr>
+<tr class="odd">
+<td><code>styles.css</code>, overlay/popup measurement</td>
+<td>Logical UI spacing and RTL prose; preserve protocol geometry while
+remeasuring affected text containers.</td>
+</tr>
+<tr class="even">
+<td><code>build.mjs</code>, <code>index.html</code>, security
+policy</td>
+<td>Explicit inclusion/escaping of catalogs, language metadata and
+correct source/emitted CSP.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Suggested new modules are a locale registry/service, message
+resolver, display-binding registry and separate locale resources. Names
+may follow repository conventions. Avoid seven app forks, seven protocol
+catalogs or seven active presenters.</p>
+<h2 id="verification-and-acceptance-matrix">11. Verification and
+acceptance matrix</h2>
+<p>Define fixtures and expected outcomes before collection. Counts below
+are planned scopes, not results. Record actual candidate, locale,
+presentation, loader, runtime, producer, input hashes, outcomes and
+unperformed cells.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="11. Verification and
+acceptance matrix — table 10"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Lane</th>
+<th scope="col">Required scope</th>
+<th scope="col">Pass condition</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Static full-corpus catalog validation</td>
+<td>Every allowlisted occurrence/template/branch in all seven
+catalogs</td>
+<td>No missing/stale/unknown keys; correct parameter/term contract;
+protected-only entries excluded from prose-completion numerator.</td>
+</tr>
+<tr class="even">
+<td>Protected identity audit</td>
+<td>All technical names, values, canonical data paths, examples and
+source references</td>
+<td>Exact equality against frozen inputs; visible technical fragment and
+copy/export paths both checked.</td>
+</tr>
+<tr class="odd">
+<td>Source projection/state invariance</td>
+<td>Enumerate all current choices/cases, render localized overlays on
+the same canonical context</td>
+<td>Locale changes never rebuild/evaluate a different scenario or alter
+canonical snapshot/queue. Report actual enumerated coverage; do not
+multiply old corpus totals.</td>
+</tr>
+<tr class="even">
+<td>Generated-state boundary probes</td>
+<td>Initial, send/receive, pre-verification, verified/rejected, expiry,
+final, empty history and unreadable representation</td>
+<td>Same permission and source-prefix gating; explanatory language
+changes without inventing evidence.</td>
+</tr>
+<tr class="odd">
+<td>Ordinary browser smoke</td>
+<td><strong>8 locales × 2 presentations × 3 loaders = 48 planned
+cells</strong></td>
+<td>Source HTTP, emitted HTTP and standalone file: usable
+selected-language shell/lesson, protected value, search, selector and
+accessible label.</td>
+</tr>
+<tr class="even">
+<td>Locale-switch depth</td>
+<td>English↔︎each locale, <code>he</code>↔︎<code>ar-AE</code>, RTL↔︎LTR,
+repeated switching</td>
+<td>Postpause invariants, partial elapsed state, scopes, field/object
+inspection, help, drafts and current focus preserved.</td>
+</tr>
+<tr class="odd">
+<td>Real layout</td>
+<td>Compact 320/390 px, Full desktop, long-text and zoom fixtures</td>
+<td>No lost controls/explanations; RTL mixed text, technical tables and
+graph meaning correct. Native layout evidence separate from DOM harness
+evidence.</td>
+</tr>
+<tr class="even">
+<td>Search</td>
+<td>Actual Unicode input plus original English/identifier/case
+suite</td>
+<td>Correct results/no-results/ranking, no selected-scenario side
+effect, no IME or stale-result activation.</td>
+</tr>
+<tr class="odd">
+<td>Translation semantic sample</td>
+<td>Each language, every high-risk concept family in section 6</td>
+<td>Explicit reviewed keys and outcomes; no invented native/human
+acceptance.</td>
+</tr>
+<tr class="even">
+<td>Regression suite</td>
+<td>Current complete normal test command on final inputs, plus
+localization tests</td>
+<td>Existing assertions retained; failed attempts not overwritten;
+actual bounded command completes.</td>
+</tr>
+<tr class="odd">
+<td>Native/AT external coverage</td>
+<td>Available supported browsers/devices and language-capable assistive
+technology</td>
+<td>Record actual engine/device/voice/language and human comprehension
+observations; missing cells remain unperformed.</td>
+</tr>
+</tbody>
+</table>
+</div><p>The source projection lane should reuse each canonical evaluation and
+vary the display overlay; it must not create eight independent engines.
+Combine exhaustive catalog/source-binding validation with exercised
+render-family coverage. Trace dynamic messages back to the inventory; do
+not claim a string was exercised merely because a dictionary contains
+it. The emitted lane must use the exact shipped bundle, not a source
+substitute.</p>
+<p>Mandatory interaction fixtures include: view/language roundtrips
+during selected-action replay; exact-object and field parent histories;
+DNSSEC/MCP chapters and comparisons; SMB event-specific crypto text;
+help Close/Escape; nonempty, empty and whitespace picker visits; global
+field query/40→80 expansion; definition-first reading; paused
+Follow/Return; no repeated automatic scrolling; and Compact inline
+versus Full F2 semantics.</p>
+<p>Add negative tests for stale source fingerprints, missing/extra
+protected placeholders, unsafe translator markup, malformed locale
+preference, unavailable locale data, unmatched native-script queries and
+bidi contamination of clipboard data. A renderer must fail safely
+without corrupting the canonical model.</p>
+<p>Keep the existing 143 runnable test files as the English regression
+reference wherever possible. Any necessary assertion change must
+identify the intentionally changed human interface contract; do not
+blanket-rewrite snapshots or replace protected expected strings. Run the
+final complete command using the actual supported runtime with its
+existing in-process budgets and an independent outer bound. Do not
+revive the earlier unbounded runtime failure or silently enlarge
+timeouts to obtain a pass.</p>
+<p>Do not require unrelated Windows/DC or installed-PAM environment
+sweeps solely because display text changed. If implementation touches a
+protocol engine or semantic projector unexpectedly, stop treating that
+change as localization-only: isolate it, document the reason, and run
+appropriate semantic checks rather than hiding it in catalog work.</p>
+<h2 id="performance-caching-and-offline-delivery">12. Performance,
+caching and offline delivery</h2>
+<p>The reviewed standalone is 5,668,235 bytes before localization. Seven
+full explanatory catalogs may materially increase size. Measure the
+extracted corpus before selecting the packaging strategy and report
+per-locale raw/encoded bytes, total HTML bytes, parse/activation cost
+and retained memory. Compression ratio alone is not a startup
+measurement.</p>
+<p>Keep all shipped languages available offline, with no remote
+translation APIs, CDN runtime, remote fonts or locale fetch required. A
+reasonable starting design is bundled locale resources with only the
+selected catalog parsed/indexed on demand; evaluate the actual
+fixed-bundler constraints. If changing script layout, explicitly
+preserve boot/security tests and CSP. Do not work around a startup
+failure by leaving most explanations untranslated or requiring network
+access.</p>
+<p>Cache English plus the active display resources and only justified
+lightweight shared metadata. Bound inactive-locale caches; release
+obsolete rendered nodes. Avoid building seven full field indexes or
+seven models, especially on first keystroke. New search aliases must not
+trigger scenario evaluation.</p>
+<p>Predeclare representative Basic, dense protocol, long-text and RTL
+fixtures for English startup, saved-locale startup, first/repeated
+language changes, first/repeated search, field opening, and both
+Full/Compact switch directions. Include source HTTP, emitted HTTP and
+standalone file. Measure ready only when the selected-language
+explanation and controls are usable, not when an English/empty shell
+appears.</p>
+<p>Retain the established method where comparable: seven measured
+samples per arm/feature, separately retained warmups, alternating paired
+order for comparisons, uninstrumented timing and separate diagnostics.
+The existing ordinary targets are <strong>250 ms median / 500 ms
+maximum</strong>. Existing classification uses a material increase
+strictly above 25% <strong>and</strong> above 100 ms for startup or 50
+ms for interaction; variation uses range/median strictly above 25%
+<strong>and</strong> range above the same absolute bound. Preserve those
+definitions for comparable rows; explicitly predeclare any genuinely new
+measurement definition before collection.</p>
+<p>The immediate localization baseline is the actual frozen
+pre-localization candidate. Retain older baselines for their original
+comparisons. Do not use faster Compact results to offset Full
+regressions or average away one locale’s failure. Record all new flags
+and dispositions without an inferred waiver. Test repeated language and
+presentation switches for listeners, timers, observers, nodes,
+catalog/index retention and qualified heap growth.</p>
+<p>The previous 1.7–1.8 second Compact→Full medians remain an open
+inherited usability concern. Localization is not permission to ignore or
+silently accept them. A new catalog strategy must not erase the old
+record or label later measurements as the earlier collection.</p>
+<h2 id="worker-delivery-and-preserved-gates">13. Worker delivery and
+preserved gates</h2>
+<p>Use <code>docs/localization/</code> or an equivalent clearly named
+documentation group. Deliver one exact entry point and a compact
+reviewable packet rather than an opaque giant historical archive.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="13. Worker delivery and
+preserved gates — table 11"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Deliverable</th>
+<th scope="col">Minimum contents</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>START-HERE.md</code></td>
+<td>Exact final source/HTML identities, version/runtime, plan reference,
+read order, actual verification and remaining conditions.</td>
+</tr>
+<tr class="even">
+<td>Occurrence inventory and protected-term registry</td>
+<td>Full source bindings, classifications, placeholders, contexts,
+fingerprints and unresolved decisions.</td>
+</tr>
+<tr class="odd">
+<td>Seven catalogs plus reference/glossaries</td>
+<td><code>ru</code>, <code>uk</code>, <code>he</code>, <code>de</code>,
+<code>ar-AE</code>, <code>fr</code>, <code>pl</code>; editorial policies
+and deterministic English fallback.</td>
+</tr>
+<tr class="even">
+<td>Locale coverage / staleness report</td>
+<td>Per-locale/family/surface counts with protected entries separate;
+real completeness denominators and fallback inventory.</td>
+</tr>
+<tr class="odd">
+<td>Language review ledger</td>
+<td>Exact keys, actual review method/person where applicable, changes,
+unperformed qualified/human checks.</td>
+</tr>
+<tr class="even">
+<td>Implementation and response ledger</td>
+<td>LOC-01–20 status, changed files, architecture decisions,
+state/search/RTL contracts and plan exceptions explained.</td>
+</tr>
+<tr class="odd">
+<td>Verification reports and reproducers</td>
+<td>Static integrity, source/emitted probes, current full CI, native
+matrix, copy fidelity, search cases and retained failed attempts.</td>
+</tr>
+<tr class="even">
+<td>Performance package</td>
+<td>Predeclared fixtures, raw samples/warmups, size/resource
+observations, summary calculations and each flag’s disposition.</td>
+</tr>
+<tr class="odd">
+<td>Source/evidence archive and standalone HTML</td>
+<td>All current inputs needed for review and offline use; checksum
+manifest; omitted historical material disclosed accurately.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Keep the original Compact closure as candidate-bound history.
+Regressions introduced by localization need current fixes/evidence; they
+do not rewrite what previously passed. Preserve human G01, the 63
+current and separate 60/37 historical performance scopes, 14 inherited
+external WebKit/device/human/AT conditions, 88 Windows/DC conditions,
+PAM 164 matches/one qualified divergence/165 calls, and earlier
+candidate02/P6/DNSSEC/P0 qualifications in their original scope. These
+counts are historical records, not new localization results or additive
+totals.</p>
+<p>This plan authorizes implementation and review preparation. It does
+not grant release acceptance, performance waivers, human
+language/accessibility approval, an all-RFC certification, publication,
+deployment or a version bump. Do not mark missing human checks “passed”
+because automated rendering works.</p>
+<p>The final worker report must name <strong>all seven requested
+languages</strong>, distinguish engineering completeness from actual
+human review, state whether every protected-term check passed, summarize
+Full/Compact/RTL/search evidence, disclose every new performance
+condition, and point to one precise review entry file. Do not report
+“translations done” while only menus or pilot lessons are
+translated.</p>
+<h2 id="sources">14. Primary references</h2>
+<p>Research checked on 1 November 2026. These references support
+web-language metadata, bidi behavior, plural handling and accessibility
+details. The stricter no-rename rule, unchanged graph geometry, English
+default, offline packaging and state-preservation contract are product
+requirements from this assignment. W3C Understanding pages are
+explanatory guidance for the linked criteria; they are not independent
+evidence that this application conforms.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="14. Primary references — table 12"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">ID</th>
+<th scope="col">Primary source</th>
+<th scope="col">Use in this plan</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>S1</td>
+<td><a href="https://www.rfc-editor.org/rfc/rfc5646.html" rel="noopener noreferrer">RFC 5646 —
+Tags for Identifying Languages</a></td>
+<td>BCP 47 language-tag structure.</td>
+</tr>
+<tr class="even">
+<td>S2</td>
+<td><a href="https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry" rel="noopener noreferrer">IANA
+Language Subtag Registry</a></td>
+<td>Registered language/region tags; retrieved file dated 17 September
+2026.</td>
+</tr>
+<tr class="odd">
+<td>S3</td>
+<td><a href="https://www.w3.org/International/questions/qa-choosing-language-tags" rel="noopener noreferrer">W3C
+— Choosing a Language Tag</a></td>
+<td>Use appropriate, not unnecessary, regional specificity.</td>
+</tr>
+<tr class="even">
+<td>S4</td>
+<td><a href="https://html.spec.whatwg.org/multipage/dom.html#global-attributes" rel="noopener noreferrer">WHATWG
+HTML — Global attributes</a></td>
+<td><code>lang</code>, <code>dir</code>, <code>translate</code> and
+nontranslation metadata.</td>
+</tr>
+<tr class="odd">
+<td>S5</td>
+<td><a href="https://www.w3.org/International/questions/qa-html-dir" rel="noopener noreferrer">W3C
+— Structural markup and right-to-left text</a></td>
+<td>Document direction, logical styling, form/table implications.</td>
+</tr>
+<tr class="even">
+<td>S6</td>
+<td><a href="https://www.w3.org/International/articles/inline-bidi-markup/index.en" rel="noopener noreferrer">W3C
+— Inline markup and bidirectional text</a></td>
+<td>Boundaries for mixed-direction phrases and unknown input.</td>
+</tr>
+<tr class="odd">
+<td>S7</td>
+<td><a href="https://tc39.es/ecma402/#pluralrules-objects" rel="noopener noreferrer">ECMA-402 —
+PluralRules objects</a></td>
+<td>Locale-aware category selection and supported locale inspection; use
+established APIs.</td>
+</tr>
+<tr class="even">
+<td>S8</td>
+<td><a href="https://www.unicode.org/cldr/charts/49/supplemental/language_plural_rules.html" rel="noopener noreferrer">Unicode
+CLDR 49 — Language Plural Rules</a></td>
+<td>Language-specific cardinal categories and test cases.</td>
+</tr>
+<tr class="odd">
+<td>S9</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html" rel="noopener noreferrer">W3C
+— Understanding 2.5.3 Label in Name</a></td>
+<td>Visible and accessible translated label consistency.</td>
+</tr>
+<tr class="even">
+<td>S10</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/language-of-page.html" rel="noopener noreferrer">W3C
+— Understanding 3.1.1 Language of Page</a></td>
+<td>Programmatically identifiable predominant language.</td>
+</tr>
+<tr class="odd">
+<td>S11</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/language-of-parts.html" rel="noopener noreferrer">W3C
+— Understanding 3.1.2 Language of Parts</a></td>
+<td>Fallback passages, technical-term exceptions and accessible-name
+limits.</td>
+</tr>
+<tr class="even">
+<td>S12</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/reflow.html" rel="noopener noreferrer">W3C —
+Understanding 1.4.10 Reflow</a></td>
+<td>Narrow/zoomed prose and the limited two-dimensional-content
+exception.</td>
+</tr>
+<tr class="odd">
+<td>S13</td>
+<td><a href="https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html" rel="noopener noreferrer">W3C
+— Understanding 1.4.4 Resize Text</a></td>
+<td>Text enlargement to 200% without lost content/function.</td>
+</tr>
+</tbody>
+</table>
+</div><p class="source-note">Auth Flow Studio localization assignment · Document version 1 · 1 November 2026 · Research and source-grounded plan only; implementation and acceptance results are not claimed.</p></main></body>
+</html>

@@ -59,6 +59,11 @@ try {
   report.manifestSha256=hash(manifestBytes);
   if(manifest.schemaVersion!==1||manifest.kind!=='compact-review-payload'||!Array.isArray(manifest.entries))fail('Invalid manifest schema');
   const identity=captureReviewInputs(args.root,self);report.inputIdentity=identity;
+  const sourceData=manifest.sourceData;
+  if(sourceData!==undefined) {
+    if(!sourceData||Array.isArray(sourceData)||Object.keys(sourceData).sort().join(',')!=='archive,checksums,encoding,index'||sourceData.encoding!=='tar.xz')fail('Invalid source-data declaration');
+    for(const key of ['index','archive','checksums'])if(!safe(sourceData[key]).startsWith('review/'))fail('Source-data inputs must be declared review members');
+  }
   const names=new Set(), folded=new Set(), entries=[], originals=[];
   for(const item of manifest.entries) {
     const name=safe(item.path);if(name.toLowerCase()==='review/sha256sums'||names.has(name)||folded.has(name.toLowerCase()))fail('Reserved or duplicate member: '+name);
@@ -91,6 +96,7 @@ try {
     standalone:{path:htmlName,bytes:html.length,sha256:hash(html)},
     entrypoint:{path:'START-HERE.md',bytes:Buffer.byteLength(start),sha256:hash(Buffer.from(start))},
     files:entries.slice().sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0),
+    ...(sourceData?{sourceData}:{}),
     omitted:manifest.omitted||[],
     checksum:{path:'review/SHA256SUMS',excluded:[contentsName,'review/SHA256SUMS'],binding:'The external checksum binds the final ZIP; the internal checksum binds payloads and the two companion uploads without a self-reference.'},
     acceptance:report.acceptance
@@ -113,6 +119,26 @@ try {
   fs.writeFileSync(path.join(args.out,'SHA256SUMS'),external,{flag:'wx'});
   function checkSums(base,text) {for(const line of text.trimEnd().split('\n')) {const m=/^([a-f0-9]{64})  (.+)$/.exec(line);if(!m||hash(fs.readFileSync(regular(path.join(base,safe(m[2])))))!==m[1])fail('Checksum mismatch: '+line);}}
   checkSums(extracted,fs.readFileSync(path.join(extracted,'review/SHA256SUMS'),'utf8'));checkSums(args.out,fs.readFileSync(path.join(args.out,'SHA256SUMS'),'utf8'));report.checks.internalAndExternalChecksums=true;
+  if(sourceData) {
+    for(const key of ['index','archive','checksums'])if(!entries.some(entry=>entry.path===sourceData[key]))fail('Missing literal source-data '+key);
+    const indexFile=regular(path.join(extracted,sourceData.index)),archiveFile=regular(path.join(extracted,sourceData.archive));
+    const dataIndex=JSON.parse(fs.readFileSync(indexFile,'utf8'));
+    if(dataIndex.schemaVersion!==1||!Array.isArray(dataIndex.entries)||!dataIndex.entries.length)fail('Invalid source-data inventory');
+    for(const entry of dataIndex.entries) {
+      const name=safe(entry.path);
+      if(!name.startsWith('source/')&&!name.startsWith('review/'))fail('Source-data member outside source/review: '+name);
+      if(entries.some(literal=>literal.path.toLowerCase()===name.toLowerCase()))fail('Encoded source-data member collides with literal payload: '+name);
+    }
+    const decodedSums=fs.readFileSync(regular(path.join(extracted,sourceData.checksums)),'utf8');
+    if(decodedSums.trimEnd().split('\n').sort().join('\n')!==dataIndex.entries.map(entry=>entry.sha256+'  '+entry.path).sort().join('\n'))fail('Decoded checksums differ from the complete source-data inventory');
+    const deliveredHelper=regular(path.join(extracted,'source/tools/verification/compact-review-archive.py'));
+    if(hash(fs.readFileSync(deliveredHelper))!==report.helperSha256)fail('Delivered data decoder differs from the captured helper');
+    run('python3',[deliveredHelper,'extract-xz',indexFile,archiveFile,extracted],extracted,'restore-source-data');
+    checkSums(extracted,decodedSums);
+    report.sourceData={...sourceData,decodedMembers:dataIndex.entries.length,decodedBytes:dataIndex.entries.reduce((total,entry)=>total+entry.bytes,0)};
+    report.checks.restoredEverySourceDataByte=true;
+    report.checks.completeDecodedChecksums=true;
+  }
   const sourceRoot=path.join(extracted,'source');
   const before=()=>{
     const result={};

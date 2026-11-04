@@ -1,0 +1,765 @@
+{
+  "schemaVersion": 1,
+  "kind": "source-bound-renderer-ui-factories",
+  "sourceSnapshot": {
+    "module": "src/app.js",
+    "sourceSha256": "785bc6090921c3652804d6b92e67cba0fdb792f825f5d80819f6aa154cfbc7ff"
+  },
+  "bindingPolicy": "Each declaration requires both the exact current authoring call and the exact producer method fingerprint; stale declarations remain unresolved. No engine/model evaluation. English one/other forms preserve actual source grammar; selector count is distinct from rendered numeric parameters.",
+  "authoringBasis": "Existing complete source message templates and parent-provided typed semantic contracts. This is English source authoring metadata, not locale translations or human acceptance.",
+  "messages": [
+    {
+      "key": "ui.state.summary",
+      "english": "{position} / {steps} · protocol clock {clock} · fixture {fixture}",
+      "parameters": {
+        "position": {
+          "kind": "human",
+          "dynamic": true
+        },
+        "steps": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "clock": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "fixture": {
+          "kind": "protected",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "renderProtocolState",
+      "sourceCallSha256": "3259b226ad3332a79c1ee41ef3d7e39520b0efa3422fb10370cb0731e50484b6",
+      "sourceExpression": "position.source+' / '+snapshot.model.steps().length+' · protocol clock '+snapshot.state.protocolClock+' · fixture '+this.labScenarioId+'@context-'+this.runtimeEnvironment.revision",
+      "parameterExpression": "{position,steps:snapshot.model.steps().length,clock:snapshot.state.protocolClock,fixture:this.labScenarioId+'@context-'+this.runtimeEnvironment.revision}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "renderProtocolState",
+        "ownerSourceSha256": "5fd373ef29ebcfa6036e184349c0106bbf37c9dee760965669abe8ef35a6e534"
+      }
+    },
+    {
+      "key": "ui.dnssec.unsignedRefused",
+      "english": "Authenticated evidence of an unsigned delegation gives an {status} result. This is not a finding that the answer was forged. The selected {policy} application refuses it.",
+      "parameters": {
+        "status": {
+          "kind": "protected",
+          "dynamic": false,
+          "value": "insecure"
+        },
+        "policy": {
+          "kind": "protected",
+          "dynamic": false,
+          "value": "secure-only",
+          "typeContract": "Canonical DNSSEC application policy literal, not human grammar."
+        }
+      },
+      "module": "src/app.js",
+      "method": "dnssecDecisionDisplay",
+      "sourceCallSha256": "4a1af88d6ff6d2f45e25a82b837ff8265397e18b9abb93c415c232185e3874a9",
+      "sourceExpression": "'Authenticated evidence of an unsigned delegation gives an insecure result. This is not a finding that the answer was forged. The selected secure-only application refuses it.'",
+      "parameterExpression": "{status:'insecure',policy:'secure-only'}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "dnssecDecisionDisplay",
+        "ownerSourceSha256": "dd882785653d1b4782ed8e417c5f96f3b9e3578431aa0acccd5b971d881bf59f"
+      }
+    },
+    {
+      "key": "ui.dnssec.hops.packetFlags",
+      "english": "{ad} / {cd} / {do}",
+      "parameters": {
+        "ad": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "cd": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "do": {
+          "kind": "protected",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "dnssecHopComparison",
+      "sourceCallSha256": "5add15f6283aa8e90ef09ed543a6bcc4b1774feca49aa4d16af8926cff6602c2",
+      "sourceExpression": "'AD='+message.flags.AD+' / CD='+message.flags.CD+' / DO='+message.edns.DO",
+      "parameterExpression": "{ad:'AD='+message.flags.AD,cd:'CD='+message.flags.CD,do:'DO='+message.edns.DO}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "dnssecHopComparison",
+        "ownerSourceSha256": "8ab1adfe5f79335464d335044b217b679e99d75c637c272f86fc0bde50ec7da5"
+      }
+    },
+    {
+      "key": "ui.dnssec.hops.packetNoOpt",
+      "english": "{ad} / {cd} / {opt} absent (no {do} bit)",
+      "parameters": {
+        "ad": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "cd": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "opt": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "do": {
+          "kind": "protected",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "dnssecHopComparison",
+      "sourceCallSha256": "50394aa846fd028a4bb8ceac8028453b8afb25c9c6382e633e86234dfca2f95a",
+      "sourceExpression": "'AD='+message.flags.AD+' / CD='+message.flags.CD+' / OPT absent (no DO bit)'",
+      "parameterExpression": "{ad:'AD='+message.flags.AD,cd:'CD='+message.flags.CD,opt:'OPT',do:'DO'}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "dnssecHopComparison",
+        "ownerSourceSha256": "8ab1adfe5f79335464d335044b217b679e99d75c637c272f86fc0bde50ec7da5"
+      }
+    },
+    {
+      "key": "ui.dnssec.hops.numberedPacket",
+      "english": "Attempt {number}: {packet}",
+      "parameters": {
+        "number": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "packet": {
+          "kind": "human",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "dnssecHopComparison",
+      "sourceCallSha256": "8044e6a79e983b4b05bbfb539f9503080e920116de718242baee189d756801b1",
+      "sourceExpression": "'Attempt '+(index+1)+': '+value.source",
+      "parameterExpression": "{number:index+1,packet:value}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "dnssecHopComparison",
+        "ownerSourceSha256": "8ab1adfe5f79335464d335044b217b679e99d75c637c272f86fc0bde50ec7da5"
+      }
+    },
+    {
+      "key": "ui.dnssec.hops.checker",
+      "english": "{actor} - {observation}",
+      "parameters": {
+        "actor": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "observation": {
+          "kind": "human",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "dnssecHopComparison",
+      "sourceCallSha256": "098ffd49702727b668420b354ef0535072ccf6ab2fd0ded5cc765e2364025c81",
+      "sourceExpression": "this.actor(hop.checkingOwner).name+' - '+observation.source",
+      "parameterExpression": "{actor:this.actor(hop.checkingOwner).name,observation}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "dnssecHopComparison",
+        "ownerSourceSha256": "8ab1adfe5f79335464d335044b217b679e99d75c637c272f86fc0bde50ec7da5"
+      }
+    },
+    {
+      "key": "ui.dnssec.hops.reliance",
+      "english": "{actor} - {observation}",
+      "parameters": {
+        "actor": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "observation": {
+          "kind": "human",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "dnssecHopComparison",
+      "sourceCallSha256": "25f8bac1ea03e924801972bad4d265b15e8aef9df7a8e843f46e6cd529d79bfb",
+      "sourceExpression": "this.actor(hop.relianceOwner).name+' - '+relianceObservation.source",
+      "parameterExpression": "{actor:this.actor(hop.relianceOwner).name,observation:relianceObservation}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "dnssecHopComparison",
+        "ownerSourceSha256": "8ab1adfe5f79335464d335044b217b679e99d75c637c272f86fc0bde50ec7da5"
+      }
+    },
+    {
+      "key": "ui.dnssec.hops.checkAndReliance",
+      "english": "{check}; {reliance}",
+      "parameters": {
+        "check": {
+          "kind": "human",
+          "dynamic": true
+        },
+        "reliance": {
+          "kind": "human",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "dnssecHopComparison",
+      "sourceCallSha256": "f7cc68a1b701953975aaa22ebf00462afe8f9cca3145f3b83ac14b1d2743f761",
+      "sourceExpression": "check.source+'; '+reliance.source",
+      "parameterExpression": "{check,reliance}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "dnssecHopComparison",
+        "ownerSourceSha256": "8ab1adfe5f79335464d335044b217b679e99d75c637c272f86fc0bde50ec7da5"
+      }
+    },
+    {
+      "key": "ui.dnssec.hops.attemptDelivery",
+      "english": {
+        "plural": {
+          "one": "{count} attempt; {delivery}",
+          "other": "{count} attempts; {delivery}"
+        }
+      },
+      "parameters": {
+        "count": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "delivery": {
+          "kind": "human",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "dnssecHopComparison",
+      "sourceCallSha256": "7ad7d99803699f50769da47e82b2f0ce6cb52c726c4f3bad6cb105eac8cc01f6",
+      "sourceExpression": "count+' attempt'+(count===1?'':'s')+'; '+delivery.source",
+      "parameterExpression": "{count,delivery}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "dnssecHopComparison",
+        "ownerSourceSha256": "8ab1adfe5f79335464d335044b217b679e99d75c637c272f86fc0bde50ec7da5"
+      }
+    },
+    {
+      "key": "ui.lifetimes.heading",
+      "english": "Four independent timelines · simulated elapsed {elapsed}",
+      "parameters": {
+        "elapsed": {
+          "kind": "protected",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "renderLifetimes",
+      "sourceCallSha256": "c034ef7256af2f48ec6ed1a4991c333a185ba2eff3816e26d33e19f82cfe8a66",
+      "sourceExpression": "'Four independent timelines · simulated elapsed '+Math.max(0,now-start)+' s'",
+      "parameterExpression": "{elapsed:Math.max(0,now-start)+' s'}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "renderLifetimes",
+        "ownerSourceSha256": "1140398d4b477da019a11d1b4301e21f369db511d929677dc89863a2889889a2"
+      }
+    },
+    {
+      "key": "ui.lifetimes.remainingLabel",
+      "english": "{label} remaining lifetime",
+      "parameters": {
+        "label": {
+          "kind": "human",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "renderLifetimes",
+      "sourceCallSha256": "701923dd761b6ee98d21a4b9fdcc523e9bc2d40ea4f828f5fc411fc39549524f",
+      "sourceExpression": "entry.label.source+' remaining lifetime'",
+      "parameterExpression": "{label:entry.label}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "renderLifetimes",
+        "ownerSourceSha256": "1140398d4b477da019a11d1b4301e21f369db511d929677dc89863a2889889a2"
+      }
+    },
+    {
+      "key": "ui.lifetimes.minutesRemaining",
+      "english": {
+        "plural": {
+          "one": "{count} {unit} remaining",
+          "other": "{count} {unit} remaining"
+        }
+      },
+      "parameters": {
+        "count": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "unit": {
+          "kind": "protected",
+          "dynamic": false,
+          "value": "min",
+          "typeContract": "Exact protocol-clock unit, not a translated noun parameter."
+        }
+      },
+      "module": "src/app.js",
+      "method": "renderLifetimes",
+      "sourceCallSha256": "46bbf481c876f71f16313007d002c9708b06e0a5eabbfc788ba0e92f1fa96022",
+      "sourceExpression": "Math.ceil((entry.expires-now)/60)+' min remaining'",
+      "parameterExpression": "{count:Math.ceil((entry.expires-now)/60),unit:'min'}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "renderLifetimes",
+        "ownerSourceSha256": "1140398d4b477da019a11d1b4301e21f369db511d929677dc89863a2889889a2"
+      }
+    },
+    {
+      "key": "ui.packet.local-processing",
+      "english": "Local processing at {actor} · {detail}",
+      "parameters": {
+        "actor": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "detail": {
+          "kind": "human",
+          "dynamic": true,
+          "structuredReferenceRequired": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "renderPacket",
+      "sourceCallSha256": "01284c316241a12b840a2d39446faee1de5c60f2abb3e7ca4ff2fc2b9f4d48e9",
+      "sourceExpression": "'Local processing at '+this.actor(event.step.from).name+' · '+detail.source",
+      "parameterExpression": "{actor:this.actor(event.step.from).name,detail}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "renderPacket",
+        "ownerSourceSha256": "d26bcb6739fa81d77b92446d507a9f8c370fb86326b79767323394b032714fb6"
+      }
+    },
+    {
+      "key": "ui.packet.phase-detail",
+      "english": "{detail} · {phase}",
+      "parameters": {
+        "detail": {
+          "kind": "human",
+          "dynamic": true,
+          "structuredReferenceRequired": true
+        },
+        "phase": {
+          "kind": "protected",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "renderPacket",
+      "sourceCallSha256": "b490dad8390e5f59d8eae7001d9c0124a1a7a68863453d038c47a8781c9997de",
+      "sourceExpression": "detail.source+' · '+event.messagePhase",
+      "parameterExpression": "{detail,phase:event.messagePhase}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "renderPacket",
+        "ownerSourceSha256": "d26bcb6739fa81d77b92446d507a9f8c370fb86326b79767323394b032714fb6"
+      }
+    },
+    {
+      "key": "ui.seek.moment-position",
+      "english": "Moment {position} / {total} · {elapsed} / {duration}",
+      "parameters": {
+        "position": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "total": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "elapsed": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "duration": {
+          "kind": "protected",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "updateSeekControls",
+      "sourceCallSha256": "5204dfcb3d2781d578d441f12d4f181ccee72dbb5b6dd46a4b17015f13d8331c",
+      "sourceExpression": "'Moment '+params.position+' / '+params.total+' · '+params.elapsed+' / '+params.duration",
+      "parameterExpression": "params",
+      "producer": {
+        "module": "src/app.js",
+        "method": "updateSeekControls",
+        "ownerSourceSha256": "ca20fcd715b6587ee119e3493ba3f8c65b1520d129e8b68b801e91a066b5b4de"
+      }
+    },
+    {
+      "key": "ui.seek.moment-label",
+      "english": "Moment {position} of {total}: {title}",
+      "parameters": {
+        "position": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "total": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "title": {
+          "kind": "human",
+          "dynamic": true,
+          "structuredReferenceRequired": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "updateSeekControls",
+      "sourceCallSha256": "a5ca78310a549ce813a7b6efccd3697667ec94654325a1937833d9ab3b2d0bac",
+      "sourceExpression": "source",
+      "parameterExpression": "{position:params.position,total:params.total,title:reference}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "updateSeekControls",
+        "ownerSourceSha256": "ca20fcd715b6587ee119e3493ba3f8c65b1520d129e8b68b801e91a066b5b4de"
+      }
+    },
+    {
+      "key": "ui.seek.step-position",
+      "english": "Step {position} / {total} · {elapsed} / {duration}",
+      "parameters": {
+        "position": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "total": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "elapsed": {
+          "kind": "protected",
+          "dynamic": true
+        },
+        "duration": {
+          "kind": "protected",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "updateSeekControls",
+      "sourceCallSha256": "c7d596119d60f8fc9010ef830e7d10126fa59961bc6ba10b5aae585249f46b8d",
+      "sourceExpression": "'Step '+params.position+' / '+params.total+' · '+params.elapsed+' / '+params.duration",
+      "parameterExpression": "params",
+      "producer": {
+        "module": "src/app.js",
+        "method": "updateSeekControls",
+        "ownerSourceSha256": "ca20fcd715b6587ee119e3493ba3f8c65b1520d129e8b68b801e91a066b5b4de"
+      }
+    },
+    {
+      "key": "ui.seek.step-label",
+      "english": "Step {position} of {total}: {title}",
+      "parameters": {
+        "position": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "total": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "title": {
+          "kind": "human",
+          "dynamic": true,
+          "structuredReferenceRequired": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "updateSeekControls",
+      "sourceCallSha256": "4e2731017ac3e1fd4aed34d40d8794dfef5c86e081665f7340ca3da976e388c1",
+      "sourceExpression": "source",
+      "parameterExpression": "{position:params.position,total:params.total,title:reference}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "updateSeekControls",
+        "ownerSourceSha256": "ca20fcd715b6587ee119e3493ba3f8c65b1520d129e8b68b801e91a066b5b4de"
+      }
+    },
+    {
+      "key": "ui.index.meta.matching",
+      "english": {
+        "plural": {
+          "one": "Showing {visible} of {total} matching global fields · {batch} per batch · numbers count current-journey steps",
+          "other": "Showing {visible} of {total} matching global fields · {batch} per batch · numbers count current-journey steps"
+        }
+      },
+      "parameters": {
+        "count": {
+          "kind": "count",
+          "dynamic": true,
+          "role": "selector"
+        },
+        "visible": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "total": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "batch": {
+          "kind": "count",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "filterAttributeIndex",
+      "sourceCallSha256": "3578bebfaf67d6520abfc4a9dd321f8b919bc8051533adf077be9933abd25b6b",
+      "sourceExpression": "source",
+      "parameterExpression": "params",
+      "producer": {
+        "module": "src/app.js",
+        "method": "filterAttributeIndex",
+        "ownerSourceSha256": "924eb5f68d14fc16b33a296f2863df97762134a4bb51acfef204c0515c89f0ff"
+      }
+    },
+    {
+      "key": "ui.index.meta.global",
+      "english": {
+        "plural": {
+          "one": "Showing {visible} of {total} global fields · {batch} per batch · numbers count current-journey steps",
+          "other": "Showing {visible} of {total} global fields · {batch} per batch · numbers count current-journey steps"
+        }
+      },
+      "parameters": {
+        "count": {
+          "kind": "count",
+          "dynamic": true,
+          "role": "selector"
+        },
+        "visible": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "total": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "batch": {
+          "kind": "count",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "filterAttributeIndex",
+      "sourceCallSha256": "542faf40a320268c6ab1d9428c869ef3d92faf606bd9cc89af5c0aeb288c08a7",
+      "sourceExpression": "source",
+      "parameterExpression": "params",
+      "producer": {
+        "module": "src/app.js",
+        "method": "filterAttributeIndex",
+        "ownerSourceSha256": "924eb5f68d14fc16b33a296f2863df97762134a4bb51acfef204c0515c89f0ff"
+      }
+    },
+    {
+      "key": "ui.index.meta.current",
+      "english": {
+        "plural": {
+          "one": "Showing {visible} of {total} current-lesson fields · {batch} per batch · numbers count current-journey steps",
+          "other": "Showing {visible} of {total} current-lesson fields · {batch} per batch · numbers count current-journey steps"
+        }
+      },
+      "parameters": {
+        "count": {
+          "kind": "count",
+          "dynamic": true,
+          "role": "selector"
+        },
+        "visible": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "total": {
+          "kind": "count",
+          "dynamic": true
+        },
+        "batch": {
+          "kind": "count",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "filterAttributeIndex",
+      "sourceCallSha256": "16a9fadfc2ba2dd4b680115dcb81360a1ef3eb3f9cd2511288e1999d8ba32355",
+      "sourceExpression": "source",
+      "parameterExpression": "params",
+      "producer": {
+        "module": "src/app.js",
+        "method": "filterAttributeIndex",
+        "ownerSourceSha256": "924eb5f68d14fc16b33a296f2863df97762134a4bb51acfef204c0515c89f0ff"
+      }
+    },
+    {
+      "key": "ui.index.meta.full-matching",
+      "english": {
+        "plural": {
+          "one": "{count} matching attributes · global catalog search · numbers count current-journey steps",
+          "other": "{count} matching attributes · global catalog search · numbers count current-journey steps"
+        }
+      },
+      "parameters": {
+        "count": {
+          "kind": "count",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "filterAttributeIndex",
+      "sourceCallSha256": "b427eb5e657462fa76263c99cfea319fdc3f1202e4d3e24fcecbc49a58c0f15b",
+      "sourceExpression": "source",
+      "parameterExpression": "{count}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "filterAttributeIndex",
+        "ownerSourceSha256": "924eb5f68d14fc16b33a296f2863df97762134a4bb51acfef204c0515c89f0ff"
+      }
+    },
+    {
+      "key": "ui.index.meta.full-current",
+      "english": {
+        "plural": {
+          "one": "{count} current-journey attributes · type to search all protocols",
+          "other": "{count} current-journey attributes · type to search all protocols"
+        }
+      },
+      "parameters": {
+        "count": {
+          "kind": "count",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "filterAttributeIndex",
+      "sourceCallSha256": "9b43e506a4c801392475bb3f2b81884b5e56b76c2d43e68de5d5a6930ba5d8fe",
+      "sourceExpression": "source",
+      "parameterExpression": "{count}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "filterAttributeIndex",
+        "ownerSourceSha256": "924eb5f68d14fc16b33a296f2863df97762134a4bb51acfef204c0515c89f0ff"
+      }
+    },
+    {
+      "key": "ui.index.meta.full-global",
+      "english": {
+        "plural": {
+          "one": "{count} attributes · numbers count journey steps · 0 means unused in this setup",
+          "other": "{count} attributes · numbers count journey steps · 0 means unused in this setup"
+        }
+      },
+      "parameters": {
+        "count": {
+          "kind": "count",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "filterAttributeIndex",
+      "sourceCallSha256": "7f3d093caa36c57f78189069d26aa80b64aa9cf32a6e78a693761df90ee358c4",
+      "sourceExpression": "source",
+      "parameterExpression": "{count}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "filterAttributeIndex",
+        "ownerSourceSha256": "924eb5f68d14fc16b33a296f2863df97762134a4bb51acfef204c0515c89f0ff"
+      }
+    },
+    {
+      "key": "ui.index.topic.client-summary",
+      "english": "The configured public client identifier selects the registration. Confidential variants authenticate the client separately; no identifier is generated per request.",
+      "parameters": {},
+      "module": "src/app.js",
+      "method": "renderAttributeIndex",
+      "sourceCallSha256": "abef3a6cfb045ccf9efb743d817a49507b551c06a68c1ed1d3d72dfe3285c9b5",
+      "sourceExpression": "source",
+      "parameterExpression": "",
+      "producer": {
+        "module": "src/app.js",
+        "method": "renderAttributeIndex",
+        "ownerSourceSha256": "f7aa0a4c565a109401e821dfcc7af4ccdd96d28689eac7f91af1768ef4a41456"
+      }
+    },
+    {
+      "key": "ui.trace.client-summary",
+      "english": "Follow this application’s configured client identifier through the selected grant. It identifies a registration and is distinct from client authentication.",
+      "parameters": {},
+      "module": "src/app.js",
+      "method": "traceHtml",
+      "sourceCallSha256": "1840a6d82ba438246494fd26a451a95dfa6cd79c0c5f623531122b7e1d3c6f81",
+      "sourceExpression": "summary",
+      "parameterExpression": "",
+      "producer": {
+        "module": "src/app.js",
+        "method": "traceHtml",
+        "ownerSourceSha256": "64345ea269df218aa5bd3c9e76ee8fc12d8c4053fc35d7c6973238febb7a5a3f"
+      }
+    },
+    {
+      "key": "ui.coverage.category-count",
+      "english": {
+        "plural": {
+          "one": "{category} · {count} scenarios",
+          "other": "{category} · {count} scenarios"
+        }
+      },
+      "parameters": {
+        "category": {
+          "kind": "human",
+          "dynamic": true
+        },
+        "count": {
+          "kind": "count",
+          "dynamic": true
+        }
+      },
+      "module": "src/app.js",
+      "method": "coverageCategories",
+      "sourceCallSha256": "746ffe5e9de39461c30a4f82736d71f60507946087ed19684990ad051750db06",
+      "sourceExpression": "category.source+' · '+count+' scenarios'",
+      "parameterExpression": "{category,count}",
+      "producer": {
+        "module": "src/app.js",
+        "method": "coverageCategories",
+        "ownerSourceSha256": "d6c7eee25ccfafa3be075ddd93c1a760533354d8436ea571b7602fd76a492b59"
+      },
+      "sourceReferences": [
+        {
+          "module": "src/app.js",
+          "source": "{ownerId:'lesson:'+model.id,fieldPath:'category',source:model.category,context:this.localeContext({scenarioId:model.id,variantId:'default',subfixtureId:null})}",
+          "sourceSha256": "be1a85f6efff0feebd38ac6e491d59d71813c76af9e2e81d1060b4a2a51b27ec"
+        },
+        {
+          "module": "src/app.js",
+          "source": "{ownerId:'workspace-option:'+option.id,fieldPath:'title',source:option.title}",
+          "sourceSha256": "c6271085ee8b354c67360d6738fcff9a8fded105ddd3c9fc2169b17024f7905b"
+        }
+      ],
+      "provenance": {
+        "scope": "Coverage groups use the actual authored lesson category or workspace/family title reference. This exact method/call/branch declaration is an additive layer; the original file sourceSnapshot remains historical.",
+        "sourceFileSha256": "79d49de2f574c21224b490df9c91f012bc85411511edbd4c5897f9cecb8f169f",
+        "nativeApproval": false,
+        "releaseApproval": false
+      }
+    }
+  ]
+}

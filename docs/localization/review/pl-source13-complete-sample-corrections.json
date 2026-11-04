@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "kind": "actual-Source13-Polish-custody-correction",
+  "status": "applied-author-correction-independent-closure-pending",
+  "sourceSetSha256": "6a9961b1e424768f33448b976fd137c10eabeadd61580235ba2be1774ce463f6",
+  "findingId": "LOC-14-PL-S13-P07-001",
+  "catalogBefore": {
+    "sha256": "6184e5df10ffc14ef76099e8b34d953e33f393d71e071e98628eec5de120258b",
+    "bytes": 5647668,
+    "overrides": 2442
+  },
+  "catalogAfter": {
+    "sha256": "98a835c4d25f7df0f92dbcd060bf316f5170b5bb1c60cd1f781d61f89718e18a",
+    "bytes": 5647708,
+    "overrides": 2442
+  },
+  "changes": [
+    {
+      "findingId": "LOC-14-PL-S13-P07-001",
+      "key": "runtime:1db882e5dc3010fcc8552989aed32e1f",
+      "schemaIndex": 3678,
+      "sourceSha256": "14a7484733492bc44f1372a3fb3e569ad58ca06619969832fb3767d5f5ea918b",
+      "english": "Verify only cached credential; remote changes are not learned while disconnected",
+      "parameters": {},
+      "membership": {
+        "key": "runtime:1db882e5dc3010fcc8552989aed32e1f",
+        "bindingIndex": 37662,
+        "owner": {
+          "semanticId": "step:lab-llog03:pam-record-cached-verify-0-0",
+          "fieldPath": "attributeOperations.detail"
+        },
+        "context": {
+          "actorId": "llogCache",
+          "attributeId": "unixws_lab_llog03_cached_secret",
+          "operationKind": "evict"
+        },
+        "classification": "prose"
+      },
+      "beforeNative": "Usuwa sekret poświadczenia z pamięci podręcznej po lokalnej weryfikacji; bez połączenia system nie uzyskuje informacji o zdalnych zmianach.",
+      "afterNative": "Usuwa lokalną kopię krótkotrwale przechowywanego hasła po weryfikacji z użyciem danych z pamięci podręcznej; bez połączenia system nie uzyskuje informacji o zdalnych zmianach.",
+      "sourceEvidence": [
+        {
+          "path": "src/linux-logon-lab.js",
+          "sha256": "2b2630b8bb506b6a7c919ac1597cbfc5d88f26b2bb0324d4c25b8e12df812002",
+          "lines": "323,332-333",
+          "evidence": "cached-verifier is seeded in privileged offline cache; cached-secret is Transient entered offline password; cached-verify checks verifier and drops secret at actor C store local IPC inbox."
+        }
+      ]
+    }
+  ],
+  "checks": {
+    "all44549DefaultsUnchanged": true,
+    "effectiveBindingsChanged": 1,
+    "canonicalModelQueueDataChanged": false,
+    "placeholderErrors": 0,
+    "unsafeMarkupBidiOrNonASCIIHyphenErrors": 0
+  },
+  "method": "Parent directly inspected current linux-logon-lab.js:323,332-333: transient entered password is dropped from actor-local IPC inbox, while the prior seeded verifier remains in privileged offline cache. Accepted the complete independent-reviewer correction. This application receipt stays frozen when separate closure arrives."
+}

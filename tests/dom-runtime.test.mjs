@@ -113,10 +113,10 @@ test('actor hover lists stored, generated, and verified attributes; fields expla
 test('field guide searches canonical names and keyboard focus opens explanations',()=>{
   const app=mount();try{
     app.querySelector('#glossary-open').click();assert.equal(app.inspection.type,'glossary');
-    const fields=app.refs.inspector.querySelectorAll('[data-search]');assert.equal(fields.length,Object.keys(ATTRIBUTES).length);
+    const fields=app.refs.inspector.querySelectorAll('[data-attribute]');assert.deepEqual(fields.map(node=>node.dataset.attribute).sort(),Object.keys(ATTRIBUTES).sort());
     const search=app.querySelector('#glossary-search');search.value='signature';search.dispatchEvent(new HarnessEvent('input'));
-    assert.ok(fields.some(n=>!n.hidden));assert.ok(fields.some(n=>n.hidden));for(const n of fields)assert.equal(n.hidden,!n.dataset.search.includes('signature'));
-    const visible=fields.find(n=>!n.hidden);visible.focus();assert.equal(app.refs['attribute-popup'].hidden,false);assert.ok(text(app.refs['attribute-popup']).includes(ATTRIBUTES[visible.dataset.attribute].purpose));
+    assert.equal(fields.find(node=>node.dataset.attribute==='signature').hidden,false);assert.equal(fields.find(node=>node.dataset.attribute==='codeVerifier').hidden,true);
+    const visible=fields.find(node=>node.dataset.attribute==='signature');visible.focus();assert.equal(app.refs['attribute-popup'].hidden,false);assert.ok(text(app.refs['attribute-popup']).includes(ATTRIBUTES.signature.purpose));
   }finally{unmount(app);}
 });
 

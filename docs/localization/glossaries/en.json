@@ -1,0 +1,1044 @@
+{
+  "schemaVersion": 1,
+  "locale": "en",
+  "nativeName": "English",
+  "direction": "ltr",
+  "scope": "Authoring reference only; not a production catalog or runtime override. Every entry is present locally without locale inheritance. English definitions bind shared concept identity; conceptual prose is independently authored for this locale.",
+  "authorshipAndReview": {
+    "authorType": "AI implementation worker",
+    "workerIdentity": "LocaleGlossaryPolicy",
+    "modelIdentity": "openai-codex/gpt-6.1-sol",
+    "method": "Direct authoring from the canonical English meaning contract, with locale-specific terminology and author self-review. No named human reviewer participated.",
+    "authorSelfReview": "completed within authored terminology and policy scope only",
+    "independentTechnicalReview": "pending",
+    "qualifiedHumanLanguageReview": "unperformed",
+    "humanComprehensionReview": "unperformed",
+    "humanPronunciationReview": "unperformed",
+    "actualScreenReaderReview": "unperformed",
+    "approvals": [],
+    "waivers": [],
+    "acceptanceClaim": "Reviewable author-self-reviewed implementation; not qualified native approval, independent technical closure, human acceptance or release acceptance."
+  },
+  "protectedLiteralContract": {
+    "scope": "Occurrence-bound formal literals, not blanket protection of every ordinary word that also appears in a name.",
+    "preserveExact": [
+      "canonical definition.name",
+      "actor.name and formal actor.role",
+      "formal role names",
+      "field and claim names",
+      "payload names and values",
+      "IDs and enum values",
+      "error and return codes",
+      "commands and flags",
+      "configuration keys and values",
+      "protocol and product names",
+      "protocol versions and numeric syntax",
+      "timestamps and technical units",
+      "URLs",
+      "official citation titles and exact quotations"
+    ],
+    "never": [
+      "translate a formal literal",
+      "inflect a formal literal",
+      "transliterate a formal literal",
+      "add translated morphology inside a literal",
+      "change casing or internal whitespace",
+      "invent a localized enum",
+      "change model state or copy payloads"
+    ],
+    "proseRule": "Translate conceptual nouns and their explanations. Put a translated generic noun around a renderer-isolated unchanged token when grammar requires it. A translated concept label never replaces a canonical formal name.",
+    "rendering": "The renderer owns bdi dir=ltr translate=no and escaping. Catalog text must contain named placeholders, not translator HTML or bidi control characters.",
+    "clipboard": "Only canonical raw values may be copied. Human explanation text is not a substitute payload.",
+    "examples": [
+      {
+        "kind": "claim name",
+        "literal": "aud",
+        "conceptId": "audience"
+      },
+      {
+        "kind": "module return code",
+        "literal": "PAM_SUCCESS",
+        "conceptId": "pamModuleReturn"
+      },
+      {
+        "kind": "PAM control flag",
+        "literal": "required",
+        "conceptId": "pamRequired"
+      },
+      {
+        "kind": "PAM action",
+        "literal": "done",
+        "conceptId": "pamSubstack"
+      },
+      {
+        "kind": "PAM action",
+        "literal": "die",
+        "conceptId": "pamSubstack"
+      },
+      {
+        "kind": "DNSSEC enum",
+        "literal": "secure",
+        "conceptId": "dnssecSecure"
+      },
+      {
+        "kind": "DNSSEC enum",
+        "literal": "insecure",
+        "conceptId": "dnssecInsecure"
+      },
+      {
+        "kind": "DNSSEC enum",
+        "literal": "bogus",
+        "conceptId": "dnssecBogus"
+      },
+      {
+        "kind": "DNSSEC enum",
+        "literal": "indeterminate",
+        "conceptId": "dnssecIndeterminate"
+      },
+      {
+        "kind": "formal role name example",
+        "literal": "Resource Owner",
+        "conceptId": "role"
+      },
+      {
+        "kind": "command",
+        "literal": "sudo",
+        "conceptId": "admission"
+      },
+      {
+        "kind": "configuration path",
+        "literal": "pam.d",
+        "conceptId": "pamAggregate"
+      }
+    ]
+  },
+  "editorialStyle": {
+    "language": "English",
+    "direction": "ltr",
+    "register": "Keep existing canonical English as the reference. These concept definitions guide meaning; they do not rewrite frozen source text.",
+    "grammar": "Use complete messages and named parameters. Distinguish subject, recipient and acting party. Do not join translated suffixes or protect an English noun just to avoid grammar.",
+    "casing": "Sentence case for ordinary UI labels. Preserve the exact casing of formal literals.",
+    "punctuation": "Use ordinary English punctuation outside protected fragments. Use only ASCII hyphens, never U+2013 or U+2014.",
+    "expansion": "Allow wrapping and variable control widths. Do not shorten a label by dropping a condition, negation or actor.",
+    "accessibleNames": "Localize visible labels and accessible names together. An accessible name contains the visible label and the same state. Keep shortcut tokens and ARIA identifiers exact.",
+    "bidi": "Prose is LTR. Protect technical values with renderer-owned LTR isolation; do not author bidi controls.",
+    "literalExample": "The field {token} describes the intended recipient.",
+    "literalExampleToken": "aud",
+    "conceptualExample": "An intended recipient is not necessarily the issuer.",
+    "pluralNote": "The category one applies to the integer 1 without visible decimal places. A CLDR decimal spelling such as 1.0 has other; JavaScript Number does not retain that spelling.",
+    "normativeModality": {
+      "requirement": "must",
+      "recommendation": "should",
+      "permission": "may",
+      "prohibition": "must not"
+    },
+    "normativeModalityRule": "These are prose formulations, not translations of literal RFC keywords or quotations. Retain attribution and strength; do not upgrade a recommendation or permission into an obligation.",
+    "numbers": {
+      "digits": "0123456789",
+      "numberingSystem": "latn",
+      "useGrouping": false,
+      "uiDecimalSeparator": ".",
+      "scope": "Product convention for UI counts, not a claim about locale defaults. Select grammar using the requested locale independently of digit presentation.",
+      "technicalValues": "Keep all technical numbers, version numbers, units, serialized examples, durations, offsets and timestamps exactly as authored in canonical data.",
+      "neverParseDisplay": "Never parse a localized displayed count, time or number back into player or model state."
+    },
+    "plurals": {
+      "type": "cardinal",
+      "referenceVersion": "CLDR 49",
+      "referenceURL": "https://raw.githubusercontent.com/unicode-org/cldr-json/49.0.0/cldr-json/cldr-core/supplemental/plurals.json",
+      "ruleLanguage": "en",
+      "categories": [
+        "one",
+        "other"
+      ],
+      "rules": {
+        "one": "i = 1 and v = 0",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1"
+        ],
+        "other": [
+          "0",
+          "2",
+          "21",
+          "0.5",
+          "1000000"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "Found {count} item.",
+        "other": "Found {count} items."
+      },
+      "selection": "Use Intl.PluralRules for the requested locale with full-message branches and typed count parameters, never suffix concatenation. Record actual resolved locale and ICU differences during integration; this file is a reference, not a claim of runtime testing.",
+      "operands": "n = absolute numeric value; i = integer digits; v = number of visible fraction digits; e = compact-decimal exponent. Examples are CLDR reference values, not exercised runtime results. Ordinary UI counts do not use compact notation. JavaScript Number does not retain visible trailing-zero precision."
+    }
+  },
+  "concepts": {
+    "possession": {
+      "englishTerm": "possession",
+      "englishDefinition": "Holding or receiving an object; this alone proves neither validity nor permission.",
+      "conceptualProse": {
+        "term": "possession",
+        "definition": "Holding or receiving an object; this alone proves neither validity nor permission."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "verification": {
+      "englishTerm": "verification",
+      "englishDefinition": "Checking evidence against a stated property, such as a signature; not an access decision.",
+      "conceptualProse": {
+        "term": "verification",
+        "definition": "Checking evidence against a stated property, such as a signature; not an access decision."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "validation": {
+      "englishTerm": "validation",
+      "englishDefinition": "Evaluating applicable constraints, context and time; say which checks have completed.",
+      "conceptualProse": {
+        "term": "validation",
+        "definition": "Evaluating applicable constraints, context and time; say which checks have completed."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "acceptance": {
+      "englishTerm": "acceptance",
+      "englishDefinition": "A particular consumer accepts an object under its checks and policy; not universal trust.",
+      "conceptualProse": {
+        "term": "acceptance",
+        "definition": "A particular consumer accepts an object under its checks and policy; not universal trust."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "authentication": {
+      "englishTerm": "authentication",
+      "englishDefinition": "Establishing a claimed identity using the applicable mechanism; not granting access.",
+      "conceptualProse": {
+        "term": "authentication",
+        "definition": "Establishing a claimed identity using the applicable mechanism; not granting access."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "authorization": {
+      "englishTerm": "authorization",
+      "englishDefinition": "Deciding whether an identified subject may perform an operation on a resource.",
+      "conceptualProse": {
+        "term": "authorization",
+        "definition": "Deciding whether an identified subject may perform an operation on a resource."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "admission": {
+      "englishTerm": "admission",
+      "englishDefinition": "The final decision to admit an operation or session at the boundary shown; distinct from authentication and intermediate results.",
+      "conceptualProse": {
+        "term": "admission",
+        "definition": "The final decision to admit an operation or session at the boundary shown; distinct from authentication and intermediate results."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "present": {
+      "englishTerm": "present",
+      "englishDefinition": "The object is present in the displayed evidence; no implication of validity.",
+      "conceptualProse": {
+        "term": "present",
+        "definition": "The object is present in the displayed evidence; no implication of validity."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "absent": {
+      "englishTerm": "absent",
+      "englishDefinition": "The object is absent in the stated observation scope, not merely unknown.",
+      "conceptualProse": {
+        "term": "absent",
+        "definition": "The object is absent in the stated observation scope, not merely unknown."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "unknown": {
+      "englishTerm": "unknown",
+      "englishDefinition": "The available evidence does not determine the state.",
+      "conceptualProse": {
+        "term": "unknown",
+        "definition": "The available evidence does not determine the state."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "expired": {
+      "englishTerm": "expired",
+      "englishDefinition": "The applicable validity interval has ended at the modeled time.",
+      "conceptualProse": {
+        "term": "expired",
+        "definition": "The applicable validity interval has ended at the modeled time."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "notYetObserved": {
+      "englishTerm": "not yet observed",
+      "englishDefinition": "No observation exists in the current source prefix; later evidence must not be revealed.",
+      "conceptualProse": {
+        "term": "not yet observed",
+        "definition": "No observation exists in the current source prefix; later evidence must not be revealed."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "notReached": {
+      "englishTerm": "not reached",
+      "englishDefinition": "Execution has not reached the check; neither success nor failure is established.",
+      "conceptualProse": {
+        "term": "not reached",
+        "definition": "Execution has not reached the check; neither success nor failure is established."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "notModeled": {
+      "englishTerm": "not modeled",
+      "englishDefinition": "The model does not represent this behavior; no claim about the real system follows.",
+      "conceptualProse": {
+        "term": "not modeled",
+        "definition": "The model does not represent this behavior; no claim about the real system follows."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "invalid": {
+      "englishTerm": "invalid",
+      "englishDefinition": "A represented validity check fails; distinguish unsupported input and unknown evidence.",
+      "conceptualProse": {
+        "term": "invalid",
+        "definition": "A represented validity check fails; distinguish unsupported input and unknown evidence."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "unsupported": {
+      "englishTerm": "unsupported",
+      "englishDefinition": "The implementation or model does not support this input or mechanism; not necessarily invalid.",
+      "conceptualProse": {
+        "term": "unsupported",
+        "definition": "The implementation or model does not support this input or mechanism; not necessarily invalid."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "denied": {
+      "englishTerm": "denied",
+      "englishDefinition": "A stated decision refuses the operation; preserve the deciding boundary and reason.",
+      "conceptualProse": {
+        "term": "denied",
+        "definition": "A stated decision refuses the operation; preserve the deciding boundary and reason."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "allowed": {
+      "englishTerm": "allowed",
+      "englishDefinition": "A stated decision permits the operation at that boundary; no wider guarantee.",
+      "conceptualProse": {
+        "term": "allowed",
+        "definition": "A stated decision permits the operation at that boundary; no wider guarantee."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "trust": {
+      "englishTerm": "trust",
+      "englishDefinition": "Reliance on another authority for a defined purpose under stated constraints.",
+      "conceptualProse": {
+        "term": "trust",
+        "definition": "Reliance on another authority for a defined purpose under stated constraints."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "trustDirection": {
+      "englishTerm": "trust direction",
+      "englishDefinition": "Who trusts whose assertions and for which purpose; never reverse the parties.",
+      "conceptualProse": {
+        "term": "trust direction",
+        "definition": "Who trusts whose assertions and for which purpose; never reverse the parties."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "issuer": {
+      "englishTerm": "issuer",
+      "englishDefinition": "The party that issues a credential or assertion; not automatically its audience.",
+      "conceptualProse": {
+        "term": "issuer",
+        "definition": "The party that issues a credential or assertion; not automatically its audience."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "audience": {
+      "englishTerm": "audience",
+      "englishDefinition": "The intended recipient or consumer identified by the applicable object and checks.",
+      "conceptualProse": {
+        "term": "audience",
+        "definition": "The intended recipient or consumer identified by the applicable object and checks."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "delegation": {
+      "englishTerm": "delegation",
+      "englishDefinition": "A constrained ability to act on another subject's behalf; preserve target and scope.",
+      "conceptualProse": {
+        "term": "delegation",
+        "definition": "A constrained ability to act on another subject's behalf; preserve target and scope."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "impersonation": {
+      "englishTerm": "impersonation",
+      "englishDefinition": "Acting using another identity in the stated mechanism; does not itself grant authorization.",
+      "conceptualProse": {
+        "term": "impersonation",
+        "definition": "Acting using another identity in the stated mechanism; does not itself grant authorization."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "referral": {
+      "englishTerm": "referral",
+      "englishDefinition": "A protocol-directed continuation toward another authority; not proof of final service access.",
+      "conceptualProse": {
+        "term": "referral",
+        "definition": "A protocol-directed continuation toward another authority; not proof of final service access."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "signing": {
+      "englishTerm": "signing",
+      "englishDefinition": "Producing a cryptographic signature for integrity and origin checks; not encrypting content.",
+      "conceptualProse": {
+        "term": "signing",
+        "definition": "Producing a cryptographic signature for integrity and origin checks; not encrypting content."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "encryption": {
+      "englishTerm": "encryption",
+      "englishDefinition": "Transforming content for confidentiality under a key; not alone proof of authorization.",
+      "conceptualProse": {
+        "term": "encryption",
+        "definition": "Transforming content for confidentiality under a key; not alone proof of authorization."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "integrity": {
+      "englishTerm": "integrity",
+      "englishDefinition": "Protection or verification against unauthorized alteration; not secrecy.",
+      "conceptualProse": {
+        "term": "integrity",
+        "definition": "Protection or verification against unauthorized alteration; not secrecy."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "confidentiality": {
+      "englishTerm": "confidentiality",
+      "englishDefinition": "Protection against unauthorized disclosure; not a synonym for integrity.",
+      "conceptualProse": {
+        "term": "confidentiality",
+        "definition": "Protection against unauthorized disclosure; not a synonym for integrity."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "tlsTransport": {
+      "englishTerm": "TLS transport protection",
+      "englishDefinition": "Channel protection in the specified TLS context; not DNSSEC validation or end-to-end application authorization.",
+      "conceptualProse": {
+        "term": "TLS transport protection",
+        "definition": "Channel protection in the specified TLS context; not DNSSEC validation or end-to-end application authorization."
+      },
+      "literalForms": [
+        "TLS"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "dnssecValidation": {
+      "englishTerm": "DNSSEC validation",
+      "englishDefinition": "Checking DNS data and authenticated denial against a chain of trust and relevant conditions; not transport encryption.",
+      "conceptualProse": {
+        "term": "DNSSEC validation",
+        "definition": "Checking DNS data and authenticated denial against a chain of trust and relevant conditions; not transport encryption."
+      },
+      "literalForms": [
+        "DNSSEC"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "credentialIsolation": {
+      "englishTerm": "credential isolation",
+      "englishDefinition": "Isolation of credential material, such as the stated Credential Guard protection; not token filtering.",
+      "conceptualProse": {
+        "term": "credential isolation",
+        "definition": "Isolation of credential material, such as the stated Credential Guard protection; not token filtering."
+      },
+      "literalForms": [
+        "Credential Guard"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "tokenFiltering": {
+      "englishTerm": "token filtering",
+      "englishDefinition": "Restricting privileges or groups in a security token; not isolating credential secrets.",
+      "conceptualProse": {
+        "term": "token filtering",
+        "definition": "Restricting privileges or groups in a security token; not isolating credential secrets."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pamModuleReturn": {
+      "englishTerm": "PAM module return",
+      "englishDefinition": "One module invocation's return code; not the stack result or final session admission.",
+      "conceptualProse": {
+        "term": "PAM module return",
+        "definition": "One module invocation's return code; not the stack result or final session admission."
+      },
+      "literalForms": [
+        "PAM_SUCCESS"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pamAggregate": {
+      "englishTerm": "PAM aggregate result",
+      "englishDefinition": "The stack outcome after control flags and actions are evaluated; not automatically application admission.",
+      "conceptualProse": {
+        "term": "PAM aggregate result",
+        "definition": "The stack outcome after control flags and actions are evaluated; not automatically application admission."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pamAdmission": {
+      "englishTerm": "PAM application admission",
+      "englishDefinition": "The application's final admission decision using applicable PAM phases and its own checks.",
+      "conceptualProse": {
+        "term": "PAM application admission",
+        "definition": "The application's final admission decision using applicable PAM phases and its own checks."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "uacConsent": {
+      "englishTerm": "UAC consent",
+      "englishDefinition": "Approval of elevation in a consent prompt; not entry of another account's credentials.",
+      "conceptualProse": {
+        "term": "UAC consent",
+        "definition": "Approval of elevation in a consent prompt; not entry of another account's credentials."
+      },
+      "literalForms": [
+        "UAC"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "uacCredentials": {
+      "englishTerm": "UAC credential entry",
+      "englishDefinition": "Supplying credentials in a credential prompt; not consent-only approval.",
+      "conceptualProse": {
+        "term": "UAC credential entry",
+        "definition": "Supplying credentials in a credential prompt; not consent-only approval."
+      },
+      "literalForms": [
+        "UAC"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "dnssecSecure": {
+      "englishTerm": "DNSSEC secure verdict",
+      "englishDefinition": "The exact verdict secure: required DNSSEC validation succeeds within the stated trust context; not a general safety guarantee.",
+      "conceptualProse": {
+        "term": "DNSSEC secure verdict",
+        "definition": "The exact verdict secure: required DNSSEC validation succeeds within the stated trust context; not a general safety guarantee."
+      },
+      "literalForms": [
+        "secure"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "dnssecInsecure": {
+      "englishTerm": "DNSSEC insecure verdict",
+      "englishDefinition": "The exact verdict insecure: data are known not to be covered by the relevant DNSSEC chain of trust under the stated policy, for example an authenticated unsigned delegation; not bogus validation.",
+      "conceptualProse": {
+        "term": "DNSSEC insecure verdict",
+        "definition": "The exact verdict insecure: data are known not to be covered by the relevant DNSSEC chain of trust under the stated policy, for example an authenticated unsigned delegation; not bogus validation."
+      },
+      "literalForms": [
+        "insecure"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "dnssecBogus": {
+      "englishTerm": "DNSSEC bogus verdict",
+      "englishDefinition": "The exact verdict bogus: expected DNSSEC validation cannot establish validity; not merely unsigned data.",
+      "conceptualProse": {
+        "term": "DNSSEC bogus verdict",
+        "definition": "The exact verdict bogus: expected DNSSEC validation cannot establish validity; not merely unsigned data."
+      },
+      "literalForms": [
+        "bogus"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "dnssecIndeterminate": {
+      "englishTerm": "DNSSEC indeterminate verdict",
+      "englishDefinition": "The exact verdict indeterminate: the validator cannot determine the required security state; not success.",
+      "conceptualProse": {
+        "term": "DNSSEC indeterminate verdict",
+        "definition": "The exact verdict indeterminate: the validator cannot determine the required security state; not success."
+      },
+      "literalForms": [
+        "indeterminate"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "normativeRequirement": {
+      "englishTerm": "normative requirement",
+      "englishDefinition": "A requirement attributed to the cited specification in its stated scope; retain obligation strength.",
+      "conceptualProse": {
+        "term": "normative requirement",
+        "definition": "A requirement attributed to the cited specification in its stated scope; retain obligation strength."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "profileRequirement": {
+      "englishTerm": "profile requirement",
+      "englishDefinition": "Behavior required by a named product or deployment profile, not necessarily the base protocol.",
+      "conceptualProse": {
+        "term": "profile requirement",
+        "definition": "Behavior required by a named product or deployment profile, not necessarily the base protocol."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "configuredBehavior": {
+      "englishTerm": "configured behavior",
+      "englishDefinition": "Behavior resulting from the explicit configuration shown, not a universal default.",
+      "conceptualProse": {
+        "term": "configured behavior",
+        "definition": "Behavior resulting from the explicit configuration shown, not a universal default."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "modelAssumption": {
+      "englishTerm": "model assumption",
+      "englishDefinition": "An explicit premise of this teaching model, not a protocol requirement.",
+      "conceptualProse": {
+        "term": "model assumption",
+        "definition": "An explicit premise of this teaching model, not a protocol requirement."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "modelLimitation": {
+      "englishTerm": "model limitation",
+      "englishDefinition": "An explicit boundary of model coverage, not evidence that real behavior cannot occur.",
+      "conceptualProse": {
+        "term": "model limitation",
+        "definition": "An explicit boundary of model coverage, not evidence that real behavior cannot occur."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "conditionalClaim": {
+      "englishTerm": "conditional claim",
+      "englishDefinition": "A claim that remains dependent on its stated conditions, actor, time and evidence.",
+      "conceptualProse": {
+        "term": "conditional claim",
+        "definition": "A claim that remains dependent on its stated conditions, actor, time and evidence."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "credential": {
+      "englishTerm": "credential",
+      "englishDefinition": "Material used to support identity or authentication; possession need not establish successful authentication.",
+      "conceptualProse": {
+        "term": "credential",
+        "definition": "Material used to support identity or authentication; possession need not establish successful authentication."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "accessToken": {
+      "englishTerm": "access token",
+      "englishDefinition": "A token used in a resource-access protocol; possession does not itself establish an authorization decision.",
+      "conceptualProse": {
+        "term": "access token",
+        "definition": "A token used in a resource-access protocol; possession does not itself establish an authorization decision."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "securityToken": {
+      "englishTerm": "security token",
+      "englishDefinition": "An operating-system security context with identity, groups or privileges; distinguish a protocol access token.",
+      "conceptualProse": {
+        "term": "security token",
+        "definition": "An operating-system security context with identity, groups or privileges; distinguish a protocol access token."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "ticket": {
+      "englishTerm": "ticket",
+      "englishDefinition": "A protocol credential for the stated service and context, not unconditional access permission.",
+      "conceptualProse": {
+        "term": "ticket",
+        "definition": "A protocol credential for the stated service and context, not unconditional access permission."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "assertion": {
+      "englishTerm": "assertion",
+      "englishDefinition": "An issuer's statement carried by a protocol object; acceptance requires applicable checks.",
+      "conceptualProse": {
+        "term": "assertion",
+        "definition": "An issuer's statement carried by a protocol object; acceptance requires applicable checks."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "claim": {
+      "englishTerm": "claim",
+      "englishDefinition": "A named statement in an identity object; literal claim names and values remain unchanged.",
+      "conceptualProse": {
+        "term": "claim",
+        "definition": "A named statement in an identity object; literal claim names and values remain unchanged."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "principal": {
+      "englishTerm": "principal",
+      "englishDefinition": "An identity recognized by the mechanism; its exact formal name remains unchanged.",
+      "conceptualProse": {
+        "term": "principal",
+        "definition": "An identity recognized by the mechanism; its exact formal name remains unchanged."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "role": {
+      "englishTerm": "role",
+      "englishDefinition": "A conceptual responsibility or permission grouping; formal role names remain literal.",
+      "conceptualProse": {
+        "term": "role",
+        "definition": "A conceptual responsibility or permission grouping; formal role names remain literal."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "permission": {
+      "englishTerm": "permission",
+      "englishDefinition": "An entitlement to perform a defined action; distinguish its assignment from a completed access check.",
+      "conceptualProse": {
+        "term": "permission",
+        "definition": "An entitlement to perform a defined action; distinguish its assignment from a completed access check."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "scope": {
+      "englishTerm": "scope",
+      "englishDefinition": "The stated boundary of authority, operation or token use; literal scope values remain unchanged.",
+      "conceptualProse": {
+        "term": "scope",
+        "definition": "The stated boundary of authority, operation or token use; literal scope values remain unchanged."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "session": {
+      "englishTerm": "session",
+      "englishDefinition": "A bounded interaction context; establishment is not an unlimited authorization grant.",
+      "conceptualProse": {
+        "term": "session",
+        "definition": "A bounded interaction context; establishment is not an unlimited authorization grant."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "challenge": {
+      "englishTerm": "challenge",
+      "englishDefinition": "Input used in a challenge-response mechanism; not a credential or successful response.",
+      "conceptualProse": {
+        "term": "challenge",
+        "definition": "Input used in a challenge-response mechanism; not a credential or successful response."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "evidence": {
+      "englishTerm": "evidence",
+      "englishDefinition": "The permission-projected observations currently available to support a claim.",
+      "conceptualProse": {
+        "term": "evidence",
+        "definition": "The permission-projected observations currently available to support a claim."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "sourcePrefix": {
+      "englishTerm": "source prefix",
+      "englishDefinition": "Only the already reached portion of the canonical source trace; no later evidence.",
+      "conceptualProse": {
+        "term": "source prefix",
+        "definition": "Only the already reached portion of the canonical source trace; no later evidence."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "fallback": {
+      "englishTerm": "fallback",
+      "englishDefinition": "A conditional alternate path, not an unconditional retry or guaranteed downgrade.",
+      "conceptualProse": {
+        "term": "fallback",
+        "definition": "A conditional alternate path, not an unconditional retry or guaranteed downgrade."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "revocation": {
+      "englishTerm": "revocation",
+      "englishDefinition": "Withdrawal of validity or authority under the stated mechanism; distinguish expiry.",
+      "conceptualProse": {
+        "term": "revocation",
+        "definition": "Withdrawal of validity or authority under the stated mechanism; distinguish expiry."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "lifetime": {
+      "englishTerm": "lifetime",
+      "englishDefinition": "The applicable duration or validity interval; keep technical units and timestamps exact.",
+      "conceptualProse": {
+        "term": "lifetime",
+        "definition": "The applicable duration or validity interval; keep technical units and timestamps exact."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "step": {
+      "englishTerm": "step",
+      "englishDefinition": "A displayed execution or teaching step with stable canonical identity.",
+      "conceptualProse": {
+        "term": "step",
+        "definition": "A displayed execution or teaching step with stable canonical identity."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "scenario": {
+      "englishTerm": "scenario",
+      "englishDefinition": "A teaching case and its selected variant; identity and state stay canonical.",
+      "conceptualProse": {
+        "term": "scenario",
+        "definition": "A teaching case and its selected variant; identity and state stay canonical."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "field": {
+      "englishTerm": "field",
+      "englishDefinition": "An object attribute; translate its explanation, not its canonical name or value.",
+      "conceptualProse": {
+        "term": "field",
+        "definition": "An object attribute; translate its explanation, not its canonical name or value."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "artifact": {
+      "englishTerm": "artifact",
+      "englishDefinition": "An object produced, held or exchanged in the flow; existence is not verification.",
+      "conceptualProse": {
+        "term": "artifact",
+        "definition": "An object produced, held or exchanged in the flow; existence is not verification."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "actor": {
+      "englishTerm": "actor",
+      "englishDefinition": "A participant in the flow; translate plain-role explanation, not its formal name or role.",
+      "conceptualProse": {
+        "term": "actor",
+        "definition": "A participant in the flow; translate plain-role explanation, not its formal name or role."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "source": {
+      "englishTerm": "source",
+      "englishDefinition": "The cited evidence or authority; official citation titles, URLs and quotes remain exact.",
+      "conceptualProse": {
+        "term": "source",
+        "definition": "The cited evidence or authority; official citation titles, URLs and quotes remain exact."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "explanation": {
+      "englishTerm": "explanation",
+      "englishDefinition": "Human teaching prose over canonical data, never a mutation of that data.",
+      "conceptualProse": {
+        "term": "explanation",
+        "definition": "Human teaching prose over canonical data, never a mutation of that data."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "search": {
+      "englishTerm": "search",
+      "englishDefinition": "Find a case using technical identifiers and additive localized prose without renaming identifiers.",
+      "conceptualProse": {
+        "term": "search",
+        "definition": "Find a case using technical identifiers and additive localized prose without renaming identifiers."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pause": {
+      "englishTerm": "pause",
+      "englishDefinition": "Stop playback while retaining current state and drafts.",
+      "conceptualProse": {
+        "term": "pause",
+        "definition": "Stop playback while retaining current state and drafts."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "resume": {
+      "englishTerm": "resume",
+      "englishDefinition": "Continue retained playback; not reset or restart.",
+      "conceptualProse": {
+        "term": "resume",
+        "definition": "Continue retained playback; not reset or restart."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "reset": {
+      "englishTerm": "reset",
+      "englishDefinition": "Return the scenario to its initial state; not pause.",
+      "conceptualProse": {
+        "term": "reset",
+        "definition": "Return the scenario to its initial state; not pause."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "clipboard": {
+      "englishTerm": "clipboard",
+      "englishDefinition": "Copy only the canonical raw value, never translated explanatory prose.",
+      "conceptualProse": {
+        "term": "clipboard",
+        "definition": "Copy only the canonical raw value, never translated explanatory prose."
+      },
+      "literalForms": [],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pamRequired": {
+      "englishTerm": "required control semantics",
+      "englishDefinition": "For the Linux-PAM simple control shown, failure is remembered while evaluation continues and prevents an overall successful result; retain implementation qualifications.",
+      "conceptualProse": {
+        "term": "required control semantics",
+        "definition": "For the Linux-PAM simple control shown, failure is remembered while evaluation continues and prevents an overall successful result; retain implementation qualifications."
+      },
+      "literalForms": [
+        "required"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pamRequisite": {
+      "englishTerm": "requisite control semantics",
+      "englishDefinition": "For the Linux-PAM simple control shown, failure returns immediately from the applicable stack boundary; not the same as required.",
+      "conceptualProse": {
+        "term": "requisite control semantics",
+        "definition": "For the Linux-PAM simple control shown, failure returns immediately from the applicable stack boundary; not the same as required."
+      },
+      "literalForms": [
+        "requisite"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pamSufficient": {
+      "englishTerm": "sufficient control semantics",
+      "englishDefinition": "For the Linux-PAM simple control shown, success can finish successfully only without an earlier required failure; its own failure is ignored.",
+      "conceptualProse": {
+        "term": "sufficient control semantics",
+        "definition": "For the Linux-PAM simple control shown, success can finish successfully only without an earlier required failure; its own failure is ignored."
+      },
+      "literalForms": [
+        "sufficient"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pamOptional": {
+      "englishTerm": "optional control semantics",
+      "englishDefinition": "For the Linux-PAM simple control shown, the result generally matters only if it is the sole relevant module for that service type; retain the exact modeled stack conditions.",
+      "conceptualProse": {
+        "term": "optional control semantics",
+        "definition": "For the Linux-PAM simple control shown, the result generally matters only if it is the sole relevant module for that service type; retain the exact modeled stack conditions."
+      },
+      "literalForms": [
+        "optional"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pamInclude": {
+      "englishTerm": "include control semantics",
+      "englishDefinition": "Include matching module-type entries in the surrounding stack; preserve enclosing control flow rather than treating it as substack.",
+      "conceptualProse": {
+        "term": "include control semantics",
+        "definition": "Include matching module-type entries in the surrounding stack; preserve enclosing control flow rather than treating it as substack."
+      },
+      "literalForms": [
+        "include"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    },
+    "pamSubstack": {
+      "englishTerm": "substack control semantics",
+      "englishDefinition": "Evaluate a bounded nested stack: done and die and jumps stay within it; a parent jump counts the substack as one module.",
+      "conceptualProse": {
+        "term": "substack control semantics",
+        "definition": "Evaluate a bounded nested stack: done and die and jumps stay within it; a parent jump counts the substack as one module."
+      },
+      "literalForms": [
+        "substack",
+        "done",
+        "die"
+      ],
+      "reviewStatus": "author-self-reviewed"
+    }
+  }
+}

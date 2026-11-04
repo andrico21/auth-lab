@@ -81,7 +81,7 @@ export class HarnessElement extends EventTarget {
   set textContent(value){this.childNodes=[];this.appendChild(new TextNode(String(value)));}
   get innerHTML(){return this.childNodes.map(n=>n instanceof HarnessElement?n.outerHTML:escape(n.data)).join('');}
   set innerHTML(html){for(const child of this.childNodes)child.parentElement=null;this.childNodes=[];parseFragment(String(html),this);}
-  get outerHTML(){return '<'+this.tagName.toLowerCase()+[...this.attributes].map(([k,v])=>' '+k+'="'+v.replace(/"/g,'&quot;')+'"').join('')+'>'+this.innerHTML+'</'+this.tagName.toLowerCase()+'>';}
+  get outerHTML(){return '<'+this.tagName.toLowerCase()+[...this.attributes].map(([k,v])=>' '+k+'="'+escape(v).replace(/"/g,'&quot;')+'"').join('')+'>'+this.innerHTML+'</'+this.tagName.toLowerCase()+'>';}
   setAttribute(name,value){this.attributes.set(name,String(value));if(name==='style')for(const part of String(value).split(';')){const colon=part.indexOf(':');if(colon>=0)this.style[part.slice(0,colon).trim()]=part.slice(colon+1).trim();}}
   getAttribute(name){return this.attributes.get(name)??null;}
   hasAttribute(name){return this.attributes.has(name);}

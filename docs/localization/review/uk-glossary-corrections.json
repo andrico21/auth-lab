@@ -1,0 +1,209 @@
+{
+  "schemaVersion": 1,
+  "locale": "uk",
+  "target": "docs/localization/glossaries/uk.json",
+  "status": "corrections-authored-awaiting-independent-closure",
+  "workerIdentity": "GlossaryFixUkrainian",
+  "workerType": "Separate AI implementation worker",
+  "modelIdentity": "openai-codex/gpt-6.1-sol",
+  "inputSHA256": {
+    "docs/localization/glossaries/uk.json": "b651b7480e42c483a6865b6916eec58d3aa466e6f6118a784945a3ebb07c9465",
+    "docs/localization/glossaries/en.json": "8c898b42c13ddc7fb8fcd501124012d5866c8219a333aeb8f5c9046dae449fec",
+    "docs/localization/editorial-policy.json": "6d11e5a8f5d06d549c82163d08832959b4414353328eeb6d3a8bb1b0b70e1742"
+  },
+  "reviewInput": {
+    "path": "local://localization-glossary-review-uk.json",
+    "contentField": "rawToolResult.text",
+    "reviewerIdentity": "GlossaryReviewUkrainian",
+    "reviewerModelIdentity": "bifrost/vllm/deepseek-v4.1-flash",
+    "originalVerdict": "changes-required",
+    "findingIds": ["L10N-GUK-001", "L10N-GUK-002", "L10N-GUK-003"]
+  },
+  "method": {
+    "sourceAuthority": "Canonical English concepts in docs/localization/glossaries/en.json; Ukrainian-only localePolicies.uk in editorial-policy.json and the Ukrainian glossary's own editorialStyle/protectedLiteralContract.",
+    "authoring": "Read all 83 English concepts and all 83 Ukrainian terms and definitions directly. Judged meaning, negation, actors, conditional scope and Ukrainian grammar against English, retaining suitable existing Ukrainian prose rather than replacing it with synonyms. Considered the original Ukrainian review's proposed corrections against English instead of accepting them mechanically.",
+    "independence": "This worker read no Russian glossary, no other locale glossary or review, and no retained shared-worker corrections. This record describes only this separate worker's pass from the exact original Ukrainian input hash above. It does not retroactively attribute independence to any superseded work.",
+    "qualification": "AI technical/linguistic authoring and author judgment only; not a qualified human or native-speaker review. The correction author does not close the original review findings. Independent closure remains with the original reviewer.",
+    "preservation": "Edits are limited to the 13 conceptualProse fields recorded below. Concept IDs/order, English carriers, literalForms, protectedLiteralContract, editorialStyle and original authorship/review metadata were not edited. Added occurrences of Linux-PAM, TLS and substack use the exact canonical spelling. No translator HTML, bidi controls, U+2013 or U+2014 was authored."
+  },
+  "scope": {
+    "conceptsDirectlyEnglishChecked": 83,
+    "conceptualFieldsRead": 166,
+    "changedConcepts": 13,
+    "changedFields": 13,
+    "changedTerms": 1,
+    "changedDefinitions": 12,
+    "unchangedConcepts": 70,
+    "unchangedConceptualFields": 153,
+    "originalReviewFindingsAddressed": 3,
+    "additionalAuthorFindingsAddressed": 10,
+    "reviewedConceptIds": [
+      "possession", "verification", "validation", "acceptance", "authentication", "authorization", "admission", "present", "absent", "unknown", "expired", "notYetObserved", "notReached", "notModeled", "invalid", "unsupported", "denied", "allowed", "trust", "trustDirection", "issuer", "audience", "delegation", "impersonation", "referral", "signing", "encryption", "integrity", "confidentiality", "tlsTransport", "dnssecValidation", "credentialIsolation", "tokenFiltering", "pamModuleReturn", "pamAggregate", "pamAdmission", "uacConsent", "uacCredentials", "dnssecSecure", "dnssecInsecure", "dnssecBogus", "dnssecIndeterminate", "normativeRequirement", "profileRequirement", "configuredBehavior", "modelAssumption", "modelLimitation", "conditionalClaim", "credential", "accessToken", "securityToken", "ticket", "assertion", "claim", "principal", "role", "permission", "scope", "session", "challenge", "evidence", "sourcePrefix", "fallback", "revocation", "lifetime", "step", "scenario", "field", "artifact", "actor", "source", "explanation", "search", "pause", "resume", "reset", "clipboard", "pamRequired", "pamRequisite", "pamSufficient", "pamOptional", "pamInclude", "pamSubstack"
+    ],
+    "retentionDecision": "All fields not listed in corrections were retained after direct English comparison as suitable Ukrainian conceptual prose; no claim is made that every retained formulation is the only possible Ukrainian translation.",
+    "excluded": ["Other locales", "Full Ukrainian catalog", "Runtime or model construction/execution", "Browser/ICU behavior", "Assistive technology", "Qualified-human or native approval", "RFC/product conformance acceptance", "Release/publication acceptance"]
+  },
+  "corrections": [
+    {
+      "findingId": "L10N-GUK-001",
+      "origin": "original-review",
+      "conceptId": "pamOptional",
+      "field": "conceptualProse.definition",
+      "english": "For the Linux-PAM simple control shown, the result generally matters only if it is the sole relevant module for that service type; retain the exact modeled stack conditions.",
+      "old": "За показаного простого керування результат зазвичай важливий лише для єдиного відповідного модуля цього типу служби; зберігати умови конкретного стека.",
+      "new": "За показаного простого керування Linux-PAM результат зазвичай має значення лише тоді, коли цей модуль є єдиним відповідним модулем цього типу служби; зберігати точні умови змодельованого стека.",
+      "nativeRationale": "Сполучення «лише тоді, коли» прямо встановлює умову значущості результату, а не адресата, для якого він важливий. «Зазвичай» зберігає обмеження узагальнення. Названо Linux-PAM і вимогу зберігати саме точні умови змодельованого стека. Запропоноване рецензентом формулювання після прямого зіставлення з англійським змістом придатне без змін.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "L10N-GUK-002",
+      "origin": "original-review",
+      "conceptId": "invalid",
+      "field": "conceptualProse.definition",
+      "english": "A represented validity check fails; distinguish unsupported input and unknown evidence.",
+      "old": "Представлена перевірка чинності дала негативний результат; відрізняти від непідтримуваного випадку.",
+      "new": "Представлена перевірка чинності дала негативний результат; відрізняти від непідтримуваних вхідних даних і стану, який неможливо визначити за наявними відомостями.",
+      "nativeRationale": "Негативний результат перевірки відокремлено і від непідтримуваних вхідних даних, і від браку відомостей для визначення стану. Замість запропонованого «невідомих відомостей», що нечітко називає саме відомості невідомими, ужито пояснення стану unknown відповідно до його англійського визначення; невизначеність не оголошується нечинністю.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "L10N-GUK-003",
+      "origin": "original-review",
+      "conceptId": "authentication",
+      "field": "conceptualProse.definition",
+      "english": "Establishing a claimed identity using the applicable mechanism; not granting access.",
+      "old": "Встановлення заявленої особи відповідним механізмом, а не надання доступу.",
+      "new": "Встановлення заявленої ідентичності відповідним механізмом, а не надання доступу.",
+      "nativeRationale": "«Ідентичність» охоплює не лише людину, а й клієнта чи службу. Прикметник «заявленої» узгоджено з цим іменником; заперечення надання доступу збережено. Пропозицію рецензента прийнято після перевірки безпосередньо за англійським визначенням.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-001",
+      "origin": "direct-English-author-pass",
+      "conceptId": "authorization",
+      "field": "conceptualProse.definition",
+      "english": "Deciding whether an identified subject may perform an operation on a resource.",
+      "old": "Рішення, чи має суб'єкт право виконати певну дію з ресурсом.",
+      "new": "Рішення, чи має ідентифікований суб'єкт право виконати певну дію з ресурсом.",
+      "nativeRationale": "Відновлено означення «ідентифікований»: рішення стосується вже визначеного суб'єкта. Решту придатного речення збережено без синонімічного переписування.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-002",
+      "origin": "direct-English-author-pass",
+      "conceptId": "admission",
+      "field": "conceptualProse.definition",
+      "english": "The final decision to admit an operation or session at the boundary shown; distinct from authentication and intermediate results.",
+      "old": "Остаточне рішення щодо операції або сеансу на показаній межі.",
+      "new": "Остаточне рішення про допуск операції або сеансу на показаній межі; відрізняти від автентифікації та проміжних результатів.",
+      "nativeRationale": "«Про допуск» називає предмет рішення, а не просто рішення щодо операції. Відновлено англійське розмежування остаточного допуску, автентифікації та проміжних результатів.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-003",
+      "origin": "direct-English-author-pass",
+      "conceptId": "impersonation",
+      "field": "conceptualProse.term",
+      "english": "Acting using another identity in the stated mechanism; does not itself grant authorization.",
+      "old": "дія від імені іншої особи",
+      "new": "дія з використанням іншої ідентичності",
+      "nativeRationale": "У визначенні вже правильно вжито «ідентичність», але назва звужувала поняття до особи. Узгоджено назву з англійським поняттям, що також охоплює ідентичність служби чи іншого нелюдського суб'єкта.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-004",
+      "origin": "direct-English-author-pass",
+      "conceptId": "tlsTransport",
+      "field": "conceptualProse.definition",
+      "english": "Channel protection in the specified TLS context; not DNSSEC validation or end-to-end application authorization.",
+      "old": "Захист зазначеного каналу; не перевірка DNSSEC і не авторизація застосунку.",
+      "new": "Захист каналу в зазначеному контексті TLS; не перевірка DNSSEC і не наскрізна авторизація застосунку.",
+      "nativeRationale": "Відновлено конкретний контекст TLS і означення «наскрізна», що задає обсяг заперечення в англійському тексті. Захист каналу не підмінює такої авторизації.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-005",
+      "origin": "direct-English-author-pass",
+      "conceptId": "dnssecValidation",
+      "field": "conceptualProse.definition",
+      "english": "Checking DNS data and authenticated denial against a chain of trust and relevant conditions; not transport encryption.",
+      "old": "Перевірка даних DNS і засвідченого заперечення існування за ланцюжком довіри; не шифрування транспорту.",
+      "new": "Перевірка даних DNS і засвідченого заперечення існування за ланцюжком довіри та відповідними умовами; не шифрування транспорту.",
+      "nativeRationale": "Додано відповідні умови, які англійський текст вимагає враховувати поряд із ланцюжком довіри. Наявність ланцюжка сама собою не вичерпує перевірки.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-006",
+      "origin": "direct-English-author-pass",
+      "conceptId": "credential",
+      "field": "conceptualProse.definition",
+      "english": "Material used to support identity or authentication; possession need not establish successful authentication.",
+      "old": "Матеріал для підтвердження особи; володіння ним не означає успішної автентифікації.",
+      "new": "Матеріал для підтвердження ідентичності або автентифікації; володіння ним не означає успішної автентифікації.",
+      "nativeRationale": "«Ідентичність» усуває звуження до фізичної особи; згадка автентифікації відновлює другу сферу використання матеріалу. Застереження щодо самого володіння збережено.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-007",
+      "origin": "direct-English-author-pass",
+      "conceptId": "pamRequired",
+      "field": "conceptualProse.definition",
+      "english": "For the Linux-PAM simple control shown, failure is remembered while evaluation continues and prevents an overall successful result; retain implementation qualifications.",
+      "old": "У показаному простому керуванні Linux-PAM помилка запам'ятовується, виконання триває, але сукупний успіх неможливий.",
+      "new": "У показаному простому керуванні Linux-PAM помилка запам'ятовується, виконання триває, але сукупний успіх неможливий; зберігати уточнення щодо реалізації.",
+      "nativeRationale": "Збережено правильний опис потоку керування й додано наявну в англійському джерелі вимогу не втрачати уточнення щодо конкретної реалізації.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-008",
+      "origin": "direct-English-author-pass",
+      "conceptId": "pamRequisite",
+      "field": "conceptualProse.definition",
+      "english": "For the Linux-PAM simple control shown, failure returns immediately from the applicable stack boundary; not the same as required.",
+      "old": "За показаного керування Linux-PAM помилка негайно повертає керування на відповідній межі стека; це не required.",
+      "new": "За показаного простого керування Linux-PAM помилка негайно повертає керування на відповідній межі стека; це не required.",
+      "nativeRationale": "Повернуто обмеження простим керуванням: англійське визначення не поширює цей опис на всі форми керування Linux-PAM. Решту правильного опису й літерал required не змінено.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-009",
+      "origin": "direct-English-author-pass",
+      "conceptId": "pamSufficient",
+      "field": "conceptualProse.definition",
+      "english": "For the Linux-PAM simple control shown, success can finish successfully only without an earlier required failure; its own failure is ignored.",
+      "old": "Успіх може успішно завершити обробку лише за відсутності попередньої помилки required; власна помилка за цього простого керування ігнорується.",
+      "new": "За показаного простого керування Linux-PAM успіх може успішно завершити обробку лише за відсутності попередньої помилки required; власна помилка ігнорується.",
+      "nativeRationale": "Уточнення щодо показаного простого керування Linux-PAM тепер стосується обох частин речення. Умова відсутності попередньої помилки required та ігнорування власної помилки збережені.",
+      "status": "correction-authored-awaiting-independent-closure"
+    },
+    {
+      "findingId": "UK-AUTHOR-010",
+      "origin": "direct-English-author-pass",
+      "conceptId": "pamInclude",
+      "field": "conceptualProse.definition",
+      "english": "Include matching module-type entries in the surrounding stack; preserve enclosing control flow rather than treating it as substack.",
+      "old": "Долучення записів відповідного типу модулів до зовнішнього стека зі збереженням його перебігу керування.",
+      "new": "Долучення записів відповідного типу модулів до зовнішнього стека зі збереженням його перебігу керування; не трактувати як substack.",
+      "nativeRationale": "Явно відновлено заборону ототожнювати include з substack, а не залишено її лише неявною в описі зовнішнього потоку керування. Формальний літерал substack збережено точно.",
+      "status": "correction-authored-awaiting-independent-closure"
+    }
+  ],
+  "verification": {
+    "performed": ["Read the scoped source inputs and original Ukrainian review", "Recorded pre-edit input SHA256 values with sha256sum", "Applied one surgical patch restricted to conceptualProse fields"],
+    "notRun": ["Post-edit structural/literal validation", "Builds", "Tests", "Lint", "Formatters", "Browser runs", "ICU execution", "Model construction/execution"],
+    "handoff": "Parent verifies structural completeness, unchanged English carriers/literals/metadata and prohibited-character absence after workers finish; original reviewer independently evaluates closure."
+  },
+  "acceptance": {
+    "independentClosure": "pending-original-reviewer",
+    "qualifiedHumanLanguageReview": "unperformed",
+    "nativeSpeakerApproval": "unperformed",
+    "humanComprehensionReview": "unperformed",
+    "humanPronunciationReview": "unperformed",
+    "actualScreenReaderReview": "unperformed",
+    "fullCatalogAcceptance": "not-established",
+    "releaseAcceptance": "not-established",
+    "approvals": [],
+    "waivers": [],
+    "claim": "Corrections authored for scoped review only; no self-closure, human/native/AT/full-catalog/RFC/product/release approval or publication authorization. No commit, push, deployment or version change was performed by this worker."
+  }
+}
