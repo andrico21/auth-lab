@@ -8,7 +8,7 @@ import {historicalInputPath} from '../tools/verification/dnssec-historical-input
 
 const repository=fileURLToPath(new URL('../',import.meta.url));
 const input={path:'tools/verification/dnssec-crypto/requirements.txt',bytes:382,sha256:'24c62a92f1a8992f2469ba6cf381a8d07e4c21ae0e058592c596221947b6fd41'};
-const before={originalPath:input.path,path:'docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/inputs/historical-requirements.input.txt',bytes:input.bytes,sha256:input.sha256};
+const before={originalPath:input.path,path:'docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/inputs/legacy-pins.input',bytes:input.bytes,sha256:input.sha256};
 const profilePath='tools/verification/dnssec-crypto-current/profile.json';
 function fixture(t){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'dnssec-historical-input-'));

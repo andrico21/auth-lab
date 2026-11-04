@@ -209,7 +209,8 @@ def create(out):
                'publicByteParity': identity(out / 'PUBLIC-BYTE-PARITY.json', out),
                'preservation': {'originalAuthorityBytesUnchanged': True,
                                 'historicalPayloadBytesPreserved': True,
-                                'relocatedInputs': [profile['historical']['requirementsBefore']],
+                                'relocatedInputs': [profile['historical']['requirementsBefore'],
+                                                    profile['historical']['referenceRequirementsBefore']],
                                 'authorities': profile['historical']['authorities'], 'files': profile['historical']['files']},
                'limits': ['Offline package selection, not OS-enforced network isolation',
                           'No production imports or live DNS/server interoperability',
@@ -251,7 +252,8 @@ def check(out):
         raise RuntimeError('Invalid current runtime catalog')
     if catalog['preservation'] != {'originalAuthorityBytesUnchanged': True,
                                   'historicalPayloadBytesPreserved': True,
-                                  'relocatedInputs': [profile['historical']['requirementsBefore']],
+                                  'relocatedInputs': [profile['historical']['requirementsBefore'],
+                                                      profile['historical']['referenceRequirementsBefore']],
                                   'authorities': profile['historical']['authorities'], 'files': profile['historical']['files']}:
         raise RuntimeError('Catalog does not preserve the original authorities and historical input bindings')
     verify_identity(ROOT, catalog['profile'])

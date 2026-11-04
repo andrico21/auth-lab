@@ -10,7 +10,7 @@ import os
 import pathlib
 import platform
 import subprocess
-from historical_inputs import LEGACY_REQUIREMENTS, historical_descriptor
+from historical_inputs import LEGACY_REQUIREMENTS, historical_descriptor, reference_requirements_descriptor
 from license_binding import validate_license_binding
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
@@ -86,6 +86,9 @@ def validate_bundle():
     verify_identity(ROOT, dict(profile['requirements'], path=LEGACY_REQUIREMENTS))
     for row in profile['historical']['authorities'] + profile['historical']['files']:
         verify_identity(ROOT, historical_descriptor(row, profile['historical']))
+    previous = reference_requirements_descriptor(
+        profile['historical'], lambda row: verify_identity(ROOT, row).read_bytes())
+    verify_identity(ROOT, previous)
     freeze_path = ROOT / 'docs/dnssec-expansion/contract-freeze.json'
     freeze_bytes = freeze_path.read_bytes()
     if hashlib.sha256(freeze_bytes).hexdigest() != 'b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19':

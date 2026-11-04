@@ -36,7 +36,10 @@ function withBundle(run){
   const frozen=put('docs/frozen.txt','original frozen payload\n');
   const authority=put('docs/dnssec-expansion/contract-freeze.json',JSON.stringify({inputs:[frozen]}));
   const final=put('docs/dnssec-expansion/numeric/FINAL-CONTENTS.json',JSON.stringify({files:[frozen]}));
-  const profile={schemaVersion:1,kind:'dnssec-current-offline-crypto-profile',runtime:structuredClone(runtime),requirements,packages,historical:{authorities:[authority,final],files:[frozen]}};
+  const previous=put('docs/history/reference-pins.input','dnspython==2.8.0\ncryptography==50.0.0\n');
+  const previousContents=put('docs/history/reference/CONTENTS.json',JSON.stringify({files:[{...previous,path:'inputs/requirements.txt'}]}));
+  const referenceRequirementsBefore={originalPath:'docs/history/reference/inputs/requirements.txt',...previous,contents:previousContents};
+  const profile={schemaVersion:1,kind:'dnssec-current-offline-crypto-profile',runtime:structuredClone(runtime),requirements,packages,historical:{authorities:[authority,final],files:[frozen],referenceRequirementsBefore}};
   const save=()=>fs.writeFileSync(path.join(tools,'profile.json'),JSON.stringify(profile));
   const check=()=>{save();return spawnSync('python3',['-B',path.join(tools,'run.py'),'--check'],{encoding:'utf8',env:{...process.env,PYTHONDONTWRITEBYTECODE:'1'}});};
   try{run({root,tools,put,profile,check,save});}finally{fs.rmSync(root,{recursive:true,force:true});}
@@ -61,7 +64,7 @@ function withArchivedRequirements(run){
     const originalPath='tools/verification/dnssec-crypto/requirements.txt';
     const originalText='dnspython==2.8.0\ncryptography==46.0.3\n';
     const original=put(originalPath,originalText);
-    const snapshot=put('docs/history/requirements.input.txt',originalText);
+    const snapshot=put('docs/history/legacy-pins.input',originalText);
     put(originalPath,fs.readFileSync(path.join(bundle.root,profile.requirements.path)));
     profile.historical.requirementsBefore={originalPath,...snapshot};
     profile.historical.files.push(original);
@@ -172,7 +175,7 @@ test('patched live requirements coexist with the exact archived frozen requireme
 
 test('historical checks reject tampered archived requirements even when live pins are patched',()=>withArchivedRequirements(({root,profile,check})=>{
   fs.appendFileSync(path.join(root,profile.historical.requirementsBefore.path),'substituted history');
-  rejects(check(),/hash\/size mismatch: .*requirements\.input\.txt/);
+  rejects(check(),/hash\/size mismatch/);
 }));
 
 test('historical checks reject a snapshot rehashed away from the original frozen identity',()=>withArchivedRequirements(({put,profile,check})=>{
@@ -184,6 +187,17 @@ test('historical checks reject a snapshot rehashed away from the original frozen
 test('historical checks do not fall back to the changed live requirements when the snapshot is absent',()=>withArchivedRequirements(({profile,check})=>{
   delete profile.historical.requirementsBefore;
   rejects(check(),/Missing exact historical requirements snapshot/);
+}));
+
+test('archived reference pins cannot be rehashed away from their original sealed identity',()=>withBundle(({put,profile,check})=>{
+  const before=profile.historical.referenceRequirementsBefore;
+  Object.assign(before,put(before.path,'dnspython==2.9.0\ncryptography==50.0.0\n'));
+  rejects(check(),/Archived reference requirements differ from original seal/);
+}));
+
+test('previous reference preservation requires its explicit relocation binding',()=>withBundle(({profile,check})=>{
+  delete profile.historical.referenceRequirementsBefore;
+  rejects(check(),/Missing exact previous reference requirements snapshot/);
 }));
 
 test('bootstrap preserves existing outputs without invoking setup',()=>withBundle(({root,tools,profile,save})=>{

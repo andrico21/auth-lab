@@ -11,7 +11,7 @@ import re
 import shutil
 import subprocess
 import sys
-from historical_inputs import LEGACY_REQUIREMENTS, historical_descriptor
+from historical_inputs import LEGACY_REQUIREMENTS, historical_descriptor, reference_requirements_descriptor
 from license_binding import validate_license_binding
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -161,6 +161,7 @@ def check_bundle(profile_path=PROFILE):
         require(entry['path'] not in preserved or preserved[entry['path']] == value,
                 f'Conflicting historical identity: {entry["path"]}')
         preserved[entry['path']] = value
+    identity(reference_requirements_descriptor(historical, identity))
 
     def check_refs(value):
         if isinstance(value, dict):
