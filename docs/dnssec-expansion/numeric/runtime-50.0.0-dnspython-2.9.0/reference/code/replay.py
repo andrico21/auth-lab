@@ -175,8 +175,8 @@ def create(out):
         with dest.open('xb') as stream:
             stream.write(path.read_bytes())
         code.append({'source': identity(path, ROOT), 'snapshot': identity(dest, out)})
-    for name in ('profile.json', 'requirements.txt'):
-        dest = out / 'inputs' / name
+    for name, archived_name in (('profile.json', 'profile.json'), ('requirements.txt', 'pins.input')):
+        dest = out / 'inputs' / archived_name
         dest.parent.mkdir(exist_ok=True)
         dest.write_bytes((TOOLS / name).read_bytes())
     commands = [capture(out, 'provenance.py', 'provenance', 1)]

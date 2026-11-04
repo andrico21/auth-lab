@@ -22,18 +22,18 @@
   "reference": {
     "catalog": {
       "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/reference/CURRENT-CATALOG.json",
-      "sha256": "0967319ff79ad7ece6d15395ef1c3396408262a9cde52654b120ee80075a4f6b",
+      "sha256": "d7b3745019675d24f46534c2e0835da71685a968b74737f7b94ad30dc0c0408d",
       "bytes": 138453
     },
     "contents": {
       "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/reference/CONTENTS.json",
-      "sha256": "9d2ab44a1593e961fea35a5e88e49e97e3a962c84fc090cc95bcd4bf1bc5c07c",
-      "bytes": 25314
+      "sha256": "d1c3539d858497de62bf27800a8f98ac767e47c258e8970d3cc19c838edab0c3",
+      "bytes": 25308
     },
     "checksums": {
       "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/reference/SHA256SUMS",
-      "sha256": "5c81be91be218216f5d974191285e4631e87c86a7a199e193ef900964aba7485",
-      "bytes": 14717
+      "sha256": "bccb100a2639090118f5bf3336637fe356b3e9af81104d9dfe8a577ecc02956f",
+      "bytes": 14711
     },
     "result": "pass",
     "producers": 18,
@@ -44,27 +44,27 @@
   "setup": [
     {
       "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/setup-uv-version.json",
-      "sha256": "919df54eabbba7ed8b414fcb2e5238e83f8a4b1ebac66b2025a1918daeafbdb5",
+      "sha256": "01cc2c48744547b4a405599d0a002b8d3145720eec371e8b85eaad9a437f1bac",
       "bytes": 246
     },
     {
       "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/setup-venv.json",
-      "sha256": "5fbca2fac019349c04d3db5ac7baca08d01298ad10d81492fedf3060617c3450",
+      "sha256": "12099068964ddc95983510babed2743d25ae98aa5f094c9b9839cdc836b0b9f4",
       "bytes": 397
     },
     {
       "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/setup-install.json",
-      "sha256": "9a974621326677257154b74b54ca5c56705ec68ddb2446d5aedf926b65a27429",
-      "bytes": 957
+      "sha256": "121d05a57147471b899fb49fd0833ba8ac2a4343f8a1cb8f70d3a23066869cd1",
+      "bytes": 958
     },
     {
       "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/replay.json",
-      "sha256": "9f635c033191cce2cb4387633a7b5858a3d57af2a3024d10e8ea37ae2d8234db",
+      "sha256": "4028ca049e5c5f7979d1ec8cfd78f7834287553dc260fce398c128ca964ec5e5",
       "bytes": 623
     },
     {
       "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/seal-check.json",
-      "sha256": "041c4e95408d77e43339c9c033611e7036beaeaa7fa7d8fb17401dcc17b944d4",
+      "sha256": "1fd53e2f7da8382037df7267930854630c02130b51529a92d645d6aa23fac747",
       "bytes": 625
     },
     {
@@ -155,6 +155,15 @@
       "allPayloadHashesPreserved": true,
       "originalContentsAndChecksumsByteIdentical": true,
       "logicalLayoutRelocations": 1
+    },
+    "sealedPinSnapshot": {
+      "identity": {
+        "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/reference/inputs/pins.input",
+        "sha256": "c45d4db1ce0e909e6a2f453864ff4a3032c26e64215124f488f1771f735388d1",
+        "bytes": 382
+      },
+      "matchesLiveRequirementsBytes": true,
+      "installManifestSnapshotAbsent": true
     }
   },
   "routing": {
@@ -181,7 +190,8 @@
         "sha256": "f51b7b17f199221a611c8c4c997fe3c022fdbe9ef39614aceb0c2a72410d9118",
         "bytes": 24997
       }
-    }
+    },
+    "sealedPinSnapshot": "inputs/pins.input"
   },
   "security": {
     "dependabotAlertNumbers": [
@@ -223,7 +233,8 @@
       "observedReason": "GitHub treats requirement snapshots named *.input.txt and the older inputs/requirements.txt as pip manifests",
       "action": "Both live manifests remain patched; exact archived bytes relocated to non-manifest .input filenames without requirements in their names",
       "originalSealBindingsPreserved": true,
-      "noDismissals": true
+      "noDismissals": true,
+      "generatorRule": "Every newly sealed reference stores the exact live requirement bytes as inputs/pins.input, never inputs/requirements.txt"
     }
   },
   "license": {
