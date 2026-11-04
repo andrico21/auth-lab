@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Capture actual current runtime and licence bytes from hash-verified sdists."""
+"""Capture actual runtime and licence bytes from hash-verified package sources."""
 import hashlib
 import json
 import platform
@@ -14,6 +14,18 @@ runtime = require_runtime()
 profile = validate_bundle()
 licenses = []
 for package in profile['packages']:
+    if 'license' in package:
+        source = package['license']
+        data = (ROOT / source['path']).read_bytes()
+        if len(data) > 1048576:
+            raise RuntimeError('Unexpected licence size')
+        dest = out / 'licenses' / (package['name'] + '-' + package['version'] + '-LICENSE.txt')
+        dest.parent.mkdir(exist_ok=True)
+        with dest.open('xb') as stream:
+            stream.write(data)
+        licenses.append({**identity(dest, out), 'package': package['name'], 'version': package['version'],
+                         'sourceFile': source, 'origin': 'captured-upstream-release-license'})
+        continue
     archive = ROOT / package['source']['path']
     found = False
     with tarfile.open(archive, 'r:gz') as source:
@@ -43,7 +55,7 @@ row = {'schemaVersion': 1, 'kind': 'dnssec-current-runtime-and-license-identitie
        'cryptographyBackend': backend.openssl_version_text(), 'licenses': licenses,
        'profile': identity(TOOLS / 'profile.json', ROOT), 'requirements': profile['requirements'],
        'packages': profile['packages'], 'command': [sys.executable, '-B', str(TOOLS / 'provenance.py')],
-       'offlineScope': {'packageArtifactsBundled': True, 'licenseBytesFromVerifiedSourceArchives': True,
+       'offlineScope': {'packageArtifactsBundled': True, 'licenseBytesFromVerifiedSources': True,
                         'setupEvidence': 'Bootstrap output sibling setup receipts; no install claimed by this licence capture.',
                         'notBundled': ['CPython interpreter', 'uv executable', 'system OpenSSL executable/library', 'OS runtime'],
                         'notClaimed': ['OS-enforced network isolation', 'Cross-platform offline installation',

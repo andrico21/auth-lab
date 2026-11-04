@@ -10,13 +10,15 @@ import os
 import pathlib
 import platform
 import subprocess
+from historical_inputs import LEGACY_REQUIREMENTS, historical_descriptor
+from license_binding import validate_license_binding
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 TOOLS = pathlib.Path(__file__).resolve().parent
 HISTORICAL_TOOLS = ROOT / 'tools/verification/dnssec-crypto'
 HISTORICAL = ROOT / 'docs/dnssec-expansion/numeric'
 EXPECTED_RUNTIME = {'python': '3.14.4', 'uv': '0.12.10', 'platform': 'Linux', 'machine': 'x86_64',
-                    'packages': {'dnspython': '2.8.0', 'cryptography': '50.0.0', 'cffi': '2.1.1', 'pycparser': '3.12'}}
+                    'packages': {'dnspython': '2.9.0', 'cryptography': '50.0.0', 'cffi': '2.1.1', 'pycparser': '3.12'}}
 
 
 def load_profile():
@@ -68,6 +70,11 @@ def validate_bundle():
     for package in profile['packages']:
         for kind in ('wheel', 'source', 'metadata'):
             verify_identity(ROOT, package[kind])
+        if 'license' in package:
+            license_row = package['license']
+            license_data = verify_identity(ROOT, license_row).read_bytes()
+            tree_data = verify_identity(ROOT, license_row['treeMetadata']).read_bytes()
+            validate_license_binding(license_row, license_data, tree_data)
         metadata = json.loads((ROOT / package['metadata']['path']).read_text())
         if metadata['info']['version'] != package['version']:
             raise RuntimeError('PyPI metadata version mismatch: ' + package['name'])
@@ -76,14 +83,15 @@ def validate_bundle():
             candidates = [entry for entry in metadata['urls'] if entry['filename'] == pathlib.PurePosixPath(row['path']).name]
             if len(candidates) != 1 or candidates[0]['digests']['sha256'] != row['sha256'] or candidates[0]['size'] != row['bytes'] or candidates[0]['url'] != row['url']:
                 raise RuntimeError('Artifact is not bound to captured PyPI metadata: ' + row['path'])
+    verify_identity(ROOT, dict(profile['requirements'], path=LEGACY_REQUIREMENTS))
     for row in profile['historical']['authorities'] + profile['historical']['files']:
-        verify_identity(ROOT, row)
+        verify_identity(ROOT, historical_descriptor(row, profile['historical']))
     freeze_path = ROOT / 'docs/dnssec-expansion/contract-freeze.json'
     freeze_bytes = freeze_path.read_bytes()
     if hashlib.sha256(freeze_bytes).hexdigest() != 'b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19':
         raise RuntimeError('Original freeze authority changed')
     for row in json.loads(freeze_bytes)['inputs']:
-        verify_identity(ROOT, row)
+        verify_identity(ROOT, historical_descriptor(row, profile['historical']))
     return profile
 
 

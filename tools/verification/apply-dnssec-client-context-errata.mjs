@@ -3,6 +3,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {historicalInputPath} from './dnssec-historical-input.mjs';
 
 // Verification-only input transform. No production or evaluator imports.
 // Only the four independently audited client-context corrections are applied.
@@ -15,7 +16,8 @@ const out=path.resolve(root,args[1]||base+'/contract-errata/effective-client-con
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const json=value=>JSON.stringify(value,null,2)+'\n';
 function ref(relative,expected,expectedBytes){
-  const bytes=fs.readFileSync(path.join(root,relative)),identity={path:relative,bytes:bytes.length,sha256:hash(bytes)};
+  const file=relative==='tools/verification/dnssec-crypto/requirements.txt'?historicalInputPath(root,{path:relative,sha256:expected,bytes:expectedBytes}):path.join(root,relative);
+  const bytes=fs.readFileSync(file),identity={path:relative,bytes:bytes.length,sha256:hash(bytes)};
   if(expected)assert.equal(identity.sha256,expected,'Exact immutable input: '+relative);
   if(expectedBytes!==undefined)assert.equal(identity.bytes,expectedBytes,'Exact input size: '+relative);
   return identity;

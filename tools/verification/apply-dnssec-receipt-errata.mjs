@@ -3,6 +3,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {historicalInputPath} from './dnssec-historical-input.mjs';
 
 // Verification-only input transform. No production, evaluator or public-fixture imports.
 // D0, v1 and v2 stay byte-immutable; independent exact patches produce a new overlay.
@@ -17,7 +18,8 @@ const sort=value=>Array.isArray(value)?value.map(sort):value&&typeof value==='ob
 const canonical=value=>JSON.stringify(sort(value));
 const json=value=>JSON.stringify(value,null,2)+'\n';
 function ref(relative,expected,expectedBytes){
-  const bytes=fs.readFileSync(path.join(root,relative));
+  const file=relative==='tools/verification/dnssec-crypto/requirements.txt'?historicalInputPath(root,{path:relative,sha256:expected,bytes:expectedBytes}):path.join(root,relative);
+  const bytes=fs.readFileSync(file);
   const value={path:relative,bytes:bytes.length,sha256:hash(bytes)};
   if(expected)assert.equal(value.sha256,expected,'Exact immutable input: '+relative);
   if(expectedBytes!==undefined)assert.equal(value.bytes,expectedBytes,'Exact immutable input size: '+relative);

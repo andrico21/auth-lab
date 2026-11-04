@@ -33,7 +33,7 @@ EXPIRATION = CLOCK + 3600
 ORDER = int('ffffffff00000000ffffffffffffffffbce6faada7179e84f3b9cac2fc632551', 16)
 FIXTURES = {'schemaVersion': 1, 'kind': 'dnssec-independent-numeric-fixtures', 'independentOfProduction': True,
  'researchCutoff': '2026-10-23', 'baseClock': CLOCK,
- 'referenceTool': {'name': 'dnspython', 'version': '2.8.0', 'crypto': 'cryptography==50.0.0',
+ 'referenceTool': {'name': 'dnspython', 'version': '2.9.0', 'crypto': 'cryptography==50.0.0',
  'python': platform.python_version(), 'signingInputProducer': 'dns.dnssec._make_rrsig_signature_data',
  'independentVerifier': 'verify.py (no dns imports; separate canonical reconstruction and OpenSSL CLI)'},
  'keys': {}, 'rrsets': {}, 'signatures': {}, 'ds': {}, 'nsec3': {}, 'vectors': {},
@@ -211,7 +211,7 @@ for index,(h,name) in enumerate(hashed):
     sign(identity+'-signature',identity,'child-zsk-g1')
 FIXTURES['vectors']['nsec3-proof-parameters']={'zone':'lab.example.','hashAlgorithm':1,'flags':0,'iterations':0,'saltHex':'','optOut':False,
  'rrsetIds':['nsec3-proof-0','nsec3-proof-1','nsec3-proof-2'],'separateZoneVariant':True}
-for package,version in [('dnspython','2.8.0'),('cryptography','50.0.0'),('cffi','2.1.1'),('pycparser','3.12')]:
+for package,version in [('dnspython','2.9.0'),('cryptography','50.0.0'),('cffi','2.1.1'),('pycparser','3.12')]:
     assert importlib.metadata.version(package)==version
 raw=(json.dumps(FIXTURES,indent=2,sort_keys=True)+'\n').encode()
 path=OUT/'dnssec-numeric-fixtures.json'

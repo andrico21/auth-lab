@@ -207,7 +207,9 @@ def create(out):
                'reports': [identity(out / name, out) for name in REPORTS],
                'runtimeAndLicenses': identity(out / 'runtime-and-licenses.json', out),
                'publicByteParity': identity(out / 'PUBLIC-BYTE-PARITY.json', out),
-               'preservation': {'originalAuthorityAndPayloadBytesUnchanged': True,
+               'preservation': {'originalAuthorityBytesUnchanged': True,
+                                'historicalPayloadBytesPreserved': True,
+                                'relocatedInputs': [profile['historical']['requirementsBefore']],
                                 'authorities': profile['historical']['authorities'], 'files': profile['historical']['files']},
                'limits': ['Offline package selection, not OS-enforced network isolation',
                           'No production imports or live DNS/server interoperability',
@@ -247,9 +249,11 @@ def check(out):
     catalog = json.loads(regular_file(out, 'CURRENT-CATALOG.json').read_bytes())
     if catalog['schemaVersion'] != 1 or catalog['kind'] != 'current-dnssec-offline-reference-catalog' or catalog['result'] != 'pass' or catalog['runtime'] != EXPECTED_RUNTIME:
         raise RuntimeError('Invalid current runtime catalog')
-    if catalog['preservation'] != {'originalAuthorityAndPayloadBytesUnchanged': True,
+    if catalog['preservation'] != {'originalAuthorityBytesUnchanged': True,
+                                  'historicalPayloadBytesPreserved': True,
+                                  'relocatedInputs': [profile['historical']['requirementsBefore']],
                                   'authorities': profile['historical']['authorities'], 'files': profile['historical']['files']}:
-        raise RuntimeError('Catalog does not preserve the original authorities')
+        raise RuntimeError('Catalog does not preserve the original authorities and historical input bindings')
     verify_identity(ROOT, catalog['profile'])
     for code in catalog['code']:
         verify_identity(ROOT, code['source'])

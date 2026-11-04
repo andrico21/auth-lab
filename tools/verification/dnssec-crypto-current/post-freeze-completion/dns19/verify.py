@@ -56,7 +56,7 @@ for item in data['provenance']['inputs'] + data['provenance']['sources'] + [data
     check('input-sha256:' + item['path'], actual['sha256'], item['sha256'])
     check('input-bytes:' + item['path'], actual['bytes'], item['bytes'])
 versions = {name: importlib.metadata.version(name) for name in ['dnspython', 'cryptography', 'cffi', 'pycparser']}
-check('pinned-package-versions', versions, {'dnspython': '2.8.0', 'cryptography': '50.0.0', 'cffi': '2.1.1', 'pycparser': '3.12'})
+check('pinned-package-versions', versions, {'dnspython': '2.9.0', 'cryptography': '50.0.0', 'cffi': '2.1.1', 'pycparser': '3.12'})
 check('pinned-python-version', platform.python_version(), '3.14.4')
 
 # Reject private/expectation field leakage anywhere in the new active public data.

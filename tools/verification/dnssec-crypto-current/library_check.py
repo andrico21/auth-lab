@@ -89,9 +89,9 @@ for identity,v in published.items():
         keys={dns.name.from_text(v['owner']):dns.rrset.from_text(v['owner'],3600,'IN','DNSKEY',v['dnskey'])}
         observe(identity+':published-signature',lambda: dns.dnssec.validate_rrsig(rr(v['rrset']),sig,keys,now=v['now']),True)
 source=inspect.getsource(dns.dnssec._validate_rrsig)
-report={'schemaVersion':1,'kind':'dnssec-version-pinned-library-observations','dnspython':'2.8.0','rows':rows,
+report={'schemaVersion':1,'kind':'dnssec-version-pinned-library-observations','dnspython':'2.9.0','rows':rows,
  'timeApiSource':source,'timeApiSourceSha256':hashlib.sha256(source.encode()).hexdigest(),
- 'sourceScope':'dns.dnssec._validate_rrsig from bundled dnspython2.8.0 source; plain comparisons observed. RFC serial vectors remain independent literals.',
+ 'sourceScope':'dns.dnssec._validate_rrsig from bundled dnspython2.9.0 source; plain comparisons observed. RFC serial vectors remain independent literals.',
  'summary':{'observations':len(rows),'recordedExpectedFailures':sum(r.get('observation',{}).get('success') is False for r in rows),
  'serialDisagreements':sum(r.get('context',{}).get('agreementWithRfcVector') is False for r in rows if isinstance(r.get('context'),dict))}}
 raw=(json.dumps(report,indent=2,sort_keys=True)+'\n').encode()

@@ -3,6 +3,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
+import {historicalInputPath} from './dnssec-historical-input.mjs';
 
 // Verification-only authority transform. No application, tests or evaluator imports.
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
@@ -13,7 +14,8 @@ const base='docs/dnssec-expansion',prior=base+'/contract-errata/effective-cache-
 const out=path.resolve(root,args[1]||base+'/contract-errata/effective-review-corrections');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex'),json=value=>JSON.stringify(value,null,2)+'\n';
 function ref(relative,sha256,bytes){
-  const data=fs.readFileSync(path.join(root,relative)),identity={path:relative,bytes:data.length,sha256:hash(data)};
+  const file=relative==='tools/verification/dnssec-crypto/requirements.txt'?historicalInputPath(root,{path:relative,sha256,bytes}):path.join(root,relative);
+  const data=fs.readFileSync(file),identity={path:relative,bytes:data.length,sha256:hash(data)};
   if(sha256)assert.equal(identity.sha256,sha256,'Exact immutable input: '+relative);
   if(bytes!==undefined)assert.equal(identity.bytes,bytes,'Exact immutable size: '+relative);
   return identity;

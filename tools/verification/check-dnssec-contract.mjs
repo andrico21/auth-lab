@@ -14,6 +14,7 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {isDeepStrictEqual} from 'node:util';
 import {performance} from 'node:perf_hooks';
 import {captureReviewInputs} from './review-input-identity.mjs';
+import {historicalInputPath} from './dnssec-historical-input.mjs';
 
 const dcRunner=fileURLToPath(import.meta.url);
 const dcSha=value=>createHash('sha256').update(value).digest('hex');
@@ -117,7 +118,12 @@ function dcVisit(value,fn,location=''){
 }
 function dcInputFiles(root,worksheet,manifest){
   const names=new Set([worksheet,manifest,path.join(root,'docs/dnssec-expansion/contract-freeze.json')]);
-  for(const input of dcJson(path.join(root,'docs/dnssec-expansion/contract-freeze.json')).inputs||[])names.add(path.resolve(root,input.path));
+  for(const input of dcJson(path.join(root,'docs/dnssec-expansion/contract-freeze.json')).inputs||[]){
+    names.add(historicalInputPath(root,input));
+    // Both live manifests and profile are captured by review.verificationFiles;
+    // retain the original live input here too, independently of its archived row.
+    names.add(path.resolve(root,input.path));
+  }
   const pending=[worksheet],visited=new Set();
   while(pending.length){
     const file=pending.pop();if(visited.has(file))continue;visited.add(file);
@@ -1578,7 +1584,11 @@ try{
   dcEqual(dcReport,manifest.totals.namedCases,159,'frozen-case-count','manifest.totals');
   dcEqual(dcReport,dcBefore.independentFiles['docs/dnssec-expansion/contract-freeze.json'],'b8ee8034a613e70c78a1f007b30a7d20b9d18e80ea84f9472bd2117e6044ad19','immutable-D0-identity','contract-freeze.json');
   const frozen=dcJson(path.join(dcOptions.root,'docs/dnssec-expansion/contract-freeze.json'));
-  for(const input of frozen.inputs)dcEqual(dcReport,dcBefore.independentFiles[input.path],input.sha256,'immutable-frozen-D0-input',input.path);
+  for(const input of frozen.inputs){
+    const file=historicalInputPath(dcOptions.root,input),actualPath=path.relative(dcOptions.root,file);
+    dcEqual(dcReport,dcBefore.independentFiles[actualPath],input.sha256,'immutable-frozen-D0-input',input.path);
+    dcEqual(dcReport,fs.statSync(file).size,input.bytes,'immutable-frozen-D0-input-bytes',input.path);
+  }
   dcReport.frozenInputsChecked=frozen.inputs.length;
   dcEqual(dcReport,manifest.totals.requiredLessons,22,'frozen-required-lessons','manifest.totals');
   dcEqual(dcReport,worksheet.totals.lessons,22,'exact-independent-worksheet-lessons','worksheet.totals');

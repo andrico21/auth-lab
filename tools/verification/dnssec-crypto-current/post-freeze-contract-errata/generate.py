@@ -3,7 +3,8 @@
 import sys as _current_sys
 from pathlib import Path as _CurrentPath
 _current_sys.path.insert(0, str(_CurrentPath(__file__).resolve().parents[1]))
-from current_profile import ROOT, TOOLS as CURRENT_TOOLS, HISTORICAL_TOOLS, output_root, reference_path, generated_hash, require_runtime
+from current_profile import ROOT, TOOLS as CURRENT_TOOLS, HISTORICAL_TOOLS, output_root, reference_path, generated_hash, require_runtime, load_profile
+from historical_inputs import historical_descriptor
 require_runtime()
 #!/usr/bin/env python3
 """Post-freeze audit inputs only. Never overwrite a frozen file or import production code."""
@@ -26,13 +27,18 @@ if hashlib.sha256(FREEZE.read_bytes()).hexdigest()!=FREEZE_HASH:
     raise RuntimeError('Freeze authority differs; do not substitute another baseline')
 authority=json.loads(FREEZE.read_text())
 owned_prefixes=['docs/dnssec-expansion/numeric/','tools/verification/dnssec-crypto/']
+historical=load_profile()['historical']
 frozen_owned=[]
 for entry in authority['inputs']:
     if any(entry['path'].startswith(prefix) for prefix in owned_prefixes):
-        path=ROOT/entry['path']; actual=hashlib.sha256(path.read_bytes()).hexdigest()
+        descriptor=historical_descriptor(entry,historical)
+        path=ROOT/descriptor['path']; actual=hashlib.sha256(path.read_bytes()).hexdigest()
         if actual!=entry['sha256']:
             raise RuntimeError('Frozen owned file already differs: '+entry['path'])
-        frozen_owned.append({'path':entry['path'],'sha256':actual,'bytes':path.stat().st_size})
+        observation={'path':descriptor['path'],'sha256':actual,'bytes':path.stat().st_size}
+        if descriptor['path']!=entry['path']:
+            observation['frozenPath']=entry['path']
+        frozen_owned.append(observation)
 base=copy.deepcopy(g.FIXTURES)
 T=g.CLOCK; I=1792713000; X=1792717200; LONG=1803081600
 assert T==1792713600
@@ -135,7 +141,7 @@ for filename,value in [('publication-fixtures.json',pub),('resolution-fixtures.j
     outputs.append({'path':reference_path(path),'bytes':len(raw),'sha256':hashlib.sha256(raw).hexdigest(),'keys':len(value.get('keys',{})),'rrsets':len(value['rrsets']),'signatures':len(value['signatures'])})
 # These source captures were already frozen; reuse them rather than refetching or rewriting.
 source_paths=['docs/dnssec-expansion/sources/publication/rfc9615.raw','docs/dnssec-expansion/sources/publication/rfc9615.txt','docs/dnssec-expansion/sources/publication/capture-metadata.json','docs/dnssec-expansion/numeric/sources/rfc4035.txt','docs/dnssec-expansion/numeric/sources/rfc6840.txt']
-provenance={'schemaVersion':1,'kind':'dnssec-post-freeze-generation-provenance','freezeAuthoritySha256':FREEZE_HASH,'outputs':outputs,'python':platform.python_version(),'dependencies':{name:importlib.metadata.version(name) for name in ['dnspython','cryptography','cffi','pycparser']},'producer':reference_path(CURRENT_TOOLS / 'post-freeze-contract-errata/generate.py'),'command':[_current_sys.executable,'-B',str(pathlib.Path(__file__).resolve())],'referenceSigningProducer':'Maintained current verification-only generate.py + dnspython2.8.0/cryptography50 deterministic sign; no production imports','sourceReferences':[{'path':name,'sha256':hashlib.sha256((ROOT/name).read_bytes()).hexdigest()} for name in source_paths],'frozenOwnedArtifactsBefore':frozen_owned,'frozenOwnedArtifactsAfterGenerationUnchanged':True,'dependencyEnvironment':'Inherited exact current replay interpreter; strict runtime profile checked before generation','newKeyScope':'12 deterministic fixture-only net/org/example/provider KSK/ZSK keys; attributed synthetic out-of-domain operators, no production secrets. Existing root and child keys reused byte-for-byte.'}
+provenance={'schemaVersion':1,'kind':'dnssec-post-freeze-generation-provenance','freezeAuthoritySha256':FREEZE_HASH,'outputs':outputs,'python':platform.python_version(),'dependencies':{name:importlib.metadata.version(name) for name in ['dnspython','cryptography','cffi','pycparser']},'producer':reference_path(CURRENT_TOOLS / 'post-freeze-contract-errata/generate.py'),'command':[_current_sys.executable,'-B',str(pathlib.Path(__file__).resolve())],'referenceSigningProducer':'Maintained current verification-only generate.py + dnspython2.9.0/cryptography50 deterministic sign; no production imports','sourceReferences':[{'path':name,'sha256':hashlib.sha256((ROOT/name).read_bytes()).hexdigest()} for name in source_paths],'frozenOwnedArtifactsBefore':frozen_owned,'frozenOwnedArtifactsAfterGenerationUnchanged':True,'dependencyEnvironment':'Inherited exact current replay interpreter; strict runtime profile checked before generation','newKeyScope':'12 deterministic fixture-only net/org/example/provider KSK/ZSK keys; attributed synthetic out-of-domain operators, no production secrets. Existing root and child keys reused byte-for-byte.'}
 for entry in frozen_owned:
     if hashlib.sha256((ROOT/entry['path']).read_bytes()).hexdigest()!=entry['sha256']:
         raise RuntimeError('Frozen owned file changed during producer: '+entry['path'])

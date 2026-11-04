@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "kind": "dnssec-current-dependency-upgrade",
+  "baseCommit": "338c7e3e8d1b952f8b1cce90a89b81ea87d217ec",
+  "version": "50.0.0-dnspython-2.9.0",
+  "applicationVersion": "1.3",
+  "sourceState": "Dependency-only follow-on to release 1.3; application bytes unchanged; not independent reviewer acceptance",
+  "replacesActiveRuntime": {
+    "dnspython": "2.8.0",
+    "cryptography": "50.0.0"
+  },
+  "currentProfile": {
+    "path": "tools/verification/dnssec-crypto-current/profile.json",
+    "sha256": "048d2386f21123acdd650385b085c21f3dcd123d2562c4773eb595ba889571a4",
+    "bytes": 97604
+  },
+  "requirements": {
+    "path": "tools/verification/dnssec-crypto-current/requirements.txt",
+    "bytes": 382,
+    "sha256": "c45d4db1ce0e909e6a2f453864ff4a3032c26e64215124f488f1771f735388d1"
+  },
+  "reference": {
+    "catalog": {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/reference/CURRENT-CATALOG.json",
+      "sha256": "330c4660665584418aa19cec9843fc8bbf4e9a0dd76f95a053577f95dcaf50b5",
+      "bytes": 137886
+    },
+    "contents": {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/reference/CONTENTS.json",
+      "sha256": "35dc2488a9737369143769873d92c4ebe44821d14b66e63f926a27dd0c572906",
+      "bytes": 25314
+    },
+    "checksums": {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/reference/SHA256SUMS",
+      "sha256": "d89bdbd1660ce29860eb713afdc29aad9dfed91bf2a468b9e4e825987ee0ae5d",
+      "bytes": 14717
+    },
+    "result": "pass",
+    "producers": 18,
+    "verifiers": 18,
+    "datasets": 19,
+    "publicCryptographicDataParity": true
+  },
+  "setup": [
+    {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/setup-uv-version.json",
+      "sha256": "45ad2d4458c03da2860a475da6e8b5f9c4c6b11ff4a62046f5e1234a450350f3",
+      "bytes": 246
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/setup-venv.json",
+      "sha256": "d8fa1a485b0d2115609ebd1d1a89a432cdae16e734dea5039518076f427eb86e",
+      "bytes": 397
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/setup-install.json",
+      "sha256": "7d5137ed503aa7f627941913d4ddb2ef5f50a269d172e6a006b1837180eb79e7",
+      "bytes": 957
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/replay.json",
+      "sha256": "28f6c6cc8379c96e2da4c0e844f303378874dae2016fc5aec4b276a8b523932c",
+      "bytes": 623
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/seal-check.json",
+      "sha256": "e25212047e4dfc4cf26e494b3c3e1a3674bcd1071b2eaa186fc5c81e00381563",
+      "bytes": 625
+    },
+    {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/cold-seal-check.json",
+      "sha256": "3a3f03b7b0086a306eec1b96f220e98f98e5719fba5c0905e40a1145714eeaeb",
+      "bytes": 901
+    }
+  ],
+  "installed": {
+    "cffi": "2.1.1",
+    "cryptography": "50.0.0",
+    "dnspython": "2.9.0",
+    "pycparser": "3.12",
+    "python": "3.14.4",
+    "uv": "0.12.10",
+    "backend": "OpenSSL 4.0.1 9 Jun 2026"
+  },
+  "preservation": {
+    "originalFreezeInputs": 354,
+    "retainedFiles": 419,
+    "authorityFiles": 19,
+    "originalAuthorityBytesUnchanged": true,
+    "historicalPayloadBytesPreserved": true,
+    "relocatedInputs": [
+      {
+        "originalPath": "tools/verification/dnssec-crypto/requirements.txt",
+        "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/inputs/historical-requirements.input.txt",
+        "bytes": 382,
+        "sha256": "24c62a92f1a8992f2469ba6cf381a8d07e4c21ae0e058592c596221947b6fd41"
+      }
+    ],
+    "olderInventories": "Retained as their original snapshots, not re-certified against later superseding payload versions"
+  },
+  "checks": {
+    "offlinePackageInstall": "Fresh external environment and uv cache; offline, no-index, require-hashes and binary wheels only",
+    "targetedBehaviorContracts": {
+      "passed": 33,
+      "failed": 0,
+      "files": [
+        "tests/dnssec-current-offline.test.mjs",
+        "tests/dnssec-historical-input.test.mjs"
+      ]
+    },
+    "realHistoricalInputs": {
+      "passed": 354,
+      "failed": 0,
+      "archivedInputBindings": 1,
+      "bothLiveManifestsPatched": true
+    },
+    "freshReplay": {
+      "result": "pass",
+      "producers": 18,
+      "verifiers": 18,
+      "datasets": 19
+    },
+    "coldCommittedSeal": {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/setup/cold-seal-check.json",
+      "sha256": "3a3f03b7b0086a306eec1b96f220e98f98e5719fba5c0905e40a1145714eeaeb",
+      "bytes": 901
+    },
+    "upstreamLicenseBinding": {
+      "gitBlobIdentityVerified": true,
+      "upstreamTreeCaptureIdentityVerified": true,
+      "treeIdentityAndLicenseMembershipVerified": true,
+      "rehashedMutationRegressions": {
+        "failedBefore": 3,
+        "passedAfter": 3
+      }
+    },
+    "existingNumericSeals": {
+      "passed": true,
+      "checks": 502,
+      "failures": 0
+    }
+  },
+  "routing": {
+    "activeCommand": "bun run verify:dnssec",
+    "legacyManifest": {
+      "path": "tools/verification/dnssec-crypto/requirements.txt",
+      "sha256": "c45d4db1ce0e909e6a2f453864ff4a3032c26e64215124f488f1771f735388d1",
+      "bytes": 382
+    },
+    "historicalRequirements": {
+      "originalPath": "tools/verification/dnssec-crypto/requirements.txt",
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/inputs/historical-requirements.input.txt",
+      "bytes": 382,
+      "sha256": "24c62a92f1a8992f2469ba6cf381a8d07e4c21ae0e058592c596221947b6fd41"
+    },
+    "frozenLegacyFreezeChecker": "Preserved byte-for-byte; checks only its original historical layout"
+  },
+  "security": {
+    "dependabotAlertNumbers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "resolution": "Patched version constraints in both recognized manifests; no alert dismissals or risk acceptance",
+    "patchedPackages": {
+      "dnspython": "2.9.0",
+      "cryptography": "50.0.0"
+    }
+  },
+  "license": {
+    "upstreamDistributionsOmitLicenseText": true,
+    "upstreamReleaseTag": "v2.9.0",
+    "upstreamTreeCapture": {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/dependencies/dnspython-2.9.0.upstream-tree.json",
+      "sha256": "75f98a5625a6f44d78f05338825a600c86b13feb469ebb7e5d58458270154eff",
+      "bytes": 3833
+    },
+    "upstreamBlobCapture": {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/dependencies/dnspython-2.9.0.license-blob.json",
+      "sha256": "9a6a849f8f620acf50a2d030e35bbb9435c06278f3ab30b1e29f1f8b0ce22bcc",
+      "bytes": 2395
+    },
+    "file": {
+      "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/dependencies/dnspython-2.9.0-LICENSE.txt",
+      "bytes": 1526,
+      "sha256": "c3ea3ff5654b329c19d3bc5f7481af623c3dded4a6145585499f843ad3d741cd",
+      "url": "https://api.github.com/repos/rthalley/dnspython/git/blobs/390a726dceb02e67bae01849000eb44632f01703",
+      "upstreamTree": "e790c8f20a67ad439c7aafef2321e161c6028eee",
+      "upstreamBlob": "390a726dceb02e67bae01849000eb44632f01703",
+      "treeMetadata": {
+        "path": "docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/dependencies/dnspython-2.9.0.upstream-tree.json",
+        "sha256": "75f98a5625a6f44d78f05338825a600c86b13feb469ebb7e5d58458270154eff",
+        "bytes": 3833,
+        "url": "https://api.github.com/repos/rthalley/dnspython/git/trees/e790c8f20a67ad439c7aafef2321e161c6028eee"
+      }
+    }
+  },
+  "applicationArtifact": {
+    "path": "dist/auth-flow-studio.html",
+    "sha256": "d4406c58469fe5156eaf1fbd2467f108ab3d4ac76d2061438c447a93b5a6e0d3",
+    "bytes": 24068489
+  },
+  "limits": [
+    "Verification-only Python dependencies, not browser runtime cryptography",
+    "Linux x86_64 only; external CPython, uv, system OpenSSL and OS prerequisites",
+    "No live DNS/server interoperability or cross-platform acceptance claimed",
+    "No new application release, tag movement or reviewer acceptance inferred"
+  ]
+}

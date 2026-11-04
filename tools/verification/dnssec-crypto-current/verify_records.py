@@ -77,7 +77,6 @@ v.check('dsync-actual-wire',f['rrsets']['parent-dsync-cds']['canonicalRdataHex']
 v.check('csync-only-a-ns-aaaa-not-ds',v.rdata('CSYNC',f['rrsets']['child-csync']['records'][0])[6:],v.bitmap(['A','NS','AAAA']))
 # Record actual library presentation limits and the original uncorrected RFC literals.
 for identity,action,expected in [
- ('nxname-mnemonic',lambda:dns.rdatatype.from_text('NXNAME'),'UnknownRdatatype'),
  ('rfc8078-original-cds-shorthand',lambda:dns.rdata.from_text('IN','CDS','0 0 0 0'),'SyntaxError'),
  ('rfc8078-original-cdnskey-shorthand',lambda:dns.rdata.from_text('IN','CDNSKEY','0 3 0 0'),'SyntaxError')]:
     try:
@@ -89,7 +88,7 @@ for identity,action,expected in [
 report={'schemaVersion':1,'kind':'dnssec-independent-record-profile-verification','fixtureSha256':hashlib.sha256(raw).hexdigest(),'result':'pass',
  'checks':len(v.RESULTS),'results':v.RESULTS,'observations':rows,
  'trustScope':{'siblingParentKey':'example-zsk-g1 authenticated by frozen baseline chain','siblingKsk':'other-ksk-g1 matches parent-signed DS','siblingZsk':'other-zsk-g1 is in sibling self-authenticated DNSKEY RRset','privateAnchor':'Explicit separate local child-csk-g1; publicDS cannot authenticate it','cdsAndCdnskey':'Existing child-ksk-g1 signing identity, sentinel is never a signing key'},
- 'limits':['NXNAME mnemonic not registered in dnspython2.8.0; actual TYPE128 bitmap encoded and verified','DSYNC trigger and CSYNC address/NS synchronization do not authorize DS changes','Compact per-query profiles not broad denial spans','Unsigned DNAME synthesized CNAME has no independent signature','No application/runtime crypto or live server interoperability']}
+ 'limits':['NXNAME uses the independently checked TYPE128 wire bitmap','DSYNC trigger and CSYNC address/NS synchronization do not authorize DS changes','Compact per-query profiles not broad denial spans','Unsigned DNAME synthesized CNAME has no independent signature','No application/runtime crypto or live server interoperability']}
 result=(json.dumps(report,indent=2,sort_keys=True)+'\n').encode()
 path=v.OUT/'record-profile-verification.json'
 if path.exists() and path.read_bytes()!=result:

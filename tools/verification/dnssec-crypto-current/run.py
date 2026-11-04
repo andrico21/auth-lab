@@ -11,12 +11,14 @@ import re
 import shutil
 import subprocess
 import sys
+from historical_inputs import LEGACY_REQUIREMENTS, historical_descriptor
+from license_binding import validate_license_binding
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 PROFILE = HERE / 'profile.json'
 RUNTIME = {'python': '3.14.4', 'uv': '0.12.10', 'platform': 'Linux',
-           'machine': 'x86_64', 'packages': {'dnspython': '2.8.0',
+           'machine': 'x86_64', 'packages': {'dnspython': '2.9.0',
            'cryptography': '50.0.0', 'cffi': '2.1.1', 'pycparser': '3.12'}}
 
 
@@ -126,6 +128,9 @@ def check_bundle(profile_path=PROFILE):
         seen.add(name)
         for key in ('wheel', 'source', 'metadata'):
             identity(package[key])
+        if 'license' in package:
+            license_row = package['license']
+            validate_license_binding(license_row, identity(license_row), identity(license_row['treeMetadata']))
         wheel = package['wheel']
         require(wheel['sha256'] == pins[name][1], f'Requirement/wheel hash disagreement: {name}')
         compatible_wheel(PurePosixPath(wheel['path']).name)
@@ -146,11 +151,12 @@ def check_bundle(profile_path=PROFILE):
                     row.get('size') == artifact['bytes'] and row.get('url') == artifact['url'] and
                     row.get('packagetype') == package_type and not row.get('yanked', False),
                     f'Artifact/upstream metadata disagreement: {artifact["path"]}')
+    identity(dict(profile['requirements'], path=LEGACY_REQUIREMENTS))
     historical = profile['historical']
     require(historical['authorities'] and historical['files'], 'Missing frozen preservation inventory')
     preserved = {}
     for entry in historical['authorities'] + historical['files']:
-        identity(entry)
+        identity(historical_descriptor(entry, historical))
         value = (entry['sha256'], entry['bytes'])
         require(entry['path'] not in preserved or preserved[entry['path']] == value,
                 f'Conflicting historical identity: {entry["path"]}')

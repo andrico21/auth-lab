@@ -21,7 +21,7 @@ from cryptography.hazmat.primitives.asymmetric import ec
 ROOT = ROOT
 BASE = output_root()
 OUT = BASE / 'review-corrections'
-assert importlib.metadata.version('dnspython') == '2.8.0'
+assert importlib.metadata.version('dnspython') == '2.9.0'
 assert importlib.metadata.version('cryptography') == '50.0.0'
 original_path = BASE / 'dnssec-numeric-fixtures.json'
 original = json.loads(original_path.read_bytes())
@@ -32,7 +32,7 @@ f = {'schemaVersion': 1, 'kind': 'dnssec-independent-review-correction-denial-fi
      'provenance': {'independentOfProduction': True, 'applicationSourceRead': False,
                     'productionEvaluatorExecuted': False, 'osSandboxEnforcementClaimed': False,
                     'producer': reference_path(pathlib.Path(__file__)),
-                    'libraries': {'dnspython': '2.8.0', 'cryptography': '50.0.0'},
+                    'libraries': {'dnspython': '2.9.0', 'cryptography': '50.0.0'},
                     'python': platform.python_version(),
                     'sources': [{'path': reference_path(p), 'bytes': p.stat().st_size, 'sha256': sha(p.read_bytes())} for p in refs],
                     'sections': ['RFC6840 section4.1', 'RFC5155 sections5,8.3'],

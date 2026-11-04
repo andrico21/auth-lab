@@ -52,7 +52,7 @@ jobs:
       - name: Verify DNSSEC sealed numeric references
         run: bun tools/verification/check-dnssec-numeric.mjs --out "$RUNNER_TEMP/auth-lab-dnssec-numeric"
       - name: Verify committed current DNSSEC seal
-        run: uv run --offline --no-project --python 3.14.4 python tools/verification/dnssec-crypto-current/replay.py --check docs/dnssec-expansion/numeric/runtime-50.0.0/reference
+        run: uv run --offline --no-project --python 3.14.4 python tools/verification/dnssec-crypto-current/replay.py --check docs/dnssec-expansion/numeric/runtime-50.0.0-dnspython-2.9.0/reference
       - name: Replay and seal current DNSSEC references offline
         run: bun run verify:dnssec --out "$RUNNER_TEMP/auth-lab-dnssec-current"
       - name: Install isolated cryptographic verification dependencies

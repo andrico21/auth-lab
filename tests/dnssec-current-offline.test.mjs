@@ -9,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 
 const repository=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const relativeTools='tools/verification/dnssec-crypto-current';
-const runtime={python:'3.14.4',uv:'0.12.10',platform:'Linux',machine:'x86_64',packages:{dnspython:'2.8.0',cryptography:'50.0.0',cffi:'2.1.1',pycparser:'3.12'}};
+const runtime={python:'3.14.4',uv:'0.12.10',platform:'Linux',machine:'x86_64',packages:{dnspython:'2.9.0',cryptography:'50.0.0',cffi:'2.1.1',pycparser:'3.12'}};
 
 // Each test has a private miniature captured repository. No committed artifact,
 // retained venv, network, package manager or installed crypto module is touched.
@@ -17,7 +17,7 @@ function withBundle(run){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'dnssec-current-offline-'));
   const tools=path.join(root,relativeTools);
   fs.mkdirSync(tools,{recursive:true});
-  fs.copyFileSync(path.join(repository,relativeTools,'run.py'),path.join(tools,'run.py'));
+  for(const name of ['run.py','historical_inputs.py','license_binding.py'])fs.copyFileSync(path.join(repository,relativeTools,name),path.join(tools,name));
   function put(name,content){
     const bytes=Buffer.from(content);
     fs.mkdirSync(path.dirname(path.join(root,name)),{recursive:true});
@@ -32,6 +32,7 @@ function withBundle(run){
     return {name,version,wheel,source,metadata};
   });
   const requirements=put(`${relativeTools}/requirements.txt`,packages.map(p=>`${p.name}==${p.version} --hash=sha256:${p.wheel.sha256}\n`).join(''));
+  put('tools/verification/dnssec-crypto/requirements.txt',fs.readFileSync(path.join(root,requirements.path)));
   const frozen=put('docs/frozen.txt','original frozen payload\n');
   const authority=put('docs/dnssec-expansion/contract-freeze.json',JSON.stringify({inputs:[frozen]}));
   const final=put('docs/dnssec-expansion/numeric/FINAL-CONTENTS.json',JSON.stringify({files:[frozen]}));
@@ -39,6 +40,35 @@ function withBundle(run){
   const save=()=>fs.writeFileSync(path.join(tools,'profile.json'),JSON.stringify(profile));
   const check=()=>{save();return spawnSync('python3',['-B',path.join(tools,'run.py'),'--check'],{encoding:'utf8',env:{...process.env,PYTHONDONTWRITEBYTECODE:'1'}});};
   try{run({root,tools,put,profile,check,save});}finally{fs.rmSync(root,{recursive:true,force:true});}
+}
+
+function withCapturedLicense(run){
+  return withBundle(bundle=>{
+    const {put,profile}=bundle;
+    const data=Buffer.from('captured upstream ISC license\n');
+    const upstreamBlob=createHash('sha1').update(Buffer.from(`blob ${data.length}\0`)).update(data).digest('hex');
+    const upstreamTree='a'.repeat(40);
+    const treeMetadata=put('bundle/dnspython-upstream-tree.json',JSON.stringify({sha:upstreamTree,truncated:false,tree:[{path:'LICENSE',type:'blob',sha:upstreamBlob}]}));
+    const license={...put('bundle/dnspython-LICENSE.txt',data),upstreamBlob,upstreamTree,treeMetadata};
+    profile.packages[0].license=license;
+    run({...bundle,license});
+  });
+}
+
+function withArchivedRequirements(run){
+  return withBundle(bundle=>{
+    const {put,profile}=bundle;
+    const originalPath='tools/verification/dnssec-crypto/requirements.txt';
+    const originalText='dnspython==2.8.0\ncryptography==46.0.3\n';
+    const original=put(originalPath,originalText);
+    const snapshot=put('docs/history/requirements.input.txt',originalText);
+    put(originalPath,fs.readFileSync(path.join(bundle.root,profile.requirements.path)));
+    profile.historical.requirementsBefore={originalPath,...snapshot};
+    profile.historical.files.push(original);
+    profile.historical.authorities[0]=put('docs/dnssec-expansion/contract-freeze.json',JSON.stringify({inputs:profile.historical.files}));
+    profile.historical.authorities[1]=put('docs/dnssec-expansion/numeric/FINAL-CONTENTS.json',JSON.stringify({files:profile.historical.files}));
+    run(bundle);
+  });
 }
 function rejects(result,pattern){
   assert.ifError(result.error);
@@ -57,6 +87,27 @@ test('offline bundle rejects artifact tampering even when filename and pinned ve
   fs.appendFileSync(path.join(root,profile.packages[1].wheel.path),'changed wheel');
   rejects(check(),/hash\/size mismatch: .*cryptography-50/);
 }));
+
+test('offline bundle rejects a substituted separately captured upstream license',()=>withBundle(({root,put,profile,check})=>{
+  profile.packages[0].license=put('bundle/dnspython-LICENSE.txt','captured upstream ISC license\n');
+  fs.appendFileSync(path.join(root,profile.packages[0].license.path),'changed license');
+  rejects(check(),/hash\/size mismatch: bundle\/dnspython-LICENSE\.txt/);
+}));
+
+test('offline bundle rejects a rehashed replacement license not belonging to the upstream blob',()=>withCapturedLicense(({put,license,check})=>{
+  Object.assign(license,put(license.path,'different locally approved license\n'));
+  rejects(check(),/Upstream license blob mismatch/);
+}));
+
+for(const boundary of ['tree identity','LICENSE blob']){
+  test(`offline bundle rejects rehashed upstream metadata with the wrong ${boundary}`,()=>withCapturedLicense(({root,put,license,check})=>{
+    const tree=JSON.parse(fs.readFileSync(path.join(root,license.treeMetadata.path),'utf8'));
+    if(boundary==='tree identity')tree.sha='f'.repeat(40);
+    else tree.tree[0].sha='f'.repeat(40);
+    license.treeMetadata=put(license.treeMetadata.path,JSON.stringify(tree));
+    rejects(check(),/Upstream license tree mismatch/);
+  }));
+}
 
 test('offline bundle rejects requirement hash disagreement with the captured wheel',()=>withBundle(({put,profile,check})=>{
   profile.requirements=put(profile.requirements.path,profile.packages.map(p=>`${p.name}==${p.version} --hash=sha256:${p.name==='cryptography'?'0'.repeat(64):p.wheel.sha256}\n`).join(''));
@@ -90,6 +141,16 @@ test('offline bundle rejects stale cryptography pins rather than accepting an ol
   rejects(check(),/Unsupported runtime\/package pins/);
 }));
 
+test('offline bundle rejects the affected dnspython version before setup',()=>withBundle(({profile,check})=>{
+  profile.runtime.packages.dnspython='2.8.0';
+  rejects(check(),/Unsupported runtime\/package pins/);
+}));
+
+test('offline bundle rejects legacy live pins drifting independently of the patched active profile',()=>withBundle(({put,check})=>{
+  put('tools/verification/dnssec-crypto/requirements.txt','dnspython==2.8.0\ncryptography==46.0.3\n');
+  rejects(check(),/hash\/size mismatch: tools\/verification\/dnssec-crypto\/requirements\.txt/);
+}));
+
 test('offline bundle rejects frozen payload drift',()=>withBundle(({root,profile,check})=>{
   fs.writeFileSync(path.join(root,profile.historical.files[0].path),'changed frozen payload\n');
   rejects(check(),/hash\/size mismatch: docs\/frozen.txt/);
@@ -98,6 +159,31 @@ test('offline bundle rejects frozen payload drift',()=>withBundle(({root,profile
 test('offline bundle rejects historical inventory shrinkage even if remaining identities validate',()=>withBundle(({profile,put,check})=>{
   profile.historical.files=[put('docs/unrelated.txt','unrelated')];
   rejects(check(),/Historical authority reference missing\/mismatched: docs\/frozen.txt/);
+}));
+
+test('patched live requirements coexist with the exact archived frozen requirement identity',()=>withArchivedRequirements(({root,profile,check})=>{
+  const result=check();
+  assert.ifError(result.error);
+  assert.equal(result.status,0,`${result.stdout}\n${result.stderr}`);
+  const before=profile.historical.requirementsBefore;
+  assert.notEqual(fs.readFileSync(path.join(root,before.originalPath),'utf8'),fs.readFileSync(path.join(root,before.path),'utf8'));
+  assert.equal(createHash('sha256').update(fs.readFileSync(path.join(root,before.path))).digest('hex'),profile.historical.files[1].sha256);
+}));
+
+test('historical checks reject tampered archived requirements even when live pins are patched',()=>withArchivedRequirements(({root,profile,check})=>{
+  fs.appendFileSync(path.join(root,profile.historical.requirementsBefore.path),'substituted history');
+  rejects(check(),/hash\/size mismatch: .*requirements\.input\.txt/);
+}));
+
+test('historical checks reject a snapshot rehashed away from the original frozen identity',()=>withArchivedRequirements(({put,profile,check})=>{
+  const before=profile.historical.requirementsBefore;
+  profile.historical.requirementsBefore={originalPath:before.originalPath,...put(before.path,'dnspython==2.9.0\ncryptography==50.0.0\n')};
+  rejects(check(),/Historical requirements snapshot differs from frozen identity/);
+}));
+
+test('historical checks do not fall back to the changed live requirements when the snapshot is absent',()=>withArchivedRequirements(({profile,check})=>{
+  delete profile.historical.requirementsBefore;
+  rejects(check(),/Missing exact historical requirements snapshot/);
 }));
 
 test('bootstrap preserves existing outputs without invoking setup',()=>withBundle(({root,tools,profile,save})=>{
@@ -115,7 +201,7 @@ test('bootstrap preserves existing outputs without invoking setup',()=>withBundl
 test('missing setup executable preserves its actual OS error before failing',()=>withBundle(({tools})=>{
   const outside=fs.mkdtempSync(path.join(os.tmpdir(),'dnssec-setup-failure-'));
   const out=path.join(outside,'new-output');
-  const code=`import importlib.util, os, pathlib\nspec=importlib.util.spec_from_file_location('offline_runner', ${JSON.stringify(path.join(tools,'run.py'))})\nm=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)\nout=pathlib.Path(${JSON.stringify(out)}); out.mkdir()\ntry:\n m.capture(out, 'setup-uv-version', [${JSON.stringify(path.join(outside,'missing-uv'))}, '--version'], dict(os.environ))\nexcept ValueError:\n raise SystemExit(1)\n`;
+  const code=`import importlib.util, os, pathlib, sys\nsys.path.insert(0, ${JSON.stringify(tools)})\nspec=importlib.util.spec_from_file_location('offline_runner', ${JSON.stringify(path.join(tools,'run.py'))})\nm=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)\nout=pathlib.Path(${JSON.stringify(out)}); out.mkdir()\ntry:\n m.capture(out, 'setup-uv-version', [${JSON.stringify(path.join(outside,'missing-uv'))}, '--version'], dict(os.environ))\nexcept ValueError:\n raise SystemExit(1)\n`;
   try{
     const result=spawnSync('python3',['-B','-c',code],{encoding:'utf8'});
     assert.ifError(result.error);
