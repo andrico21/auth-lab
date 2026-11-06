@@ -32,7 +32,25 @@
     "de",
     "ar-AE",
     "fr",
-    "pl"
+    "pl",
+    "hi",
+    "ur",
+    "sw",
+    "ha",
+    "yo",
+    "ig",
+    "ml",
+    "fil",
+    "bn",
+    "el",
+    "es-CO",
+    "es-ES",
+    "it",
+    "pt-PT",
+    "pt-BR",
+    "sr-Cyrl",
+    "sr-Latn",
+    "hr"
   ],
   "glossaryContract": {
     "filePattern": "docs/localization/glossaries/{locale}.json",
@@ -141,8 +159,10 @@
     "digits": "0123456789",
     "numberingSystem": "latn",
     "useGrouping": false,
-    "uiDecimalSeparator": ".",
-    "scope": "Product convention for UI counts, not a claim about locale defaults. Select grammar using the requested locale independently of digit presentation.",
+    "defaultUIDecimalSeparator": ".",
+    "decimalCommaLocales": ["ru", "uk", "de", "fr", "pl", "el", "es-CO", "es-ES", "it", "pt-PT", "pt-BR", "sr-Cyrl", "sr-Latn", "hr"],
+    "maximumFractionDigits": 20,
+    "scope": "Latin-digit ungrouped ordinary-decimal human UI counts with the selected locale's decimal separator. JavaScript Number does not retain visible trailing zero operands or compact exponents. Select grammar independently of digit presentation.",
     "technicalValues": "Keep all technical numbers, version numbers, units, serialized examples, durations, offsets and timestamps exactly as authored in canonical data.",
     "neverParseDisplay": "Never parse a localized displayed count, time or number back into player or model state."
   },
@@ -188,6 +208,46 @@
         "locale": "uk",
         "value": "21",
         "category": "one"
+      },
+      {
+        "locale": "hi",
+        "value": "0.5",
+        "category": "one"
+      },
+      {
+        "locale": "bn",
+        "value": "0",
+        "category": "one"
+      },
+      {
+        "locale": "ur",
+        "value": "0.5",
+        "category": "other"
+      },
+      {
+        "locale": "yo",
+        "value": "1",
+        "category": "other"
+      },
+      {
+        "locale": "ig",
+        "value": "1",
+        "category": "other"
+      },
+      {
+        "locale": "fil",
+        "value": "2",
+        "category": "one"
+      },
+      {
+        "locale": "fil",
+        "value": "0.4",
+        "category": "other"
+      },
+      {
+        "locale": "fil",
+        "value": "0.000004",
+        "category": "other"
       }
     ],
     "integrationReferenceValues": [
@@ -208,7 +268,11 @@
       "102",
       "1000000",
       "0.5",
-      "1.5"
+      "1.5",
+      "6",
+      "9",
+      "0.4",
+      "0.000004"
     ],
     "visiblePrecision": "CLDR lexical operands can distinguish 1 from 1.0. JavaScript Number does not retain trailing-zero spelling; document actual runtime behavior and explicit formatting choices rather than claiming it does.",
     "runtimeEvidence": "No browser, Intl.PluralRules, supportedLocalesOf, resolvedOptions or ICU behavior was exercised by this worker. Runtime/ICU differences must be recorded during integration, not hidden by an English fallback.",
@@ -327,7 +391,7 @@
   ],
   "layoutAndAccessibility": {
     "rtl": [
-      "Hebrew and Arabic human prose uses RTL. Technical graphs, raw JSON, identifiers, commands and technical tables remain LTR.",
+      "Hebrew, Arabic and Urdu human prose uses RTL. Technical graphs, raw JSON, identifiers, commands and technical tables remain LTR.",
       "Renderer-owned LTR bdi isolation surrounds unchanged inline tokens; catalog authors supply no HTML, bidi overrides or hidden directional controls.",
       "Use logical spacing and alignment. Do not reverse arrays, trust directions, arrow meaning, punctuation or token character order to obtain an RTL visual effect.",
       "Use readable translated generic nouns around isolated tokens instead of attaching native-language morphology to them."
@@ -335,7 +399,8 @@
     "expansion": "Allow wrapping, longer labels and flexible control widths for all locales, especially German compounds. Do not remove semantic conditions or negation to fit a width. No unsupported claims of reflow or zoom acceptance.",
     "accessibleNames": "Translate visible and accessible labels together. The accessible name includes the visible localized label and correct state. Keep IDs, aria-controls, roles and shortcut tokens exact. No English-only accessible-name override for a translated control.",
     "languageMetadata": "Mark predominant human language with the selected BCP 47 tag and direction. Mark genuine English fallback as English/LTR. Acronyms and technical names do not require arbitrary pronunciation rewrites.",
-    "pronunciation": "Accessible names may flatten inline language markup. Do not claim actual pronunciation or comprehension without human assistive-technology review."
+    "pronunciation": "Accessible names may flatten inline language markup. Do not claim actual pronunciation or comprehension without human assistive-technology review.",
+    "nativeScripts": "Preserve Devanagari, Malayalam and Bengali shaping, combining marks and joiners; preserve Urdu joining and meaningful Yoruba/Igbo dot-below and tone marks. Use offline system font fallbacks, never remote fonts. Latin-script Hausa is the selected catalog script, not a claim that Hausa has no other script."
   },
   "punctuation": {
     "allowedDash": "ASCII hyphen U+002D only",
@@ -343,13 +408,15 @@
       "U+2013",
       "U+2014"
     ],
-    "scope": "Newly authored project prose. Frozen historical input bytes and exact protected quotes remain unchanged. Locale punctuation never modifies internal literal bytes."
+    "scope": "Newly authored project prose. Frozen historical input bytes and exact protected quotes remain unchanged. Locale punctuation never modifies internal literal bytes.",
+    "exactMetadataLabelExceptions": ["Српски — ћирилица", "Srpski — latinica"],
+    "exceptionAuthority": "The European locale worker plan requires these exact selector labels; prose still uses ASCII hyphens."
   },
   "safeAuthoring": {
     "parameters": "Named parameters follow typed owner contracts. Human prose parameters use structured translation references; technical parameters are exact/protected. Preserve required placeholder occurrences and source hashes.",
     "noTranslatorStructure": "Do not author HTML, scripts, styles, link destinations or markup-bearing translations. Renderer-owned emphasis, code and source links are the only structural fragments.",
     "evidenceBoundary": "Translate already permission- and prefix-projected display data only; do not query future trace data or evaluate semantic models in the localizer.",
-    "search": "Localized prose and aliases are additive search aids only. Preserve canonical IDs, values, Ukrainian letters and technical plus signs; never normalize display or copy payloads."
+    "search": "Localized prose and aliases are additive search aids only. Preserve raw drafts, display text, meaningful native letters/marks/joiners, canonical IDs and technical plus signs. Prose match keys normalize legacy Malayalam virama+ZWJ chillus to their atomic letters and ignore other shaping joiners without splitting words. Atomic chillu versus consonant/virama remains distinct in the exact lane; forgiving chillu folds occur only as lower-priority aliases. Exact NFC/decomposed native forms outrank folded aliases. Never rewrite identifiers or copied payloads."
   },
   "localePolicies": {
     "en": {
@@ -932,6 +999,758 @@
         "actualScreenReaderReview": "unperformed",
         "approvals": []
       }
+    },
+    "hi": {
+      "glossaryPath": "docs/localization/glossaries/hi.json",
+      "style": {
+        "language": "Hindi",
+        "direction": "ltr",
+        "register": "सरल, सम्मानजनक और तकनीकी रूप से सटीक हिन्दी लिखें। निर्देशों में करें जैसे आदरसूचक रूप अपनाएँ। अनावश्यक संस्कृतनिष्ठ शब्दों से बचें।",
+        "grammar": "पूरे वाक्य और नामित पैरामीटर उपयोग करें। प्राप्त होने, साक्ष्य जाँचे जाने, सत्यापन, प्रमाणीकरण और प्राधिकरण का भेद रखें। कर्ता, प्राप्तकर्ता, शर्त और निषेध न हटाएँ।",
+        "casing": "देवनागरी में बड़े और छोटे अक्षरों का भेद नहीं है। औपचारिक लैटिन पहचानकर्ताओं का अक्षर-रूप अक्षरशः रखें।",
+        "punctuation": "हिन्दी वाक्यों में उपयुक्त विराम-चिह्न और पूर्णविराम । उपयोग करें। केवल ASCII हाइफ़न उपयोग करें; U+2013 और U+2014 नहीं।",
+        "expansion": "पंक्तियों को लपेटने दें और नियंत्रणों की चौड़ाई बदलने दें। संक्षेप के लिए शर्त, निषेध या कर्ता न हटाएँ।",
+        "accessibleNames": "दिखने वाले लेबल और सुलभ नाम साथ में अनूदित करें। सुलभ नाम में वही लेबल और स्थिति रखें। शॉर्टकट टोकन और ARIA पहचानकर्ता अक्षरशः रखें।",
+        "bidi": "हिन्दी पाठ बाएँ से दाएँ है। तकनीकी पहचानकर्ताओं का अक्षरक्रम न बदलें; LTR अलगाव रेंडरर का काम है। पाठ में bidi नियंत्रण न जोड़ें।",
+        "literalExample": "{token} फ़ील्ड अभिप्रेत प्राप्तकर्ता का वर्णन करती है।",
+        "literalExampleToken": "aud",
+        "conceptualExample": "अभिप्रेत प्राप्तकर्ता का जारीकर्ता होना आवश्यक नहीं है।",
+        "pluralNote": "CLDR 49 में one तब है जब i = 0 या n = 1: 0, 0.5 और 1 one हैं; 1.5 और 2 other हैं। अंक-प्रदर्शन और व्याकरणिक चयन अलग हैं।",
+        "normativeModality": {
+          "requirement": "करना अनिवार्य है",
+          "recommendation": "करना चाहिए",
+          "permission": "कर सकते हैं",
+          "prohibition": "करना निषिद्ध है"
+        },
+        "normativeModalityRule": "These are prose formulations, not translations of literal RFC keywords or quotations. Retain attribution and strength; do not upgrade a recommendation or permission into an obligation.",
+        "script": "देवनागरी की मात्राएँ, हलंत, नुक्ता, संयुक्ताक्षर, संयोजक और संयोजन चिह्न सुरक्षित रखें। खोज या प्रदर्शन में चिह्न न हटाएँ और अक्षर-समूह न तोड़ें।"
+      },
+      "cardinalCategories": [
+        "one",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "i = 0 or n = 1",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "0",
+          "0.5",
+          "1"
+        ],
+        "other": [
+          "1.5",
+          "2"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "{count} परिणाम मिला।",
+        "other": "{count} परिणाम मिले।"
+      },
+      "review": {
+        "authorWorker": "AuthorHindi",
+        "authorSelfReview": "glossary authoring only; catalog coverage reported separately",
+        "independentTechnicalReview": "unperformed",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "ur": {
+      "glossaryPath": "docs/localization/glossaries/ur.json",
+      "style": {
+        "language": "اردو",
+        "direction": "rtl",
+        "register": "واضح، باادب اور فنی اردو استعمال کریں؛ شناخت کی تصدیق، درستی کی جانچ، توثیق اور اجازت دہی کو الگ رکھیں۔",
+        "grammar": "مکمل جملے اور نامزد پیرامیٹر استعمال کریں؛ فاعل، وصول کنندہ، نفی اور شرط برقرار رکھیں۔",
+        "casing": "اردو میں بڑے اور چھوٹے حروف کی تقسیم نہیں؛ رسمی لاطینی عبارت کا کیس بعینہٖ رکھیں۔",
+        "punctuation": "اردو رموزِ اوقاف استعمال کریں؛ محفوظ ٹکڑوں کے اندر کچھ نہ بدلیں۔ ڈیش کی جگہ صرف ASCII hyphen استعمال کریں۔",
+        "expansion": "Allow wrapping and variable control widths. Do not shorten a label by dropping a condition, negation or actor.",
+        "accessibleNames": "Localize visible labels and accessible names together. An accessible name contains the visible label and the same state. Keep shortcut tokens and ARIA identifiers exact.",
+        "bidi": "اردو نثر RTL ہے۔ رسمی شناخت کار اور تکنیکی قدریں renderer-owned LTR isolation میں رہیں؛ ہاتھ سے bidi controls یا HTML شامل نہ کریں۔ پروٹوکول کی سمت یا بائٹ ترتیب نہ الٹیں۔",
+        "literalExample": "خانہ {token} مطلوبہ وصول کنندہ بیان کرتا ہے۔",
+        "literalExampleToken": "aud",
+        "conceptualExample": "مطلوبہ وصول کنندہ ضروری نہیں کہ جاری کنندہ بھی ہو۔",
+        "pluralNote": "CLDR 49 میں one صرف i = 1 and v = 0 کے لیے ہے؛ عددی 1 واحد، جبکہ 0، 0.5، 1.5 اور 2 دوسری قسم میں ہیں۔",
+        "normativeModality": {
+          "requirement": "لازم ہے",
+          "recommendation": "چاہیے",
+          "permission": "کر سکتا ہے",
+          "prohibition": "ہرگز نہیں کرنا چاہیے"
+        },
+        "normativeModalityRule": "These are prose formulations, not translations of literal RFC keywords or quotations. Retain attribution and strength; do not upgrade a recommendation or permission into an obligation.",
+        "script": "اردو کے درست حروف، جوڑ اور اعراب محفوظ رکھیں؛ ملتے جلتے عربی حروف سے اردو حروف نہ بدلیں۔ قدرتی لفظی فاصلوں کو برقرار رکھیں؛ joiners نہ حذف کریں نہ نیا bidi کنٹرول شامل کریں۔"
+      },
+      "cardinalCategories": [
+        "one",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "i = 1 and v = 0",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1"
+        ],
+        "other": [
+          "0",
+          "0.5",
+          "1.5",
+          "2"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "{count} نتیجہ ملا۔",
+        "other": "{count} نتائج ملے۔"
+      },
+      "review": {
+        "authorWorker": "AuthorUrdu",
+        "authorSelfReview": "glossary authoring only; catalog coverage reported separately",
+        "independentTechnicalReview": "unperformed",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "sw": {
+      "glossaryPath": "docs/localization/glossaries/sw.json",
+      "style": {
+        "language": "Kiswahili",
+        "direction": "ltr",
+        "register": "Use clear standard Kiswahili for technical learning, with complete natural clauses and consistent terminology. Authentication is uthibitishaji wa utambulisho, authorization is uidhinishaji, and validation is uhalalishaji.",
+        "grammar": "Respect Swahili noun-class agreement, subject and object concords, and negation. Translate complete messages; do not append translated suffixes to English words. Preserve actor, recipient, trust direction, conditions and time.",
+        "casing": "Use sentence case for ordinary labels and preserve formal literal casing.",
+        "punctuation": "Use Swahili prose punctuation and ASCII hyphens only, never U+2013 or U+2014.",
+        "expansion": "Allow wrapping and variable control widths. Do not shorten a label by dropping a condition, negation or actor.",
+        "accessibleNames": "Localize visible labels and accessible names together. An accessible name contains the visible label and the same state. Keep shortcut tokens and ARIA identifiers exact.",
+        "bidi": "Kiswahili prose uses Latin script and LTR direction. Preserve native orthography, combining marks and joiners where present; do not author bidi controls. Renderer-owned isolation protects technical tokens.",
+        "literalExample": "Uga {token} unaeleza mpokeaji anayelengwa.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Mpokeaji anayelengwa si lazima awe mtoaji.",
+        "pluralNote": "CLDR 49 Swahili cardinal one applies only when i = 1 and v = 0; other covers 0, 0.5, 1.5 and 2. JavaScript Number does not preserve visible decimal trailing zeros.",
+        "normativeModality": {
+          "requirement": "lazima",
+          "recommendation": "inapendekezwa",
+          "permission": "inaruhusiwa",
+          "prohibition": "hairuhusiwi"
+        },
+        "normativeModalityRule": "These are prose formulations, not translations of literal RFC keywords or quotations. Retain attribution and strength; do not upgrade a recommendation or permission into an obligation."
+      },
+      "cardinalCategories": [
+        "one",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "i = 1 and v = 0",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1"
+        ],
+        "other": [
+          "0",
+          "0.5",
+          "1.5",
+          "2"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "Kipengee {count} kimepatikana.",
+        "other": "Vipengee {count} vimepatikana."
+      },
+      "review": {
+        "authorWorker": "AuthorSwahili",
+        "authorSelfReview": "glossary authoring only; catalog coverage reported separately",
+        "independentTechnicalReview": "unperformed",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "ha": {
+      "glossaryPath": "docs/localization/glossaries/ha.json",
+      "style": {
+        "language": "Hausa",
+        "direction": "ltr",
+        "register": "Yi amfani da Hausa mai sauƙin fahimta daidai da ma’anar fasaha; kada a goge sharadi ko musantawa.",
+        "grammar": "Rubuta cikakkiyar jimla. A bayyana mai aiki, mai bayarwa da mai karɓa; kada a sauya alkiblar amana.",
+        "casing": "Yi amfani da manyan haruffa a farkon jimla; kiyaye sunayen fasaha daidai.",
+        "punctuation": "Yi amfani da alamomin rubutun Hausa; yi amfani da ASCII hyphen kawai, ba U+2013 ko U+2014 ba.",
+        "expansion": "Allow wrapping and variable control widths. Do not shorten a label by dropping a condition, negation or actor.",
+        "accessibleNames": "Localize visible labels and accessible names together. An accessible name contains the visible label and the same state. Keep shortcut tokens and ARIA identifiers exact.",
+        "bidi": "Hausa a wannan kundin rubutun Latin ce kuma LTR. Ba a nufin Latin ne kaɗai rubutun Hausa ba; ana amfani da Ajami ma. Kiyaye Ƙ/ƙ, Ɗ/ɗ, Ɓ/ɓ da dukkan alamomin haɗawa. Kada a ƙara bidi controls; renderer ne ke ware ƙimomin fasaha LTR.",
+        "literalExample": "Filin {token} yana bayyana wanda aka nufa.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Wanda aka nufa ba lallai ya zama mai bayarwa ba.",
+        "pluralNote": "CLDR 49 Hausa: one idan n = 1; other ga 0, 0.5, 1.5 da 2. Kada a gina jam’i da ƙarin harafi kawai.",
+        "normativeModality": {
+          "requirement": "dole ne",
+          "recommendation": "ya kamata",
+          "permission": "ana iya",
+          "prohibition": "kada"
+        },
+        "normativeModalityRule": "These are prose formulations, not translations of literal RFC keywords or quotations. Retain attribution and strength; do not upgrade a recommendation or permission into an obligation."
+      },
+      "cardinalCategories": [
+        "one",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "n = 1",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1"
+        ],
+        "other": [
+          "0",
+          "0.5",
+          "1.5",
+          "2"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "An sami abu {count}.",
+        "other": "An sami abubuwa {count}."
+      },
+      "review": {
+        "authorWorker": "AuthorHausa",
+        "authorSelfReview": "glossary authoring only; catalog coverage reported separately",
+        "independentTechnicalReview": "unperformed",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "yo": {
+      "glossaryPath": "docs/localization/glossaries/yo.json",
+      "style": {
+        "language": "Yorùbá",
+        "direction": "ltr",
+        "register": "Use clear, respectful Yoruba teaching prose with meaningful tone and dot-below marks. Distinguish ìmúdájú ìdánimọ̀ (authentication), àyẹ̀wò ẹ̀rí (verification), ìfìdímúlẹ̀ (validation), and fífúnni ní àṣẹ (authorization). No qualified native human approval is claimed.",
+        "grammar": "Author whole Yoruba clauses with explicit actors and conditions. Never replace negation or conditional language with an unconditional outcome; possession and receipt do not imply verification, validation or authorization.",
+        "casing": "Use sentence case for prose and preserve exact casing of protected literals.",
+        "punctuation": "Use normal Yoruba punctuation outside protected literals; only ASCII hyphens, never U+2013 or U+2014.",
+        "expansion": "Allow wrapping and variable control widths. Do not shorten a label by dropping a condition, negation or actor.",
+        "accessibleNames": "Localize visible labels and accessible names together. An accessible name contains the visible label and the same state. Keep shortcut tokens and ARIA identifiers exact.",
+        "bidi": "Yoruba prose is LTR. Technical values use renderer-owned isolation. Do not author bidi controls.",
+        "literalExample": "Pápá {token} ṣàpèjúwe olùgbà tí a pinnu.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Olùgbà tí a pinnu kò fi dandan jẹ́ olùfúnni.",
+        "pluralNote": "Yoruba cardinal grammar uses other for every value, including 1. Number formatting is separate from grammatical selection.",
+        "normativeModality": {
+          "requirement": "gbọdọ̀",
+          "recommendation": "ó yẹ kí",
+          "permission": "lè",
+          "prohibition": "kò gbọdọ̀"
+        },
+        "normativeModalityRule": "These are prose formulations, not translations of literal RFC keywords or quotations. Retain attribution and strength; do not upgrade a recommendation or permission into an obligation.",
+        "script": "Preserve Yoruba ẹ, ọ, ṣ, tone marks and all meaningful combining marks in both NFC and decomposed input. Do not strip marks from catalog text or search aliases. Search may normalize canonically equivalent sequences, not erase tone or dot-below marks."
+      },
+      "cardinalCategories": [
+        "other"
+      ],
+      "cardinalRules": {
+        "other": ""
+      },
+      "categoryExamples": {
+        "other": [
+          "0",
+          "1",
+          "2",
+          "0.5",
+          "1.5",
+          "1000000"
+        ]
+      },
+      "completeMessageExamples": {
+        "other": "A rí ohun {count}."
+      },
+      "review": {
+        "authorWorker": "AuthorYoruba",
+        "authorSelfReview": "glossary authoring only; catalog coverage reported separately",
+        "independentTechnicalReview": "unperformed",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "ig": {
+      "glossaryPath": "docs/localization/glossaries/ig.json",
+      "style": {
+        "language": "Igbo",
+        "direction": "ltr",
+        "register": "Jiri Igbo doro anya maka nkuzi teknụzụ; kọwaa echiche ma debe aha teknụzụ kpọmkwem.",
+        "grammar": "Jiri ahịrịokwu zuru ezu na oghere nnọchi nwere aha. Kewapụ onye na-eme ihe, onye na-enye na onye na-anata. Ewepụla ọnọdụ ma ọ bụ okwu na-agọnahụ.",
+        "casing": "Jiri mkpụrụedemede ukwu na mmalite ahịrịokwu; debe ụdị mkpụrụedemede teknụzụ kpọmkwem.",
+        "punctuation": "Jiri akara edemede Igbo na ASCII hyphen. Ejila U+2013 ma ọ bụ U+2014.",
+        "expansion": "Kwe ka ahịrịokwu kewaa n'ahịrị; ebelatala nkọwa site n'iwepụ ọnọdụ ma ọ bụ onye na-eme ihe.",
+        "accessibleNames": "Aha enyemaka ga-enwe aha bọtịnụ a na-ahụ anya na otu ọnọdụ ya. Debe akara ụzọ mkpirisi na njirimara ARIA kpọmkwem.",
+        "bidi": "Igbo bụ LTR. Renderer na-ekewapụ uru teknụzụ dịka LTR; etinyela akara njikwa bidi n'okwu.",
+        "literalExample": "Oghere {token} na-akọwa onye e bu n'obi ka ọ nata.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Onye e bu n'obi ka ọ nata abụghị mgbe niile onye na-enye.",
+        "pluralNote": "CLDR 49: Igbo cardinal uses other only, including 1; use one complete other message rather than English singular/plural suffixes.",
+        "normativeModality": {
+          "requirement": "ga-emerịrị",
+          "recommendation": "kwesịrị",
+          "permission": "nwere ike",
+          "prohibition": "agaghị eme"
+        },
+        "normativeModalityRule": "These are prose formulations, not translations of literal RFC keywords or quotations. Retain attribution and strength; do not upgrade a recommendation or permission into an obligation.",
+        "script": "Preserve Igbo dot-below letters ị ọ ụ, authored tone marks, and combining sequences. NFC/NFD-equivalent search aliases are additive; never strip marks from raw display text or replace marked native aliases with accent-folded forms."
+      },
+      "cardinalCategories": [
+        "other"
+      ],
+      "cardinalRules": {
+        "other": ""
+      },
+      "categoryExamples": {
+        "other": [
+          "0",
+          "1",
+          "2",
+          "21",
+          "0.5",
+          "1000000"
+        ]
+      },
+      "completeMessageExamples": {
+        "other": "Achọtara ihe {count}."
+      },
+      "review": {
+        "authorWorker": "AuthorIgbo",
+        "authorSelfReview": "glossary authoring only; catalog coverage reported separately",
+        "independentTechnicalReview": "unperformed",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "ml": {
+      "glossaryPath": "docs/localization/glossaries/ml.json",
+      "style": {
+        "language": "Malayalam",
+        "direction": "ltr",
+        "register": "സാങ്കേതിക ആശയം കൃത്യമായി വിവരിക്കുന്ന സ്വാഭാവിക മലയാളം ഉപയോഗിക്കുക. സാധാരണ വാചകങ്ങൾക്ക് ASCII ലിപ്യന്തരണം ഉപയോഗിക്കരുത്.",
+        "grammar": "പൂർണ്ണ സന്ദേശങ്ങളും പേരുള്ള സ്ഥാനപൂരകങ്ങളും ഉപയോഗിക്കുക. പ്രവർത്തിക്കുന്ന കക്ഷി, സ്വീകർത്താവ്, വിശ്വാസത്തിന്റെ ദിശ, നിഷേധം, വ്യവസ്ഥകൾ എന്നിവ വ്യക്തമാക്കുക. ഔദ്യോഗിക ടോക്കണുകൾക്കുള്ളിൽ മലയാള പ്രത്യയങ്ങൾ ചേർക്കരുത്.",
+        "casing": "മലയാളത്തിന് വലിയക്ഷര-ചെറിയക്ഷര വ്യത്യാസമില്ല. ഔദ്യോഗിക ചിഹ്നങ്ങളുടെ അക്ഷരരൂപം മാറ്റരുത്.",
+        "punctuation": "സാധാരണ മലയാള വിരാമചിഹ്നങ്ങൾ ഉപയോഗിക്കുക. ഹൈഫനായി ASCII - മാത്രം ഉപയോഗിക്കുക; U+2013, U+2014 ഉപയോഗിക്കരുത്.",
+        "expansion": "Allow wrapping and variable control widths. Do not shorten a label by dropping a condition, negation or actor.",
+        "accessibleNames": "Localize visible labels and accessible names together. An accessible name contains the visible label and the same state. Keep shortcut tokens and ARIA identifiers exact.",
+        "bidi": "മലയാള വാചകം LTR ആണ്. സാങ്കേതിക മൂല്യങ്ങളുടെ LTR ഒറ്റപ്പെടുത്തൽ റെൻഡററുടേതാണ്; ദിശാനിയന്ത്രണ ചിഹ്നങ്ങൾ എഴുതരുത്.",
+        "literalExample": "{token} എന്ന ഫീൽഡ് ഉദ്ദേശിച്ച സ്വീകർത്താവിനെ വിവരിക്കുന്നു.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "ഉദ്ദേശിച്ച സ്വീകർത്താവ് പുറപ്പെടുവിക്കുന്ന കക്ഷി തന്നെയായിരിക്കണമെന്നില്ല.",
+        "pluralNote": "CLDR 49 പ്രകാരം n = 1 ആണെങ്കിൽ one; മറ്റെല്ലാ മൂല്യങ്ങൾക്കും other. 0, 0.5, 1.5, 2 എന്നിവ other ആണ്. സംഖ്യയുടെ അവതരണം വ്യാകരണവിഭാഗം തിരഞ്ഞെടുക്കുന്നതിൽനിന്ന് വേറിട്ടതാണ്.",
+        "normativeModality": {
+          "requirement": "നിർബന്ധമായും വേണം",
+          "recommendation": "ചെയ്യുന്നതാണ് ഉചിതം",
+          "permission": "ചെയ്യാം",
+          "prohibition": "ചെയ്യരുത്"
+        },
+        "normativeModalityRule": "These are prose formulations, not translations of literal RFC keywords or quotations. Retain attribution and strength; do not upgrade a recommendation or permission into an obligation.",
+        "script": "സ്വരചിഹ്നങ്ങൾ, ചന്ദ്രക്കല, കൂട്ടക്ഷരങ്ങൾ, ചില്ലുകൾ, സംയോജകചിഹ്നങ്ങൾ, joiner-കൾ എന്നിവ നിലനിർത്തുക. ദൃശ്യമാക്കുമ്പോഴും അസംസ്കൃത ഇൻപുട്ടിലും അർഥവത്തായ അടയാളങ്ങൾ കളയരുത്. ഓഫ്‌ലൈൻ സിസ്റ്റം ഫോണ്ട് ഫാൾബാക്കും ശരിയായ shaping-ഉം ഉപയോഗിക്കുക; പുറം ഫോണ്ടുകൾ ആവശ്യമില്ല."
+      },
+      "cardinalCategories": [
+        "one",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "n = 1",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "1"
+        ],
+        "other": [
+          "0",
+          "0.5",
+          "1.5",
+          "2"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "{count} ഇനം കണ്ടെത്തി.",
+        "other": "{count} ഇനങ്ങൾ കണ്ടെത്തി."
+      },
+      "review": {
+        "authorWorker": "AuthorMalayalam",
+        "authorSelfReview": "glossary authoring only; catalog coverage reported separately",
+        "independentTechnicalReview": "unperformed",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "fil": {
+      "glossaryPath": "docs/localization/glossaries/fil.json",
+      "style": {
+        "language": "Filipino",
+        "direction": "ltr",
+        "register": "Malinaw at magalang na Filipino para sa teknikal na pag-aaral. Gumamit ng natural na hiram na salita kung karaniwan ito; huwag ipagkamali ang pagtanggap, pagsusuri ng katibayan, pagpapatunay ng bisa at pagpapahintulot.",
+        "grammar": "Gumamit ng buong pangungusap at pinangalanang parameter. Panatilihing malinaw ang tagakilos, tagatanggap, kondisyon at pagtanggi. Huwag bumuo ng pangungusap sa pamamagitan ng pagdurugtong ng mga isinaling piraso.",
+        "casing": "Malaking titik sa simula ng pangungusap; panatilihin ang eksaktong laki ng titik ng mga pormal na literal.",
+        "punctuation": "Karaniwang bantas ng Filipino. ASCII hyphen lamang; walang U+2013 o U+2014.",
+        "expansion": "Allow wrapping and variable control widths. Do not shorten a label by dropping a condition, negation or actor.",
+        "accessibleNames": "Localize visible labels and accessible names together. An accessible name contains the visible label and the same state. Keep shortcut tokens and ARIA identifiers exact.",
+        "bidi": "Latin script, LTR. Panatilihin ang mga tuldik at combining mark kung kailangan; huwag magdagdag ng bidi control, translator HTML o di-kailangang joiner. Renderer ang nagbubukod ng mga teknikal na literal.",
+        "literalExample": "Inilalarawan ng patlang na {token} ang nilalayong tagatanggap.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Ang nilalayong tagatanggap ay hindi kinakailangang ang tagapag-isyu.",
+        "pluralNote": "CLDR 49 fil: one para sa integer na ang huling digit ay hindi 4, 6 o 9, at para sa fraction na ang huling nakikitang digit ay hindi 4, 6 o 9; other sa iba. Hindi ito simpleng tuntunin ng isahan at maramihan.",
+        "normativeModality": {
+          "requirement": "dapat",
+          "recommendation": "inirerekomenda",
+          "permission": "maaaring",
+          "prohibition": "hindi dapat"
+        },
+        "normativeModalityRule": "These are prose formulations, not translations of literal RFC keywords or quotations. Retain attribution and strength; do not upgrade a recommendation or permission into an obligation."
+      },
+      "cardinalCategories": [
+        "one",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "v = 0 and i = 1,2,3 or v = 0 and i % 10 != 4,6,9 or v != 0 and f % 10 != 4,6,9",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "0",
+          "1",
+          "2",
+          "3",
+          "5",
+          "11",
+          "21",
+          "0.5"
+        ],
+        "other": [
+          "4",
+          "6",
+          "9",
+          "14",
+          "0.4"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "May nahanap na {count} na item.",
+        "other": "May nahanap na {count} na item."
+      },
+      "review": {
+        "authorWorker": "AuthorFilipino",
+        "authorSelfReview": "glossary authoring only; catalog coverage reported separately",
+        "independentTechnicalReview": "unperformed",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "bn": {
+      "glossaryPath": "docs/localization/glossaries/bn.json",
+      "style": {
+        "language": "বাংলা",
+        "direction": "ltr",
+        "register": "প্রযুক্তি শেখার উপযোগী সহজ, নির্ভুল ও সম্মানসূচক বাংলা লিখুন। নির্দেশে করুন রূপ ব্যবহার করুন; একই ধারণার জন্য একই পরিভাষা রাখুন।",
+        "grammar": "পূর্ণ বাক্য ও নামযুক্ত প্যারামিটার ব্যবহার করুন। কর্তা, প্রাপক ও কার্যকারী পক্ষ আলাদা রাখুন। ইংরেজি শব্দের ক্রম অনুকরণ না করে স্বাভাবিক বাংলা বাক্য লিখুন।",
+        "casing": "বাংলা বর্ণে বড়-ছোট হাতের পার্থক্য নেই। আনুষ্ঠানিক আক্ষরিক মানের অক্ষরবিন্যাস হুবহু রাখুন।",
+        "punctuation": "বাংলা বাক্যে উপযুক্ত দাঁড়ি ব্যবহার করুন। U+2013 বা U+2014 নয়, শুধু ASCII হাইফেন ব্যবহার করুন।",
+        "expansion": "লেখা মোড়ানো ও নিয়ন্ত্রণের প্রস্থ বাড়তে দিন; শর্ত, নাকারণ বা পক্ষ বাদ দিয়ে লেখা ছোট করবেন না।",
+        "accessibleNames": "দৃশ্যমান লেখা ও প্রবেশগম্য নাম একই সঙ্গে অনুবাদ করুন; দৃশ্যমান নাম ও অবস্থার অর্থ উভয়টিতে রাখুন। শর্টকাট ও ARIA শনাক্তকারী হুবহু রাখুন।",
+        "bidi": "বাংলা বর্ণনা LTR। বাংলা যুক্তাক্ষর, স্বরচিহ্ন, বিরাম, combining marks ও প্রয়োজনীয় joiner অক্ষুণ্ণ রাখুন; বর্ণসীমায় লেখা কাটবেন না বা letter-spacing আরোপ করবেন না। আক্ষরিক কারিগরি মানে renderer-এর LTR isolation ব্যবহার করুন; নিজে bidi control লিখবেন না।",
+        "literalExample": "{token} ক্ষেত্রটি উদ্দিষ্ট প্রাপক নির্দেশ করে।",
+        "literalExampleToken": "aud",
+        "conceptualExample": "উদ্দিষ্ট প্রাপকই প্রদানকারী, এমন নয়।",
+        "pluralNote": "CLDR 49 বাংলা cardinal নিয়মে i = 0 or n = 1 হলে one; অন্যথায় other। তাই 0, 0.5 ও 1 হলো one; 1.5 ও 2 হলো other। সংখ্যা দেখানোর রীতি থেকে ব্যাকরণের বিভাগ আলাদা রাখুন।",
+        "normativeModality": {
+          "requirement": "করতে হবে",
+          "recommendation": "করা উচিত",
+          "permission": "করা যেতে পারে",
+          "prohibition": "করা যাবে না"
+        },
+        "normativeModalityRule": "এগুলো বর্ণনামূলক ভাষার রূপ, আক্ষরিক RFC keyword বা উদ্ধৃতির অনুবাদ নয়। উৎস ও বাধ্যতার মাত্রা রাখুন; সুপারিশ বা অনুমতিকে বাধ্যতায় বদলাবেন না।"
+      },
+      "cardinalCategories": [
+        "one",
+        "other"
+      ],
+      "cardinalRules": {
+        "one": "i = 0 or n = 1",
+        "other": ""
+      },
+      "categoryExamples": {
+        "one": [
+          "0",
+          "0.5",
+          "1"
+        ],
+        "other": [
+          "1.5",
+          "2"
+        ]
+      },
+      "completeMessageExamples": {
+        "one": "{count}টি বস্তু পাওয়া গেছে।",
+        "other": "{count}টি বস্তু পাওয়া গেছে।"
+      },
+      "review": {
+        "authorWorker": "AuthorBengali",
+        "authorSelfReview": "glossary authoring only; catalog coverage reported separately",
+        "independentTechnicalReview": "unperformed",
+        "qualifiedNativeHumanApproval": "unperformed",
+        "humanComprehensionReview": "unperformed",
+        "humanPronunciationReview": "unperformed",
+        "actualScreenReaderReview": "unperformed",
+        "approvals": []
+      }
+    },
+    "el": {
+      "glossaryPath": "docs/localization/glossaries/el.json",
+      "style": {
+        "language": "Ελληνικά",
+        "direction": "ltr",
+        "register": "Modern, idiomatic technical Greek; precise authentication, authorization, verification and validation concepts, not English word-by-word order.",
+        "grammar": "Translate complete messages with correct gender, case and number. Retain acting subject, recipient, trust direction, negation, condition, timing and normative strength.",
+        "script": "Preserve Greek accents, case, NFC/NFD equivalence and final sigma in displayed text. Comparison normalization never rewrites raw search or formal identifiers.",
+        "casing": "Sentence case for ordinary UI prose; exact source case for formal names.",
+        "punctuation": "Greek prose punctuation outside protected placeholders; ASCII hyphens only.",
+        "expansion": "Allow wrapping without dropping actors, conditions or negation.",
+        "accessibleNames": "Translate visible and accessible names together, preserving the same label and state; shortcut tokens and ARIA IDs remain exact.",
+        "bidi": "LTR prose; renderer-owned LTR isolation for unchanged technical tokens, no translator HTML or bidi controls.",
+        "literalExample": "Το πεδίο {token} περιγράφει τον προβλεπόμενο παραλήπτη.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Ο προβλεπόμενος παραλήπτης δεν είναι απαραίτητα ο εκδότης.",
+        "pluralNote": "For represented ordinary numeric counts, only 1 is one; 0, fractions, 2 and 1000000 are other.",
+        "normativeModality": {"requirement": "πρέπει", "recommendation": "συνιστάται", "permission": "επιτρέπεται", "prohibition": "δεν επιτρέπεται"}
+      },
+      "cardinalCategories": ["one", "other"],
+      "cardinalRules": {"one": "n = 1", "other": ""},
+      "categoryExamples": {"one": ["1"], "other": ["0", "1.5", "2", "1000000"]},
+      "completeMessageExamples": {"one": "Βρέθηκε {count} αποτέλεσμα.", "other": "Βρέθηκαν {count} αποτελέσματα."},
+      "review": {"authorWorker": "AuthorGreek", "authorSelfReview": "Scope and corrections are recorded separately in the locale authoring receipt.", "independentTechnicalReview": "unperformed", "qualifiedNativeHumanApproval": "unperformed", "humanComprehensionReview": "unperformed", "humanPronunciationReview": "unperformed", "actualScreenReaderReview": "unperformed", "approvals": []}
+    },
+    "es-CO": {
+      "glossaryPath": "docs/localization/glossaries/es-CO.json",
+      "style": {
+        "language": "Español (Colombia)",
+        "direction": "ltr",
+        "register": "Idiomatic Colombian technical Spanish, consistent direct instructions; computador and celular where those ordinary concepts occur. Do not force differences in genuinely shared Spanish.",
+        "grammar": "Complete natural messages; distinguish autenticación, autorización, verificación and validación. Preserve subject, recipient, trust direction, negation, timing, condition and modality.",
+        "script": "Preserve ñ, accents and native NFC/NFD spelling; forgiving comparison never rewrites display or the raw query.",
+        "casing": "Sentence case; exact formal literal case.",
+        "punctuation": "Spanish question/exclamation punctuation outside protected tokens; ASCII hyphens only.",
+        "expansion": "Allow wrapping without losing a condition, actor or negation.",
+        "accessibleNames": "Visible and accessible names carry the same native label and state; preserve shortcuts and ARIA IDs.",
+        "bidi": "LTR, renderer-owned technical-token isolation; no translator markup or bidi controls.",
+        "literalExample": "El campo {token} describe el destinatario previsto.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "El destinatario previsto no es necesariamente el emisor.",
+        "pluralNote": "1 is one; nonzero integer multiples of 1000000 are many; 0, .5, 1.5, 2 and 1000001 are other for ordinary numeric input.",
+        "normativeModality": {"requirement": "debe", "recommendation": "debería", "permission": "se permite", "prohibition": "no debe"}
+      },
+      "cardinalCategories": ["one", "many", "other"],
+      "cardinalRules": {"one": "n = 1", "many": "e = 0 and i != 0 and i % 1000000 = 0 and v = 0 or e != 0..5", "other": ""},
+      "categoryExamples": {"one": ["1"], "many": ["1000000", "2000000"], "other": ["0", "0.5", "1.5", "2", "1000001"]},
+      "completeMessageExamples": {"one": "Se encontró {count} resultado.", "many": "Se encontraron {count} resultados.", "other": "Se encontraron {count} resultados."},
+      "review": {"authorWorker": "AuthorSpanish", "authorSelfReview": "Scope and regional choices are recorded separately in the locale authoring receipt.", "independentTechnicalReview": "unperformed", "qualifiedNativeHumanApproval": "unperformed", "humanComprehensionReview": "unperformed", "humanPronunciationReview": "unperformed", "actualScreenReaderReview": "unperformed", "approvals": []}
+    },
+    "es-ES": {
+      "glossaryPath": "docs/localization/glossaries/es-ES.json",
+      "style": {
+        "language": "Español (España)",
+        "direction": "ltr",
+        "register": "Idiomatic Spain technical Spanish; ordenador and móvil where appropriate, and natural present-perfect usage for current completed events. Shared Spanish need not be artificially different.",
+        "grammar": "Complete natural messages; distinguish autenticación, autorización, verificación and validación. Preserve subject, recipient, trust direction, negation, timing, condition and modality.",
+        "script": "Keep ñ and accents in displayed/native exact text; NFC/NFD and forgiving search are comparison-only.",
+        "casing": "Sentence case, unchanged formal literal casing.",
+        "punctuation": "Spanish punctuation outside protected tokens; ASCII hyphens only.",
+        "expansion": "Wrapping is preferable to omitting an actor, condition or negation.",
+        "accessibleNames": "Localize visible and accessible labels together without changing their state; preserve shortcut tokens and ARIA IDs.",
+        "bidi": "LTR, renderer-owned technical-token isolation; no translator HTML or bidi controls.",
+        "literalExample": "El campo {token} describe el destinatario previsto.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "El destinatario previsto no es necesariamente el emisor.",
+        "pluralNote": "1 is one; integer 1000000 and 2000000 are many; 0, .5, 1.5, 2 and 1000001 are other, not English-style million plurals.",
+        "normativeModality": {"requirement": "debe", "recommendation": "debería", "permission": "se permite", "prohibition": "no debe"}
+      },
+      "cardinalCategories": ["one", "many", "other"],
+      "cardinalRules": {"one": "n = 1", "many": "e = 0 and i != 0 and i % 1000000 = 0 and v = 0 or e != 0..5", "other": ""},
+      "categoryExamples": {"one": ["1"], "many": ["1000000", "2000000"], "other": ["0", "0.5", "1.5", "2", "1000001"]},
+      "completeMessageExamples": {"one": "Se ha encontrado {count} resultado.", "many": "Se han encontrado {count} resultados.", "other": "Se han encontrado {count} resultados."},
+      "review": {"authorWorker": "AuthorSpanish", "authorSelfReview": "Scope and regional choices are recorded separately in the locale authoring receipt.", "independentTechnicalReview": "unperformed", "qualifiedNativeHumanApproval": "unperformed", "humanComprehensionReview": "unperformed", "humanPronunciationReview": "unperformed", "actualScreenReaderReview": "unperformed", "approvals": []}
+    },
+    "it": {
+      "glossaryPath": "docs/localization/glossaries/it.json",
+      "style": {
+        "language": "Italiano",
+        "direction": "ltr",
+        "register": "Natural concise technical Italian, with explicit autenticazione versus autorizzazione and verifica versus convalida distinctions.",
+        "grammar": "Complete messages with correct agreement and prepositions; preserve actor, recipient, trust direction, negation, condition, timing and normative strength.",
+        "script": "Keep Italian accents and apostrophes in human prose; comparison normalization never modifies raw queries or technical names.",
+        "casing": "Sentence case for ordinary labels, exact case for formal names.",
+        "punctuation": "Ordinary Italian punctuation outside protected placeholders; ASCII hyphens only.",
+        "expansion": "Allow wrapping rather than shortening away a condition or actor.",
+        "accessibleNames": "Accessible names contain the same visible native label and state; shortcuts and ARIA IDs remain exact.",
+        "bidi": "LTR with renderer-owned technical isolation; no authored HTML or bidi controls.",
+        "literalExample": "Il campo {token} descrive il destinatario previsto.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Il destinatario previsto non è necessariamente l'emittente.",
+        "pluralNote": "Integer 1 is one; nonzero integer multiples of 1000000 are many; ordinary fractions and the other supplied values are other.",
+        "normativeModality": {"requirement": "deve", "recommendation": "dovrebbe", "permission": "è consentito", "prohibition": "non deve"}
+      },
+      "cardinalCategories": ["one", "many", "other"],
+      "cardinalRules": {"one": "i = 1 and v = 0", "many": "e = 0 and i != 0 and i % 1000000 = 0 and v = 0 or e != 0..5", "other": ""},
+      "categoryExamples": {"one": ["1"], "many": ["1000000", "2000000"], "other": ["0", "0.5", "1.5", "2", "1000001"]},
+      "completeMessageExamples": {"one": "Trovato {count} risultato.", "many": "Trovati {count} risultati.", "other": "Trovati {count} risultati."},
+      "review": {"authorWorker": "AuthorItalian", "authorSelfReview": "Scope and corrections are recorded separately in the locale authoring receipt.", "independentTechnicalReview": "unperformed", "qualifiedNativeHumanApproval": "unperformed", "humanComprehensionReview": "unperformed", "humanPronunciationReview": "unperformed", "actualScreenReaderReview": "unperformed", "approvals": []}
+    },
+    "pt-PT": {
+      "glossaryPath": "docs/localization/glossaries/pt-PT.json",
+      "style": {
+        "language": "Português (Portugal)",
+        "direction": "ltr",
+        "register": "European Portuguese: ficheiro, guardar, utilizador, ecrã, passo and descarregamento in their ordinary contexts; natural a + infinitive progress. Do not force artificial differences in common prose.",
+        "grammar": "Complete natural messages; distinguish autenticação/autorização and verificação/validação. Preserve acting party, recipient, trust direction, negation, timing, conditions and modality.",
+        "script": "Preserve ç, ã, õ and other native accents in display/exact search; no raw-input normalization.",
+        "casing": "Sentence case; formal literals retain exact casing.",
+        "punctuation": "Portuguese punctuation outside unchanged technical tokens; ASCII hyphens only.",
+        "expansion": "Allow wrapping without discarding conditions, negation or actors.",
+        "accessibleNames": "Visible and accessible native names describe the same label and state; preserve shortcuts and ARIA IDs.",
+        "bidi": "LTR, technical isolation belongs to the renderer; no authored HTML or bidi controls.",
+        "literalExample": "O campo {token} descreve o destinatário previsto.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "O destinatário previsto não é necessariamente o emissor.",
+        "pluralNote": "Unlike pt-BR, 0, .5 and 1.5 are other. Only integer 1 is one; nonzero integer multiples of 1000000 are many.",
+        "normativeModality": {"requirement": "deve", "recommendation": "recomenda-se", "permission": "é permitido", "prohibition": "não deve"}
+      },
+      "cardinalCategories": ["one", "many", "other"],
+      "cardinalRules": {"one": "i = 1 and v = 0", "many": "e = 0 and i != 0 and i % 1000000 = 0 and v = 0 or e != 0..5", "other": ""},
+      "categoryExamples": {"one": ["1"], "many": ["1000000", "2000000"], "other": ["0", "0.5", "1.5", "2", "1000001"]},
+      "completeMessageExamples": {"one": "Foi encontrado {count} resultado.", "many": "Foram encontrados {count} resultados.", "other": "Foram encontrados {count} resultados."},
+      "review": {"authorWorker": "AuthorPortuguese", "authorSelfReview": "Scope and regional choices are recorded separately in the locale authoring receipt.", "independentTechnicalReview": "unperformed", "qualifiedNativeHumanApproval": "unperformed", "humanComprehensionReview": "unperformed", "humanPronunciationReview": "unperformed", "actualScreenReaderReview": "unperformed", "approvals": []}
+    },
+    "pt-BR": {
+      "glossaryPath": "docs/localization/glossaries/pt-BR.json",
+      "style": {
+        "language": "Português (Brasil)",
+        "direction": "ltr",
+        "register": "Brazilian Portuguese: arquivo, salvar, usuário, tela, etapa and download in their ordinary contexts; natural gerund for ongoing actions. Explicitly decide when common Portuguese applies to both regions.",
+        "grammar": "Complete natural messages; distinguish autenticação/autorização and verificação/validação. Preserve actor, recipient, trust direction, conditions, negation, timing and normative strength.",
+        "script": "Keep ç, ã, õ and accents in native display and exact query matches; comparison folds never rewrite raw input.",
+        "casing": "Sentence case for labels, exact formal literal case.",
+        "punctuation": "Portuguese punctuation outside protected tokens; ASCII hyphens only.",
+        "expansion": "Allow longer labels and wrapping without dropping meaning.",
+        "accessibleNames": "Accessible names retain the visible localized label and same state; shortcut tokens and ARIA IDs remain exact.",
+        "bidi": "LTR with renderer-owned technical isolation; no translator markup or bidi controls.",
+        "literalExample": "O campo {token} descreve o destinatário previsto.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "O destinatário previsto não é necessariamente o emissor.",
+        "pluralNote": "i = 0 or 1 selects one: 0, .5, 1, 1.2 and 1.5. Nonzero integer multiples of 1000000 select many; 2 and 1000001 are other.",
+        "normativeModality": {"requirement": "deve", "recommendation": "recomenda-se", "permission": "é permitido", "prohibition": "não deve"}
+      },
+      "cardinalCategories": ["one", "many", "other"],
+      "cardinalRules": {"one": "i = 0..1", "many": "e = 0 and i != 0 and i % 1000000 = 0 and v = 0 or e != 0..5", "other": ""},
+      "categoryExamples": {"one": ["0", "0.5", "1", "1.2", "1.5"], "many": ["1000000", "2000000"], "other": ["2", "1000001"]},
+      "completeMessageExamples": {"one": "Foi encontrado {count} resultado.", "many": "Foram encontrados {count} resultados.", "other": "Foram encontrados {count} resultados."},
+      "review": {"authorWorker": "AuthorPortuguese", "authorSelfReview": "Scope and regional choices are recorded separately in the locale authoring receipt.", "independentTechnicalReview": "unperformed", "qualifiedNativeHumanApproval": "unperformed", "humanComprehensionReview": "unperformed", "humanPronunciationReview": "unperformed", "actualScreenReaderReview": "unperformed", "approvals": []}
+    },
+    "sr-Cyrl": {
+      "glossaryPath": "docs/localization/glossaries/sr-Cyrl.json",
+      "style": {
+        "language": "Српски (ћирилица)",
+        "direction": "ltr",
+        "register": "Idiomatic Serbian Ekavian in Cyrillic: време, следећи, безбедност and прегледач where appropriate. Distinguish аутентификација from ауторизација and verification from validation.",
+        "grammar": "Complete Serbian messages with correct cases and agreement; retain actor, recipient, trust direction, conditions, negation, timing and normative force.",
+        "script": "Human prose is Cyrillic. All placeholders, English glossary carriers, literalForms, formal names, identifiers, code and wire/example values remain unchanged. Script conversion is human-text-only, never a native-human approval.",
+        "casing": "Sentence case, exact technical case; scoped conversion must respect љ/њ/џ and uppercase/titlecase digraph boundaries.",
+        "punctuation": "Normal Serbian punctuation outside protected spans; ASCII hyphens in prose.",
+        "expansion": "Permit wrapping without dropping negation, conditions or actors.",
+        "accessibleNames": "Visible and accessible labels use the same selected script and state; preserve shortcuts and ARIA IDs.",
+        "bidi": "LTR with renderer-owned technical isolation; no authored markup or bidi controls.",
+        "literalExample": "Поље {token} описује предвиђеног примаоца.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Предвиђени прималац није нужно издавалац.",
+        "pluralNote": "Use ordinary decimal fraction operands: 1.1/1.21 are one; 1.2 is few; 1.5/1.11 are other. Do not select solely from the integer part.",
+        "normativeModality": {"requirement": "мора", "recommendation": "препоручује се", "permission": "сме", "prohibition": "не сме"}
+      },
+      "cardinalCategories": ["one", "few", "other"],
+      "cardinalRules": {"one": "v = 0 and i % 10 = 1 and i % 100 != 11 or f % 10 = 1 and f % 100 != 11", "few": "v = 0 and i % 10 = 2..4 and i % 100 != 12..14 or f % 10 = 2..4 and f % 100 != 12..14", "other": ""},
+      "categoryExamples": {"one": ["1", "21", "101", "1.1", "1.21"], "few": ["2", "3", "4", "22", "1.2"], "other": ["0", "5", "11", "12", "111", "1.5", "1.11"]},
+      "completeMessageExamples": {"one": "Пронађен је {count} резултат.", "few": "Пронађена су {count} резултата.", "other": "Пронађено је {count} резултата."},
+      "review": {"authorWorker": "AuthorSerbian", "authorSelfReview": "Authorship and protected-span-safe script conversion are recorded separately; mechanical conversion is not native approval.", "independentTechnicalReview": "unperformed", "qualifiedNativeHumanApproval": "unperformed", "humanComprehensionReview": "unperformed", "humanPronunciationReview": "unperformed", "actualScreenReaderReview": "unperformed", "approvals": []}
+    },
+    "sr-Latn": {
+      "glossaryPath": "docs/localization/glossaries/sr-Latn.json",
+      "style": {
+        "language": "Srpski (latinica)",
+        "direction": "ltr",
+        "register": "The same idiomatic Serbian Ekavian meaning as sr-Cyrl, in Latin script: vreme, sledeći, bezbednost and pregledač. Not Croatian relabeling.",
+        "grammar": "Retain all Cyrillic-source meaning, case agreement, subjects, recipients, trust direction, negation, conditions, timing and modality.",
+        "script": "Convert authored human spans only; lj, nj and dž preserve uppercase/titlecase and word boundaries. Do not transform named placeholders, formal identifiers, raw technical values, glossary English carriers or literalForms.",
+        "casing": "Sentence case; preserve Serbian č/ć/š/ž/đ and exact formal literal case.",
+        "punctuation": "Normal Serbian prose punctuation; ASCII hyphens outside protected spans.",
+        "expansion": "Allow wrapping without omitting an actor, condition or negation.",
+        "accessibleNames": "Visible and accessible labels retain the exact selected Latin script and same state; shortcuts and ARIA IDs are exact.",
+        "bidi": "LTR with renderer-owned technical isolation; no translator HTML or bidi controls.",
+        "literalExample": "Polje {token} opisuje predviđenog primaoca.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Predviđeni primalac nije nužno izdavalac.",
+        "pluralNote": "Same one/few/other decimal rules as sr-Cyrl; 1.1/1.21 one, 1.2 few, 1.5/1.11 other.",
+        "normativeModality": {"requirement": "mora", "recommendation": "preporučuje se", "permission": "sme", "prohibition": "ne sme"}
+      },
+      "cardinalCategories": ["one", "few", "other"],
+      "cardinalRules": {"one": "v = 0 and i % 10 = 1 and i % 100 != 11 or f % 10 = 1 and f % 100 != 11", "few": "v = 0 and i % 10 = 2..4 and i % 100 != 12..14 or f % 10 = 2..4 and f % 100 != 12..14", "other": ""},
+      "categoryExamples": {"one": ["1", "21", "101", "1.1", "1.21"], "few": ["2", "3", "4", "22", "1.2"], "other": ["0", "5", "11", "12", "111", "1.5", "1.11"]},
+      "completeMessageExamples": {"one": "Pronađen je {count} rezultat.", "few": "Pronađena su {count} rezultata.", "other": "Pronađeno je {count} rezultata."},
+      "review": {"authorWorker": "AuthorSerbian", "authorSelfReview": "Authorship and protected-span-safe script conversion are recorded separately; mechanical conversion is not native approval.", "independentTechnicalReview": "unperformed", "qualifiedNativeHumanApproval": "unperformed", "humanComprehensionReview": "unperformed", "humanPronunciationReview": "unperformed", "actualScreenReaderReview": "unperformed", "approvals": []}
+    },
+    "hr": {
+      "glossaryPath": "docs/localization/glossaries/hr.json",
+      "style": {
+        "language": "Hrvatski",
+        "direction": "ltr",
+        "register": "Independently authored idiomatic Croatian/Ijekavian: vrijeme, sljedeći, sigurnost, trenutačni, spremiti and preglednik. Never use Serbian as the translation source.",
+        "grammar": "Natural complete Croatian messages; distinguish autentikacija/autorizacija and provjera/validacija. Preserve subject, recipient, trust direction, negation, conditions, timing and normative strength.",
+        "script": "Preserve native č/ć/š/ž/đ and NFC/NFD spelling; forgiving comparison cannot rewrite displayed text or raw queries.",
+        "casing": "Sentence case for ordinary UI labels; exact casing for technical identities.",
+        "punctuation": "Croatian punctuation outside unchanged protected spans; ASCII hyphens only.",
+        "expansion": "Allow labels to wrap rather than dropping conditions, negation or actors.",
+        "accessibleNames": "Accessible names contain the visible Croatian label and same state; shortcuts and ARIA IDs remain exact.",
+        "bidi": "LTR, renderer-owned technical isolation; no translator markup or bidi controls.",
+        "literalExample": "Polje {token} opisuje predviđenog primatelja.",
+        "literalExampleToken": "aud",
+        "conceptualExample": "Predviđeni primatelj nije nužno izdavatelj.",
+        "pluralNote": "Use the ordinary decimal one/few/other rules, including fractional suffixes: 1.1/1.21 one, 1.2 few, 1.5/1.11 other.",
+        "normativeModality": {"requirement": "mora", "recommendation": "preporučuje se", "permission": "smije", "prohibition": "ne smije"}
+      },
+      "cardinalCategories": ["one", "few", "other"],
+      "cardinalRules": {"one": "v = 0 and i % 10 = 1 and i % 100 != 11 or f % 10 = 1 and f % 100 != 11", "few": "v = 0 and i % 10 = 2..4 and i % 100 != 12..14 or f % 10 = 2..4 and f % 100 != 12..14", "other": ""},
+      "categoryExamples": {"one": ["1", "21", "101", "1.1", "1.21"], "few": ["2", "3", "4", "22", "1.2"], "other": ["0", "5", "11", "12", "111", "1.5", "1.11"]},
+      "completeMessageExamples": {"one": "Pronađen je {count} rezultat.", "few": "Pronađena su {count} rezultata.", "other": "Pronađeno je {count} rezultata."},
+      "review": {"authorWorker": "AuthorCroatian", "authorSelfReview": "Independent English-source authorship scope and corrections are recorded in the locale receipt; not an independent approval.", "independentTechnicalReview": "unperformed", "qualifiedNativeHumanApproval": "unperformed", "humanComprehensionReview": "unperformed", "humanPronunciationReview": "unperformed", "actualScreenReaderReview": "unperformed", "approvals": []}
     }
   },
   "reviewEvidenceContract": {
@@ -947,5 +1766,26 @@
     "statusSeparation": "Keep draft/author review, independent technical review, qualified language review, human comprehension, human pronunciation and actual screen-reader review separate. A machine check or back-translation does not establish native fluency.",
     "knownDefects": "Known incorrect technical meaning must be corrected, not waived by an author-reviewed label. Pending human review is explicit, not a claim of release acceptance.",
     "execution": "No tests, builds, linters, formatters, browser runs or performance runs were performed for this assignment."
+  },
+  "extensionAuthority": {
+    "path": "docs/localization/inputs/languages-dependency-worker-plan.html.input.txt",
+    "sha256": "1d49f764d244d4c32a5a9fc2b809d216b40d15061d84e6c945365bbeba38e7b3",
+    "baseCommit": "e3124ad8e2f94c3176b95355acedd02f3a1de8f7",
+    "versionUnchanged": "1.3",
+    "scope": "Nine new independently authored locale glossaries/catalogs; existing English/protected corpus and seven native catalogs unchanged. Catalog engineering coverage is reported separately, not inferred from this policy.",
+    "humanLanguageAndAssistiveTechnologyApproval": "unperformed"
+  },
+  "europeanLocaleExtensionAuthority": {
+    "path": "docs/localization/inputs/greek-spanish-serbian-croatian-worker-plan.html.input.txt",
+    "sha256": "e407b04df98afbb450194dd33d2e27044b6a5791c57eb4c8683a78f24ea4d266",
+    "referenceCanonicalSha256": "8ac8615deb84ee50b04564f84e5a328a73415ec05c1f4f3315f2a5deea306206",
+    "referenceStandaloneSha256": "920aa1cfe09affd1ad9a30aea613c9d9e3111ace2e92a8884ea66f2691c3960f",
+    "sourceSetSha256": "85c2b7dbdaeaa84ecb17de6183bec73119d079e8110f095f1532e57062e81c6a",
+    "versionUnchanged": "1.3",
+    "localeTags": ["el", "es-CO", "es-ES", "it", "pt-PT", "pt-BR", "sr-Cyrl", "sr-Latn", "hr"],
+    "scope": "Nine complete regional/script choices over the existing 17; preserve old catalog/glossary bytes, current PNG behavior and dependency pins. This authoring policy is not corpus, independent reviewer, human-language, AT, performance-owner or publication acceptance.",
+    "authorType": "AI implementation worker",
+    "humanLanguageAndAssistiveTechnologyApproval": "unperformed",
+    "publication": "No commit, push or deployment authorized."
   }
 }

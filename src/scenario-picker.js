@@ -27,9 +27,12 @@ export function filterScenarioOptions(options,query,localization=null,kind='scen
   const rows=[],seen=new Set();
   const rank=(fields,localized,parent=null,localizedParent=null)=>{
     const original=rankSearchFields(fields,prepared,parent);
-    if(original!==null)return original;
-    const translated=localized&&rankSearchFields(localized,prepared,localizedParent);
-    return translated===null||translated===undefined?null:translated+4;
+    if(original===0)return original;
+    const translated=localized?rankSearchFields(localized,prepared,localizedParent):null;
+    // Tiers are at least 0.5 apart: original exact names keep equal-quality
+    // priority, but cannot demote a better localized prose match.
+    const localizedRank=translated===null?null:translated+0.25;
+    return original===null?localizedRank:localizedRank===null?original:Math.min(original,localizedRank);
   };
   for(const option of options){
     if(seen.has(option.id))continue;

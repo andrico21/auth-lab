@@ -1,16 +1,22 @@
 // Identifier identity never uses prose aliases or punctuation/diacritic folding.
 export const normalizeSearchIdentifier = value => String(value??'').normalize('NFC').toLowerCase().trim().replace(/\s+/gu,' ');
-export const normalizeSearchProse = value => String(value??'').normalize('NFC').toLowerCase().replace(/[^\p{L}\p{N}\p{M}+]+/gu,' ').trim().replace(/\s+/gu,' ');
+// Ignore prose shaping controls; sigma forms share a case key, accents stay exact.
+const searchMalayalamChillus={'\u0d7a':'\u0d23\u0d4d','\u0d7b':'\u0d28\u0d4d','\u0d7c':'\u0d30\u0d4d','\u0d7d':'\u0d32\u0d4d','\u0d7e':'\u0d33\u0d4d','\u0d7f':'\u0d15\u0d4d'};
+const searchMalayalamLegacyChillus={'\u0d23':'\u0d7a','\u0d28':'\u0d7b','\u0d30':'\u0d7c','\u0d32':'\u0d7d','\u0d33':'\u0d7e','\u0d15':'\u0d7f'};
+export const normalizeSearchProse = value => String(value??'').normalize('NFC').toLowerCase().replace(/ς/gu,'σ').replace(/[\u0d15\u0d23\u0d28\u0d30\u0d32\u0d33]\u0d4d\u200d/gu,sequence=>searchMalayalamLegacyChillus[sequence[0]]).replace(/[\u200c\u200d]/gu,'').replace(/[^\p{L}\p{N}\p{M}+]+/gu,' ').trim().replace(/\s+/gu,' ');
 const searchValues = value => Array.isArray(value)?value:value==null?[]:[value];
 const searchUnique = values => [...new Set(values.filter(Boolean))];
 const searchTokens = values => new Set(values.flatMap(value=>value.split(' ')));
 
 // These are search-copy policies, not transliteration or display rewriting.
-// Latin accents fold after NFD; Cyrillic й/і/ї/є/ґ remain distinct. Hebrew
+// Latin and Greek accents fold after NFD; Cyrillic й/і/ї/є/ґ remain distinct. Hebrew
 // niqqud/cantillation folds except shin/sin dots and rafe. Arabic vowel and
 // recitation marks fold, but hamza/maddah and letter variants remain distinct.
+// Atomic chillus fold to consonant/virama only in this lower-priority alias lane.
 const foldSearchProse = value => value.normalize('NFD')
+  .replace(/[\u0d7a-\u0d7f]/gu,character=>searchMalayalamChillus[character])
   .replace(/\p{Script=Latin}\p{M}*/gu,cluster=>cluster.replace(/\p{M}/gu,''))
+  .replace(/\p{Script=Greek}\p{M}*/gu,cluster=>cluster.replace(/\p{M}/gu,''))
   .replace(/[ßł]/gu,char=>char==='ß'?'ss':'l')
   .replace(/[\u0591-\u05BD\u05C4\u05C5\u05C7\u0610-\u061A\u064B-\u0652\u0656-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E4\u06E7\u06E8\u06EA-\u06ED]/gu,'')
   .normalize('NFC');
@@ -35,17 +41,18 @@ export function createSearchFields({phrases=[],identifiers=[],context=[],aliases
   const exact=new Set(searchValues(identifiers).map(normalizeSearchIdentifier).filter(Boolean));
   // A name repeated in phrases is still an identifier, not an independent
   // punctuation-folded exact prose match. Keep its forgiving tokens below.
-  const strong=proseKeys(searchValues(phrases).filter(value=>!exact.has(normalizeSearchIdentifier(value))));
+  const nativeStrong=searchUnique(searchValues(phrases).filter(value=>!exact.has(normalizeSearchIdentifier(value))).map(normalizeSearchProse));
+  const strong=proseKeys(nativeStrong);
   const identifierPhrases=searchUnique(searchValues(identifiers).map(normalizeSearchProse));
   return {
-    exact,strong:new Set(strong),tokens:searchTokens(strong),
+    exact,nativeStrong:new Set(nativeStrong),strong:new Set(strong),tokens:searchTokens(strong),
     identifierTokens:searchTokens(identifierPhrases),
     contextTokens:searchTokens(proseKeys(searchValues(context))),
   };
 }
 export function mergeSearchFields(...sources) {
   const result={};
-  for(const key of ['exact','strong','tokens','identifierTokens','contextTokens']){
+  for(const key of ['exact','nativeStrong','strong','tokens','identifierTokens','contextTokens']){
     const values=new Set();
     for(const source of sources)if(source)for(const value of source[key])values.add(value);
     result[key]=values;
@@ -60,14 +67,15 @@ const searchHasPrefix = (tokens,term) => {
 };
 const searchIn = (fields,parent,key,term,prefix=false) => fields[key].has(term)||parent?.[key].has(term)||(prefix&&(searchHasPrefix(fields[key],term)||(parent&&searchHasPrefix(parent[key],term))));
 
-/** Original SEARCH01 tiers: exact phrase 0, tokens 1, prefix 2, context 3. */
+/** SEARCH01 tiers: native exact 0, folded phrase 0.5, tokens 1, prefix 2, context 3. */
 export function rankSearchFields(fields,query,parent=null) {
   if(query.empty)return 0;
   if(!query.variants.length)return null;
   if(searchIn(fields,parent,'exact',query.identifier))return 0;
+  if(searchIn(fields,parent,'nativeStrong',query.phrase))return 0;
   let best=null;
   for(const variant of query.variants){
-    if(searchIn(fields,parent,'strong',variant.phrase))return 0;
+    if(searchIn(fields,parent,'strong',variant.phrase))return 0.5;
     let rank=1;
     for(const term of variant.terms){
       // Aliased query tokens cannot weaken a protected identifier. Unchanged

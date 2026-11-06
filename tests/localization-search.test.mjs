@@ -36,18 +36,40 @@ const key=(picker,value,init={})=>{const event=new HarnessEvent('keydown',{key:v
 const active=picker=>picker.results?.[picker.activeIndex]?.id;
 const options=()=>[{id:'alpha',title:'Alpha lesson',summary:'Original explanation',category:'Original group'},{id:'beta',title:'Beta lesson',summary:'Other explanation',category:'Original group'}];
 
-test('native Cyrillic, Hebrew, Arabic and mixed protocol queries use public filtering without rewriting metadata',()=>{
-  const records=options();records[0].searchTags=['PKINIT'];
+test('native and mixed protocol queries use public filtering without rewriting metadata',()=>{
+  const records=options();records[0].searchTags=['PKINIT'];records[0].searchIdentifiers=['client_id'];
   const before=JSON.stringify(records),localizer=localization({
     ru:{alpha:{title:'Проверка подписи',summary:'Проверка доверия'}},
     uk:{alpha:{title:'Перевірка підпису',summary:'Довіра до відповіді'}},
     he:{alpha:{title:'אימות חתימה',summary:'בדיקת אמון'}},
     'ar-AE':{alpha:{title:'التحقق من التوقيع',summary:'التحقق من الثقة'}},
+    hi:{alpha:{title:'प्रमाणीकरण जाँच'}},
+    ur:{alpha:{title:'تصدیقِ شناخت کی جانچ'}},
+    sw:{alpha:{title:'Uthibitishaji wa utambulisho'}},
+    ha:{alpha:{title:'Tabbatar da asali'}},
+    yo:{alpha:{title:'Ìmúdájú ìdánimọ̀'}},
+    ig:{alpha:{title:'Nnyocha njirimara'}},
+    ml:{alpha:{title:'ആധികാരികത പരിശോധന'}},
+    fil:{alpha:{title:'Pagpapatunay ng pagkakakilanlan'}},
+    bn:{alpha:{title:'পরিচয় প্রমাণীকরণ'}},
   });
-  for(const [locale,query,mixed] of [['ru','подписи','PKINIT подписи'],['uk','підпису','PKINIT підпису'],['he','חתימה','PKINIT חתימה'],['ar-AE','التوقيع','PKINIT التوقيع']]){
+  for(const [locale,query,mixed] of [
+    ['ru','подписи','PKINIT подписи'],['uk','підпису','PKINIT підпису'],
+    ['he','חתימה','PKINIT חתימה'],['ar-AE','التوقيع','PKINIT التوقيع'],
+    ['hi','प्रमाणीकरण','client_id प्रमाणीकरण PKINIT'],
+    ['ur','تصدیقِ شناخت','PKINIT تصدیقِ شناخت client_id'],
+    ['sw','uthibitishaji','PKINIT uthibitishaji'],
+    ['ha','tabbatar da asali','PKINIT tabbatar da asali'],
+    ['yo','ìmúdájú ìdánimọ̀','PKINIT ìmúdájú ìdánimọ̀'],
+    ['ig','nnyocha njirimara','PKINIT nnyocha njirimara'],
+    ['ml','ആധികാരികത','PKINIT ആധികാരികത'],
+    ['fil','pagpapatunay ng pagkakakilanlan','PKINIT pagpapatunay ng pagkakakilanlan'],
+    ['bn','প্রমাণীকরণ','PKINIT প্রমাণীকরণ'],
+  ]){
     localizer.activate(locale);
     assert.deepEqual(ids(filterScenarioOptions(records,query,localizer)),['alpha']);
     assert.deepEqual(ids(filterScenarioOptions(records,mixed,localizer)),['alpha']);
+    assert.deepEqual(filterScenarioOptions(records,'अस्तित्वहीनअनुरोध987654321',localizer),[],locale+' unmatched query');
   }
   assert.equal(JSON.stringify(records),before);
 });
@@ -70,6 +92,19 @@ test('Unicode normalization preserves Ukrainian and other distinct Cyrillic lett
   assert.equal(normalizeSearchIdentifier('pam.d'),'pam.d');
 });
 
+test('Indic shaping variants remain searchable without erasing exact Malayalam words',()=>{
+  const atomic='അവൻ',joined='അവന്\u200d',plain='അവന്';
+  for(const [stored,query] of [[joined,plain],[atomic,joined],[plain,atomic],['रक्\u200cषा','रक्षा']]){
+    const records=[{id:'indic',title:stored}],before=JSON.stringify(records);
+    assert.deepEqual(ids(filterScenarioOptions(records,query)),['indic']);
+    assert.equal(prepareSearchQuery(query).raw,query);
+    assert.equal(JSON.stringify(records),before);
+  }
+  const records=[{id:'virama',title:plain},{id:'chillu',title:atomic}];
+  for(const query of [atomic,joined])assert.deepEqual(ids(filterScenarioOptions(records,query)),['chillu','virama']);
+  assert.deepEqual(ids(filterScenarioOptions(records,plain)),['virama','chillu']);
+});
+
 test('Latin prose aliases explicitly support accents, German umlaut spellings and Polish ł',()=>{
   const records=[{id:'fr',title:'Vérification du café'},{id:'de',title:'Ärger über Größen'},{id:'pl',title:'Zażółć gęślą jaźń'}];
   for(const [query,id] of [['verification cafe','fr'],['arger uber grossen','de'],['aerger ueber groessen','de'],['zazolc gesla jazn','pl']])assert.deepEqual(ids(filterScenarioOptions(records,query)),[id]);
@@ -81,6 +116,131 @@ test('Latin prose aliases explicitly support accents, German umlaut spellings an
   assert.equal(rankSearchFields(createSearchFields({identifiers:['zolc']}),prepareSearchQuery('żółć')),null);
   assert.equal(rankSearchFields(strict,prepareSearchQuery('CÓDE_VERIFIER')),0);
   assert.equal(rankSearchFields(createSearchFields({phrases:['Café'],aliases:false}),prepareSearchQuery('cafe',{aliases:false})),null);
+});
+
+test('marked Yoruba and Igbo prose outranks folded aliases in NFC and decomposed queries',()=>{
+  for(const [marked,folded] of [['ọkọ̀','oko'],['ọkụ','oku']]){
+    const records=[{id:'folded',title:folded},{id:'native',title:marked}],before=JSON.stringify(records);
+    for(const query of [marked,marked.normalize('NFD')])assert.deepEqual(ids(filterScenarioOptions(records,query)),['native','folded']);
+    assert.deepEqual(ids(filterScenarioOptions(records,folded)),['folded','native']);
+    assert.equal(JSON.stringify(records),before);
+  }
+});
+
+test('exact localized Yoruba and Igbo prose outranks folded original prose across picker lanes',()=>{
+  for(const [locale,marked,folded] of [['yo','Ọ','O'],['ig','ọkụ','oku']]){
+    const records=[{id:'folded',title:folded},{id:'native',title:'Other'}],before=JSON.stringify(records);
+    const localizer=localization({[locale]:{folded:{title:'Unrelated'},native:{title:marked}}},locale);
+    for(const query of [marked.toLowerCase(),marked.toLowerCase().normalize('NFD')]){
+      assert.deepEqual(ids(filterScenarioOptions(records,query,localizer)),['native','folded']);
+    }
+    assert.deepEqual(ids(filterScenarioOptions(records,folded,localizer)),['folded','native']);
+    assert.equal(JSON.stringify(records),before);
+  }
+});
+
+test('Greek sigma case variants and canonical accents match localized titles, tokens and cases',()=>{
+  const records=[
+    {id:'check',title:'Identity check',searchIdentifiers:['client_id'],searchTags:['PKINIT']},
+    {id:'policy',title:'Access policy',searchVariants:[{id:'denied',label:'Denied offline'}]},
+  ],before=JSON.stringify(records);
+  const localizer=localization({el:{
+    check:{title:'Έλεγχος ταυτότητας'},
+    policy:{searchVariants:[{id:'denied',label:'Έλεγχος πρόσβασης'}]},
+  }},'el');
+  for(const raw of ['Έλεγχος ταυτότητας','Έλεγχοσ ταυτότητασ','ΈΛΕΓΧΟΣ ΤΑΥΤΌΤΗΤΑΣ']){
+    for(const query of [raw,raw.normalize('NFD')]){
+      assert.deepEqual(ids(filterScenarioOptions(records,query,localizer)),['check']);
+      assert.equal(prepareSearchQuery(query).raw,query);
+    }
+  }
+  assert.deepEqual(ids(filterScenarioOptions(records,'client_id ταυτότητασ PKINIT',localizer)),['check']);
+  const [denied]=filterScenarioOptions(records,'ΠΡΌΣΒΑΣΗΣ',localizer);
+  assert.equal(denied.id,'policy');assert.equal(denied.variantId,'denied');assert.equal(denied.caseLabel,'Denied offline');
+  assert.equal(JSON.stringify(records),before);
+});
+
+test('European catalog vocabulary supports native and mixed protected-name queries without script rewriting',()=>{
+  const records=[{id:'native',title:'Authentication',searchTags:['PKINIT'],searchIdentifiers:['client_id']},{id:'other',title:'Unrelated'}];
+  const before=JSON.stringify(records);
+  for(const [locale,title,term] of [
+    ['el','Έλεγχος ταυτότητας','ταυτότητασ'],
+    ['es-CO','Validación de contraseña','contraseña'],
+    ['es-ES','Autenticación de usuario','autenticación'],
+    ['it','Verifica dell’autenticità','autenticità'],
+    ['pt-PT','Autenticação de utilizadores','autenticação'],
+    ['pt-BR','Validação de permissões','permissões'],
+    ['sr-Cyrl','Провера идентитета','идентитета'],
+    ['sr-Latn','Zaštićeni uređaj','uređaj'],
+    ['hr','Čuvanje žetona','žetona'],
+  ]){
+    const localizer=localization({[locale]:{native:{title,searchTags:[term]}}},locale);
+    for(const query of [term.toUpperCase(),term.normalize('NFD'),'client_id '+term+' PKINIT']){
+      assert.deepEqual(ids(filterScenarioOptions(records,query,localizer)),['native'],locale+' '+query);
+      assert.equal(prepareSearchQuery(query).raw,query);
+    }
+    assert.deepEqual(ids(filterScenarioOptions(records,'Authentication',localizer)),['native'],locale+' retains English discovery');
+    assert.deepEqual(ids(filterScenarioOptions(records,'ΡΚΙΝΙΤ',localizer)),[],locale+' Greek lookalikes are not PKINIT');
+    assert.deepEqual(ids(filterScenarioOptions(records,'сlient_id',localizer)),[],locale+' Cyrillic с is not Latin c');
+  }
+  const cyrillic=localization({'sr-Cyrl':{native:{title:'Провера идентитета'}}},'sr-Cyrl');
+  assert.deepEqual(filterScenarioOptions(records,'provera identiteta',cyrillic),[]);
+  assert.equal(JSON.stringify(records),before);
+});
+
+test('European accented exact overlays outrank folded original prose without weakening technical priority',()=>{
+  for(const [locale,marked,folded] of [
+    ['el','Έλεγχος','Ελεγχος'],
+    ['es-CO','Contraseña','Contrasena'],['es-ES','Validación','Validacion'],
+    ['it','Autenticità','Autenticita'],['pt-PT','Autenticação','Autenticacao'],
+    ['pt-BR','Permissões','Permissoes'],['sr-Latn','Čišćenje','Ciscenje'],['hr','Čuvanje žetona','Cuvanje zetona'],
+  ]){
+    const records=[
+      {id:'folded',title:folded},{id:'native',title:'Other'},
+      {id:'field',title:'Client field',searchIdentifiers:['client_id']},{id:'protocol',title:'PKINIT'},
+    ],before=JSON.stringify(records);
+    const localizer=localization({[locale]:{native:{title:marked,searchTags:['client_id','PKINIT']}}},locale);
+    for(const query of [marked,marked.toUpperCase(),marked.normalize('NFD')]){
+      assert.deepEqual(ids(filterScenarioOptions(records,query,localizer)),['native','folded'],locale+' '+query);
+    }
+    for(const query of [folded,folded.toUpperCase()])assert.deepEqual(ids(filterScenarioOptions(records,query,localizer)),['folded','native'],locale+' '+query);
+    assert.deepEqual(ids(filterScenarioOptions(records,'client_id',localizer)),['field','native']);
+    assert.deepEqual(ids(filterScenarioOptions(records,'PKINIT',localizer)),['protocol','native']);
+    assert.equal(JSON.stringify(records),before);
+  }
+  assert.deepEqual(filterScenarioOptions([{id:'device',title:'Uređaj'}],'uredaj'),[],'đ is not silently rewritten to d');
+});
+
+test('Greek composition and locale refresh retain raw decomposed input while filtering sigma variants',()=>{
+  const records=options(),localizer=localization({el:{beta:{title:'Έλεγχος ταυτότητας'}}},'el');
+  const fixture=mount(records,localizer),{picker,selected}=fixture;
+  try{
+    type(picker,'Alpha');assert.equal(active(picker),'alpha');
+    const raw='  Έλεγχοσ ταυτότητασ  '.normalize('NFD');
+    picker.input.dispatchEvent(new HarnessEvent('compositionstart'));type(picker,raw);
+    picker.input.selectionStart=3;picker.input.selectionEnd=7;
+    localizer.activate('el');assert.equal(picker.refreshLocale(),false);
+    assert.equal(active(picker),'alpha');assert.equal(picker.input.value,raw);
+    key(picker,'Enter',{isComposing:true});assert.deepEqual(selected,[]);
+    picker.input.dispatchEvent(new HarnessEvent('compositionend'));
+    assert.deepEqual(ids(picker.results),['beta']);assert.equal(picker.query,raw);assert.equal(picker.input.value,raw);
+    assert.equal(picker.input.selectionStart,3);assert.equal(picker.input.selectionEnd,7);
+    assert.equal(picker.list.querySelector('strong').textContent,'Έλεγχος ταυτότητας');
+    assert.deepEqual(selected,[]);assert.equal(records[1].title,'Beta lesson');
+  }finally{fixture.dispose();}
+});
+
+test('exact identifiers and canonical protocol names keep priority over localized prose ties',()=>{
+  const records=[
+    {id:'localized',title:'Other'},
+    {id:'field',title:'Client field',searchIdentifiers:['client_id']},
+    {id:'canonical',title:'PKINIT'},
+    {id:'canonical-tie',title:'PKINIT'},
+  ];
+  records.push(records[2]);
+  const localizer=localization({yo:{localized:{title:'PKINIT',searchTags:['client_id','client_id']}}},'yo');
+  assert.deepEqual(ids(filterScenarioOptions(records,'client_id',localizer)),['field','localized']);
+  assert.deepEqual(ids(filterScenarioOptions(records,'PKINIT',localizer)),['canonical','canonical-tie','localized']);
 });
 
 test('vowel aliases affect Hebrew and Arabic prose copies without folding meaningful letter distinctions',()=>{
@@ -102,14 +262,6 @@ test('SPAKE2 and SPAKE2+ remain separate in every lane, including localized pros
   assert.deepEqual(ids(filterScenarioOptions(records,'SPAKE',localizer)),['balanced','augmented']);
 });
 
-test('every original English tier outranks additive localized prose and duplicate tags never boost it',()=>{
-  const records=[{id:'localized',title:'Unrelated'},{id:'context',title:'Other lesson',summary:'PKINIT explanation'},{id:'technical',title:'PKINIT'},{id:'tie',title:'Another lesson',searchTags:['PKINIT','PKINIT','PKINIT']}];
-  const localizer=localization({uk:{localized:{title:'PKINIT',searchTags:['PKINIT','PKINIT']}}});
-  assert.deepEqual(ids(filterScenarioOptions(records,'PKINIT',localizer)),['technical','tie','context','localized']);
-  assert.deepEqual(ids(filterScenarioOptions([...records,records[0]],'PKINIT',localizer)),['technical','tie','context','localized']);
-  localizer.activate('en');
-  assert.deepEqual(filterScenarioOptions(records,'PKINIT',localizer),filterScenarioOptions(records,'PKINIT'));
-});
 
 test('localized cases retain canonical labels, explicit denial selection and single-case term boundaries',()=>{
   const record={id:'model',title:'PKINIT',searchVariants:[{id:'denied',label:'Offline denial'},{id:'success',label:'Online success'}]};

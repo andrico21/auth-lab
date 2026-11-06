@@ -1,6 +1,6 @@
 import {createHash} from 'node:crypto';
 
-// Source mode needs same-origin modules, stylesheet and supplied favicon files.
+// Source mode needs same-origin modules/assets and locally generated data images.
 // The standalone build embeds icons and hashes its exact script and stylesheet.
 const policy = (scriptSource, styleSource, imageSource) => [
   "default-src 'none'",
@@ -20,7 +20,7 @@ const policy = (scriptSource, styleSource, imageSource) => [
   "form-action 'none'",
 ].join('; ');
 
-export const SOURCE_CSP = policy("'self'", "'self'", "'self'");
+export const SOURCE_CSP = policy("'self'", "'self'", "'self' data:");
 
 // HTML parsing normalizes CRLF and CR. Emit LF before hashing so builds made
 // from Windows-edited sources also match the text that browsers actually parse.

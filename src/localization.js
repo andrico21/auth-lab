@@ -8,9 +8,27 @@ export const LOCALES = Object.freeze([
   Object.freeze({tag:'ar-AE',name:'العربية (الإمارات)',direction:'rtl'}),
   Object.freeze({tag:'fr',name:'Français',direction:'ltr'}),
   Object.freeze({tag:'pl',name:'Polski',direction:'ltr'}),
+  Object.freeze({tag:'hi',name:'हिन्दी',direction:'ltr'}),
+  Object.freeze({tag:'ur',name:'اردو',direction:'rtl'}),
+  Object.freeze({tag:'sw',name:'Kiswahili',direction:'ltr'}),
+  Object.freeze({tag:'ha',name:'Hausa',direction:'ltr'}),
+  Object.freeze({tag:'yo',name:'Yorùbá',direction:'ltr'}),
+  Object.freeze({tag:'ig',name:'Igbo',direction:'ltr'}),
+  Object.freeze({tag:'ml',name:'മലയാളം',direction:'ltr'}),
+  Object.freeze({tag:'fil',name:'Filipino',direction:'ltr'}),
+  Object.freeze({tag:'bn',name:'বাংলা',direction:'ltr'}),
+  Object.freeze({tag:'el',name:'Ελληνικά',direction:'ltr'}),
+  Object.freeze({tag:'es-CO',name:'Español (Colombia)',direction:'ltr'}),
+  Object.freeze({tag:'es-ES',name:'Español (España)',direction:'ltr'}),
+  Object.freeze({tag:'it',name:'Italiano',direction:'ltr'}),
+  Object.freeze({tag:'pt-PT',name:'Português (Portugal)',direction:'ltr'}),
+  Object.freeze({tag:'pt-BR',name:'Português (Brasil)',direction:'ltr'}),
+  Object.freeze({tag:'sr-Cyrl',name:'Српски — ћирилица',direction:'ltr'}),
+  Object.freeze({tag:'sr-Latn',name:'Srpski — latinica',direction:'ltr'}),
+  Object.freeze({tag:'hr',name:'Hrvatski',direction:'ltr'}),
 ]);
 const localeByTag = new Map(LOCALES.map(locale=>[locale.tag,locale]));
-const localePluralCategories={en:['one','other'],ru:['one','few','many','other'],uk:['one','few','many','other'],he:['one','two','other'],de:['one','other'],'ar-AE':['zero','one','two','few','many','other'],fr:['one','many','other'],pl:['one','few','many','other']};
+const localePluralCategories={en:['one','other'],ru:['one','few','many','other'],uk:['one','few','many','other'],he:['one','two','other'],de:['one','other'],'ar-AE':['zero','one','two','few','many','other'],fr:['one','many','other'],pl:['one','few','many','other'],hi:['one','other'],ur:['one','other'],sw:['one','other'],ha:['one','other'],yo:['other'],ig:['other'],ml:['one','other'],fil:['one','other'],bn:['one','other'],el:['one','other'],'es-CO':['one','many','other'],'es-ES':['one','many','other'],it:['one','many','other'],'pt-PT':['one','many','other'],'pt-BR':['one','many','other'],'sr-Cyrl':['one','few','other'],'sr-Latn':['one','few','other'],hr:['one','few','other']};
 const localeEscape = value=>String(value??'').replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
 const localeBidiControls = /[\u061c\u200e\u200f\u202a-\u202e\u2066-\u2069]/u;
 const localeUnsafeMarkup = /<[^>]*>|(?<![a-z0-9+.-])(?:[a-z][a-z0-9+.-]*:\/\/|javascript:|(?:data|file):(?=\S)|data:\s*(?:[a-z0-9!#$&^_.+-]+\/[a-z0-9!#$&^_.+-]+)?(?:;[^\s,]*)*,|file:\s*(?:[/\\]|[a-z]:[/\\]))|\bwww\./iu;
@@ -28,6 +46,20 @@ const localeSameCounts = (left,right)=>{
 };
 const localeRegexEscape = value=>value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 const localePacked = value=>typeof value==='string'&&value.startsWith('gzip:');
+// The same ordinary-decimal, at-most-20-fraction-digit policy as the Intl path.
+const localeDecimal = value=>{
+  const [mantissa,exponent='0']=String(value).split('e'),[whole,fraction='']=mantissa.split('.');
+  const digits=whole+fraction,point=whole.length+Number(exponent);
+  let text=point<=0?'0.'+'0'.repeat(-point)+digits:point>=digits.length?digits+'0'.repeat(point-digits.length):digits.slice(0,point)+'.'+digits.slice(point);
+  const [integer,decimal='']=text.split('.');
+  if(decimal.length>20){
+    let rounded=BigInt(integer+decimal.slice(0,20));
+    if(decimal[20]>='5')rounded++;
+    const padded=String(rounded).padStart(21,'0');
+    text=padded.slice(0,-20)+'.'+padded.slice(-20);
+  }
+  return text.includes('.')?text.replace(/0+$/,'').replace(/\.$/,''):text;
+};
 const localeInflate = async value=>{
   if(typeof DecompressionStream!=='function')throw new TypeError('Offline language catalogs require gzip DecompressionStream support.');
   const encoded=value.slice(5),bytes=typeof Uint8Array.fromBase64==='function'?Uint8Array.fromBase64(encoded):Uint8Array.from(atob(encoded),character=>character.charCodeAt(0));
@@ -36,8 +68,10 @@ const localeInflate = async value=>{
 
 /** English plus one selected catalog. No protocol objects enter this service. */
 export class Localizer {
-  constructor({host=globalThis,catalogs={},bindings={messages:[]},initialLocale}={}) {
+  /** Additional resources are small, unpacked catalogs; base table indices stay unchanged. */
+  constructor({host=globalThis,catalogs={},bindings={messages:[]},additionalBindings=[],additionalCatalogs={},initialLocale}={}) {
     this.host=host;this.resources=catalogs;this.bindingResource=bindings;
+    this.additionalBindings=additionalBindings;this.additionalResources=additionalCatalogs;this.additionalCatalog=null;
     this.locale='en';this.direction='ltr';this.revision=0;this.source='default';
     this.catalog=null;this.contracts=null;this.owners=null;this.matchers=new Map();
     this.pluralRules=null;this.numberFormatter=null;this.searchCache=new Map();this.pluralDataSource=null;this.numberDataSource=null;
@@ -75,7 +109,7 @@ export class Localizer {
     if(!localeByTag.has(tag))throw new RangeError('Unknown display locale.');
     if(tag===this.locale){this.discardPrepared();return false;}
     if(this.needsPreparation(tag))throw new TypeError('Prepare the selected display resources before activation.');
-    let catalog=null;
+    let catalog=null,additionalCatalog=null;
     if(tag!=='en'){
       const resource=this.prepared?.tag===tag?this.prepared.resource:this.resources[tag];
       if(resource!==undefined){
@@ -83,9 +117,11 @@ export class Localizer {
         if(catalog?.format==='auth-lab-l10n-catalog-table')catalog=this.decodeCatalog(catalog,tag);
         if(!catalog||catalog.locale!==tag||!catalog.entries||typeof catalog.entries!=='object')throw new TypeError('The selected offline language catalog is invalid.');
       }
+      additionalCatalog=this.additionalResources[tag]??null;
+      if(additionalCatalog!==null&&(additionalCatalog.locale!==tag||!additionalCatalog.entries||typeof additionalCatalog.entries!=='object'))throw new TypeError('The selected additional language catalog is invalid.');
     }
     this.discardPrepared();
-    this.locale=tag;this.direction=localeByTag.get(tag).direction;this.catalog=catalog;
+    this.locale=tag;this.direction=localeByTag.get(tag).direction;this.catalog=catalog;this.additionalCatalog=additionalCatalog;
     this.revision++;this.matchers.clear();this.searchCache=new Map();this.coverage.clear();this.fallbacks.clear();this.resolvedLanguages.clear();
     this.pluralRules=null;this.numberFormatter=null;this.pluralDataSource=null;this.numberDataSource=null;
     if(persist){
@@ -129,7 +165,8 @@ export class Localizer {
       if(this.sourceWasPacked)this.bindingResource=null;
     }else messages=Array.isArray(resource)?resource:resource.messages||Object.values(resource.entries||{});
     this.contracts=new Map();this.owners=new Map();
-    for(const contract of messages){
+    // Extend lookup contracts without extending the frozen base catalog binding order.
+    for(const collection of [messages,this.additionalBindings])for(const contract of collection){
       if(!contract||typeof contract.key!=='string'&&(!indexed||!Number.isInteger(contract.key)||contract.key<0))throw new TypeError('A display contract requires a semantic binding or explicit UI key.');
       if(this.contracts.has(contract.key))throw new RangeError('Duplicate display message key: '+contract.key);
       this.contracts.set(contract.key,contract);
@@ -143,9 +180,9 @@ export class Localizer {
     if(!this.pluralRules){
       try{
         if(!Intl.PluralRules.supportedLocalesOf([locale]).length)throw new RangeError('Locale plural data unavailable.');
-        const rules=new Intl.PluralRules(locale,{type:'cardinal'});
+        const rules=new Intl.PluralRules(locale,{type:'cardinal',maximumFractionDigits:20});
         if(rules.resolvedOptions().locale.split('-')[0]!==locale.split('-')[0])throw new RangeError('Wrong plural locale.');
-        for(const probe of [0,1,2,3,4,5,11,12,14,21,22,25,100,101,102,1000000,0.1,1.5])if(rules.select(probe)!==this.fallbackCardinal(probe,locale))throw new RangeError('Runtime cardinal data differs from CLDR 49.');
+        for(const probe of [0,1,2,3,4,5,6,9,11,12,14,21,22,25,100,101,102,111,1000000,2000000,1000001,0.1,0.4,0.5,1.1,1.2,1.5,1.11,1.21])if(rules.select(probe)!==this.fallbackCardinal(probe,locale))throw new RangeError('Runtime cardinal data differs from CLDR 49.');
         this.pluralRules=rules;this.pluralDataSource='Intl verified against CLDR 49 probes';
       }catch{
         this.pluralRules={select:count=>this.fallbackCardinal(count,locale)};this.pluralDataSource='CLDR 49 ordinary-decimal fallback';
@@ -161,6 +198,20 @@ export class Localizer {
     if(language==='ru'||language==='uk')return !integer?'other':mod10===1&&mod100!==11?'one':mod10>=2&&mod10<=4&&(mod100<12||mod100>14)?'few':mod10===0||mod10>=5||mod100>=11&&mod100<=14?'many':'other';
     if(language==='pl')return !integer?'other':i===1?'one':mod10>=2&&mod10<=4&&(mod100<12||mod100>14)?'few':'many';
     if(language==='fr')return i===0||i===1?'one':integer&&i!==0&&i%1000000===0?'many':'other';
+    if(language==='es'||language==='it'||language==='pt'){
+      const one=language==='pt'&&locale!=='pt-PT'?i===0||i===1:value===1;
+      return one?'one':integer&&i!==0&&i%1000000===0?'many':'other';
+    }
+    if(language==='sr'||language==='hr'){
+      const decimal=localeDecimal(value).split('.')[1]||'',last=decimal?Number(decimal.slice(-1)):mod10,lastTwo=decimal?Number(decimal.slice(-2)):mod100;
+      return last===1&&lastTwo!==11?'one':last>=2&&last<=4&&(lastTwo<12||lastTwo>14)?'few':'other';
+    }
+    if(language==='hi'||language==='bn')return i===0||value===1?'one':'other';
+    if(language==='yo'||language==='ig')return 'other';
+    if(language==='fil'){
+      const last=integer?mod10:Number(String(value).split(/[eE]/)[0].slice(-1));
+      return last===4||last===6||last===9?'other':'one';
+    }
     return integer&&i===1?'one':'other';
   }
   formatCount(value) {
@@ -173,8 +224,8 @@ export class Localizer {
         this.numberFormatter=formatter;this.numberDataSource='Intl Latin UI digits without grouping';
       }catch{
         // Versioned UI policy: Latin digits, no grouping; CLDR 49 decimal separators.
-        const comma=/^(ru|uk|de|fr|pl)$/.test(this.locale);
-        this.numberFormatter={format:count=>String(count).replace('.',comma?',':'.')};this.numberDataSource='CLDR 49 Latin-digit decimal-separator fallback';
+        const comma=/^(ru|uk|de|fr|pl|el|es|it|pt|sr|hr)$/.test(this.locale.split('-')[0]);
+        this.numberFormatter={format:count=>localeDecimal(count).replace('.',comma?',':'.')};this.numberDataSource='CLDR 49 Latin-digit decimal-separator fallback';
       }
     }
     return this.numberFormatter.format(value);
@@ -330,7 +381,7 @@ export class Localizer {
     if(contract.classification==='ambiguous')return this.fallback(key,source,'ambiguous-source-contract',html);
     const matched=this.matchSource(contract,source,params);
     if(!matched)return this.fallback(key,source,'stale-source-or-parameter-contract',html);
-    const values=matched.values,entry=this.catalog?.entries[key],message=this.validateMessage(contract,entry,values);
+    const values=matched.values,entry=this.catalog?.entries[key]??this.additionalCatalog?.entries[key],message=this.validateMessage(contract,entry,values);
     if(message===null)return this.fallback(key,source,entry?'stale-or-invalid-translation':'missing-translation',html);
     const rendered=this.parts(message,contract,values,html,{rich});if(rendered===null)return this.fallback(key,source,'missing-human-translation',html);
     this.coverage.set(key,(this.coverage.get(key)||0)+1);this.resolvedLanguages.set(key,this.locale);return rendered;

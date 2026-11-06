@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="dcterms.date" content="2026-11-04">
+  <title>Auth Flow Studio · Nine languages and dependency update</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>body{font:16px/1.6 system-ui,sans-serif;color:#18334a;background:#f3f7f9;margin:0;padding:24px}header,nav,main{max-width:1000px;background:white;margin:auto;padding:18px 28px}header{border-top:5px solid #00716b;border-radius:12px 12px 0 0}h1{line-height:1.15}h2{border-top:1px solid #d4e0e6;padding-top:22px;margin-top:32px}h3{color:#00645f}nav ul{padding-left:24px}a{color:#006c76}.table-scroll{overflow-x:auto;border:1px solid #d4e0e6;border-radius:8px}table{border-collapse:collapse;min-width:600px;width:100%}th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid #d4e0e6}th{background:#18384a;color:white}code{overflow-wrap:anywhere;background:#eef3f6;padding:2px 4px}li{margin:8px 0}@media(max-width:600px){body{padding:8px}header,nav,main{padding:14px}h1{font-size:26px}}@media print{body{padding:0;background:white}nav{display:none}header,main{padding:0}.table-scroll{overflow:visible}table{min-width:0}}</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Auth Flow Studio · Nine languages and dependency
+update</h1>
+<p class="subtitle">Focused worker plan · document version 2</p>
+<p class="date">4 November 2026</p>
+</header>
+<nav id="TOC" role="doc-toc" aria-label="Worker plan contents">
+<ul>
+<li><a href="#assignment" id="toc-assignment">Assignment</a></li>
+<li><a href="#add-nine-languages-to-the-existing-localization" id="toc-add-nine-languages-to-the-existing-localization">1. Add nine
+languages to the existing localization</a></li>
+<li><a href="#update-the-dependency-pins-coherently" id="toc-update-the-dependency-pins-coherently">2. Update the dependency
+pins coherently</a></li>
+<li><a href="#focused-verification-and-cost-limit" id="toc-focused-verification-and-cost-limit">3. Focused verification and
+cost limit</a></li>
+<li><a href="#deliver-and-report" id="toc-deliver-and-report">4. Deliver
+and report</a></li>
+</ul>
+</nav>
+<main><h2 id="assignment">Assignment</h2>
+<p>Implement <strong>Hindi, Urdu, Swahili, Hausa, Yoruba, Igbo,
+Malayalam, Filipino and Bengali</strong> and update the project’s direct
+DNSSEC verification dependencies:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Assignment — table 1"><table>
+<thead>
+<tr class="header">
+<th scope="col">Package</th>
+<th style="text-align: right;" scope="col">Current pinned version</th>
+<th style="text-align: right;" scope="col">Requested version</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>dnspython</code></td>
+<td style="text-align: right;"><code>2.9.0</code></td>
+<td style="text-align: right;"><code>2.9.2</code></td>
+</tr>
+<tr class="even">
+<td><code>cryptography</code></td>
+<td style="text-align: right;"><code>50.0.0</code></td>
+<td style="text-align: right;"><code>50.0.2</code></td>
+</tr>
+</tbody>
+</table>
+</div><p>The requested versions were listed as the latest stable releases on
+the <a href="https://pypi.org/project/dnspython/" rel="noopener noreferrer">dnspython</a> and <a href="https://pypi.org/project/cryptography/" rel="noopener noreferrer">cryptography</a> PyPI
+project pages on 4 November 2026. Use these <strong>exact
+targets</strong> for this assignment. Resolve and verify hashes for the
+actual compatible artifacts; do not copy a checksum for a different
+wheel or platform.</p>
+<p><strong>Worker input:</strong>
+<code>auth-flow-studio-languages-dependency-worker-plan.html</code>,
+<strong>document version 2</strong>. This supersedes version 1 and adds
+Malayalam, Filipino and Bengali while retaining all six previously
+requested languages and both dependency updates. Use Filipino
+(<code>fil</code>) for the accepted Filipino/Tagalog suggestion;
+<code>tl</code> is a distinct Tagalog tag and is not a second promised
+catalog. Other additional languages are outside this assignment.</p>
+<p>Start from the actual current checkout and record its identity. The
+most recent supplied handoff identified version 1.3, checkpoint
+<code>e3124ad8e2f94c3176b95355acedd02f3a1de8f7</code>, canonical source
+<code>031b48d912242915994f01943d1742c8ef4b39b7c7a7b9dcd8a6a99104e52b88</code>.
+Those identities are reference context; do not reset later work or claim
+they identify the finished change.</p>
+<p><strong>Keep this simple.</strong> Use the existing localization
+pipeline and project conventions. Make only changes needed for the
+requested languages, dependency updates and their operation; avoid new
+frameworks, general-purpose abstractions, elaborate reporting, extra
+review rounds and unrelated cleanup. Translate and implement directly.
+Produce one concise handoff. Do not turn the verification budget below
+into a reason to create new monitoring or evidence machinery. If an
+existing requirement is infeasible, report it plainly instead of
+building a workaround project.</p>
+<h2 id="add-nine-languages-to-the-existing-localization">1. Add nine
+languages to the existing localization</h2>
+<ol type="1">
+<li><p>Add these nine distinct locales; no regional restriction was
+requested:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="1. Add nine
+languages to the existing localization — table 2"><table>
+<thead>
+<tr class="header">
+<th scope="col">Language</th>
+<th scope="col">Tag</th>
+<th scope="col">Selector label</th>
+<th scope="col">Script / direction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Hindi</td>
+<td><code>hi</code></td>
+<td lang="hi" dir="ltr">हिन्दी</td>
+<td>Devanagari / LTR</td>
+</tr>
+<tr class="even">
+<td>Urdu</td>
+<td><code>ur</code></td>
+<td lang="ur" dir="rtl">اردو</td>
+<td>Urdu Arabic script / RTL</td>
+</tr>
+<tr class="odd">
+<td>Swahili</td>
+<td><code>sw</code></td>
+<td lang="sw" dir="ltr">Kiswahili</td>
+<td>Latin / LTR</td>
+</tr>
+<tr class="even">
+<td>Hausa</td>
+<td><code>ha</code></td>
+<td lang="ha" dir="ltr">Hausa</td>
+<td>Latin / LTR for this initial catalog</td>
+</tr>
+<tr class="odd">
+<td>Yoruba</td>
+<td><code>yo</code></td>
+<td lang="yo" dir="ltr">Yorùbá</td>
+<td>Latin / LTR</td>
+</tr>
+<tr class="even">
+<td>Igbo</td>
+<td><code>ig</code></td>
+<td lang="ig" dir="ltr">Igbo</td>
+<td>Latin / LTR</td>
+</tr>
+<tr class="odd">
+<td>Malayalam</td>
+<td><code>ml</code></td>
+<td lang="ml" dir="ltr">മലയാളം</td>
+<td>Malayalam script / LTR</td>
+</tr>
+<tr class="even">
+<td>Filipino</td>
+<td><code>fil</code></td>
+<td lang="fil" dir="ltr">Filipino</td>
+<td>Latin / LTR</td>
+</tr>
+<tr class="odd">
+<td>Bengali</td>
+<td><code>bn</code></td>
+<td lang="bn" dir="ltr">বাংলা</td>
+<td>Bengali script / LTR</td>
+</tr>
+</tbody>
+</table>
+</div><p>Hausa is also written in Arabic-derived Ajami; Latin is the initial
+editorial choice, not a claim that it is the only Hausa script. Use
+idiomatic independent translations, not a shared generic catalog. Keep
+English, Russian, Ukrainian, Hebrew, German, Arabic UAE, French and
+Polish available and unchanged in behavior.</p></li>
+<li><p>Provide a separate catalog and glossary for <strong>each of the
+nine languages</strong> using the existing source-bound localization
+system. Translate human-facing explanations, navigation, help and
+accessibility text throughout <strong>both Full and Compact</strong> and
+across the existing lessons, cases, fields and generated explanations. A
+translated language selector or a few sample lessons alone is not
+completion.</p></li>
+<li><p>Preserve exact attribute/claim/parameter names, RFC entities,
+protocol names, formal actor names, examples, code, URLs and values. In
+particular, retain the previously corrected <code>state</code>,
+<code>nonce</code>, <code>client_secret</code>, <code>Realm A</code>,
+<code>spake-kdc</code>, <code>cname</code>, <code>bogus</code> and
+<code>insecure</code> where they are the canonical technical names.
+Translate the explanation around them; do not change model state or
+protocol logic.</p></li>
+<li><p>Wire all nine into <code>src/localization.js</code>
+(<code>LOCALES</code>, plural categories and fallback),
+<code>src/localization-resources.js</code>, the existing catalog
+compiler in <code>tools/verification/localization/resources.mjs</code>,
+editorial policy/glossaries and the standalone build. The compiler
+currently enumerates locales and plural categories separately: update
+both, not just the selector. Reuse the current English source bindings
+and protected-term registry rather than rebuilding the existing seven
+translations.</p></li>
+<li><p>Make all nine complete catalogs available offline in the
+standalone HTML using the existing packaging/security design. Preserve
+the working English recovery path if catalog preparation fails. Do not
+introduce a remote translation API, external font requirement or runtime
+fetch.</p></li>
+<li><p>Preserve current language-change behavior: pause an active flow,
+retain its selected lesson, step, elapsed position, queue, field/object
+investigation, search drafts and canonical state, and leave it paused
+after the switch. Both Full and Compact use the same underlying
+state.</p></li>
+</ol>
+<h3 id="language-specific-details">Language-specific details</h3>
+<ul>
+<li><p><strong>Plural handling:</strong> the current generic fallback
+uses English rules, which are wrong for some of these languages. Add
+correct cardinal behavior to the runtime fallback and catalog compiler;
+use complete natural messages rather than an English-style suffix. Check
+both <code>Intl.PluralRules</code> and the supported no-Intl fallback,
+based on <a href="https://www.unicode.org/cldr/charts/49/supplemental/language_plural_rules.html" rel="noopener noreferrer">Unicode
+CLDR plural rules</a>:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Language-specific details — table 3"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Locale</th>
+<th scope="col">Cardinal forms</th>
+<th scope="col">Required sample checks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>hi</code></td>
+<td><code>one</code>, <code>other</code></td>
+<td><code>0</code>, <code>0.5</code>, <code>1</code> → <code>one</code>;
+<code>1.5</code>, <code>2</code> → <code>other</code>.</td>
+</tr>
+<tr class="even">
+<td><code>ur</code>, <code>sw</code>, <code>ha</code></td>
+<td><code>one</code>, <code>other</code></td>
+<td><code>1</code> → <code>one</code>; <code>0</code>, <code>0.5</code>,
+<code>1.5</code>, <code>2</code> → <code>other</code>. Verify each
+language’s actual rule rather than sharing a guessed
+implementation.</td>
+</tr>
+<tr class="odd">
+<td><code>yo</code>, <code>ig</code></td>
+<td><code>other</code></td>
+<td>All tested counts, including <code>1</code>, use
+<code>other</code>.</td>
+</tr>
+<tr class="even">
+<td><code>ml</code></td>
+<td><code>one</code>, <code>other</code></td>
+<td><code>1</code> → <code>one</code>; <code>0</code>, <code>0.5</code>,
+<code>1.5</code>, <code>2</code> → <code>other</code>.</td>
+</tr>
+<tr class="odd">
+<td><code>bn</code></td>
+<td><code>one</code>, <code>other</code></td>
+<td><code>0</code>, <code>0.5</code>, <code>1</code> → <code>one</code>;
+<code>1.5</code>, <code>2</code> → <code>other</code>.</td>
+</tr>
+<tr class="even">
+<td><code>fil</code></td>
+<td><code>one</code>, <code>other</code></td>
+<td><code>0</code>, <code>1</code>, <code>2</code>, <code>3</code>,
+<code>5</code>, <code>11</code>, <code>21</code>, <code>0.5</code> →
+<code>one</code>; <code>4</code>, <code>6</code>, <code>9</code>,
+<code>14</code>, <code>0.4</code> → <code>other</code>. Do not use the
+English rule.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Record runtime locale support. Treat number formatting separately
+from grammatical selection and never change exact protocol
+values.</p></li>
+<li><p><strong>Devanagari text:</strong> preserve vowel signs, virama,
+nukta, joining/shaping and combining marks. The existing search
+normalization already preserves Unicode letters, numbers and marks; do
+not replace it with ASCII-only matching or strip meaningful marks. See
+<a href="https://www.w3.org/TR/deva-lreq/" rel="noopener noreferrer">W3C Devanagari script
+resources</a>.</p></li>
+<li><p><strong>Malayalam and Bengali text:</strong> preserve each
+script’s vowel signs, conjuncts, virama and joiners in displayed text
+and raw input; use working offline font fallback and proper shaping.
+Test native-script search and composed/decomposed equivalents without
+removing meaningful marks. See <a href="https://www.w3.org/TR/beng-lreq/" rel="noopener noreferrer">W3C Bengali script resources</a>
+and <a href="https://www.w3.org/International/questions/qa-indic-graphemes.en.html" rel="noopener noreferrer">W3C
+guidance on Indic character units</a>.</p></li>
+<li><p><strong>Urdu RTL:</strong> use Urdu-specific text and proper
+joining, a suitable local/system font fallback and RTL prose. Isolate
+exact LTR identifiers and code; do not mirror the protocol graph,
+reverse messages or alter byte order. Existing Arabic/Hebrew RTL support
+is a base to test, not a substitute for Urdu translation. See the
+current <a href="https://www.w3.org/TR/arab-lreq/" rel="noopener noreferrer">W3C Arabic script
+resources</a>, which include Urdu; the older Urdu-only W3C draft is
+retired.</p></li>
+<li><p><strong>Yoruba and Igbo:</strong> preserve dot-below letters,
+tone marks and Unicode combining sequences in translations and display.
+Existing search creates accent-folded Latin aliases: exact forms must
+rank first, and any forgiving alias must remain lower priority because
+marks can distinguish words. Test NFC and decomposed equivalents and
+collisions such as <code>ọ</code>/<code>o</code>,
+<code>ẹ</code>/<code>e</code> and <code>ụ</code>/<code>u</code>. Never
+fold canonical technical identifiers or rewrite the user’s raw
+input.</p></li>
+<li><p><strong>Search:</strong> add a small set of useful
+native-language aliases in each of the nine catalogs, including
+equivalents of filtering, authentication and validation, while retaining
+English queries and exact technical-name priority. Test a real
+native-language query for each new language, mixed Hindi or Urdu +
+<code>client_id</code>/<code>PKINIT</code>, and an unmatched query.
+Preserve raw input, IME composition, case selection and the distinction
+between <code>SPAKE2</code> and <code>SPAKE2+</code>.</p></li>
+<li><p><strong>Meaning:</strong> preserve negation, conditions, actor
+and trust direction, and the distinction between received, verified and
+authorized. Pay particular attention to DNSSEC result labels, Windows
+token filtering and PAM control flow. Translation may not imply that an
+operation has completed before the current step.</p></li>
+<li><p><strong>Review status:</strong> record what was translated and
+any unresolved/stale/missing entries separately for all nine locales. A
+fallback is not a completed translation. Do not claim qualified human or
+screen-reader approval unless actually performed; an unavailable human
+reviewer does not block completing the implementation and reporting the
+limitation.</p></li>
+</ul>
+<h3 id="concrete-translations-supplied-for-the-worker">Concrete
+translations supplied for the worker</h3>
+<p>The following are <strong>draft translations supplied as a starting
+point</strong>, not complete catalogs or claims of native-speaker
+review. Apply them to matching source text and meaning, preserve
+placeholders and protected technical identifiers, and adapt a word if
+the actual UI context requires a different grammatical form. The four
+playback labels and the two longer strings below were checked against
+the supplied product source. The other short entries are a practical UI
+glossary; use them only where the meaning matches. Translate the
+remaining actual human-facing source strings for all nine languages as
+part of this assignment, and report the real coverage. Do not treat this
+starter table as completed lesson translations.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Concrete
+translations supplied for the worker — table 4"><table>
+<thead>
+<tr class="header">
+<th scope="col">English UI meaning</th>
+<th scope="col">Hindi <code>hi</code></th>
+<th scope="col">Urdu <code>ur</code></th>
+<th scope="col">Malayalam <code>ml</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Language</td>
+<td>भाषा</td>
+<td>زبان</td>
+<td>ഭാഷ</td>
+</tr>
+<tr class="even">
+<td>Search</td>
+<td>खोजें</td>
+<td>تلاش کریں</td>
+<td>തിരയുക</td>
+</tr>
+<tr class="odd">
+<td>Scenario</td>
+<td>परिदृश्य</td>
+<td>منظرنامہ</td>
+<td>സാഹചര്യം</td>
+</tr>
+<tr class="even">
+<td>Step</td>
+<td>चरण</td>
+<td>مرحلہ</td>
+<td>ഘട്ടം</td>
+</tr>
+<tr class="odd">
+<td>Play</td>
+<td>चलाएँ</td>
+<td>چلائیں</td>
+<td>പ്ലേ ചെയ്യുക</td>
+</tr>
+<tr class="even">
+<td>Pause</td>
+<td>विराम दें</td>
+<td>عارضی طور پر روکیں</td>
+<td>താൽക്കാലികമായി നിർത്തുക</td>
+</tr>
+<tr class="odd">
+<td>Next</td>
+<td>अगला</td>
+<td>اگلا</td>
+<td>അടുത്തത്</td>
+</tr>
+<tr class="even">
+<td>Previous</td>
+<td>पिछला</td>
+<td>پچھلا</td>
+<td>മുമ്പത്തേത്</td>
+</tr>
+<tr class="odd">
+<td>Reset</td>
+<td>फिर से शुरू करें</td>
+<td>دوبارہ شروع کریں</td>
+<td>വീണ്ടും തുടങ്ങുക</td>
+</tr>
+<tr class="even">
+<td>Close</td>
+<td>बंद करें</td>
+<td>بند کریں</td>
+<td>അടയ്ക്കുക</td>
+</tr>
+<tr class="odd">
+<td>Help</td>
+<td>सहायता</td>
+<td>مدد</td>
+<td>സഹായം</td>
+</tr>
+<tr class="even">
+<td>Loading…</td>
+<td>लोड हो रहा है…</td>
+<td>لوڈ ہو رہا ہے…</td>
+<td>ലോഡ് ചെയ്യുന്നു…</td>
+</tr>
+<tr class="odd">
+<td>Error</td>
+<td>त्रुटि</td>
+<td>خرابی</td>
+<td>പിശക്</td>
+</tr>
+</tbody>
+</table>
+</div><div class="table-scroll" tabindex="0" role="region" aria-label="Concrete
+translations supplied for the worker — table 5"><table>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">English UI meaning</th>
+<th scope="col">Swahili <code>sw</code></th>
+<th scope="col">Hausa <code>ha</code></th>
+<th scope="col">Yoruba <code>yo</code></th>
+<th scope="col">Igbo <code>ig</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Language</td>
+<td>Lugha</td>
+<td>Harshe</td>
+<td>Èdè</td>
+<td>Asụsụ</td>
+</tr>
+<tr class="even">
+<td>Search</td>
+<td>Tafuta</td>
+<td>Bincika</td>
+<td>Wá</td>
+<td>Chọọ</td>
+</tr>
+<tr class="odd">
+<td>Scenario</td>
+<td>Hali</td>
+<td>Yanayi</td>
+<td>Ìṣẹ̀lẹ̀</td>
+<td>Ọnọdụ</td>
+</tr>
+<tr class="even">
+<td>Step</td>
+<td>Hatua</td>
+<td>Mataki</td>
+<td>Ìgbésẹ̀</td>
+<td>Nzọụkwụ</td>
+</tr>
+<tr class="odd">
+<td>Play</td>
+<td>Cheza</td>
+<td>Kunna</td>
+<td>Mu ṣiṣẹ́</td>
+<td>Kpọọ</td>
+</tr>
+<tr class="even">
+<td>Pause</td>
+<td>Sitisha</td>
+<td>Dakata</td>
+<td>Dádúró</td>
+<td>Kwụsịtụ</td>
+</tr>
+<tr class="odd">
+<td>Next</td>
+<td>Inayofuata</td>
+<td>Na gaba</td>
+<td>Tókàn</td>
+<td>Na-esote</td>
+</tr>
+<tr class="even">
+<td>Previous</td>
+<td>Iliyotangulia</td>
+<td>Na baya</td>
+<td>Tí ó ṣáájú</td>
+<td>Gara aga</td>
+</tr>
+<tr class="odd">
+<td>Reset</td>
+<td>Weka upya</td>
+<td>Sake saita</td>
+<td>Tún ṣètò</td>
+<td>Tọgharịa</td>
+</tr>
+<tr class="even">
+<td>Close</td>
+<td>Funga</td>
+<td>Rufe</td>
+<td>Pa dé</td>
+<td>Mechie</td>
+</tr>
+<tr class="odd">
+<td>Help</td>
+<td>Msaada</td>
+<td>Taimako</td>
+<td>Ìrànlọ́wọ́</td>
+<td>Enyemaka</td>
+</tr>
+<tr class="even">
+<td>Loading…</td>
+<td>Inapakia…</td>
+<td>Ana lodawa…</td>
+<td>Ó ń kójọpọ̀…</td>
+<td>Ọ na-ebu…</td>
+</tr>
+<tr class="odd">
+<td>Error</td>
+<td>Hitilafu</td>
+<td>Kuskure</td>
+<td>Àṣìṣe</td>
+<td>Njehie</td>
+</tr>
+</tbody>
+</table>
+</div><div class="table-scroll" tabindex="0" role="region" aria-label="Concrete
+translations supplied for the worker — table 6"><table>
+<thead>
+<tr class="header">
+<th scope="col">English UI meaning</th>
+<th scope="col">Filipino <code>fil</code></th>
+<th scope="col">Bengali <code>bn</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Language</td>
+<td>Wika</td>
+<td>ভাষা</td>
+</tr>
+<tr class="even">
+<td>Search</td>
+<td>Maghanap</td>
+<td>খুঁজুন</td>
+</tr>
+<tr class="odd">
+<td>Scenario</td>
+<td>Sitwasyon</td>
+<td>পরিস্থিতি</td>
+</tr>
+<tr class="even">
+<td>Step</td>
+<td>Hakbang</td>
+<td>ধাপ</td>
+</tr>
+<tr class="odd">
+<td>Play</td>
+<td>I-play</td>
+<td>চালু করুন</td>
+</tr>
+<tr class="even">
+<td>Pause</td>
+<td>I-pause</td>
+<td>বিরতি দিন</td>
+</tr>
+<tr class="odd">
+<td>Next</td>
+<td>Susunod</td>
+<td>পরবর্তী</td>
+</tr>
+<tr class="even">
+<td>Previous</td>
+<td>Nakaraan</td>
+<td>পূর্ববর্তী</td>
+</tr>
+<tr class="odd">
+<td>Reset</td>
+<td>I-reset</td>
+<td>পুনরায় শুরু করুন</td>
+</tr>
+<tr class="even">
+<td>Close</td>
+<td>Isara</td>
+<td>বন্ধ করুন</td>
+</tr>
+<tr class="odd">
+<td>Help</td>
+<td>Tulong</td>
+<td>সহায়তা</td>
+</tr>
+<tr class="even">
+<td>Loading…</td>
+<td>Naglo-load…</td>
+<td>লোড হচ্ছে…</td>
+</tr>
+<tr class="odd">
+<td>Error</td>
+<td>Error</td>
+<td>ত্রুটি</td>
+</tr>
+</tbody>
+</table>
+</div><p>Exact app text: <strong>“Compact view. Playback paused.”</strong>
+(<code>ui.view.compact-paused</code>):</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Concrete
+translations supplied for the worker — table 7"><table>
+<thead>
+<tr class="header">
+<th scope="col">Language</th>
+<th scope="col">Translation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Hindi</td>
+<td>संक्षिप्त दृश्य। प्लेबैक विराम पर है।</td>
+</tr>
+<tr class="even">
+<td>Urdu</td>
+<td>مختصر منظر۔ پلے بیک عارضی طور پر رکا ہوا ہے۔</td>
+</tr>
+<tr class="odd">
+<td>Swahili</td>
+<td>Mwonekano finyu. Uchezaji umesitishwa.</td>
+</tr>
+<tr class="even">
+<td>Hausa</td>
+<td>Ƙaramin kallo. An dakatar da sake kunnawa.</td>
+</tr>
+<tr class="odd">
+<td>Yoruba</td>
+<td>Ìfihàn tó hára. A ti dádúró ìmúṣiṣẹ́.</td>
+</tr>
+<tr class="even">
+<td>Igbo</td>
+<td>Nlele dị mkpụmkpụ. A kwụsịtụla ọkpụkpọ.</td>
+</tr>
+<tr class="odd">
+<td>Malayalam</td>
+<td>സംക്ഷിപ്ത കാഴ്ച. പ്ലേബാക്ക് താൽക്കാലികമായി നിർത്തിയിരിക്കുന്നു.</td>
+</tr>
+<tr class="even">
+<td>Filipino</td>
+<td>Compact na view. Naka-pause ang pag-play.</td>
+</tr>
+<tr class="odd">
+<td>Bengali</td>
+<td>সংক্ষিপ্ত ভিউ। প্লেব্যাক বিরতিতে আছে।</td>
+</tr>
+</tbody>
+</table>
+</div><p>Exact app text: <strong>“Search scenarios, protocols or
+attributes…”</strong>
+(<code>ui.scenario-picker.scenario.placeholder</code>):</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Concrete
+translations supplied for the worker — table 8"><table>
+<thead>
+<tr class="header">
+<th scope="col">Language</th>
+<th scope="col">Translation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Hindi</td>
+<td>परिदृश्य, प्रोटोकॉल या एट्रिब्यूट खोजें…</td>
+</tr>
+<tr class="even">
+<td>Urdu</td>
+<td>منظرنامے، پروٹوکول یا ایٹریبیوٹس تلاش کریں…</td>
+</tr>
+<tr class="odd">
+<td>Swahili</td>
+<td>Tafuta hali, itifaki au sifa…</td>
+</tr>
+<tr class="even">
+<td>Hausa</td>
+<td>Bincika yanayi, ƙa’idoji ko siffofi…</td>
+</tr>
+<tr class="odd">
+<td>Yoruba</td>
+<td>Wá àwọn ìṣẹ̀lẹ̀, ìlànà tàbí àwọn àbùdá…</td>
+</tr>
+<tr class="even">
+<td>Igbo</td>
+<td>Chọọ ọnọdụ, usoro nkwurịta okwu ma ọ bụ njirimara…</td>
+</tr>
+<tr class="odd">
+<td>Malayalam</td>
+<td>സാഹചര്യങ്ങളോ പ്രോട്ടോക്കോളുകളോ ആട്രിബ്യൂട്ടുകളോ തിരയുക…</td>
+</tr>
+<tr class="even">
+<td>Filipino</td>
+<td>Maghanap ng mga sitwasyon, protocol o attribute…</td>
+</tr>
+<tr class="odd">
+<td>Bengali</td>
+<td>পরিস্থিতি, প্রোটোকল বা অ্যাট্রিবিউট খুঁজুন…</td>
+</tr>
+</tbody>
+</table>
+</div><p>The four exact playback entries are
+<code>compact.playback.play</code>, <code>.pause</code>,
+<code>.next</code> and <code>.previous</code>; use the corresponding
+table entries above. Names of specific protocols and attributes remain
+unchanged even where the generic words “protocol” and “attribute” are
+translated.</p>
+<h2 id="update-the-dependency-pins-coherently">2. Update the dependency
+pins coherently</h2>
+<ol type="1">
+<li>Update the two live, hash-pinned verification manifests:
+<ul>
+<li><code>tools/verification/dnssec-crypto/requirements.txt</code></li>
+<li><code>tools/verification/dnssec-crypto-current/requirements.txt</code></li>
+</ul></li>
+<li>Update the current offline verification profile, runtime version
+checks and affected tests to agree with both new versions. The existing
+profile binds a specific Python/OS platform, wheel and source hashes,
+package metadata and upstream license information. Obtain the matching
+artifacts and metadata from official PyPI, verify their exact hashes and
+compatibility, and preserve the offline verification workflow. Do not
+invent hashes or silently use an incompatible wheel.</li>
+<li>Update the current versioned DNSSEC reference and the CI reference
+path <strong>where the implementation requires it</strong>. Compare new
+verification results with the existing current reference. Investigate
+meaningful changes; record the actual differences. Do not
+mass-regenerate unrelated fixtures or present newly generated data as
+historical evidence.</li>
+<li>Preserve old requirements snapshots, historical input bindings,
+frozen numeric records, seal files and original hashes. Create a new
+versioned reference when required rather than overwriting an old one.
+The prior handoff already disclosed that some old install/generate/seal
+workflows cannot run in their original layout; do not claim that this
+update repairs that limitation unless it actually does.</li>
+<li>Change transitive dependencies only if resolution or compatibility
+requires it, and explain any such change. These Python packages support
+verification tooling; do not add them or any Python runtime dependency
+to the user’s offline web app.</li>
+</ol>
+<p>Useful current integration points include
+<code>tools/verification/dnssec-crypto-current/profile.json</code>,
+<code>run.py</code>, the historical-input helpers,
+<code>.github/workflows/ci.yml</code>,
+<code>tests/dnssec-current-offline.test.mjs</code> and
+<code>tests/dnssec-historical-input.test.mjs</code>. Inspect the actual
+checkout for any additional active references; keep the pin, artifact
+hashes, profile and CI target consistent.</p>
+<h2 id="focused-verification-and-cost-limit">3. Focused verification and
+cost limit</h2>
+<p>Use the existing tests and a few checks directly related to the
+change. The aim is confidence in the nine languages and the new
+dependencies without another expensive evidence campaign.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="3. Focused verification and
+cost limit — table 9"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Check</th>
+<th scope="col">Required evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Catalog and protected terms</td>
+<td>Compile/validate all nine new catalogs against the existing English
+bindings. Report missing/stale/invalid entries and placeholder
+violations by locale; preserve exact technical literals. Use aggregate
+counts, not a per-DOM-node dump.</td>
+</tr>
+<tr class="even">
+<td>Locale runtime</td>
+<td>Check all nine selector entries, real localized prose, protected
+names, plural fallback and native-language search with small shared
+fixtures. Exercise Hindi (LTR) and Urdu (RTL) in source/standalone and
+Full/Compact, including paused language switches; spot-check
+Malayalam/Bengali shaping and one existing LTR and one existing RTL
+language. Avoid a Cartesian product of every locale, view, loader and
+scenario.</td>
+</tr>
+<tr class="odd">
+<td>Dependencies</td>
+<td>Run the two focused DNSSEC test files affected by pin/history
+changes, plus one real small DNSSEC cryptographic sign/verify vector
+with the new installed dependencies where the environment permits.
+Report exact versions and results.</td>
+</tr>
+<tr class="even">
+<td>Build</td>
+<td>Build the standalone once and confirm it starts offline with the new
+languages and preserves the existing ones. Check the generated artifact
+matches the committed/source build as appropriate.</td>
+</tr>
+<tr class="odd">
+<td>Known limitations</td>
+<td>Report any unavailable dependency, unavailable real crypto check,
+untranslated content in any of the nine languages or unperformed human
+review explicitly. Do not label them passed.</td>
+</tr>
+</tbody>
+</table>
+</div><p><strong>Verification budget:</strong> target <strong>10 minutes
+total</strong> and <strong>100 MB of new temporary/evidence
+output</strong>, excluding the existing checkout, necessary finished
+app/catalog files and ordinary dependency installation. Reuse an
+existing environment/cache when safe and avoid duplicate dependency
+installations or artifact copies. This is a limit on
+verification/evidence collection, not a deadline on writing the nine
+translations or implementing the fixes. If a check cannot reasonably
+fit, finish independent implementation work and report the specific
+check as unperformed; do not silently expand the budget.</p>
+<p>Do <strong>not</strong> run another full suite,
+locale/browser/performance matrix, profiling campaign, historical
+archive reconstruction or multi-million-row rendered inventory for this
+assignment. Do not produce duplicate raw traces or giant screenshots.
+Keep existing CI configuration and safeguards; if the user later
+authorizes a push, the repository’s ordinary automatic CI may still run.
+Do not disable CI to meet this budget.</p>
+<h2 id="deliver-and-report">4. Deliver and report</h2>
+<p>Provide one concise handoff with:</p>
+<ul>
+<li>Changed files and the final two exact dependency pins.</li>
+<li>Catalog coverage for each of Hindi, Urdu, Swahili, Hausa, Yoruba,
+Igbo, Malayalam, Filipino and Bengali, and any known missing/stale
+entries; confirmation that protected names and existing languages were
+preserved.</li>
+<li>Actual focused checks performed and results, including the
+Python/runtime and artifact hashes used for the dependency update.
+Identify any real crypto check or human review not performed.</li>
+<li>Any changed DNSSEC reference or compatibility issue, with old
+historical snapshots and the previously disclosed legacy-workflow
+limitation preserved.</li>
+<li>One source/build identity and a runnable standalone. Do not attach
+historical raw archives or repeat old performance evidence.</li>
+</ul>
+<p>Keep the previously disclosed performance and human-accessibility
+conditions in their existing status; do not require a new performance
+investigation merely to add these languages or update these
+dependencies. Do not commit, push, deploy, publish or change the product
+version solely because this plan exists; follow any separate user
+instruction for those actions.</p>
+</main></body>
+</html>

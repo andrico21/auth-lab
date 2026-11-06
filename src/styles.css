@@ -1222,6 +1222,25 @@ summary:focus-visible, [role="button"]:focus-visible {
   font-family: "Segoe UI", Tahoma, Arial, "Noto Sans Arabic", ui-sans-serif, sans-serif;
   line-height: 1.8;
 }
+:where(.studio,.floating-panel,.attribute-tooltip,.toast):lang(ur) {
+  font-family: "Noto Naskh Arabic", "Noto Sans Arabic", "Segoe UI", Tahoma, sans-serif;
+  line-height: 1.9;
+}
+:where(.studio,.floating-panel,.attribute-tooltip,.toast):lang(ur) :is(button,label,summary,h1,h2,h3,h4) {
+  letter-spacing: normal;
+}
+:where(.studio,.floating-panel,.attribute-tooltip,.toast):lang(hi) {
+  font-family: "Nirmala UI", "Noto Sans Devanagari", Mangal, ui-sans-serif, sans-serif;
+  line-height: 1.8;
+}
+:where(.studio,.floating-panel,.attribute-tooltip,.toast):lang(ml) {
+  font-family: "Nirmala UI", "Noto Sans Malayalam", Kartika, ui-sans-serif, sans-serif;
+  line-height: 1.8;
+}
+:where(.studio,.floating-panel,.attribute-tooltip,.toast):lang(bn) {
+  font-family: "Nirmala UI", "Noto Sans Bengali", Vrinda, ui-sans-serif, sans-serif;
+  line-height: 1.8;
+}
 
 /* UI alignment is logical; this list deliberately excludes coordinate labels,
    exact values and fixed-order technical table cells. */
@@ -1429,3 +1448,14 @@ summary:focus-visible, [role="button"]:focus-visible {
 .studio .language-control select { min-height: 44px; max-width: 100%; padding: .5em; font: inherit; color: inherit; background: var(--panel); border: 1px solid var(--border); border-radius: .5rem; }
 .studio .language-control select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 :where(.studio,.floating-panel,.attribute-tooltip,.toast) :is(bdi[translate="no"],code[translate="no"],pre[translate="no"]) { text-transform: none; letter-spacing: normal; }
+
+.map-controls { flex-wrap: wrap; }
+.png-export-control { display: flex; flex-direction: column; align-items: flex-start; gap: .35rem; min-width: 0; max-width: 100%; flex: 0 1 23rem; }
+.png-export-control .button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.png-export-control [aria-disabled="true"] { opacity: .65; cursor: default; }
+.png-export-status { min-height: 1.5em; font-size: .8125rem; line-height: 1.5; color: var(--muted); overflow-wrap: anywhere; }
+.compact-playback .png-export-control { margin-block: .75rem; }
+.png-export-caption { position: fixed; left: -100000px; top: 0; margin: 0; padding: 0; color: var(--text); font: inherit; overflow-wrap: anywhere; pointer-events: none; }
+.png-export-caption h1 { margin: 0 0 10px; font-size: 20px; line-height: 1.5; }
+.png-export-caption h2 { margin: 8px 0; font-size: 17px; line-height: 1.5; }
+.png-export-caption p { margin: 6px 0; font-size: 14px; line-height: 1.65; }

@@ -23,15 +23,18 @@ const meta=html=>{
   return {value:matches[0][1],index:matches[0].index};
 };
 const directives=value=>new Map(value.split(';').map(item=>item.trim().split(/\s+/)).filter(item=>item[0]).map(([name,...sources])=>[name,sources]));
-const contents=(html,tag)=>[...html.matchAll(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`,'gi'))].map(match=>match[1]);
+const contents=(html,tag)=>[...html.matchAll(/<(script|style)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/gi)].filter(match=>match[1].toLowerCase()===tag).map(match=>match[2]);
 let built;
 before(()=>{
+  // Artifact-only checks can reuse the reviewed bundle; fixture-mutating tests
+  // still require the default build path and are excluded by the test selector.
+  if(process.env.CSP_TEST_BUNDLE){built=fs.readFileSync(process.env.CSP_TEST_BUNDLE,'utf8');return;}
   for(const name of ['build.mjs','security-policy.mjs','index.html','src','assets'])fs.cpSync(path.join(project,name),path.join(fixture,name),{recursive:true});
   build();built=output();
 });
 after(()=>fs.rmSync(fixture,{recursive:true,force:true}));
 
-test('source CSP precedes assets and permits same-origin scripts, styles and icons, with no connections or HTML handlers',()=>{
+test('source CSP permits same-origin modules/styles and local data images without opening connections or HTML handlers',()=>{
   const policy=meta(template),rules=directives(policy.value);
   assert.equal(policy.value,SOURCE_CSP);
   assert.ok(policy.index>template.indexOf('<meta charset='));
@@ -39,9 +42,10 @@ test('source CSP precedes assets and permits same-origin scripts, styles and ico
   assert.ok(policy.index<template.indexOf('<script '));
   assert.deepEqual(rules.get('script-src'),["'self'"]);
   assert.deepEqual(rules.get('style-src'),["'self'"]);
-  assert.deepEqual(rules.get('img-src'),["'self'"]);
+  assert.deepEqual(rules.get('img-src'),["'self'",'data:']);
   for(const name of ['default-src','script-src-attr','style-src-attr','connect-src','font-src','media-src','object-src','frame-src','worker-src','manifest-src','base-uri','form-action'])assert.deepEqual(rules.get(name),["'none'"],name);
-  assert.doesNotMatch(policy.value,/unsafe-inline|unsafe-eval|unsafe-hashes|\*|https?:|data:|blob:/);
+  assert.doesNotMatch(policy.value,/unsafe-inline|unsafe-eval|unsafe-hashes|\*|https?:|blob:/);
+  for(const [name,sources] of rules)if(name!=='img-src')assert.equal(sources.includes('data:'),false,name+' must not authorize data URLs');
   for(const unsupported of ['frame-ancestors','sandbox','report-uri','report-to'])assert.equal(rules.has(unsupported),false,'unsupported meta directive is not advertised');
 });
 

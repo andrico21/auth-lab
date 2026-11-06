@@ -1,0 +1,73 @@
+{
+  "checks": 8,
+  "fixtureSha256": "438a1be5ca85690a815cac0bc746aeaea2527da65aa1e0fe95d4b39c153dc151",
+  "kind": "dnssec-independent-parent-negative-verification",
+  "libraryObservations": [
+    {
+      "rrsetId": "example-soa-negative-cache",
+      "validAt": 1792713600
+    },
+    {
+      "rrsetId": "denial-parent-unsigned-lab",
+      "validAt": 1792713600
+    }
+  ],
+  "opensslObservation": {
+    "argv": [
+      "openssl",
+      "pkeyutl",
+      "-verify",
+      "-pubin",
+      "-inkey",
+      "<scratch>/public.pem",
+      "-rawin",
+      "-in",
+      "<scratch>/input.bin",
+      "-sigfile",
+      "<scratch>/signature.bin",
+      "-digest",
+      "sha256"
+    ],
+    "exitCode": 0,
+    "id": "example-soa-negative-cache-signature",
+    "stderr": "",
+    "stdout": "Signature Verified Successfully\n"
+  },
+  "result": "pass",
+  "results": [
+    {
+      "id": "parent-negative-pinned-sha256",
+      "result": "pass"
+    },
+    {
+      "id": "parent-negative-resolution-binding",
+      "result": "pass"
+    },
+    {
+      "id": "parent-soa-independent-input",
+      "result": "pass"
+    },
+    {
+      "id": "parent-soa-crypto",
+      "result": "pass"
+    },
+    {
+      "id": "parent-soa-minimum",
+      "result": "pass"
+    },
+    {
+      "id": "parent-negative-original-ttl-signed",
+      "result": "pass"
+    },
+    {
+      "id": "parent-negative-received-soa-input",
+      "result": "pass"
+    },
+    {
+      "id": "parent-negative-ttl-cap",
+      "result": "pass"
+    }
+  ],
+  "schemaVersion": 1,
+  "scope": "Actual parent SOA and parent noDS NSEC validation in a separate unsigned-delegation profile, not a claim that public baseline child DS is absent."
+}

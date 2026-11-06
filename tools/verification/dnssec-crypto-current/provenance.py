@@ -14,18 +14,6 @@ runtime = require_runtime()
 profile = validate_bundle()
 licenses = []
 for package in profile['packages']:
-    if 'license' in package:
-        source = package['license']
-        data = (ROOT / source['path']).read_bytes()
-        if len(data) > 1048576:
-            raise RuntimeError('Unexpected licence size')
-        dest = out / 'licenses' / (package['name'] + '-' + package['version'] + '-LICENSE.txt')
-        dest.parent.mkdir(exist_ok=True)
-        with dest.open('xb') as stream:
-            stream.write(data)
-        licenses.append({**identity(dest, out), 'package': package['name'], 'version': package['version'],
-                         'sourceFile': source, 'origin': 'captured-upstream-release-license'})
-        continue
     archive = ROOT / package['source']['path']
     found = False
     with tarfile.open(archive, 'r:gz') as source:

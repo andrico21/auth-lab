@@ -17,8 +17,12 @@ const evidenceDir=path.resolve(process.env.AUTH_LAB_QA_EVIDENCE_DIR||path.join(p
 const {installHarness}=await import(pathToFileURL(path.join(project,'tests/dom-harness.mjs')).href);
 const harness=installHarness();
 const html=fs.readFileSync(path.join(project,'dist/auth-flow-studio.html'),'utf8');
-const scripts=[...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m=>m[1]);
-const styles=[...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(m=>m[1]);
+// Consume script/style as raw-text blocks, as in the CSP contract tests.
+// PNG serialization contains a literal <style> string inside the script.
+const scripts=[],styles=[];
+for(const match of html.matchAll(/<(script|style)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/gi)){
+  (match[1].toLowerCase()==='script'?scripts:styles).push(match[2]);
+}
 const report={kind:'compiled-bundle-offline-smoke',nativeBrowser:false,timestamp:new Date().toISOString(),project,htmlSha256:createHash('sha256').update(html).digest('hex'),runnerSha256:createHash('sha256').update(fs.readFileSync(fileURLToPath(import.meta.url))).digest('hex'),regenerationCommand:[process.execPath,...process.argv.slice(1)],runtime:{executable:process.execPath,version:process.version,bun:process.versions.bun||null},scenarios:[]};
 report.inputIdentity=captureReviewInputs(project,fileURLToPath(import.meta.url));
 let app;

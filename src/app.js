@@ -346,6 +346,7 @@ export class AuthFlowStudio extends StudyController {
       <div class="workspace">
         <div class="diagram-column"><div class="map-controls" id="map-controls" role="group" aria-label="${escapeHtml(this.uiText("ui.app.fullShell.attribute.0047","Animation controls"))}">
         <div class="playback-controls"><button class="button primary" id="play">${uiIcon('play',true)}<span>${this.ui("ui.app.fullShell.text.0048","Play demo")}</span></button><button class="icon-button" id="reset" aria-label="${escapeHtml(this.uiText("ui.app.fullShell.attribute.0049","Reset demo"))}">${uiIcon('reset')}</button></div>
+        ${this.pngExporter.controlsHtml()}
         <div class="speed-control"><label for="speed">${this.ui("ui.app.fullShell.text.0050","Playback speed")} <output class="speed-value" id="speed-label">1×</output></label><input id="speed" type="range" min="0" max="4" step="0.01" value="1" aria-label="${escapeHtml(this.uiText("ui.app.fullShell.attribute.0051","Playback speed"))}" title="${escapeHtml(this.uiText("ui.app.fullShell.attribute.0052","0 pauses; speeds start at 0.01×. Play restores the last non-zero speed."))}"></div>
         </div>
         <section class="map-panel" aria-label="${escapeHtml(this.uiText("ui.app.fullShell.attribute.0053","Interactive authentication map"))}">
@@ -1656,6 +1657,7 @@ export class AuthFlowStudio extends StudyController {
     if(event.type==='speed'&&event.speed>0)this.lastRunningSpeed=event.speed;
     if(event.type==='stepcomplete'&&event.step)this.visited.add(pairKey(this.nodeId(event.step.from),this.nodeId(event.step.to)));
     this.heldView.event(event);this.presenter.onPlayer(event);
+    if(event.type!=='frame')this.pngExporter.update();
   }
   onFullPlayer(event) {
     this.heldView.render(event);
@@ -1828,6 +1830,7 @@ export class AuthFlowStudio extends StudyController {
   updateControls() {
     if(this.presentationMode==='compact'){this.compactView.render('controls');return;}
     const status=this.player.status;if(status==='idle')this.renderPacket(this.player.snapshot());
+    this.pngExporter.update();
     const label=status==='playing'?this.ui('ui.playback.pause','Pause'):status==='paused'?this.ui('ui.playback.resume','Resume'):this.objectTraceSelection?this.ui('ui.playback.play-object','Play exact object history'):this.attributeSelection?this.ui('ui.playback.play-field','Play attribute path'):this.ui('ui.playback.play-demo','Play demo');
     this.refs.play.innerHTML=uiIcon(status==='playing'?'pause':'play',status!=='playing')+'<span id="play-label">'+label+'</span>';this.refs.play.removeAttribute('aria-label');this.refs.play.setAttribute('aria-labelledby','play-label');
     this.refs.play.disabled=this.hasTrace&&!this.traceQueue.length;

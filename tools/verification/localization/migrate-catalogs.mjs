@@ -176,7 +176,7 @@ function renameMessage(message,map){
 }
 function validateMessage(message,schema,locale){
   const branches=forms(message),plural=typeof schema[1]!=='string';
-  const categories={ru:['one','few','many','other'],uk:['one','few','many','other'],he:['one','two','other'],de:['one','other'],'ar-AE':['zero','one','two','few','many','other'],fr:['one','many','other'],pl:['one','few','many','other']};
+  const categories={ru:['one','few','many','other'],uk:['one','few','many','other'],he:['one','two','other'],de:['one','other'],'ar-AE':['zero','one','two','few','many','other'],fr:['one','many','other'],pl:['one','few','many','other'],hi:['one','other'],ur:['one','other'],sw:['one','other'],ha:['one','other'],yo:['other'],ig:['other'],ml:['one','other'],fil:['one','other'],bn:['one','other']};
   assert(object(branches)&&same(Object.keys(branches).sort(),(plural?categories[locale]:['source']).slice().sort()),'Invalid Native form shape for '+locale);
   for(const value of Object.values(branches))assert(typeof value==='string'&&value.trim()&&same(placeholders(value),schema[3])&&!/[{}]/.test(value.replace(/\{[A-Za-z][A-Za-z0-9_]*\}/g,'')),'Invalid Native placeholder contract for '+locale);
 }
@@ -280,7 +280,7 @@ function localePacket(locale,catalog,before,after,lineage){
 // implicit fallback writer. Decisions bind exact unit IDs and approval scopes.
 const applicationContract={
   mode:'Preparation only; this tool never writes incomplete authored catalogs.',
-  reviewedPacket:{schemaVersion:1,locale:'one of the seven exact locales',packetSha256:'SHA256 of the compressed locale packet',messages:{'<unitId>':{message:'string or {plural:{...}}',reviewId:'nonempty Native review evidence ID'}},identityScopes:[{kind:'default|override',newKey:'exact canonical audit key',newSourceSha256:'exact strong SHA',decision:'approved|remove-justification',justification:'compiler identity justification when approved',reviewId:'exact scope review evidence ID'}]},
+  reviewedPacket:{schemaVersion:1,locale:'one of the configured exact locales',packetSha256:'SHA256 of the compressed locale packet',messages:{'<unitId>':{message:'string or {plural:{...}}',reviewId:'nonempty Native review evidence ID'}},identityScopes:[{kind:'default|override',newKey:'exact canonical audit key',newSourceSha256:'exact strong SHA',decision:'approved|remove-justification',justification:'compiler identity justification when approved',reviewId:'exact scope review evidence ID'}]},
   applicationRules:[
     'Bind reviewed inputs to packet and source-set hashes; require decisions for every pending-native-authoring unit and every review-required-no-authorization identity scope.',
     'Set messages[newSchemaIndex] from defaultTargets unit messages. Mechanically preserved defaults must remain byte-identical unless an explicit separately reviewed replacement is supplied.',
@@ -343,7 +343,7 @@ export async function applyReviewedMigration(manifestFile,outDirectory){
     const manifestIdentity=identity(path.resolve(manifestFile));seen.set(manifestIdentity.path,manifestIdentity);
     const manifest=JSON.parse(fs.readFileSync(manifestFile,'utf8'));
     assert(manifest.schemaVersion===1&&digest.test(manifest.sourceSetSha256),'Invalid application manifest');
-    assert(same(Object.keys(manifest.locales||{}).sort(),RESOURCE_SCHEMA.locales.slice().sort()),'All seven exact locales required');
+    assert(same(Object.keys(manifest.locales||{}).sort(),RESOURCE_SCHEMA.locales.slice().sort()),'All configured exact locales required');
     report.sourceSetSha256=manifest.sourceSetSha256;
     report.producers=[producer,path.join(path.dirname(producer),'resources.mjs'),path.join(path.dirname(producer),'protected.mjs')].map(identity);
     const before=await readAuthoring(load(manifest.beforeAuthoring,'path'),readTable(load(manifest.before,'path')));

@@ -1,0 +1,25 @@
+{
+  "result": "pass",
+  "python": "3.14.4",
+  "packages": {
+    "dnspython": "2.9.2",
+    "cryptography": "50.0.2",
+    "cffi": "2.1.1",
+    "pycparser": "3.12"
+  },
+  "vector": "ED25519 deterministic example.test. A RRset",
+  "valid_signature": true,
+  "tampered_rrset_rejected": true,
+  "rrsig_wire_sha256": "1a879cfa3d1ce72b14391f72aa451be91149c45b4b5b2ef6fd74e953d0cbc0ba",
+  "seconds": 0.291,
+  "argv": [
+    "/home/andrico/.cache/auth-lab-held-qa/languages-dependency-crypto-50.0.2-2.9.2-run01/venv/bin/python",
+    "-B",
+    "/home/andrico/.cache/auth-lab-held-qa/languages-dependency-crypto-50.0.2-2.9.2-run01/sign-verify-smoke.py"
+  ],
+  "input": {
+    "source": "import hashlib\nimport importlib.metadata\nimport json\nimport platform\n\nimport dns.dnssec\nimport dns.exception\nimport dns.name\nimport dns.rrset\nfrom cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey\n\nzone = dns.name.from_text('example.test.')\nkey = Ed25519PrivateKey.from_private_bytes(bytes(range(32)))\ndnskey = dns.dnssec.make_dnskey(key.public_key(), 'ED25519')\nkeys = {zone: dns.rrset.from_rdata_list(zone, 300, [dnskey])}\nrrset = dns.rrset.from_text('www.example.test.', 300, 'IN', 'A', '192.0.2.1')\nsignature = dns.dnssec.sign(rrset, key, zone, dnskey, inception=1700000000,\n                            expiration=1700003600, deterministic=True)\nsignatures = dns.rrset.from_rdata_list(rrset.name, rrset.ttl, [signature])\ndns.dnssec.validate(rrset, signatures, keys, now=1700001800)\nchanged = dns.rrset.from_text('www.example.test.', 300, 'IN', 'A', '192.0.2.2')\ntry:\n    dns.dnssec.validate(changed, signatures, keys, now=1700001800)\nexcept dns.exception.ValidationFailure:\n    tamper_rejected = True\nelse:\n    raise AssertionError('A changed RRset passed DNSSEC signature validation')\nprint(json.dumps({'result': 'pass', 'python': platform.python_version(),\n                  'packages': {name: importlib.metadata.version(name) for name in\n                               ['dnspython', 'cryptography', 'cffi', 'pycparser']},\n                  'vector': 'ED25519 deterministic example.test. A RRset',\n                  'valid_signature': True, 'tampered_rrset_rejected': tamper_rejected,\n                  'rrsig_wire_sha256': hashlib.sha256(signature.to_wire()).hexdigest()}))\n",
+    "sha256": "f208f095cb76ac857edc16c0fcde5302463195c2dc7d75dcb6a437969c8e80aa",
+    "scope": "Deterministic test-only private seed; one real sign/verify and rejection of changed RRset. Not an application dependency or permanent test suite."
+  }
+}

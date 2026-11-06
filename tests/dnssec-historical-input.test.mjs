@@ -18,7 +18,7 @@ function fixture(t){
   const save=()=>put(profilePath,JSON.stringify(profile));
   save();
   put(before.path,fs.readFileSync(path.join(repository,before.path)));
-  put(input.path,'dnspython==2.9.0\ncryptography==50.0.0\n');
+  put(input.path,'dnspython==2.9.2\ncryptography==50.0.2\n');
   return {root,put,profile,save};
 }
 

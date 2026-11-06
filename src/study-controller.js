@@ -8,6 +8,8 @@ import { resolveActor } from './player.js';
 import { captureFocusTarget, resolveFocusTarget, isVisibleFocusTarget } from './focus-target.js';
 import { Localizer, LOCALES } from './localization.js';
 import { LOCALIZATION_BINDINGS, LOCALIZATION_CATALOGS } from './localization-resources.js';
+import { PNG_EXPORT_BINDINGS, PNG_EXPORT_CATALOGS } from './localization-png.js';
+import { PngExporter } from './png-export.js';
 
 const studyFocusAttributes = ['id','data-presentation-choice','data-compact-command','data-compact-action','data-compact-step-index','data-held-key','data-held-action','data-holding-id','data-index-attribute','data-attribute','data-trace-topic','data-actor','data-learning-detail','data-lesson-chapter','data-instance-history','href'];
 const studyDetailAttributes = ['data-study-key','data-compact-disclosure','data-instance-history','data-pam-disclosure','data-remote-comparison'];
@@ -21,7 +23,7 @@ const studyLocaleEscape=value=>String(value??'').replace(/[&<>"']/g,character=>(
 /** Shared methods on the one custom-element controller, not another session. */
 export class StudyController extends HTMLElement {
   initializeLocale() {
-    if(!this.localizer)this.localizer=new Localizer({host:window,catalogs:LOCALIZATION_CATALOGS,bindings:LOCALIZATION_BINDINGS});
+    if(!this.localizer)this.localizer=new Localizer({host:window,catalogs:LOCALIZATION_CATALOGS,bindings:LOCALIZATION_BINDINGS,additionalBindings:PNG_EXPORT_BINDINGS,additionalCatalogs:PNG_EXPORT_CATALOGS});
     return this.localizer.initialPreparation;
   }
   clearLocaleFailure() {
@@ -42,6 +44,7 @@ export class StudyController extends HTMLElement {
     this.presentationPreference=new PresentationPreference(window);
     this.presentationMode=this.presentationPreference.mode;this.presentationSource=this.presentationPreference.source;
     this.presentationStates={full:{},compact:{}};this.sharedListeners=[];
+    this.pngExporter=new PngExporter(this);
     this.fullView=new FullView(this);this.compactView=new CompactView(this);
   }
   cacheRefs() {
@@ -196,6 +199,7 @@ export class StudyController extends HTMLElement {
   listenFull(node,type,listener,options) {this.fullView.listen(node,type,listener,options);}
   bindShared() {
     this.listenShared(this,'click',event=>{
+      if(event.target.closest('[data-png-export]')){this.pngExporter.save();return;}
       const choice=event.target.closest('[data-presentation-choice]');
       if(choice){this.switchPresentation(choice.dataset.presentationChoice);return;}
       if(event.target.closest('#theme-toggle')){this.theme=this.theme==='dark'?'light':'dark';this.refs.studio.dataset.theme=this.theme;}
@@ -244,7 +248,7 @@ export class StudyController extends HTMLElement {
     this.refs['attribute-search'].value=this.attributeQuery;
     if(this.refs['lab-search'])this.refs['lab-search'].value=this.catalogQuery;
     if(this.presentationStates[this.presentationMode].indexHidden!==undefined)this.refs['attribute-index'].hidden=this.presentationStates[this.presentationMode].indexHidden;
-    this.invalidatePresentationCaches();this.updatePresentationControls();this.presenter.render(reason,event);
+    this.invalidatePresentationCaches();this.updatePresentationControls();this.presenter.render(reason,event);this.pngExporter.update();
   }
   capturePresentationState() {
     const host=this.querySelector('#presentation-host'),active=document.activeElement,state=this.presentationStates[this.presentationMode];
@@ -310,6 +314,7 @@ export class StudyController extends HTMLElement {
   }
   destroyPresentation() {
     this.releaseExactCopyDownload();
+    this.pngExporter.dispose();
     this.presenter?.unmount();this.presenter=null;
     clearTimeout(this.localeFlushTimer);this.pendingLocale=null;this.localeCompositions?.clear();
     this.localeDeferredInputs?.clear();

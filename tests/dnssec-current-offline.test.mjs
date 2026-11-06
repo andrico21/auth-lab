@@ -9,7 +9,7 @@ import {fileURLToPath} from 'node:url';
 
 const repository=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const relativeTools='tools/verification/dnssec-crypto-current';
-const runtime={python:'3.14.4',uv:'0.12.10',platform:'Linux',machine:'x86_64',packages:{dnspython:'2.9.0',cryptography:'50.0.0',cffi:'2.1.1',pycparser:'3.12'}};
+const runtime={python:'3.14.4',uv:'0.12.10',platform:'Linux',machine:'x86_64',packages:{dnspython:'2.9.2',cryptography:'50.0.2',cffi:'2.1.1',pycparser:'3.12'}};
 
 // Each test has a private miniature captured repository. No committed artifact,
 // retained venv, network, package manager or installed crypto module is touched.
@@ -17,7 +17,7 @@ function withBundle(run){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'dnssec-current-offline-'));
   const tools=path.join(root,relativeTools);
   fs.mkdirSync(tools,{recursive:true});
-  for(const name of ['run.py','historical_inputs.py','license_binding.py'])fs.copyFileSync(path.join(repository,relativeTools,name),path.join(tools,name));
+  for(const name of ['run.py','historical_inputs.py'])fs.copyFileSync(path.join(repository,relativeTools,name),path.join(tools,name));
   function put(name,content){
     const bytes=Buffer.from(content);
     fs.mkdirSync(path.dirname(path.join(root,name)),{recursive:true});
@@ -43,19 +43,6 @@ function withBundle(run){
   const save=()=>fs.writeFileSync(path.join(tools,'profile.json'),JSON.stringify(profile));
   const check=()=>{save();return spawnSync('python3',['-B',path.join(tools,'run.py'),'--check'],{encoding:'utf8',env:{...process.env,PYTHONDONTWRITEBYTECODE:'1'}});};
   try{run({root,tools,put,profile,check,save});}finally{fs.rmSync(root,{recursive:true,force:true});}
-}
-
-function withCapturedLicense(run){
-  return withBundle(bundle=>{
-    const {put,profile}=bundle;
-    const data=Buffer.from('captured upstream ISC license\n');
-    const upstreamBlob=createHash('sha1').update(Buffer.from(`blob ${data.length}\0`)).update(data).digest('hex');
-    const upstreamTree='a'.repeat(40);
-    const treeMetadata=put('bundle/dnspython-upstream-tree.json',JSON.stringify({sha:upstreamTree,truncated:false,tree:[{path:'LICENSE',type:'blob',sha:upstreamBlob}]}));
-    const license={...put('bundle/dnspython-LICENSE.txt',data),upstreamBlob,upstreamTree,treeMetadata};
-    profile.packages[0].license=license;
-    run({...bundle,license});
-  });
 }
 
 function withArchivedRequirements(run){
@@ -91,26 +78,15 @@ test('offline bundle rejects artifact tampering even when filename and pinned ve
   rejects(check(),/hash\/size mismatch: .*cryptography-50/);
 }));
 
-test('offline bundle rejects a substituted separately captured upstream license',()=>withBundle(({root,put,profile,check})=>{
-  profile.packages[0].license=put('bundle/dnspython-LICENSE.txt','captured upstream ISC license\n');
-  fs.appendFileSync(path.join(root,profile.packages[0].license.path),'changed license');
-  rejects(check(),/hash\/size mismatch: bundle\/dnspython-LICENSE\.txt/);
+test('offline bundle rejects a missing packaged dnspython source before setup',()=>withBundle(({root,profile,check})=>{
+  fs.unlinkSync(path.join(root,profile.packages[0].source.path));
+  rejects(check(),/Missing bundled file: .*dnspython-2\.9\.2\.tar\.gz/);
 }));
 
-test('offline bundle rejects a rehashed replacement license not belonging to the upstream blob',()=>withCapturedLicense(({put,license,check})=>{
-  Object.assign(license,put(license.path,'different locally approved license\n'));
-  rejects(check(),/Upstream license blob mismatch/);
+test('offline bundle rejects tampering with the source archive carrying package licences',()=>withBundle(({root,profile,check})=>{
+  fs.appendFileSync(path.join(root,profile.packages[0].source.path),'changed packaged licence');
+  rejects(check(),/hash\/size mismatch: .*dnspython-2\.9\.2\.tar\.gz/);
 }));
-
-for(const boundary of ['tree identity','LICENSE blob']){
-  test(`offline bundle rejects rehashed upstream metadata with the wrong ${boundary}`,()=>withCapturedLicense(({root,put,license,check})=>{
-    const tree=JSON.parse(fs.readFileSync(path.join(root,license.treeMetadata.path),'utf8'));
-    if(boundary==='tree identity')tree.sha='f'.repeat(40);
-    else tree.tree[0].sha='f'.repeat(40);
-    license.treeMetadata=put(license.treeMetadata.path,JSON.stringify(tree));
-    rejects(check(),/Upstream license tree mismatch/);
-  }));
-}
 
 test('offline bundle rejects requirement hash disagreement with the captured wheel',()=>withBundle(({put,profile,check})=>{
   profile.requirements=put(profile.requirements.path,profile.packages.map(p=>`${p.name}==${p.version} --hash=sha256:${p.name==='cryptography'?'0'.repeat(64):p.wheel.sha256}\n`).join(''));
@@ -140,12 +116,12 @@ test('offline bundle rejects upstream Python compatibility incompatible with the
 }));
 
 test('offline bundle rejects stale cryptography pins rather than accepting an old offline environment',()=>withBundle(({profile,check})=>{
-  profile.runtime.packages.cryptography='46.0.3';
+  profile.runtime.packages.cryptography='50.0.0';
   rejects(check(),/Unsupported runtime\/package pins/);
 }));
 
 test('offline bundle rejects the affected dnspython version before setup',()=>withBundle(({profile,check})=>{
-  profile.runtime.packages.dnspython='2.8.0';
+  profile.runtime.packages.dnspython='2.9.0';
   rejects(check(),/Unsupported runtime\/package pins/);
 }));
 

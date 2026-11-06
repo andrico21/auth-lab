@@ -4,9 +4,9 @@ import {fileURLToPath} from 'node:url';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {sha256,stableJson,semanticParameters} from './protected.mjs';
 
-export const RESOURCE_SCHEMA={version:2,locales:['ru','uk','he','de','ar-AE','fr','pl'],catalog:'{locale,entries:{[key]:{sourceSha256,message:string|{plural:{category:string}},identityJustification?:{approvalId:string,reason:string}|{kind:"structural-template",sourceSha256:string}}},aliases?:{[kind]:{[canonicalId]:string[]}}}',glossary:'{terms:[{id,source,translations:{[locale]:string},messageKeys?:string[]}]} or --glossary-dir native conceptual glossary files',approvals:'{approvals:[{id,locale,key,sourceSha256,reason,status:"approved"}]}',exports:['LOCALIZATION_BINDINGS','LOCALIZATION_CATALOGS','LOCALIZATION_RESOURCE_METADATA']};
+export const RESOURCE_SCHEMA={version:2,locales:['ru','uk','he','de','ar-AE','fr','pl','hi','ur','sw','ha','yo','ig','ml','fil','bn','el','es-CO','es-ES','it','pt-PT','pt-BR','sr-Cyrl','sr-Latn','hr'],catalog:'{locale,entries:{[key]:{sourceSha256,message:string|{plural:{category:string}},identityJustification?:{approvalId:string,reason:string}|{kind:"structural-template",sourceSha256:string}}},aliases?:{[kind]:{[canonicalId]:string[]}}}',glossary:'{terms:[{id,source,translations:{[locale]:string},messageKeys?:string[]}]} or --glossary-dir native conceptual glossary files',approvals:'{approvals:[{id,locale,key,sourceSha256,reason,status:"approved"}]}',exports:['LOCALIZATION_BINDINGS','LOCALIZATION_CATALOGS','LOCALIZATION_RESOURCE_METADATA']};
 RESOURCE_SCHEMA.compactCatalog='{schemaVersion:2,format:"auth-lab-l10n-authored-catalog",locale,sourceSetSha256,messages:[nativeMessage aligned to English schemas],overrides?:{[canonicalAuditId]:{sourceSha256,message,identityJustification?}},schemaIdentityJustifications?:{[schemaIndex]:identityJustification},aliases?}';
-const categories={en:['one','other'],de:['one','other'],he:['one','two','other'],ru:['one','few','many','other'],uk:['one','few','many','other'],pl:['one','few','many','other'],fr:['one','many','other'],'ar-AE':['zero','one','two','few','many','other']};
+const categories={en:['one','other'],de:['one','other'],he:['one','two','other'],ru:['one','few','many','other'],uk:['one','few','many','other'],pl:['one','few','many','other'],fr:['one','many','other'],'ar-AE':['zero','one','two','few','many','other'],hi:['one','other'],ur:['one','other'],sw:['one','other'],ha:['one','other'],yo:['other'],ig:['other'],ml:['one','other'],fil:['one','other'],bn:['one','other'],el:['one','other'],'es-CO':['one','many','other'],'es-ES':['one','many','other'],it:['one','many','other'],'pt-PT':['one','many','other'],'pt-BR':['one','many','other'],'sr-Cyrl':['one','few','other'],'sr-Latn':['one','few','other'],hr:['one','few','other']};
 const object=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const same=(a,b)=>stableJson(a)===stableJson(b);
 const digest=/^[a-f0-9]{64}$/;
@@ -95,7 +95,7 @@ export function compileResources({inventory,ui,catalogs,locales=RESOURCE_SCHEMA.
   for(const [name,value] of Object.entries(summary?.unresolved||{}))if(typeof value==='number'&&value>0)incomplete('unresolved-inventory-contracts',{name,count:value});
   if(summary?.counts?.unclassifiedGeneratedStrings>0)incomplete('unclassified-generated-strings',{count:summary.counts.unclassifiedGeneratedStrings});
   if(!Array.isArray(locales)||!locales.length||new Set(locales).size!==locales.length||locales.some(locale=>!RESOURCE_SCHEMA.locales.includes(locale)))fail('locale-set-invalid');
-  if(!pilot&&!same([...locales].sort(),[...RESOURCE_SCHEMA.locales].sort()))fail('release-requires-seven-locales');
+  if(!pilot&&!same([...locales].sort(),[...RESOURCE_SCHEMA.locales].sort()))fail('release-requires-all-locales');
   const messages=new Map(),ownerSlots=new Map(),registry=new Map();
   const uiOccurrences=new Map(),uiSourceFiles=new Map((ui?.sourceFiles||[]).map(file=>[file.module,file.sourceSha256]));
   for(const occurrence of ui?.occurrences||[]){const list=uiOccurrences.get(occurrence.messageKey)||[];list.push(occurrence);uiOccurrences.set(occurrence.messageKey,list);}
@@ -259,7 +259,7 @@ export function runCLI(args=process.argv.slice(2)){
   const options={},catalogFiles={};
   for(let index=0;index<args.length;index++){
     const flag=args[index];
-    if(flag==='--help'){console.log('resources.mjs --inventory DIR --ui FILE --catalog-dir DIR --report FILE [--out FILE] [--pilot de,he [--pilot-partial-catalogs]] [--glossary-dir DIR] [--approvals FILE]\nDefault release requires all seven native catalogs. Partial catalogs require explicit pilot; absent entries use -1 fallback indices and engineeringComplete:false.');return 0;}
+    if(flag==='--help'){console.log('resources.mjs --inventory DIR --ui FILE --catalog-dir DIR --report FILE [--out FILE] [--pilot de,he [--pilot-partial-catalogs]] [--glossary-dir DIR] [--approvals FILE]\nDefault release requires every configured native catalog. Partial catalogs require explicit pilot; absent entries use -1 fallback indices and engineeringComplete:false.');return 0;}
     if(flag==='--pilot-partial-catalogs'){if(options[flag])throw new Error('Repeated option: '+flag);options[flag]=true;continue;}
     if(!['--inventory','--ui','--ui-protected','--catalog-dir','--report','--out','--pilot','--glossary','--glossary-dir','--approvals'].includes(flag)||!args[index+1]||args[index+1].startsWith('--')||Object.hasOwn(options,flag))throw new Error('Unknown, repeated, or valueless option: '+flag);
     options[flag]=args[++index];

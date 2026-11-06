@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "kind": "authorized-1.4-localization-png-publication",
+  "recordedAt": "2026-11-06T15:30:32.939741+00:00",
+  "repository": "https://github.com/andrico21/auth-lab",
+  "branch": "main",
+  "parent": "e3124ad8e2f94c3176b95355acedd02f3a1de8f7",
+  "version": "1.4",
+  "tag": "1.4",
+  "footerVersion": "1.4",
+  "authorization": {
+    "request": "publish, 1.4",
+    "commit": true,
+    "push": true,
+    "tag": true,
+    "deployPagesAfterSuccessfulCI": true,
+    "forcePush": false,
+    "createGitHubRelease": false,
+    "waiveHumanPerformanceOrNativeAcceptance": false
+  },
+  "publicationStatusAtRecordCreation": "Owner-authorized inputs and actual local release checks passed. Commit, push, main CI/Pages and tag CI have not run at record creation; Git refs and exact GitHub Actions runs bind their later identities/status. Do not interpret this creation record as completed publication.",
+  "canonicalSource": {
+    "algorithm": "sha256-path-nul-bytes-nul-v1",
+    "files": 287,
+    "sha256": "b2d8905cf7e5d27d8a329ef17da1d60de207cc8696feb2d989765dceda5458ad"
+  },
+  "standalone": {
+    "path": "dist/auth-flow-studio.html",
+    "bytes": 51216110,
+    "sha256": "90db84824d9cd64d17dd6c4eead92fda09a59a48d6a7493ab0b35b2d75cb51e1"
+  },
+  "verifiedBefore": {
+    "version": "1.3",
+    "canonicalSha256": "0f2bb64a32d19d56cf9a0e790ad0f2b4dfe540d7dec40a3be0b09fb371af3ad5",
+    "standalone": {
+      "bytes": 51216110,
+      "sha256": "54229c0a97ac96c70bb8ad1f26ca48917126da2e057b3fb688075f30f404f268"
+    },
+    "canonicalManifest": "docs/verification/releases/1.4/inputs/verified-candidate-canonical.json"
+  },
+  "versionOnlyApplicationDelta": {
+    "canonicalChangedFiles": [
+      "index.html",
+      "package.json"
+    ],
+    "other285CanonicalInputsByteIdentical": true,
+    "standaloneOnlyChange": "data-build-version marker 1.3 -> 1.4",
+    "normalizingVersionReproducesVerifiedCandidateBytes": true
+  },
+  "workPublished": [
+    "26 selectable languages, including the two completed nine-language expansions and their own source-bound glossaries.",
+    "Localized PNG export in Full and Compact, with exact protected data and canonical state preserved.",
+    "Native/technical search precedence and region/script-aware counts/plurals.",
+    "Previously verified DNSSEC-only toolchain 50.0.2 / 2.9.2, without pin changes during release cutover."
+  ],
+  "releaseVerification": {
+    "bun": "1.4.3",
+    "localProjectBuilds": 1,
+    "emittedSmokeScenarios": 328,
+    "emittedSmoke": "docs/verification/releases/1.4/inputs/emitted-smoke.json",
+    "focusedCspContracts": {
+      "passed": 2,
+      "failed": 0,
+      "filteredOut": 4,
+      "runnerMilliseconds": 716,
+      "command": "CSP_TEST_BUNDLE=dist/auth-flow-studio.html bun test --isolate --test-name-pattern \"source CSP permits|standalone CSP authorizes\" ./tests/csp.test.mjs",
+      "source": "Actual command output retained in the owner session; these two artifact-only cases did not build fixtures."
+    },
+    "actualRenderedFooter": "docs/verification/releases/1.4/footer.json",
+    "nativeFooterCases": 2,
+    "newLocalFullSuite": false,
+    "newBrowserMatrix": false,
+    "historicalFocusedLocalizationResult": {
+      "passed": 123,
+      "failed": 0,
+      "rerunForVersionCutover": false,
+      "qualification": "Exact unchanged localization/search code and tests; not a new suite result or human acceptance."
+    }
+  },
+  "verificationOnlyCorrection": {
+    "file": "tools/verification/compiled-bundle-smoke.mjs",
+    "problem": "Independent style regex counted a literal <style> inside PNG serialization JavaScript as a second HTML stylesheet.",
+    "fix": "Use the same raw-text script/style block parsing pattern as the existing CSP contracts; keep every original CSP/hash/boot/catalog assertion.",
+    "before": "docs/verification/releases/1.4/inputs/initial-smoke-parser-failure.json",
+    "after": "docs/verification/releases/1.4/inputs/emitted-smoke.json",
+    "applicationOrBundleChangedByFix": false,
+    "additionalProjectBuilds": 0
+  },
+  "curation": "docs/verification/releases/1.4/curation.json",
+  "remainingConditions": {
+    "qualifiedNativeHumanAndATAcceptance": false,
+    "independentAcceptanceNotInferred": true,
+    "source85ProtectedEnglishEnter": "Schema 42854 / 13 title bindings remain an inherited frozen-source limitation.",
+    "performanceOwnerAndLegacyConditions": "Unchanged, unaccepted and unwaived.",
+    "ownerPublicationAuthorizationIsNotGateWaiver": true
+  }
+}

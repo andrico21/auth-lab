@@ -159,6 +159,9 @@ test('denied storage permits memory-only explicit choices without implicit langu
   assert.equal(root.getAttribute('lang'),'en');assert.equal(document.documentElement.getAttribute('dir'),'ltr');
 });
 
+const europeanLocales=['el','es-CO','es-ES','it','pt-PT','pt-BR','sr-Cyrl','sr-Latn','hr'];
+const europeanMillionCases=[[0,'other'],[0.5,'other'],[1,'one'],[1.5,'other'],[2,'other'],[1000000,'many'],[2000000,'many'],[1000001,'other']];
+const serboCroatianCases=[[1,'one'],[21,'one'],[101,'one'],[1.1,'one'],[1.21,'one'],[2,'few'],[3,'few'],[4,'few'],[22,'few'],[1.2,'few'],[0,'other'],[5,'other'],[11,'other'],[12,'other'],[111,'other'],[1.5,'other'],[1.11,'other']];
 const cardinalCases={
   en:[[0,'other'],[1,'one'],[2,'other'],[0.5,'other']],
   ru:[[1,'one'],[2,'few'],[5,'many'],[11,'many'],[21,'one'],[22,'few'],[1.5,'other']],
@@ -168,6 +171,24 @@ const cardinalCases={
   'ar-AE':[[0,'zero'],[1,'one'],[2,'two'],[3,'few'],[10,'few'],[11,'many'],[99,'many'],[100,'other'],[0.5,'other']],
   fr:[[0,'one'],[0.5,'one'],[1,'one'],[1.5,'one'],[2,'other'],[1000000,'many'],[2000000,'many']],
   pl:[[0,'many'],[1,'one'],[2,'few'],[5,'many'],[12,'many'],[21,'many'],[22,'few'],[1.5,'other']],
+  hi:[[0,'one'],[0.5,'one'],[1,'one'],[1.5,'other'],[2,'other']],
+  ur:[[0,'other'],[0.5,'other'],[1,'one'],[1.5,'other'],[2,'other']],
+  sw:[[0,'other'],[0.5,'other'],[1,'one'],[1.5,'other'],[2,'other']],
+  ha:[[0,'other'],[0.5,'other'],[1,'one'],[1.5,'other'],[2,'other']],
+  yo:[[0,'other'],[0.5,'other'],[1,'other'],[1.5,'other'],[2,'other']],
+  ig:[[0,'other'],[0.5,'other'],[1,'other'],[1.5,'other'],[2,'other']],
+  ml:[[0,'other'],[0.5,'other'],[1,'one'],[1.5,'other'],[2,'other']],
+  fil:[[0,'one'],[1,'one'],[2,'one'],[3,'one'],[5,'one'],[11,'one'],[21,'one'],[0.5,'one'],[4,'other'],[6,'other'],[9,'other'],[14,'other'],[0.4,'other'],[0.000004,'other'],[0.000005,'one']],
+  bn:[[0,'one'],[0.5,'one'],[1,'one'],[1.5,'other'],[2,'other']],
+  el:[[0,'other'],[1,'one'],[1.5,'other'],[2,'other'],[1000000,'other']],
+  'es-CO':europeanMillionCases,
+  'es-ES':europeanMillionCases,
+  it:europeanMillionCases,
+  'pt-PT':europeanMillionCases,
+  'pt-BR':[[0,'one'],[0.5,'one'],[1,'one'],[1.2,'one'],[1.5,'one'],[2,'other'],[1000000,'many'],[2000000,'many'],[1000001,'other']],
+  'sr-Cyrl':serboCroatianCases,
+  'sr-Latn':serboCroatianCases,
+  hr:serboCroatianCases,
 };
 for(const [locale,cases] of Object.entries(cardinalCases))test(locale+' cardinal categories match ordinary-decimal CLDR boundaries',()=>{
   const localizer=new Localizer({host:{},initialLocale:locale});
@@ -185,12 +206,30 @@ test('plural messages select native branches rather than English singular/plural
     'ar-AE':{zero:'{count} نتيجة',one:'{count} نتيجة',two:'{count} نتيجتان',few:'{count} نتائج',many:'{count} نتيجة',other:'{count} نتيجة'},
     fr:{one:'{count} résultat',many:'{count} résultats',other:'{count} résultats'},
     pl:{one:'{count} wynik',few:'{count} wyniki',many:'{count} wyników',other:'{count} wyniku'},
+    hi:{one:'{count} परिणाम मिला।',other:'{count} परिणाम मिले।'},
+    ur:{one:'{count} نتیجہ ملا۔',other:'{count} نتائج ملے۔'},
+    sw:{one:'Matokeo {count} yamepatikana.',other:'Matokeo {count} yamepatikana.'},
+    ha:{one:'An samu sakamako {count}.',other:'An samu sakamako {count}.'},
+    yo:{other:'A rí àbájáde {count}.'},
+    ig:{other:'Achọtara nsonaazụ {count}.'},
+    ml:{one:'{count} ഫലം കണ്ടെത്തി.',other:'{count} ഫലങ്ങൾ കണ്ടെത്തി.'},
+    fil:{one:'May {count} resulta.',other:'May {count} resulta.'},
+    bn:{one:'{count}টি ফল পাওয়া গেছে।',other:'{count}টি ফল পাওয়া গেছে।'},
+    el:{one:'{count} αποτέλεσμα',other:'{count} αποτελέσματα'},
+    'es-CO':{one:'{count} resultado',many:'{count} resultados',other:'{count} resultados'},
+    'es-ES':{one:'{count} resultado',many:'{count} resultados',other:'{count} resultados'},
+    it:{one:'{count} risultato',many:'{count} risultati',other:'{count} risultati'},
+    'pt-PT':{one:'{count} resultado',many:'{count} resultados',other:'{count} resultados'},
+    'pt-BR':{one:'{count} resultado',many:'{count} resultados',other:'{count} resultados'},
+    'sr-Cyrl':{one:'{count} резултат',few:'{count} резултата',other:'{count} резултата'},
+    'sr-Latn':{one:'{count} rezultat',few:'{count} rezultata',other:'{count} rezultata'},
+    hr:{one:'{count} rezultat',few:'{count} rezultata',other:'{count} rezultata'},
   };
   for(const [locale,native] of Object.entries(forms)){
     const localizer=fixture([binding],{results:{plural:native}},locale);
     for(const [count,category] of cardinalCases[locale]){
       const source=count+(count===1?' result':' results');
-      const decimal=['ru','uk','de','fr','pl'].includes(locale)?String(count).replace('.',','):String(count);
+      const decimal=['ru','uk','de','fr','pl',...europeanLocales].includes(locale)?String(count).replace('.',','):String(count);
       assert.equal(localizer.plural('results',count,source),native[category].replace('{count}',decimal),locale+' '+count);
       assert.equal(localizer.language('results'),locale);
     }
@@ -213,7 +252,38 @@ for(const mode of ['missing','wrong locale','wrong rules'])test(mode+' Intl data
     assert.equal(localizer.formatCount(1234.5),'1234,5');
     assert.equal(localizer.diagnostics().pluralDataSource,'CLDR 49 ordinary-decimal fallback');
     assert.equal(localizer.diagnostics().numberDataSource,'CLDR 49 Latin-digit decimal-separator fallback');
+    for(const locale of ['hi','ur','sw','ha','yo','ig','ml','fil','bn',...europeanLocales]){
+      const native=new Localizer({host:{},initialLocale:locale});
+      for(const [count,expected] of cardinalCases[locale])assert.equal(native.cardinal(count),expected,locale+' '+count+' '+mode);
+      if(europeanLocales.includes(locale))assert.equal(native.formatCount(1234.5),'1234,5',locale+' '+mode);
+    }
   }finally{Object.defineProperty(Intl,'PluralRules',pluralDescriptor);Object.defineProperty(Intl,'NumberFormat',numberDescriptor);}
+});
+
+test('Portuguese parent-locale plural data cannot erase the selected regional rules',()=>{
+  const descriptor=Object.getOwnPropertyDescriptor(Intl,'PluralRules'),NativeRules=Intl.PluralRules;
+  try{
+    Object.defineProperty(Intl,'PluralRules',{configurable:true,writable:true,value:class {
+      static supportedLocalesOf(){return ['pt-PT','pt-BR'];}
+      constructor(){this.rules=new NativeRules('pt-BR',{maximumFractionDigits:20});}
+      resolvedOptions(){return {locale:'pt'};}
+      select(value){return this.rules.select(value);}
+    }});
+    const portugal=new Localizer({host:{},initialLocale:'pt-PT'}),brazil=new Localizer({host:{},initialLocale:'pt-BR'});
+    for(const value of [0,0.5,1.5]){assert.equal(portugal.cardinal(value),'other');assert.equal(brazil.cardinal(value),'one');}
+    assert.equal(portugal.cardinal(1000000),'many');assert.equal(brazil.cardinal(1000000),'many');
+  }finally{Object.defineProperty(Intl,'PluralRules',descriptor);}
+});
+
+test('no-Intl European human counts use decimal commas without scientific or compact notation',()=>{
+  const descriptor=Object.getOwnPropertyDescriptor(Intl,'NumberFormat');
+  try{
+    Object.defineProperty(Intl,'NumberFormat',{configurable:true,writable:true,value:undefined});
+    for(const locale of europeanLocales){
+      const localizer=new Localizer({host:{},initialLocale:locale});
+      for(const [value,expected] of [[1.5,'1,5'],[1e-7,'0,0000001'],[1e-21,'0'],[1e21,'1000000000000000000000']])assert.equal(localizer.formatCount(value),expected,locale+' '+value);
+    }
+  }finally{Object.defineProperty(Intl,'NumberFormat',descriptor);}
 });
 
 test('only the active lazy catalog is loaded, with no-op preserving live caches and revision',()=>{

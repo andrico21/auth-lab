@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Auth Flow Studio · Greek, Spanish, Italian, Portuguese, Serbian and Croatian</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+<style>body{max-width:1100px;line-height:1.55;padding:1rem;margin:auto} table{border-collapse:collapse;width:100%;min-width:640px} th,td{padding:.65rem;border:1px solid #b5bdc7;vertical-align:top} th{background:#edf1f7;text-align:left} .table-scroll{overflow-x:auto;margin:1rem 0} code{overflow-wrap:anywhere} @media (prefers-color-scheme:dark){th{background:#303a48}}</style></head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Auth Flow Studio · Greek, Spanish, Italian,
+Portuguese, Serbian and Croatian</h1>
+<p class="subtitle">Focused localization assignment for the worker · 5
+November 2026</p>
+</header>
+<nav id="TOC" role="doc-toc" aria-label="Contents">
+<ul>
+<li><a href="#assignment" id="toc-assignment">Assignment</a></li>
+<li><a href="#translation-scope-and-integrity" id="toc-translation-scope-and-integrity">Translation scope and
+integrity</a></li>
+<li><a href="#product-integration" id="toc-product-integration">Product
+integration</a></li>
+<li><a href="#plurals-and-search" id="toc-plurals-and-search">Plurals
+and search</a></li>
+<li><a href="#concrete-translation-drafts-supplied" id="toc-concrete-translation-drafts-supplied">Concrete translation
+drafts supplied</a></li>
+<li><a href="#focused-verification-and-handoff" id="toc-focused-verification-and-handoff">Focused verification and
+handoff</a></li>
+</ul>
+</nav>
+<h2 id="assignment">Assignment</h2>
+<p>Add <strong>Greek</strong>, <strong>Spanish for Colombia and
+Spain</strong>, <strong>Italian</strong>, <strong>Portuguese for
+Portugal and Brazil</strong>, <strong>Serbian in both Cyrillic and
+Latin</strong>, and <strong>Croatian</strong>. “Colombian” means
+Colombian Spanish (<code>es-CO</code>); “classic Spanish” is implemented
+as Spanish for Spain (<code>es-ES</code>). Provide both Portuguese
+regional variants. The two Serbian choices are script variants of one
+language, not two different languages. Croatian is a separate locale and
+requires its own idiomatic text. Provide nine selectable options:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 1"><table>
+<thead>
+<tr class="header">
+<th scope="col">Language</th>
+<th scope="col">Tag</th>
+<th scope="col">Display label</th>
+<th scope="col">Direction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Greek</td>
+<td><code>el</code></td>
+<td>Ελληνικά</td>
+<td>LTR</td>
+</tr>
+<tr class="even">
+<td>Spanish (Colombia)</td>
+<td><code>es-CO</code></td>
+<td>Español (Colombia)</td>
+<td>LTR</td>
+</tr>
+<tr class="odd">
+<td>Spanish (Spain)</td>
+<td><code>es-ES</code></td>
+<td>Español (España)</td>
+<td>LTR</td>
+</tr>
+<tr class="even">
+<td>Italian</td>
+<td><code>it</code></td>
+<td>Italiano</td>
+<td>LTR</td>
+</tr>
+<tr class="odd">
+<td>Portuguese (Portugal)</td>
+<td><code>pt-PT</code></td>
+<td>Português (Portugal)</td>
+<td>LTR</td>
+</tr>
+<tr class="even">
+<td>Portuguese (Brazil)</td>
+<td><code>pt-BR</code></td>
+<td>Português (Brasil)</td>
+<td>LTR</td>
+</tr>
+<tr class="odd">
+<td>Serbian (Cyrillic)</td>
+<td><code>sr-Cyrl</code></td>
+<td>Српски — ћирилица</td>
+<td>LTR</td>
+</tr>
+<tr class="even">
+<td>Serbian (Latin)</td>
+<td><code>sr-Latn</code></td>
+<td>Srpski — latinica</td>
+<td>LTR</td>
+</tr>
+<tr class="odd">
+<td>Croatian</td>
+<td><code>hr</code></td>
+<td>Hrvatski</td>
+<td>LTR</td>
+</tr>
+</tbody>
+</table>
+</div><p>Use the latest actual checkout, preserving the existing 17 options
+and the newly added PNG export. The latest reviewed PNG handoff
+identified canonical app/test SHA-256
+<code>8ac8615deb84ee50b04564f84e5a328a73415ec05c1f4f3315f2a5deea306206</code>
+and standalone SHA-256
+<code>920aa1cfe09affd1ad9a30aea613c9d9e3111ace2e92a8884ea66f2691c3960f</code>.
+These are reference context, not a reason to reset newer work.</p>
+<p><strong>Keep this simple.</strong> Extend the existing translation
+workflow; do not build another localization framework, a new reporting
+system, a profiling setup or a browser matrix. Make only changes
+necessary for these languages and their correct operation. Produce one
+concise handoff. Avoid repeated full-catalog audits and rebuilds,
+duplicate checkpoints, large evidence exports and historical archive
+reconstruction. The 10-minute verification target and 100 MB
+temporary/evidence target below are real targets; if a check does not
+fit, report it rather than starting an open-ended diagnostics
+campaign.</p>
+<h2 id="translation-scope-and-integrity">Translation scope and
+integrity</h2>
+<ol type="1">
+<li>Translate the actual human-facing UI, navigation, help,
+accessibility text, step descriptions, scenarios, warnings and generated
+explanations across <strong>Full and Compact</strong>, using the
+existing source-bound system. Include the PNG action and its
+status/error messages. The starter translations in this plan are a small
+head start; they are <strong>not</strong> complete lesson catalogs.
+Finish the translations for all nine options and report actual
+unresolved or untranslated entries separately; do not present
+schema/binding counts as proof of linguistic accuracy.</li>
+<li>Preserve exact protocol names, RFC entities, formal actors, claims,
+parameters, identifiers, placeholders, code, URLs and example values.
+For example, <code>client_id</code>, <code>nonce</code>,
+<code>Realm A</code>, <code>PKINIT</code>, <code>SPAKE2+</code>,
+<code>bogus</code> and <code>insecure</code> remain byte-exact where
+they are technical names. Translate surrounding human prose, including
+generic words such as “protocol”, without changing trust direction,
+negation, timing, token state or the distinction between authentication
+and authorization.</li>
+<li>Use clear professional Greek, Colombian and Spain Spanish, Italian,
+European and Brazilian Portuguese, Serbian and Croatian without invented
+slang or a claim that a whole country speaks identically. Regional
+catalogs may share identical entries where appropriate, but each must
+use natural regional grammar and vocabulary where they differ. Croatian
+requires its own natural vocabulary and grammar; do not relabel a
+Serbian catalog as Croatian. Both Serbian scripts must contain the same
+meaning. It is acceptable to derive one script from an authored Serbian
+prose catalog through a carefully scoped conversion <strong>if</strong>
+it preserves placeholders and protected spans exactly and handles
+script-specific spelling/case; apply human-language corrections where
+needed. Do not blindly transliterate mixed text, protocol names, URLs or
+code. <code>љ</code>/<code>lj</code>, <code>њ</code>/<code>nj</code>,
+and <code>џ</code>/<code>dž</code>, letter case and word boundaries need
+care. A mechanical conversion is not qualified native-speaker
+approval.</li>
+<li>Preserve all current languages, translation coverage and behavior.
+Make all nine new choices usable offline in the single-file standalone.
+Do not add a remote translation API, runtime fetch or externally hosted
+font. Retain the existing English recovery path and report unavailable
+native-human or assistive-technology review honestly; do not invent such
+approval.</li>
+</ol>
+<h2 id="product-integration">Product integration</h2>
+<ul>
+<li>Register all nine full tags and labels in
+<code>src/localization.js</code> and the existing selection, metadata,
+plural, fallback and number-formatting paths. Keep <code>es-CO</code>
+distinct from <code>es-ES</code>, <code>pt-PT</code> distinct from
+<code>pt-BR</code>, <code>hr</code> distinct from <code>sr</code>, and
+both Serbian script tags distinct. Persist and reload the user’s exact
+selected region/script. The current application selects exact registered
+tags and does not need a new browser-language detection system. If
+existing code already receives a bare language tag, use a documented
+default without overriding an explicit region or script.</li>
+<li>Extend the source-bound catalogs, glossaries,
+<code>tools/verification/localization/resources.mjs</code> and the
+packed <code>src/localization-resources.js</code> using the current
+pipeline. Extend any locale enumerations and plural categories in the
+compiler as well as the UI registry. Avoid changing existing catalogs or
+duplicating huge derived artifacts beyond what the existing build
+actually requires.</li>
+<li>The PNG exporter has a <strong>separate eight-message additive
+catalog</strong> in <code>src/localization-png.js</code>; add the nine
+locales there, preserving its existing source-hash bindings. The
+included complete draft PNG messages may be used directly after
+contextual checking. Otherwise the new PNG UI can silently fall back to
+English even if the main catalogs are complete.</li>
+<li>Preserve offline standalone build and language-change behavior:
+active playback pauses as the current product does; the selected
+scenario/case, step, elapsed position, queue, trace/field selection,
+held state and raw search drafts remain intact. The user’s chosen
+Serbian script remains selected in both views. Changing language must
+not mutate protocol state or implicitly advance a step. Do not change
+PNG export behavior beyond translating its UI.</li>
+<li>Existing <code>formatCount</code> fallback matches some exact locale
+tags; ensure full regional/script tags receive appropriate localized
+number formatting when <code>Intl</code> is unavailable. Formatting
+human counts is separate from exact protocol values: never reformat an
+attribute, example or wire value.</li>
+</ul>
+<h2 id="plurals-and-search">Plurals and search</h2>
+<p>Use the current <a href="https://unicode.org/cldr/charts/49/supplemental/language_plural_rules.html">Unicode
+CLDR cardinal rules</a> in both the runtime
+<code>Intl.PluralRules</code> path and the supported
+no-<code>Intl</code> fallback, and update the compiler’s accepted forms.
+Write natural complete messages instead of suffix concatenation. The
+fallback must match supported normal numeric inputs and formatting; do
+not claim support for CLDR operands or compact-number formats the app
+does not actually represent.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 2"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Locale</th>
+<th scope="col">Cardinal forms</th>
+<th scope="col">Small representative checks</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>el</code></td>
+<td><code>one</code>, <code>other</code></td>
+<td><code>1</code> → <code>one</code>; <code>0</code>, <code>1.5</code>,
+<code>2</code>, <code>1000000</code> → <code>other</code>.</td>
+</tr>
+<tr class="even">
+<td><code>es-CO</code>, <code>es-ES</code>, <code>it</code>,
+<code>pt-PT</code></td>
+<td><code>one</code>, <code>many</code>, <code>other</code></td>
+<td><code>1</code> → <code>one</code>; <code>1000000</code>,
+<code>2000000</code> → <code>many</code>; <code>0</code>,
+<code>0.5</code>, <code>1.5</code>, <code>2</code>, <code>1000001</code>
+→ <code>other</code>. Do not substitute English’s two-category
+rule.</td>
+</tr>
+<tr class="odd">
+<td><code>pt-BR</code></td>
+<td><code>one</code>, <code>many</code>, <code>other</code></td>
+<td><code>0</code>, <code>0.5</code>, <code>1</code>, <code>1.2</code>,
+<code>1.5</code> → <code>one</code>; <code>1000000</code>,
+<code>2000000</code> → <code>many</code>; <code>2</code>,
+<code>1000001</code> → <code>other</code>. Do not reuse the
+<code>pt-PT</code> rule.</td>
+</tr>
+<tr class="even">
+<td><code>sr-Cyrl</code>, <code>sr-Latn</code>, <code>hr</code></td>
+<td><code>one</code>, <code>few</code>, <code>other</code></td>
+<td><code>1</code>, <code>21</code>, <code>101</code>, <code>1.1</code>,
+<code>1.21</code> → <code>one</code>; <code>2</code>, <code>3</code>,
+<code>4</code>, <code>22</code>, <code>1.2</code> → <code>few</code>;
+<code>0</code>, <code>5</code>, <code>11</code>, <code>12</code>,
+<code>111</code>, <code>1.5</code>, <code>1.11</code> →
+<code>other</code>.</td>
+</tr>
+</tbody>
+</table>
+</div><p>Numbers above are normal JavaScript numeric inputs; representations
+such as <code>1.0</code> may lose visible trailing zeros before
+selection. Do not equate Serbian with Russian or English plural rules.
+Check the normal and no-<code>Intl</code> paths against the runtime
+actually used, including fractional inputs.</p>
+<p>The present runtime’s plural capability check and fallback branch on
+a base language; make these checks sensitive to the Portuguese region.
+Validate observable plural behavior rather than demanding exact
+<code>Intl.resolvedOptions().locale</code> text: a conforming runtime
+may resolve a regional tag to an inherited parent while still applying
+the correct rules.</p>
+<p>Add a few useful native search terms per new option for concepts such
+as authentication, filtering and validation, alongside existing English
+and exact technical searches. Respect NFC/NFD equivalence, Greek case
+including <code>σ</code>/<code>ς</code>, and accented Greek text.
+Preserve Spanish <code>ñ</code>, Portuguese <code>ç</code>,
+<code>ã</code>, <code>õ</code>, Italian accented vowels, Croatian and
+Serbian Latin <code>č</code>, <code>ć</code>, <code>š</code>,
+<code>ž</code>, <code>đ</code>, and meaningful Greek accents in
+displayed/input text and exact matching. A forgiving alias may follow an
+exact native spelling, never outrank it; retain exact canonical
+identifier/protocol priority. Keep user’s raw input and IME composition
+unchanged. Test Serbian in each script, Croatian, Greek, Spanish and
+Portuguese region variants, Italian and mixed text containing a
+protected name. Do not introduce automatic cross-script rewriting of
+technical identifiers.</p>
+<h2 id="concrete-translation-drafts-supplied">Concrete translation
+drafts supplied</h2>
+<p>These are actual draft translations for matching product text; they
+have <strong>not</strong> been reviewed by qualified native speakers.
+Check context and adjust where necessary. They are a starting set only,
+not a substitute for translating the full product.</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 3"><table>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source or UI meaning</th>
+<th scope="col">Greek <code>el</code></th>
+<th scope="col">Spanish <code>es-CO</code></th>
+<th scope="col">Serbian <code>sr-Cyrl</code></th>
+<th scope="col">Serbian <code>sr-Latn</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Language</td>
+<td>Γλώσσα</td>
+<td>Idioma</td>
+<td>Језик</td>
+<td>Jezik</td>
+</tr>
+<tr class="even">
+<td>Search</td>
+<td>Αναζήτηση</td>
+<td>Buscar</td>
+<td>Претрага</td>
+<td>Pretraga</td>
+</tr>
+<tr class="odd">
+<td>Play</td>
+<td>Αναπαραγωγή</td>
+<td>Reproducir</td>
+<td>Пусти</td>
+<td>Pusti</td>
+</tr>
+<tr class="even">
+<td>Pause</td>
+<td>Παύση</td>
+<td>Pausar</td>
+<td>Паузирај</td>
+<td>Pauziraj</td>
+</tr>
+<tr class="odd">
+<td>Next</td>
+<td>Επόμενο</td>
+<td>Siguiente</td>
+<td>Следећи</td>
+<td>Sledeći</td>
+</tr>
+<tr class="even">
+<td>Previous</td>
+<td>Προηγούμενο</td>
+<td>Anterior</td>
+<td>Претходни</td>
+<td>Prethodni</td>
+</tr>
+<tr class="odd">
+<td>Compact view. Playback paused.</td>
+<td>Συνοπτική προβολή. Η αναπαραγωγή είναι σε παύση.</td>
+<td>Vista compacta. Reproducción en pausa.</td>
+<td>Компактни приказ. Репродукција је паузирана.</td>
+<td>Kompaktni prikaz. Reprodukcija je pauzirana.</td>
+</tr>
+<tr class="even">
+<td>Search scenarios, protocols or attributes…</td>
+<td>Αναζήτηση σεναρίων, πρωτοκόλλων ή χαρακτηριστικών…</td>
+<td>Buscar escenarios, protocolos o atributos…</td>
+<td>Претражи сценарије, протоколе или атрибуте…</td>
+<td>Pretraži scenarije, protokole ili atribute…</td>
+</tr>
+</tbody>
+</table>
+</div><div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 4"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source or UI meaning</th>
+<th scope="col">Croatian <code>hr</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Language</td>
+<td>Jezik</td>
+</tr>
+<tr class="even">
+<td>Search</td>
+<td>Pretraži</td>
+</tr>
+<tr class="odd">
+<td>Play</td>
+<td>Reproduciraj</td>
+</tr>
+<tr class="even">
+<td>Pause</td>
+<td>Pauziraj</td>
+</tr>
+<tr class="odd">
+<td>Next</td>
+<td>Sljedeće</td>
+</tr>
+<tr class="even">
+<td>Previous</td>
+<td>Prethodno</td>
+</tr>
+<tr class="odd">
+<td>Compact view. Playback paused.</td>
+<td>Sažeti prikaz. Reprodukcija je pauzirana.</td>
+</tr>
+<tr class="even">
+<td>Search scenarios, protocols or attributes…</td>
+<td>Pretraži scenarije, protokole ili atribute…</td>
+</tr>
+</tbody>
+</table>
+</div><div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 5"><table>
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source or UI meaning</th>
+<th scope="col">Spain Spanish <code>es-ES</code></th>
+<th scope="col">Italian <code>it</code></th>
+<th scope="col">European Portuguese <code>pt-PT</code></th>
+<th scope="col">Brazilian Portuguese <code>pt-BR</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Language</td>
+<td>Idioma</td>
+<td>Lingua</td>
+<td>Idioma</td>
+<td>Idioma</td>
+</tr>
+<tr class="even">
+<td>Search</td>
+<td>Buscar</td>
+<td>Cerca</td>
+<td>Pesquisar</td>
+<td>Pesquisar</td>
+</tr>
+<tr class="odd">
+<td>Play</td>
+<td>Reproducir</td>
+<td>Riproduci</td>
+<td>Reproduzir</td>
+<td>Reproduzir</td>
+</tr>
+<tr class="even">
+<td>Pause</td>
+<td>Pausar</td>
+<td>Pausa</td>
+<td>Pausar</td>
+<td>Pausar</td>
+</tr>
+<tr class="odd">
+<td>Next</td>
+<td>Siguiente</td>
+<td>Successivo</td>
+<td>Seguinte</td>
+<td>Próximo</td>
+</tr>
+<tr class="even">
+<td>Previous</td>
+<td>Anterior</td>
+<td>Precedente</td>
+<td>Anterior</td>
+<td>Anterior</td>
+</tr>
+<tr class="odd">
+<td>Compact view. Playback paused.</td>
+<td>Vista compacta. Reproducción en pausa.</td>
+<td>Vista compatta. Riproduzione in pausa.</td>
+<td>Vista compacta. Reprodução em pausa.</td>
+<td>Visualização compacta. Reprodução em pausa.</td>
+</tr>
+<tr class="even">
+<td>Search scenarios, protocols or attributes…</td>
+<td>Buscar escenarios, protocolos o atributos…</td>
+<td>Cerca scenari, protocolli o attributi…</td>
+<td>Pesquisar cenários, protocolos ou atributos…</td>
+<td>Pesquisar cenários, protocolos ou atributos…</td>
+</tr>
+</tbody>
+</table>
+</div><p>Exact PNG exporter English sources, corresponding to the eight
+entries in <code>src/localization-png.js</code>:</p>
+<div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 6"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source</th>
+<th scope="col">Greek <code>el</code></th>
+<th scope="col">Spanish <code>es-CO</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Save current step as PNG</td>
+<td>Αποθήκευση τρέχοντος βήματος ως PNG</td>
+<td>Guardar paso actual como PNG</td>
+</tr>
+<tr class="even">
+<td>Pause playback to save the current step.</td>
+<td>Παύστε την αναπαραγωγή για να αποθηκεύσετε το τρέχον βήμα.</td>
+<td>Pausa la reproducción para guardar el paso actual.</td>
+</tr>
+<tr class="odd">
+<td>Select a step before saving a PNG.</td>
+<td>Επιλέξτε ένα βήμα πριν αποθηκεύσετε ένα PNG.</td>
+<td>Selecciona un paso antes de guardar un PNG.</td>
+</tr>
+<tr class="even">
+<td>Preparing PNG…</td>
+<td>Προετοιμασία PNG…</td>
+<td>Preparando PNG…</td>
+</tr>
+<tr class="odd">
+<td>PNG download requested. Your browser controls saving.</td>
+<td>Ζητήθηκε η λήψη του PNG. Το πρόγραμμα περιήγησής σας ελέγχει την
+αποθήκευση.</td>
+<td>Se solicitó la descarga del PNG. Tu navegador controla cómo se
+guarda.</td>
+</tr>
+<tr class="even">
+<td>PNG export canceled because the study view changed.</td>
+<td>Η εξαγωγή PNG ακυρώθηκε επειδή άλλαξε η προβολή μελέτης.</td>
+<td>Se canceló la exportación a PNG porque cambió la vista de
+estudio.</td>
+</tr>
+<tr class="odd">
+<td>PNG export failed. Try another browser.</td>
+<td>Η εξαγωγή PNG απέτυχε. Δοκιμάστε άλλο πρόγραμμα περιήγησης.</td>
+<td>Falló la exportación a PNG. Prueba con otro navegador.</td>
+</tr>
+<tr class="even">
+<td>This view is too large to export safely at 2x resolution.</td>
+<td>Αυτή η προβολή είναι πολύ μεγάλη για να εξαχθεί με ασφάλεια σε
+ανάλυση 2x.</td>
+<td>Esta vista es demasiado grande para exportarla de forma segura a una
+resolución de 2x.</td>
+</tr>
+</tbody>
+</table>
+</div><div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 7"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source</th>
+<th scope="col">Serbian <code>sr-Cyrl</code></th>
+<th scope="col">Serbian <code>sr-Latn</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Save current step as PNG</td>
+<td>Сачувај тренутни корак као PNG</td>
+<td>Sačuvaj trenutni korak kao PNG</td>
+</tr>
+<tr class="even">
+<td>Pause playback to save the current step.</td>
+<td>Паузирај репродукцију да сачуваш тренутни корак.</td>
+<td>Pauziraj reprodukciju da sačuvaš trenutni korak.</td>
+</tr>
+<tr class="odd">
+<td>Select a step before saving a PNG.</td>
+<td>Изабери корак пре него што сачуваш PNG.</td>
+<td>Izaberi korak pre nego što sačuvaš PNG.</td>
+</tr>
+<tr class="even">
+<td>Preparing PNG…</td>
+<td>Припрема PNG слике…</td>
+<td>Priprema PNG slike…</td>
+</tr>
+<tr class="odd">
+<td>PNG download requested. Your browser controls saving.</td>
+<td>Затражено је преузимање PNG слике. Твој прегледач одређује како ће
+се сачувати.</td>
+<td>Zatraženo je preuzimanje PNG slike. Tvoj pregledač određuje kako će
+se sačuvati.</td>
+</tr>
+<tr class="even">
+<td>PNG export canceled because the study view changed.</td>
+<td>Извоз PNG слике је отказан јер се променио приказ учења.</td>
+<td>Izvoz PNG slike je otkazan jer se promenio prikaz učenja.</td>
+</tr>
+<tr class="odd">
+<td>PNG export failed. Try another browser.</td>
+<td>Извоз PNG слике није успео. Покушај са другим прегледачем.</td>
+<td>Izvoz PNG slike nije uspeo. Pokušaj sa drugim pregledačem.</td>
+</tr>
+<tr class="even">
+<td>This view is too large to export safely at 2x resolution.</td>
+<td>Овај приказ је превелик за безбедан извоз у резолуцији 2x.</td>
+<td>Ovaj prikaz je prevelik za bezbedan izvoz u rezoluciji 2x.</td>
+</tr>
+</tbody>
+</table>
+</div><div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 8"><table>
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source</th>
+<th scope="col">Croatian <code>hr</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Save current step as PNG</td>
+<td>Spremite trenutačni korak kao PNG</td>
+</tr>
+<tr class="even">
+<td>Pause playback to save the current step.</td>
+<td>Pauzirajte reprodukciju kako biste spremili trenutačni korak.</td>
+</tr>
+<tr class="odd">
+<td>Select a step before saving a PNG.</td>
+<td>Odaberite korak prije spremanja PNG slike.</td>
+</tr>
+<tr class="even">
+<td>Preparing PNG…</td>
+<td>Priprema PNG slike…</td>
+</tr>
+<tr class="odd">
+<td>PNG download requested. Your browser controls saving.</td>
+<td>Zatraženo je preuzimanje PNG slike. Spremanjem upravlja vaš
+preglednik.</td>
+</tr>
+<tr class="even">
+<td>PNG export canceled because the study view changed.</td>
+<td>Izvoz PNG slike otkazan je jer se promijenio prikaz učenja.</td>
+</tr>
+<tr class="odd">
+<td>PNG export failed. Try another browser.</td>
+<td>Izvoz PNG slike nije uspio. Pokušajte s drugim preglednikom.</td>
+</tr>
+<tr class="even">
+<td>This view is too large to export safely at 2x resolution.</td>
+<td>Ovaj je prikaz prevelik za siguran izvoz u dvostrukoj rezoluciji
+(2x).</td>
+</tr>
+</tbody>
+</table>
+</div><div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 9"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source</th>
+<th scope="col">Spain Spanish <code>es-ES</code></th>
+<th scope="col">Italian <code>it</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Save current step as PNG</td>
+<td>Guardar el paso actual como PNG</td>
+<td>Salva il passaggio corrente come PNG</td>
+</tr>
+<tr class="even">
+<td>Pause playback to save the current step.</td>
+<td>Pausa la reproducción para guardar el paso actual.</td>
+<td>Metti in pausa la riproduzione per salvare il passaggio
+corrente.</td>
+</tr>
+<tr class="odd">
+<td>Select a step before saving a PNG.</td>
+<td>Selecciona un paso antes de guardar un PNG.</td>
+<td>Seleziona un passaggio prima di salvare un PNG.</td>
+</tr>
+<tr class="even">
+<td>Preparing PNG…</td>
+<td>Preparando PNG…</td>
+<td>Preparazione del PNG…</td>
+</tr>
+<tr class="odd">
+<td>PNG download requested. Your browser controls saving.</td>
+<td>Se ha solicitado la descarga del PNG. Tu navegador controla cómo se
+guarda.</td>
+<td>Download del PNG richiesto. Il browser controlla il
+salvataggio.</td>
+</tr>
+<tr class="even">
+<td>PNG export canceled because the study view changed.</td>
+<td>Se ha cancelado la exportación a PNG porque ha cambiado la vista de
+estudio.</td>
+<td>Esportazione PNG annullata perché la vista di studio è
+cambiata.</td>
+</tr>
+<tr class="odd">
+<td>PNG export failed. Try another browser.</td>
+<td>Ha fallado la exportación a PNG. Prueba con otro navegador.</td>
+<td>Esportazione PNG non riuscita. Prova un altro browser.</td>
+</tr>
+<tr class="even">
+<td>This view is too large to export safely at 2x resolution.</td>
+<td>Esta vista es demasiado grande para exportarla de forma segura a una
+resolución de 2x.</td>
+<td>Questa vista è troppo grande per essere esportata in sicurezza a una
+risoluzione 2x.</td>
+</tr>
+</tbody>
+</table>
+</div><div class="table-scroll" tabindex="0" role="region" aria-label="Translation or locale table 10"><table>
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th scope="col">Source</th>
+<th scope="col">European Portuguese <code>pt-PT</code></th>
+<th scope="col">Brazilian Portuguese <code>pt-BR</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Save current step as PNG</td>
+<td>Guardar o passo atual como PNG</td>
+<td>Salvar a etapa atual como PNG</td>
+</tr>
+<tr class="even">
+<td>Pause playback to save the current step.</td>
+<td>Pause a reprodução para guardar o passo atual.</td>
+<td>Pause a reprodução para salvar a etapa atual.</td>
+</tr>
+<tr class="odd">
+<td>Select a step before saving a PNG.</td>
+<td>Selecione um passo antes de guardar um PNG.</td>
+<td>Selecione uma etapa antes de salvar um PNG.</td>
+</tr>
+<tr class="even">
+<td>Preparing PNG…</td>
+<td>A preparar PNG…</td>
+<td>Preparando PNG…</td>
+</tr>
+<tr class="odd">
+<td>PNG download requested. Your browser controls saving.</td>
+<td>Foi pedido o descarregamento do PNG. O navegador controla como o
+ficheiro é guardado.</td>
+<td>Download do PNG solicitado. Seu navegador controla como o arquivo é
+salvo.</td>
+</tr>
+<tr class="even">
+<td>PNG export canceled because the study view changed.</td>
+<td>A exportação do PNG foi cancelada porque a vista de estudo
+mudou.</td>
+<td>A exportação do PNG foi cancelada porque a visualização de estudo
+mudou.</td>
+</tr>
+<tr class="odd">
+<td>PNG export failed. Try another browser.</td>
+<td>A exportação do PNG falhou. Experimente outro navegador.</td>
+<td>Falha ao exportar o PNG. Tente outro navegador.</td>
+</tr>
+<tr class="even">
+<td>This view is too large to export safely at 2x resolution.</td>
+<td>Esta vista é demasiado grande para ser exportada em segurança com
+resolução de 2x.</td>
+<td>Esta visualização é grande demais para ser exportada com segurança
+em resolução 2x.</td>
+</tr>
+</tbody>
+</table>
+</div><h2 id="focused-verification-and-handoff">Focused verification and
+handoff</h2>
+<p>Target <strong>10 minutes total verification</strong> and <strong>100
+MB of new temporary/evidence output</strong>, excluding the finished
+app/catalogs and ordinary dependency installation. This is a
+verification budget, not a deadline for translation work. Reuse the
+existing environment, remove only your own transient files when safe,
+and report a specific check as unperformed if it cannot fit. No full
+suite, performance measurements, browser matrix, repetitive profiling,
+giant per-binding reports, forensic copies or new acceptance
+process.</p>
+<ol type="1">
+<li>Use the existing compiler/validation path as needed for the new nine
+catalogs and source bindings; report aggregate
+missing/stale/invalid/protected-placeholder errors per locale. Run it
+only as necessary to compile/validate the change; don’t repeatedly
+regenerate or audit all old catalogs if the existing workflow permits a
+targeted run.</li>
+<li>Exercise all nine selector entries and real translated lesson prose
+with a small shared fixture. Check the plural samples above in both
+supported paths, natural counts and protected identifiers, native search
+and exact-before-alias ordering. Include Portuguese regional plural
+differences, Croatian, Serbian both scripts and Greek
+<code>σ</code>/<code>ς</code>; use one mixed query with
+<code>client_id</code> or <code>PKINIT</code>.</li>
+<li>In one available browser, do a short shared smoke covering language
+change while paused, both Full and Compact, one script switch,
+preservation of state/search input and the localized PNG action/status.
+Build the standalone once and confirm it starts offline with the new
+languages and PNG labels. Avoid a full locale × view × browser ×
+scenario matrix; report any unavailable check honestly.</li>
+<li>Return one short handoff naming changed files, nine
+coverage/limitation summaries, actual focused checks and a runnable
+standalone. Preserve current dependency pins, the PNG export and earlier
+corrected search behavior. Native-human and human-accessibility review,
+previous performance-owner conditions and legacy limits remain at their
+previously documented status. Do not commit, push or deploy without a
+separate instruction.</li>
+</ol>
+<p>References: <a href="https://unicode.org/cldr/charts/49/supplemental/language_plural_rules.html">Unicode
+CLDR plural rules</a>; <a href="https://www.rfc-editor.org/info/rfc5646/">RFC 5646 language
+tags</a>; <a href="https://cldr.unicode.org/index/cldr-spec/transliteration-guidelines">Unicode
+transliteration guidelines</a>.</p>
+</body>
+</html>
